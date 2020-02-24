@@ -14,8 +14,13 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
-    "eject": "react-scripts eject"
+    "provision:contracts": "sh ./scripts/provision.sh",
+    "codegen": "yarn typechain --target ethers --outDir src/typechain './lib/mStable-contracts/build/*.json'",
+    "truffle:migrate": "cd ./lib/mStable-contracts && yarn migrate",
+    "truffle:script": "cd ./lib/mStable-contracts && yarn script",
+    "postinstall": "yarn provision:contracts && yarn codegen"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -41,6 +46,8 @@
     "eslint-plugin-react-hooks": "^2.4.0",
     "eslint-plugin-unicorn": "^16.1.1",
     "prettier": "^1.19.1",
+    "typechain": "^1.0.5",
+    "typechain-target-ethers": "^1.0.3",
     "typescript": "^3.8.2"
   }
 }
