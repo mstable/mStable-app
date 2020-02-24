@@ -1,0 +1,34 @@
+{
+  "extends": [
+    "airbnb-typescript",
+    "airbnb/hooks",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:unicorn/recommended",
+    "prettier",
+    "prettier/react",
+    "prettier/@typescript-eslint"
+  ],
+  "env": {
+    "node": true,
+    "browser": true,
+    "jest": true
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "import/prefer-default-export": "off",
+    "import/no-default-export": "error",
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      { "allowExpressions": true, "allowTypedFunctionExpressions": true }
+    ],
+    "unicorn/filename-case": [
+      "error",
+      {
+        "case": "camelCase",
+        "ignore": ["(.+).tsx"]
+      }
+    ]
+  }
+}
