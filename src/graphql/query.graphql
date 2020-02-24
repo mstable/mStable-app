@@ -1,0 +1,9 @@
+# import './fragments.graphql'
+
+query Token($id: ID!) {
+    token(id: $id) {
+        id
+        symbol
+        address
+    }
+}

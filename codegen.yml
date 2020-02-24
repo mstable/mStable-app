@@ -1,0 +1,16 @@
+overwrite: true
+schema: "http://0.0.0.0:8000/subgraphs/name/jameslefrere/mStable"
+documents: "src/graphql/**/*.graphql"
+generates:
+  ./src/graphql/generated.tsx:
+    schema: 'src/graphql/types.ts'
+    config:
+      skipTypename: true
+      withComponent: false
+      withHOC: false
+      withHooks: true
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'

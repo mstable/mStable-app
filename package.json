@@ -3,24 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/react-common": "^3.1.3",
+    "@apollo/react-hooks": "^3.1.3",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "apollo-boost": "^0.4.7",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.4.0"
   },
   "scripts": {
-    "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "codegen": "yarn codegen:typechain && yarn codegen:graphql",
+    "codegen:graphql": "graphql-codegen --config ./codegen.yml",
+    "codegen:typechain": "yarn typechain --target ethers --outDir src/typechain './lib/mStable-contracts/build/*.json'",
     "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "provision:contracts": "sh ./scripts/provision.sh",
-    "codegen": "yarn typechain --target ethers --outDir src/typechain './lib/mStable-contracts/build/*.json'",
+    "start": "react-scripts start",
+    "test": "react-scripts test",
     "truffle:migrate": "cd ./lib/mStable-contracts && yarn migrate",
-    "truffle:script": "cd ./lib/mStable-contracts && yarn script",
-    "postinstall": "yarn provision:contracts && yarn codegen"
+    "truffle:script": "cd ./lib/mStable-contracts && yarn script"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -38,6 +42,11 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.12.2",
+    "@graphql-codegen/fragment-matcher": "^1.12.2",
+    "@graphql-codegen/typescript": "1.12.2",
+    "@graphql-codegen/typescript-operations": "1.12.2",
+    "@graphql-codegen/typescript-react-apollo": "1.12.2",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "eslint-config-airbnb-typescript": "^7.0.0",
     "eslint-config-prettier": "^6.10.0",
@@ -45,6 +54,8 @@
     "eslint-plugin-react": "^7.18.3",
     "eslint-plugin-react-hooks": "^2.4.0",
     "eslint-plugin-unicorn": "^16.1.1",
+    "graphql": "^14.6.0",
+    "graphql-tag": "^2.10.3",
     "prettier": "^1.19.1",
     "typechain": "^1.0.5",
     "typechain-target-ethers": "^1.0.3",

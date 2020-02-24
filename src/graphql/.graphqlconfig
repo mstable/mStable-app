@@ -1,0 +1,12 @@
+{
+  "name": "mStable",
+  "schemaPath": "schema.graphql",
+  "extensions": {
+    "endpoints": {
+      "local": {
+        "url": "http://0.0.0.0:8000/subgraphs/name/jameslefrere/mStable",
+        "introspect": false
+      }
+    }
+  }
+}
