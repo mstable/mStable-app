@@ -17,14 +17,14 @@
     "build": "react-scripts build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml",
-    "codegen:typechain": "yarn typechain --target ethers --outDir src/typechain './lib/mStable-contracts/build/*.json'",
+    "codegen:typechain": "yarn typechain --target ethers --outDir src/typechain './lib/mStable-subgraph/lib/mStable-contracts/build/*.json'",
     "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
-    "provision:contracts": "sh ./scripts/provision.sh",
+    "provision": "sh ./scripts/provision.sh",
     "start": "react-scripts start",
     "test": "react-scripts test",
-    "truffle:migrate": "cd ./lib/mStable-contracts && yarn migrate",
-    "truffle:script": "cd ./lib/mStable-contracts && yarn script"
+    "truffle:migrate": "cd ./lib/mStable-subgraph && yarn truffle:migrate",
+    "truffle:script": "cd ./lib/mStable-subgraph && yarn truffle:script"
   },
   "eslintConfig": {
     "extends": "react-app"
