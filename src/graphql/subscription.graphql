@@ -1,1 +1,9 @@
 # import './fragments.graphql'
+
+subscription TokenSub($id: ID!) {
+    token(id: $id) {
+        id
+        symbol
+        address
+    }
+}

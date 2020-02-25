@@ -196,6 +196,7 @@ export type Basset = {
   maxWeight: Scalars['BigInt'],
   ratio: Scalars['BigInt'],
   status: Scalars['String'],
+  isTransferFeeCharged: Scalars['Boolean'],
   token: Token,
   vaultBalance: Scalars['BigInt'],
 };
@@ -239,6 +240,10 @@ export type Basset_Filter = {
   status_not_starts_with?: Maybe<Scalars['String']>,
   status_ends_with?: Maybe<Scalars['String']>,
   status_not_ends_with?: Maybe<Scalars['String']>,
+  isTransferFeeCharged?: Maybe<Scalars['Boolean']>,
+  isTransferFeeCharged_not?: Maybe<Scalars['Boolean']>,
+  isTransferFeeCharged_in?: Maybe<Array<Scalars['Boolean']>>,
+  isTransferFeeCharged_not_in?: Maybe<Array<Scalars['Boolean']>>,
   token?: Maybe<Scalars['String']>,
   token_not?: Maybe<Scalars['String']>,
   token_gt?: Maybe<Scalars['String']>,
@@ -269,6 +274,7 @@ export enum Basset_OrderBy {
   MaxWeight = 'maxWeight',
   Ratio = 'ratio',
   Status = 'status',
+  IsTransferFeeCharged = 'isTransferFeeCharged',
   Token = 'token',
   VaultBalance = 'vaultBalance'
 }
@@ -956,7 +962,7 @@ export enum TrancheReward_OrderBy {
   Tranche = 'tranche'
 }
 
-export type TestWithAddressFragment = Pick<Token, 'address'>;
+export type AddressFragment = Pick<Token, 'address'>;
 
 export type TokenQueryVariables = {
   id: Scalars['ID']
@@ -965,8 +971,15 @@ export type TokenQueryVariables = {
 
 export type TokenQuery = { token: Maybe<Pick<Token, 'id' | 'symbol' | 'address'>> };
 
-export const TestWithAddressFragmentDoc = gql`
-    fragment TestWithAddress on Token {
+export type TokenSubSubscriptionVariables = {
+  id: Scalars['ID']
+};
+
+
+export type TokenSubSubscription = { token: Maybe<Pick<Token, 'id' | 'symbol' | 'address'>> };
+
+export const AddressFragmentDoc = gql`
+    fragment Address on Token {
   address
 }
     `;
@@ -1005,3 +1018,34 @@ export function useTokenLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOp
 export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
 export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
 export type TokenQueryResult = ApolloReactCommon.QueryResult<TokenQuery, TokenQueryVariables>;
+export const TokenSubDocument = gql`
+    subscription TokenSub($id: ID!) {
+  token(id: $id) {
+    id
+    symbol
+    address
+  }
+}
+    `;
+
+/**
+ * __useTokenSubSubscription__
+ *
+ * To run a query within a React component, call `useTokenSubSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTokenSubSubscription` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTokenSubSubscription({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTokenSubSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<TokenSubSubscription, TokenSubSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<TokenSubSubscription, TokenSubSubscriptionVariables>(TokenSubDocument, baseOptions);
+      }
+export type TokenSubSubscriptionHookResult = ReturnType<typeof useTokenSubSubscription>;
+export type TokenSubSubscriptionResult = ApolloReactCommon.SubscriptionResult<TokenSubSubscription>;

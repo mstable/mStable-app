@@ -3,9 +3,3 @@
 fragment Address on Token {
     address
 }
-
-fragment Address on Masset {
-    token {
-        address
-    }
-}

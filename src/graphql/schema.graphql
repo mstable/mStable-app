@@ -75,6 +75,7 @@ type Basset {
     """
     basket: Basket!
     id: ID!
+    isTransferFeeCharged: Boolean!
     """
     Maximum weight of the basset in its Basket
     """
@@ -500,6 +501,7 @@ enum Basket_orderBy {
 enum Basset_orderBy {
     basket
     id
+    isTransferFeeCharged
     maxWeight
     ratio
     status
@@ -662,6 +664,10 @@ input Basset_filter {
     id_lte: ID
     id_not: ID
     id_not_in: [ID!]
+    isTransferFeeCharged: Boolean
+    isTransferFeeCharged_in: [Boolean!]
+    isTransferFeeCharged_not: Boolean
+    isTransferFeeCharged_not_in: [Boolean!]
     maxWeight: BigInt
     maxWeight_gt: BigInt
     maxWeight_gte: BigInt

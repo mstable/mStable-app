@@ -17,12 +17,14 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    "import/prefer-default-export": "off",
-    "import/no-default-export": "error",
     "@typescript-eslint/explicit-function-return-type": [
       "error",
       { "allowExpressions": true, "allowTypedFunctionExpressions": true }
     ],
+    "import/prefer-default-export": "off",
+    "import/no-default-export": "error",
+    "react/prop-types": "off",
+    "unicorn/prevent-abbreviations": "off",
     "unicorn/filename-case": [
       "error",
       {

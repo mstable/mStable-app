@@ -4,7 +4,7 @@ jobs:
     docker:
       - image: circleci/node:10.15.3
       - image: trufflesuite/ganache-cli
-        command: ganache-cli -p 7545 --gasLimit 9000000
+        command: ganache-cli -p 8545 --gasLimit 9000000
     steps:
       - checkout
       - restore_cache:
@@ -16,26 +16,24 @@ jobs:
           name: Provision
           command: yarn provision
       - run:
+          name: Codegen (TypeChain)
+          command: yarn codegen:typechain
+      - run:
+          name: Lint
+          command: yarn lint
+      - run:
           name: Migrate
           command: yarn truffle:migrate
       - setup_remote_docker
       - run:
-          name: Subgraph
-          command:
+          name: Start subgraph
+          command: |
+            - cd ./lib/graph-node/docker
+            - sh ./setup.sh
+            - docker-compose up -d
       - run:
-          name: Codegen (TypeChain)
-          command: yarn codegen:typechain
-        # TODO: GraphQL server has to be running first
-#       - run:
-#         name: Codegen (GraphQL)
-#         command: yarn codegen:graphql
-      - run:
-          name: Lint
-          command: yarn lint
-       # TODO: Add tests
-#      - run:
-#          name: Test
-#          command: yarn test
+          name: Test
+          command: yarn test
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
