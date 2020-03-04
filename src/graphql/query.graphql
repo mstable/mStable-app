@@ -1,9 +1,50 @@
 # import './fragments.graphql'
 
-query Token($id: ID!) {
+query CoreTokens {
+    mta: tokens(where: { symbol: "MTA" }) {
+        ...TokenDetails
+    }
+    mUSD: tokens(where: { symbol: "mUSD" }) {
+        ...TokenDetails
+    }
+    mGLD: tokens(where: { symbol: "mGLD" }) {
+        ...TokenDetails
+    }
+}
+
+query Masset($id: ID!) {
+    masset(id: $id) {
+        id
+        token {
+            ...TokenDetails
+        }
+        basket {
+            bassets {
+                id
+                token {
+                    ...TokenDetails
+                }
+            }
+        }
+    }
+}
+
+query ERC20Tokens {
+    tokens(where: { symbol_not_in: ["MTA", "mUSD", "mGLD"] }) {
+        ...TokenDetails
+    }
+}
+
+query TokenByAddress($id: ID!) {
     token(id: $id) {
         id
-        symbol
         address
+        decimals
+        name
+        symbol
+        totalBurned
+        totalBurned
+        totalSupply
+        totalTransferred
     }
 }

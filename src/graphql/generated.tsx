@@ -293,6 +293,7 @@ export type Masset = {
   redemptionFee: Scalars['BigInt'],
   feePool: Scalars['Bytes'],
   token: Token,
+  tokenSymbol: Scalars['String'],
   tranches: Array<Tranche>,
 };
 
@@ -356,6 +357,20 @@ export type Masset_Filter = {
   token_not_starts_with?: Maybe<Scalars['String']>,
   token_ends_with?: Maybe<Scalars['String']>,
   token_not_ends_with?: Maybe<Scalars['String']>,
+  tokenSymbol?: Maybe<Scalars['String']>,
+  tokenSymbol_not?: Maybe<Scalars['String']>,
+  tokenSymbol_gt?: Maybe<Scalars['String']>,
+  tokenSymbol_lt?: Maybe<Scalars['String']>,
+  tokenSymbol_gte?: Maybe<Scalars['String']>,
+  tokenSymbol_lte?: Maybe<Scalars['String']>,
+  tokenSymbol_in?: Maybe<Array<Scalars['String']>>,
+  tokenSymbol_not_in?: Maybe<Array<Scalars['String']>>,
+  tokenSymbol_contains?: Maybe<Scalars['String']>,
+  tokenSymbol_not_contains?: Maybe<Scalars['String']>,
+  tokenSymbol_starts_with?: Maybe<Scalars['String']>,
+  tokenSymbol_not_starts_with?: Maybe<Scalars['String']>,
+  tokenSymbol_ends_with?: Maybe<Scalars['String']>,
+  tokenSymbol_not_ends_with?: Maybe<Scalars['String']>,
   tranches?: Maybe<Array<Scalars['String']>>,
   tranches_not?: Maybe<Array<Scalars['String']>>,
   tranches_contains?: Maybe<Array<Scalars['String']>>,
@@ -368,6 +383,7 @@ export enum Masset_OrderBy {
   RedemptionFee = 'redemptionFee',
   FeePool = 'feePool',
   Token = 'token',
+  TokenSymbol = 'tokenSymbol',
   Tranches = 'tranches'
 }
 
@@ -962,14 +978,37 @@ export enum TrancheReward_OrderBy {
   Tranche = 'tranche'
 }
 
-export type AddressFragment = Pick<Token, 'address'>;
+export type TokenDetailsFragment = Pick<Token, 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
 
-export type TokenQueryVariables = {
+export type CoreTokensQueryVariables = {};
+
+
+export type CoreTokensQuery = { mta: Array<TokenDetailsFragment>, mUSD: Array<TokenDetailsFragment>, mGLD: Array<TokenDetailsFragment> };
+
+export type MassetQueryVariables = {
   id: Scalars['ID']
 };
 
 
-export type TokenQuery = { token: Maybe<Pick<Token, 'id' | 'symbol' | 'address'>> };
+export type MassetQuery = { masset: Maybe<(
+    Pick<Masset, 'id'>
+    & { token: TokenDetailsFragment, basket: { bassets: Array<(
+        Pick<Basset, 'id'>
+        & { token: TokenDetailsFragment }
+      )> } }
+  )> };
+
+export type Erc20TokensQueryVariables = {};
+
+
+export type Erc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
+
+export type TokenByAddressQueryVariables = {
+  id: Scalars['ID']
+};
+
+
+export type TokenByAddressQuery = { token: Maybe<Pick<Token, 'id' | 'address' | 'decimals' | 'name' | 'symbol' | 'totalBurned' | 'totalSupply' | 'totalTransferred'>> };
 
 export type TokenSubSubscriptionVariables = {
   id: Scalars['ID']
@@ -978,46 +1017,169 @@ export type TokenSubSubscriptionVariables = {
 
 export type TokenSubSubscription = { token: Maybe<Pick<Token, 'id' | 'symbol' | 'address'>> };
 
-export const AddressFragmentDoc = gql`
-    fragment Address on Token {
+export const TokenDetailsFragmentDoc = gql`
+    fragment TokenDetails on Token {
   address
+  decimals
+  symbol
+  totalSupply
 }
     `;
-export const TokenDocument = gql`
-    query Token($id: ID!) {
-  token(id: $id) {
-    id
-    symbol
-    address
+export const CoreTokensDocument = gql`
+    query CoreTokens {
+  mta: tokens(where: {symbol: "MTA"}) {
+    ...TokenDetails
+  }
+  mUSD: tokens(where: {symbol: "mUSD"}) {
+    ...TokenDetails
+  }
+  mGLD: tokens(where: {symbol: "mGLD"}) {
+    ...TokenDetails
   }
 }
-    `;
+    ${TokenDetailsFragmentDoc}`;
 
 /**
- * __useTokenQuery__
+ * __useCoreTokensQuery__
  *
- * To run a query within a React component, call `useTokenQuery` and pass it any options that fit your needs.
- * When your component renders, `useTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * To run a query within a React component, call `useCoreTokensQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCoreTokensQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useTokenQuery({
+ * const { data, loading, error } = useCoreTokensQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCoreTokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
+        return ApolloReactHooks.useQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
+      }
+export function useCoreTokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
+        }
+export type CoreTokensQueryHookResult = ReturnType<typeof useCoreTokensQuery>;
+export type CoreTokensLazyQueryHookResult = ReturnType<typeof useCoreTokensLazyQuery>;
+export type CoreTokensQueryResult = ApolloReactCommon.QueryResult<CoreTokensQuery, CoreTokensQueryVariables>;
+export const MassetDocument = gql`
+    query Masset($id: ID!) {
+  masset(id: $id) {
+    id
+    token {
+      ...TokenDetails
+    }
+    basket {
+      bassets {
+        id
+        token {
+          ...TokenDetails
+        }
+      }
+    }
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
+
+/**
+ * __useMassetQuery__
+ *
+ * To run a query within a React component, call `useMassetQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMassetQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMassetQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useTokenQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TokenQuery, TokenQueryVariables>) {
-        return ApolloReactHooks.useQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
+export function useMassetQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MassetQuery, MassetQueryVariables>) {
+        return ApolloReactHooks.useQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
       }
-export function useTokenLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TokenQuery, TokenQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
+export function useMassetLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MassetQuery, MassetQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
         }
-export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
-export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
-export type TokenQueryResult = ApolloReactCommon.QueryResult<TokenQuery, TokenQueryVariables>;
+export type MassetQueryHookResult = ReturnType<typeof useMassetQuery>;
+export type MassetLazyQueryHookResult = ReturnType<typeof useMassetLazyQuery>;
+export type MassetQueryResult = ApolloReactCommon.QueryResult<MassetQuery, MassetQueryVariables>;
+export const Erc20TokensDocument = gql`
+    query ERC20Tokens {
+  tokens(where: {symbol_not_in: ["MTA", "mUSD", "mGLD"]}) {
+    ...TokenDetails
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
+
+/**
+ * __useErc20TokensQuery__
+ *
+ * To run a query within a React component, call `useErc20TokensQuery` and pass it any options that fit your needs.
+ * When your component renders, `useErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useErc20TokensQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
+        return ApolloReactHooks.useQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
+      }
+export function useErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
+        }
+export type Erc20TokensQueryHookResult = ReturnType<typeof useErc20TokensQuery>;
+export type Erc20TokensLazyQueryHookResult = ReturnType<typeof useErc20TokensLazyQuery>;
+export type Erc20TokensQueryResult = ApolloReactCommon.QueryResult<Erc20TokensQuery, Erc20TokensQueryVariables>;
+export const TokenByAddressDocument = gql`
+    query TokenByAddress($id: ID!) {
+  token(id: $id) {
+    id
+    address
+    decimals
+    name
+    symbol
+    totalBurned
+    totalBurned
+    totalSupply
+    totalTransferred
+  }
+}
+    `;
+
+/**
+ * __useTokenByAddressQuery__
+ *
+ * To run a query within a React component, call `useTokenByAddressQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTokenByAddressQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTokenByAddressQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTokenByAddressQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TokenByAddressQuery, TokenByAddressQueryVariables>) {
+        return ApolloReactHooks.useQuery<TokenByAddressQuery, TokenByAddressQueryVariables>(TokenByAddressDocument, baseOptions);
+      }
+export function useTokenByAddressLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TokenByAddressQuery, TokenByAddressQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<TokenByAddressQuery, TokenByAddressQueryVariables>(TokenByAddressDocument, baseOptions);
+        }
+export type TokenByAddressQueryHookResult = ReturnType<typeof useTokenByAddressQuery>;
+export type TokenByAddressLazyQueryHookResult = ReturnType<typeof useTokenByAddressLazyQuery>;
+export type TokenByAddressQueryResult = ApolloReactCommon.QueryResult<TokenByAddressQuery, TokenByAddressQueryVariables>;
 export const TokenSubDocument = gql`
     subscription TokenSub($id: ID!) {
   token(id: $id) {

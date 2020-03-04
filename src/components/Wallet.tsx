@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from 'react';
+import React, { FC } from 'react';
 import { useWallet, Wallet } from 'use-wallet';
 
 interface InjectedEthereum {
   enable(): Promise<string[]>;
 }
 
-const WalletConnected: FunctionComponent<{
+const WalletConnected: FC<{
   wallet: Wallet<InjectedEthereum>;
 }> = ({ wallet }) => (
   <div>
@@ -16,7 +16,7 @@ const WalletConnected: FunctionComponent<{
   </div>
 );
 
-const WalletDisconnected: FunctionComponent<{
+const WalletDisconnected: FC<{
   wallet: Wallet<InjectedEthereum>;
 }> = ({ wallet }) => (
   <div>
@@ -27,7 +27,7 @@ const WalletDisconnected: FunctionComponent<{
   </div>
 );
 
-export const WalletConnection = () => {
+export const WalletConnection: FC<{}> = () => {
   const wallet = useWallet<InjectedEthereum>();
   return (
     <div>

@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { FC } from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import { App } from './components/App';
+import { Providers } from './context';
+import { Updaters } from './updaters';
+import { Layout } from './components/Layout';
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+const Root: FC<{}> = () => (
+  <Providers>
+    <Updaters />
+    <>
+      <Layout />
+    </>
+  </Providers>
+);
+
+
+ReactDOM.render(<Root />, document.querySelector('#root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

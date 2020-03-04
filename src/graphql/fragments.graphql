@@ -1,5 +1,8 @@
 # Just testing this is picked up
 
-fragment Address on Token {
+fragment TokenDetails on Token {
     address
+    decimals
+    symbol
+    totalSupply
 }
