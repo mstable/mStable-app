@@ -1,0 +1,1 @@
+export { asciiToHex as aToH } from 'web3-utils'
