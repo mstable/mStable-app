@@ -68,6 +68,7 @@
     "prettier": "^1.19.1",
     "typechain": "^1.0.5",
     "typechain-target-ethers": "^1.0.3",
-    "typescript": "^3.8.2"
+    "typescript": "^3.8.2",
+    "typescript-plugin-css-modules": "^2.2.0"
   }
 }

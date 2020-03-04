@@ -1,40 +1,33 @@
 import React, { FC } from 'react';
-import { useWallet, Wallet } from 'use-wallet';
+
+import { useWallet } from 'use-wallet';
+import styles from './Wallet.module.css';
 
 interface InjectedEthereum {
   enable(): Promise<string[]>;
 }
 
-const WalletConnected: FC<{
-  wallet: Wallet<InjectedEthereum>;
-}> = ({ wallet }) => (
-  <div>
-    <p>Connected: {wallet.account}</p>
-    <button type="submit" onClick={wallet.deactivate}>
-      Disconnect
-    </button>
-  </div>
-);
-
-const WalletDisconnected: FC<{
-  wallet: Wallet<InjectedEthereum>;
-}> = ({ wallet }) => (
-  <div>
-    <p>Disconnected</p>
-    <button type="submit" onClick={() => wallet.activate('injected')}>
-      Connect
-    </button>
-  </div>
-);
-
 export const WalletConnection: FC<{}> = () => {
-  const wallet = useWallet<InjectedEthereum>();
+  const { connected, account, activate, deactivate } = useWallet<
+    InjectedEthereum
+  >();
   return (
-    <div>
-      {wallet.connected ? (
-        <WalletConnected wallet={wallet} />
+    <div className={styles.container}>
+      {connected ? (
+        <>
+          <div className={styles.account}>{account}</div>
+          <button
+            type="submit"
+            onClick={deactivate}
+            className={styles.deactivate}
+          >
+            disconnect wallet
+          </button>
+        </>
       ) : (
-        <WalletDisconnected wallet={wallet} />
+        <button type="submit" onClick={() => activate('injected')}>
+          connect wallet
+        </button>
       )}
     </div>
   );
