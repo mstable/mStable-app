@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@apollo/client@^3.0.0-beta.37":
+"@apollo/client@^3.0.0-beta.23", "@apollo/client@^3.0.0-beta.37":
   version "3.0.0-beta.37"
   resolved "https://registry.yarnpkg.com/@apollo/client/-/client-3.0.0-beta.37.tgz#24d4eacebc2dd0d6c27e87b8aacbb5323c0d29d6"
   integrity sha512-EVarxDX4dG51IHs9DyivYZQN51U2eu9deWRyAI9xkp6Y5vwmTfAcfMYQIxc/ZZhiFAq4MEk0EPLtU2kOfTILjQ==
@@ -26,6 +26,14 @@
     apollo-server-env "^2.4.3"
     core-js "^3.4.0"
     lodash.xorby "^4.7.0"
+
+"@apollo/link-ws@^2.0.0-beta.3":
+  version "2.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@apollo/link-ws/-/link-ws-2.0.0-beta.3.tgz#b0283c68516aa0caa82c4904f84eff639643b04b"
+  integrity sha512-CyQT8WOJXiA9/wOVDRdFWCRdiq38yM5dtuuQB6dkyK9yyFb8M213GHjrJoOwXxcbYsPboj14V5VMX+FT+Ghy7g==
+  dependencies:
+    "@apollo/client" "^3.0.0-beta.23"
+    tslib "^1.9.3"
 
 "@apollo/react-common@^3.1.3":
   version "3.1.3"
@@ -2134,7 +2142,7 @@
   dependencies:
     "@web3-react/types" "^6.0.7"
 
-"@web3-react/authereum-connector@^6.0.2":
+"@web3-react/authereum-connector@^6.0.8":
   version "6.0.8"
   resolved "https://registry.yarnpkg.com/@web3-react/authereum-connector/-/authereum-connector-6.0.8.tgz#a9e72d2c0498e69594f5aa0b6c4d0b1ad7016c10"
   integrity sha512-j6HSTX47G/4UZO9pqVWr9ZbOzL4EamSg2wcZvnOZQGehwBUwpiQHp7hlj9ARCy+TN+kBgpw3n60lJrJ5XaBnww==
@@ -2143,7 +2151,7 @@
     "@web3-react/types" "^6.0.7"
     authereum "^0.0.4-beta.93"
 
-"@web3-react/core@^6.0.2":
+"@web3-react/core@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/core/-/core-6.0.7.tgz#e8cfe771e0487946edba117de6a864c4da72c144"
   integrity sha512-6WoxrTrsdwUG6JbOyHQEyq2Mm3BrEorFQbCIeGEEupykoH3tB6W6NkcdmwVVqP0nO5ff/JKpXCfVcboyzadbCg==
@@ -2154,7 +2162,7 @@
     tiny-invariant "^1.0.6"
     tiny-warning "^1.0.3"
 
-"@web3-react/fortmatic-connector@^6.0.2":
+"@web3-react/fortmatic-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/fortmatic-connector/-/fortmatic-connector-6.0.7.tgz#abb250e647580be7314119a1834759c5d0b8f3cd"
   integrity sha512-e+IpfYBqBn77PVNbMPztPlU8OV/O7DFhd55vKbvBkytPPdJSDrqG9dm5ADe5etSmhfmLk8+R3xbPdYtIq2gL5Q==
@@ -2164,7 +2172,7 @@
     fortmatic "^1.0.0"
     tiny-invariant "^1.0.6"
 
-"@web3-react/frame-connector@^6.0.2":
+"@web3-react/frame-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/frame-connector/-/frame-connector-6.0.7.tgz#e206f8166841330263e4d6812eaa037bd2c73cf6"
   integrity sha512-wKmdJ9P0pAWAZiapLlggVaEcIe5mRJcppNIZuTVnUbvqYvr5w+oo0TE8fB9yh3AHt7LCcwiyaXoxnbFtEMS6Fw==
@@ -2174,7 +2182,7 @@
     eth-provider "^0.2.5"
     tiny-invariant "^1.0.6"
 
-"@web3-react/injected-connector@^6.0.3":
+"@web3-react/injected-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/injected-connector/-/injected-connector-6.0.7.tgz#1e0be23f51fa07fe6547fe986768a46b74c3a426"
   integrity sha512-Y7aJSz6pg+MWKtvdyuqyy6LWuH+4Tqtph1LWfiyVms9II9ar/9B/de4R8wh4wjg91wmHkU+D75yP09E/Soh2RA==
@@ -2183,7 +2191,7 @@
     "@web3-react/types" "^6.0.7"
     tiny-warning "^1.0.3"
 
-"@web3-react/portis-connector@^6.0.2":
+"@web3-react/portis-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/portis-connector/-/portis-connector-6.0.7.tgz#c9c7acc7be69e8a54a1e4a7cd6b54022acaf9446"
   integrity sha512-CbWGN9jQ1Ei9ij7tOKq70PdOiyZGs5Gf9Q8ZeJ0fuUhbWP9SAw58rMjIAFou08UFW6v3TrD58znNqAIv4pjRjA==
@@ -2193,7 +2201,7 @@
     "@web3-react/types" "^6.0.7"
     tiny-invariant "^1.0.6"
 
-"@web3-react/squarelink-connector@^6.0.2":
+"@web3-react/squarelink-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/squarelink-connector/-/squarelink-connector-6.0.7.tgz#377aa93bbb54661359444dbc3d9cbb8b7a3c0f08"
   integrity sha512-f8/ejTpWE+nZo1KXZLY380HxABnCpfBWs1MWU1egSZ/mZOz21X5DEfsBfdcxpdneorzbblZkbEbusQmbxsSAWQ==
@@ -2203,7 +2211,7 @@
     squarelink "^1.1.4"
     tiny-invariant "^1.0.6"
 
-"@web3-react/torus-connector@^6.0.2":
+"@web3-react/torus-connector@^6.0.8":
   version "6.0.8"
   resolved "https://registry.yarnpkg.com/@web3-react/torus-connector/-/torus-connector-6.0.8.tgz#7b087c5238d06f76ca7db0e777585261383ffa40"
   integrity sha512-jbQBbOHME3YU0MFBt2UHIpS5M3xNNRF9xBG325YIC3UkJEM1fqPgD+q0niAQyRGpK/BHHAmm/7lxF6VEtO9pgQ==
@@ -2217,7 +2225,7 @@
   resolved "https://registry.yarnpkg.com/@web3-react/types/-/types-6.0.7.tgz#34a6204224467eedc6123abaf55fbb6baeb2809f"
   integrity sha512-ofGmfDhxmNT1/P/MgVa8IKSkCStFiyvXe+U5tyZurKdrtTDFU+wJ/LxClPDtFerWpczNFPUSrKcuhfPX1sI6+A==
 
-"@web3-react/walletconnect-connector@^6.0.2":
+"@web3-react/walletconnect-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/walletconnect-connector/-/walletconnect-connector-6.0.7.tgz#97c545f806e9bc4e7db4dc13b0085337fdec9e6d"
   integrity sha512-Od2+36zZtvoACNOHoNq15YdNW9niGcW2mdAko9D+LYW+sulx9mzJqi3bIvKu3bh+X5Gb2fhOFFxOy9prYCXC2w==
@@ -2227,7 +2235,7 @@
     "@web3-react/types" "^6.0.7"
     tiny-invariant "^1.0.6"
 
-"@web3-react/walletlink-connector@^6.0.2":
+"@web3-react/walletlink-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/walletlink-connector/-/walletlink-connector-6.0.7.tgz#0b135cfbcf608406af188c2704a6e157157b3e4c"
   integrity sha512-phWIPLI0SZtB3FV+ugx0OMRav1bfWJHPQDgHUggih2CJHJBhf/JykMD1YLeNd55MG7atmDMLYcPhNaYwCSsSVg==
@@ -2724,14 +2732,6 @@ apollo-link-http@^1.3.1, apollo-link-http@^1.5.5:
   dependencies:
     apollo-link "^1.2.13"
     apollo-link-http-common "^0.2.15"
-    tslib "^1.9.3"
-
-apollo-link-ws@^1.0.19:
-  version "1.0.19"
-  resolved "https://registry.yarnpkg.com/apollo-link-ws/-/apollo-link-ws-1.0.19.tgz#dfa871d4df883a8777c9556c872fc892e103daa5"
-  integrity sha512-mRXmeUkc55ixOdYRtfq5rq3o9sboKghKABKroDVhJnkdS56zthBEWMAD+phajujOUbqByxjok0te8ABqByBdeQ==
-  dependencies:
-    apollo-link "^1.2.13"
     tslib "^1.9.3"
 
 apollo-link@^1.0.0, apollo-link@^1.0.6, apollo-link@^1.2.13, apollo-link@^1.2.3:
@@ -13157,21 +13157,21 @@ url@^0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
-use-wallet@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/use-wallet/-/use-wallet-0.4.2.tgz#a0cd9417379a8f2b3a28300794b03af3d6dd4581"
-  integrity sha512-BL18iURSbkd27CqA9bGEH9IB0ESJiR6BMlm/RIpxLbVFTxV4geAEOt7dfYf3bVNSFf+3yfcT2eBf08HRpo4Qsg==
+use-wallet@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/use-wallet/-/use-wallet-0.4.4.tgz#c1f26bc521c2a3165c3a35f2a24f2d4f66be5bd1"
+  integrity sha512-7gQFM3oJ32zehNaCtj3rdposmmCJpKmXBkGA0p2CXySsho8ycD+CVDGS8tqeglSHqBDpdGunc/Uaw94Z9DYDcQ==
   dependencies:
-    "@web3-react/authereum-connector" "^6.0.2"
-    "@web3-react/core" "^6.0.2"
-    "@web3-react/fortmatic-connector" "^6.0.2"
-    "@web3-react/frame-connector" "^6.0.2"
-    "@web3-react/injected-connector" "^6.0.3"
-    "@web3-react/portis-connector" "^6.0.2"
-    "@web3-react/squarelink-connector" "^6.0.2"
-    "@web3-react/torus-connector" "^6.0.2"
-    "@web3-react/walletconnect-connector" "^6.0.2"
-    "@web3-react/walletlink-connector" "^6.0.2"
+    "@web3-react/authereum-connector" "^6.0.8"
+    "@web3-react/core" "^6.0.7"
+    "@web3-react/fortmatic-connector" "^6.0.7"
+    "@web3-react/frame-connector" "^6.0.7"
+    "@web3-react/injected-connector" "^6.0.7"
+    "@web3-react/portis-connector" "^6.0.7"
+    "@web3-react/squarelink-connector" "^6.0.7"
+    "@web3-react/torus-connector" "^6.0.8"
+    "@web3-react/walletconnect-connector" "^6.0.7"
+    "@web3-react/walletlink-connector" "^6.0.7"
     jsbi "^3.1.1"
     prop-types "^15.7.2"
 

@@ -57,7 +57,7 @@ export const useMassetToken = (
   return data?.[massetName]?.[0] || null;
 };
 
-export const useSelectedMassetToken = () => {
+export const useSelectedMassetToken = (): TokenDetailsFragment | null => {
   const [{ selectedMasset }] = useUIContext();
   return useMassetToken(selectedMasset);
 };
