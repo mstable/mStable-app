@@ -1,68 +1,54 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# mStable App
 
-## Available Scripts
+A web frontend for interacting with the [mStable contracts](https://github.com/mstable/mStable-contracts).
 
-In the project directory, you can run:
+---
 
-### `yarn start`
+## Setup
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+### Prerequisites
 
-### `yarn test`
+First, ensure that these are installed:
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* [Ganache](https://www.trufflesuite.com/ganache)
+* [Truffle](https://www.trufflesuite.com/truffle)
+* [Docker](https://docs.docker.com/install)
 
-### `yarn build`
+And that the the Docker daemon is running.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### Installation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. `git clone git@github.com:mstable/mStable-app.git && cd mStable-app`
+2. `yarn`
+3. `yarn provision`
+4. `yarn codegen`
 
-### `yarn eject`
+### Deploying the contracts locally
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Simply run `yarn truffle:migrate` and the contracts will be deployed to a
+local Ganache instance on http://127.0.0.1:7545.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Deploying the subgraph
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Firstly run `graph-node` locally:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+1. Navigate to `lib/graph-node/docker`.
+2. Edit `docker-compose.yml` if needed (e.g. to set the host URL for Ganache). 
+3. Run `docker-compose up` to start the node.
 
-## Learn More
+Next, create and deploy the subgraph.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. Navigate to `lib/mStable-subgraph`.
+2. Edit `subgraph.yaml` if needed to set the contract addresses to those deployed locally.
+3. Run `yarn codegen`.
+4. Run `yarn create-local`; the graph node should output a log.
+5. Run `yarn deploy-local`; the graph node should start running the subgraph and begin processing blocks.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+More detailed instructions are available [here](https://github.com/mstable/mStable-subgraph/tree/master#setup).
 
-### Code Splitting
+### Running the application locally
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+Simply run `yarn start`.
 
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
