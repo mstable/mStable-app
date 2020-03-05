@@ -3,28 +3,34 @@ import { useWallet } from 'use-wallet';
 
 import { useUIContext } from '../context/UIProvider';
 import styles from './Wallet.module.css';
+import { useTruncatedAddress } from '../web3/hooks';
+import { useHasPendingTransactions } from '../context/TransactionsProvider';
 
 interface InjectedEthereum {
   enable(): Promise<string[]>;
 }
 
 export const WalletConnection: FC<{}> = () => {
-  const { connected, account, deactivate } = useWallet<InjectedEthereum>();
+  const { connected, account } = useWallet<InjectedEthereum>();
+  const truncatedAddress = useTruncatedAddress(account);
   const [, { showWalletModal }] = useUIContext();
+  const hasPendingTransactions = useHasPendingTransactions();
   return (
     <>
       <div className={styles.container}>
         {connected ? (
-          <>
-            <div className={styles.account}>{account}</div>
+          <div className={styles.connected}>
+            {hasPendingTransactions ? (
+              <div className={styles.pendingIndicator} />
+            ) : null}
             <button
               type="submit"
-              onClick={deactivate}
-              className={styles.deactivate}
+              onClick={showWalletModal}
+              className={styles.account}
             >
-              disconnect wallet
+              {truncatedAddress}
             </button>
-          </>
+          </div>
         ) : (
           <button type="submit" onClick={showWalletModal}>
             connect wallet
