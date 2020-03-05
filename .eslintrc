@@ -30,6 +30,7 @@
     "import/no-default-export": "error",
     "react/prop-types": "off",
     "unicorn/prevent-abbreviations": "off",
+    "unicorn/no-nested-ternary": "off",
     "unicorn/filename-case": [
       "error",
       {

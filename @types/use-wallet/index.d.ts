@@ -5,13 +5,13 @@ declare module 'use-wallet' {
   import { ReactNode } from 'react';
 
   export interface Connectors {
-    authereum: null;
+    authereum: {};
     fortmatic: { apiKey: string };
-    frame: null;
-    injected: null;
+    frame: {};
+    injected: {};
     portis: { dAppId: string };
     squarelink: { clientId: string, options: object };
-    torus: { initOptions: object, constructorOptions: object };
+    torus: { chainId?: number, initOptions: object, constructorOptions: object };
     walletconnect: null;
     walletlink: { url: string, appName: string, appLogoUrl: string };
   }
@@ -23,7 +23,7 @@ declare module 'use-wallet' {
     activating: boolean;
     balance: string;
     connected: boolean;
-    connectors: boolean;
+    connectors: Connectors;
     deactivate(): void;
     ethereum: T;
     getBlockNumber(): number;

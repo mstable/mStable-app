@@ -4,7 +4,7 @@ import * as serviceWorker from './serviceWorker';
 import { Providers } from './context';
 import { Updaters } from './updaters';
 import { Layout } from './components/Layout';
-import './global.css'
+import './global.css';
 
 const Root: FC<{}> = () => (
   <Providers>

@@ -3,6 +3,7 @@ import { WalletConnection } from './Wallet';
 import { Transactions } from './Transactions';
 import { Mint } from './Mint';
 import styles from './Layout.module.css';
+import { useUIContext } from '../context/UIProvider';
 
 /**
  * Placeholder component for logo.
@@ -35,23 +36,30 @@ const Sidebar: FC<{}> = () => <div>my account</div>;
 /**
  * App layout component.
  */
-export const Layout: FC<{}> = () => (
-  <div className={styles.container}>
-    <header className={styles.header}>
-      <Logo />
-      <Navigation />
-      <WalletConnection />
-    </header>
-    <main className={styles.main}>
-      <>
-        {/* TODO later: dynamic content, e.g. from router */}
-        <Transactions />
-        <Mint />
-      </>
-    </main>
-    <footer className={styles.footer}>
-      <Footer />
-    </footer>
-    <div className={styles.sidebar}><Sidebar /></div>
-  </div>
-);
+export const Layout: FC<{}> = () => {
+  const [{ walletModalIsShown }] = useUIContext();
+  return (
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <Logo />
+        <Navigation />
+        <WalletConnection />
+      </header>
+      <main className={styles.main}>
+        <>
+          {/* TODO later: dynamic content, e.g. from router */}
+          <Transactions />
+          <Mint />
+        </>
+      </main>
+      <footer className={styles.footer}>
+        <Footer />
+      </footer>
+      <div className={styles.sidebar}>
+        <Sidebar />
+      </div>
+      {walletModalIsShown ? <div className={styles.modalOverlay} /> : null}
+      <div id="modal-root" />
+    </div>
+  );
+};
