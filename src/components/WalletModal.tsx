@@ -156,7 +156,7 @@ export const WalletModal: FC<{ hideModal: () => void }> = ({ hideModal }) => {
     if (connected) {
       dispatch({ type: 'CONNECT_SUCCESS', payload: activated });
     }
-  }, [connected]);
+  }, [connected, activated]);
 
   return (
     <>

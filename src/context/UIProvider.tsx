@@ -46,7 +46,7 @@ const initialState: State = {
 const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 
 const useModal = (): [() => void, () => void, boolean] => {
-  let hideModal: any;
+  let hideModal: () => void;
   const [isShown, setShown] = useState(false);
   const [_showModal, _hideModal] = useModalHook(() => (
     <WalletModal hideModal={hideModal} />
