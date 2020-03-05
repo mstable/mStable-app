@@ -20,6 +20,9 @@ jobs:
           name: Codegen (TypeChain)
           command: yarn codegen:typechain
       - run:
+          name: TypeScript
+          command: yarn tsc --noEmit
+      - run:
           name: Lint
           command: yarn lint
 # TODO enable this for integration testing
@@ -35,7 +38,7 @@ jobs:
 #            - docker-compose up -d
       - run:
           name: Test
-          command: yarn test
+          command: yarn test --passWithNoTests
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
