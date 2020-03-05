@@ -3,7 +3,13 @@
 echo "Provisioning submodules"
 git submodule update --init
 
-echo "Installing subgraph"
+echo "Installing contracts"
+
 cd ./lib/mStable-subgraph
+git submodule update --init
+
+cd ./lib/mStable-contracts
 yarn install
-yarn provision
+
+echo "Compiling contracts"
+yarn compile
