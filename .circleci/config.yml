@@ -22,10 +22,10 @@ jobs:
       - run:
           name: Lint
           command: yarn lint
-      - run:
-          name: Migrate
-          command: yarn truffle:migrate
 # TODO enable this for integration testing
+#      - run:
+#          name: Migrate
+#          command: yarn truffle:migrate
 #      - setup_remote_docker
 #      - run:
 #          name: Start subgraph
