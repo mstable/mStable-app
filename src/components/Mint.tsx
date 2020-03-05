@@ -59,6 +59,7 @@ export const Mint: FC<{}> = () => {
 
       if (!basset) throw new Error('Basset not selected');
       if (!forgeRewardsContract) throw new Error('Rewards contract not found');
+      if (!account) throw new Error('Account not found');
 
       sendTransaction(
         forgeRewardsContract.mintSingleTo(
