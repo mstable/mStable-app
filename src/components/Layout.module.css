@@ -1,0 +1,57 @@
+.container {
+    margin-right: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.main {
+    margin-top: 50px;
+    padding: 20px;
+}
+
+.header {
+    right: 20px;
+    background: lightgray;
+    position: fixed;
+    top: 0;
+    width: calc(100% - 20px);
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    height: 50px;
+}
+
+.header nav {
+    flex-grow: 1;
+}
+
+.header nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: lightgray;
+    padding: 10px;
+}
+
+.sidebar {
+    position: fixed;
+    right: 0;
+    width: 20px;
+    background: gray;
+    bottom: 0;
+    top: 0;
+}
+
+.sidebar > div {
+    writing-mode: vertical-rl;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    text-align: center;
+}
