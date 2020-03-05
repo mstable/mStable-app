@@ -57,11 +57,6 @@ export const useMassetToken = (
   return data?.[massetName]?.[0] || null;
 };
 
-export const useSelectedMassetToken = (): TokenDetailsFragment | null => {
-  const [{ selectedMasset }] = useUIContext();
-  return useMassetToken(selectedMasset);
-};
-
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useBassets = (massetAddress: string | null) => {
   const { data } = useMassetQuery({
