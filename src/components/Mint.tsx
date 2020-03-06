@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet } from 'use-wallet';
-import { ContractNames } from '../types';
+import { ContractNames, Interfaces, SendTxManifest } from '../types';
 import {
   useBassets,
   useERC20Contract,
@@ -60,15 +60,17 @@ export const Mint: FC<{}> = () => {
       if (!forgeRewardsContract) throw new Error('Rewards contract not found');
       if (!account) throw new Error('Account not found');
 
-      sendTransaction(
-        forgeRewardsContract.mintSingleTo(
-          basset.token.address,
-          convertSimpleToExact(massetQ, basset.token.decimals).toString(),
-          account,
-          account,
-        ),
-        'mintSingleTo',
-      );
+      const tokenAddress = basset.token.address;
+      const tokenQ = convertSimpleToExact(
+        massetQ,
+        basset.token.decimals,
+      ).toString();
+
+      sendTransaction({
+        iface: forgeRewardsContract,
+        fn: 'mintSingleTo',
+        args: [tokenAddress, tokenQ, account, account],
+      } as SendTxManifest<Interfaces.ForgeRewards, 'mintSingleTo'>);
     },
     [forgeRewardsContract, basset, massetQ, account, sendTransaction],
   );
@@ -77,13 +79,11 @@ export const Mint: FC<{}> = () => {
     if (!(bassetContract && basset)) throw new Error('Basset not selected');
     if (!forgeRewardsContract) throw new Error('Rewards contract not found');
 
-    sendTransaction(
-      bassetContract.approve(
-        forgeRewardsContract.address,
-        basset.token.totalSupply.toString(),
-      ),
-      'approve',
-    );
+    sendTransaction({
+      iface: bassetContract,
+      fn: 'approve',
+      args: [forgeRewardsContract.address, basset.token.totalSupply.toString()],
+    } as SendTxManifest<Interfaces.ERC20, 'approve'>);
   }, [bassetContract, forgeRewardsContract, basset, sendTransaction]);
 
   return (

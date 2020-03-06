@@ -9,7 +9,8 @@ import React, {
 import { Connectors, useWallet } from 'use-wallet';
 import styles from './WalletModal.module.css';
 import { AVAILABLE_CONNECTORS } from '../web3/constants';
-import { useEtherscanLink } from '../web3/hooks';
+import { RecentTransactions } from './RecentTransactions';
+import { EtherscanLink } from './EtherscanLink';
 
 interface Connector {
   id: keyof Connectors;
@@ -111,34 +112,25 @@ const Connected: FC<{
   account: string;
   connector: keyof Connectors;
   deactivate(): void;
-}> = ({ account, connector, deactivate }) => {
-  const link = useEtherscanLink(account, 'account');
-  return (
-    <div className={styles.connected}>
-      <div className={styles.connectedAccount}>
-        <div className={styles.accountDetails}>
-          <div className={styles.blockie}>blockie</div>
-          <div className={styles.connectorLabel}>
-            {allConnectors[connector].label}
-          </div>
+}> = ({ account, connector, deactivate }) => (
+  <div className={styles.connected}>
+    <div className={styles.connectedAccount}>
+      <div className={styles.accountDetails}>
+        <div className={styles.blockie}>blockie</div>
+        <div className={styles.connectorLabel}>
+          {allConnectors[connector].label}
         </div>
-        <div className={styles.accountAddress}>
-          <a
-            className={styles.externalLink}
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {account}
-          </a>
-        </div>
-        <button type="submit" onClick={deactivate}>
-          Disconnect
-        </button>
       </div>
+      <div className={styles.accountAddress}>
+        <EtherscanLink data={account} type="account" showData />
+      </div>
+      <RecentTransactions />
+      <button type="submit" onClick={deactivate}>
+        Disconnect
+      </button>
     </div>
-  );
-};
+  </div>
+);
 
 export const WalletModal: FC<{ hideModal: () => void }> = ({ hideModal }) => {
   const [{ status, connector }, dispatch] = useReducer(reducer, initialState);
