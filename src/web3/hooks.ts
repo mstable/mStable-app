@@ -12,8 +12,7 @@ import { IERC20Factory } from '../typechain/IERC20Factory';
 import { IForgeRewardsFactory } from '../typechain/IForgeRewardsFactory';
 import { IERC20 } from '../typechain/IERC20.d';
 import { IForgeRewards } from '../typechain/IForgeRewards.d';
-import { CHAIN_ID } from './constants';
-import { getEtherscanLink, truncateAddress } from './strings';
+import { truncateAddress } from './strings';
 
 interface ContractFactory<TContract extends Contract> {
   connect(address: string, signerOrProvider: Signer | Provider): TContract;
@@ -66,12 +65,5 @@ export const useBassets = (massetAddress: string | null) => {
   });
   return data?.masset?.basket?.bassets || [];
 };
-
-export const useEtherscanLink = (
-  data: string,
-  type: 'account' | 'transaction',
-): string =>
-  useMemo(() => getEtherscanLink(CHAIN_ID, data, type), [data, type]);
-
 export const useTruncatedAddress = (address: string | null): string | null =>
   useMemo(() => (address ? truncateAddress(address) : null), [address]);

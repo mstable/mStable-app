@@ -1,3 +1,5 @@
+import { CHAIN_ID } from './constants';
+
 export { asciiToHex as aToH } from 'web3-utils';
 
 const ETHERSCAN_PREFIXES = {
@@ -8,13 +10,9 @@ const ETHERSCAN_PREFIXES = {
   42: 'kovan.',
 };
 
-export const getEtherscanLink = (
-  chainId: number,
-  data: string,
-  type: string,
-): string => {
+export const getEtherscanLink = (data: string, type: string): string => {
   const prefix = `https://${ETHERSCAN_PREFIXES[
-    chainId as keyof typeof ETHERSCAN_PREFIXES
+    CHAIN_ID as keyof typeof ETHERSCAN_PREFIXES
   ] || ETHERSCAN_PREFIXES[1]}etherscan.io`;
 
   switch (type) {
