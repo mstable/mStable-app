@@ -17,9 +17,9 @@ declare module 'use-wallet' {
   }
 
   export interface Wallet<T> {
-    account: string;
+    account: string | null;
     activate(connectorId: keyof Connectors): void;
-    activated: boolean;
+    activated: keyof Connectors;
     activating: boolean;
     balance: string;
     connected: boolean;

@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
-import { aToH } from './strings';
 import { Connectors } from 'use-wallet';
+import { aToH } from './strings';
 
 export const PERCENT_SCALE = new BigNumber('1e16');
 export const RATIO_SCALE = new BigNumber('1e8');

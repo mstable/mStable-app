@@ -12,6 +12,8 @@ import React, {
 import { useModal as useModalHook } from 'react-modal-hook';
 import { MassetNames } from '../types';
 import { WalletModal } from '../components/WalletModal';
+import { TokenDetailsFragment } from '../graphql/generated';
+import { useMassetToken } from '../web3/hooks';
 
 interface State {
   selectedMasset: MassetNames;
@@ -44,7 +46,7 @@ const initialState: State = {
 const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 
 const useModal = (): [() => void, () => void, boolean] => {
-  let hideModal: any;
+  let hideModal: () => void;
   const [isShown, setShown] = useState(false);
   const [_showModal, _hideModal] = useModalHook(() => (
     <WalletModal hideModal={hideModal} />
@@ -104,3 +106,8 @@ export const UIProvider: FC<{}> = ({ children }) => {
 };
 
 export const useUIContext = (): [State, Dispatch] => useContext(context);
+
+export const useSelectedMassetToken = (): TokenDetailsFragment | null => {
+  const [{ selectedMasset }] = useUIContext();
+  return useMassetToken(selectedMasset);
+};

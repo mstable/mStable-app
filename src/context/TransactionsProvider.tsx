@@ -127,13 +127,15 @@ export const useAllTransactions = (): State => {
   return state;
 };
 
+export const useHasPendingTransactions = (): boolean => {
+  const transactions = useAllTransactions();
+  return Object.values(transactions).filter(tx => !tx.receipt).length > 0;
+};
+
 export const useSendTransaction = <
   TContract extends Contract,
   TFnName extends string & keyof TContract['functions']
->(): ((
-  sendPromise: Promise<ContractTransaction>,
-  fnName: TFnName,
-) => void) => {
+>(): ((sendPromise: Promise<ContractTransaction>, fnName: TFnName) => void) => {
   const [, { add }] = useTransactionsContext();
 
   return useCallback(

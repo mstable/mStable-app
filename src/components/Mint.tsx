@@ -5,11 +5,10 @@ import {
   useBassets,
   useERC20Contract,
   useForgeRewardsContract,
-  useSelectedMassetToken,
 } from '../web3/hooks';
 import { useSendTransaction } from '../context/TransactionsProvider';
 import { convertSimpleToExact } from '../web3/maths';
-import { useUIContext } from '../context/UIProvider';
+import { useUIContext, useSelectedMassetToken } from '../context/UIProvider';
 
 const massetNames = [ContractNames.mUSD, ContractNames.mGLD];
 
@@ -59,6 +58,7 @@ export const Mint: FC<{}> = () => {
 
       if (!basset) throw new Error('Basset not selected');
       if (!forgeRewardsContract) throw new Error('Rewards contract not found');
+      if (!account) throw new Error('Account not found');
 
       sendTransaction(
         forgeRewardsContract.mintSingleTo(

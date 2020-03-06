@@ -9,6 +9,7 @@ import React, {
 import { Connectors, useWallet } from 'use-wallet';
 import styles from './WalletModal.module.css';
 import { AVAILABLE_CONNECTORS } from '../web3/constants';
+import { useEtherscanLink } from '../web3/hooks';
 
 interface Connector {
   id: keyof Connectors;
@@ -29,7 +30,7 @@ interface State {
 
 type Action =
   | { type: 'SELECT_CONNECTOR'; payload: keyof Connectors }
-  | { type: 'CONNECT_SUCCESS' };
+  | { type: 'CONNECT_SUCCESS'; payload: keyof Connectors };
 
 interface Dispatch {
   selectConnector(connector: keyof Connectors): void;
@@ -41,7 +42,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
     case 'SELECT_CONNECTOR':
       return { status: Status.Connecting, connector: action.payload };
     case 'CONNECT_SUCCESS':
-      return { ...state, status: Status.Connected };
+      return { status: Status.Connected, connector: action.payload };
     default:
       return state;
   }
@@ -49,24 +50,22 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 const initialState: State = { status: Status.Disconnected };
 
-const allConnectors: Connector[] = [
-  { id: 'authereum', label: 'Authereum' },
-  { id: 'fortmatic', label: 'Fortmatic' },
-  { id: 'frame', label: 'Frame' },
-  { id: 'injected', label: 'MetaMask' },
-  { id: 'portis', label: 'Portis' },
-  { id: 'squarelink', label: 'Squarelink' },
-  { id: 'torus', label: 'Torus' },
-  { id: 'walletconnect', label: 'WalletConnect' },
-  { id: 'walletlink', label: 'WalletLink' },
-];
+const allConnectors: Record<keyof Connectors, Connector> = {
+  authereum: { id: 'authereum', label: 'Authereum' },
+  fortmatic: { id: 'fortmatic', label: 'Fortmatic' },
+  frame: { id: 'frame', label: 'Frame' },
+  injected: { id: 'injected', label: 'MetaMask' },
+  portis: { id: 'portis', label: 'Portis' },
+  squarelink: { id: 'squarelink', label: 'Squarelink' },
+  torus: { id: 'torus', label: 'Torus' },
+  walletconnect: { id: 'walletconnect', label: 'WalletConnect' },
+  walletlink: { id: 'walletlink', label: 'WalletLink' },
+};
 
 const Connecting: FC<{ connector: NonNullable<State['connector']> }> = ({
   connector,
 }) => {
-  const { label } = allConnectors.find(
-    ({ id }) => id === connector,
-  ) as Connector;
+  const { label } = allConnectors[connector];
   return (
     <div>
       <div>Connecting to {label}</div>
@@ -80,12 +79,9 @@ const Disconnected: FC<{
 }> = ({ selectConnector }) => {
   const list: Connector[] = useMemo(
     () =>
-      allConnectors.map(connector => ({
-        ...connector,
-        disabled: !Object.hasOwnProperty.call(
-          AVAILABLE_CONNECTORS,
-          connector.id,
-        ),
+      Object.keys(allConnectors).map(key => ({
+        ...allConnectors[key as keyof typeof allConnectors],
+        disabled: !Object.hasOwnProperty.call(AVAILABLE_CONNECTORS, key),
       })),
     [],
   );
@@ -111,11 +107,42 @@ const Disconnected: FC<{
   );
 };
 
-const Connected: FC<{}> = () => <div>Connected</div>;
+const Connected: FC<{
+  account: string;
+  connector: keyof Connectors;
+  deactivate(): void;
+}> = ({ account, connector, deactivate }) => {
+  const link = useEtherscanLink(account, 'account');
+  return (
+    <div className={styles.connected}>
+      <div className={styles.connectedAccount}>
+        <div className={styles.accountDetails}>
+          <div className={styles.blockie}>blockie</div>
+          <div className={styles.connectorLabel}>
+            {allConnectors[connector].label}
+          </div>
+        </div>
+        <div className={styles.accountAddress}>
+          <a
+            className={styles.externalLink}
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {account}
+          </a>
+        </div>
+        <button type="submit" onClick={deactivate}>
+          Disconnect
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export const WalletModal: FC<{ hideModal: () => void }> = ({ hideModal }) => {
   const [{ status, connector }, dispatch] = useReducer(reducer, initialState);
-  const { activate, connected } = useWallet();
+  const { activate, connected, account, activated, deactivate } = useWallet();
 
   const selectConnector = useCallback(
     (selected: keyof Connectors) => {
@@ -127,19 +154,23 @@ export const WalletModal: FC<{ hideModal: () => void }> = ({ hideModal }) => {
 
   useEffect(() => {
     if (connected) {
-      dispatch({ type: 'CONNECT_SUCCESS' });
+      dispatch({ type: 'CONNECT_SUCCESS', payload: activated });
     }
-  }, [connected]);
+  }, [connected, activated]);
 
   return (
     <>
       <div className={styles.container}>
-        {status === Status.Disconnected ? (
-          <Disconnected selectConnector={selectConnector} />
+        {status === Status.Connected && connector && account ? (
+          <Connected
+            account={account}
+            connector={connector}
+            deactivate={deactivate}
+          />
         ) : status === Status.Connecting && connector ? (
           <Connecting connector={connector} />
         ) : (
-          <Connected />
+          <Disconnected selectConnector={selectConnector} />
         )}
         <button type="submit" onClick={hideModal}>
           Close modal
