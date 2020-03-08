@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import { WalletConnection } from './Wallet';
-import { Transactions } from './Transactions';
 import { Mint } from './Mint';
 import styles from './Layout.module.css';
 import { useUIContext } from '../context/UIProvider';
@@ -48,7 +47,6 @@ export const Layout: FC<{}> = () => {
       <main className={styles.main}>
         <>
           {/* TODO later: dynamic content, e.g. from router */}
-          <Transactions />
           <Mint />
         </>
       </main>

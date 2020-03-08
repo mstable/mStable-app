@@ -1,0 +1,38 @@
+.indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    margin-right: 10px;
+}
+
+.successIndicator {
+    composes: indicator;
+    background: forestgreen;
+}
+
+.errorIndicator {
+    composes: indicator;
+    background: darkred;
+}
+
+.pendingIndicator {
+    composes: indicator;
+    background: dodgerblue;
+}
+
+.list {
+    padding: 0;
+}
+
+.status {
+    display: flex;
+}
+
+.transaction {
+    display: flex;
+    justify-content: space-between;
+}
+
+.description {
+
+}

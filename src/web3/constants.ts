@@ -1,6 +1,6 @@
 import { BigNumber } from 'bignumber.js';
 import { Connectors } from 'use-wallet';
-import { aToH } from './strings';
+import { asciiToHex as aToH } from 'web3-utils';
 
 export const PERCENT_SCALE = new BigNumber('1e16');
 export const RATIO_SCALE = new BigNumber('1e8');
