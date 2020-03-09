@@ -29,8 +29,14 @@ query Masset($id: ID!) {
     }
 }
 
-query ERC20Tokens {
-    tokens(where: { symbol_not_in: ["MTA", "mUSD", "mGLD"] }) {
+query Erc20Tokens($addresses: [Bytes!]!) {
+    tokens(where: { address_in: $addresses }) {
+        ...TokenDetails
+    }
+}
+
+query AllErc20Tokens {
+    tokens {
         ...TokenDetails
     }
 }
