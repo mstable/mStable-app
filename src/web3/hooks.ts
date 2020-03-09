@@ -8,9 +8,9 @@ import {
   useCoreTokensQuery,
   useMassetQuery,
 } from '../graphql/generated';
-import { IERC20Factory } from '../typechain/IERC20Factory';
+import { ERC20DetailedFactory } from '../typechain/ERC20DetailedFactory';
 import { IForgeRewardsFactory } from '../typechain/IForgeRewardsFactory';
-import { IERC20 } from '../typechain/IERC20.d';
+import { ERC20Detailed } from '../typechain/ERC20Detailed.d';
 import { IForgeRewards } from '../typechain/IForgeRewards.d';
 import { truncateAddress } from './strings';
 
@@ -40,8 +40,9 @@ export const useContract = <TContract extends Contract>(
   }, [factory, address, signer]);
 };
 
-export const useERC20Contract = (address: string | null): IERC20 | null =>
-  useContract(IERC20Factory, address);
+export const useERC20Contract = (
+  address: string | null,
+): ERC20Detailed | null => useContract(ERC20DetailedFactory, address);
 
 // TODO later: handle more than MUSD
 export const useForgeRewardsContract = (): IForgeRewards | null =>
