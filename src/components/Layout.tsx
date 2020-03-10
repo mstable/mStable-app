@@ -1,8 +1,9 @@
 import React, { FC } from 'react';
+import { useUIContext } from '../context/UIProvider';
 import { WalletConnection } from './Wallet';
 import { Mint } from './Mint';
+import { Balances } from './Balances';
 import styles from './Layout.module.css';
-import { useUIContext } from '../context/UIProvider';
 
 /**
  * Placeholder component for logo.
@@ -48,6 +49,7 @@ export const Layout: FC<{}> = () => {
         <>
           {/* TODO later: dynamic content, e.g. from router */}
           <Mint />
+          <Balances />
         </>
       </main>
       <footer className={styles.footer}>

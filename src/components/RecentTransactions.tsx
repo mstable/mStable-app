@@ -3,7 +3,7 @@ import { useAllTransactions } from '../context/TransactionsProvider';
 import { Transaction, TransactionStatus } from '../types';
 import { EtherscanLink } from './EtherscanLink';
 import styles from './RecentTransactions.module.css';
-import { useErc20TokensQuery } from '../graphql/generated';
+import { useAllErc20TokensQuery } from '../graphql/generated';
 import { convertExactToSimple } from '../web3/maths';
 
 const getStatus = (tx: Transaction): TransactionStatus => {
@@ -39,7 +39,7 @@ const getStatusTitle = (status: TransactionStatus, confs = 0): string => {
  * @param tx
  */
 const ERC20ApproveDescription: FC<{ tx: Transaction }> = ({ tx }) => {
-  const { data: bassetData } = useErc20TokensQuery({
+  const { data: bassetData } = useAllErc20TokensQuery({
     variables: { id: tx.response.to },
   });
 
@@ -62,7 +62,7 @@ const ERC20ApproveDescription: FC<{ tx: Transaction }> = ({ tx }) => {
  */
 const MintSingleToDescription: FC<{ tx: Transaction }> = ({ tx }) => {
   const [bassetAddress, bassetQ] = tx.args;
-  const { data: bassetData } = useErc20TokensQuery({
+  const { data: bassetData } = useAllErc20TokensQuery({
     variables: { id: bassetAddress },
   });
 
