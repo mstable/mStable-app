@@ -1,20 +1,35 @@
 import React, { FC } from 'react';
 import ReactDOM from 'react-dom';
+import { useRoutes } from 'hookrouter';
 import * as serviceWorker from './serviceWorker';
 import { Providers } from './context';
 import { Updaters } from './updaters';
-import { Layout } from './components/Layout';
+import { Layout } from './components/layout/Layout';
+import { Home } from './components/pages/Home';
+import { Swap } from './components/pages/Swap';
+import { Earn } from './components/pages/Earn';
+import { Save } from './components/pages/Save';
+import { NotFound } from './components/pages/NotFound';
 import './global.css';
 
-const Root: FC<{}> = () => (
-  <Providers>
-    <Updaters />
-    <>
-      <Layout />
-    </>
-  </Providers>
-);
+const routes = {
+  '/': () => <Home />,
+  '/swap': () => <Swap />,
+  '/earn': () => <Earn />,
+  '/save': () => <Save />,
+};
 
+const Root: FC<{}> = () => {
+  const routeResult = useRoutes(routes);
+  return (
+    <Providers>
+      <Updaters />
+      <>
+        <Layout>{routeResult || <NotFound />}</Layout>
+      </>
+    </Providers>
+  );
+};
 
 ReactDOM.render(<Root />, document.querySelector('#root'));
 
