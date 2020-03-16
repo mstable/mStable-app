@@ -1,13 +1,10 @@
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from 'ethers/utils';
 import { Connectors } from 'use-wallet';
 import { asciiToHex as aToH } from 'web3-utils';
 
-export const PERCENT_SCALE = new BigNumber('1e16');
-export const RATIO_SCALE = new BigNumber('1e8');
-export const EXP_SCALE = new BigNumber('1e18');
-
-export const DEFAULT_DECIMALS = new BigNumber('18');
-export const DEFAULT_SUPPLY = new BigNumber('1e23');
+export const PERCENT_SCALE = new BigNumber(1e16.toString());
+export const RATIO_SCALE = new BigNumber(1e8.toString());
+export const EXP_SCALE = new BigNumber(1e18.toString());
 
 export const KEY_META = aToH('MTA');
 export const KEY_MUSD = aToH('mUSD');
