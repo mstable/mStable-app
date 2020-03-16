@@ -14,6 +14,7 @@ interface Props {
   value: string | void;
   decimals: number | void;
   onChange?(value: string): void;
+  onSetMax?(): void;
   disabled?: boolean;
 }
 
@@ -27,12 +28,15 @@ const maxUint256 = MaxUint256.toString();
  * @param disabled Flag for disabling the input
  * @param decimals Given amount decimals, e.g. `18`
  * @param onChange Optional callback with the amount value
+ * @param onSetMax Optional callback called on setting the max value
  */
 export const AmountInput: FC<Props> = ({
   error,
   disabled = false,
   decimals,
   onChange,
+  onSetMax,
+  value,
 }) => {
   const step = useMemo(() => (decimals ? decimalsStep(decimals) : ''), [
     decimals,
@@ -56,6 +60,10 @@ export const AmountInput: FC<Props> = ({
     [onChange],
   );
 
+  const handleMax = useCallback(() => {
+    onSetMax?.();
+  }, [onSetMax]);
+
   return (
     <div className={styles.container}>
       <input
@@ -65,10 +73,16 @@ export const AmountInput: FC<Props> = ({
         max={maxUint256}
         placeholder="0.0"
         step={step}
+        value={value || ''}
         onKeyPress={handleKeyPress}
         onChange={handleChange}
         disabled={disabled}
       />
+      {onSetMax ? (
+        <button type="button" onClick={handleMax}>
+          Max
+        </button>
+      ) : null}
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { TokenAmountInput } from './TokenAmountInput';
 import { useKnownAddress } from '../../context/KnownAddressProvider';
 import { ContractNames } from '../../types';
 import { useTokenWithBalance } from '../../context/TokensProvider';
+import { formatDecimal } from '../../web3/strings';
 
 enum Action {
   Deposit,
@@ -101,6 +102,11 @@ export const SavingsForm: FC<{}> = () => {
     [action, amount],
   );
 
+  const handleSetMax = useCallback(() => {
+    const max = action === Action.Deposit ? mUSDBalance : savingBalance;
+    if (max && decimals) setAmountDecimal(formatDecimal(max, decimals));
+  }, [action, savingBalance, mUSDBalance, decimals, setAmountDecimal]);
+
   return (
     <form onSubmit={handleSubmit}>
       <button
@@ -121,6 +127,7 @@ export const SavingsForm: FC<{}> = () => {
         error={error}
         amountValue={amountDecimal}
         onChangeAmount={handleChangeAmount}
+        onSetMax={handleSetMax}
         tokenValue={mUSDAddress}
         tokenAddresses={mUSDAddress ? [mUSDAddress] : []}
       />

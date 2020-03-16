@@ -10,6 +10,7 @@ interface Props {
   tokenAddresses: string[];
   onChangeAmount?(amount: string): void;
   onChangeToken?(token: string): void;
+  onSetMax?(): void;
 }
 
 /**
@@ -22,6 +23,7 @@ interface Props {
  * @param amountValue Chosen amount, e.g. '0.12'
  * @param onChangeAmount Optional callback with the amount value
  * @param onChangeToken Optional callback with the selected token
+ * @param onSetMax Optional callback called on setting the max value
  */
 export const TokenAmountInput: FC<Props> = ({
   error,
@@ -30,6 +32,7 @@ export const TokenAmountInput: FC<Props> = ({
   amountValue,
   onChangeAmount,
   onChangeToken,
+  onSetMax,
 }) => {
   const { data: tokensData } = useErc20TokensQuery({
     variables: { addresses: tokenAddresses },
@@ -44,6 +47,7 @@ export const TokenAmountInput: FC<Props> = ({
         error={error}
         value={amountValue}
         onChange={onChangeAmount}
+        onSetMax={onSetMax}
         decimals={selectedToken?.decimals}
       />
       <TokenInput
