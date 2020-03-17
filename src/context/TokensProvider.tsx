@@ -7,19 +7,26 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
+import { BigNumber } from 'ethers/utils';
+import {
+  TokenDetailsFragment,
+  useErc20TokensQuery,
+} from '../graphql/generated';
+
+type TokenAddress = string;
 
 interface State {
   [token: string]: {
     subscribed: boolean;
-    balance: string;
+    balance?: BigNumber;
   };
 }
 
 interface Dispatch {
-  subscribe(token: string): void;
+  subscribe(token: TokenAddress): void;
   reset(): void;
-  updateBalances(balances: Record<string, string>): void;
-  unsubscribe(token: string): void;
+  updateBalances(balances: Record<TokenAddress, BigNumber>): void;
+  unsubscribe(token: TokenAddress): void;
 }
 
 enum Actions {
@@ -30,10 +37,13 @@ enum Actions {
 }
 
 type Action =
-  | { type: Actions.Subscribe; payload: string }
-  | { type: Actions.Unsubscribe; payload: string }
+  | { type: Actions.Subscribe; payload: TokenAddress }
+  | { type: Actions.Unsubscribe; payload: TokenAddress }
   | { type: Actions.Reset }
-  | { type: Actions.UpdateBalances; payload: Record<string, string> };
+  | {
+      type: Actions.UpdateBalances;
+      payload: Record<TokenAddress, BigNumber>;
+    };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const context = createContext<[State, Dispatch]>([new Set(), {}] as any);
@@ -83,30 +93,43 @@ const initialState: State = {};
 export const TokensProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const subscribe = useCallback(
-    (token: string) => dispatch({ type: Actions.Subscribe, payload: token }),
+  const subscribe = useCallback<Dispatch['subscribe']>(
+    token => {
+      dispatch({ type: Actions.Subscribe, payload: token });
+    },
     [dispatch],
   );
 
-  const unsubscribe = useCallback(
-    (token: string) => dispatch({ type: Actions.Unsubscribe, payload: token }),
+  const unsubscribe = useCallback<Dispatch['unsubscribe']>(
+    token => {
+      dispatch({ type: Actions.Unsubscribe, payload: token });
+    },
     [dispatch],
   );
 
-  const updateBalances = useCallback(
-    (balances: Record<string, string>) =>
-      dispatch({ type: Actions.UpdateBalances, payload: balances }),
+  const updateBalances = useCallback<Dispatch['updateBalances']>(
+    balances => {
+      dispatch({ type: Actions.UpdateBalances, payload: balances });
+    },
     [dispatch],
   );
 
-  const reset = useCallback(() => dispatch({ type: Actions.Reset }), [
-    dispatch,
-  ]);
+  const reset = useCallback<Dispatch['reset']>(() => {
+    dispatch({ type: Actions.Reset });
+  }, [dispatch]);
 
   return (
     <context.Provider
       value={useMemo(
-        () => [state, { subscribe, unsubscribe, updateBalances, reset }],
+        () => [
+          state,
+          {
+            subscribe,
+            reset,
+            updateBalances,
+            unsubscribe,
+          },
+        ],
         [state, subscribe, unsubscribe, updateBalances, reset],
       )}
     >
@@ -116,3 +139,37 @@ export const TokensProvider: FC<{}> = ({ children }) => {
 };
 
 export const useTokensContext = (): [State, Dispatch] => useContext(context);
+
+export const useTokensState = (): State => useTokensContext()[0];
+
+export const useTokensDispatch = (): Dispatch => useTokensContext()[1];
+
+export const useSubscribedTokens = (): string[] => {
+  const state = useTokensState();
+  return useMemo(
+    () =>
+      Object.keys(state)
+        .filter(token => state[token].subscribed)
+        .sort(),
+    [state],
+  );
+};
+
+export const useToken = (token: TokenAddress | null): State[string] | null => {
+  const state = useTokensState();
+
+  if (!token) return null;
+
+  return state[token];
+};
+
+export const useTokenWithBalance = (
+  token: TokenAddress | null,
+): Partial<TokenDetailsFragment & State[keyof State]> => {
+  const tokenFromState = useToken(token);
+  const query = useErc20TokensQuery({
+    variables: { addresses: [token] },
+  });
+  const tokenFromData = query.data?.tokens?.[0];
+  return { ...tokenFromState, ...tokenFromData };
+};

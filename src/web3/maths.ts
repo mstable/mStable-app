@@ -4,33 +4,33 @@
  * it likely share code with the front end
  */
 
-import { BigNumber } from 'bignumber.js';
+import { BigNumber } from 'ethers/utils';
 import { PERCENT_SCALE, EXP_SCALE, RATIO_SCALE } from './constants';
 
 export const divideByRatio = (value: BigNumber): BigNumber =>
   value.div(RATIO_SCALE);
 
 export const percentToWeight = (percent: number): BigNumber =>
-  new BigNumber(percent).times(PERCENT_SCALE);
+  new BigNumber(percent).mul(PERCENT_SCALE);
 
 export const convertExactToPercent = (percentExact: BigNumber): number =>
   new BigNumber(percentExact).div(PERCENT_SCALE).toNumber();
 
 export const createMultiple = (ratio: number): BigNumber =>
-  new BigNumber(ratio).times(RATIO_SCALE);
+  new BigNumber(ratio).mul(RATIO_SCALE);
 
 /** @dev Converts a simple ratio (e.g. x1.1) to 1e6 format for OracleData */
 export const simpleToExactRelativePrice = (relativePrice: number): BigNumber =>
-  new BigNumber(relativePrice).times(new BigNumber(10).pow(new BigNumber(6)));
+  new BigNumber(relativePrice).mul(new BigNumber(10).pow(new BigNumber(6)));
 
 export const convertSimpleToExact = (
   value: number | string,
   decimals: number,
 ): BigNumber =>
-  new BigNumber(value).times(new BigNumber(10).pow(new BigNumber(decimals)));
+  new BigNumber(value).mul(new BigNumber(10).pow(new BigNumber(decimals)));
 
 export const convertExactToSimple = (
-  value: number | string,
+  value: number | string | BigNumber,
   decimals: number,
 ): BigNumber =>
   new BigNumber(value).div(new BigNumber(10).pow(new BigNumber(decimals)));

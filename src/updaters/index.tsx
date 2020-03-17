@@ -1,10 +1,16 @@
 import React, { FC } from 'react';
+import { KnownAddressUpdater } from './knownAddressUpdater';
 import { TransactionsUpdater } from './transactionsUpdater';
-import { TokensUpdater } from './tokensUpdater';
+import { TokenBalancesUpdater } from './tokenBalancesUpdater';
+import { TokenSubscriptionUpdater } from './tokenSubscriptionUpdater';
 
 export const Updaters: FC<{}> = () => (
   <>
-    <TokensUpdater />
+    <TokenBalancesUpdater />
+    <TokenSubscriptionUpdater />
+    <KnownAddressUpdater />
     <TransactionsUpdater />
   </>
 );
+
+
