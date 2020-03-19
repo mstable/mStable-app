@@ -1,8 +1,8 @@
-import React, { useMemo, FC } from 'react';
+import React, { FC, useMemo } from 'react';
+import styled from 'styled-components';
 import { useAllTransactions } from '../context/TransactionsProvider';
 import { Transaction, TransactionStatus } from '../types';
 import { EtherscanLink } from './EtherscanLink';
-import styles from './RecentTransactions.module.css';
 import { useAllErc20TokensQuery } from '../graphql/generated';
 import { convertExactToSimple } from '../web3/maths';
 
@@ -14,16 +14,6 @@ const getStatus = (tx: Transaction): TransactionStatus => {
   return TransactionStatus.Pending;
 };
 
-const getStatusClassName = (
-  status: TransactionStatus,
-): typeof styles[keyof typeof styles] => {
-  if (status === TransactionStatus.Success) return styles.successIndicator;
-
-  if (status === TransactionStatus.Error) return styles.errorIndicator;
-
-  return styles.pendingIndicator;
-};
-
 const getStatusTitle = (status: TransactionStatus, confs = 0): string => {
   if (status === TransactionStatus.Success)
     return `Success (${confs} confirmation${confs > 1 ? 's' : ''})`;
@@ -32,6 +22,31 @@ const getStatusTitle = (status: TransactionStatus, confs = 0): string => {
 
   return 'Pending';
 };
+
+const Indicator = styled.div<{ status: TransactionStatus }>`
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  margin-right: 10px;
+  background: ${props => {
+    if (props.status === TransactionStatus.Error) return 'darkred';
+    if (props.status === TransactionStatus.Success) return 'forestgreen';
+    return 'dodgerblue';
+  }};
+`;
+
+const List = styled.ul`
+  padding: 0;
+`;
+
+const Item = styled.li`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const Status = styled.div`
+  display: flex;
+`;
 
 /**
  * Description for an ERC20 `approve` transaction.
@@ -90,15 +105,15 @@ const MintSingleToDescription: FC<{ tx: Transaction }> = ({ tx }) => {
 const TransactionStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
   const status = getStatus(tx);
   return (
-    <div className={styles.status}>
-      <div
-        className={getStatusClassName(status)}
+    <Status>
+      <Indicator
+        status={status}
         title={getStatusTitle(status, tx.receipt?.confirmations)}
       />
       {tx.response.hash ? (
         <EtherscanLink data={tx.response.hash} type="transaction" />
       ) : null}
-    </div>
+    </Status>
   );
 };
 
@@ -135,13 +150,13 @@ export const RecentTransactions: FC<{}> = () => {
   );
 
   return (
-    <ul className={styles.list}>
+    <List>
       {sortedTxs.map(([hash, tx]) => (
-        <li key={hash} className={styles.transaction}>
+        <Item key={hash}>
           <TransactionDescription tx={tx} />
           <TransactionStatusIndicator tx={tx} />
-        </li>
+        </Item>
       ))}
-    </ul>
+    </List>
   );
 };

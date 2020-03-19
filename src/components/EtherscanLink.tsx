@@ -1,7 +1,14 @@
 import React, { FC, useMemo } from 'react';
-
+import styled from 'styled-components';
 import { getEtherscanLink } from '../web3/strings';
-import styles from './EtherscanLink.module.css';
+
+const Link = styled.a``;
+
+const Data = styled.span`
+  margin-right: 10px;
+`;
+
+const Icon = styled.i``;
 
 const useEtherscanLink = (
   data: string,
@@ -22,14 +29,13 @@ export const EtherscanLink: FC<{
   type: 'transaction' | 'account';
   showData?: boolean;
 }> = ({ type, data, showData }) => (
-  <a
-    className={styles.link}
+  <Link
     href={useEtherscanLink(data, type)}
     target="_blank"
     rel="noopener noreferrer"
     title={`View ${type} on Etherscan`}
   >
-    {showData ? <span className={styles.data}>{data}</span> : null}
-    <i className={styles.icon}>[-&gt;]</i>
-  </a>
+    {showData ? <Data>{data}</Data> : null}
+    <Icon>[-&gt;]</Icon>
+  </Link>
 );

@@ -1,8 +1,20 @@
 import React, { FC, useMemo } from 'react';
+import styled from 'styled-components';
 import { useTokensState } from '../context/TokensProvider';
 import { useAllErc20TokensQuery } from '../graphql/generated';
-import styles from './Balances.module.css';
 import { formatDecimal } from '../web3/strings';
+
+const Container = styled.div``;
+
+const Heading = styled.h3``;
+
+const List = styled.ul``;
+
+const Token = styled.li``;
+
+const Symbol = styled.div``;
+
+const Balance = styled.div``;
 
 /**
  * Component to track and display the balances of tokens for the currently
@@ -28,16 +40,16 @@ export const Balances: FC<{}> = () => {
   );
 
   return (
-    <div className={styles.container}>
-      <h3 className={styles.heading}>Balances</h3>
-      <ul className={styles.list}>
+    <Container>
+      <Heading>Balances</Heading>
+      <List>
         {tokensWithBalances.map(({ symbol, address, balanceFormatted }) => (
-          <li key={address} className={styles.token}>
-            <div className={styles.symbol}>{symbol}</div>
-            <div className={styles.balance}>{balanceFormatted}</div>
-          </li>
+          <Token key={address}>
+            <Symbol>{symbol}</Symbol>
+            <Balance>{balanceFormatted}</Balance>
+          </Token>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Container>
   );
 };
