@@ -7,7 +7,7 @@ import React, {
   useReducer,
 } from 'react';
 import { Connectors, useWallet } from 'use-wallet';
-import styles from './WalletModal.module.css';
+import styled from 'styled-components';
 import { AVAILABLE_CONNECTORS } from '../web3/constants';
 import { RecentTransactions } from './RecentTransactions';
 import { EtherscanLink } from './EtherscanLink';
@@ -63,6 +63,35 @@ const allConnectors: Record<keyof Connectors, Connector> = {
   walletlink: { id: 'walletlink', label: 'WalletLink' },
 };
 
+const Container = styled.div`
+  background: white;
+  padding: 10px;
+`;
+
+const ConnectorsContainer = styled.div``;
+
+const ConnectedContainer = styled.div``;
+
+const ConnectedAccount = styled.div``;
+
+const Blockie = styled.div``;
+
+const ConnectorLabel = styled.div``;
+
+const AccountDetails = styled.div``;
+
+const AccountAddress = styled.div``;
+
+const DisconnectButton = styled.button``;
+
+const CloseModalButton = styled.button``;
+
+const ConnectorsList = styled.ul``;
+
+const ConnectorItem = styled.li``;
+
+const ConnectButton = styled.button``;
+
 const Connecting: FC<{ connector: NonNullable<State['connector']> }> = ({
   connector,
 }) => {
@@ -89,47 +118,45 @@ const Disconnected: FC<{
 
   // TODO wallet button style incl. logo
   return (
-    <div className={styles.connectors}>
-      <ul>
+    <ConnectorsContainer>
+      <ConnectorsList>
         {list.map(({ id, label, disabled }) => (
-          <li key={id}>
-            <button
+          <ConnectorItem key={id}>
+            <ConnectButton
               type="submit"
-              className={styles.connector}
               disabled={disabled}
-              onClick={selectConnector.bind(null, id)}
+              onClick={() => selectConnector(id)}
             >
               {label}
-            </button>
-          </li>
+            </ConnectButton>
+          </ConnectorItem>
         ))}
-      </ul>
-    </div>
+      </ConnectorsList>
+    </ConnectorsContainer>
   );
 };
+
 
 const Connected: FC<{
   account: string;
   connector: keyof Connectors;
   deactivate(): void;
 }> = ({ account, connector, deactivate }) => (
-  <div className={styles.connected}>
-    <div className={styles.connectedAccount}>
-      <div className={styles.accountDetails}>
-        <div className={styles.blockie}>blockie</div>
-        <div className={styles.connectorLabel}>
-          {allConnectors[connector].label}
-        </div>
-      </div>
-      <div className={styles.accountAddress}>
+  <ConnectedContainer>
+    <ConnectedAccount>
+      <AccountDetails>
+        <Blockie>blockie</Blockie>
+        <ConnectorLabel>{allConnectors[connector].label}</ConnectorLabel>
+      </AccountDetails>
+      <AccountAddress>
         <EtherscanLink data={account} type="account" showData />
-      </div>
+      </AccountAddress>
       <RecentTransactions />
-      <button type="submit" onClick={deactivate}>
+      <DisconnectButton type="submit" onClick={deactivate}>
         Disconnect
-      </button>
-    </div>
-  </div>
+      </DisconnectButton>
+    </ConnectedAccount>
+  </ConnectedContainer>
 );
 
 export const WalletModal: FC<{ hideModal: () => void }> = ({ hideModal }) => {
@@ -152,7 +179,7 @@ export const WalletModal: FC<{ hideModal: () => void }> = ({ hideModal }) => {
 
   return (
     <>
-      <div className={styles.container}>
+      <Container>
         {status === Status.Connected && connector && account ? (
           <Connected
             account={account}
@@ -164,10 +191,10 @@ export const WalletModal: FC<{ hideModal: () => void }> = ({ hideModal }) => {
         ) : (
           <Disconnected selectConnector={selectConnector} />
         )}
-        <button type="submit" onClick={hideModal}>
+        <CloseModalButton type="submit" onClick={hideModal}>
           Close modal
-        </button>
-      </div>
+        </CloseModalButton>
+      </Container>
     </>
   );
 };

@@ -5,9 +5,9 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
+import styled from 'styled-components';
 import { MaxUint256 } from 'ethers/constants';
 import { decimalsStep } from '../../web3/strings';
-import styles from './AmountInput.module.css';
 
 interface Props {
   error?: string;
@@ -19,6 +19,12 @@ interface Props {
 }
 
 const maxUint256 = MaxUint256.toString();
+
+const Container = styled.div``;
+
+const Input = styled.input<{ error: string | void }>`
+  ${props => (props.error ? 'border-color: red;' : '')}
+`;
 
 /**
  * AmountInput component
@@ -65,9 +71,9 @@ export const AmountInput: FC<Props> = ({
   }, [onSetMax]);
 
   return (
-    <div className={styles.container}>
-      <input
-        className={error ? styles.error : ''}
+    <Container>
+      <Input
+        error={error}
         type="number"
         min="0"
         max={maxUint256}
@@ -83,6 +89,6 @@ export const AmountInput: FC<Props> = ({
           Max
         </button>
       ) : null}
-    </div>
+    </Container>
   );
 };

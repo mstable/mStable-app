@@ -1,14 +1,33 @@
 import React, { FC } from 'react';
 import { useWallet } from 'use-wallet';
+import styled from 'styled-components';
 
 import { useUIContext } from '../context/UIProvider';
-import styles from './Wallet.module.css';
 import { useTruncatedAddress } from '../web3/hooks';
 import { useHasPendingTransactions } from '../context/TransactionsProvider';
 
 interface InjectedEthereum {
   enable(): Promise<string[]>;
 }
+
+const Container = styled.div``;
+
+const ConnectButton = styled.button``;
+
+const AccountButton = styled.button``;
+
+const PendingIndicator = styled.div`
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  background: gold;
+  margin-right: 10px;
+`;
+
+const Connected = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
 export const WalletConnection: FC<{}> = () => {
   const { connected, account } = useWallet<InjectedEthereum>();
@@ -17,26 +36,20 @@ export const WalletConnection: FC<{}> = () => {
   const hasPendingTransactions = useHasPendingTransactions();
   return (
     <>
-      <div className={styles.container}>
+      <Container>
         {connected ? (
-          <div className={styles.connected}>
-            {hasPendingTransactions ? (
-              <div className={styles.pendingIndicator} />
-            ) : null}
-            <button
-              type="submit"
-              onClick={showWalletModal}
-              className={styles.account}
-            >
+          <Connected>
+            {hasPendingTransactions ? <PendingIndicator /> : null}
+            <AccountButton type="submit" onClick={showWalletModal}>
               {truncatedAddress}
-            </button>
-          </div>
+            </AccountButton>
+          </Connected>
         ) : (
-          <button type="submit" onClick={showWalletModal}>
+          <ConnectButton type="submit" onClick={showWalletModal}>
             connect wallet
-          </button>
+          </ConnectButton>
         )}
-      </div>
+      </Container>
     </>
   );
 };

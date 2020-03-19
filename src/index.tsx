@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import ReactDOM from 'react-dom';
 import { useRoutes } from 'hookrouter';
+import { createGlobalStyle } from 'styled-components';
 import * as serviceWorker from './serviceWorker';
 import { Providers } from './context';
 import { Updaters } from './updaters';
@@ -10,7 +11,15 @@ import { Swap } from './components/pages/Swap';
 import { Earn } from './components/pages/Earn';
 import { Save } from './components/pages/Save';
 import { NotFound } from './components/pages/NotFound';
-import './global.css';
+
+const GlobalStyle = createGlobalStyle`
+  html, body {
+      margin: 0;
+  }
+  * {
+      box-sizing: border-box;
+  }
+`;
 
 const routes = {
   '/': () => <Home />,
@@ -26,6 +35,7 @@ const Root: FC<{}> = () => {
       <Updaters />
       <>
         <Layout>{routeResult || <NotFound />}</Layout>
+        <GlobalStyle />
       </>
     </Providers>
   );
