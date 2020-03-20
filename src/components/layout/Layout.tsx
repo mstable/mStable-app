@@ -3,22 +3,18 @@ import styled from 'styled-components';
 import { useUIContext } from '../../context/UIProvider';
 import { WalletConnection } from '../Wallet';
 import { Navigation } from './Navigation';
-import { Logo } from './Logo';
 import { Footer } from './Footer';
-import { Sidebar } from './Sidebar';
 
 const Container = styled.div`
-  margin-right: 20px;
   display: flex;
   justify-content: center;
 `;
 
 const Header = styled.header`
-  right: 20px;
   background: lightgray;
   position: fixed;
   top: 0;
-  width: calc(100% - 20px);
+  width: 100%;
   display: flex;
   justify-content: space-between;
   padding: 10px;
@@ -56,13 +52,11 @@ export const Layout: FC<{}> = ({ children }) => {
   return (
     <Container>
       <Header>
-        <Logo />
         <Navigation />
         <WalletConnection />
       </Header>
       <Main>{children}</Main>
       <Footer />
-      <Sidebar />
       {walletModalIsShown ? <ModalOverlay /> : null}
       <div id="modal-root" />
     </Container>

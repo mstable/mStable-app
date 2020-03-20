@@ -16,6 +16,9 @@ const GlobalStyle = createGlobalStyle`
   html, body {
       margin: 0;
   }
+  body {
+    background: ${props => props.theme.colors.background};
+  }
   * {
       box-sizing: border-box;
   }

@@ -10,10 +10,7 @@ import { KnownAddressProvider } from './KnownAddressProvider';
 import { ModalRoot } from '../components/ModalRoot';
 import { AVAILABLE_CONNECTORS, CHAIN_ID } from '../web3/constants';
 import { TokensProvider } from './TokensProvider';
-
-const theme = {
-  // TODO
-};
+import { theme } from '../theme';
 
 export const Providers: FC<{}> = ({ children }) => (
   <ApolloProvider>
@@ -24,7 +21,9 @@ export const Providers: FC<{}> = ({ children }) => (
             <TransactionsProvider>
               <ModalProvider rootComponent={ModalRoot}>
                 <UIProvider>
-                  <ThemeProvider theme={theme}>{children}</ThemeProvider>
+                  <ThemeProvider theme={theme}>
+                    {children}
+                  </ThemeProvider>
                 </UIProvider>
               </ModalProvider>
             </TransactionsProvider>
