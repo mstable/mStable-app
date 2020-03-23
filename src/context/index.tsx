@@ -1,19 +1,14 @@
 import React, { FC } from 'react';
 import { UseWalletProvider } from 'use-wallet';
-import { ModalProvider } from 'react-modal-hook';
 import { ThemeProvider } from 'styled-components';
 import { ApolloProvider } from './ApolloProvider';
 import { TransactionsProvider } from './TransactionsProvider';
 import { UIProvider } from './UIProvider';
 import { SignerProvider } from './SignerProvider';
 import { KnownAddressProvider } from './KnownAddressProvider';
-import { ModalRoot } from '../components/ModalRoot';
 import { AVAILABLE_CONNECTORS, CHAIN_ID } from '../web3/constants';
 import { TokensProvider } from './TokensProvider';
-
-const theme = {
-  // TODO
-};
+import { theme } from '../theme';
 
 export const Providers: FC<{}> = ({ children }) => (
   <ApolloProvider>
@@ -22,11 +17,9 @@ export const Providers: FC<{}> = ({ children }) => (
         <TokensProvider>
           <KnownAddressProvider>
             <TransactionsProvider>
-              <ModalProvider rootComponent={ModalRoot}>
-                <UIProvider>
-                  <ThemeProvider theme={theme}>{children}</ThemeProvider>
-                </UIProvider>
-              </ModalProvider>
+              <UIProvider>
+                <ThemeProvider theme={theme}>{children}</ThemeProvider>
+              </UIProvider>
             </TransactionsProvider>
           </KnownAddressProvider>
         </TokensProvider>

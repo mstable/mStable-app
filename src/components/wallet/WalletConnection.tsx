@@ -1,4 +1,5 @@
 import React, {
+  ComponentProps,
   FC,
   Reducer,
   useCallback,
@@ -8,9 +9,11 @@ import React, {
 } from 'react';
 import { Connectors, useWallet } from 'use-wallet';
 import styled from 'styled-components';
-import { AVAILABLE_CONNECTORS } from '../web3/constants';
+import { AVAILABLE_CONNECTORS } from '../../web3/constants';
 import { RecentTransactions } from './RecentTransactions';
-import { EtherscanLink } from './EtherscanLink';
+import { EtherscanLink } from '../core/EtherscanLink';
+import { Button } from '../core/Button';
+import { Size } from '../../theme';
 
 interface Connector {
   id: keyof Connectors;
@@ -65,7 +68,7 @@ const allConnectors: Record<keyof Connectors, Connector> = {
 
 const Container = styled.div`
   background: white;
-  padding: 10px;
+  padding: ${props => props.theme.spacing.s};
 `;
 
 const ConnectorsContainer = styled.div``;
@@ -82,15 +85,19 @@ const AccountDetails = styled.div``;
 
 const AccountAddress = styled.div``;
 
-const DisconnectButton = styled.button``;
+const DisconnectButton = styled(Button)<ComponentProps<typeof Button>>``;
 
-const CloseModalButton = styled.button``;
+const CollapseButton = styled(Button)<ComponentProps<typeof Button>>``;
 
-const ConnectorsList = styled.ul``;
+const ConnectorsList = styled.ul`
+  padding: 0;
+  margin: 0;
+  list-style: none;
+`;
 
-const ConnectorItem = styled.li``;
-
-const ConnectButton = styled.button``;
+const ConnectorItem = styled.li`
+  margin-bottom: ${props => props.theme.spacing.s};
+`;
 
 const Connecting: FC<{ connector: NonNullable<State['connector']> }> = ({
   connector,
@@ -122,20 +129,20 @@ const Disconnected: FC<{
       <ConnectorsList>
         {list.map(({ id, label, disabled }) => (
           <ConnectorItem key={id}>
-            <ConnectButton
-              type="submit"
+            <Button
+              type="button"
               disabled={disabled}
               onClick={() => selectConnector(id)}
+              size={Size.m}
             >
               {label}
-            </ConnectButton>
+            </Button>
           </ConnectorItem>
         ))}
       </ConnectorsList>
     </ConnectorsContainer>
   );
 };
-
 
 const Connected: FC<{
   account: string;
@@ -152,14 +159,16 @@ const Connected: FC<{
         <EtherscanLink data={account} type="account" showData />
       </AccountAddress>
       <RecentTransactions />
-      <DisconnectButton type="submit" onClick={deactivate}>
+      <DisconnectButton type="submit" onClick={deactivate} size={Size.m}>
         Disconnect
       </DisconnectButton>
     </ConnectedAccount>
   </ConnectedContainer>
 );
 
-export const WalletModal: FC<{ hideModal: () => void }> = ({ hideModal }) => {
+export const WalletConnection: FC<{ collapse: () => void }> = ({
+  collapse,
+}) => {
   const [{ status, connector }, dispatch] = useReducer(reducer, initialState);
   const { activate, connected, account, activated, deactivate } = useWallet();
 
@@ -191,9 +200,9 @@ export const WalletModal: FC<{ hideModal: () => void }> = ({ hideModal }) => {
         ) : (
           <Disconnected selectConnector={selectConnector} />
         )}
-        <CloseModalButton type="submit" onClick={hideModal}>
-          Close modal
-        </CloseModalButton>
+        <CollapseButton type="button" onClick={collapse} size={Size.m}>
+          x
+        </CollapseButton>
       </Container>
     </>
   );

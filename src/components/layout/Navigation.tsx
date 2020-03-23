@@ -1,17 +1,39 @@
 import React, { FC } from 'react';
-import { A } from 'hookrouter';
+import styled from 'styled-components';
+// import { A } from 'hookrouter';
+
+const Container = styled.nav`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  padding: ${props => props.theme.spacing.s};
+`;
+
+const BackButton = styled.button`
+  width: 24px;
+  height: 24px;
+`;
+
+const Title = styled.h2`
+  font-size: 20px;
+  margin: 0;
+`;
+
+const MenuIcon = styled.i`
+  display: block;
+  width: 24px;
+  height: 24px;
+  background: ${props => props.theme.color.foreground};
+`;
 
 /**
  * Placeholder component for app navigation.
  */
 export const Navigation: FC<{}> = () => (
-  <nav>
-    <ul>
-      {['swap', 'earn', 'save'].map(item => (
-        <li key={item}>
-          <A href={`/${item}`}>{item}</A>
-        </li>
-      ))}
-    </ul>
-  </nav>
+  <Container>
+    <BackButton>&lt;</BackButton>
+    <Title>mStable</Title>
+    <MenuIcon />
+  </Container>
 );

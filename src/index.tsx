@@ -16,8 +16,14 @@ const GlobalStyle = createGlobalStyle`
   html, body {
       margin: 0;
   }
+  body {
+    background: ${props => props.theme.color.background};
+  }
   * {
       box-sizing: border-box;
+  }
+  body, button, input {
+    font-family: 'Poppins', sans-serif;
   }
 `;
 

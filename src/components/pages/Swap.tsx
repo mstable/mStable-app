@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
-import { Mint } from '../Mint';
-import { Balances } from '../Balances';
+import { Mint } from './Mint';
 
 /**
  * Placeholder component for Swap.
@@ -8,6 +7,5 @@ import { Balances } from '../Balances';
 export const Swap: FC<{}> = () => (
   <>
     <Mint />
-    <Balances />
   </>
 );

@@ -1,8 +1,8 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { useTokensState } from '../context/TokensProvider';
-import { useAllErc20TokensQuery } from '../graphql/generated';
-import { formatDecimal } from '../web3/strings';
+import { useTokensState } from '../../context/TokensProvider';
+import { useAllErc20TokensQuery } from '../../graphql/generated';
+import { formatDecimal } from '../../web3/strings';
 
 const Container = styled.div``;
 

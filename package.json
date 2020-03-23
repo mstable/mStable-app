@@ -20,7 +20,6 @@
     "hookrouter": "^1.2.3",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-modal-hook": "^3.0.0",
     "react-scripts": "3.4.0",
     "styled-components": "^5.0.1",
     "subscriptions-transport-ws": "^0.9.16",

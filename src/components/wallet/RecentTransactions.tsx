@@ -1,10 +1,10 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { useAllTransactions } from '../context/TransactionsProvider';
-import { Transaction, TransactionStatus } from '../types';
-import { EtherscanLink } from './EtherscanLink';
-import { useAllErc20TokensQuery } from '../graphql/generated';
-import { convertExactToSimple } from '../web3/maths';
+import { useAllTransactions } from '../../context/TransactionsProvider';
+import { Transaction, TransactionStatus } from '../../types';
+import { EtherscanLink } from '../core/EtherscanLink';
+import { useAllErc20TokensQuery } from '../../graphql/generated';
+import { convertExactToSimple } from '../../web3/maths';
 
 const getStatus = (tx: Transaction): TransactionStatus => {
   if (tx.receipt?.status === 1) return TransactionStatus.Success;
@@ -27,7 +27,7 @@ const Indicator = styled.div<{ status: TransactionStatus }>`
   width: 20px;
   height: 20px;
   border-radius: 100%;
-  margin-right: 10px;
+  margin-right: ${props => props.theme.spacing.s};
   background: ${props => {
     if (props.status === TransactionStatus.Error) return 'darkred';
     if (props.status === TransactionStatus.Success) return 'forestgreen';

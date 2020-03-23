@@ -1,14 +1,14 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useWallet } from 'use-wallet';
-import { ContractNames, Interfaces, SendTxManifest } from '../types';
+import { ContractNames, Interfaces, SendTxManifest } from '../../types';
 import {
   useBassets,
   useERC20Contract,
   useForgeRewardsContract,
-} from '../web3/hooks';
-import { useSendTransaction } from '../context/TransactionsProvider';
-import { convertSimpleToExact } from '../web3/maths';
-import { useUIContext, useSelectedMassetToken } from '../context/UIProvider';
+} from '../../web3/hooks';
+import { useSendTransaction } from '../../context/TransactionsProvider';
+import { convertSimpleToExact } from '../../web3/maths';
+import { useUIContext, useSelectedMassetToken } from '../../context/UIProvider';
 
 const massetNames = [ContractNames.mUSD, ContractNames.mGLD];
 
