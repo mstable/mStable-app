@@ -1,11 +1,11 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { getEtherscanLink } from '../web3/strings';
+import { getEtherscanLink } from '../../web3/strings';
 
 const Link = styled.a``;
 
 const Data = styled.span`
-  margin-right: 10px;
+  margin-right: ${props => props.theme.spacing.s};
 `;
 
 const Icon = styled.i``;

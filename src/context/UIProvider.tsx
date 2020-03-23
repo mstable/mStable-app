@@ -6,32 +6,41 @@ import React, {
   useMemo,
   useReducer,
   Reducer,
-  useState,
-  useEffect,
 } from 'react';
-import { useModal as useModalHook } from 'react-modal-hook';
 import { MassetNames } from '../types';
-import { WalletModal } from '../components/WalletModal';
 import { TokenDetailsFragment } from '../graphql/generated';
 import { useMassetToken } from '../web3/hooks';
 
 interface State {
   selectedMasset: MassetNames;
-  walletModalIsShown: boolean;
+  walletExpanded: boolean;
 }
 
 interface Dispatch {
   selectMasset(massetName: MassetNames): void;
-  showWalletModal(): void;
-  hideWalletModal(): void;
+  collapseWallet(): void;
+  expandWallet(): void;
 }
 
-type Action = { type: 'SELECT_MASSET'; payload: MassetNames };
+enum Actions {
+  SelectMasset,
+  CollapseWallet,
+  ExpandWallet,
+}
+
+type Action =
+  | { type: Actions.SelectMasset; payload: MassetNames }
+  | { type: Actions.CollapseWallet }
+  | { type: Actions.ExpandWallet };
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case 'SELECT_MASSET':
+    case Actions.SelectMasset:
       return { ...state, selectedMasset: action.payload };
+    case Actions.CollapseWallet:
+      return { ...state, walletExpanded: false };
+    case Actions.ExpandWallet:
+      return { ...state, walletExpanded: true };
     default:
       return state;
   }
@@ -39,47 +48,29 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 const initialState: State = {
   selectedMasset: MassetNames.mUSD,
-  walletModalIsShown: false,
+  walletExpanded: false,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const context = createContext<[State, Dispatch]>([initialState, {}] as any);
-
-const useModal = (): [() => void, () => void, boolean] => {
-  let hideModal: () => void;
-  const [isShown, setShown] = useState(false);
-  const [_showModal, _hideModal] = useModalHook(() => (
-    <WalletModal hideModal={hideModal} />
-  ));
-
-  const showModal = useCallback(() => {
-    setShown(true);
-  }, []);
-  hideModal = useCallback(() => {
-    setShown(false);
-  }, []);
-
-  useEffect(() => {
-    if (isShown) {
-      _showModal();
-    } else {
-      _hideModal();
-    }
-  }, [isShown, _showModal, _hideModal]);
-
-  return [showModal, hideModal, isShown];
-};
 
 /**
  * Provider for global UI state and interactions.
  */
 export const UIProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [showWalletModal, hideWalletModal, walletModalIsShown] = useModal();
 
-  const selectMasset = useCallback(
-    (massetName: MassetNames) => {
-      dispatch({ type: 'SELECT_MASSET', payload: massetName });
+  const collapseWallet = useCallback<Dispatch['collapseWallet']>(() => {
+    dispatch({ type: Actions.CollapseWallet });
+  }, [dispatch]);
+
+  const expandWallet = useCallback<Dispatch['expandWallet']>(() => {
+    dispatch({ type: Actions.ExpandWallet });
+  }, [dispatch]);
+
+  const selectMasset = useCallback<Dispatch['selectMasset']>(
+    massetName => {
+      dispatch({ type: Actions.SelectMasset, payload: massetName });
     },
     [dispatch],
   );
@@ -87,17 +78,8 @@ export const UIProvider: FC<{}> = ({ children }) => {
   return (
     <context.Provider
       value={useMemo(
-        () => [
-          { ...state, walletModalIsShown }, // FIXME use reducer
-          { selectMasset, showWalletModal, hideWalletModal },
-        ],
-        [
-          state,
-          selectMasset,
-          walletModalIsShown,
-          showWalletModal,
-          hideWalletModal,
-        ],
+        () => [state, { collapseWallet, expandWallet, selectMasset }],
+        [state, collapseWallet, expandWallet, selectMasset],
       )}
     >
       {children}
@@ -106,6 +88,22 @@ export const UIProvider: FC<{}> = ({ children }) => {
 };
 
 export const useUIContext = (): [State, Dispatch] => useContext(context);
+
+export const useUIState = (): State => useUIContext()[0];
+
+export const useWalletExpanded = (): State['walletExpanded'] =>
+  useUIState().walletExpanded;
+
+export const useUIDispatch = (): Dispatch => useUIContext()[1];
+
+export const useCollapseWallet = (): Dispatch['collapseWallet'] =>
+  useUIDispatch().collapseWallet;
+
+export const useExpandWallet = (): Dispatch['expandWallet'] =>
+  useUIDispatch().expandWallet;
+
+export const useSelectMasset = (): Dispatch['selectMasset'] =>
+  useUIDispatch().selectMasset;
 
 export const useSelectedMassetToken = (): TokenDetailsFragment | null => {
   const [{ selectedMasset }] = useUIContext();

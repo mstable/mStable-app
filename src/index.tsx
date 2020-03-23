@@ -17,10 +17,13 @@ const GlobalStyle = createGlobalStyle`
       margin: 0;
   }
   body {
-    background: ${props => props.theme.colors.background};
+    background: ${props => props.theme.color.background};
   }
   * {
       box-sizing: border-box;
+  }
+  body, button, input {
+    font-family: 'Poppins', sans-serif;
   }
 `;
 
