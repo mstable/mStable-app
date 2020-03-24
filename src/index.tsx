@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import ReactDOM from 'react-dom';
 import { useRoutes } from 'hookrouter';
 import { createGlobalStyle } from 'styled-components';
-import reset from 'styled-reset'
+import reset from 'styled-reset';
 import * as serviceWorker from './serviceWorker';
 import { Providers } from './context';
 import { Updaters } from './updaters';
@@ -27,6 +27,10 @@ const GlobalStyle = createGlobalStyle`
   }
   body, button, input {
     font-family: 'Poppins', sans-serif;
+  }
+  #root {
+    display: flex;
+    justify-content: center;
   }
 `;
 

@@ -1,4 +1,4 @@
-import { DefaultTheme } from 'styled-components';
+import { DefaultTheme, CSSProp } from 'styled-components';
 
 export enum Color {
   background = '#f9f5f2',
@@ -17,12 +17,12 @@ export enum Size {
 }
 
 export enum Spacing {
-  xxs = '3px',
+  xxs = '2px',
   xs = '6px',
-  s = '10px',
-  m = '16px',
-  l = '20px',
-  xl = '40px',
+  s = '16px',
+  m = '20px',
+  l = '30px',
+  xl = '60px',
 }
 
 export enum FontSize {
@@ -32,6 +32,18 @@ export enum FontSize {
   l = '20px',
   xl = '32px',
 }
+
+export enum ViewportWidth {
+  xs = '320px',
+  s = '480px',
+  m = '640px',
+  l = '900px',
+}
+
+export const forMinWidth = (width: ViewportWidth, css: CSSProp): CSSProp =>
+  `@media (min-width: ${width}) {
+   ${css}
+}`;
 
 // eslint-disable-next-line consistent-return
 export const mapSizeToFontSize = (size: Size): string => {
@@ -72,4 +84,5 @@ export const theme: DefaultTheme = {
   spacing: Spacing,
   size: Size,
   fontSize: FontSize,
+  viewportWidth: ViewportWidth,
 };
