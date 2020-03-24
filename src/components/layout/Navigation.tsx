@@ -1,6 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { A, getWorkingPath } from 'hookrouter';
+import { FontSize, ViewportWidth } from "../../theme";
 
 interface NavItem {
   disabled?: boolean;
@@ -10,10 +11,8 @@ interface NavItem {
 
 const Container = styled.nav`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  height: 100%;
-  padding: ${props => props.theme.spacing.s};
 `;
 
 const List = styled.ul`
@@ -24,6 +23,10 @@ const List = styled.ul`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+
+  @media (min-width: ${ViewportWidth.s}) {
+    width: auto;
+  }
 `;
 
 const Item = styled.li<{ disabled?: boolean; active: boolean }>`
@@ -40,13 +43,15 @@ const Item = styled.li<{ disabled?: boolean; active: boolean }>`
   a {
     color: ${props => props.theme.color.foreground};
   }
-`;
 
-const MenuIcon = styled.i`
-  display: block;
-  width: 24px;
-  height: 24px;
-  background: ${props => props.theme.color.foreground};
+  margin-right: ${props => props.theme.spacing.xl};
+  &:last-child {
+    margin-right: 0;
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    font-size: ${FontSize.l};
+  }
 `;
 
 const navItems: NavItem[] = [
@@ -77,7 +82,6 @@ export const Navigation: FC<{}> = () => {
           </Item>
         ))}
       </List>
-      <MenuIcon />
     </Container>
   );
 };

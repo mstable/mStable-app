@@ -1,6 +1,6 @@
 import 'styled-components';
 
-import { Color, Spacing, Size, FontSize } from './theme';
+import { Color, Spacing, Size, FontSize, ViewportWidth } from './theme';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
@@ -8,5 +8,6 @@ declare module 'styled-components' {
     spacing: typeof Spacing;
     size: typeof Size;
     fontSize: typeof FontSize;
+    viewportWidth: typeof ViewportWidth;
   }
 }

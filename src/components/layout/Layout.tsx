@@ -1,34 +1,47 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { Navigation } from './Navigation';
+import { Header } from './Header';
 import { Footer } from './Footer';
+import { Wallet } from '../wallet/Wallet';
+import { useWalletExpanded } from '../../context/UIProvider';
+import { forMinWidth, ViewportWidth } from '../../theme';
+import { Background } from './Background';
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
-`;
-
-const Header = styled.header`
-  position: fixed;
-  top: 0;
+  min-height: 100vh;
   width: 100%;
-  height: 50px;
+  min-width: ${ViewportWidth.xs};
+
+  ${forMinWidth(ViewportWidth.s, `max-width: ${ViewportWidth.s}`)}
+  ${forMinWidth(ViewportWidth.m, `max-width: ${ViewportWidth.m}`)}
 `;
 
 const Main = styled.main`
-  margin-top: 50px;
+  flex: 1;
   padding: ${props => props.theme.spacing.l};
+
+  @media (min-width: ${ViewportWidth.m}) {
+    padding-top: 10%;
+  }
 `;
 
 /**
  * App layout component.
  */
-export const Layout: FC<{}> = ({ children }) => (
-  <Container>
-    <Header>
-      <Navigation />
-    </Header>
-    <Main>{children}</Main>
-    <Footer />
-  </Container>
-);
+export const Layout: FC<{}> = ({ children }) => {
+  const walletExpanded = useWalletExpanded();
+  return (
+    <>
+      <Background />
+      <Container>
+        <Header />
+        <Main>{children}</Main>
+        {walletExpanded ? <Wallet /> : null}
+        <Footer />
+      </Container>
+    </>
+  );
+};

@@ -67,7 +67,6 @@ const allConnectors: Record<keyof Connectors, Connector> = {
 };
 
 const Container = styled.div`
-  background: white;
   padding: ${props => props.theme.spacing.s};
 `;
 
@@ -134,6 +133,7 @@ const Disconnected: FC<{
               disabled={disabled}
               onClick={() => selectConnector(id)}
               size={Size.m}
+              inverted
             >
               {label}
             </Button>

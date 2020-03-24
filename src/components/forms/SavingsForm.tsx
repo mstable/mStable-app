@@ -1,16 +1,19 @@
 import React, {
   FC,
+  FormEventHandler,
   useCallback,
   useEffect,
   useState,
-  FormEventHandler,
 } from 'react';
 import { BigNumber, parseUnits } from 'ethers/utils';
 import { TokenAmountInput } from './TokenAmountInput';
+import { Form, FormRow } from '../core/Form';
 import { useKnownAddress } from '../../context/KnownAddressProvider';
 import { ContractNames } from '../../types';
 import { useTokenWithBalance } from '../../context/TokensProvider';
 import { formatDecimal } from '../../web3/strings';
+import { Button } from '../core/Button';
+import { Size } from '../../theme';
 
 enum Action {
   Deposit,
@@ -108,30 +111,40 @@ export const SavingsForm: FC<{}> = () => {
   }, [action, savingBalance, mUSDBalance, decimals, setAmountDecimal]);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <button
-        type="button"
-        disabled={action === Action.Deposit}
-        onClick={selectDeposit}
-      >
-        Deposit
-      </button>
-      <button
-        type="submit"
-        disabled={action === Action.Withdraw}
-        onClick={selectWithdraw}
-      >
-        Withdraw
-      </button>
-      <TokenAmountInput
-        error={error}
-        amountValue={amountDecimal}
-        onChangeAmount={handleChangeAmount}
-        onSetMax={handleSetMax}
-        tokenValue={mUSDAddress}
-        tokenAddresses={mUSDAddress ? [mUSDAddress] : []}
-      />
-      <button type="submit">Submit</button>
-    </form>
+    <Form onSubmit={handleSubmit}>
+      <FormRow>
+        <Button
+          type="button"
+          size={Size.m}
+          disabled={action === Action.Deposit}
+          onClick={selectDeposit}
+        >
+          Deposit
+        </Button>
+        <Button
+          type="button"
+          size={Size.m}
+          disabled={action === Action.Withdraw}
+          onClick={selectWithdraw}
+        >
+          Withdraw
+        </Button>
+      </FormRow>
+      <FormRow>
+        <TokenAmountInput
+          error={error}
+          amountValue={amountDecimal}
+          onChangeAmount={handleChangeAmount}
+          onSetMax={handleSetMax}
+          tokenValue={mUSDAddress}
+          tokenAddresses={mUSDAddress ? [mUSDAddress] : []}
+        />
+      </FormRow>
+      <FormRow>
+        <Button type="submit" size={Size.m}>
+          Submit
+        </Button>
+      </FormRow>
+    </Form>
   );
 };

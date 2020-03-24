@@ -8,7 +8,10 @@ import {
 } from '../../web3/hooks';
 import { useSendTransaction } from '../../context/TransactionsProvider';
 import { convertSimpleToExact } from '../../web3/maths';
-import { useUIContext, useSelectedMassetToken } from '../../context/UIProvider';
+import { useSelectedMassetToken, useUIContext } from '../../context/UIProvider';
+import { Form, FormRow } from '../core/Form';
+import { Button } from '../core/Button';
+import { Size } from '../../theme';
 
 const massetNames = [ContractNames.mUSD, ContractNames.mGLD];
 
@@ -88,12 +91,18 @@ export const Mint: FC<{}> = () => {
 
   return (
     <>
-      <button type="submit" onClick={approveBassetTotalSupply}>
-        Approve total supply
-      </button>
-      <form onSubmit={mintSingleTo}>
-        <div>
-          <span>mint</span>
+      <Form onSubmit={mintSingleTo}>
+        <FormRow>
+          <Button
+            type="button"
+            onClick={approveBassetTotalSupply}
+            size={Size.m}
+          >
+            Approve total supply
+          </Button>
+        </FormRow>
+        <div>mint</div>
+        <FormRow>
           <input
             name="massetQ"
             type="number"
@@ -111,9 +120,9 @@ export const Mint: FC<{}> = () => {
               </option>
             ))}
           </select>
-        </div>
-        <div>
-          <span>with</span>
+        </FormRow>
+        <div>with</div>
+        <FormRow>
           <input
             name="bassetQ"
             type="number"
@@ -133,11 +142,13 @@ export const Mint: FC<{}> = () => {
               </option>
             ))}
           </select>
-        </div>
-        <div>
-          <button type="submit">mint and earn 884 MTA</button>
-        </div>
-      </form>
+        </FormRow>
+        <FormRow>
+          <Button type="submit" size={Size.m}>
+            mint and earn 884 MTA
+          </Button>
+        </FormRow>
+      </Form>
     </>
   );
 };
