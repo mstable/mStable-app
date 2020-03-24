@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import ReactDOM from 'react-dom';
 import { useRoutes } from 'hookrouter';
 import { createGlobalStyle } from 'styled-components';
+import reset from 'styled-reset'
 import * as serviceWorker from './serviceWorker';
 import { Providers } from './context';
 import { Updaters } from './updaters';
@@ -13,8 +14,10 @@ import { Save } from './components/pages/Save';
 import { NotFound } from './components/pages/NotFound';
 
 const GlobalStyle = createGlobalStyle`
-  html, body {
-      margin: 0;
+  ${reset}
+  a {
+    text-decoration: none;
+    color: ${props => props.theme.color.blue};
   }
   body {
     background: ${props => props.theme.color.background};
