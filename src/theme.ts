@@ -17,6 +17,7 @@ export enum Size {
 }
 
 export enum Spacing {
+  xxs = '3px',
   xs = '6px',
   s = '10px',
   m = '16px',
