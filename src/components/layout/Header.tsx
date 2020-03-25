@@ -4,10 +4,11 @@ import { A, getWorkingPath } from 'hookrouter';
 import { ReactComponent as LogoSVG } from './logo.svg';
 import { WalletButton } from '../wallet/WalletButton';
 import { Navigation } from './Navigation';
-import { Activity } from '../activity/Activity';
+import { ViewportWidth } from "../../theme";
 
 const Logo = styled.div<{ active: boolean }>`
   width: 25px;
+  order: 1;
 
   svg {
     // Gentle nudge to visual centre
@@ -20,35 +21,34 @@ const Logo = styled.div<{ active: boolean }>`
   }
 `;
 
-const Top = styled.div`
-  display: flex;
-  padding: ${props => props.theme.spacing.s} ${props => props.theme.spacing.l};
-  align-items: center;
-  justify-content: space-between;
-`;
-
 const Container = styled.header`
   position: sticky;
   top: 0;
   width: 100%;
   height: 80px;
   background: ${props => props.theme.color.background};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0 ${props => props.theme.spacing.l};
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-wrap: initial;
+  }
 `;
 
 export const Header: FC<{}> = () => {
   const path = getWorkingPath('');
   return (
     <Container>
-      <Top>
-        <Logo active={path === '/'}>
-          <A href="/" title="Home">
-            <LogoSVG />
-          </A>
-        </Logo>
-        <Activity />
-        <WalletButton />
-      </Top>
+      <Logo active={path === '/'}>
+        <A href="/" title="Home">
+          <LogoSVG />
+        </A>
+      </Logo>
       <Navigation />
+      <WalletButton />
     </Container>
   );
 };
