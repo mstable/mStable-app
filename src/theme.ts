@@ -38,6 +38,7 @@ export enum ViewportWidth {
   s = '480px',
   m = '640px',
   l = '900px',
+  xl = '1400px',
 }
 
 export const forMinWidth = (width: ViewportWidth, css: CSSProp): CSSProp =>
