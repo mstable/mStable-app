@@ -17,6 +17,7 @@ const Container = styled.div`
 
   ${forMinWidth(ViewportWidth.s, `max-width: ${ViewportWidth.s}`)}
   ${forMinWidth(ViewportWidth.m, `max-width: ${ViewportWidth.m}`)}
+  ${forMinWidth(ViewportWidth.xl, `max-width: ${ViewportWidth.l}`)}
 `;
 
 const Main = styled.main`
