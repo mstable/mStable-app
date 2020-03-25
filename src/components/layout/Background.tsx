@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { ReactComponent as LogoSVG } from './logo.svg';
+// import { ReactComponent as LogoSVG } from './logo.svg';
 
 interface Props {
   active?: boolean;
@@ -35,18 +35,18 @@ const DotsContainer = styled(SVGContainer)`
   z-index: -2;
 `;
 
-const LogoContainer = styled(SVGContainer)<Props>`
-  z-index: -1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  opacity: ${props => (props.active ? '1' : '0.1')};
-
-  svg {
-    width: 15%;
-  }
-`;
+// const LogoContainer = styled(SVGContainer)<Props>`
+//   z-index: -1;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//
+//   opacity: ${props => (props.active ? '1' : '0.1')};
+//
+//   svg {
+//     width: 15%;
+//   }
+// `;
 
 // TODO: Animate this
 export const Background: FC<Props> = ({ active }) => (
@@ -58,8 +58,8 @@ export const Background: FC<Props> = ({ active }) => (
         <circle id="green" r="5%" cx="30%" cy="80%" />
       </Dots>
     </DotsContainer>
-    <LogoContainer active={active}>
-      <LogoSVG />
-    </LogoContainer>
+    {/* <LogoContainer active={active}> */}
+    {/*  <LogoSVG /> */}
+    {/* </LogoContainer> */}
   </>
 );
