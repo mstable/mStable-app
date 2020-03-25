@@ -4,7 +4,8 @@ import styled from 'styled-components';
 import { useExpandWallet } from '../../context/UIProvider';
 import { useTruncatedAddress } from '../../web3/hooks';
 import { Button } from '../core/Button';
-import { FontSize, Size } from '../../theme';
+import { FontSize, Size, ViewportWidth } from '../../theme';
+import { Activity } from '../activity/Activity';
 
 interface InjectedEthereum {
   enable(): Promise<string[]>;
@@ -12,6 +13,11 @@ interface InjectedEthereum {
 
 const Container = styled.div`
   cursor: pointer;
+  order: 2;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    order: 3;
+  }
 `;
 
 const Address = styled.div`
@@ -23,7 +29,7 @@ const Blockie = styled.div`
   width: 16px;
   height: 16px;
   background: green;
-  margin-right: ${props => props.theme.spacing.xs};
+  margin: 0 ${props => props.theme.spacing.xs};
 `;
 
 const Account = styled.div`
@@ -41,6 +47,7 @@ export const WalletButton: FC<{}> = () => {
     <Container onClick={expandWallet}>
       {connected ? (
         <Account>
+          <Activity />
           <Blockie />
           <Address>{truncatedAddress}</Address>
         </Account>
