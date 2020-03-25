@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { A, getWorkingPath } from 'hookrouter';
-import { FontSize, ViewportWidth } from "../../theme";
+import { FontSize, ViewportWidth } from '../../theme';
 
 interface NavItem {
   disabled?: boolean;
@@ -13,12 +13,18 @@ const Container = styled.nav`
   display: flex;
   justify-content: center;
   align-items: center;
+  order: 3;
+  width: 100%;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    width: auto;
+    order: 2;
+  }
 `;
 
 const List = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 0 ${props => props.theme.spacing.l};
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -26,6 +32,7 @@ const List = styled.ul`
 
   @media (min-width: ${ViewportWidth.s}) {
     width: auto;
+    margin: 0 ${props => props.theme.spacing.l};
   }
 `;
 
