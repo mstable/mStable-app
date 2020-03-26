@@ -11,6 +11,7 @@ import { Home } from './components/pages/Home';
 import { Swap } from './components/pages/Swap';
 import { Earn } from './components/pages/Earn';
 import { Save } from './components/pages/Save';
+import { About } from './components/pages/About';
 import { NotFound } from './components/pages/NotFound';
 
 const GlobalStyle = createGlobalStyle`
@@ -39,6 +40,7 @@ const routes = {
   '/swap': () => <Swap />,
   '/earn': () => <Earn />,
   '/save': () => <Save />,
+  '/about': () => <About />,
 };
 
 const Root: FC<{}> = () => {

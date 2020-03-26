@@ -1,5 +1,6 @@
 import React, { ChangeEventHandler, FC, useCallback } from 'react';
 import { TokenDetailsFragment } from '../../graphql/generated';
+import { Select } from '../core/Select';
 
 interface Props {
   value: string | null;
@@ -30,10 +31,10 @@ export const TokenInput: FC<Props> = ({
     [onChange],
   );
   return (
-    <select onChange={handleChange} value={value || ''} disabled={disabled}>
+    <Select onChange={handleChange} value={value || ''} disabled={disabled}>
       {tokens.map(token => (
         <option key={token.address}>{token.symbol}</option>
       ))}
-    </select>
+    </Select>
   );
 };

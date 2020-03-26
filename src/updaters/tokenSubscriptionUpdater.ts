@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
-import { useAllErc20TokensQuery } from '../graphql/generated';
+// import { useAllErc20TokensQuery } from '../graphql/generated';
+import { TokenDetailsFragment } from '../graphql/generated';
 import {
   useSubscribedTokens,
   useTokensDispatch,
@@ -12,8 +13,12 @@ export const TokenSubscriptionUpdater = (): null => {
   const { subscribe, unsubscribe } = useTokensDispatch();
   const subscribedTokens = useSubscribedTokens();
 
-  const query = useAllErc20TokensQuery();
-  const tokensData = query.data?.tokens || [];
+  // TODO remove fake data
+  // const query = useAllErc20TokensQuery();
+  // const tokensData = query.data?.tokens || [];
+  const tokensData: TokenDetailsFragment[] = [
+    { address: '0x1', symbol: 'mUSD', decimals: 18, totalSupply: '0' },
+  ];
 
   const toSubscribe = useMemo(
     () => tokensData.map(token => token.address) || [],

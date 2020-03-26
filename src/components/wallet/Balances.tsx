@@ -4,10 +4,6 @@ import { useTokensState } from '../../context/TokensProvider';
 import { useAllErc20TokensQuery } from '../../graphql/generated';
 import { formatDecimal } from '../../web3/strings';
 
-const Container = styled.div``;
-
-const Heading = styled.h3``;
-
 const List = styled.ul``;
 
 const Token = styled.li``;
@@ -40,16 +36,13 @@ export const Balances: FC<{}> = () => {
   );
 
   return (
-    <Container>
-      <Heading>Balances</Heading>
-      <List>
-        {tokensWithBalances.map(({ symbol, address, balanceFormatted }) => (
-          <Token key={address}>
-            <Symbol>{symbol}</Symbol>
-            <Balance>{balanceFormatted}</Balance>
-          </Token>
-        ))}
-      </List>
-    </Container>
+    <List>
+      {tokensWithBalances.map(({ symbol, address, balanceFormatted }) => (
+        <Token key={address}>
+          <Symbol>{symbol}</Symbol>
+          <Balance>{balanceFormatted}</Balance>
+        </Token>
+      ))}
+    </List>
   );
 };

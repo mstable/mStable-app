@@ -6,8 +6,9 @@ import React, {
   useMemo,
 } from 'react';
 import styled from 'styled-components';
-import { MaxUint256 } from 'ethers/constants';
 import { decimalsStep } from '../../web3/strings';
+import { Button } from '../core/Button';
+import { FontSize, Size } from '../../theme';
 
 interface Props {
   error?: string;
@@ -18,12 +19,30 @@ interface Props {
   disabled?: boolean;
 }
 
-const maxUint256 = MaxUint256.toString();
-
-const Container = styled.div``;
+const Container = styled.div`
+  display: flex;
+  justify-content: space-between;
+  flex-basis: 100%;
+  min-width: 0;
+`;
 
 const Input = styled.input<{ error: string | void }>`
-  ${props => (props.error ? 'border-color: red;' : '')}
+  background: transparent;
+  border: none
+    ${props =>
+      props.error ? props.theme.color.red : props.theme.color.foreground};
+  border-bottom: 2px solid;
+  color: ${props =>
+    props.error ? props.theme.color.red : props.theme.color.foreground};
+  font-size: ${FontSize.l};
+  font-weight: bold;
+  min-width: 0;
+  outline: none;
+  padding: ${props => props.theme.spacing.xs} ${props => props.theme.spacing.s};
+`;
+
+const MaxButton = styled(Button)`
+  border: 0;
 `;
 
 /**
@@ -76,7 +95,6 @@ export const AmountInput: FC<Props> = ({
         error={error}
         type="number"
         min="0"
-        max={maxUint256}
         placeholder="0.0"
         step={step}
         value={value || ''}
@@ -85,9 +103,9 @@ export const AmountInput: FC<Props> = ({
         disabled={disabled}
       />
       {onSetMax ? (
-        <button type="button" onClick={handleMax}>
+        <MaxButton type="button" onClick={handleMax} size={Size.xs}>
           Max
-        </button>
+        </MaxButton>
       ) : null}
     </Container>
   );

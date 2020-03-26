@@ -1,10 +1,10 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
-import { useAllTransactions } from '../../context/TransactionsProvider';
+// import { useAllTransactions } from '../../context/TransactionsProvider';
 import { Transaction, TransactionStatus } from '../../types';
 import { EtherscanLink } from '../core/EtherscanLink';
-import { useAllErc20TokensQuery } from '../../graphql/generated';
-import { convertExactToSimple } from '../../web3/maths';
+// import { useAllErc20TokensQuery } from '../../graphql/generated';
+// import { convertExactToSimple } from '../../web3/maths';
 
 const getStatus = (tx: Transaction): TransactionStatus => {
   if (tx.receipt?.status === 1) return TransactionStatus.Success;
@@ -37,6 +37,7 @@ const Indicator = styled.div<{ status: TransactionStatus }>`
 
 const List = styled.ul`
   padding: 0;
+  width: 100%;
 `;
 
 const Item = styled.li`
@@ -53,19 +54,22 @@ const Status = styled.div`
  *
  * @param tx
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ERC20ApproveDescription: FC<{ tx: Transaction }> = ({ tx }) => {
-  const { data: bassetData } = useAllErc20TokensQuery({
-    variables: { id: tx.response.to },
-  });
+  // const { data: bassetData } = useAllErc20TokensQuery({
+  //   variables: { id: tx.response.to },
+  // });
 
   // TODO support all massets
   const massetSymbol = 'mUSD';
 
-  const basset = bassetData?.tokens[0];
+  // TODO remove fake data
+  // const basset = bassetData?.tokens[0];
+  const basset = { symbol: 'USDC' };
 
   return (
     <>
-      Approving {massetSymbol} to transfer ${basset?.symbol}
+      Approving {massetSymbol} to transfer {basset?.symbol}
     </>
   );
 };
@@ -75,19 +79,23 @@ const ERC20ApproveDescription: FC<{ tx: Transaction }> = ({ tx }) => {
  *
  * @param tx
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const MintSingleToDescription: FC<{ tx: Transaction }> = ({ tx }) => {
-  const [bassetAddress, bassetQ] = tx.args;
-  const { data: bassetData } = useAllErc20TokensQuery({
-    variables: { id: bassetAddress },
-  });
+  // const [bassetAddress, bassetQ] = tx.args;
+  // const { data: bassetData } = useAllErc20TokensQuery({
+  //   variables: { id: bassetAddress },
+  // });
 
   // TODO support all massets
   const massetSymbol = 'mUSD';
 
-  const basset = bassetData?.tokens[0];
-  const massetQ = basset?.decimals
-    ? convertExactToSimple(bassetQ as string, basset.decimals || 18).toString()
-    : 'unknown';
+  // TODO remove fake data
+  // const basset = bassetData?.tokens[0];
+  // const massetQ = basset?.decimals
+  //   ? convertExactToSimple(bassetQ as string, basset.decimals || 18).toString()
+  //   : 'unknown';
+  const basset = { symbol: 'USDC' };
+  const massetQ = '1337';
 
   return (
     <>
@@ -140,18 +148,48 @@ const TransactionDescription: FC<{ tx: Transaction }> = ({ tx }) => {
  * TODO: correct design
  */
 export const RecentTransactions: FC<{}> = () => {
-  const state = useAllTransactions();
-  const sortedTxs = useMemo(
-    () =>
-      [...Object.entries(state)].sort(
-        ([, a], [, b]) => b.timestamp - a.timestamp,
-      ),
-    [state],
-  );
+  // const state = useAllTransactions();
+  // const sortedTxs = useMemo(
+  //   () =>
+  //     [...Object.entries(state)].sort(
+  //       ([, a], [, b]) => b.timestamp - a.timestamp,
+  //     ),
+  //   [state],
+  // );
+  // TODO remove fake data
+  const sortedTxs = [
+    [
+      '0x1',
+      {
+        response: {
+          hash: '0x1',
+        },
+        receipt: {
+          confirmations: 2,
+          status: 1,
+        },
+        fn: 'approve',
+        timestamp: Date.now(),
+        args: [],
+      },
+    ],
+    [
+      '0x2',
+      {
+        response: {
+          hash: '0x2',
+        },
+        fn: 'mintSingleTo',
+        timestamp: Date.now(),
+        args: ['1000', '1000'],
+      },
+    ],
+  ];
 
   return (
     <List>
-      {sortedTxs.map(([hash, tx]) => (
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      {sortedTxs.map(([hash, tx]: any) => (
         <Item key={hash}>
           <TransactionDescription tx={tx} />
           <TransactionStatusIndicator tx={tx} />
