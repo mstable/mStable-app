@@ -5,6 +5,7 @@ export enum Color {
   gold = '#ffb334',
   green = '#5bb189',
   blue = '#005cde',
+  red = '#ca001b',
   foreground = '#000000',
 }
 

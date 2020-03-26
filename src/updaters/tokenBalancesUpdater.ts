@@ -1,7 +1,7 @@
 import { useEffect, useRef, useReducer, Reducer } from 'react';
 import { useWallet } from 'use-wallet';
 import { useSignerContext } from '../context/SignerProvider';
-import { ERC20DetailedFactory } from '../typechain/ERC20DetailedFactory';
+// import { ERC20DetailedFactory } from '../typechain/ERC20DetailedFactory';
 import {
   useSubscribedTokens,
   useTokensDispatch,
@@ -65,13 +65,15 @@ export const TokenBalancesUpdater = (): null => {
   useEffect(() => {
     if (!signer || missing.current.length === 0) return;
 
-    const instances = missing.current.reduce(
-      (_contracts, token) => ({
-        ..._contracts,
-        [token]: ERC20DetailedFactory.connect(token, signer),
-      }),
-      {},
-    );
+    // const instances = missing.current.reduce(
+    //   (_contracts, token) => ({
+    //     ..._contracts,
+    //     [token]: ERC20DetailedFactory.connect(token, signer),
+    //   }),
+    //   {},
+    // );
+    // TODO re-enable when fake data is removed
+    const instances = {};
 
     dispatch({ type: Actions.SetContracts, payload: instances });
   }, [signer, missing]);

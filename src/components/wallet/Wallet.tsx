@@ -5,6 +5,9 @@ import { useCollapseWallet } from '../../context/UIProvider';
 import { WalletConnection } from './WalletConnection';
 import { RecentTransactions } from './RecentTransactions';
 import { Balances } from './Balances';
+import { Button } from '../core/Button';
+import { Size } from '../../theme';
+import { H3 } from '../core/Typography';
 
 interface InjectedEthereum {
   enable(): Promise<string[]>;
@@ -21,7 +24,11 @@ const Container = styled.div`
   padding: ${props => props.theme.spacing.s} ${props => props.theme.spacing.l};
 `;
 
-const CollapseButton = styled.button``;
+const Row = styled.div`
+  margin-bottom: ${props => props.theme.spacing.m};
+`;
+
+const CollapseButton = styled(Button)``;
 
 export const Wallet: FC<{}> = () => {
   const { connected } = useWallet<InjectedEthereum>();
@@ -30,9 +37,19 @@ export const Wallet: FC<{}> = () => {
     <Container>
       {connected ? (
         <>
-          <CollapseButton onClick={collapseWallet}>x</CollapseButton>
-          <RecentTransactions />
-          <Balances />
+          <Row>
+            <CollapseButton onClick={collapseWallet} size={Size.m}>
+              Close
+            </CollapseButton>
+          </Row>
+          <Row>
+            <H3>Transactions</H3>
+            <RecentTransactions />
+          </Row>
+          <Row>
+            <H3>Balances</H3>
+            <Balances />
+          </Row>
         </>
       ) : (
         <WalletConnection collapse={collapseWallet} />

@@ -1,7 +1,11 @@
 import React, { FC, useMemo } from 'react';
+import styled from 'styled-components';
 import { AmountInput } from './AmountInput';
 import { TokenInput } from './TokenInput';
-import { useErc20TokensQuery } from '../../graphql/generated';
+import {
+  TokenDetailsFragment,
+  // useErc20TokensQuery,
+} from '../../graphql/generated';
 
 interface Props {
   error?: string;
@@ -12,6 +16,22 @@ interface Props {
   onChangeToken?(token: string): void;
   onSetMax?(): void;
 }
+
+const Container = styled.div``;
+
+const InputContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: ${props => props.theme.spacing.s};
+  
+  > :last-child {
+    margin-left: ${props => props.theme.spacing.s};  
+  }
+`;
+
+const Error = styled.div`
+  color: ${props => props.theme.color.red};
+`;
 
 /**
  * TokenAmountInput
@@ -27,6 +47,7 @@ interface Props {
  */
 export const TokenAmountInput: FC<Props> = ({
   error,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   tokenAddresses,
   tokenValue,
   amountValue,
@@ -34,28 +55,36 @@ export const TokenAmountInput: FC<Props> = ({
   onChangeToken,
   onSetMax,
 }) => {
-  const { data: tokensData } = useErc20TokensQuery({
-    variables: { addresses: tokenAddresses },
-  });
+  // TODO remove fake data
+  // const { data: tokensData } = useErc20TokensQuery({
+  //   variables: { addresses: tokenAddresses },
+  // });
+  const tokensData: { tokens: TokenDetailsFragment[] } = {
+    tokens: [
+      { address: '0x1', symbol: 'mUSD', decimals: 18, totalSupply: '0' },
+    ],
+  };
   const selectedToken = useMemo(
     () => tokensData?.tokens.find(t => t.address === tokenValue),
     [tokensData, tokenValue],
   );
   return (
-    <>
-      <AmountInput
-        error={error}
-        value={amountValue}
-        onChange={onChangeAmount}
-        onSetMax={onSetMax}
-        decimals={selectedToken?.decimals}
-      />
-      <TokenInput
-        value={tokenValue}
-        tokens={tokensData?.tokens || []}
-        onChange={onChangeToken}
-      />
-      <div>{error}</div>
-    </>
+    <Container>
+      <InputContainer>
+        <AmountInput
+          error={error}
+          value={amountValue}
+          onChange={onChangeAmount}
+          onSetMax={onSetMax}
+          decimals={selectedToken?.decimals}
+        />
+        <TokenInput
+          value={tokenValue}
+          tokens={tokensData?.tokens || []}
+          onChange={onChangeToken}
+        />
+      </InputContainer>
+       {error ? <Error>{error}</Error> : null}
+    </Container>
   );
 };
