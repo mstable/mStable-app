@@ -19,12 +19,12 @@ jobs:
       - run:
           name: 'Provision (Mimic yarn provision)'
           command: |
-            - git submodule sync
-            - git submodule update --init
-            - cd ./lib/mStable-subgraph
-            - git submodule update --init
-            - yarn install
-            - yarn compile
+            git submodule sync
+            git submodule update --init
+            cd ./lib/mStable-subgraph
+            git submodule update --init
+            yarn install
+            yarn compile
       - run:
           name: Codegen (TypeChain)
           command: yarn codegen:typechain
