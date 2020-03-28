@@ -1,10 +1,13 @@
 version: 2.1
+
+executors:
+  gcp:
+    docker:
+      - image: alsco77/node-gcp-dockerfile:origin
+
 jobs:
   build:
-    docker:
-      - image: circleci/node:10.15.3
-      - image: trufflesuite/ganache-cli
-        command: ganache-cli -p 7545 --gasLimit 9000000
+    executor: gcp
     resource_class: medium+
     steps:
       - checkout
@@ -12,7 +15,7 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
       - run:
           name: Install
-          command: yarn install
+          command: yarn
       - run:
           name: Provision
           command: yarn provision
@@ -25,21 +28,66 @@ jobs:
       - run:
           name: Lint
           command: yarn lint
-# TODO enable this for integration testing
-#      - run:
-#          name: Migrate
-#          command: yarn truffle:migrate
-#      - setup_remote_docker
-#      - run:
-#          name: Start subgraph
-#          command: |
-#            - cd ./lib/graph-node/docker
-#            - sh ./setup.sh
-#            - docker-compose up -d
       - run:
           name: Test
           command: yarn test --passWithNoTests
+      - run:
+          name: Build
+          command: yarn build
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/build
+            - project/public
+            - project/*
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
+  deployStaging:
+    executor: gcp
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: 'Deploy'
+          command: |
+            echo "Deploy to staging target GAE instance with project ID $S_GCP_PROJECT_ID"
+            echo $S_GCP_KEY > /tmp/$CI_PIPELINE_ID.json
+            gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+            gcloud config set project $S_GCP_PROJECT_ID
+            gcloud --quiet app deploy app.yml
+  deployProd:
+    executor: gcp
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: 'Deploy'
+          command: |
+            echo "Deploy to prod target GAE instance with project ID $P_GCP_PROJECT_ID"
+            echo $P_GCP_KEY > /tmp/$CI_PIPELINE_ID.json
+            gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+            gcloud config set project $P_GCP_PROJECT_ID
+            gcloud --quiet app deploy app.yml
+workflows:
+  version: 2.1
+  staging:
+    jobs:
+      - build
+      - Approval:
+          type: approval
+      - deployStaging:
+          requires:
+            - Approval
+            - build
+  prod:
+    jobs:
+      - Approval:
+          type: approval
+      - build:
+          requires:
+            - Approval
+      - deployProd:
+          requires:
+            - build
