@@ -22,6 +22,7 @@ jobs:
             git submodule update --init
             cd ./lib/mStable-subgraph
             git submodule update --init
+            cd ./lib/mStable-contracts
             yarn install
             yarn compile
       - run:
