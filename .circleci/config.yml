@@ -3,7 +3,7 @@ version: 2.1
 executors:
   gcp:
     docker:
-      - image: alsco77/node-gcp-dockerfile:origin
+      - image: alsco77/node-gcp-dockerfile:suite
 
 jobs:
   build:
@@ -19,7 +19,6 @@ jobs:
       - run:
           name: 'Provision (Mimic yarn provision)'
           command: |
-            git submodule sync
             git submodule update --init
             cd ./lib/mStable-subgraph
             git submodule update --init
