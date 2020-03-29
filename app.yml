@@ -2,15 +2,6 @@ runtime: nodejs10
 
 service: app
 
-env_variables:
-  REACT_APP_GRAPHQL_ENDPOINT: 'http://0.0.0.0:8000/subgraphs/name/jameslefrere/mStable'
-  REACT_APP_GRAPHQL_ENDPOINT_WS: 'ws://0.0.0.0:8001/subgraphs/name/jameslefrere/mStable'
-  REACT_APP_FORGE_REWARDS_ADDRESS:
-  REACT_APP_CHAIN_ID: 3
-  REACT_APP_PORTIS_DAPP_ID:
-  REACT_APP_FORMATIC_API_KEY:
-  REACT_APP_SQUARELINK_CLIENT_ID:
-
 handlers:
   - url: /(.*\.(gif|png|svg|ttf|jpeg|jpg|css|css.map|js|pdf|scss|ico|json|json.map))$
     static_files: build/\1
