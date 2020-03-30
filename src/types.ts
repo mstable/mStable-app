@@ -28,7 +28,7 @@ export enum ContractNames {
   mUSD = 'mUSD',
   mGLD = 'mGLD',
   MTA = 'MTA',
-  ERC20 = 'ERC20',
+  mUSDSavings = 'mUSDSavings',
 }
 
 export enum Interfaces {
