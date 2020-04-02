@@ -1,5 +1,5 @@
 overwrite: true
-schema: "http://0.0.0.0:8000/subgraphs/name/jameslefrere/mStable"
+schema: "http://0.0.0.0:8000/subgraphs/name/mStable/mStable-protocol"
 documents: "src/graphql/**/*.graphql"
 generates:
   ./src/graphql/generated.tsx:

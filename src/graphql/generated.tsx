@@ -37,6 +37,7 @@ export type Account = {
   id: Scalars['ID'],
   address: Scalars['Bytes'],
   balances: Array<AccountBalance>,
+  creditBalances: Array<CreditBalance>,
 };
 
 
@@ -46,6 +47,15 @@ export type AccountBalancesArgs = {
   orderBy?: Maybe<AccountBalance_OrderBy>,
   orderDirection?: Maybe<OrderDirection>,
   where?: Maybe<AccountBalance_Filter>
+};
+
+
+export type AccountCreditBalancesArgs = {
+  skip?: Maybe<Scalars['Int']>,
+  first?: Maybe<Scalars['Int']>,
+  orderBy?: Maybe<CreditBalance_OrderBy>,
+  orderDirection?: Maybe<OrderDirection>,
+  where?: Maybe<CreditBalance_Filter>
 };
 
 export type Account_Filter = {
@@ -68,7 +78,8 @@ export type Account_Filter = {
 export enum Account_OrderBy {
   Id = 'id',
   Address = 'address',
-  Balances = 'balances'
+  Balances = 'balances',
+  CreditBalances = 'creditBalances'
 }
 
 export type AccountBalance = {
@@ -136,7 +147,8 @@ export type Basket = {
   id: Scalars['ID'],
   bassets: Array<Basset>,
   collateralisationRatio: Scalars['BigInt'],
-  expiredBassets: Array<Scalars['Bytes']>,
+  grace: Scalars['BigInt'],
+  maxBassets: Scalars['Int'],
   failed: Scalars['Boolean'],
   masset: Masset,
 };
@@ -171,10 +183,22 @@ export type Basket_Filter = {
   collateralisationRatio_lte?: Maybe<Scalars['BigInt']>,
   collateralisationRatio_in?: Maybe<Array<Scalars['BigInt']>>,
   collateralisationRatio_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  expiredBassets?: Maybe<Array<Scalars['Bytes']>>,
-  expiredBassets_not?: Maybe<Array<Scalars['Bytes']>>,
-  expiredBassets_contains?: Maybe<Array<Scalars['Bytes']>>,
-  expiredBassets_not_contains?: Maybe<Array<Scalars['Bytes']>>,
+  grace?: Maybe<Scalars['BigInt']>,
+  grace_not?: Maybe<Scalars['BigInt']>,
+  grace_gt?: Maybe<Scalars['BigInt']>,
+  grace_lt?: Maybe<Scalars['BigInt']>,
+  grace_gte?: Maybe<Scalars['BigInt']>,
+  grace_lte?: Maybe<Scalars['BigInt']>,
+  grace_in?: Maybe<Array<Scalars['BigInt']>>,
+  grace_not_in?: Maybe<Array<Scalars['BigInt']>>,
+  maxBassets?: Maybe<Scalars['Int']>,
+  maxBassets_not?: Maybe<Scalars['Int']>,
+  maxBassets_gt?: Maybe<Scalars['Int']>,
+  maxBassets_lt?: Maybe<Scalars['Int']>,
+  maxBassets_gte?: Maybe<Scalars['Int']>,
+  maxBassets_lte?: Maybe<Scalars['Int']>,
+  maxBassets_in?: Maybe<Array<Scalars['Int']>>,
+  maxBassets_not_in?: Maybe<Array<Scalars['Int']>>,
   failed?: Maybe<Scalars['Boolean']>,
   failed_not?: Maybe<Scalars['Boolean']>,
   failed_in?: Maybe<Array<Scalars['Boolean']>>,
@@ -185,7 +209,8 @@ export enum Basket_OrderBy {
   Id = 'id',
   Bassets = 'bassets',
   CollateralisationRatio = 'collateralisationRatio',
-  ExpiredBassets = 'expiredBassets',
+  Grace = 'grace',
+  MaxBassets = 'maxBassets',
   Failed = 'failed',
   Masset = 'masset'
 }
@@ -193,12 +218,12 @@ export enum Basket_OrderBy {
 export type Basset = {
   id: Scalars['ID'],
   basket: Basket,
-  maxWeight: Scalars['BigInt'],
+  targetWeight: Scalars['BigInt'],
   ratio: Scalars['BigInt'],
   status: Scalars['String'],
   isTransferFeeCharged: Scalars['Boolean'],
   token: Token,
-  vaultBalance: Scalars['BigInt'],
+  vaultBalance: Scalars['BigDecimal'],
 };
 
 export type Basset_Filter = {
@@ -210,14 +235,14 @@ export type Basset_Filter = {
   id_lte?: Maybe<Scalars['ID']>,
   id_in?: Maybe<Array<Scalars['ID']>>,
   id_not_in?: Maybe<Array<Scalars['ID']>>,
-  maxWeight?: Maybe<Scalars['BigInt']>,
-  maxWeight_not?: Maybe<Scalars['BigInt']>,
-  maxWeight_gt?: Maybe<Scalars['BigInt']>,
-  maxWeight_lt?: Maybe<Scalars['BigInt']>,
-  maxWeight_gte?: Maybe<Scalars['BigInt']>,
-  maxWeight_lte?: Maybe<Scalars['BigInt']>,
-  maxWeight_in?: Maybe<Array<Scalars['BigInt']>>,
-  maxWeight_not_in?: Maybe<Array<Scalars['BigInt']>>,
+  targetWeight?: Maybe<Scalars['BigInt']>,
+  targetWeight_not?: Maybe<Scalars['BigInt']>,
+  targetWeight_gt?: Maybe<Scalars['BigInt']>,
+  targetWeight_lt?: Maybe<Scalars['BigInt']>,
+  targetWeight_gte?: Maybe<Scalars['BigInt']>,
+  targetWeight_lte?: Maybe<Scalars['BigInt']>,
+  targetWeight_in?: Maybe<Array<Scalars['BigInt']>>,
+  targetWeight_not_in?: Maybe<Array<Scalars['BigInt']>>,
   ratio?: Maybe<Scalars['BigInt']>,
   ratio_not?: Maybe<Scalars['BigInt']>,
   ratio_gt?: Maybe<Scalars['BigInt']>,
@@ -258,20 +283,20 @@ export type Basset_Filter = {
   token_not_starts_with?: Maybe<Scalars['String']>,
   token_ends_with?: Maybe<Scalars['String']>,
   token_not_ends_with?: Maybe<Scalars['String']>,
-  vaultBalance?: Maybe<Scalars['BigInt']>,
-  vaultBalance_not?: Maybe<Scalars['BigInt']>,
-  vaultBalance_gt?: Maybe<Scalars['BigInt']>,
-  vaultBalance_lt?: Maybe<Scalars['BigInt']>,
-  vaultBalance_gte?: Maybe<Scalars['BigInt']>,
-  vaultBalance_lte?: Maybe<Scalars['BigInt']>,
-  vaultBalance_in?: Maybe<Array<Scalars['BigInt']>>,
-  vaultBalance_not_in?: Maybe<Array<Scalars['BigInt']>>,
+  vaultBalance?: Maybe<Scalars['BigDecimal']>,
+  vaultBalance_not?: Maybe<Scalars['BigDecimal']>,
+  vaultBalance_gt?: Maybe<Scalars['BigDecimal']>,
+  vaultBalance_lt?: Maybe<Scalars['BigDecimal']>,
+  vaultBalance_gte?: Maybe<Scalars['BigDecimal']>,
+  vaultBalance_lte?: Maybe<Scalars['BigDecimal']>,
+  vaultBalance_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  vaultBalance_not_in?: Maybe<Array<Scalars['BigDecimal']>>,
 };
 
 export enum Basset_OrderBy {
   Id = 'id',
   Basket = 'basket',
-  MaxWeight = 'maxWeight',
+  TargetWeight = 'targetWeight',
   Ratio = 'ratio',
   Status = 'status',
   IsTransferFeeCharged = 'isTransferFeeCharged',
@@ -287,23 +312,139 @@ export type Block_Height = {
 };
 
 
+export type CreditBalance = {
+  id: Scalars['ID'],
+  account: Account,
+  amount: Scalars['BigDecimal'],
+  savingsContract: SavingsContract,
+};
+
+export type CreditBalance_Filter = {
+  id?: Maybe<Scalars['ID']>,
+  id_not?: Maybe<Scalars['ID']>,
+  id_gt?: Maybe<Scalars['ID']>,
+  id_lt?: Maybe<Scalars['ID']>,
+  id_gte?: Maybe<Scalars['ID']>,
+  id_lte?: Maybe<Scalars['ID']>,
+  id_in?: Maybe<Array<Scalars['ID']>>,
+  id_not_in?: Maybe<Array<Scalars['ID']>>,
+  account?: Maybe<Scalars['String']>,
+  account_not?: Maybe<Scalars['String']>,
+  account_gt?: Maybe<Scalars['String']>,
+  account_lt?: Maybe<Scalars['String']>,
+  account_gte?: Maybe<Scalars['String']>,
+  account_lte?: Maybe<Scalars['String']>,
+  account_in?: Maybe<Array<Scalars['String']>>,
+  account_not_in?: Maybe<Array<Scalars['String']>>,
+  account_contains?: Maybe<Scalars['String']>,
+  account_not_contains?: Maybe<Scalars['String']>,
+  account_starts_with?: Maybe<Scalars['String']>,
+  account_not_starts_with?: Maybe<Scalars['String']>,
+  account_ends_with?: Maybe<Scalars['String']>,
+  account_not_ends_with?: Maybe<Scalars['String']>,
+  amount?: Maybe<Scalars['BigDecimal']>,
+  amount_not?: Maybe<Scalars['BigDecimal']>,
+  amount_gt?: Maybe<Scalars['BigDecimal']>,
+  amount_lt?: Maybe<Scalars['BigDecimal']>,
+  amount_gte?: Maybe<Scalars['BigDecimal']>,
+  amount_lte?: Maybe<Scalars['BigDecimal']>,
+  amount_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  amount_not_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  savingsContract?: Maybe<Scalars['String']>,
+  savingsContract_not?: Maybe<Scalars['String']>,
+  savingsContract_gt?: Maybe<Scalars['String']>,
+  savingsContract_lt?: Maybe<Scalars['String']>,
+  savingsContract_gte?: Maybe<Scalars['String']>,
+  savingsContract_lte?: Maybe<Scalars['String']>,
+  savingsContract_in?: Maybe<Array<Scalars['String']>>,
+  savingsContract_not_in?: Maybe<Array<Scalars['String']>>,
+  savingsContract_contains?: Maybe<Scalars['String']>,
+  savingsContract_not_contains?: Maybe<Scalars['String']>,
+  savingsContract_starts_with?: Maybe<Scalars['String']>,
+  savingsContract_not_starts_with?: Maybe<Scalars['String']>,
+  savingsContract_ends_with?: Maybe<Scalars['String']>,
+  savingsContract_not_ends_with?: Maybe<Scalars['String']>,
+};
+
+export enum CreditBalance_OrderBy {
+  Id = 'id',
+  Account = 'account',
+  Amount = 'amount',
+  SavingsContract = 'savingsContract'
+}
+
+export type ExchangeRate = {
+  id: Scalars['ID'],
+  exchangeRate: Scalars['BigDecimal'],
+  timestamp: Scalars['Int'],
+  savingsContract: SavingsContract,
+};
+
+export type ExchangeRate_Filter = {
+  id?: Maybe<Scalars['ID']>,
+  id_not?: Maybe<Scalars['ID']>,
+  id_gt?: Maybe<Scalars['ID']>,
+  id_lt?: Maybe<Scalars['ID']>,
+  id_gte?: Maybe<Scalars['ID']>,
+  id_lte?: Maybe<Scalars['ID']>,
+  id_in?: Maybe<Array<Scalars['ID']>>,
+  id_not_in?: Maybe<Array<Scalars['ID']>>,
+  exchangeRate?: Maybe<Scalars['BigDecimal']>,
+  exchangeRate_not?: Maybe<Scalars['BigDecimal']>,
+  exchangeRate_gt?: Maybe<Scalars['BigDecimal']>,
+  exchangeRate_lt?: Maybe<Scalars['BigDecimal']>,
+  exchangeRate_gte?: Maybe<Scalars['BigDecimal']>,
+  exchangeRate_lte?: Maybe<Scalars['BigDecimal']>,
+  exchangeRate_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  exchangeRate_not_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  timestamp?: Maybe<Scalars['Int']>,
+  timestamp_not?: Maybe<Scalars['Int']>,
+  timestamp_gt?: Maybe<Scalars['Int']>,
+  timestamp_lt?: Maybe<Scalars['Int']>,
+  timestamp_gte?: Maybe<Scalars['Int']>,
+  timestamp_lte?: Maybe<Scalars['Int']>,
+  timestamp_in?: Maybe<Array<Scalars['Int']>>,
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>,
+  savingsContract?: Maybe<Scalars['String']>,
+  savingsContract_not?: Maybe<Scalars['String']>,
+  savingsContract_gt?: Maybe<Scalars['String']>,
+  savingsContract_lt?: Maybe<Scalars['String']>,
+  savingsContract_gte?: Maybe<Scalars['String']>,
+  savingsContract_lte?: Maybe<Scalars['String']>,
+  savingsContract_in?: Maybe<Array<Scalars['String']>>,
+  savingsContract_not_in?: Maybe<Array<Scalars['String']>>,
+  savingsContract_contains?: Maybe<Scalars['String']>,
+  savingsContract_not_contains?: Maybe<Scalars['String']>,
+  savingsContract_starts_with?: Maybe<Scalars['String']>,
+  savingsContract_not_starts_with?: Maybe<Scalars['String']>,
+  savingsContract_ends_with?: Maybe<Scalars['String']>,
+  savingsContract_not_ends_with?: Maybe<Scalars['String']>,
+};
+
+export enum ExchangeRate_OrderBy {
+  Id = 'id',
+  ExchangeRate = 'exchangeRate',
+  Timestamp = 'timestamp',
+  SavingsContract = 'savingsContract'
+}
+
 export type Masset = {
   id: Scalars['ID'],
   basket: Basket,
-  redemptionFee: Scalars['BigInt'],
+  feeRate: Scalars['BigInt'],
   feePool: Scalars['Bytes'],
   token: Token,
   tokenSymbol: Scalars['String'],
-  tranches: Array<Tranche>,
+  savingsContracts: Array<SavingsContract>,
 };
 
 
-export type MassetTranchesArgs = {
+export type MassetSavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>,
   first?: Maybe<Scalars['Int']>,
-  orderBy?: Maybe<Tranche_OrderBy>,
+  orderBy?: Maybe<SavingsContract_OrderBy>,
   orderDirection?: Maybe<OrderDirection>,
-  where?: Maybe<Tranche_Filter>
+  where?: Maybe<SavingsContract_Filter>
 };
 
 export type Masset_Filter = {
@@ -329,14 +470,14 @@ export type Masset_Filter = {
   basket_not_starts_with?: Maybe<Scalars['String']>,
   basket_ends_with?: Maybe<Scalars['String']>,
   basket_not_ends_with?: Maybe<Scalars['String']>,
-  redemptionFee?: Maybe<Scalars['BigInt']>,
-  redemptionFee_not?: Maybe<Scalars['BigInt']>,
-  redemptionFee_gt?: Maybe<Scalars['BigInt']>,
-  redemptionFee_lt?: Maybe<Scalars['BigInt']>,
-  redemptionFee_gte?: Maybe<Scalars['BigInt']>,
-  redemptionFee_lte?: Maybe<Scalars['BigInt']>,
-  redemptionFee_in?: Maybe<Array<Scalars['BigInt']>>,
-  redemptionFee_not_in?: Maybe<Array<Scalars['BigInt']>>,
+  feeRate?: Maybe<Scalars['BigInt']>,
+  feeRate_not?: Maybe<Scalars['BigInt']>,
+  feeRate_gt?: Maybe<Scalars['BigInt']>,
+  feeRate_lt?: Maybe<Scalars['BigInt']>,
+  feeRate_gte?: Maybe<Scalars['BigInt']>,
+  feeRate_lte?: Maybe<Scalars['BigInt']>,
+  feeRate_in?: Maybe<Array<Scalars['BigInt']>>,
+  feeRate_not_in?: Maybe<Array<Scalars['BigInt']>>,
   feePool?: Maybe<Scalars['Bytes']>,
   feePool_not?: Maybe<Scalars['Bytes']>,
   feePool_in?: Maybe<Array<Scalars['Bytes']>>,
@@ -371,20 +512,16 @@ export type Masset_Filter = {
   tokenSymbol_not_starts_with?: Maybe<Scalars['String']>,
   tokenSymbol_ends_with?: Maybe<Scalars['String']>,
   tokenSymbol_not_ends_with?: Maybe<Scalars['String']>,
-  tranches?: Maybe<Array<Scalars['String']>>,
-  tranches_not?: Maybe<Array<Scalars['String']>>,
-  tranches_contains?: Maybe<Array<Scalars['String']>>,
-  tranches_not_contains?: Maybe<Array<Scalars['String']>>,
 };
 
 export enum Masset_OrderBy {
   Id = 'id',
   Basket = 'basket',
-  RedemptionFee = 'redemptionFee',
+  FeeRate = 'feeRate',
   FeePool = 'feePool',
   Token = 'token',
   TokenSymbol = 'tokenSymbol',
-  Tranches = 'tranches'
+  SavingsContracts = 'savingsContracts'
 }
 
 export enum OrderDirection {
@@ -399,16 +536,18 @@ export type Query = {
   bassets: Array<Basset>,
   basket?: Maybe<Basket>,
   baskets: Array<Basket>,
-  trancheReward?: Maybe<TrancheReward>,
-  trancheRewards: Array<TrancheReward>,
-  tranche?: Maybe<Tranche>,
-  tranches: Array<Tranche>,
   masset?: Maybe<Masset>,
   massets: Array<Masset>,
   account?: Maybe<Account>,
   accounts: Array<Account>,
   accountBalance?: Maybe<AccountBalance>,
   accountBalances: Array<AccountBalance>,
+  creditBalance?: Maybe<CreditBalance>,
+  creditBalances: Array<CreditBalance>,
+  savingsContract?: Maybe<SavingsContract>,
+  savingsContracts: Array<SavingsContract>,
+  exchangeRate?: Maybe<ExchangeRate>,
+  exchangeRates: Array<ExchangeRate>,
 };
 
 
@@ -460,38 +599,6 @@ export type QueryBasketsArgs = {
 };
 
 
-export type QueryTrancheRewardArgs = {
-  id: Scalars['ID'],
-  block?: Maybe<Block_Height>
-};
-
-
-export type QueryTrancheRewardsArgs = {
-  skip?: Maybe<Scalars['Int']>,
-  first?: Maybe<Scalars['Int']>,
-  orderBy?: Maybe<TrancheReward_OrderBy>,
-  orderDirection?: Maybe<OrderDirection>,
-  where?: Maybe<TrancheReward_Filter>,
-  block?: Maybe<Block_Height>
-};
-
-
-export type QueryTrancheArgs = {
-  id: Scalars['ID'],
-  block?: Maybe<Block_Height>
-};
-
-
-export type QueryTranchesArgs = {
-  skip?: Maybe<Scalars['Int']>,
-  first?: Maybe<Scalars['Int']>,
-  orderBy?: Maybe<Tranche_OrderBy>,
-  orderDirection?: Maybe<OrderDirection>,
-  where?: Maybe<Tranche_Filter>,
-  block?: Maybe<Block_Height>
-};
-
-
 export type QueryMassetArgs = {
   id: Scalars['ID'],
   block?: Maybe<Block_Height>
@@ -539,6 +646,147 @@ export type QueryAccountBalancesArgs = {
   block?: Maybe<Block_Height>
 };
 
+
+export type QueryCreditBalanceArgs = {
+  id: Scalars['ID'],
+  block?: Maybe<Block_Height>
+};
+
+
+export type QueryCreditBalancesArgs = {
+  skip?: Maybe<Scalars['Int']>,
+  first?: Maybe<Scalars['Int']>,
+  orderBy?: Maybe<CreditBalance_OrderBy>,
+  orderDirection?: Maybe<OrderDirection>,
+  where?: Maybe<CreditBalance_Filter>,
+  block?: Maybe<Block_Height>
+};
+
+
+export type QuerySavingsContractArgs = {
+  id: Scalars['ID'],
+  block?: Maybe<Block_Height>
+};
+
+
+export type QuerySavingsContractsArgs = {
+  skip?: Maybe<Scalars['Int']>,
+  first?: Maybe<Scalars['Int']>,
+  orderBy?: Maybe<SavingsContract_OrderBy>,
+  orderDirection?: Maybe<OrderDirection>,
+  where?: Maybe<SavingsContract_Filter>,
+  block?: Maybe<Block_Height>
+};
+
+
+export type QueryExchangeRateArgs = {
+  id: Scalars['ID'],
+  block?: Maybe<Block_Height>
+};
+
+
+export type QueryExchangeRatesArgs = {
+  skip?: Maybe<Scalars['Int']>,
+  first?: Maybe<Scalars['Int']>,
+  orderBy?: Maybe<ExchangeRate_OrderBy>,
+  orderDirection?: Maybe<OrderDirection>,
+  where?: Maybe<ExchangeRate_Filter>,
+  block?: Maybe<Block_Height>
+};
+
+export type SavingsContract = {
+  id: Scalars['ID'],
+  masset: Masset,
+  totalSavings: Scalars['BigDecimal'],
+  totalCredits: Scalars['BigDecimal'],
+  exchangeRates: Array<ExchangeRate>,
+  savingsRate: Scalars['BigDecimal'],
+  creditBalances: Array<CreditBalance>,
+  automationEnabled: Scalars['Boolean'],
+};
+
+
+export type SavingsContractExchangeRatesArgs = {
+  skip?: Maybe<Scalars['Int']>,
+  first?: Maybe<Scalars['Int']>,
+  orderBy?: Maybe<ExchangeRate_OrderBy>,
+  orderDirection?: Maybe<OrderDirection>,
+  where?: Maybe<ExchangeRate_Filter>
+};
+
+
+export type SavingsContractCreditBalancesArgs = {
+  skip?: Maybe<Scalars['Int']>,
+  first?: Maybe<Scalars['Int']>,
+  orderBy?: Maybe<CreditBalance_OrderBy>,
+  orderDirection?: Maybe<OrderDirection>,
+  where?: Maybe<CreditBalance_Filter>
+};
+
+export type SavingsContract_Filter = {
+  id?: Maybe<Scalars['ID']>,
+  id_not?: Maybe<Scalars['ID']>,
+  id_gt?: Maybe<Scalars['ID']>,
+  id_lt?: Maybe<Scalars['ID']>,
+  id_gte?: Maybe<Scalars['ID']>,
+  id_lte?: Maybe<Scalars['ID']>,
+  id_in?: Maybe<Array<Scalars['ID']>>,
+  id_not_in?: Maybe<Array<Scalars['ID']>>,
+  masset?: Maybe<Scalars['String']>,
+  masset_not?: Maybe<Scalars['String']>,
+  masset_gt?: Maybe<Scalars['String']>,
+  masset_lt?: Maybe<Scalars['String']>,
+  masset_gte?: Maybe<Scalars['String']>,
+  masset_lte?: Maybe<Scalars['String']>,
+  masset_in?: Maybe<Array<Scalars['String']>>,
+  masset_not_in?: Maybe<Array<Scalars['String']>>,
+  masset_contains?: Maybe<Scalars['String']>,
+  masset_not_contains?: Maybe<Scalars['String']>,
+  masset_starts_with?: Maybe<Scalars['String']>,
+  masset_not_starts_with?: Maybe<Scalars['String']>,
+  masset_ends_with?: Maybe<Scalars['String']>,
+  masset_not_ends_with?: Maybe<Scalars['String']>,
+  totalSavings?: Maybe<Scalars['BigDecimal']>,
+  totalSavings_not?: Maybe<Scalars['BigDecimal']>,
+  totalSavings_gt?: Maybe<Scalars['BigDecimal']>,
+  totalSavings_lt?: Maybe<Scalars['BigDecimal']>,
+  totalSavings_gte?: Maybe<Scalars['BigDecimal']>,
+  totalSavings_lte?: Maybe<Scalars['BigDecimal']>,
+  totalSavings_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  totalSavings_not_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  totalCredits?: Maybe<Scalars['BigDecimal']>,
+  totalCredits_not?: Maybe<Scalars['BigDecimal']>,
+  totalCredits_gt?: Maybe<Scalars['BigDecimal']>,
+  totalCredits_lt?: Maybe<Scalars['BigDecimal']>,
+  totalCredits_gte?: Maybe<Scalars['BigDecimal']>,
+  totalCredits_lte?: Maybe<Scalars['BigDecimal']>,
+  totalCredits_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  totalCredits_not_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  savingsRate?: Maybe<Scalars['BigDecimal']>,
+  savingsRate_not?: Maybe<Scalars['BigDecimal']>,
+  savingsRate_gt?: Maybe<Scalars['BigDecimal']>,
+  savingsRate_lt?: Maybe<Scalars['BigDecimal']>,
+  savingsRate_gte?: Maybe<Scalars['BigDecimal']>,
+  savingsRate_lte?: Maybe<Scalars['BigDecimal']>,
+  savingsRate_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  savingsRate_not_in?: Maybe<Array<Scalars['BigDecimal']>>,
+  automationEnabled?: Maybe<Scalars['Boolean']>,
+  automationEnabled_not?: Maybe<Scalars['Boolean']>,
+  automationEnabled_in?: Maybe<Array<Scalars['Boolean']>>,
+  automationEnabled_not_in?: Maybe<Array<Scalars['Boolean']>>,
+};
+
+export enum SavingsContract_OrderBy {
+  Id = 'id',
+  Masset = 'masset',
+  TotalSavings = 'totalSavings',
+  TotalCredits = 'totalCredits',
+  ExchangeRates = 'exchangeRates',
+  SavingsRate = 'savingsRate',
+  CreditBalances = 'creditBalances',
+  AutomationEnabled = 'automationEnabled'
+}
+
 export type Subscription = {
   token?: Maybe<Token>,
   tokens: Array<Token>,
@@ -546,16 +794,18 @@ export type Subscription = {
   bassets: Array<Basset>,
   basket?: Maybe<Basket>,
   baskets: Array<Basket>,
-  trancheReward?: Maybe<TrancheReward>,
-  trancheRewards: Array<TrancheReward>,
-  tranche?: Maybe<Tranche>,
-  tranches: Array<Tranche>,
   masset?: Maybe<Masset>,
   massets: Array<Masset>,
   account?: Maybe<Account>,
   accounts: Array<Account>,
   accountBalance?: Maybe<AccountBalance>,
   accountBalances: Array<AccountBalance>,
+  creditBalance?: Maybe<CreditBalance>,
+  creditBalances: Array<CreditBalance>,
+  savingsContract?: Maybe<SavingsContract>,
+  savingsContracts: Array<SavingsContract>,
+  exchangeRate?: Maybe<ExchangeRate>,
+  exchangeRates: Array<ExchangeRate>,
 };
 
 
@@ -607,38 +857,6 @@ export type SubscriptionBasketsArgs = {
 };
 
 
-export type SubscriptionTrancheRewardArgs = {
-  id: Scalars['ID'],
-  block?: Maybe<Block_Height>
-};
-
-
-export type SubscriptionTrancheRewardsArgs = {
-  skip?: Maybe<Scalars['Int']>,
-  first?: Maybe<Scalars['Int']>,
-  orderBy?: Maybe<TrancheReward_OrderBy>,
-  orderDirection?: Maybe<OrderDirection>,
-  where?: Maybe<TrancheReward_Filter>,
-  block?: Maybe<Block_Height>
-};
-
-
-export type SubscriptionTrancheArgs = {
-  id: Scalars['ID'],
-  block?: Maybe<Block_Height>
-};
-
-
-export type SubscriptionTranchesArgs = {
-  skip?: Maybe<Scalars['Int']>,
-  first?: Maybe<Scalars['Int']>,
-  orderBy?: Maybe<Tranche_OrderBy>,
-  orderDirection?: Maybe<OrderDirection>,
-  where?: Maybe<Tranche_Filter>,
-  block?: Maybe<Block_Height>
-};
-
-
 export type SubscriptionMassetArgs = {
   id: Scalars['ID'],
   block?: Maybe<Block_Height>
@@ -683,6 +901,54 @@ export type SubscriptionAccountBalancesArgs = {
   orderBy?: Maybe<AccountBalance_OrderBy>,
   orderDirection?: Maybe<OrderDirection>,
   where?: Maybe<AccountBalance_Filter>,
+  block?: Maybe<Block_Height>
+};
+
+
+export type SubscriptionCreditBalanceArgs = {
+  id: Scalars['ID'],
+  block?: Maybe<Block_Height>
+};
+
+
+export type SubscriptionCreditBalancesArgs = {
+  skip?: Maybe<Scalars['Int']>,
+  first?: Maybe<Scalars['Int']>,
+  orderBy?: Maybe<CreditBalance_OrderBy>,
+  orderDirection?: Maybe<OrderDirection>,
+  where?: Maybe<CreditBalance_Filter>,
+  block?: Maybe<Block_Height>
+};
+
+
+export type SubscriptionSavingsContractArgs = {
+  id: Scalars['ID'],
+  block?: Maybe<Block_Height>
+};
+
+
+export type SubscriptionSavingsContractsArgs = {
+  skip?: Maybe<Scalars['Int']>,
+  first?: Maybe<Scalars['Int']>,
+  orderBy?: Maybe<SavingsContract_OrderBy>,
+  orderDirection?: Maybe<OrderDirection>,
+  where?: Maybe<SavingsContract_Filter>,
+  block?: Maybe<Block_Height>
+};
+
+
+export type SubscriptionExchangeRateArgs = {
+  id: Scalars['ID'],
+  block?: Maybe<Block_Height>
+};
+
+
+export type SubscriptionExchangeRatesArgs = {
+  skip?: Maybe<Scalars['Int']>,
+  first?: Maybe<Scalars['Int']>,
+  orderBy?: Maybe<ExchangeRate_OrderBy>,
+  orderDirection?: Maybe<OrderDirection>,
+  where?: Maybe<ExchangeRate_Filter>,
   block?: Maybe<Block_Height>
 };
 
@@ -795,195 +1061,12 @@ export enum Token_OrderBy {
   TotalBurned = 'totalBurned'
 }
 
-export type Tranche = {
-  id: Scalars['ID'],
-  claimEndTime: Scalars['BigInt'],
-  endTime: Scalars['BigInt'],
-  masset: Masset,
-  rewardees: Array<Scalars['Bytes']>,
-  rewards: Array<TrancheReward>,
-  startTime: Scalars['BigInt'],
-  totalMintVolume: Scalars['BigInt'],
-  totalRewardUnits: Scalars['BigInt'],
-  trancheNumber: Scalars['BigInt'],
-  unclaimedRewardUnits: Scalars['BigInt'],
-  unlockTime: Scalars['BigInt'],
-};
-
-
-export type TrancheRewardsArgs = {
-  skip?: Maybe<Scalars['Int']>,
-  first?: Maybe<Scalars['Int']>,
-  orderBy?: Maybe<TrancheReward_OrderBy>,
-  orderDirection?: Maybe<OrderDirection>,
-  where?: Maybe<TrancheReward_Filter>
-};
-
-export type Tranche_Filter = {
-  id?: Maybe<Scalars['ID']>,
-  id_not?: Maybe<Scalars['ID']>,
-  id_gt?: Maybe<Scalars['ID']>,
-  id_lt?: Maybe<Scalars['ID']>,
-  id_gte?: Maybe<Scalars['ID']>,
-  id_lte?: Maybe<Scalars['ID']>,
-  id_in?: Maybe<Array<Scalars['ID']>>,
-  id_not_in?: Maybe<Array<Scalars['ID']>>,
-  claimEndTime?: Maybe<Scalars['BigInt']>,
-  claimEndTime_not?: Maybe<Scalars['BigInt']>,
-  claimEndTime_gt?: Maybe<Scalars['BigInt']>,
-  claimEndTime_lt?: Maybe<Scalars['BigInt']>,
-  claimEndTime_gte?: Maybe<Scalars['BigInt']>,
-  claimEndTime_lte?: Maybe<Scalars['BigInt']>,
-  claimEndTime_in?: Maybe<Array<Scalars['BigInt']>>,
-  claimEndTime_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  endTime?: Maybe<Scalars['BigInt']>,
-  endTime_not?: Maybe<Scalars['BigInt']>,
-  endTime_gt?: Maybe<Scalars['BigInt']>,
-  endTime_lt?: Maybe<Scalars['BigInt']>,
-  endTime_gte?: Maybe<Scalars['BigInt']>,
-  endTime_lte?: Maybe<Scalars['BigInt']>,
-  endTime_in?: Maybe<Array<Scalars['BigInt']>>,
-  endTime_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  rewardees?: Maybe<Array<Scalars['Bytes']>>,
-  rewardees_not?: Maybe<Array<Scalars['Bytes']>>,
-  rewardees_contains?: Maybe<Array<Scalars['Bytes']>>,
-  rewardees_not_contains?: Maybe<Array<Scalars['Bytes']>>,
-  rewards?: Maybe<Array<Scalars['String']>>,
-  rewards_not?: Maybe<Array<Scalars['String']>>,
-  rewards_contains?: Maybe<Array<Scalars['String']>>,
-  rewards_not_contains?: Maybe<Array<Scalars['String']>>,
-  startTime?: Maybe<Scalars['BigInt']>,
-  startTime_not?: Maybe<Scalars['BigInt']>,
-  startTime_gt?: Maybe<Scalars['BigInt']>,
-  startTime_lt?: Maybe<Scalars['BigInt']>,
-  startTime_gte?: Maybe<Scalars['BigInt']>,
-  startTime_lte?: Maybe<Scalars['BigInt']>,
-  startTime_in?: Maybe<Array<Scalars['BigInt']>>,
-  startTime_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  totalMintVolume?: Maybe<Scalars['BigInt']>,
-  totalMintVolume_not?: Maybe<Scalars['BigInt']>,
-  totalMintVolume_gt?: Maybe<Scalars['BigInt']>,
-  totalMintVolume_lt?: Maybe<Scalars['BigInt']>,
-  totalMintVolume_gte?: Maybe<Scalars['BigInt']>,
-  totalMintVolume_lte?: Maybe<Scalars['BigInt']>,
-  totalMintVolume_in?: Maybe<Array<Scalars['BigInt']>>,
-  totalMintVolume_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  totalRewardUnits?: Maybe<Scalars['BigInt']>,
-  totalRewardUnits_not?: Maybe<Scalars['BigInt']>,
-  totalRewardUnits_gt?: Maybe<Scalars['BigInt']>,
-  totalRewardUnits_lt?: Maybe<Scalars['BigInt']>,
-  totalRewardUnits_gte?: Maybe<Scalars['BigInt']>,
-  totalRewardUnits_lte?: Maybe<Scalars['BigInt']>,
-  totalRewardUnits_in?: Maybe<Array<Scalars['BigInt']>>,
-  totalRewardUnits_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  trancheNumber?: Maybe<Scalars['BigInt']>,
-  trancheNumber_not?: Maybe<Scalars['BigInt']>,
-  trancheNumber_gt?: Maybe<Scalars['BigInt']>,
-  trancheNumber_lt?: Maybe<Scalars['BigInt']>,
-  trancheNumber_gte?: Maybe<Scalars['BigInt']>,
-  trancheNumber_lte?: Maybe<Scalars['BigInt']>,
-  trancheNumber_in?: Maybe<Array<Scalars['BigInt']>>,
-  trancheNumber_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  unclaimedRewardUnits?: Maybe<Scalars['BigInt']>,
-  unclaimedRewardUnits_not?: Maybe<Scalars['BigInt']>,
-  unclaimedRewardUnits_gt?: Maybe<Scalars['BigInt']>,
-  unclaimedRewardUnits_lt?: Maybe<Scalars['BigInt']>,
-  unclaimedRewardUnits_gte?: Maybe<Scalars['BigInt']>,
-  unclaimedRewardUnits_lte?: Maybe<Scalars['BigInt']>,
-  unclaimedRewardUnits_in?: Maybe<Array<Scalars['BigInt']>>,
-  unclaimedRewardUnits_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  unlockTime?: Maybe<Scalars['BigInt']>,
-  unlockTime_not?: Maybe<Scalars['BigInt']>,
-  unlockTime_gt?: Maybe<Scalars['BigInt']>,
-  unlockTime_lt?: Maybe<Scalars['BigInt']>,
-  unlockTime_gte?: Maybe<Scalars['BigInt']>,
-  unlockTime_lte?: Maybe<Scalars['BigInt']>,
-  unlockTime_in?: Maybe<Array<Scalars['BigInt']>>,
-  unlockTime_not_in?: Maybe<Array<Scalars['BigInt']>>,
-};
-
-export enum Tranche_OrderBy {
-  Id = 'id',
-  ClaimEndTime = 'claimEndTime',
-  EndTime = 'endTime',
-  Masset = 'masset',
-  Rewardees = 'rewardees',
-  Rewards = 'rewards',
-  StartTime = 'startTime',
-  TotalMintVolume = 'totalMintVolume',
-  TotalRewardUnits = 'totalRewardUnits',
-  TrancheNumber = 'trancheNumber',
-  UnclaimedRewardUnits = 'unclaimedRewardUnits',
-  UnlockTime = 'unlockTime'
-}
-
-export type TrancheReward = {
-  id: Scalars['ID'],
-  allocation: Scalars['BigInt'],
-  claimed: Scalars['Boolean'],
-  mintVolume: Scalars['BigInt'],
-  redeemed: Scalars['Boolean'],
-  rewardee: Scalars['Bytes'],
-  tranche: Tranche,
-};
-
-export type TrancheReward_Filter = {
-  id?: Maybe<Scalars['ID']>,
-  id_not?: Maybe<Scalars['ID']>,
-  id_gt?: Maybe<Scalars['ID']>,
-  id_lt?: Maybe<Scalars['ID']>,
-  id_gte?: Maybe<Scalars['ID']>,
-  id_lte?: Maybe<Scalars['ID']>,
-  id_in?: Maybe<Array<Scalars['ID']>>,
-  id_not_in?: Maybe<Array<Scalars['ID']>>,
-  allocation?: Maybe<Scalars['BigInt']>,
-  allocation_not?: Maybe<Scalars['BigInt']>,
-  allocation_gt?: Maybe<Scalars['BigInt']>,
-  allocation_lt?: Maybe<Scalars['BigInt']>,
-  allocation_gte?: Maybe<Scalars['BigInt']>,
-  allocation_lte?: Maybe<Scalars['BigInt']>,
-  allocation_in?: Maybe<Array<Scalars['BigInt']>>,
-  allocation_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  claimed?: Maybe<Scalars['Boolean']>,
-  claimed_not?: Maybe<Scalars['Boolean']>,
-  claimed_in?: Maybe<Array<Scalars['Boolean']>>,
-  claimed_not_in?: Maybe<Array<Scalars['Boolean']>>,
-  mintVolume?: Maybe<Scalars['BigInt']>,
-  mintVolume_not?: Maybe<Scalars['BigInt']>,
-  mintVolume_gt?: Maybe<Scalars['BigInt']>,
-  mintVolume_lt?: Maybe<Scalars['BigInt']>,
-  mintVolume_gte?: Maybe<Scalars['BigInt']>,
-  mintVolume_lte?: Maybe<Scalars['BigInt']>,
-  mintVolume_in?: Maybe<Array<Scalars['BigInt']>>,
-  mintVolume_not_in?: Maybe<Array<Scalars['BigInt']>>,
-  redeemed?: Maybe<Scalars['Boolean']>,
-  redeemed_not?: Maybe<Scalars['Boolean']>,
-  redeemed_in?: Maybe<Array<Scalars['Boolean']>>,
-  redeemed_not_in?: Maybe<Array<Scalars['Boolean']>>,
-  rewardee?: Maybe<Scalars['Bytes']>,
-  rewardee_not?: Maybe<Scalars['Bytes']>,
-  rewardee_in?: Maybe<Array<Scalars['Bytes']>>,
-  rewardee_not_in?: Maybe<Array<Scalars['Bytes']>>,
-  rewardee_contains?: Maybe<Scalars['Bytes']>,
-  rewardee_not_contains?: Maybe<Scalars['Bytes']>,
-};
-
-export enum TrancheReward_OrderBy {
-  Id = 'id',
-  Allocation = 'allocation',
-  Claimed = 'claimed',
-  MintVolume = 'mintVolume',
-  Redeemed = 'redeemed',
-  Rewardee = 'rewardee',
-  Tranche = 'tranche'
-}
-
 export type TokenDetailsFragment = Pick<Token, 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
 
 export type CoreTokensQueryVariables = {};
 
 
-export type CoreTokensQuery = { mta: Array<TokenDetailsFragment>, mUSD: Array<TokenDetailsFragment>, mGLD: Array<TokenDetailsFragment> };
+export type CoreTokensQuery = { mUSD: Array<TokenDetailsFragment> };
 
 export type MassetQueryVariables = {
   id: Scalars['ID']
@@ -991,11 +1074,14 @@ export type MassetQueryVariables = {
 
 
 export type MassetQuery = { masset: Maybe<(
-    Pick<Masset, 'id'>
-    & { token: TokenDetailsFragment, basket: { bassets: Array<(
-        Pick<Basset, 'id'>
+    Pick<Masset, 'id' | 'feeRate'>
+    & { token: TokenDetailsFragment, basket: (
+      Pick<Basket, 'failed' | 'collateralisationRatio'>
+      & { bassets: Array<(
+        Pick<Basset, 'id' | 'vaultBalance' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'targetWeight'>
         & { token: TokenDetailsFragment }
-      )> } }
+      )> }
+    ) }
   )> };
 
 export type Erc20TokensQueryVariables = {
@@ -1034,13 +1120,7 @@ export const TokenDetailsFragmentDoc = gql`
     `;
 export const CoreTokensDocument = gql`
     query CoreTokens {
-  mta: tokens(where: {symbol: "MTA"}) {
-    ...TokenDetails
-  }
   mUSD: tokens(where: {symbol: "mUSD"}) {
-    ...TokenDetails
-  }
-  mGLD: tokens(where: {symbol: "mGLD"}) {
     ...TokenDetails
   }
 }
@@ -1077,9 +1157,17 @@ export const MassetDocument = gql`
     token {
       ...TokenDetails
     }
+    feeRate
     basket {
+      failed
+      collateralisationRatio
       bassets {
         id
+        vaultBalance
+        isTransferFeeCharged
+        ratio
+        status
+        targetWeight
         token {
           ...TokenDetails
         }

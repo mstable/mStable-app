@@ -1,12 +1,14 @@
-import { useEffect, useRef, useReducer, Reducer } from 'react';
+import { Reducer, useEffect, useReducer, useRef } from 'react';
 import { useWallet } from 'use-wallet';
 import { useSignerContext } from '../context/SignerProvider';
-// import { ERC20DetailedFactory } from '../typechain/ERC20DetailedFactory';
+import { ERC20DetailedFactory } from '../typechain/ERC20DetailedFactory';
 import {
   useSubscribedTokens,
   useTokensDispatch,
 } from '../context/TokensProvider';
 import { ERC20Detailed } from '../typechain/ERC20Detailed.d';
+import { useKnownAddress } from '../context/KnownAddressProvider';
+import { ContractNames } from '../types';
 
 interface State {
   [tokenAddress: string]: ERC20Detailed;
@@ -42,8 +44,9 @@ const reducer: Reducer<State, Action> = (state, action) => {
  * block, and keeping contract instances in state.
  */
 export const TokenBalancesUpdater = (): null => {
-  const { reset, updateBalances } = useTokensDispatch();
+  const { reset, updateBalances, updateAllowance } = useTokensDispatch();
   const signer = useSignerContext();
+  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
 
   const [contracts, dispatch] = useReducer(reducer, initialState);
 
@@ -65,27 +68,42 @@ export const TokenBalancesUpdater = (): null => {
   useEffect(() => {
     if (!signer || missing.current.length === 0) return;
 
-    // const instances = missing.current.reduce(
-    //   (_contracts, token) => ({
-    //     ..._contracts,
-    //     [token]: ERC20DetailedFactory.connect(token, signer),
-    //   }),
-    //   {},
-    // );
-    // TODO re-enable when fake data is removed
-    const instances = {};
+    const instances = missing.current.reduce(
+      (_contracts, token) => ({
+        ..._contracts,
+        [token]: ERC20DetailedFactory.connect(token, signer),
+      }),
+      {},
+    );
 
     dispatch({ type: Actions.SetContracts, payload: instances });
   }, [signer, missing]);
 
-  // Update subscribed balances on each block.
+  // Update subscribed tokens on each block.
   useEffect(() => {
     if (account && blockNumberRef.current !== blockNumber) {
+      // Update balances
       const balancePromises = subscribedTokens
         .filter(token => contracts[token])
         .map(async token => ({
           [token]: await contracts[token].balanceOf(account),
         }));
+
+      // Update mUSD allowances
+      if (mUSDAddress) {
+        const allowancePromises = subscribedTokens
+          .filter(token => contracts[token] && token !== mUSDAddress)
+          .map(async token => ({
+            [token]: await contracts[token].allowance(account, mUSDAddress),
+          }));
+
+        Promise.all(allowancePromises).then(result => {
+          updateAllowance(
+            mUSDAddress,
+            result.reduce((acc, obj) => ({ ...acc, ...obj }), {}),
+          );
+        });
+      }
 
       Promise.all(balancePromises).then(result => {
         updateBalances(result.reduce((acc, obj) => ({ ...acc, ...obj }), {}));
@@ -98,6 +116,8 @@ export const TokenBalancesUpdater = (): null => {
     blockNumberRef,
     contracts,
     subscribedTokens,
+    mUSDAddress,
+    updateAllowance,
     updateBalances,
   ]);
 

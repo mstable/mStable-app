@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useWallet } from 'use-wallet';
 import styled from 'styled-components';
 import { useExpandWallet } from '../../context/UIProvider';
@@ -39,9 +39,15 @@ const Account = styled.div`
 `;
 
 export const WalletButton: FC<{}> = () => {
-  const { connected, account } = useWallet<InjectedEthereum>();
+  const { connected, account, activate } = useWallet<InjectedEthereum>();
   const truncatedAddress = useTruncatedAddress(account);
   const expandWallet = useExpandWallet();
+
+  // TODO remove this; just for quick testing
+  useEffect(() => {
+    activate('injected');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container onClick={expandWallet}>

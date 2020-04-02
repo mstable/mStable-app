@@ -31,7 +31,7 @@
     "build": "react-scripts build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml",
-    "codegen:typechain": "yarn typechain --target ethers --outDir src/typechain './lib/mStable-subgraph/lib/mStable-contracts/build/*.json' && echo \"// @ts-nocheck\\n$(cat src/typechain/MiniMeTokenFactoryFactory.ts)\" > src/typechain/MiniMeTokenFactoryFactory.ts",
+    "codegen:typechain": "yarn typechain --target ethers --outDir src/typechain './lib/mStable-subgraph/lib/mStable-contracts/build/contracts/*.json' && echo \"// @ts-nocheck\\n$(cat src/typechain/MiniMeTokenFactoryFactory.ts)\" > src/typechain/MiniMeTokenFactoryFactory.ts",
     "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "provision": "sh ./scripts/provision.sh",

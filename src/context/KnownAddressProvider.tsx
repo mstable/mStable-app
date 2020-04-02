@@ -31,10 +31,11 @@ interface Dispatch {
 type Context = [State, Dispatch];
 
 const initialState: State = {
-  [ContractNames.mGLD]: null,
+  // [ContractNames.mGLD]: null,
   [ContractNames.mUSD]: null,
+  [ContractNames.mUSDForgeValidator]: null,
   [ContractNames.mUSDSavings]: null,
-  [ContractNames.MTA]: null,
+  // [ContractNames.MTA]: null,
 };
 
 const context = createContext<Context>([initialState, {} as Dispatch]);

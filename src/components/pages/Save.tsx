@@ -10,7 +10,7 @@ import { TokenAmountInput } from '../forms/TokenAmountInput';
 import { Form, FormRow } from '../core/Form';
 import { useKnownAddress } from '../../context/KnownAddressProvider';
 import { ContractNames } from '../../types';
-// import { useTokenWithBalance } from '../../context/TokensProvider';
+import { useTokenWithBalance } from '../../context/TokensProvider';
 import { formatDecimal } from '../../web3/strings';
 import { Button } from '../core/Button';
 import { Size } from '../../theme';
@@ -29,18 +29,7 @@ enum Action {
 export const Save: FC<{}> = () => {
   // Tokens
   const mUSDAddress = useKnownAddress(ContractNames.mUSD);
-  // TODO remove fake data
-  // const mUSDToken = useTokenWithBalance(mUSDAddress);
-  const mUSDToken = {
-    symbol: 'mUSD',
-    address: '0x1',
-    id: '0x1',
-    totalSupply: new BigNumber('0'),
-    balance: new BigNumber('10000000000000'),
-    decimals: 18,
-  };
-
-  // TODO later: add mUSD savings contract
+  const mUSDToken = useTokenWithBalance(mUSDAddress);
   // const mUSDSavings = useMUSDSavings();
 
   const decimals = mUSDToken?.decimals;
@@ -144,6 +133,7 @@ export const Save: FC<{}> = () => {
       <FormRow>
         <TokenAmountInput
           error={error}
+          name="TODO"
           amountValue={amountDecimal}
           onChangeAmount={handleChangeAmount}
           onSetMax={handleSetMax}
