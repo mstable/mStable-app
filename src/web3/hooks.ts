@@ -79,7 +79,7 @@ export const useERC20Contract = (
 export const useForgeRewardsContract = (): IForgeRewards | null =>
   useContract(
     IForgeRewardsFactory,
-    process.env.REACT_APP_FORGE_REWARDS_ADDRESS,
+    '0x0000000000000000000000000000000000000000',
   );
 
 export const useMassetToken = (
