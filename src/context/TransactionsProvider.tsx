@@ -141,7 +141,10 @@ export const useAllTransactions = (): State => {
 
 export const useHasPendingTransactions = (): boolean => {
   const transactions = useAllTransactions();
-  return Object.values(transactions).filter(tx => !tx.receipt).length > 0;
+  return (
+    Object.values(transactions).filter(tx => !tx.receipt?.confirmations)
+      .length > 0
+  );
 };
 
 /**
