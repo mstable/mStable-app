@@ -57,7 +57,7 @@ export interface SendTxManifest<
   TFn extends keyof Instances[TIface]['functions']
 > {
   iface: Instances[TIface];
-  fn: Extract<keyof Instances[TIface]['functions'], TFn>;
+  fn: Extract<keyof Instances[TIface]['functions'], TFn> & string;
   args: Parameters<
     Extract<
       Instances[TIface]['functions'][TFn],
