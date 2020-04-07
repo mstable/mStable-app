@@ -1,8 +1,7 @@
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
-import { IForgeRewards } from './typechain/IForgeRewards.d';
+import { BigNumber } from "ethers/utils";
 import { IERC20 } from './typechain/IERC20.d';
 import { IMasset } from './typechain/IMasset.d';
-import { ISystok } from './typechain/ISystok.d';
 
 export interface Transaction {
   response: TransactionResponse;
@@ -21,27 +20,28 @@ export enum TransactionStatus {
 
 export enum MassetNames {
   mUSD = 'mUSD',
-  mGLD = 'mGLD',
+  // mGLD = 'mGLD',
 }
 
 export enum ContractNames {
   mUSD = 'mUSD',
-  mGLD = 'mGLD',
-  MTA = 'MTA',
+  mUSDForgeValidator = 'mUSDForgeValidator',
+  // mGLD = 'mGLD',
+  // MTA = 'MTA',
   mUSDSavings = 'mUSDSavings',
 }
 
 export enum Interfaces {
-  ForgeRewards,
+  // ForgeRewards,
   Masset,
-  Systok,
+  // Systok,
   ERC20,
 }
 
 export interface Instances {
-  [Interfaces.ForgeRewards]: IForgeRewards;
+  // [Interfaces.ForgeRewards]: IForgeRewards;
   [Interfaces.Masset]: IMasset;
-  [Interfaces.Systok]: ISystok;
+  // [Interfaces.Systok]: ISystok;
   [Interfaces.ERC20]: IERC20;
 }
 
@@ -57,7 +57,7 @@ export interface SendTxManifest<
   TFn extends keyof Instances[TIface]['functions']
 > {
   iface: Instances[TIface];
-  fn: Extract<keyof Instances[TIface]['functions'], TFn>;
+  fn: Extract<keyof Instances[TIface]['functions'], TFn> & string;
   args: Parameters<
     Extract<
       Instances[TIface]['functions'][TFn],
@@ -65,4 +65,21 @@ export interface SendTxManifest<
       (...args: any[]) => any
     >
   >;
+}
+
+export interface TokenDetails {
+  address: string | null;
+  decimals: number | null;
+  symbol: string | null;
+}
+
+export interface Amount {
+  simple: string | null;
+  exact: BigNumber | null;
+  formatted: string | null;
+}
+
+export interface TokenQuantity {
+  amount: Amount;
+  token: TokenDetails;
 }

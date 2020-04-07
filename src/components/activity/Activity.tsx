@@ -1,5 +1,10 @@
 import React, { FC } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
+import { useHasPendingTransactions } from '../../context/TransactionsProvider';
+
+interface Props {
+  hasPendingTxs: boolean;
+}
 
 const rotate = keyframes`
   from {
@@ -11,15 +16,24 @@ const rotate = keyframes`
   }
 `;
 
-const Container = styled.div`
-  background: ${props => props.theme.color.blue};
+const Container = styled.div<Props>`
+  background: ${props =>
+    props.hasPendingTxs ? props.theme.color.blue : 'transparent'};
   width: 16px;
   height: 16px;
-  animation: ${rotate} 1s linear infinite;
+  animation: ${props =>
+    props.hasPendingTxs
+      ? css`
+          ${rotate} 1s linear infinite
+        `
+      : 'none'};
 `;
 
 /**
  * Component to show app activity such as pending transactions.
  * @TODO design and content
  */
-export const Activity: FC<{}> = () => <Container />;
+export const Activity: FC<{}> = () => {
+  const hasPendingTxs = useHasPendingTransactions();
+  return <Container hasPendingTxs={hasPendingTxs} />;
+};

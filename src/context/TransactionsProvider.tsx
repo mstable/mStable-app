@@ -8,7 +8,9 @@ import React, {
   useContext,
 } from 'react';
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
+import { BigNumber } from 'ethers/utils';
 import { SendTxManifest, Transaction } from '../types';
+import { TransactionOverrides } from '../typechain/index.d';
 
 type State = Record<string, Transaction>;
 
@@ -141,7 +143,54 @@ export const useAllTransactions = (): State => {
 
 export const useHasPendingTransactions = (): boolean => {
   const transactions = useAllTransactions();
-  return Object.values(transactions).filter(tx => !tx.receipt).length > 0;
+  return (
+    Object.values(transactions).filter(tx => !tx.receipt?.confirmations)
+      .length > 0
+  );
+};
+
+const overrideProps = ['nonce', 'gasLimit', 'gasPrice', 'value', 'chainId'];
+
+export function calculateGasMargin(value: BigNumber): BigNumber {
+  const GAS_MARGIN = new BigNumber(1000);
+  const offset = value.mul(GAS_MARGIN).div(new BigNumber(10000));
+  return value.add(offset);
+}
+
+const isTransactionOverrides = (arg: unknown): boolean =>
+  arg != null &&
+  typeof arg === 'object' &&
+  overrideProps.some(prop => Object.hasOwnProperty.call(arg, prop));
+
+const addGasLimit = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  manifest: SendTxManifest<any, any>,
+): Promise<typeof manifest> => {
+  const { iface, fn, args } = manifest;
+  const last = args[args.length - 1];
+
+  if (
+    isTransactionOverrides(last) &&
+    !(last as TransactionOverrides).gasLimit
+  ) {
+    // Don't alter the manifest if the gas limit is already set
+    return manifest;
+  }
+
+  // Set the gas limit (with the calculated gas margin)
+  const gasLimit = await iface.estimate[fn](...args);
+  return {
+    ...manifest,
+    args: [...args, { gasLimit: calculateGasMargin(gasLimit) }],
+  };
+};
+
+const sendTransaction = async (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  manifest: SendTxManifest<any, any>,
+): Promise<TransactionResponse> => {
+  const { iface, fn, args } = await addGasLimit(manifest);
+  return iface[fn](...args);
 };
 
 /**
@@ -154,11 +203,11 @@ export const useSendTransaction =
     const [, { add }] = useTransactionsContext();
 
     return useCallback(
-      ({ iface, fn, args }) => {
-        iface[fn](...args).then((response: TransactionResponse) => {
+      manifest => {
+        sendTransaction(manifest).then(response => {
           const { hash } = response;
           if (!hash) throw new Error('Missing transaction hash');
-          add(hash, response, fn as string, args);
+          add(hash, response, manifest.fn as string, manifest.args);
         });
       },
       [add],

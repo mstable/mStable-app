@@ -1,15 +1,15 @@
 # import './fragments.graphql'
 
 query CoreTokens {
-    mta: tokens(where: { symbol: "MTA" }) {
-        ...TokenDetails
-    }
-    mUSD: tokens(where: { symbol: "mUSD" }) {
-        ...TokenDetails
-    }
-    mGLD: tokens(where: { symbol: "mGLD" }) {
-        ...TokenDetails
-    }
+  mUSD: tokens(where: { symbol: "mUSD" }) {
+    ...TokenDetails
+  }
+  #    mta: tokens(where: { symbol: "MTA" }) {
+  #        ...TokenDetails
+  #    }
+  #    mGLD: tokens(where: { symbol: "mGLD" }) {
+  #        ...TokenDetails
+  #    }
 }
 
 query Masset($id: ID!) {
@@ -18,9 +18,17 @@ query Masset($id: ID!) {
         token {
             ...TokenDetails
         }
+        feeRate
         basket {
+            failed
+            collateralisationRatio
             bassets {
                 id
+                vaultBalance
+                isTransferFeeCharged
+                ratio
+                status
+                targetWeight
                 token {
                     ...TokenDetails
                 }

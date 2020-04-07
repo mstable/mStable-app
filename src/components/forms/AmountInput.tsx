@@ -14,7 +14,8 @@ interface Props {
   error?: string;
   value: string | void;
   decimals: number | void;
-  onChange?(value: string): void;
+  name: string;
+  onChange?(name: string, simpleAmount: string | null): void;
   onSetMax?(): void;
   disabled?: boolean;
 }
@@ -49,6 +50,7 @@ const MaxButton = styled(Button)`
  * AmountInput component
  * Form input for selecting an amount denominated in given decimals.
  *
+ * @param name @TODO
  * @param error Error message, e.g. 'Amount too low'
  * @param disabled Flag for disabling the input
  * @param decimals Given amount decimals, e.g. `18`
@@ -56,6 +58,7 @@ const MaxButton = styled(Button)`
  * @param onSetMax Optional callback called on setting the max value
  */
 export const AmountInput: FC<Props> = ({
+  name,
   error,
   disabled = false,
   decimals,
@@ -80,9 +83,9 @@ export const AmountInput: FC<Props> = ({
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
-      onChange?.(event.target.value);
+      onChange?.(name, event.target.value || null);
     },
-    [onChange],
+    [onChange, name],
   );
 
   const handleMax = useCallback(() => {

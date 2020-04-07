@@ -1,7 +1,8 @@
+import { ButtonHTMLAttributes } from 'react';
 import styled from 'styled-components';
 import { Size, mapSizeToFontSize } from '../../theme';
 
-interface Props {
+interface Props extends ButtonHTMLAttributes<unknown> {
   size: Size;
   inverted?: boolean;
 }
@@ -22,7 +23,8 @@ export const Button = styled.button<Props>`
     props.inverted
       ? props.theme.color.background
       : props.theme.color.foreground};
-  cursor: pointer;
+  opacity: ${props => (props.disabled ? '0.5' : '1')};
+  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   font-weight: bold;
   font-size: ${props => mapSizeToFontSize(props.size)};
   outline: none;

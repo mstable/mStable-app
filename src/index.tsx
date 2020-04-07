@@ -28,6 +28,7 @@ const GlobalStyle = createGlobalStyle`
   }
   body, button, input {
     font-family: 'Poppins', sans-serif;
+    color: ${props => props.theme.color.foreground};
   }
   #root {
     display: flex;

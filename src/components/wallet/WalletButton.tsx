@@ -43,6 +43,12 @@ export const WalletButton: FC<{}> = () => {
   const truncatedAddress = useTruncatedAddress(account);
   const expandWallet = useExpandWallet();
 
+  // TODO remove this; just for quick testing
+  // useEffect(() => {
+  //   activate('injected');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
   return (
     <Container onClick={expandWallet}>
       {connected ? (

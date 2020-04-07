@@ -14,15 +14,15 @@ export const Providers: FC<{}> = ({ children }) => (
   <ApolloProvider>
     <UseWalletProvider chainId={CHAIN_ID} connectors={AVAILABLE_CONNECTORS}>
       <SignerProvider>
-        <TokensProvider>
-          <KnownAddressProvider>
+        <KnownAddressProvider>
+          <TokensProvider>
             <TransactionsProvider>
               <UIProvider>
                 <ThemeProvider theme={theme}>{children}</ThemeProvider>
               </UIProvider>
             </TransactionsProvider>
-          </KnownAddressProvider>
-        </TokensProvider>
+          </TokensProvider>
+        </KnownAddressProvider>
       </SignerProvider>
     </UseWalletProvider>
   </ApolloProvider>

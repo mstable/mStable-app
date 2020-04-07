@@ -15,16 +15,22 @@ import {
 
 type TokenAddress = string;
 
+interface Allowance {
+  [spender: string]: BigNumber;
+}
+
 interface State {
   [token: string]: {
     subscribed: boolean;
     balance?: BigNumber;
+    allowance: Allowance;
   };
 }
 
 interface Dispatch {
   subscribe(token: TokenAddress): void;
   reset(): void;
+  updateAllowance(token: TokenAddress, allowance: Allowance): void;
   updateBalances(balances: Record<TokenAddress, BigNumber>): void;
   unsubscribe(token: TokenAddress): void;
 }
@@ -34,11 +40,16 @@ enum Actions {
   Unsubscribe,
   Reset,
   UpdateBalances,
+  UpdateAllowance,
 }
 
 type Action =
   | { type: Actions.Subscribe; payload: TokenAddress }
   | { type: Actions.Unsubscribe; payload: TokenAddress }
+  | {
+      type: Actions.UpdateAllowance;
+      payload: { token: TokenAddress; allowance: Allowance };
+    }
   | { type: Actions.Reset }
   | {
       type: Actions.UpdateBalances;
@@ -54,7 +65,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
       const token = action.payload;
       return {
         ...state,
-        [token]: { ...state[token], subscribed: true },
+        [token]: { ...state[token], subscribed: true, allowance: {} },
       };
     }
     case Actions.Unsubscribe: {
@@ -78,6 +89,19 @@ const reducer: Reducer<State, Action> = (state, action) => {
         }),
         state,
       );
+    }
+    case Actions.UpdateAllowance: {
+      const { token, allowance } = action.payload;
+      return {
+        ...state,
+        [token]: {
+          ...state[token],
+          allowance: {
+            ...state[token].allowance,
+            ...allowance,
+          },
+        },
+      };
     }
     default:
       throw new Error('Unexpected action type');
@@ -114,6 +138,16 @@ export const TokensProvider: FC<{}> = ({ children }) => {
     [dispatch],
   );
 
+  const updateAllowance = useCallback<Dispatch['updateAllowance']>(
+    (token, allowance) => {
+      dispatch({
+        type: Actions.UpdateAllowance,
+        payload: { token, allowance },
+      });
+    },
+    [dispatch],
+  );
+
   const reset = useCallback<Dispatch['reset']>(() => {
     dispatch({ type: Actions.Reset });
   }, [dispatch]);
@@ -126,11 +160,12 @@ export const TokensProvider: FC<{}> = ({ children }) => {
           {
             subscribe,
             reset,
+            updateAllowance,
             updateBalances,
             unsubscribe,
           },
         ],
-        [state, subscribe, unsubscribe, updateBalances, reset],
+        [state, subscribe, unsubscribe, updateAllowance, updateBalances, reset],
       )}
     >
       {children}
@@ -171,5 +206,8 @@ export const useTokenWithBalance = (
     variables: { addresses: [token] },
   });
   const tokenFromData = query.data?.tokens?.[0];
-  return { ...tokenFromState, ...tokenFromData };
+  return useMemo(() => ({ ...tokenFromState, ...tokenFromData }), [
+    tokenFromState,
+    tokenFromData,
+  ]);
 };

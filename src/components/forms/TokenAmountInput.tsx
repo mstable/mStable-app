@@ -4,28 +4,38 @@ import { AmountInput } from './AmountInput';
 import { TokenInput } from './TokenInput';
 import {
   TokenDetailsFragment,
-  // useErc20TokensQuery,
+  useErc20TokensQuery,
 } from '../../graphql/generated';
+import { Size } from '../../theme';
+import { Button } from '../core/Button';
 
 interface Props {
+  name: string;
   error?: string;
   tokenValue: string | null;
   amountValue: string | void;
   tokenAddresses: string[];
-  onChangeAmount?(amount: string): void;
-  onChangeToken?(token: string): void;
+  needsUnlock?: boolean;
+  onUnlock?(): void;
+  onChangeAmount?(name: string, simpleAmount: string | null): void;
+  onChangeToken?(name: string, token: TokenDetailsFragment): void;
   onSetMax?(): void;
 }
 
 const Container = styled.div``;
 
+const UnlockButton = styled(Button)`
+  background: transparent;
+  height: 36px;
+`;
+
 const InputContainer = styled.div`
   display: flex;
   justify-content: space-around;
   margin-bottom: ${props => props.theme.spacing.s};
-  
+
   > :last-child {
-    margin-left: ${props => props.theme.spacing.s};  
+    margin-left: ${props => props.theme.spacing.s};
   }
 `;
 
@@ -37,6 +47,9 @@ const Error = styled.div`
  * TokenAmountInput
  * Select a token and an amount denominated in that token.
  *
+ * @param name @TODO
+ * @param needsUnlock @TODO
+ * @param onUnlock @TODO
  * @param error Error message, e.g. 'Amount too low'
  * @param tokenAddresses List of available token addresses
  * @param tokenValue Selected token address
@@ -51,19 +64,16 @@ export const TokenAmountInput: FC<Props> = ({
   tokenAddresses,
   tokenValue,
   amountValue,
+  name,
+  needsUnlock,
+  onUnlock,
   onChangeAmount,
   onChangeToken,
   onSetMax,
 }) => {
-  // TODO remove fake data
-  // const { data: tokensData } = useErc20TokensQuery({
-  //   variables: { addresses: tokenAddresses },
-  // });
-  const tokensData: { tokens: TokenDetailsFragment[] } = {
-    tokens: [
-      { address: '0x1', symbol: 'mUSD', decimals: 18, totalSupply: '0' },
-    ],
-  };
+  const { data: tokensData } = useErc20TokensQuery({
+    variables: { addresses: tokenAddresses },
+  });
   const selectedToken = useMemo(
     () => tokensData?.tokens.find(t => t.address === tokenValue),
     [tokensData, tokenValue],
@@ -72,19 +82,26 @@ export const TokenAmountInput: FC<Props> = ({
     <Container>
       <InputContainer>
         <AmountInput
-          error={error}
+          name={name}
           value={amountValue}
           onChange={onChangeAmount}
           onSetMax={onSetMax}
+          error={error}
           decimals={selectedToken?.decimals}
         />
+        {needsUnlock && onUnlock ? (
+          <UnlockButton type="button" onClick={onUnlock} size={Size.m}>
+            Unlock
+          </UnlockButton>
+        ) : null}
         <TokenInput
+          name={name}
           value={tokenValue}
           tokens={tokensData?.tokens || []}
           onChange={onChangeToken}
         />
       </InputContainer>
-       {error ? <Error>{error}</Error> : null}
+      {error ? <Error>{error}</Error> : null}
     </Container>
   );
 };
