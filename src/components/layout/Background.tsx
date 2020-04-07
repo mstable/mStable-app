@@ -49,7 +49,7 @@ interface Props {
 // `;
 
 // TODO: Animate this
-export const Background: FC<Props> = ({ active }) => (
+export const Background: FC<Props> = () => (
   <>
     {/* <DotsContainer> */}
     {/*   <Dots active={active}> */}

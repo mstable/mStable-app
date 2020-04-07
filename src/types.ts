@@ -1,7 +1,7 @@
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
+import { BigNumber } from "ethers/utils";
 import { IERC20 } from './typechain/IERC20.d';
 import { IMasset } from './typechain/IMasset.d';
-import { BigNumber } from "ethers/utils";
 
 export interface Transaction {
   response: TransactionResponse;
