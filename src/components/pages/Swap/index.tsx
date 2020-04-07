@@ -55,15 +55,22 @@ const mapReasonToMessage = (reason: Reasons): string => {
       return 'Token must be unlocked';
     case Reasons.FetchingData:
       return 'Fetching data...';
-
-    // TODO write messages for these:
-    case Reasons.BAssetNotAllowedInMint:
-    case Reasons.MustBeBelowImplicitMaxWeighting:
-    case Reasons.MustRedeemOverweightBAssets:
-    case Reasons.BAssetsMustRemainUnderMaxWeight:
-    case Reasons.BAssetsMustRemainAboveImplicitMinWeight:
-    case Reasons.InputLengthShouldBeEqual:
+    case Reasons.ValidationFailed:
       return 'Validation failed';
+
+    // TODO edit messages for these:
+    case Reasons.BAssetNotAllowedInMint:
+      return 'bAsset not allowed in mint';
+    case Reasons.MustBeBelowImplicitMaxWeighting:
+      return 'Must be below implicit max weighting';
+    case Reasons.MustRedeemOverweightBAssets:
+      return 'Must redeem overweight bAssets';
+    case Reasons.BAssetsMustRemainUnderMaxWeight:
+      return 'bAssets must remain under max weight';
+    case Reasons.BAssetsMustRemainAboveImplicitMinWeight:
+      return 'bAssets must remain above implicit min weight';
+    case Reasons.InputLengthShouldBeEqual:
+      return 'Input length should be equal';
 
     default:
       return 'Unknown reason';
@@ -375,35 +382,33 @@ export const Swap: FC<{}> = () => {
     const bassetIndex = allBassets.findIndex(b => b.addr === selectedBasset.id);
     const totalSupply = parseUnits(mUSD.token.totalSupply, mUSD.token.decimals);
 
-    if (transactionType === TransactionType.Mint) {
-      forgeValidatorContract
-        .validateMint(
-          totalSupply.toString(),
-          grace,
-          allBassets[bassetIndex],
-          input.amount.exact.toString(),
-        )
-        .then(({ isValid, reason }: { isValid: boolean; reason: string }) => {
-          setError(isValid ? null : mapForgeValidatorResponseToReason(reason));
-        });
+    const validatePromise =
+      transactionType === TransactionType.Mint
+        ? forgeValidatorContract.validateMint(
+            totalSupply,
+            grace,
+            allBassets[bassetIndex],
+            input.amount.exact,
+          )
+        : forgeValidatorContract.validateRedemption(
+            mUSD.basket.failed,
+            totalSupply,
+            allBassets,
+            grace,
+            bassetIndex,
+            output.amount.exact,
+          );
 
-      return;
-    }
+    validatePromise
+      .then(({ '0': isValid, '1': reason }) => {
+        setError(isValid ? null : mapForgeValidatorResponseToReason(reason));
+      })
+      .catch(error_ => {
+        // eslint-disable-next-line no-console
+        console.error(error_);
+        setError(Reasons.ValidationFailed);
+      });
 
-    if (transactionType === TransactionType.Redeem) {
-      forgeValidatorContract
-        .validateRedemption(
-          mUSD.basket.failed,
-          totalSupply,
-          allBassets,
-          grace,
-          bassetIndex,
-          output.amount.exact,
-        )
-        .then(({ '0': isValid, '1': reason }) => {
-          setError(isValid ? null : mapForgeValidatorResponseToReason(reason));
-        });
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input, output, touched, needsUnlock]);
 

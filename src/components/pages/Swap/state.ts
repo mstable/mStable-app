@@ -30,6 +30,7 @@ export enum Reasons {
   TokenMustBeSelected,
   TokenMustBeUnlocked,
   FetchingData,
+  ValidationFailed,
   BAssetNotAllowedInMint,
   MustBeBelowImplicitMaxWeighting,
   MustRedeemOverweightBAssets,
