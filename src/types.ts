@@ -1,5 +1,5 @@
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
-import { BigNumber } from "ethers/utils";
+import { BigNumber } from 'ethers/utils';
 import { IERC20 } from './typechain/IERC20.d';
 import { IMasset } from './typechain/IMasset.d';
 
@@ -82,4 +82,11 @@ export interface Amount {
 export interface TokenQuantity {
   amount: Amount;
   token: TokenDetails;
+}
+
+export interface InjectedEthereum {
+  enable(): Promise<string[]>;
+  on(event: 'networkChanged', listener: (chainId: number) => void): void;
+  autoRefreshOnNetworkChange: boolean;
+  removeListener(event: 'networkChanged', listener: Function): void;
 }

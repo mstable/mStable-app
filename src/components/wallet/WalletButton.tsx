@@ -1,15 +1,16 @@
 import React, { FC } from 'react';
 import { useWallet } from 'use-wallet';
 import styled from 'styled-components';
-import { useExpandWallet } from '../../context/UIProvider';
-import { useTruncatedAddress } from '../../web3/hooks';
+import {
+  useAppDispatch,
+  useIsWalletConnecting,
+  useWalletExpanded,
+} from '../../context/AppProvider';
+import { useTruncatedAddress, useBlockie } from '../../web3/hooks';
 import { Button } from '../core/Button';
 import { FontSize, Size, ViewportWidth } from '../../theme';
 import { Activity } from '../activity/Activity';
-
-interface InjectedEthereum {
-  enable(): Promise<string[]>;
-}
+import { InjectedEthereum } from '../../types';
 
 const Container = styled.div`
   cursor: pointer;
@@ -25,10 +26,8 @@ const Address = styled.div`
 `;
 
 const Blockie = styled.div`
-  // TODO replace with actual blockie
-  width: 16px;
-  height: 16px;
-  background: green;
+  width: 24px;
+  height: 24px;
   margin: 0 ${props => props.theme.spacing.xs};
 `;
 
@@ -40,26 +39,31 @@ const Account = styled.div`
 
 export const WalletButton: FC<{}> = () => {
   const { connected, account } = useWallet<InjectedEthereum>();
+  const connecting = useIsWalletConnecting();
   const truncatedAddress = useTruncatedAddress(account);
-  const expandWallet = useExpandWallet();
-
-  // TODO remove this; just for quick testing
-  // useEffect(() => {
-  //   activate('injected');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  const walletExpanded = useWalletExpanded();
+  const { expandWallet, collapseWallet, resetWallet } = useAppDispatch();
+  const blockie = useBlockie(account);
 
   return (
-    <Container onClick={expandWallet}>
+    <Container
+      onClick={
+        walletExpanded
+          ? connecting
+            ? resetWallet
+            : collapseWallet
+          : expandWallet
+      }
+    >
       {connected ? (
         <Account>
           <Activity />
-          <Blockie />
+          <Blockie>{blockie}</Blockie>
           <Address>{truncatedAddress}</Address>
         </Account>
       ) : (
         <Button type="button" size={Size.s}>
-          Connect
+          {walletExpanded ? (connecting ? 'Back' : 'Close') : 'Connect'}
         </Button>
       )}
     </Container>

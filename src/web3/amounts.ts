@@ -1,5 +1,20 @@
-import { commify, parseUnits } from 'ethers/utils';
+import { BigNumber, commify, parseUnits, formatUnits } from 'ethers/utils';
 import { TokenQuantity } from '../types';
+
+export const formatSimpleAmount = (
+  simpleAmount: string | null,
+  symbol: string | null,
+): string | null =>
+  simpleAmount && symbol ? `${commify(simpleAmount)} ${symbol}` : null;
+
+export const formatExactAmount = (
+  exactAmount?: BigNumber,
+  decimals?: number,
+  symbol?: string,
+): string | null =>
+  exactAmount && decimals && symbol
+    ? formatSimpleAmount(formatUnits(exactAmount, decimals), symbol)
+    : null;
 
 export const parseAmounts = ({
   amount: { simple },
@@ -18,7 +33,7 @@ export const parseAmounts = ({
         return null;
       }
     })(),
-    formatted: simple && symbol ? `${commify(simple)} ${symbol}` : null,
+    formatted: formatSimpleAmount(simple, symbol),
   },
   token,
 });

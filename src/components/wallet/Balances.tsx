@@ -2,13 +2,23 @@ import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTokensState } from '../../context/TokensProvider';
 import { useAllErc20TokensQuery } from '../../graphql/generated';
-import { formatDecimal } from '../../web3/strings';
+import { formatExactAmount } from '../../web3/amounts';
+import { EtherscanLink } from '../core/EtherscanLink';
 
-const List = styled.ul``;
+const BalancesList = styled.ul``;
 
-const Token = styled.li``;
+const BalanceItem = styled.li`
+  margin-bottom: ${({ theme }) => theme.spacing.m};
+`;
 
-const Symbol = styled.div``;
+const Symbol = styled.div`
+  font-weight: bold;
+  font-size: ${({ theme }) => theme.fontSize.l};
+  > * {
+    display: inline-block;
+    margin-right: ${({ theme }) => theme.spacing.xs};
+  }
+`;
 
 const Balance = styled.div``;
 
@@ -25,24 +35,30 @@ export const Balances: FC<{}> = () => {
     () =>
       tokensData.map(token => {
         const tokenBalance = tokens[token.address];
-        const balanceFormatted = tokenBalance?.balance
-          ? // Note that the decimals are not normalized for presentation;
-            // might not be what is needed
-            formatDecimal(tokenBalance.balance, token.decimals)
-          : '';
-        return { ...token, ...tokenBalance, balanceFormatted };
+        return {
+          ...token,
+          ...tokenBalance,
+          balanceFormatted: formatExactAmount(
+            tokenBalance?.balance,
+            token.decimals,
+            token.symbol,
+          ),
+        };
       }),
     [tokens, tokensData],
   );
 
   return (
-    <List>
+    <BalancesList>
       {tokensWithBalances.map(({ symbol, address, balanceFormatted }) => (
-        <Token key={address}>
-          <Symbol>{symbol}</Symbol>
+        <BalanceItem key={address}>
+          <Symbol>
+            <span>{symbol}</span>
+            <EtherscanLink data={address} />
+          </Symbol>
           <Balance>{balanceFormatted}</Balance>
-        </Token>
+        </BalanceItem>
       ))}
-    </List>
+    </BalancesList>
   );
 };

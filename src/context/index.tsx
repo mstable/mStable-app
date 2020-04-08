@@ -3,7 +3,7 @@ import { UseWalletProvider } from 'use-wallet';
 import { ThemeProvider } from 'styled-components';
 import { ApolloProvider } from './ApolloProvider';
 import { TransactionsProvider } from './TransactionsProvider';
-import { UIProvider } from './UIProvider';
+import { AppProvider } from './AppProvider';
 import { SignerProvider } from './SignerProvider';
 import { KnownAddressProvider } from './KnownAddressProvider';
 import { AVAILABLE_CONNECTORS, CHAIN_ID } from '../web3/constants';
@@ -17,9 +17,9 @@ export const Providers: FC<{}> = ({ children }) => (
         <KnownAddressProvider>
           <TokensProvider>
             <TransactionsProvider>
-              <UIProvider>
+              <AppProvider>
                 <ThemeProvider theme={theme}>{children}</ThemeProvider>
-              </UIProvider>
+              </AppProvider>
             </TransactionsProvider>
           </TokensProvider>
         </KnownAddressProvider>

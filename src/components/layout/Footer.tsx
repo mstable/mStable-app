@@ -8,6 +8,6 @@ const Container = styled.footer`
 /**
  * Placeholder component for footer.
  */
-export const Footer: FC<{}> = () => (
+export const Footer: FC<{ walletExpanded: boolean }> = () => (
   <Container>Footer content placeholder</Container>
 );

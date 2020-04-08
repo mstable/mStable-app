@@ -10,6 +10,7 @@ import React, {
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
 import { SendTxManifest, Transaction } from '../types';
+import { useAddSuccessNotification } from './AppProvider';
 import { TransactionOverrides } from '../typechain/index.d';
 
 type State = Record<string, Transaction>;
@@ -201,6 +202,7 @@ export const useSendTransaction =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (): ((tx: SendTxManifest<any, any>) => void) => {
     const [, { add }] = useTransactionsContext();
+    const addSuccess = useAddSuccessNotification(); // TODO move this, wrong context
 
     return useCallback(
       manifest => {
@@ -208,8 +210,9 @@ export const useSendTransaction =
           const { hash } = response;
           if (!hash) throw new Error('Missing transaction hash');
           add(hash, response, manifest.fn as string, manifest.args);
+          addSuccess('Transaction sent');
         });
       },
-      [add],
+      [add, addSuccess],
     );
   };

@@ -6,20 +6,12 @@ import { FontSize, ViewportWidth } from '../../theme';
 interface NavItem {
   disabled?: boolean;
   title: string;
-  path: string;
+  path?: string;
 }
 
 const Container = styled.nav`
-  display: flex;
   justify-content: center;
   align-items: center;
-  order: 3;
-  width: 100%;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    width: auto;
-    order: 2;
-  }
 `;
 
 const List = styled.ul`
@@ -36,19 +28,27 @@ const List = styled.ul`
   }
 `;
 
-const Item = styled.li<{ disabled?: boolean; active: boolean }>`
+const Item = styled.li<{
+  disabled?: boolean;
+  active: boolean;
+  inverted: boolean;
+}>`
   border-bottom: 4px solid transparent;
   font-weight: bold;
   text-transform: uppercase;
   padding: ${props => props.theme.spacing.xxs} 0;
-
-  ${props =>
-    props.active ? `border-bottom-color: ${props.theme.color.foreground}` : ''}
+  border-bottom-color: ${({ theme, active, inverted }) =>
+    active
+      ? inverted
+        ? theme.color.background
+        : theme.color.foreground
+      : 'transparent'};
 
   ${props => (props.disabled ? `opacity: 0.4; cursor: disabled` : '')};
 
   a {
-    color: ${props => props.theme.color.foreground};
+    color: ${({ theme, inverted }) =>
+      inverted ? theme.color.background : theme.color.foreground};
   }
 
   margin-right: ${props => props.theme.spacing.xl};
@@ -70,22 +70,35 @@ const navItems: NavItem[] = [
 /**
  * Placeholder component for app navigation.
  */
-export const Navigation: FC<{}> = () => {
+export const Navigation: FC<{ walletExpanded: boolean }> = ({
+  walletExpanded,
+}) => {
   const activePath = getWorkingPath('');
   const items: (NavItem & { active: boolean })[] = useMemo(
     () =>
-      navItems.map(item => ({
-        ...item,
-        active: activePath === item.path,
-      })),
-    [activePath],
+      walletExpanded
+        ? [{ title: 'Account', active: true }]
+        : navItems.map(item => ({
+            ...item,
+            active: activePath === item.path,
+          })),
+    [activePath, walletExpanded],
   );
   return (
     <Container>
       <List>
         {items.map(({ title, path, disabled, active }) => (
-          <Item key={path} disabled={disabled} active={active}>
-            {disabled ? <span>{title}</span> : <A href={path}>{title}</A>}
+          <Item
+            key={title}
+            disabled={disabled}
+            active={active}
+            inverted={walletExpanded}
+          >
+            {disabled || !path ? (
+              <span>{title}</span>
+            ) : (
+              <A href={path}>{title}</A>
+            )}
           </Item>
         ))}
       </List>

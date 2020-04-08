@@ -1,6 +1,7 @@
 // eslint-disable-next-line spaced-comment
 /// <reference types="node" />
 
+// eslint-disable-next-line max-classes-per-file
 declare module 'use-wallet' {
   import { ReactNode } from 'react';
 
@@ -10,21 +11,26 @@ declare module 'use-wallet' {
     frame: {};
     injected: {};
     portis: { dAppId: string };
-    squarelink: { clientId: string, options: object };
-    torus: { chainId?: number, initOptions: object, constructorOptions: object };
+    squarelink: { clientId: string; options: object };
+    torus: {
+      chainId?: number;
+      initOptions: object;
+      constructorOptions: object;
+    };
     walletconnect: null;
-    walletlink: { url: string, appName: string, appLogoUrl: string };
+    walletlink: { url: string; appName: string; appLogoUrl: string };
   }
 
   export interface Wallet<T> {
     account: string | null;
-    activate(connectorId: keyof Connectors): void;
+    activate(connectorId: keyof Connectors): Promise<void>;
     activated: keyof Connectors;
     activating: boolean;
     balance: string;
     connected: boolean;
     connectors: Connectors;
     deactivate(): void;
+    chainId: number | null;
     ethereum: T;
     getBlockNumber(): number;
     isContract: boolean;
@@ -42,6 +48,22 @@ declare module 'use-wallet' {
   interface UseWalletProps {
     pollBalanceInterval?: number;
     pollBlockNumberInterval?: number;
+  }
+
+  export class UnsupportedChainError extends Error {
+    name: 'UnsupportedChainError';
+  }
+
+  export class UnsupportedConnectorError extends Error {
+    name: 'UnsupportedConnectorError';
+  }
+
+  export class RejectedActivationError extends Error {
+    name: 'RejectedActivationError';
+  }
+
+  export class ConnectorConfigError extends Error {
+    name: 'ConnectorConfigError';
   }
 
   export function useWallet<T>(props?: UseWalletProps): Wallet<T>;
