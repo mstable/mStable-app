@@ -1,8 +1,6 @@
 import React, { FC } from 'react';
 import ReactDOM from 'react-dom';
 import { useRoutes } from 'hookrouter';
-import { createGlobalStyle } from 'styled-components';
-import reset from 'styled-reset';
 import * as serviceWorker from './serviceWorker';
 import { Providers } from './context';
 import { Updaters } from './updaters';
@@ -13,28 +11,6 @@ import { Earn } from './components/pages/Earn';
 import { Save } from './components/pages/Save';
 import { About } from './components/pages/About';
 import { NotFound } from './components/pages/NotFound';
-
-const GlobalStyle = createGlobalStyle`
-  ${reset}
-  a {
-    text-decoration: none;
-    color: ${props => props.theme.color.blue};
-  }
-  body {
-    background: ${props => props.theme.color.background};
-  }
-  * {
-      box-sizing: border-box;
-  }
-  body, button, input {
-    font-family: 'Poppins', sans-serif;
-    color: ${props => props.theme.color.foreground};
-  }
-  #root {
-    display: flex;
-    justify-content: center;
-  }
-`;
 
 const routes = {
   '/': () => <Home />,
@@ -49,10 +25,7 @@ const Root: FC<{}> = () => {
   return (
     <Providers>
       <Updaters />
-      <>
-        <Layout>{routeResult || <NotFound />}</Layout>
-        <GlobalStyle />
-      </>
+      <Layout>{routeResult || <NotFound />}</Layout>
     </Providers>
   );
 };

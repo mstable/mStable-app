@@ -11,7 +11,7 @@ const ETHERSCAN_PREFIXES = {
   42: 'kovan.',
 };
 
-export const getEtherscanLink = (data: string, type: string): string => {
+export const getEtherscanLink = (data: string, type?: string): string => {
   const prefix = `https://${ETHERSCAN_PREFIXES[
     CHAIN_ID as keyof typeof ETHERSCAN_PREFIXES
   ] || ETHERSCAN_PREFIXES[1]}etherscan.io`;
