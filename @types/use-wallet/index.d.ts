@@ -5,7 +5,7 @@
 declare module 'use-wallet' {
   import { ReactNode } from 'react';
 
-  export interface Connectors {
+  type Connectors = Partial<{
     authereum: {};
     fortmatic: { apiKey: string };
     frame: {};
@@ -17,9 +17,9 @@ declare module 'use-wallet' {
       initOptions: object;
       constructorOptions: object;
     };
-    walletconnect: null;
+    walletconnect: {};
     walletlink: { url: string; appName: string; appLogoUrl: string };
-  }
+  }>;
 
   export interface Wallet<T> {
     account: string | null;

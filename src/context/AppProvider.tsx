@@ -18,6 +18,7 @@ import {
 import { TokenDetailsFragment } from '../graphql/generated';
 import { useMassetToken } from '../web3/hooks';
 import { MassetNames, InjectedEthereum } from '../types';
+import { CHAIN_ID } from '../web3/constants';
 
 enum Actions {
   ResetWallet,
@@ -42,8 +43,8 @@ enum WalletConnectionStatus {
 enum Reasons {
   RejectedActivation = 'Wallet activation rejected 😢',
   UnsupportedChain = 'Unsupported network. 😢 Please connect to a supported network.',
-  UnsupportedConnector = 'Unsupported connector 🤔🤔',
-  Unknown = 'Unknown 🤔',
+  UnsupportedConnector = 'Unsupported connector 🤔',
+  Unknown = 'Unknown error 🤔',
 }
 
 export enum StatusWarnings {
@@ -297,13 +298,13 @@ export const AppProvider: FC<{}> = ({ children }) => {
    * https://docs.metamask.io/guide/ethereum-provider.html#methods-current-api
    */
   useEffect(() => {
-    let networkChangedListener: (chainId: number) => void;
+    let networkChangedListener: (chainId: number | string) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const injected = (window as any).ethereum;
 
     if (injected) {
       networkChangedListener = chainId => {
-        const supported = chainId.toString() === process.env.REACT_APP_CHAIN_ID;
+        const supported = CHAIN_ID === parseInt(chainId as string, 10);
         dispatch({ type: Actions.SupportedChainSelected, payload: supported });
       };
       networkChangedListener(parseInt(injected.chainId, 16));
