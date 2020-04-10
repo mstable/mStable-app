@@ -9,74 +9,139 @@ import React, {
 } from 'react';
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
-import { SendTxManifest, Transaction } from '../types';
+import {
+  SendTxManifest,
+  Transaction,
+  HistoricTransaction,
+} from '../types';
 import { useAddSuccessNotification } from './AppProvider';
 import { TransactionOverrides } from '../typechain/index.d';
 
-type State = Record<string, Transaction>;
+enum Actions {
+  AddPending,
+  AddHistoric,
+  Check,
+  Finalize,
+  Reset,
+}
+
+type TransactionHash = string;
+
+interface State {
+  current: Record<TransactionHash, Transaction>;
+  historic: Record<TransactionHash, HistoricTransaction>;
+}
 
 interface Dispatch {
   /**
-   * Add a just-sent transaction to the state and track its progress.
-   * @param hash
-   * @param response
-   * @param fn Contract function name
-   * @param args Decoded arguments for the function
+   * Add a single current transaction
    */
-  add: (
-    hash: string,
-    response: TransactionResponse,
-    fn: string,
-    args: unknown[],
-  ) => void;
+  addPending(currentTx: Transaction): void;
+
   /**
-   * Check that a transaction is present at a given block number.
+   * Add many historic transactions
+   *
+   * @param historicTxs Map of historic transactions indexed by hash
+   */
+  addHistoric(historicTxs: Record<TransactionHash, HistoricTransaction>): void;
+
+  /**
+   * Check that a current transaction is present at a given block number.
    * @param hash
    * @param blockNumber
    */
-  check: (hash: string, blockNumber: number) => void;
+  check(hash: string, blockNumber: number): void;
+
   /**
-   * Mark a transaction as finalized with a transaction receipt.
+   * Mark a current transaction as finalized with a transaction receipt.
    * @param hash
    * @param receipt
    */
-  finalize: (hash: string, receipt: TransactionReceipt) => void;
+  finalize(hash: string, receipt: TransactionReceipt): void;
+
+  /**
+   * Reset the state completely.
+   */
+  reset(): void;
 }
 
 type Action =
   | {
-      type: 'ADD';
+      type: Actions.AddPending;
+      payload: Transaction;
+    }
+  | {
+      type: Actions.AddHistoric;
+      payload: Record<TransactionHash, HistoricTransaction>;
+    }
+  | {
+      type: Actions.Check;
+      payload: { hash: string; blockNumber: number };
+    }
+  | {
+      type: Actions.Finalize;
       payload: {
         hash: string;
-        response: TransactionResponse;
-        fn: string;
-        timestamp: number;
-        args: unknown[];
+        receipt: TransactionReceipt;
       };
     }
-  | { type: 'CHECK'; payload: { hash: string; blockNumber: number } }
-  | {
-      type: 'FINALIZE';
-      payload: { hash: string; receipt: TransactionReceipt };
-    };
+  | { type: Actions.Reset };
 
 const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case 'ADD': {
-      const { hash, response, fn, timestamp, args } = action.payload;
-      return { ...state, [hash]: { response, fn, timestamp, args } };
+    case Actions.AddPending: {
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          [action.payload.hash]: action.payload,
+        },
+      };
     }
-    case 'CHECK': {
+    case Actions.AddHistoric: {
+      return {
+        ...state,
+        historic: {
+          ...state.historic,
+          ...action.payload,
+        },
+      };
+    }
+    case Actions.Check: {
       const { hash, blockNumber } = action.payload;
       return {
         ...state,
-        [hash]: { ...state[hash], blockNumberChecked: blockNumber },
+        current: {
+          ...state.current,
+          [hash]: {
+            ...state.current[hash],
+            blockNumberChecked: blockNumber,
+          },
+        },
       } as State;
     }
-    case 'FINALIZE': {
-      const { hash, receipt } = action.payload;
-      return { ...state, [hash]: { ...state[hash], receipt } };
+    case Actions.Finalize: {
+      const {
+        hash,
+        receipt: { status, blockNumber },
+      } = action.payload;
+      return {
+        ...state,
+        current: {
+          ...state.current,
+          [hash]: {
+            ...state.current[hash],
+            status: status as number,
+            blockNumberChecked: blockNumber as number,
+          },
+        },
+      };
     }
+    case Actions.Reset:
+      return {
+        historic: {},
+        current: {},
+      };
     default:
       throw new Error('Unhandled action');
   }
@@ -85,22 +150,29 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const context = createContext<[State, Dispatch]>(null as any);
 
+const initialState: State = Object.freeze({ historic: {}, current: {} });
+
 /**
  * Provider for sending transactions and tracking their progress.
  */
 export const TransactionsProvider: FC<{}> = ({ children }) => {
-  const [state, dispatch] = useReducer(transactionsCtxReducer, {});
+  const [state, dispatch] = useReducer(transactionsCtxReducer, initialState);
 
-  const add = useCallback(
-    (
-      hash: string,
-      response: TransactionResponse,
-      fn: string,
-      args: unknown[],
-    ) => {
+  const addPending = useCallback(
+    (currentTx: Transaction) => {
       dispatch({
-        type: 'ADD',
-        payload: { hash, response, fn, timestamp: Date.now(), args },
+        type: Actions.AddPending,
+        payload: currentTx,
+      });
+    },
+    [dispatch],
+  );
+
+  const addHistoric = useCallback(
+    (historicTransactions: Record<TransactionHash, HistoricTransaction>) => {
+      dispatch({
+        type: Actions.AddHistoric,
+        payload: historicTransactions,
       });
     },
     [dispatch],
@@ -108,26 +180,28 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
 
   const check = useCallback(
     (hash: string, blockNumber: number) => {
-      dispatch({ type: 'CHECK', payload: { hash, blockNumber } });
+      dispatch({ type: Actions.Check, payload: { hash, blockNumber } });
     },
     [dispatch],
   );
 
   const finalize = useCallback(
     (hash: string, receipt: TransactionReceipt) => {
-      dispatch({ type: 'FINALIZE', payload: { hash, receipt } });
+      dispatch({ type: Actions.Finalize, payload: { hash, receipt } });
     },
     [dispatch],
   );
 
+  const reset = useCallback(() => {
+    dispatch({ type: Actions.Reset });
+  }, [dispatch]);
+
   return (
     <context.Provider
-      value={useMemo(() => [state, { add, check, finalize }], [
-        state,
-        add,
-        check,
-        finalize,
-      ])}
+      value={useMemo(
+        () => [state, { addPending, addHistoric, check, finalize, reset }],
+        [state, addPending, addHistoric, check, finalize, reset],
+      )}
     >
       {children}
     </context.Provider>
@@ -137,26 +211,39 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
 export const useTransactionsContext = (): [State, Dispatch] =>
   useContext(context);
 
-export const useAllTransactions = (): State => {
-  const [state] = useTransactionsContext();
-  return state;
+export const useTransactionsState = (): State => useTransactionsContext()[0];
+
+export const useTransactionsDispatch = (): Dispatch =>
+  useTransactionsContext()[1];
+
+export const useOrderedCurrentTransactions = (): Transaction[] => {
+  const { current } = useTransactionsState();
+  return useMemo(
+    () => Object.values(current).sort((a, b) => b.timestamp - a.timestamp),
+    [current],
+  );
+};
+
+export const useOrderedHistoricTransactions = (): HistoricTransaction[] => {
+  const { historic } = useTransactionsState();
+  return useMemo(
+    () => Object.values(historic).sort((a, b) => b.blockNumber - a.blockNumber),
+    [historic],
+  );
 };
 
 export const useHasPendingTransactions = (): boolean => {
-  const transactions = useAllTransactions();
-  return (
-    Object.values(transactions).filter(tx => !tx.receipt?.confirmations)
-      .length > 0
-  );
+  const { current } = useTransactionsState();
+  return !!Object.values(current).find(tx => tx.status !== 1);
 };
 
 const overrideProps = ['nonce', 'gasLimit', 'gasPrice', 'value', 'chainId'];
 
-export function calculateGasMargin(value: BigNumber): BigNumber {
+export const calculateGasMargin = (value: BigNumber): BigNumber => {
   const GAS_MARGIN = new BigNumber(1000);
   const offset = value.mul(GAS_MARGIN).div(new BigNumber(10000));
   return value.add(offset);
-}
+};
 
 const isTransactionOverrides = (arg: unknown): boolean =>
   arg != null &&
@@ -201,7 +288,7 @@ const sendTransaction = async (
 export const useSendTransaction =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (): ((tx: SendTxManifest<any, any>) => void) => {
-    const [, { add }] = useTransactionsContext();
+    const [, { addPending }] = useTransactionsContext();
     const addSuccess = useAddSuccessNotification(); // TODO move this, wrong context
 
     return useCallback(
@@ -209,10 +296,17 @@ export const useSendTransaction =
         sendTransaction(manifest).then(response => {
           const { hash } = response;
           if (!hash) throw new Error('Missing transaction hash');
-          add(hash, response, manifest.fn as string, manifest.args);
+          addPending({
+            hash,
+            response,
+            fn: manifest.fn,
+            args: manifest.args,
+            timestamp: Date.now(),
+            status: null,
+          });
           addSuccess('Transaction sent');
         });
       },
-      [add, addSuccess],
+      [addPending, addSuccess],
     );
   };

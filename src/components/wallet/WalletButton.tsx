@@ -9,8 +9,9 @@ import {
 import { useTruncatedAddress, useBlockie } from '../../web3/hooks';
 import { Button } from '../core/Button';
 import { FontSize, Size, ViewportWidth } from '../../theme';
-import { Activity } from '../activity/Activity';
 import { InjectedEthereum } from '../../types';
+import { useHasPendingTransactions } from '../../context/TransactionsProvider';
+import { ActivitySpinner } from '../core/ActivitySpinner';
 
 const Container = styled.div`
   cursor: pointer;
@@ -37,6 +38,20 @@ const Account = styled.div`
   justify-content: space-between;
 `;
 
+const PendingIndicatorContainer = styled.div`
+  width: 16px;
+  height: 16px;
+`;
+
+const PendingIndicator: FC<{}> = () => {
+  const hasPendingTxs = useHasPendingTransactions();
+  return (
+    <PendingIndicatorContainer title={hasPendingTxs ? "Pending transactions" : ''}>
+      {hasPendingTxs ? <ActivitySpinner /> : null}
+    </PendingIndicatorContainer>
+  );
+};
+
 export const WalletButton: FC<{}> = () => {
   const { connected, account } = useWallet<InjectedEthereum>();
   const connecting = useIsWalletConnecting();
@@ -57,7 +72,7 @@ export const WalletButton: FC<{}> = () => {
     >
       {connected ? (
         <Account>
-          <Activity />
+          <PendingIndicator />
           <Blockie>{blockie}</Blockie>
           <Address>{truncatedAddress}</Address>
         </Account>

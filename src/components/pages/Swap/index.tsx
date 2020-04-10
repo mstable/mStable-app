@@ -198,6 +198,13 @@ export const Swap: FC<{}> = () => {
 
   const inputToken = useTokenWithBalance(inputAddress);
   const outputToken = useTokenWithBalance(outputAddress);
+  const inputTokenBalance = useMemo(
+    () =>
+      inputToken?.balance && inputToken.decimals
+        ? formatUnits(inputToken.balance.toString(), inputToken.decimals)
+        : null,
+    [inputToken],
+  );
 
   const [redemptionFee, netOutput] = useMemo<
     [TokenQuantity | null, TokenQuantity | null]
@@ -287,12 +294,10 @@ export const Swap: FC<{}> = () => {
    * Handle setting the max amount for the input token
    */
   const handleSetMax = useCallback(() => {
-    if (inputToken?.balance)
-      setQuantity(
-        Fields.Input,
-        formatUnits(inputToken.balance.toString(), inputToken.decimals),
-      );
-  }, [setQuantity, inputToken]);
+    if (inputTokenBalance) {
+      setQuantity(Fields.Input, inputTokenBalance);
+    }
+  }, [setQuantity, inputTokenBalance]);
 
   /**
    * Handle form submission
@@ -444,6 +449,7 @@ export const Swap: FC<{}> = () => {
           onSetMax={handleSetMax}
           onUnlock={handleUnlock}
           needsUnlock={needsUnlock}
+          balance={inputTokenBalance}
         />
       </FormRow>
       <SwapDirectionButton onClick={swapTransactionType}>

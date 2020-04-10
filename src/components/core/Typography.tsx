@@ -5,7 +5,7 @@ import { FontSize } from '../../theme';
 
 export const P = styled.p`
   font-size: ${FontSize.m};
-  line-height: 2rem;
+  line-height: 1.5rem;
   margin-bottom: 1rem;
 `;
 

@@ -3,9 +3,9 @@ import { TokenQuantity } from '../types';
 
 export const formatSimpleAmount = (
   simpleAmount: string | null,
-  symbol: string | null,
+  symbol?: string | null,
 ): string | null =>
-  simpleAmount && symbol ? `${commify(simpleAmount)} ${symbol}` : null;
+  simpleAmount ? `${commify(simpleAmount)}${symbol ? ` ${symbol}` : ''}` : null;
 
 export const formatExactAmount = (
   exactAmount?: BigNumber,
