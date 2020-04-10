@@ -1,6 +1,9 @@
-import React, { FC, FormEvent } from 'react';
+import React, { FC, FormEvent, useCallback } from 'react';
 import styled from 'styled-components';
-import { useIsWalletConnected } from '../../context/AppProvider';
+import {
+  useExpandWallet,
+  useIsWalletConnected,
+} from '../../context/AppProvider';
 
 export const StyledForm = styled.form<{ disabled?: boolean }>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};
@@ -18,8 +21,17 @@ export const Form: FC<{ onSubmit(event: FormEvent<Element>): void }> = ({
   onSubmit,
 }) => {
   const connected = useIsWalletConnected();
+  const expandWallet = useExpandWallet();
+
+  const handleClick = useCallback(() => {
+    // If not connected, forms should start the wallet connection
+    if (!connected) {
+      expandWallet();
+    }
+  }, [connected, expandWallet]);
+
   return (
-    <StyledForm onSubmit={onSubmit} disabled={!connected}>
+    <StyledForm onClick={handleClick} onSubmit={onSubmit} disabled={!connected}>
       {children}
     </StyledForm>
   );

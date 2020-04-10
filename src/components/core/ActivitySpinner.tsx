@@ -8,7 +8,7 @@ const Spinner = styled.svg`
 
   circle {
     stroke: ${({ theme }) => theme.color.blue};
-    stroke-width: 4px;
+    stroke-width: 6px;
     stroke-linecap: round;
     fill: none;
     animation: dash 1.5s ease-in-out infinite;

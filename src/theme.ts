@@ -1,7 +1,8 @@
 import { DefaultTheme, CSSProp } from 'styled-components';
 
 export enum Color {
-  background = '#f9f5f2',
+  background = 'rgb(249, 245, 242)',
+  backgroundTransparent = 'rgba(249, 245, 242, 0.3)',
   gold = '#ffb334',
   green = '#5bb189',
   blue = '#005cde',

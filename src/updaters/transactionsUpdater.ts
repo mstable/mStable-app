@@ -13,40 +13,45 @@ export const TransactionsUpdater = (): null => {
   const { getBlockNumber } = useWallet();
   const blockNumber = getBlockNumber();
 
-  const [state, { check, finalize }] = useTransactionsContext();
+  const [{ current }, { check, finalize }] = useTransactionsContext();
 
-  useEffect((): (() => void) | void => {
-    if (provider && blockNumber) {
-      let stale = false;
-      Object.keys(state)
-        .filter(
-          hash =>
-            !state[hash].receipt &&
-            state[hash].response.blockNumber !== blockNumber,
-        )
-        .forEach(hash => {
-          provider
-            .getTransactionReceipt(hash)
-            .then((receipt: TransactionReceipt) => {
-              if (!stale) {
-                if (!receipt) {
-                  check(hash, blockNumber);
-                } else {
-                  finalize(hash, receipt);
+  useEffect(
+    (): (() => void) | void => {
+      if (provider && blockNumber) {
+        let stale = false;
+        Object.keys(current)
+          .filter(
+            hash =>
+              current[hash].status === null &&
+              current[hash].response.blockNumber !== blockNumber,
+          )
+          .forEach(hash => {
+            provider
+              .getTransactionReceipt(hash)
+              .then((receipt: TransactionReceipt) => {
+                if (!stale) {
+                  if (!receipt) {
+                    check(hash, blockNumber);
+                  } else {
+                    finalize(hash, receipt);
+                  }
                 }
-              }
-            })
-            .catch(() => {
-              check(hash, blockNumber);
-            });
-        });
+              })
+              .catch(() => {
+                check(hash, blockNumber);
+              });
+          });
 
-      return () => {
-        stale = true;
-      };
-    }
-    return undefined;
-  }, [provider, state, blockNumber, check, finalize]);
+        return () => {
+          stale = true;
+        };
+      }
+      return undefined;
+    },
+    // blockNumber should be the *only* dep; otherwise it will check too often.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [blockNumber],
+  );
 
   return null;
 };

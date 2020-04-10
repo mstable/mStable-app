@@ -16,6 +16,7 @@ interface Props {
   amountValue: string | void;
   tokenAddresses: string[];
   needsUnlock?: boolean;
+  balance?: string | null;
   onUnlock?(): void;
   onChangeAmount?(name: string, simpleAmount: string | null): void;
   onChangeToken?(name: string, token: TokenDetailsFragment): void;
@@ -43,6 +44,11 @@ const Error = styled.div`
   color: ${props => props.theme.color.red};
 `;
 
+const Balance = styled.div`
+  font-size: ${({ theme }) => theme.fontSize.s};
+  text-transform: uppercase;
+`;
+
 /**
  * TokenAmountInput
  * Select a token and an amount denominated in that token.
@@ -50,6 +56,7 @@ const Error = styled.div`
  * @param name @TODO
  * @param needsUnlock @TODO
  * @param onUnlock @TODO
+ * @param balance @TODO
  * @param error Error message, e.g. 'Amount too low'
  * @param tokenAddresses List of available token addresses
  * @param tokenValue Selected token address
@@ -66,6 +73,7 @@ export const TokenAmountInput: FC<Props> = ({
   amountValue,
   name,
   needsUnlock,
+  balance,
   onUnlock,
   onChangeAmount,
   onChangeToken,
@@ -101,6 +109,7 @@ export const TokenAmountInput: FC<Props> = ({
           onChange={onChangeToken}
         />
       </InputContainer>
+      {balance ? <Balance>Balance: {balance}</Balance> : null}
       {error ? <Error>{error}</Error> : null}
     </Container>
   );

@@ -12,8 +12,9 @@ import { H3 } from '../core/Typography';
 import { Address } from '../core/Address';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { Size } from '../../theme';
-import { RecentTransactions } from './RecentTransactions';
 import { Balances } from './Balances';
+import { HistoricTransactions } from './HistoricTransactions';
+import { Transactions } from './Transactions';
 
 interface Connector {
   id: keyof Connectors;
@@ -47,7 +48,8 @@ const Rows = styled.div`
 `;
 
 const Row = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.m};
+  border-top: ${({ theme }) => `2px ${theme.color.background} solid`};
+  margin-bottom: ${({ theme }) => theme.spacing.l};
 `;
 
 const Header = styled.header`
@@ -141,12 +143,16 @@ const Connected: FC<{ account: string }> = ({ account }) => (
       <Address address={account} type="account" copyable />
     </Row>
     <Row>
-      <H3>Transactions</H3>
-      <RecentTransactions />
-    </Row>
-    <Row>
       <H3>Balances</H3>
       <Balances />
+    </Row>
+    <Row>
+      <H3>Transactions</H3>
+      <Transactions />
+    </Row>
+    <Row>
+      <H3>Historic transactions</H3>
+      <HistoricTransactions />
     </Row>
   </Rows>
 );

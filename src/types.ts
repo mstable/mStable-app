@@ -1,15 +1,28 @@
-import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
-import { BigNumber } from 'ethers/utils';
+import { TransactionResponse, Log } from 'ethers/providers';
+import { BigNumber, LogDescription } from 'ethers/utils';
+
 import { IERC20 } from './typechain/IERC20.d';
 import { IMasset } from './typechain/IMasset.d';
 
 export interface Transaction {
+  hash: string;
   response: TransactionResponse;
-  receipt?: TransactionReceipt;
   blockNumberChecked?: number;
   fn: string;
+  status: number | null;
   timestamp: number;
   args: unknown[];
+}
+
+export type LogWithTransactionHash = Omit<Log, 'transactionHash'> &
+  Required<Pick<Log, 'transactionHash'>>;
+
+export interface HistoricTransaction {
+  hash: string;
+  contractAddress: string;
+  blockNumber: number;
+  status: number;
+  logs: LogDescription[];
 }
 
 export enum TransactionStatus {
