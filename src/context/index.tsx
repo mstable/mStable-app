@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { UseWalletProvider } from 'use-wallet';
 import { ThemeProvider } from 'styled-components';
+import { NotificationsProvider } from './NotificationsProvider';
 import { ApolloProvider } from './ApolloProvider';
 import { TransactionsProvider } from './TransactionsProvider';
 import { AppProvider } from './AppProvider';
@@ -11,19 +12,21 @@ import { TokensProvider } from './TokensProvider';
 import { theme } from '../theme';
 
 export const Providers: FC<{}> = ({ children }) => (
-  <ApolloProvider>
-    <UseWalletProvider chainId={CHAIN_ID} connectors={AVAILABLE_CONNECTORS}>
-      <SignerProvider>
-        <KnownAddressProvider>
-          <TokensProvider>
-            <TransactionsProvider>
-              <AppProvider>
-                <ThemeProvider theme={theme}>{children}</ThemeProvider>
-              </AppProvider>
-            </TransactionsProvider>
-          </TokensProvider>
-        </KnownAddressProvider>
-      </SignerProvider>
-    </UseWalletProvider>
-  </ApolloProvider>
+  <NotificationsProvider>
+    <ApolloProvider>
+      <UseWalletProvider chainId={CHAIN_ID} connectors={AVAILABLE_CONNECTORS}>
+        <SignerProvider>
+          <KnownAddressProvider>
+            <TokensProvider>
+              <TransactionsProvider>
+                <AppProvider>
+                  <ThemeProvider theme={theme}>{children}</ThemeProvider>
+                </AppProvider>
+              </TransactionsProvider>
+            </TokensProvider>
+          </KnownAddressProvider>
+        </SignerProvider>
+      </UseWalletProvider>
+    </ApolloProvider>
+  </NotificationsProvider>
 );

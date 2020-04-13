@@ -14,7 +14,7 @@ import {
   Transaction,
   HistoricTransaction,
 } from '../types';
-import { useAddSuccessNotification } from './AppProvider';
+import { useAddSuccessNotification } from './NotificationsProvider';
 import { TransactionOverrides } from '../typechain/index.d';
 
 enum Actions {
@@ -289,7 +289,7 @@ export const useSendTransaction =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (): ((tx: SendTxManifest<any, any>) => void) => {
     const [, { addPending }] = useTransactionsContext();
-    const addSuccess = useAddSuccessNotification(); // TODO move this, wrong context
+    const addSuccess = useAddSuccessNotification();
 
     return useCallback(
       manifest => {

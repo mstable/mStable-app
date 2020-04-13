@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import {
   Notification,
   NotificationType,
-  useAppState,
+  useNotificationsState,
   useRemoveNotification,
-} from '../../context/AppProvider';
+} from '../../context/NotificationsProvider';
 
 const Container = styled.div`
   position: fixed;
@@ -23,7 +23,7 @@ const Item = styled.div<Pick<Notification, 'type'>>`
 `;
 
 export const Notifications: FC<{}> = () => {
-  const { notifications } = useAppState();
+  const notifications = useNotificationsState();
   const remove = useRemoveNotification();
   return (
     <Container>
