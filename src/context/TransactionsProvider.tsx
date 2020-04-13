@@ -1,21 +1,10 @@
-import React, {
-  createContext,
-  FC,
-  Reducer,
-  useReducer,
-  useMemo,
-  useCallback,
-  useContext,
-} from 'react';
+import React, { createContext, FC, Reducer, useCallback, useContext, useMemo, useReducer } from 'react';
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
-import {
-  SendTxManifest,
-  Transaction,
-  HistoricTransaction,
-} from '../types';
-import { useAddSuccessNotification } from './NotificationsProvider';
+import { HistoricTransaction, SendTxManifest, Transaction, TransactionStatus } from '../types';
+import { useAddErrorNotification, useAddSuccessNotification } from './NotificationsProvider';
 import { TransactionOverrides } from '../typechain/index.d';
+import { getTransactionStatus } from '../web3/transactions';
 
 enum Actions {
   AddPending,
@@ -157,6 +146,8 @@ const initialState: State = Object.freeze({ historic: {}, current: {} });
  */
 export const TransactionsProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(transactionsCtxReducer, initialState);
+  const addSuccessNotification = useAddSuccessNotification();
+  const addErrorNotification = useAddErrorNotification();
 
   const addPending = useCallback(
     (currentTx: Transaction) => {
@@ -187,9 +178,17 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
 
   const finalize = useCallback(
     (hash: string, receipt: TransactionReceipt) => {
+      const status = getTransactionStatus(receipt);
+
+      // TODO add etherscan link for this so the user knows the tx was
+      if (status === TransactionStatus.Success) {
+        addSuccessNotification('Transaction confirmed');
+      } else if (status === TransactionStatus.Error) {
+        addErrorNotification('Transaction failed');
+      }
       dispatch({ type: Actions.Finalize, payload: { hash, receipt } });
     },
-    [dispatch],
+    [dispatch, addSuccessNotification, addErrorNotification],
   );
 
   const reset = useCallback(() => {
@@ -289,13 +288,17 @@ export const useSendTransaction =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (): ((tx: SendTxManifest<any, any>) => void) => {
     const [, { addPending }] = useTransactionsContext();
-    const addSuccess = useAddSuccessNotification();
+    const addSuccessNotification = useAddSuccessNotification();
+    const addErrorNotification = useAddErrorNotification();
 
     return useCallback(
       manifest => {
         sendTransaction(manifest).then(response => {
           const { hash } = response;
-          if (!hash) throw new Error('Missing transaction hash');
+          if (!hash) {
+            addErrorNotification('Transaction failed to send: missing hash');
+            return;
+          }
           addPending({
             hash,
             response,
@@ -304,9 +307,9 @@ export const useSendTransaction =
             timestamp: Date.now(),
             status: null,
           });
-          addSuccess('Transaction sent');
+          addSuccessNotification('Transaction sent');
         });
       },
-      [addPending, addSuccess],
+      [addPending, addErrorNotification, addSuccessNotification],
     );
   };
