@@ -30,8 +30,6 @@ enum Actions {
   SelectMasset,
   SupportedChainSelected,
   SetOnline,
-  AddNotification,
-  RemoveNotification,
 }
 
 enum WalletConnectionStatus {
@@ -52,16 +50,6 @@ export enum StatusWarnings {
   UnsupportedChain,
 }
 
-export enum NotificationType {
-  Success,
-  Error,
-}
-
-export interface Notification {
-  type: NotificationType;
-  message: string;
-}
-
 interface State {
   wallet: {
     expanded: boolean;
@@ -72,9 +60,6 @@ interface State {
   };
   online: boolean;
   selectedMasset: MassetNames;
-  notifications: {
-    [id: string]: Notification;
-  };
 }
 
 type Action =
@@ -86,11 +71,6 @@ type Action =
   | { type: Actions.ConnectWallet; payload: keyof Connectors }
   | { type: Actions.ConnectWalletError; payload: Reasons }
   | { type: Actions.ConnectWalletSuccess }
-  | {
-      type: Actions.AddNotification;
-      payload: { id: string; notification: Notification };
-    }
-  | { type: Actions.RemoveNotification; payload: { id: string } }
   | { type: Actions.SetOnline; payload: boolean };
 
 interface Dispatch {
@@ -99,8 +79,6 @@ interface Dispatch {
   expandWallet(): void;
   resetWallet(): void;
   connectWallet(connector: keyof Connectors): void;
-  addNotification(notification: Notification): void;
-  removeNotification(id: string): void;
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
@@ -154,23 +132,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
           error: null,
         },
       };
-    case Actions.AddNotification: {
-      const { id, notification } = action.payload;
-      return {
-        ...state,
-        notifications: {
-          ...state.notifications,
-          [id]: notification,
-        },
-      };
-    }
-    case Actions.RemoveNotification: {
-      const { [action.payload.id]: _, ...notifications } = state.notifications;
-      return {
-        ...state,
-        notifications,
-      };
-    }
     case Actions.SetOnline:
       return { ...state, online: action.payload };
     default:
@@ -187,7 +148,6 @@ const initialState: State = {
   },
   selectedMasset: MassetNames.mUSD,
   online: true,
-  notifications: {},
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -256,30 +216,6 @@ export const AppProvider: FC<{}> = ({ children }) => {
     });
   }, [dispatch]);
 
-  const addNotification = useCallback(
-    (notification: Notification) => {
-      const id = Math.random().toString();
-
-      dispatch({
-        type: Actions.AddNotification,
-        payload: { id, notification },
-      });
-
-      // Remove the notification after a delay
-      setTimeout(() => {
-        dispatch({ type: Actions.RemoveNotification, payload: { id } });
-      }, 5000);
-    },
-    [dispatch],
-  );
-
-  const removeNotification = useCallback(
-    (id: string) => {
-      dispatch({ type: Actions.RemoveNotification, payload: { id } });
-    },
-    [dispatch],
-  );
-
   /**
    * Detect internet connection (or lack thereof)
    */
@@ -326,8 +262,6 @@ export const AppProvider: FC<{}> = ({ children }) => {
         () => [
           state,
           {
-            addNotification,
-            removeNotification,
             collapseWallet,
             expandWallet,
             selectMasset,
@@ -337,8 +271,6 @@ export const AppProvider: FC<{}> = ({ children }) => {
         ],
         [
           state,
-          addNotification,
-          removeNotification,
           collapseWallet,
           expandWallet,
           selectMasset,
@@ -371,29 +303,6 @@ export const useAppDispatch = (): Dispatch => useAppContext()[1];
 
 export const useCollapseWallet = (): Dispatch['collapseWallet'] =>
   useAppDispatch().collapseWallet;
-
-export const useAddSuccessNotification = (): ((message: string) => void) => {
-  const add = useAppDispatch().addNotification;
-  return useCallback(
-    (message: string) => {
-      add({ type: NotificationType.Success, message });
-    },
-    [add],
-  );
-};
-
-export const useAddErrorNotification = (): ((message: string) => void) => {
-  const add = useAppDispatch().addNotification;
-  return useCallback(
-    (message: string) => {
-      add({ type: NotificationType.Error, message });
-    },
-    [add],
-  );
-};
-
-export const useRemoveNotification = (): Dispatch['removeNotification'] =>
-  useAppDispatch().removeNotification;
 
 export const useAppStatusWarnings = (): StatusWarnings[] => {
   const {
