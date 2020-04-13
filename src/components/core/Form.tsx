@@ -5,7 +5,12 @@ import {
   useIsWalletConnected,
 } from '../../context/AppProvider';
 
-export const StyledForm = styled.form<{ disabled?: boolean }>`
+interface Props {
+  onSubmit(event: FormEvent<Element>): void;
+  error?: string;
+}
+
+const StyledForm = styled.form<{ disabled?: boolean }>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};
 
   input,
@@ -16,11 +21,13 @@ export const StyledForm = styled.form<{ disabled?: boolean }>`
   }
 `;
 
-export const Form: FC<{ onSubmit(event: FormEvent<Element>): void }> = ({
-  children,
-  onSubmit,
-}) => {
+const FormError = styled.div`
+  color: ${({ theme }) => theme.color.red};
+`;
+
+export const Form: FC<Props> = ({ children, onSubmit, error }) => {
   const connected = useIsWalletConnected();
+  const disabled = !connected;
   const expandWallet = useExpandWallet();
 
   const handleClick = useCallback(() => {
@@ -31,24 +38,9 @@ export const Form: FC<{ onSubmit(event: FormEvent<Element>): void }> = ({
   }, [connected, expandWallet]);
 
   return (
-    <StyledForm onClick={handleClick} onSubmit={onSubmit} disabled={!connected}>
-      {children}
+    <StyledForm onClick={handleClick} onSubmit={onSubmit} disabled={disabled}>
+      {error ? <FormError>{error}</FormError> : null}
+      <div>{children}</div>
     </StyledForm>
   );
 };
-
-export const FormRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: ${props => props.theme.spacing.xl};
-
-  > * {
-    flex: 1;
-    margin-right: ${props => props.theme.spacing.l};
-    width: 100%;
-    &:last-child {
-      margin-right: 0;
-    }
-  }
-`;

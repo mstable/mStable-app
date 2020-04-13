@@ -8,6 +8,7 @@ export enum Color {
   blue = '#005cde',
   red = '#ca001b',
   foreground = '#000000',
+  foregroundTransparent = 'rgba(0, 0, 0, 0.3)',
 }
 
 export enum Size {

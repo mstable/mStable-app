@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { BigNumber, parseUnits } from 'ethers/utils';
 import { TokenAmountInput } from '../forms/TokenAmountInput';
-import { Form, FormRow } from '../core/Form';
+import { Form } from '../core/Form';
 import { useKnownAddress } from '../../context/KnownAddressProvider';
 import { ContractNames } from '../../types';
 import { useTokenWithBalance } from '../../context/TokensProvider';
@@ -112,7 +112,7 @@ export const Save: FC<{}> = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <FormRow>
+      <div>
         <Button
           type="button"
           size={Size.m}
@@ -129,8 +129,8 @@ export const Save: FC<{}> = () => {
         >
           Withdraw
         </Button>
-      </FormRow>
-      <FormRow>
+      </div>
+      <div>
         <TokenAmountInput
           error={error}
           name="TODO"
@@ -140,13 +140,13 @@ export const Save: FC<{}> = () => {
           tokenValue={mUSDAddress}
           tokenAddresses={mUSDAddress ? [mUSDAddress] : []}
         />
-      </FormRow>
-      <FormRow>
+      </div>
+      <div>
         <Button type="submit" size={Size.m}>
           Submit
         </Button>
-      </FormRow>
-      <FormRow>
+      </div>
+      <div>
         <TransactionDetailsDropdown>
           <>
             <P>
@@ -161,7 +161,7 @@ export const Save: FC<{}> = () => {
             </P>
           </>
         </TransactionDetailsDropdown>
-      </FormRow>
+      </div>
     </Form>
   );
 };

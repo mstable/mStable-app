@@ -7,6 +7,7 @@ interface Props {
   value: string | null;
   tokens: TokenDetailsFragment[];
   onChange?(name: string, token: TokenDetailsFragment | null): void;
+  error?: string;
   disabled?: boolean;
 }
 
@@ -17,6 +18,7 @@ const UNSET = 'UNSET';
  * Select a token from a given list of tokens.
  *
  * @param name @TODO
+ * @param error @TODO
  * @param value Selected token address value (address)
  * @param tokens Available tokens (list of addresses)
  * @param onChange Optional callback for change event
@@ -28,6 +30,7 @@ export const TokenInput: FC<Props> = ({
   tokens,
   onChange,
   disabled = false,
+  error,
 }) => {
   const handleChange = useCallback<ChangeEventHandler<HTMLSelectElement>>(
     event => {
@@ -46,7 +49,12 @@ export const TokenInput: FC<Props> = ({
     [onChange, tokens, name],
   );
   return (
-    <Select onChange={handleChange} value={value || ''} disabled={disabled}>
+    <Select
+      onChange={handleChange}
+      value={value || ''}
+      disabled={disabled}
+      error={error}
+    >
       <option key={UNSET} value={UNSET}>
         Select a token
       </option>

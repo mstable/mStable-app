@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber, formatUnits } from 'ethers/utils';
 import {
   TokenDetailsFragment,
   useErc20TokensQuery,
@@ -200,14 +200,25 @@ export const useToken = (token: TokenAddress | null): State[string] | null => {
 
 export const useTokenWithBalance = (
   token: TokenAddress | null,
-): Partial<TokenDetailsFragment & State[keyof State]> => {
+): Partial<TokenDetailsFragment &
+  State[keyof State] & { formattedBalance: string | null }> => {
   const tokenFromState = useToken(token);
   const query = useErc20TokensQuery({
     variables: { addresses: [token] },
   });
   const tokenFromData = query.data?.tokens?.[0];
-  return useMemo(() => ({ ...tokenFromState, ...tokenFromData }), [
-    tokenFromState,
-    tokenFromData,
-  ]);
+  return useMemo(
+    () => ({
+      ...tokenFromState,
+      ...tokenFromData,
+      formattedBalance:
+        tokenFromState?.balance && tokenFromData?.decimals
+          ? formatUnits(
+              tokenFromState.balance.toString(),
+              tokenFromData.decimals,
+            )
+          : null,
+    }),
+    [tokenFromState, tokenFromData],
+  );
 };

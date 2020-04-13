@@ -32,10 +32,6 @@ const Main = styled.main`
   width: 100%;
   flex: 1;
   padding: ${props => props.theme.spacing.l};
-
-  @media (min-width: ${ViewportWidth.m}) {
-    padding-top: 10%;
-  }
 `;
 
 const GlobalStyle = createGlobalStyle<{ walletExpanded: boolean }>`

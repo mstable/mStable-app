@@ -40,13 +40,17 @@ export enum Reasons {
 }
 
 type Action =
-  | { type: Actions.SetError; payload: Reasons | null }
+  | {
+      type: Actions.SetError;
+      payload: null | { reason: Reasons; field?: Fields };
+    }
   | { type: Actions.StartSubmission }
   | { type: Actions.EndSubmission }
   | {
       type: Actions.SetToken;
       payload: {
         field: Fields;
+        swapType?: boolean;
       } & TokenDetails;
     }
   | {
@@ -66,13 +70,12 @@ interface State {
   };
   mUSD: TokenDetails;
   transactionType: TransactionType;
-  error: Reasons | null;
+  error: null | { reason: Reasons; field?: Fields };
   submitting: boolean;
-  // success: boolean // TODO?
 }
 
 interface Dispatch {
-  setError(reason: Reasons | null): void;
+  setError(reason: Reasons | null, field?: Fields): void;
   setToken(field: Fields, token: TokenDetails): void;
   setMUSD(token: TokenDetails): void;
   setQuantity(field: Fields, simpleAmount: string): void;
@@ -109,6 +112,16 @@ const initialState: State = Object.freeze({
   transactionType: TransactionType.Mint,
 });
 
+const getOtherTransactionType = (
+  transactionType: TransactionType,
+): TransactionType =>
+  transactionType === TransactionType.Mint
+    ? TransactionType.Redeem
+    : TransactionType.Mint;
+
+const getOtherField = (field: Fields): Fields =>
+  field === Fields.Input ? Fields.Output : Fields.Input;
+
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.SetError:
@@ -120,7 +133,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
       };
     }
     case Actions.SetToken: {
-      const { field, decimals, address, symbol } = action.payload;
+      const { field, decimals, address, symbol, swapType } = action.payload;
       return {
         ...state,
         values: {
@@ -129,13 +142,26 @@ const reducer: Reducer<State, Action> = (state, action) => {
             ...state.values[field],
             token: { decimals, address, symbol },
           }),
+          ...(swapType
+            ? {
+                [getOtherField(field)]: parseAmounts({
+                  ...state.values[field],
+                  token: { ...state.mUSD },
+                }),
+              }
+            : null),
         },
+        ...(swapType
+          ? {
+              transactionType: getOtherTransactionType(state.transactionType),
+            }
+          : null),
       };
     }
     case Actions.SetQuantity: {
       const { field, simpleAmount } = action.payload;
 
-      const otherField = field === Fields.Input ? Fields.Output : Fields.Input;
+      const otherField = getOtherField(field);
       const { [field]: tokenQ, [otherField]: otherTokenQ } = state.values;
 
       // TODO use `field` and `state.transactionType` to determine amounts
@@ -192,16 +218,16 @@ export const useSwapState = (): [State, Dispatch] => {
   const swapTransactionType = useCallback(() => {
     dispatch({
       type: Actions.SetTransactionType,
-      payload:
-        transactionType === TransactionType.Mint
-          ? TransactionType.Redeem
-          : TransactionType.Mint,
+      payload: getOtherTransactionType(transactionType),
     });
   }, [dispatch, transactionType]);
 
   const setError = useCallback<Dispatch['setError']>(
-    payload => {
-      dispatch({ type: Actions.SetError, payload });
+    (reason, field) => {
+      dispatch({
+        type: Actions.SetError,
+        payload: reason === null ? null : { reason, field },
+      });
     },
     [dispatch],
   );
@@ -215,8 +241,17 @@ export const useSwapState = (): [State, Dispatch] => {
         symbol: string | null;
       },
     ) => {
-      const otherField = field === Fields.Input ? Fields.Output : Fields.Input;
+      const otherField = getOtherField(field);
       const { [field]: tokenQ, [otherField]: otherTokenQ } = state.values;
+
+      // Handle unsetting the token
+      if (payload === null) {
+        dispatch({
+          type: Actions.SetToken,
+          payload: { field, address: null, symbol: null, decimals: null },
+        });
+        return;
+      }
 
       // Ignore no change
       if (payload.address === tokenQ.token?.address) return;
@@ -228,24 +263,16 @@ export const useSwapState = (): [State, Dispatch] => {
       }
 
       // If neither token will be mUSD, set the other token to MUSD (change type)
-      if (
+      const swapType = !!(
         payload.address &&
         mUSD.address &&
         payload.address !== mUSD.address &&
         otherTokenQ.token.address !== mUSD.address
-      ) {
-        dispatch({
-          type: Actions.SetToken,
-          payload: {
-            field: otherField,
-            ...mUSD,
-          },
-        });
-      }
+      );
 
       dispatch({
         type: Actions.SetToken,
-        payload: { field, ...payload },
+        payload: { field, swapType, ...payload },
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

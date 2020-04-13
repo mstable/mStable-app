@@ -13,7 +13,7 @@ import { MUSDFactory } from '../../../typechain/MUSDFactory';
 import { parseAmounts } from '../../../web3/amounts';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
-import { Form, FormRow } from '../../core/Form';
+import { Form } from '../../core/Form';
 import { Button } from '../../core/Button';
 import { H3, P } from '../../core/Typography';
 import { ReactComponent as ArrowsSVG } from '../arrows.svg';
@@ -87,6 +87,12 @@ const SwapDirectionButton = styled.div`
   }
 `;
 
+const SubmitButton = styled(Button)`
+  background: white;
+  width: 100%;
+  margin-bottom: ${({ theme }) => theme.spacing.m};
+`;
+
 // Unit based deviation allowance, where 1 == 1e18
 const grace = '1000000000000000000000000';
 
@@ -116,10 +122,23 @@ export const Swap: FC<{}> = () => {
   const touched = useRef<boolean>(false);
 
   /**
-   * Error message string (mapped from reasons)
+   * Error message strings (mapped from reasons)
    */
-  const errorMessage = useMemo<string | null>(
-    () => (error === null ? null : mapReasonToMessage(error)),
+  const { formError, inputError, outputError } = useMemo<{
+    formError?: string;
+    inputError?: string;
+    outputError?: string;
+  }>(
+    () =>
+      error === null
+        ? {}
+        : {
+            [error.field === Fields.Input
+              ? 'inputError'
+              : error.field === Fields.Output
+              ? 'outputError'
+              : 'formError']: mapReasonToMessage(error.reason),
+          },
     [error],
   );
 
@@ -167,12 +186,6 @@ export const Swap: FC<{}> = () => {
   /**
    * Subsets of data from inputs/outputs
    */
-  const selectedBasset = useMemo(() => {
-    const address =
-      transactionType === TransactionType.Mint ? inputAddress : outputAddress;
-    return bassets.find(b => b.id === address);
-  }, [bassets, inputAddress, outputAddress, transactionType]);
-
   const allBassets = useMemo(
     () =>
       bassets.map(
@@ -198,13 +211,6 @@ export const Swap: FC<{}> = () => {
 
   const inputToken = useTokenWithBalance(inputAddress);
   const outputToken = useTokenWithBalance(outputAddress);
-  const inputTokenBalance = useMemo(
-    () =>
-      inputToken?.balance && inputToken.decimals
-        ? formatUnits(inputToken.balance.toString(), inputToken.decimals)
-        : null,
-    [inputToken],
-  );
 
   const [redemptionFee, netOutput] = useMemo<
     [TokenQuantity | null, TokenQuantity | null]
@@ -246,6 +252,22 @@ export const Swap: FC<{}> = () => {
     }
     return [null, null];
   }, [feeRate, input, output, transactionType]);
+
+  const inputItems = useMemo(
+    () => [{ label: 'Balance', value: inputToken?.formattedBalance }],
+    [inputToken],
+  );
+
+  const outputItems = useMemo(
+    () => [
+      { label: 'Balance', value: outputToken?.formattedBalance },
+      ...(transactionType === TransactionType.Redeem &&
+      redemptionFee?.amount?.formatted
+        ? [{ label: 'Redemption fee', value: redemptionFee.amount.formatted }]
+        : []),
+    ],
+    [outputToken, transactionType, redemptionFee],
+  );
 
   /**
    * Flag for whether mUSD needs approval to spend the input token (for minting)
@@ -294,10 +316,10 @@ export const Swap: FC<{}> = () => {
    * Handle setting the max amount for the input token
    */
   const handleSetMax = useCallback(() => {
-    if (inputTokenBalance) {
-      setQuantity(Fields.Input, inputTokenBalance);
+    if (inputToken?.formattedBalance) {
+      setQuantity(Fields.Input, inputToken.formattedBalance);
     }
-  }, [setQuantity, inputTokenBalance]);
+  }, [setQuantity, inputToken]);
 
   /**
    * Handle form submission
@@ -345,46 +367,45 @@ export const Swap: FC<{}> = () => {
     }
 
     if (!(input.amount.simple && output.amount.simple)) {
-      setError(Reasons.AmountMustBeSet);
+      setError(Reasons.AmountMustBeSet, Fields.Input);
       return;
     }
 
     if (input.amount.exact?.lte(0)) {
-      setError(Reasons.AmountMustBeGreaterThanZero);
+      setError(Reasons.AmountMustBeGreaterThanZero, Fields.Input);
       return;
     }
 
-    if (
-      (input.amount.simple && !input.token.address) ||
-      (output.amount.simple && !output.token.address)
-    ) {
-      setError(Reasons.TokenMustBeSelected);
+    if (input.amount.simple && !input.token.address) {
+      setError(Reasons.TokenMustBeSelected, Fields.Input);
+      return;
+    }
+
+    if (output.amount.simple && !output.token.address) {
+      setError(Reasons.TokenMustBeSelected, Fields.Output);
       return;
     }
 
     if (!input.amount.exact || !output.amount.exact) {
-      setError(Reasons.AmountCouldNotBeParsed);
+      setError(Reasons.AmountCouldNotBeParsed, Fields.Input);
       return;
     }
 
     if (inputToken?.balance && input.amount.exact?.gt(inputToken.balance)) {
-      setError(Reasons.AmountMustNotExceedBalance);
+      setError(Reasons.AmountMustNotExceedBalance, Fields.Input);
       return;
     }
 
     if (needsUnlock) {
-      setError(Reasons.TokenMustBeUnlocked);
+      setError(Reasons.TokenMustBeUnlocked, Fields.Input);
       return;
     }
 
-    if (
-      !(selectedBasset && mUSD && forgeValidatorContract && input.amount.simple)
-    ) {
+    if (!(mUSD && forgeValidatorContract && input.amount.simple)) {
       setError(Reasons.FetchingData);
       return;
     }
 
-    const bassetIndex = allBassets.findIndex(b => b.addr === selectedBasset.id);
     const totalSupply = parseUnits(mUSD.token.totalSupply, mUSD.token.decimals);
 
     const validatePromise =
@@ -392,7 +413,9 @@ export const Swap: FC<{}> = () => {
         ? forgeValidatorContract.validateMint(
             totalSupply,
             grace,
-            allBassets[bassetIndex],
+            allBassets.find(b => b.addr === inputAddress) as NonNullable<
+              Parameters<typeof forgeValidatorContract['validateMint']>[2]
+            >,
             input.amount.exact,
           )
         : forgeValidatorContract.validateRedemption(
@@ -400,7 +423,7 @@ export const Swap: FC<{}> = () => {
             totalSupply,
             allBassets,
             grace,
-            bassetIndex,
+            allBassets.findIndex(b => b.addr === outputAddress),
             output.amount.exact,
           );
 
@@ -435,10 +458,9 @@ export const Swap: FC<{}> = () => {
   }, [outputAddress, mUSDAddress, touched, setMUSD, mUSD]);
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <FormRow>{errorMessage}</FormRow>
+    <Form error={formError} onSubmit={handleSubmit}>
       <H3>Send</H3>
-      <FormRow>
+      <div>
         <TokenAmountInput
           amountValue={input.amount.simple || ''}
           tokenAddresses={allTokenAddresses}
@@ -449,14 +471,18 @@ export const Swap: FC<{}> = () => {
           onSetMax={handleSetMax}
           onUnlock={handleUnlock}
           needsUnlock={needsUnlock}
-          balance={inputTokenBalance}
+          items={inputItems}
+          error={inputError}
         />
-      </FormRow>
-      <SwapDirectionButton onClick={swapTransactionType}>
+      </div>
+      <SwapDirectionButton
+        onClick={swapTransactionType}
+        title="Change direction"
+      >
         <ArrowsSVG />
       </SwapDirectionButton>
       <H3>Receive</H3>
-      <FormRow>
+      <div>
         <TokenAmountInput
           amountValue={netOutput?.amount.simple || output.amount.simple || ''}
           tokenAddresses={allTokenAddresses}
@@ -464,32 +490,27 @@ export const Swap: FC<{}> = () => {
           name={Fields.Output}
           onChangeAmount={setQuantity}
           onChangeToken={setToken}
+          items={outputItems}
+          error={outputError}
         />
-      </FormRow>
-      {redemptionFee ? (
-        <FormRow>Redemption fee: {redemptionFee.amount.formatted}</FormRow>
-      ) : null}
-      <FormRow>
-        <Button type="submit" size={Size.m} disabled={submitButtonDisabled}>
-          Swap
-        </Button>
-      </FormRow>
-      <FormRow>
-        <TransactionDetailsDropdown>
-          <>
-            <P>
-              You are swapping {input.amount.formatted} for
-              {output.amount.formatted} (1:1).
-            </P>
-            <P>How about some more details here explaining what the deal is?</P>
-            <P>
-              Details are really nice and they might go on for a few lines. Here
-              is another sentence. Watch out, this sentence ends with an
-              exclamation mark!
-            </P>
-          </>
-        </TransactionDetailsDropdown>
-      </FormRow>
+      </div>
+      <SubmitButton type="submit" size={Size.l} disabled={submitButtonDisabled}>
+        Swap
+      </SubmitButton>
+      <TransactionDetailsDropdown>
+        <>
+          <P>
+            You are swapping {input.amount.formatted} for
+            {output.amount.formatted} (1:1).
+          </P>
+          <P>How about some more details here explaining what the deal is?</P>
+          <P>
+            Details are really nice and they might go on for a few lines. Here
+            is another sentence. Watch out, this sentence ends with an
+            exclamation mark!
+          </P>
+        </>
+      </TransactionDetailsDropdown>
     </Form>
   );
 };
