@@ -28,7 +28,7 @@ export const parseAmounts = ({
       if (!(simple && decimals)) return null;
 
       try {
-        return parseUnits(simple, decimals);
+        return parseUnits(simple.slice(0, decimals), decimals);
       } catch {
         return null;
       }

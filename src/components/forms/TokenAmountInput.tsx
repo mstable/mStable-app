@@ -8,6 +8,7 @@ import {
 } from '../../graphql/generated';
 import { Size } from '../../theme';
 import { Button } from '../core/Button';
+import { FlexRow } from '../core/Containers';
 
 interface Props {
   name: string;
@@ -16,37 +17,35 @@ interface Props {
   amountValue: string | void;
   tokenAddresses: string[];
   needsUnlock?: boolean;
-  balance?: string | null;
+  items?: { label: string; value?: string | null | undefined }[];
   onUnlock?(): void;
   onChangeAmount?(name: string, simpleAmount: string | null): void;
   onChangeToken?(name: string, token: TokenDetailsFragment): void;
   onSetMax?(): void;
 }
 
-const Container = styled.div``;
-
-const UnlockButton = styled(Button)`
-  background: transparent;
-  height: 36px;
-`;
-
-const InputContainer = styled.div`
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: ${props => props.theme.spacing.s};
-
-  > :last-child {
-    margin-left: ${props => props.theme.spacing.s};
-  }
+const InputsRow = styled(FlexRow)`
+  align-items: flex-start;
+  margin-bottom: 0;
 `;
 
 const Error = styled.div`
-  color: ${props => props.theme.color.red};
+  text-align: center;
+  color: ${({ theme }) => theme.color.red};
+  font-size: ${({ theme }) => theme.fontSize.s};
+  min-height: 2rem;
 `;
 
-const Balance = styled.div`
+const Item = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing.s};
+`;
+
+const ItemValue = styled.div``;
+
+const ItemLabel = styled.div`
   font-size: ${({ theme }) => theme.fontSize.s};
   text-transform: uppercase;
+  font-weight: bold;
 `;
 
 /**
@@ -56,7 +55,7 @@ const Balance = styled.div`
  * @param name @TODO
  * @param needsUnlock @TODO
  * @param onUnlock @TODO
- * @param balance @TODO
+ * @param items @TODO
  * @param error Error message, e.g. 'Amount too low'
  * @param tokenAddresses List of available token addresses
  * @param tokenValue Selected token address
@@ -73,11 +72,11 @@ export const TokenAmountInput: FC<Props> = ({
   amountValue,
   name,
   needsUnlock,
-  balance,
   onUnlock,
   onChangeAmount,
   onChangeToken,
   onSetMax,
+  items = [],
 }) => {
   const { data: tokensData } = useErc20TokensQuery({
     variables: { addresses: tokenAddresses },
@@ -87,30 +86,49 @@ export const TokenAmountInput: FC<Props> = ({
     [tokensData, tokenValue],
   );
   return (
-    <Container>
-      <InputContainer>
-        <AmountInput
-          name={name}
-          value={amountValue}
-          onChange={onChangeAmount}
-          onSetMax={onSetMax}
-          error={error}
-          decimals={selectedToken?.decimals}
-        />
-        {needsUnlock && onUnlock ? (
-          <UnlockButton type="button" onClick={onUnlock} size={Size.m}>
-            Unlock
-          </UnlockButton>
-        ) : null}
+    <div>
+      <InputsRow>
+        <div>
+          <AmountInput
+            name={name}
+            value={amountValue}
+            onChange={onChangeAmount}
+            onSetMax={onSetMax}
+            error={error}
+            decimals={selectedToken?.decimals}
+          />
+          <FlexRow size={Size.xs}>
+            <div>
+              {items.map(({ label, value }) => (
+                <Item key={label}>
+                  <ItemLabel>{label}</ItemLabel>
+                  <ItemValue>{value || '—'}</ItemValue>
+                </Item>
+              ))}
+            </div>
+            <FlexRow size={Size.xs}>
+              {onSetMax ? (
+                <Button type="button" onClick={onSetMax} size={Size.xs}>
+                  Set maximum
+                </Button>
+              ) : null}
+              {needsUnlock && onUnlock ? (
+                <Button type="button" onClick={onUnlock} size={Size.xs}>
+                  Unlock
+                </Button>
+              ) : null}
+            </FlexRow>
+          </FlexRow>
+        </div>
         <TokenInput
           name={name}
           value={tokenValue}
           tokens={tokensData?.tokens || []}
           onChange={onChangeToken}
+          error={error}
         />
-      </InputContainer>
-      {balance ? <Balance>Balance: {balance}</Balance> : null}
-      {error ? <Error>{error}</Error> : null}
-    </Container>
+      </InputsRow>
+      <Error>{error}</Error>
+    </div>
   );
 };

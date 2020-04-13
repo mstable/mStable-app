@@ -9,21 +9,20 @@ interface Props extends ButtonHTMLAttributes<unknown> {
 
 export const Button = styled.button<Props>`
   appearance: none;
-  background: ${props =>
-    props.inverted
-      ? props.theme.color.foreground
-      : props.theme.color.background};
+  background: ${({ inverted, theme }) =>
+    inverted ? theme.color.foreground : 'white'};
   border: 2px
     ${props =>
       props.inverted
         ? props.theme.color.background
         : props.theme.color.foreground}
     solid;
+  border-radius: 3px;
   color: ${props =>
     props.inverted
       ? props.theme.color.background
       : props.theme.color.foreground};
-  opacity: ${props => (props.disabled ? '0.5' : '1')};
+  opacity: ${props => (props.disabled ? '0.3' : '1')};
   cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
   font-weight: bold;
   font-size: ${props => mapSizeToFontSize(props.size)};

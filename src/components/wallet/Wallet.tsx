@@ -11,6 +11,7 @@ import { Button } from '../core/Button';
 import { H3 } from '../core/Typography';
 import { Address } from '../core/Address';
 import { ActivitySpinner } from '../core/ActivitySpinner';
+import { FlexRow } from '../core/Containers';
 import { Size } from '../../theme';
 import { Balances } from './Balances';
 import { HistoricTransactions } from './HistoricTransactions';
@@ -68,12 +69,6 @@ const DisconnectButton = styled(Button)`
   background: ${({ theme }) => theme.color.red};
 `;
 
-const Content = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-`;
-
 const Error = styled.div`
   color: ${({ theme }) => theme.color.red};
   font-weight: bold;
@@ -85,9 +80,9 @@ const ConnectorsList = styled.div`
   margin: 0;
   list-style: none;
   display: grid;
+  width: 100%;
 
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-auto-rows: minmax(min-content, max-content);
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   grid-column-gap: ${({ theme }) => theme.spacing.m};
 `;
 
@@ -96,7 +91,7 @@ const ConnectorButton = styled(Button)`
   padding: ${props => props.theme.spacing.m};
   img {
     display: block;
-    max-width: 150px;
+    max-width: 100%;
     margin-bottom: ${({ theme }) => theme.spacing.s};
   }
   div {
@@ -105,7 +100,7 @@ const ConnectorButton = styled(Button)`
 `;
 
 const Connecting = styled.div`
-  width: 150px;
+  width: 120px;
 `;
 
 const Disconnected: FC<{
@@ -186,7 +181,7 @@ export const Wallet: FC<{}> = () => {
         ) : null}
       </Header>
       {error ? <Error>{error}</Error> : null}
-      <Content>
+      <FlexRow>
         {connected && account ? (
           <Connected account={account} />
         ) : connecting ? (
@@ -196,7 +191,7 @@ export const Wallet: FC<{}> = () => {
         ) : (
           <Disconnected connect={connectWallet} />
         )}
-      </Content>
+      </FlexRow>
     </Container>
   );
 };
