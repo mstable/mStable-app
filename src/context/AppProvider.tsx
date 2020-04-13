@@ -19,6 +19,7 @@ import { TokenDetailsFragment } from '../graphql/generated';
 import { useMassetToken } from '../web3/hooks';
 import { MassetNames, InjectedEthereum } from '../types';
 import { CHAIN_ID } from '../web3/constants';
+import { useAddSuccessNotification, useAddErrorNotification } from './NotificationsProvider';
 
 enum Actions {
   ResetWallet,
@@ -159,6 +160,8 @@ const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 export const AppProvider: FC<{}> = ({ children }) => {
   const { activate, deactivate } = useWallet<InjectedEthereum>();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const addSuccessNotification = useAddSuccessNotification();
+  const addErrorNotification = useAddErrorNotification();
 
   const collapseWallet = useCallback<Dispatch['collapseWallet']>(() => {
     dispatch({ type: Actions.CollapseWallet });
@@ -185,6 +188,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
       dispatch({ type: Actions.ConnectWallet, payload: selected });
       activate(selected)
         .then(() => {
+          addSuccessNotification('Connected');
           dispatch({ type: Actions.ConnectWalletSuccess });
         })
         .catch(error => {
@@ -200,13 +204,14 @@ export const AppProvider: FC<{}> = ({ children }) => {
             reason = Reasons.Unknown;
           }
 
+          addErrorNotification(reason);
           dispatch({
             type: Actions.ConnectWalletError,
             payload: reason,
           });
         });
     },
-    [activate],
+    [activate, addSuccessNotification, addErrorNotification],
   );
 
   const connectionListener = useCallback(() => {

@@ -5,6 +5,7 @@ import { useOrderedCurrentTransactions } from '../../context/TransactionsProvide
 import { useKnownAddress } from '../../context/KnownAddressProvider';
 import { ContractNames, Transaction, TransactionStatus } from '../../types';
 import { MassetQuery, useMassetQuery } from '../../graphql/generated';
+import { getTransactionStatus } from '../../web3/transactions';
 import { formatExactAmount } from '../../web3/amounts';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { EtherscanLink } from '../core/EtherscanLink';
@@ -36,13 +37,6 @@ const TxStatusContainer = styled.div`
 `;
 
 const LOADING = 'Loading...';
-
-const getStatus = (tx: Transaction): TransactionStatus =>
-  tx.status === 1
-    ? TransactionStatus.Success
-    : tx.status === 0
-    ? TransactionStatus.Error
-    : TransactionStatus.Pending;
 
 const getStatusLabel = (status: TransactionStatus): string =>
   status === TransactionStatus.Success
@@ -110,7 +104,7 @@ const getPendingTxDescription = (
 };
 
 const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
-  const status = getStatus(tx);
+  const status = getTransactionStatus(tx);
   const label = getStatusLabel(status);
   return (
     <TxStatusContainer title={label}>
