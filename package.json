@@ -65,6 +65,8 @@
     "@graphql-codegen/typescript": "1.12.2",
     "@graphql-codegen/typescript-operations": "1.12.2",
     "@graphql-codegen/typescript-react-apollo": "1.12.2",
+    "@testing-library/react-hooks": "^3.2.1",
+    "@types/jest": "^25.2.1",
     "@types/react-transition-group": "^4.2.4",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "eslint-config-airbnb-typescript": "^7.0.0",
@@ -76,6 +78,7 @@
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.3",
     "prettier": "^1.19.1",
+    "react-test-renderer": "^16.13.1",
     "typechain": "^1.0.5",
     "typechain-target-ethers": "^1.0.3",
     "typescript": "^3.8.2"
