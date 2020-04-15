@@ -1,10 +1,10 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useOrderedHistoricTransactions } from '../../context/TransactionsProvider';
-import { ContractNames, HistoricTransaction } from '../../types';
+import { HistoricTransaction } from '../../types';
 import { EtherscanLink } from '../core/EtherscanLink';
-import { MassetQuery, useMassetQuery } from '../../graphql/generated';
-import { useKnownAddress } from '../../context/KnownAddressProvider';
+import { MassetQuery } from '../../graphql/generated';
+import { useMUSD } from '../../context/KnownAddressProvider';
 import { formatExactAmount } from '../../web3/amounts';
 import { EMOJIS } from '../../web3/constants';
 import { P } from '../core/Typography';
@@ -21,9 +21,8 @@ const List = styled.ul`
 `;
 
 const Item = styled.li`
-  border-top: ${({ theme }) =>
-    `2px ${theme.color.backgroundTransparent} solid`};
-  padding: ${({ theme }) => theme.spacing.s};
+  border-top: 1px rgba(255, 255, 255, 0.3) solid;
+  padding: ${({ theme }) => theme.spacing.m};
 `;
 
 const HistoricTxContainer = styled.div`
@@ -146,10 +145,7 @@ const HistoricTx: FC<{
 
 export const HistoricTransactions: FC<{}> = () => {
   const historic = useOrderedHistoricTransactions();
-
-  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
-  const massetQuery = useMassetQuery({ variables: { id: mUSDAddress || '' } });
-  const mUSD = massetQuery.data?.masset;
+  const mUSD = useMUSD();
 
   return (
     <Container>

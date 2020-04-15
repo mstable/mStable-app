@@ -1,26 +1,35 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTokensState } from '../../context/TokensProvider';
-import { useAllErc20TokensQuery } from '../../graphql/generated';
+import {
+  TokenDetailsFragment,
+  useAllErc20TokensQuery,
+} from '../../graphql/generated';
 import { formatExactAmount } from '../../web3/amounts';
 import { EtherscanLink } from '../core/EtherscanLink';
+import { mapSizeToFontSize, Size } from '../../theme';
 
 const BalancesList = styled.ul``;
 
-const BalanceItem = styled.li`
-  margin-bottom: ${({ theme }) => theme.spacing.m};
+const BalanceItem = styled.li<{ size?: Size }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: ${({ size = Size.m }) => mapSizeToFontSize(size)};
+  border-top: 1px rgba(255, 255, 255, 0.3) solid;
+  padding: 10px 0;
 `;
 
-const Symbol = styled.div`
+const Symbol = styled.div``;
+
+const Balance = styled.div<{ size?: Size }>`
   font-weight: bold;
-  font-size: ${({ theme }) => theme.fontSize.l};
-  > * {
-    display: inline-block;
-    margin-right: ${({ theme }) => theme.spacing.xs};
-  }
+  font-size: ${({ size = Size.l }) => mapSizeToFontSize(size)};
 `;
 
-const Balance = styled.div``;
+type TokenWithBalance = TokenDetailsFragment & {
+  balanceFormatted: string | null;
+};
 
 /**
  * Component to track and display the balances of tokens for the currently
@@ -31,26 +40,46 @@ export const Balances: FC<{}> = () => {
   const tokensQuery = useAllErc20TokensQuery();
   const tokensData = tokensQuery.data?.tokens || [];
 
-  const tokensWithBalances = useMemo(
-    () =>
-      tokensData.map(token => {
-        const tokenBalance = tokens[token.address];
-        return {
-          ...token,
-          ...tokenBalance,
-          balanceFormatted: formatExactAmount(
-            tokenBalance?.balance,
-            token.decimals,
-            token.symbol,
-          ),
-        };
-      }),
-    [tokens, tokensData],
-  );
+  const { mUSD, otherTokens } = useMemo(() => {
+    const addBalance = (token: typeof tokensData[0]): TokenWithBalance => {
+      const tokenBalance = tokens[token.address];
+      return {
+        ...token,
+        ...tokenBalance,
+        balanceFormatted: formatExactAmount(
+          tokenBalance?.balance,
+          token.decimals,
+        ),
+      };
+    };
+
+    return tokensData.reduce<{
+      mUSD: TokenWithBalance | null;
+      otherTokens: TokenWithBalance[];
+    }>(
+      (_tokens, token) =>
+        token.symbol === 'mUSD'
+          ? { ..._tokens, mUSD: addBalance(token) }
+          : {
+              ..._tokens,
+              otherTokens: [..._tokens.otherTokens, addBalance(token)],
+            },
+      { mUSD: null, otherTokens: [] },
+    );
+  }, [tokens, tokensData]);
 
   return (
     <BalancesList>
-      {tokensWithBalances.map(({ symbol, address, balanceFormatted }) => (
+      {mUSD ? (
+        <BalanceItem size={Size.xl} key={mUSD.address}>
+          <Symbol>
+            <span>{mUSD.symbol}</span>
+            <EtherscanLink data={mUSD.address} />
+          </Symbol>
+          <Balance size={Size.xl}>{mUSD.balanceFormatted}</Balance>
+        </BalanceItem>
+      ) : null}
+      {otherTokens.map(({ symbol, address, balanceFormatted }) => (
         <BalanceItem key={address}>
           <Symbol>
             <span>{symbol}</span>

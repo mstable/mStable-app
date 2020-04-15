@@ -1,10 +1,12 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { ApolloProvider as ApolloReactProvider } from '@apollo/react-hooks';
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 import { getMainDefinition } from 'apollo-utilities';
 import { WebSocketLink } from '@apollo/link-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
-import { ApolloLink, split } from 'apollo-link';
+import { ApolloLink, split, concat } from 'apollo-link';
+import { onError } from 'apollo-link-error';
+import { useAddErrorNotification } from './NotificationsProvider';
 
 if (!process.env.REACT_APP_GRAPHQL_ENDPOINT) {
   throw new Error(
@@ -29,28 +31,47 @@ const wsClient = new SubscriptionClient(
 
 const wsLink = (new WebSocketLink(wsClient) as unknown) as ApolloLink;
 
-const link = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query);
-    return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-    );
-  },
-  wsLink,
-  httpLink,
-);
-
-const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore Can't be helped
-  link,
-});
-
 /**
  * Provider for accessing Apollo queries and subscriptions.
  */
-export const ApolloProvider: FC<{}> = ({ children }) => (
-  <ApolloReactProvider client={client}>{children}</ApolloReactProvider>
-);
+export const ApolloProvider: FC<{}> = ({ children }) => {
+  const addErrorNotification = useAddErrorNotification();
+
+  const client = useMemo(() => {
+    const errorLink = onError((...args) => {
+      const { networkError, graphQLErrors } = args[0];
+      if (graphQLErrors) {
+        graphQLErrors.map(({ message }) =>
+          addErrorNotification(`GraphQL error: ${message}`),
+        );
+      }
+      if (networkError)
+        addErrorNotification(`Network error: ${networkError.message}`);
+    });
+
+    const link = concat(
+      split(
+        ({ query }) => {
+          const definition = getMainDefinition(query);
+          return (
+            definition.kind === 'OperationDefinition' &&
+            definition.operation === 'subscription'
+          );
+        },
+        wsLink,
+        httpLink,
+      ),
+      errorLink,
+    );
+
+    return new ApolloClient({
+      cache: new InMemoryCache(),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore Can't be helped
+      link,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return <ApolloReactProvider client={client}>{children}</ApolloReactProvider>;
+};

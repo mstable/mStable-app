@@ -8,6 +8,7 @@ import React, {
   useReducer,
 } from 'react';
 import { ContractNames } from '../types';
+import { MassetQuery, useMassetQuery } from '../graphql/generated';
 
 type State = Record<ContractNames, string | null>;
 
@@ -108,4 +109,10 @@ export const useKnownAddress = (
 ): State[typeof contractName] => {
   const state = useKnownAddressState();
   return state[contractName];
+};
+
+export const useMUSD = (): MassetQuery['masset'] | null => {
+  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
+  const massetQuery = useMassetQuery({ variables: { id: mUSDAddress || '' } });
+  return massetQuery.data?.masset || null;
 };

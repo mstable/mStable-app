@@ -29,7 +29,7 @@ export const useBlockie = (
               seed: address,
               color: theme.color.green,
               bgcolor: theme.color.blue,
-              size: 8,
+              size: 7,
               scale: 3,
               spotcolor: theme.color.gold,
             },

@@ -7,11 +7,12 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import { BigNumber, formatUnits } from 'ethers/utils';
+import { BigNumber } from 'ethers/utils';
 import {
   TokenDetailsFragment,
   useErc20TokensQuery,
 } from '../graphql/generated';
+import { formatExactAmount } from '../web3/amounts';
 
 type TokenAddress = string;
 
@@ -211,13 +212,10 @@ export const useTokenWithBalance = (
     () => ({
       ...tokenFromState,
       ...tokenFromData,
-      formattedBalance:
-        tokenFromState?.balance && tokenFromData?.decimals
-          ? formatUnits(
-              tokenFromState.balance.toString(),
-              tokenFromData.decimals,
-            )
-          : null,
+      formattedBalance: formatExactAmount(
+        tokenFromState?.balance,
+        tokenFromData?.decimals,
+      ),
     }),
     [tokenFromState, tokenFromData],
   );

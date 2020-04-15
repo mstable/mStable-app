@@ -22,9 +22,10 @@ interface Props {
 
 const Input = styled.input<{ error: string | void }>`
   appearance: none;
-  background: ${({ error }) => (error ? `rgba(255, 0, 0, 0.1)` : 'white')};
+  background: ${({ theme, error }) =>
+    error ? theme.color.redTransparent : theme.color.white};
   border: ${({ theme, error }) =>
-    `2px ${error ? theme.color.red : theme.color.foregroundTransparent} solid`};
+    `2px ${error ? theme.color.red : theme.color.blackTransparent} solid`};
   border-radius: 4px;
   color: ${({ error, theme }) =>
     error ? theme.color.red : theme.color.foreground};
@@ -84,7 +85,7 @@ export const AmountInput: FC<Props> = ({
       error={error}
       type="number"
       min="0"
-      placeholder="0.0"
+      placeholder="0.00"
       step={step}
       value={value || ''}
       onKeyPress={handleKeyPress}

@@ -2,9 +2,9 @@ import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { BigNumber } from 'ethers/utils';
 import { useOrderedCurrentTransactions } from '../../context/TransactionsProvider';
-import { useKnownAddress } from '../../context/KnownAddressProvider';
-import { ContractNames, Transaction, TransactionStatus } from '../../types';
-import { MassetQuery, useMassetQuery } from '../../graphql/generated';
+import { useMUSD } from '../../context/KnownAddressProvider';
+import { Transaction, TransactionStatus } from '../../types';
+import { MassetQuery } from '../../graphql/generated';
 import { getTransactionStatus } from '../../web3/transactions';
 import { formatExactAmount } from '../../web3/amounts';
 import { ActivitySpinner } from '../core/ActivitySpinner';
@@ -19,9 +19,8 @@ const List = styled.ul`
 `;
 
 const Item = styled.li`
-  border-top: ${({ theme }) =>
-    `2px ${theme.color.backgroundTransparent} solid`};
-  padding: ${({ theme }) => theme.spacing.s};
+  border-top: 1px rgba(255, 255, 255, 0.3) solid;
+  padding: ${({ theme }) => theme.spacing.m};
 `;
 
 const PendingTxContainer = styled.div`
@@ -144,9 +143,7 @@ const PendingTx: FC<{
  */
 export const Transactions: FC<{}> = () => {
   const pending = useOrderedCurrentTransactions();
-  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
-  const massetQuery = useMassetQuery({ variables: { id: mUSDAddress || '' } });
-  const mUSD = massetQuery.data?.masset;
+  const mUSD = useMUSD();
 
   return (
     <Container>

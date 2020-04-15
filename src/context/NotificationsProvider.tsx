@@ -20,7 +20,12 @@ export enum NotificationType {
 
 export interface Notification {
   type: NotificationType;
-  message: string;
+  title: string;
+  body?: string | null;
+  link?: {
+    href: string;
+    title: string;
+  } | null;
 }
 
 interface State {
@@ -70,8 +75,8 @@ const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 export const NotificationsProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const addNotification = useCallback(
-    (notification: Notification) => {
+  const addNotification = useCallback<Dispatch['addNotification']>(
+    notification => {
       const id = Math.random().toString();
 
       dispatch({
@@ -87,8 +92,8 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
     [dispatch],
   );
 
-  const removeNotification = useCallback(
-    (id: string) => {
+  const removeNotification = useCallback<Dispatch['removeNotification']>(
+    id => {
       dispatch({ type: Actions.RemoveNotification, payload: { id } });
     },
     [dispatch],
@@ -120,21 +125,29 @@ export const useNotificationsState = (): State => useNotificationsContext()[0];
 export const useNotificationsDispatch = (): Dispatch =>
   useNotificationsContext()[1];
 
-export const useAddSuccessNotification = (): ((message: string) => void) => {
+export const useAddSuccessNotification = (): ((
+  title: Notification['title'],
+  body?: Notification['body'],
+  link?: Notification['link'],
+) => void) => {
   const { addNotification } = useNotificationsDispatch();
   return useCallback(
-    (message: string) => {
-      addNotification({ type: NotificationType.Success, message });
+    (title, body, link) => {
+      addNotification({ type: NotificationType.Success, body, title, link });
     },
     [addNotification],
   );
 };
 
-export const useAddErrorNotification = (): ((message: string) => void) => {
+export const useAddErrorNotification = (): ((
+  title: Notification['title'],
+  body?: Notification['body'],
+  link?: Notification['link'],
+) => void) => {
   const { addNotification } = useNotificationsDispatch();
   return useCallback(
-    (message: string) => {
-      addNotification({ type: NotificationType.Error, message });
+    (title, body, link) => {
+      addNotification({ type: NotificationType.Error, body, title, link });
     },
     [addNotification],
   );

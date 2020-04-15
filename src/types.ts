@@ -1,5 +1,6 @@
 import { TransactionResponse, Log } from 'ethers/providers';
 import { BigNumber, LogDescription } from 'ethers/utils';
+import { Connectors } from 'use-wallet';
 
 import { IERC20 } from './typechain/IERC20.d';
 import { IMasset } from './typechain/IMasset.d';
@@ -12,6 +13,7 @@ export interface Transaction {
   status: number | null;
   timestamp: number;
   args: unknown[];
+  purpose: string | null;
 }
 
 export type LogWithTransactionHash = Omit<Log, 'transactionHash'> &
@@ -102,4 +104,10 @@ export interface InjectedEthereum {
   on(event: 'networkChanged', listener: (chainId: number) => void): void;
   autoRefreshOnNetworkChange: boolean;
   removeListener(event: 'networkChanged', listener: Function): void;
+}
+
+export interface Connector {
+  id: keyof Connectors;
+  label: string;
+  icon?: string;
 }
