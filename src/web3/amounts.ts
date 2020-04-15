@@ -1,18 +1,27 @@
 import { BigNumber, commify, parseUnits, formatUnits } from 'ethers/utils';
+import { padLeft } from 'web3-utils';
 import { TokenQuantity } from '../types';
 
 export const formatSimpleAmount = (
   simpleAmount: string | null,
   symbol?: string | null,
-): string | null =>
-  simpleAmount ? `${commify(simpleAmount)}${symbol ? ` ${symbol}` : ''}` : null;
+): string | null => {
+  if (simpleAmount) {
+    // Use two padded decimal places
+    const [intAmount, decimals] = simpleAmount.split('.');
+    return `${commify(
+      `${intAmount}.${padLeft((decimals || '0').slice(0, 2), 2)}`,
+    )}${symbol ? ` ${symbol}` : ''}`;
+  }
+  return null;
+};
 
 export const formatExactAmount = (
   exactAmount?: BigNumber,
   decimals?: number,
   symbol?: string,
 ): string | null =>
-  exactAmount && decimals && symbol
+  exactAmount && decimals
     ? formatSimpleAmount(formatUnits(exactAmount, decimals), symbol)
     : null;
 

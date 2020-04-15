@@ -8,24 +8,24 @@ import {
   useAppStatusWarnings,
   useWalletExpanded,
 } from '../../context/AppProvider';
-import { forMinWidth, ViewportWidth } from '../../theme';
 import { Background } from './Background';
 import { StatusBar } from './StatusBar';
 import { Notifications } from './Notifications';
+import { centredLayout } from './css';
+
+interface WalletExpanded {
+  walletExpanded: boolean;
+}
 
 export const Container = styled.div<{ warnings: number }>`
-  display: flex;
   flex-direction: column;
-  justify-content: center;
   min-height: 100vh;
-  width: 100%;
-  min-width: ${ViewportWidth.xs};
   align-items: flex-start;
-  margin-top: ${({ warnings }) => warnings * 25}px; // Offset the warnings
+  justify-content: center;
+  padding-top: ${({ warnings }) =>
+    warnings * 25 + 80}px; // Offset the warnings, plus fixed header
 
-  ${forMinWidth(ViewportWidth.s, `max-width: ${ViewportWidth.s}`)}
-  ${forMinWidth(ViewportWidth.m, `max-width: ${ViewportWidth.m}`)}
-  ${forMinWidth(ViewportWidth.xl, `max-width: ${ViewportWidth.l}`)}
+  ${centredLayout}
 `;
 
 const Main = styled.main`
@@ -34,15 +34,18 @@ const Main = styled.main`
   padding: ${props => props.theme.spacing.l};
 `;
 
-const GlobalStyle = createGlobalStyle<{ walletExpanded: boolean }>`
+const GlobalStyle = createGlobalStyle<WalletExpanded>`
   ${reset}
   a {
     text-decoration: none;
     color: ${props => props.theme.color.blue};
   }
+  html {
+    overflow-y: scroll;
+  }
   body {
-    background: ${({ theme, walletExpanded }) =>
-      walletExpanded ? theme.color.foreground : theme.color.background};
+    background: ${({ theme }) => theme.color.background};
+    min-width: 320px;
   }
   * {
       box-sizing: border-box;
@@ -51,6 +54,7 @@ const GlobalStyle = createGlobalStyle<{ walletExpanded: boolean }>`
     font-family: 'Poppins', sans-serif;
     color: ${({ theme, walletExpanded }) =>
       walletExpanded ? theme.color.background : theme.color.foreground};
+    line-height: 1.3rem;
   }
   #root {
     display: flex;
@@ -66,7 +70,7 @@ export const Layout: FC<{}> = ({ children }) => {
   const warnings = useAppStatusWarnings();
   return (
     <>
-      <Background />
+      <Background walletExpanded={walletExpanded} />
       <Container warnings={warnings.length}>
         <StatusBar />
         <Header walletExpanded={walletExpanded} />

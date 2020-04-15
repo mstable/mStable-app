@@ -18,14 +18,18 @@ import {
 import { TokenDetailsFragment } from '../graphql/generated';
 import { useMassetToken } from '../web3/hooks';
 import { MassetNames, InjectedEthereum } from '../types';
-import { CHAIN_ID } from '../web3/constants';
-import { useAddSuccessNotification, useAddErrorNotification } from './NotificationsProvider';
+import { CHAIN_ID, CONNECTORS } from '../web3/constants';
+import {
+  useAddSuccessNotification,
+  useAddErrorNotification,
+} from './NotificationsProvider';
 
 enum Actions {
   ResetWallet,
   ConnectWallet,
   ConnectWalletError,
   ConnectWalletSuccess,
+  SetWalletPosition,
   ExpandWallet,
   CollapseWallet,
   SelectMasset,
@@ -58,6 +62,10 @@ interface State {
     status: WalletConnectionStatus;
     error: Reasons | null;
     supportedChain: boolean;
+    position: {
+      cx: number;
+      cy: number;
+    };
   };
   online: boolean;
   selectedMasset: MassetNames;
@@ -72,7 +80,14 @@ type Action =
   | { type: Actions.ConnectWallet; payload: keyof Connectors }
   | { type: Actions.ConnectWalletError; payload: Reasons }
   | { type: Actions.ConnectWalletSuccess }
-  | { type: Actions.SetOnline; payload: boolean };
+  | { type: Actions.SetOnline; payload: boolean }
+  | {
+      type: Actions.SetWalletPosition;
+      payload: {
+        cx: number;
+        cy: number;
+      };
+    };
 
 interface Dispatch {
   selectMasset(massetName: MassetNames): void;
@@ -80,6 +95,7 @@ interface Dispatch {
   expandWallet(): void;
   resetWallet(): void;
   connectWallet(connector: keyof Connectors): void;
+  setWalletPosition(cx: number, cy: number): void;
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
@@ -88,6 +104,11 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return { ...state, wallet: { ...state.wallet, expanded: false } };
     case Actions.ExpandWallet:
       return { ...state, wallet: { ...state.wallet, expanded: true } };
+    case Actions.SetWalletPosition:
+      return {
+        ...state,
+        wallet: { ...state.wallet, position: action.payload },
+      };
     case Actions.SupportedChainSelected:
       return {
         ...state,
@@ -146,6 +167,10 @@ const initialState: State = {
     status: WalletConnectionStatus.Disconnected,
     error: null,
     supportedChain: true,
+    position: {
+      cx: 0,
+      cy: 0,
+    },
   },
   selectedMasset: MassetNames.mUSD,
   online: true,
@@ -188,7 +213,11 @@ export const AppProvider: FC<{}> = ({ children }) => {
       dispatch({ type: Actions.ConnectWallet, payload: selected });
       activate(selected)
         .then(() => {
-          addSuccessNotification('Connected');
+          const connector = CONNECTORS.find(c => c.id === selected);
+          addSuccessNotification(
+            'Connected',
+            connector ? `Connected with ${connector.label}` : null,
+          );
           dispatch({ type: Actions.ConnectWalletSuccess });
         })
         .catch(error => {
@@ -212,6 +241,16 @@ export const AppProvider: FC<{}> = ({ children }) => {
         });
     },
     [activate, addSuccessNotification, addErrorNotification],
+  );
+
+  const setWalletPosition = useCallback<Dispatch['setWalletPosition']>(
+    (cx, cy) => {
+      dispatch({
+        type: Actions.SetWalletPosition,
+        payload: { cx, cy },
+      });
+    },
+    [dispatch],
   );
 
   const connectionListener = useCallback(() => {
@@ -272,6 +311,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
             selectMasset,
             connectWallet,
             resetWallet,
+            setWalletPosition,
           },
         ],
         [
@@ -281,6 +321,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
           selectMasset,
           resetWallet,
           connectWallet,
+          setWalletPosition,
         ],
       )}
     >
@@ -303,6 +344,9 @@ export const useIsWalletConnecting = (): boolean =>
 
 export const useWalletExpanded = (): State['wallet']['expanded'] =>
   useWalletState().expanded;
+
+export const useWalletPosition = (): State['wallet']['position'] =>
+  useWalletState().position;
 
 export const useAppDispatch = (): Dispatch => useAppContext()[1];
 
@@ -330,6 +374,9 @@ export const useExpandWallet = (): Dispatch['expandWallet'] =>
 
 export const useResetWallet = (): Dispatch['resetWallet'] =>
   useAppDispatch().resetWallet;
+
+export const useSetWalletPosition = (): Dispatch['setWalletPosition'] =>
+  useAppDispatch().setWalletPosition;
 
 export const useSelectMasset = (): Dispatch['selectMasset'] =>
   useAppDispatch().selectMasset;

@@ -6,9 +6,9 @@ import {
   useIsWalletConnecting,
   useWalletState,
 } from '../../context/AppProvider';
-import { AVAILABLE_CONNECTORS } from '../../web3/constants';
+import { AVAILABLE_CONNECTORS, CONNECTORS } from '../../web3/constants';
 import { Button } from '../core/Button';
-import { H3 } from '../core/Typography';
+import { H2, H3 } from '../core/Typography';
 import { Address } from '../core/Address';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { FlexRow } from '../core/Containers';
@@ -16,30 +16,11 @@ import { Size } from '../../theme';
 import { Balances } from './Balances';
 import { HistoricTransactions } from './HistoricTransactions';
 import { Transactions } from './Transactions';
-
-interface Connector {
-  id: keyof Connectors;
-  label: string;
-  icon?: string;
-}
-
-const allConnectors: Connector[] = [
-  { id: 'injected', label: 'MetaMask', icon: 'metamask.png' },
-  { id: 'fortmatic', label: 'Fortmatic', icon: 'fortmatic.png' },
-  { id: 'portis', label: 'Portis', icon: 'portis.png' },
-  // TODO add missing icons
-  { id: 'authereum', label: 'Authereum' },
-  { id: 'squarelink', label: 'Squarelink' },
-  { id: 'torus', label: 'Torus' },
-  { id: 'walletconnect', label: 'WalletConnect' },
-  { id: 'walletlink', label: 'WalletLink' },
-  { id: 'frame', label: 'Frame' },
-];
+import { Connector } from '../../types';
 
 const Container = styled.div`
   width: 100%;
   height: 100%;
-  background: ${({ theme }) => theme.color.foreground};
   color: ${({ theme }) => theme.color.background};
   padding: ${({ theme }) => `${theme.spacing.s} ${theme.spacing.l}`};
 `;
@@ -49,8 +30,8 @@ const Rows = styled.div`
 `;
 
 const Row = styled.div`
-  border-top: ${({ theme }) => `2px ${theme.color.background} solid`};
-  margin-bottom: ${({ theme }) => theme.spacing.l};
+  border-top: 1px rgba(255, 255, 255, 0.3) solid;
+  margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
 const Header = styled.header`
@@ -60,7 +41,7 @@ const Header = styled.header`
   margin-bottom: ${({ theme }) => theme.spacing.xl};
 `;
 
-const HeaderTitle = styled(H3)`
+const HeaderTitle = styled(H2)`
   text-align: center;
 `;
 
@@ -89,6 +70,8 @@ const ConnectorsList = styled.div`
 const ConnectorButton = styled(Button)`
   margin-bottom: ${props => props.theme.spacing.s};
   padding: ${props => props.theme.spacing.m};
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
   img {
     display: block;
     max-width: 100%;
@@ -107,7 +90,7 @@ const Disconnected: FC<{
   connect(connector: keyof Connectors): void;
 }> = ({ connect }) => {
   const list: Connector[] = useMemo(
-    () => allConnectors.filter(({ id }) => !!AVAILABLE_CONNECTORS[id]),
+    () => CONNECTORS.filter(({ id }) => !!AVAILABLE_CONNECTORS[id]),
     [],
   );
 
@@ -131,12 +114,8 @@ const Disconnected: FC<{
   );
 };
 
-const Connected: FC<{ account: string }> = ({ account }) => (
+const Connected: FC<{}> = () => (
   <Rows>
-    <Row>
-      <H3>Address</H3>
-      <Address address={account} type="account" copyable />
-    </Row>
     <Row>
       <H3>Balances</H3>
       <Balances />
@@ -158,7 +137,7 @@ export const Wallet: FC<{}> = () => {
   const { connectWallet, resetWallet } = useAppDispatch();
   const { connected, account } = useWallet();
   const wallet = useMemo(
-    () => (connector ? allConnectors.find(({ id }) => id === connector) : null),
+    () => (connector ? CONNECTORS.find(({ id }) => id === connector) : null),
     [connector],
   );
 
@@ -174,16 +153,19 @@ export const Wallet: FC<{}> = () => {
               } wallet`
             : 'Connect wallet'}
         </HeaderTitle>
-        {connected ? (
-          <DisconnectButton size={Size.s} type="button" onClick={resetWallet}>
-            Disconnect
-          </DisconnectButton>
+        {connected && account ? (
+          <>
+            <Address address={account} type="account" copyable />
+            <DisconnectButton size={Size.s} type="button" onClick={resetWallet}>
+              Disconnect
+            </DisconnectButton>
+          </>
         ) : null}
       </Header>
       {error ? <Error>{error}</Error> : null}
       <FlexRow>
         {connected && account ? (
-          <Connected account={account} />
+          <Connected />
         ) : connecting ? (
           <Connecting>
             <ActivitySpinner />

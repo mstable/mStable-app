@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import { A } from 'hookrouter';
 import {
   Notification,
   NotificationType,
@@ -25,9 +26,10 @@ const slideIn = keyframes`
 
 const Container = styled.div`
   position: fixed;
-  top: 40px;
+  top: 100px;
   right: 40px;
   width: 20%;
+  min-width: 240px;
   z-index: 2;
 `;
 
@@ -35,9 +37,27 @@ const Item = styled.div<Pick<Notification, 'type'>>`
   background: ${({ theme, type }) =>
     type === NotificationType.Success ? theme.color.green : theme.color.red};
   border-radius: 4px;
-  font-weight: bold;
   padding: ${({ theme }) => theme.spacing.s};
   margin-bottom: ${({ theme }) => theme.spacing.m};
+
+  > * {
+    margin-bottom: ${({ theme }) => theme.spacing.s};
+  }
+
+  > :last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const Title = styled.div`
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: ${({ theme }) => theme.fontSize.s};
+`;
+
+const Link = styled(A)`
+  display: block;
+  font-size: ${({ theme }) => theme.fontSize.s};
 `;
 
 const Animation = styled(CSSTransition)`
@@ -58,17 +78,30 @@ export const Notifications: FC<{}> = () => {
   return (
     <Container>
       <TransitionGroup>
-        {Object.keys(notifications).map(id => (
-          <Animation
-            timeout={{ enter: 600, exit: 300 }}
-            classNames="item"
-            key={id}
-          >
-            <Item type={notifications[id].type} onClick={() => remove(id)}>
-              {notifications[id].message}
-            </Item>
-          </Animation>
-        ))}
+        {Object.keys(notifications).map(id => {
+          const { type, title, body, link } = notifications[id];
+          return (
+            <Animation
+              timeout={{ enter: 500, exit: 200 }}
+              classNames="item"
+              key={id}
+            >
+              <Item type={type} onClick={() => remove(id)}>
+                <Title>{title}</Title>
+                {body ? <div>{body}</div> : null}
+                {link ? (
+                  <Link
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {link.title}
+                  </Link>
+                ) : null}
+              </Item>
+            </Animation>
+          );
+        })}
       </TransitionGroup>
     </Container>
   );

@@ -48,6 +48,10 @@ const ItemLabel = styled.div`
   font-weight: bold;
 `;
 
+const AmountInputContainer = styled.div`
+  width: 100%;
+`;
+
 /**
  * TokenAmountInput
  * Select a token and an amount denominated in that token.
@@ -86,9 +90,9 @@ export const TokenAmountInput: FC<Props> = ({
     [tokensData, tokenValue],
   );
   return (
-    <div>
+    <>
       <InputsRow>
-        <div>
+        <AmountInputContainer>
           <AmountInput
             name={name}
             value={amountValue}
@@ -119,7 +123,7 @@ export const TokenAmountInput: FC<Props> = ({
               ) : null}
             </FlexRow>
           </FlexRow>
-        </div>
+        </AmountInputContainer>
         <TokenInput
           name={name}
           value={tokenValue}
@@ -129,6 +133,6 @@ export const TokenAmountInput: FC<Props> = ({
         />
       </InputsRow>
       <Error>{error}</Error>
-    </div>
+    </>
   );
 };

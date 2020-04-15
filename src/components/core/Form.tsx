@@ -44,3 +44,7 @@ export const Form: FC<Props> = ({ children, onSubmit, error }) => {
     </StyledForm>
   );
 };
+
+export const FormRow = styled.div`
+  width: 100%;
+`;

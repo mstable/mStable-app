@@ -13,7 +13,7 @@ import { MUSDFactory } from '../../../typechain/MUSDFactory';
 import { parseAmounts } from '../../../web3/amounts';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
-import { Form } from '../../core/Form';
+import { Form, FormRow } from '../../core/Form';
 import { Button } from '../../core/Button';
 import { H3, P } from '../../core/Typography';
 import { ReactComponent as ArrowsSVG } from '../arrows.svg';
@@ -88,9 +88,15 @@ const SwapDirectionButton = styled.div`
 `;
 
 const SubmitButton = styled(Button)`
-  background: white;
+  color: ${({ theme, disabled }) =>
+    disabled ? theme.color.blackTransparent : theme.color.foreground};
+  border-color: ${({ theme, disabled }) =>
+    disabled ? theme.color.blackTransparent : theme.color.foreground};
+  background: ${({ theme, disabled }) =>
+    disabled ? 'transparent' : theme.color.gold};
   width: 100%;
   margin-bottom: ${({ theme }) => theme.spacing.m};
+  line-height: 2.5rem;
 `;
 
 // Unit based deviation allowance, where 1 == 1e18
@@ -175,8 +181,10 @@ export const Swap: FC<{}> = () => {
   /**
    * GraphQL data
    */
-  const massetQuery = useMassetQuery({ variables: { id: mUSDAddress || '' } });
-  const mUSD = massetQuery.data?.masset;
+  // TODO use loading prop
+  const { data: { masset: mUSD } = {} } = useMassetQuery({
+    variables: { id: mUSDAddress || '' },
+  });
   const allTokenAddresses = useMemo<string[]>(
     () => (mUSD ? [mUSD.id, ...mUSD.basket.bassets.map(b => b.id)] : []),
     [mUSD],
@@ -460,7 +468,7 @@ export const Swap: FC<{}> = () => {
   return (
     <Form error={formError} onSubmit={handleSubmit}>
       <H3>Send</H3>
-      <div>
+      <FormRow>
         <TokenAmountInput
           amountValue={input.amount.simple || ''}
           tokenAddresses={allTokenAddresses}
@@ -474,7 +482,7 @@ export const Swap: FC<{}> = () => {
           items={inputItems}
           error={inputError}
         />
-      </div>
+      </FormRow>
       <SwapDirectionButton
         onClick={swapTransactionType}
         title="Change direction"
@@ -482,7 +490,7 @@ export const Swap: FC<{}> = () => {
         <ArrowsSVG />
       </SwapDirectionButton>
       <H3>Receive</H3>
-      <div>
+      <FormRow>
         <TokenAmountInput
           amountValue={netOutput?.amount.simple || output.amount.simple || ''}
           tokenAddresses={allTokenAddresses}
@@ -493,7 +501,7 @@ export const Swap: FC<{}> = () => {
           items={outputItems}
           error={outputError}
         />
-      </div>
+      </FormRow>
       <SubmitButton type="submit" size={Size.l} disabled={submitButtonDisabled}>
         Swap
       </SubmitButton>

@@ -1,7 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { getEtherscanLink, truncateAddress } from '../../web3/strings';
-import { ReactComponent as ArrowSVG } from './external-link-arrow.svg';
 
 const Link = styled.a`
   display: flex;
@@ -11,16 +10,6 @@ const Link = styled.a`
 const Data = styled.span`
   font-weight: bold;
   margin-right: ${props => props.theme.spacing.xs};
-`;
-
-const Icon = styled.div`
-  svg {
-    width: 16px;
-    height: 16px;
-    path {
-      fill: ${props => props.theme.color.background};
-    }
-  }
 `;
 
 const useEtherscanLink = (
@@ -49,8 +38,5 @@ export const EtherscanLink: FC<{
     title={`View ${type} on Etherscan`}
   >
     {showData ? <Data>{truncate ? truncateAddress(data) : data}</Data> : null}
-    <Icon>
-      <ArrowSVG />
-    </Icon>
   </Link>
 );
