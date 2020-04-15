@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useReducer, Reducer } from 'react';
+import { BigNumber, formatUnits } from 'ethers/utils';
 import { TokenQuantity, TokenDetails } from '../../../types';
 import { parseAmounts } from '../../../web3/amounts';
 
@@ -16,6 +17,7 @@ enum Actions {
   SetError,
   SetToken,
   SetMUSD,
+  SetFeeRate,
   SetQuantity,
   SetTransactionType,
   StartSubmission,
@@ -58,6 +60,10 @@ type Action =
       payload: TokenDetails;
     }
   | {
+      type: Actions.SetFeeRate;
+      payload: BigNumber;
+    }
+  | {
       type: Actions.SetQuantity;
       payload: { field: Fields; simpleAmount: string | null };
     }
@@ -72,12 +78,14 @@ interface State {
   transactionType: TransactionType;
   error: null | { reason: Reasons; field?: Fields };
   submitting: boolean;
+  feeRate: BigNumber | null;
 }
 
 interface Dispatch {
   setError(reason: Reasons | null, field?: Fields): void;
-  setToken(field: Fields, token: TokenDetails): void;
-  setMUSD(token: TokenDetails): void;
+  setToken(field: Fields, token: NonNullable<TokenDetails> | null): void;
+  setMUSD(token: NonNullable<TokenDetails>): void;
+  setFeeRate(feeRate: BigNumber): void;
   setQuantity(field: Fields, simpleAmount: string): void;
   startSubmission(): void;
   endSubmission(): void;
@@ -110,6 +118,7 @@ const initialState: State = Object.freeze({
   error: null,
   submitting: false,
   transactionType: TransactionType.Mint,
+  feeRate: null,
 });
 
 const getOtherTransactionType = (
@@ -130,6 +139,12 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return {
         ...state,
         mUSD: action.payload,
+      };
+    }
+    case Actions.SetFeeRate: {
+      return {
+        ...state,
+        feeRate: action.payload,
       };
     }
     case Actions.SetToken: {
@@ -162,21 +177,54 @@ const reducer: Reducer<State, Action> = (state, action) => {
       const { field, simpleAmount } = action.payload;
 
       const otherField = getOtherField(field);
-      const { [field]: tokenQ, [otherField]: otherTokenQ } = state.values;
+      const {
+        feeRate,
+        transactionType,
+        values: { [field]: tokenQ, [otherField]: otherTokenQ },
+      } = state;
 
-      // TODO use `field` and `state.transactionType` to determine amounts
-      // (i.e. add the fee for redeeming)
+      const newTokenQ = parseAmounts({
+        ...tokenQ,
+        amount: { ...tokenQ.amount, simple: simpleAmount },
+      });
+
+      let otherTokenSimpleAmount: string | null = null;
+      if (transactionType === TransactionType.Mint) {
+        otherTokenSimpleAmount = simpleAmount;
+      } else if (
+        transactionType === TransactionType.Redeem &&
+        feeRate &&
+        newTokenQ.amount.exact &&
+        newTokenQ.token.decimals
+      ) {
+        // ethers BigNumber doesn't do scientific notation (1e18)
+        const divisor = new BigNumber(10).pow(newTokenQ.token.decimals);
+
+        const feeAmountExact = newTokenQ.amount.exact.mul(feeRate).div(divisor);
+
+        const netAmountExact =
+          field === Fields.Input
+            ? newTokenQ.amount.exact.sub(feeAmountExact)
+            // FIXME wrong calculation
+            : newTokenQ.amount.exact.add(feeAmountExact);
+
+        otherTokenSimpleAmount = formatUnits(
+          netAmountExact,
+          newTokenQ.token.decimals,
+        );
+      }
+
       return {
         ...state,
         values: {
           ...state.values,
-          [field]: parseAmounts({
-            ...tokenQ,
-            amount: { ...tokenQ.amount, simple: simpleAmount },
-          }),
+          [field]: newTokenQ,
           [otherField]: parseAmounts({
             ...otherTokenQ,
-            amount: { ...otherTokenQ.amount, simple: simpleAmount },
+            amount: {
+              ...otherTokenQ.amount,
+              simple: otherTokenSimpleAmount,
+            },
           }),
         },
       };
@@ -236,10 +284,10 @@ export const useSwapState = (): [State, Dispatch] => {
     (
       field: Fields,
       payload: {
-        decimals: number | null;
-        address: string | null;
-        symbol: string | null;
-      },
+        decimals: number;
+        address: string;
+        symbol: string;
+      } | null,
     ) => {
       const otherField = getOtherField(field);
       const { [field]: tokenQ, [otherField]: otherTokenQ } = state.values;
@@ -263,11 +311,11 @@ export const useSwapState = (): [State, Dispatch] => {
       }
 
       // If neither token will be mUSD, set the other token to MUSD (change type)
-      const swapType = !!(
+      const swapType = Boolean(
         payload.address &&
-        mUSD.address &&
-        payload.address !== mUSD.address &&
-        otherTokenQ.token.address !== mUSD.address
+          mUSD.address &&
+          payload.address !== mUSD.address &&
+          otherTokenQ.token.address !== mUSD.address,
       );
 
       dispatch({
@@ -284,6 +332,16 @@ export const useSwapState = (): [State, Dispatch] => {
       dispatch({
         type: Actions.SetQuantity,
         payload: { simpleAmount, field },
+      });
+    },
+    [dispatch],
+  );
+
+  const setFeeRate = useCallback<Dispatch['setFeeRate']>(
+    feeRate => {
+      dispatch({
+        type: Actions.SetFeeRate,
+        payload: feeRate,
       });
     },
     [dispatch],
@@ -317,6 +375,7 @@ export const useSwapState = (): [State, Dispatch] => {
         setToken,
         setMUSD,
         setQuantity,
+        setFeeRate,
         startSubmission,
         endSubmission,
       },
@@ -328,6 +387,7 @@ export const useSwapState = (): [State, Dispatch] => {
       setError,
       setToken,
       setQuantity,
+      setFeeRate,
       startSubmission,
       endSubmission,
     ],
