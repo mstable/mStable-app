@@ -38,18 +38,19 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
   const addErrorNotification = useAddErrorNotification();
 
   const client = useMemo(() => {
-    const errorLink = onError((...args) => {
-      const { networkError, graphQLErrors } = args[0];
+    const errorLink = onError(({ networkError, graphQLErrors }) => {
       if (graphQLErrors) {
-        graphQLErrors.map(({ message }) =>
-          addErrorNotification(`GraphQL error: ${message}`),
-        );
+        graphQLErrors.forEach(({ message }) => {
+          // eslint-disable-next-line no-console
+          console.error(message);
+        });
       }
       if (networkError)
         addErrorNotification(`Network error: ${networkError.message}`);
     });
 
     const link = concat(
+      errorLink,
       split(
         ({ query }) => {
           const definition = getMainDefinition(query);
@@ -61,7 +62,6 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
         wsLink,
         httpLink,
       ),
-      errorLink,
     );
 
     return new ApolloClient({

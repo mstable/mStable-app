@@ -4,6 +4,7 @@ import {
   useExpandWallet,
   useIsWalletConnected,
 } from '../../context/AppProvider';
+import { Button } from './Button';
 
 interface Props {
   onSubmit(event: FormEvent<Element>): void;
@@ -47,4 +48,16 @@ export const Form: FC<Props> = ({ children, onSubmit, error }) => {
 
 export const FormRow = styled.div`
   width: 100%;
+`;
+
+export const SubmitButton = styled(Button)`
+  color: ${({ theme, disabled }) =>
+    disabled ? theme.color.blackTransparent : theme.color.foreground};
+  border-color: ${({ theme, disabled }) =>
+    disabled ? theme.color.blackTransparent : theme.color.foreground};
+  background: ${({ theme, disabled }) =>
+    disabled ? 'transparent' : theme.color.gold};
+  width: 100%;
+  margin-bottom: ${({ theme }) => theme.spacing.m};
+  line-height: 2.5rem;
 `;

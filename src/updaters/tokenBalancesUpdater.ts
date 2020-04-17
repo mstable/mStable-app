@@ -1,4 +1,4 @@
-import { Reducer, useEffect, useReducer, useRef } from 'react';
+import { Reducer, useEffect, useMemo, useReducer, useRef } from 'react';
 import { useWallet } from 'use-wallet';
 import { useSignerContext } from '../context/SignerProvider';
 import { ERC20DetailedFactory } from '../typechain/ERC20DetailedFactory';
@@ -47,6 +47,15 @@ export const TokenBalancesUpdater = (): null => {
   const { reset, updateBalances, updateAllowance } = useTokensDispatch();
   const signer = useSignerContext();
   const mUSDAddress = useKnownAddress(ContractNames.mUSD);
+  const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
+
+  const mUSD = useMemo(
+    () =>
+      mUSDAddress && signer
+        ? ERC20DetailedFactory.connect(mUSDAddress, signer)
+        : null,
+    [mUSDAddress, signer],
+  );
 
   const [contracts, dispatch] = useReducer(reducer, initialState);
 
@@ -84,7 +93,7 @@ export const TokenBalancesUpdater = (): null => {
     if (account && blockNumberRef.current !== blockNumber) {
       // Update balances
       const balancePromises = subscribedTokens
-        .filter(token => contracts[token])
+        .filter(token => contracts[token] && token !== mUSDSavingsAddress)
         .map(async token => ({
           [token]: await contracts[token].balanceOf(account),
         }));
@@ -96,6 +105,12 @@ export const TokenBalancesUpdater = (): null => {
           .map(async token => ({
             [token]: await contracts[token].allowance(account, mUSDAddress),
           }));
+
+        if (mUSDSavingsAddress && mUSD) {
+          mUSD.allowance(account, mUSDSavingsAddress).then(allowance => {
+            updateAllowance(mUSDSavingsAddress, { [mUSDAddress]: allowance });
+          });
+        }
 
         Promise.all(allowancePromises).then(result => {
           updateAllowance(
@@ -117,6 +132,8 @@ export const TokenBalancesUpdater = (): null => {
     contracts,
     subscribedTokens,
     mUSDAddress,
+    mUSD,
+    mUSDSavingsAddress,
     updateAllowance,
     updateBalances,
   ]);

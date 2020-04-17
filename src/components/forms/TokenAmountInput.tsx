@@ -84,6 +84,7 @@ export const TokenAmountInput: FC<Props> = ({
 }) => {
   const { data: tokensData } = useErc20TokensQuery({
     variables: { addresses: tokenAddresses },
+    skip: tokenAddresses.length === 0,
   });
   const selectedToken = useMemo(
     () => tokensData?.tokens.find(t => t.address === tokenValue),

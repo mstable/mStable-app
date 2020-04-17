@@ -25,6 +25,19 @@ export const formatExactAmount = (
     ? formatSimpleAmount(formatUnits(exactAmount, decimals), symbol)
     : null;
 
+export const parseSimpleAmount = (
+  simple: string | null,
+  decimals?: number | null,
+): BigNumber | null => {
+  if (!(simple && decimals)) return null;
+
+  try {
+    return parseUnits(simple.slice(0, decimals), decimals);
+  } catch {
+    return null;
+  }
+};
+
 export const parseAmounts = ({
   amount: { simple },
   token: { decimals, symbol },
@@ -33,15 +46,7 @@ export const parseAmounts = ({
 }: TokenQuantity): TokenQuantity => ({
   amount: {
     ...amount,
-    exact: (() => {
-      if (!(simple && decimals)) return null;
-
-      try {
-        return parseUnits(simple.slice(0, decimals), decimals);
-      } catch {
-        return null;
-      }
-    })(),
+    exact: parseSimpleAmount(simple, decimals),
     formatted: formatSimpleAmount(simple, symbol),
   },
   token,

@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes } from 'react';
 import styled from 'styled-components';
-import { Size, mapSizeToFontSize } from '../../theme';
+import { Size, mapSizeToFontSize, ViewportWidth } from '../../theme';
 
 interface Props extends ButtonHTMLAttributes<unknown> {
   size: Size;
@@ -18,8 +18,12 @@ export const Button = styled.button<Props>`
   border-radius: 3px;
   color: ${({ inverted, theme }) =>
     inverted ? theme.color.background : theme.color.foreground};
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${({disabled}) => (disabled ? 'not-allowed' : 'pointer')};
   font-weight: bold;
   font-size: ${props => mapSizeToFontSize(props.size)};
   outline: none;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    padding: ${({theme}) => theme.spacing.xs};
+  }
 `;

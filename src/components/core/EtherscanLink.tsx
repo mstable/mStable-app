@@ -30,13 +30,15 @@ export const EtherscanLink: FC<{
   type?: 'transaction' | 'account' | 'address';
   truncate?: boolean;
   showData?: boolean;
-}> = ({ type = 'address', data, showData, truncate = true }) => (
+}> = ({ children, type = 'address', data, showData, truncate = true }) => (
   <Link
     href={useEtherscanLink(data, type)}
     target="_blank"
     rel="noopener noreferrer"
     title={`View ${type} on Etherscan`}
   >
-    {showData ? <Data>{truncate ? truncateAddress(data) : data}</Data> : null}
+    {children || (showData ? (
+      <Data>{truncate ? truncateAddress(data) : data}</Data>
+    ) : null)}
   </Link>
 );

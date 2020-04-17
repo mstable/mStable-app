@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
+import { BigNumber } from 'ethers/utils';
 import { ContractNames } from '../types';
 import {
   MassetQuery,
@@ -14,6 +15,7 @@ import {
   useMassetQuery,
   useSavingsContractQuery,
 } from '../graphql/generated';
+import { useToken } from './TokensProvider';
 
 type State = Record<ContractNames, string | null>;
 
@@ -123,11 +125,25 @@ export const useMUSD = (): MassetQuery['masset'] | null => {
 };
 
 export const useMUSDSavings = ():
-  | SavingsContractQuery['savingsContracts']
+  | (SavingsContractQuery['savingsContracts'][0] & {
+      allowance: BigNumber | null;
+    })
   | null => {
   const address = useKnownAddress(ContractNames.mUSDSavings);
-  const query = useSavingsContractQuery({
+  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
+
+  const {
+    data: { savingsContracts: [fromData] = [] } = {},
+  } = useSavingsContractQuery({
     variables: { id: address || '' },
   });
-  return query.data?.savingsContracts || null;
+
+  const { allowance } = useToken(address) || {};
+
+  return fromData
+    ? {
+        ...fromData,
+        allowance: allowance && mUSDAddress ? allowance[mUSDAddress] : null,
+      }
+    : null;
 };

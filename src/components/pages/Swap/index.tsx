@@ -12,8 +12,7 @@ import { ERC20DetailedFactory } from '../../../typechain/ERC20DetailedFactory';
 import { MUSDFactory } from '../../../typechain/MUSDFactory';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
-import { Form, FormRow } from '../../core/Form';
-import { Button } from '../../core/Button';
+import { Form, FormRow, SubmitButton } from '../../core/Form';
 import { H3, P } from '../../core/Typography';
 import { ReactComponent as ArrowsSVG } from '../arrows.svg';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
@@ -84,18 +83,6 @@ const SwapDirectionButton = styled.div`
     width: 40px;
     height: 40px;
   }
-`;
-
-const SubmitButton = styled(Button)`
-  color: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparent : theme.color.foreground};
-  border-color: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparent : theme.color.foreground};
-  background: ${({ theme, disabled }) =>
-    disabled ? 'transparent' : theme.color.gold};
-  width: 100%;
-  margin-bottom: ${({ theme }) => theme.spacing.m};
-  line-height: 2.5rem;
 `;
 
 // Unit based deviation allowance, where 1 == 1e18

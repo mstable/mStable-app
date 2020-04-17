@@ -2,11 +2,12 @@ import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { BigNumber } from 'ethers/utils';
 import { useOrderedCurrentTransactions } from '../../context/TransactionsProvider';
-import { useMUSD } from '../../context/KnownAddressProvider';
-import { Transaction, TransactionStatus } from '../../types';
+import { useKnownAddress, useMUSD } from '../../context/KnownAddressProvider';
+import { ContractNames, Transaction, TransactionStatus } from '../../types';
 import { MassetQuery } from '../../graphql/generated';
 import { getTransactionStatus } from '../../web3/transactions';
 import { formatExactAmount } from '../../web3/amounts';
+import { P } from '../core/Typography';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { EMOJIS } from '../../web3/constants';
@@ -46,7 +47,13 @@ const getStatusLabel = (status: TransactionStatus): string =>
 
 const getPendingTxDescription = (
   tx: Transaction,
-  mUSD?: MassetQuery['masset'],
+  {
+    mUSD,
+    mUSDSavingsAddress,
+  }: {
+    mUSD: MassetQuery['masset'];
+    mUSDSavingsAddress: string | null;
+  },
 ): string => {
   if (!mUSD) return LOADING;
 
@@ -54,8 +61,33 @@ const getPendingTxDescription = (
     basket: { bassets },
   } = mUSD;
 
+  if (tx.response.to === mUSDSavingsAddress) {
+    switch (tx.fn) {
+      case 'redeem': {
+        const [amount] = tx.args as [BigNumber];
+        return `You ${
+          tx.status ? 'withdrew' : 'are withdrawing'
+        } ${formatExactAmount(amount, 18)} ${mUSD.token.symbol}`;
+      }
+      case 'depositSavings': {
+        const [amount] = tx.args as [BigNumber];
+        return `You ${
+          tx.status ? 'deposited' : 'are depositing'
+        } ${formatExactAmount(amount, 18)} ${mUSD.token.symbol}`;
+      }
+      default:
+        return 'Unknown';
+    }
+  }
+
   switch (tx.fn) {
     case 'approve': {
+      if (tx.args[0] === mUSDSavingsAddress) {
+        return `You ${
+          tx.status ? 'approved' : 'are approving'
+        } the mUSD Savings Contract to transfer ${mUSD.token.symbol}`;
+      }
+
       const bAsset = bassets.find(b => b.token.address === tx.response.to);
       if (!bAsset) return LOADING;
 
@@ -120,18 +152,20 @@ const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
 
 const PendingTx: FC<{
   tx: Transaction;
-  mUSD?: MassetQuery['masset'];
-}> = ({ tx, mUSD }) => {
-  const description = useMemo(() => getPendingTxDescription(tx, mUSD), [
-    tx,
-    mUSD,
-  ]);
+  mUSD: MassetQuery['masset'];
+  mUSDSavingsAddress: string | null;
+}> = ({ tx, mUSD, mUSDSavingsAddress }) => {
+  const description = useMemo(
+    () => getPendingTxDescription(tx, { mUSD, mUSDSavingsAddress }),
+    [tx, mUSD, mUSDSavingsAddress],
+  );
 
   return (
     <PendingTxContainer>
       <TxStatusIndicator tx={tx} />
-      <EtherscanLink data={tx.hash} type="transaction" />
-      <div>{description}</div>
+      <EtherscanLink data={tx.hash} type="transaction">
+        <P>{description}</P>
+      </EtherscanLink>
     </PendingTxContainer>
   );
 };
@@ -144,6 +178,7 @@ const PendingTx: FC<{
 export const Transactions: FC<{}> = () => {
   const pending = useOrderedCurrentTransactions();
   const mUSD = useMUSD();
+  const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   return (
     <Container>
@@ -153,7 +188,11 @@ export const Transactions: FC<{}> = () => {
         <List>
           {pending.map(tx => (
             <Item key={tx.hash}>
-              <PendingTx tx={tx} mUSD={mUSD} />
+              <PendingTx
+                tx={tx}
+                mUSD={mUSD}
+                mUSDSavingsAddress={mUSDSavingsAddress}
+              />
             </Item>
           ))}
         </List>
