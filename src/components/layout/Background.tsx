@@ -9,12 +9,10 @@ interface Props {
 
 const wipeIn = keyframes`
   0% {
-    filter: blur(80px);
     opacity: 0.5;
     r: 0;
   }
   100% {
-    filter: blur(0);
     opacity: 1;
     r: 100%;
   }

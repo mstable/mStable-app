@@ -11,7 +11,8 @@ export enum Color {
   white = '#fff',
   black = '#000',
   blackTransparent = 'rgba(0, 0, 0, 0.3)',
-  foreground = '#2b2b2b',
+  foreground = '#000',
+  foregroundTransparent = 'rgba(0, 0, 0, 0.3)',
 }
 
 export enum Size {
