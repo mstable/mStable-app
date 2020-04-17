@@ -131,6 +131,40 @@ const getOtherTransactionType = (
 const getOtherField = (field: Fields): Fields =>
   field === Fields.Input ? Fields.Output : Fields.Input;
 
+const calculateRedemptionQuantity = (
+  field: Fields,
+  tokenQ: TokenQuantity,
+  otherTokenQ: TokenQuantity,
+  feeRate: BigNumber | null,
+): string | null => {
+  if (
+    !(
+      feeRate &&
+      tokenQ.amount.exact &&
+      tokenQ.token.decimals &&
+      (field === Fields.Input || otherTokenQ.token.decimals)
+    )
+  ) {
+    return null;
+  }
+
+  const divisorDecimals =
+    field === Fields.Input ? tokenQ.token.decimals : otherTokenQ.token.decimals;
+
+  const divisor = new BigNumber(10).pow(
+    divisorDecimals as NonNullable<typeof divisorDecimals>,
+  );
+
+  const feeAmount = tokenQ.amount.exact.mul(feeRate).div(divisor);
+
+  return formatUnits(
+    field === Fields.Input
+      ? tokenQ.amount.exact.sub(feeAmount)
+      : tokenQ.amount.exact.add(feeAmount),
+    tokenQ.token.decimals,
+  );
+};
+
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.SetError:
@@ -148,29 +182,20 @@ const reducer: Reducer<State, Action> = (state, action) => {
       };
     }
     case Actions.SetToken: {
-      const { field, decimals, address, symbol, swapType } = action.payload;
+      const { field, decimals, address, symbol } = action.payload;
+      const {
+        values: { [field]: prevTokenQ },
+      } = state;
+
       return {
         ...state,
         values: {
           ...state.values,
           [field]: parseAmounts({
-            ...state.values[field],
+            ...prevTokenQ,
             token: { decimals, address, symbol },
           }),
-          ...(swapType
-            ? {
-                [getOtherField(field)]: parseAmounts({
-                  ...state.values[field],
-                  token: { ...state.mUSD },
-                }),
-              }
-            : null),
         },
-        ...(swapType
-          ? {
-              transactionType: getOtherTransactionType(state.transactionType),
-            }
-          : null),
       };
     }
     case Actions.SetQuantity: {
@@ -180,73 +205,87 @@ const reducer: Reducer<State, Action> = (state, action) => {
       const {
         feeRate,
         transactionType,
-        values: { [field]: tokenQ, [otherField]: otherTokenQ },
+        values: { [field]: prevTokenQ, [otherField]: prevOtherTokenQ },
       } = state;
 
-      const newTokenQ = parseAmounts({
-        ...tokenQ,
-        amount: { ...tokenQ.amount, simple: simpleAmount },
+      const tokenQ = parseAmounts({
+        ...prevTokenQ,
+        amount: {
+          ...prevOtherTokenQ.amount,
+          simple: simpleAmount,
+        },
       });
 
-      let otherTokenSimpleAmount: string | null = null;
-      if (transactionType === TransactionType.Mint) {
-        otherTokenSimpleAmount = simpleAmount;
-      } else if (
-        transactionType === TransactionType.Redeem &&
-        feeRate &&
-        newTokenQ.amount.exact &&
-        newTokenQ.token.decimals
-      ) {
-        // ethers BigNumber doesn't do scientific notation (1e18)
-        const divisor = new BigNumber(10).pow(newTokenQ.token.decimals);
-
-        const feeAmountExact = newTokenQ.amount.exact.mul(feeRate).div(divisor);
-
-        const netAmountExact =
-          field === Fields.Input
-            ? newTokenQ.amount.exact.sub(feeAmountExact)
-            // FIXME wrong calculation
-            : newTokenQ.amount.exact.add(feeAmountExact);
-
-        otherTokenSimpleAmount = formatUnits(
-          netAmountExact,
-          newTokenQ.token.decimals,
-        );
-      }
+      const otherTokenQ = parseAmounts({
+        ...prevOtherTokenQ,
+        amount: {
+          ...prevOtherTokenQ.amount,
+          simple:
+            // When redeeming, the fee must be applied
+            transactionType === TransactionType.Redeem
+              ? calculateRedemptionQuantity(
+                  field,
+                  tokenQ,
+                  prevOtherTokenQ,
+                  feeRate,
+                )
+              : simpleAmount,
+        },
+      });
 
       return {
         ...state,
         values: {
           ...state.values,
-          [field]: newTokenQ,
-          [otherField]: parseAmounts({
-            ...otherTokenQ,
-            amount: {
-              ...otherTokenQ.amount,
-              simple: otherTokenSimpleAmount,
-            },
-          }),
+          [field]: tokenQ,
+          [otherField]: otherTokenQ,
         },
       };
     }
     case Actions.SetTransactionType: {
+      const transactionType = action.payload;
       const {
         values: { input, output },
-        transactionType,
+        transactionType: prevTransactionType,
+        feeRate,
       } = state;
 
       // Do nothing if the type is the same
-      if (transactionType === action.payload) return state;
+      if (transactionType === prevTransactionType) return state;
 
       return {
         ...state,
         error: null,
         values: {
           ...state.values,
-          input: output,
-          output: input,
+          input: parseAmounts({
+            // Only the token should be changed for the input, because the
+            // input amount will always be greater than the output amount.
+            ...input,
+            token: output.token,
+          }),
+          output: parseAmounts({
+            // The output takes the input values, plus special handling for
+            // the amount.
+            ...input,
+            amount: {
+              ...input.amount,
+              // When the transaction type is being set to redeem, the fee
+              // must be applied to the output amount.
+              ...(transactionType === TransactionType.Redeem
+                ? {
+                    simple: calculateRedemptionQuantity(
+                      Fields.Input,
+                      output,
+                      input,
+                      feeRate,
+                    ),
+                  }
+                : null),
+            },
+          }),
         },
-        transactionType: action.payload,
+        transactionType,
       };
     }
     default:
@@ -302,25 +341,20 @@ export const useSwapState = (): [State, Dispatch] => {
       }
 
       // Ignore no change
-      if (payload.address === tokenQ.token?.address) return;
+      if (payload.address === tokenQ.token.address) return;
 
-      // If the input token is set to the output token, change the type instead.
-      if (payload.address === otherTokenQ.token?.address) {
+      // If the input token is set to the output token, or field being set is
+      // currently mUSD, change the type first.
+      if (
+        payload.address === otherTokenQ.token?.address ||
+        tokenQ.token.address === mUSD.address
+      ) {
         swapTransactionType();
-        return;
       }
-
-      // If neither token will be mUSD, set the other token to MUSD (change type)
-      const swapType = Boolean(
-        payload.address &&
-          mUSD.address &&
-          payload.address !== mUSD.address &&
-          otherTokenQ.token.address !== mUSD.address,
-      );
 
       dispatch({
         type: Actions.SetToken,
-        payload: { field, swapType, ...payload },
+        payload: { field, ...payload },
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

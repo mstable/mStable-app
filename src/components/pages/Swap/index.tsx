@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
-import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
-import { ContractNames, SendTxManifest, TokenQuantity } from '../../../types';
+import { parseUnits } from 'ethers/utils';
+import { ContractNames, SendTxManifest } from '../../../types';
 import { useKnownAddress } from '../../../context/KnownAddressProvider';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
@@ -10,7 +10,6 @@ import { useMassetQuery } from '../../../graphql/generated';
 import { ForgeValidatorFactory } from '../../../typechain/ForgeValidatorFactory';
 import { ERC20DetailedFactory } from '../../../typechain/ERC20DetailedFactory';
 import { MUSDFactory } from '../../../typechain/MUSDFactory';
-import { parseAmounts } from '../../../web3/amounts';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import { Form, FormRow } from '../../core/Form';
@@ -118,6 +117,7 @@ export const Swap: FC<{}> = () => {
     swapTransactionType,
     setError,
     setMUSD,
+    setFeeRate,
     setToken,
     setQuantity,
   } = dispatch;
@@ -220,61 +220,13 @@ export const Swap: FC<{}> = () => {
   const inputToken = useTokenWithBalance(inputAddress);
   const outputToken = useTokenWithBalance(outputAddress);
 
-  const [redemptionFee, netOutput] = useMemo<
-    [TokenQuantity | null, TokenQuantity | null]
-  >(() => {
-    if (
-      transactionType === TransactionType.Redeem &&
-      feeRate &&
-      input.amount.exact &&
-      input.token.decimals
-    ) {
-      const { decimals } = input.token;
-
-      // ethers BigNumber doesn't do scientific notation (1e18)
-      const divisor = new BigNumber(10).pow(decimals);
-      const feeAmountExact = input.amount.exact.mul(feeRate).div(divisor);
-      const feeAmountSimple = formatUnits(feeAmountExact, decimals);
-
-      const netOutputAmountExact = input.amount.exact.sub(feeAmountExact);
-      const netOutputAmountSimple = formatUnits(netOutputAmountExact, decimals);
-
-      return [
-        parseAmounts({
-          amount: {
-            simple: feeAmountSimple,
-            exact: feeAmountExact,
-            formatted: null,
-          },
-          token: input.token,
-        }),
-        parseAmounts({
-          amount: {
-            simple: netOutputAmountSimple,
-            exact: netOutputAmountExact,
-            formatted: null,
-          },
-          token: output.token,
-        }),
-      ];
-    }
-    return [null, null];
-  }, [feeRate, input, output, transactionType]);
-
   const inputItems = useMemo(
     () => [{ label: 'Balance', value: inputToken?.formattedBalance }],
     [inputToken],
   );
-
   const outputItems = useMemo(
-    () => [
-      { label: 'Balance', value: outputToken?.formattedBalance },
-      ...(transactionType === TransactionType.Redeem &&
-      redemptionFee?.amount?.formatted
-        ? [{ label: 'Redemption fee', value: redemptionFee.amount.formatted }]
-        : []),
-    ],
-    [outputToken, transactionType, redemptionFee],
+    () => [{ label: 'Balance', value: outputToken?.formattedBalance }],
+    [outputToken],
   );
 
   /**
@@ -374,23 +326,26 @@ export const Swap: FC<{}> = () => {
       return;
     }
 
-    if (!(input.amount.simple && output.amount.simple)) {
-      setError(Reasons.AmountMustBeSet, Fields.Input);
-      return;
-    }
-
-    if (input.amount.exact?.lte(0)) {
-      setError(Reasons.AmountMustBeGreaterThanZero, Fields.Input);
-      return;
-    }
-
     if (input.amount.simple && !input.token.address) {
       setError(Reasons.TokenMustBeSelected, Fields.Input);
       return;
     }
 
-    if (output.amount.simple && !output.token.address) {
+    if (!input.amount.simple) {
+      setError(Reasons.AmountMustBeSet, Fields.Input);
+      return;
+    }
+
+    if (
+      (output.amount.simple || transactionType === TransactionType.Redeem) &&
+      !output.token.address
+    ) {
       setError(Reasons.TokenMustBeSelected, Fields.Output);
+      return;
+    }
+
+    if (input.amount.exact?.lte(0)) {
+      setError(Reasons.AmountMustBeGreaterThanZero, Fields.Input);
       return;
     }
 
@@ -465,6 +420,11 @@ export const Swap: FC<{}> = () => {
     }
   }, [outputAddress, mUSDAddress, touched, setMUSD, mUSD]);
 
+  // Set fee rate (should just happen once)
+  useEffect(() => {
+    setFeeRate(feeRate);
+  }, [feeRate, setFeeRate]);
+
   return (
     <Form error={formError} onSubmit={handleSubmit}>
       <H3>Send</H3>
@@ -492,7 +452,7 @@ export const Swap: FC<{}> = () => {
       <H3>Receive</H3>
       <FormRow>
         <TokenAmountInput
-          amountValue={netOutput?.amount.simple || output.amount.simple || ''}
+          amountValue={output.amount.simple || ''}
           tokenAddresses={allTokenAddresses}
           tokenValue={outputAddress}
           name={Fields.Output}
