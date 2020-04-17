@@ -62,8 +62,12 @@ const Container = styled.header<{ inverted?: boolean }>`
   top: 0;
   min-height: 80px;
   background: ${({ theme, inverted }) =>
-    inverted ? theme.color.black : theme.color.white};
-  box-shadow: rgba(0, 0, 0, 0.15) 0 0 4px;
+    inverted ? theme.color.foreground : theme.color.background};
+  box-shadow: ${({ theme, inverted }) =>
+      inverted
+        ? theme.color.backgroundTransparent
+        : theme.color.foregroundTransparent}
+    0 0 4px;
 `;
 
 const Content = styled.div`
