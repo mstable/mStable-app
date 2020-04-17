@@ -1,6 +1,7 @@
 # Just testing this is picked up
 
 fragment TokenDetails on Token {
+    id
     address
     decimals
     symbol
