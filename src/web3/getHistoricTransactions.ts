@@ -8,18 +8,30 @@ import { HistoricTransaction, LogWithTransactionHash } from '../types';
  *
  * @param contract ethers.Contract instance
  * @param account Ethereum account address
- * @param filter Optional log filter
+ * @param topics Array of topic filters
+ * @param filter Optional log filter (without `topics`)
  */
 export const getHistoricTransactions = async (
   contract: Contract,
   account: string,
-  filter?: Filter,
+  topics: (string | null)[][],
+  filter: Omit<Filter, 'topic'>,
 ): Promise<Record<string, HistoricTransaction>> => {
   // TODO later: This is probably not a scalable solution
-  const logs = await contract.provider.getLogs({
-    ...filter,
-    address: contract.address,
-  });
+  const allLogs = await Promise.all(
+    topics.map(_topics =>
+      contract.provider.getLogs({
+        ...filter,
+        topics: _topics as string[],
+        address: contract.address,
+      }),
+    ),
+  );
+
+  const logs = allLogs.reduce(
+    (flattened, _logs) => [...flattened, ..._logs],
+    [],
+  );
 
   // Create a map of unique hashes to logs for lookups later
   const logsMap = (logs.filter(

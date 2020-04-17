@@ -10,6 +10,7 @@ import React, {
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
 import {
+  ContractNames,
   HistoricTransaction,
   SendTxManifest,
   Transaction,
@@ -22,7 +23,7 @@ import {
 import { TransactionOverrides } from '../typechain/index.d';
 import { getTransactionStatus } from '../web3/transactions';
 import { MassetQuery } from '../graphql/generated';
-import { useMUSD } from './KnownAddressProvider';
+import { useKnownAddress, useMUSD } from './KnownAddressProvider';
 import { formatExactAmount } from '../web3/amounts';
 import { getEtherscanLink } from '../web3/strings';
 
@@ -166,8 +167,12 @@ const context = createContext<[State, Dispatch]>(null as any);
 const initialState: State = Object.freeze({ historic: {}, current: {} });
 
 const getTxPurpose = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { args, fn, iface }: SendTxManifest<any, any>,
-  mUSD: MassetQuery['masset'] | null,
+  {
+    mUSD,
+    mUSDSavingsAddress,
+  }: { mUSD: MassetQuery['masset'] | null; mUSDSavingsAddress: string | null },
 ): string | null => {
   if (!mUSD) return null;
 
@@ -193,6 +198,14 @@ const getTxPurpose = (
       )}`;
     }
     case 'redeem': {
+      if (iface.address === mUSDSavingsAddress) {
+        const [amount] = args as [BigNumber];
+        return `Withdrawing ${formatExactAmount(
+          amount,
+          18,
+          mUSD.token.symbol,
+        )}`;
+      }
       const [bassetAddress, bassetQ] = args as [string, BigNumber];
 
       const bAsset = bassets.find(b => b.token.address === bassetAddress);
@@ -209,10 +222,18 @@ const getTxPurpose = (
       )}`;
     }
     case 'approve': {
+      if (args[0] === mUSDSavingsAddress) {
+        return `Approving the mUSD Savings Contract to transfer ${mUSD.token.symbol}`;
+      }
+
       const bAsset = bassets.find(b => b.token.address === iface.address);
       if (!bAsset) return null;
 
       return `Approving ${mUSD.token.symbol} to transfer ${bAsset.token.symbol}`;
+    }
+    case 'depositSavings': {
+      const [amount] = args as [BigNumber];
+      return `Depositing ${formatExactAmount(amount, 18)} ${mUSD.token.symbol}`;
     }
     default:
       return null;
@@ -234,10 +255,11 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   const addSuccessNotification = useAddSuccessNotification();
   const addErrorNotification = useAddErrorNotification();
   const mUSD = useMUSD();
+  const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   const addPending = useCallback<Dispatch['addPending']>(
     (manifest, pendingTx) => {
-      const purpose = getTxPurpose(manifest, mUSD);
+      const purpose = getTxPurpose(manifest, { mUSD, mUSDSavingsAddress });
       dispatch({
         type: Actions.AddPending,
         payload: {
@@ -256,7 +278,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
         getEtherscanLinkForHash(pendingTx.hash),
       );
     },
-    [dispatch, mUSD, addSuccessNotification],
+    [dispatch, mUSD, addSuccessNotification, mUSDSavingsAddress],
   );
 
   const addHistoric = useCallback<Dispatch['addHistoric']>(
@@ -402,10 +424,14 @@ export const useSendTransaction =
               addErrorNotification('Transaction failed to send: missing hash');
               return;
             }
-            addPending(manifest, { hash, response });
+            addPending(manifest, {
+              hash,
+              response: { ...response, to: response.to?.toLowerCase() },
+            });
           })
           .catch(error => {
-            addErrorNotification(error.message);
+            // MetaMask error messages are in a `data` property
+            addErrorNotification(error.data?.message || error.message);
           });
       },
       [addPending, addErrorNotification],

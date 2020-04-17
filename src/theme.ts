@@ -38,6 +38,7 @@ export enum FontSize {
   m = '16px',
   l = '20px',
   xl = '32px',
+  insane = '64px',
 }
 
 export enum ViewportWidth {

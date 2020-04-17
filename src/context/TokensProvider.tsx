@@ -98,7 +98,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         [token]: {
           ...state[token],
           allowance: {
-            ...state[token].allowance,
+            ...state[token]?.allowance,
             ...allowance,
           },
         },
@@ -206,6 +206,7 @@ export const useTokenWithBalance = (
   const tokenFromState = useToken(token);
   const query = useErc20TokensQuery({
     variables: { addresses: [token] },
+    skip: !token,
   });
   const tokenFromData = query.data?.tokens?.[0];
   return useMemo(

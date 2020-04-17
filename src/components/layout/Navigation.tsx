@@ -12,17 +12,18 @@ interface NavItem {
 const Container = styled.nav`
   justify-content: center;
   align-items: center;
+  width: 100%;
 `;
 
 const List = styled.ul`
   list-style: none;
   padding: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
   width: 100%;
 
-  @media (min-width: ${ViewportWidth.s}) {
+  @media (min-width: ${ViewportWidth.m}) {
     width: auto;
     margin: 0 ${props => props.theme.spacing.l};
   }
@@ -51,7 +52,7 @@ const Item = styled.li<{
       inverted ? theme.color.background : theme.color.foreground};
   }
 
-  margin-right: ${props => props.theme.spacing.xl};
+  margin-right: ${props => props.theme.spacing.m};
   &:last-child {
     margin-right: 0;
   }

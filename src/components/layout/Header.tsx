@@ -13,8 +13,9 @@ import { centredLayout } from './css';
 
 const Logo = styled.div<{ active: boolean; inverted?: boolean }>`
   width: 25px;
-  margin-right: 55px; // Offset the wallet button
+  margin-right: 115px; // Offset the wallet button
   order: 1;
+  flex-shrink: 0;
 
   svg {
     // Gentle nudge to visual centre
@@ -36,6 +37,7 @@ const Centre = styled.div`
   display: flex;
   order: 3;
   width: 100%;
+  margin: 0 auto;
 
   @media (min-width: ${ViewportWidth.m}) {
     width: auto;
@@ -61,6 +63,7 @@ const Container = styled.header<{ inverted?: boolean }>`
   left: 0;
   top: 0;
   min-height: 80px;
+  min-width: ${ViewportWidth.xs};
   background: ${({ theme, inverted }) =>
     inverted ? theme.color.foreground : theme.color.background};
   box-shadow: ${({ theme, inverted }) =>
@@ -75,6 +78,7 @@ const Content = styled.div`
   align-items: center;
   flex-wrap: wrap;
   padding: 0 ${({ theme }) => theme.spacing.l};
+  height: 80px;
 
   @media (min-width: ${ViewportWidth.m}) {
     flex-wrap: initial;

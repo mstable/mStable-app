@@ -14,6 +14,7 @@ export enum Reasons {
   WithdrawAmountMustNotExceedSavingsBalance,
   TokenMustBeSelected,
   FetchingData,
+  MUSDMustBeUnlocked,
 }
 
 enum Actions {

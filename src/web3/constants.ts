@@ -22,7 +22,7 @@ export const AVAILABLE_CONNECTORS: Connectors = getConnectors(CHAIN_ID);
 export const EMOJIS = {
   error: '❌',
   approve: '✔️',
-  deposit: '🏦',
+  depositSavings: '🏦',
   mint: '💵',
   redeem: '💱',
   withdraw: '🏧',

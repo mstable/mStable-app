@@ -1,15 +1,15 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useOrderedHistoricTransactions } from '../../context/TransactionsProvider';
-import { HistoricTransaction } from '../../types';
+import { ContractNames, HistoricTransaction } from '../../types';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { MassetQuery } from '../../graphql/generated';
-import { useMUSD } from '../../context/KnownAddressProvider';
+import { useKnownAddress, useMUSD } from '../../context/KnownAddressProvider';
 import { formatExactAmount } from '../../web3/amounts';
 import { EMOJIS } from '../../web3/constants';
 import { P } from '../core/Typography';
 
-type FnName = 'mint' | 'redeem' | 'withdraw' | 'deposit';
+type FnName = 'mint' | 'redeem' | 'withdraw' | 'depositSavings';
 
 const LOADING = 'Loading...';
 
@@ -49,96 +49,129 @@ const getHistoricTxFn = ({ logs }: HistoricTransaction): FnName | null => {
     return 'mint';
   }
   if (logs.find(({ name }) => name === 'SavingsDeposited')) {
-    return 'deposit';
+    return 'depositSavings';
   }
-  if (logs.find(({ name }) => name === 'Withdrawal')) {
+  if (logs.find(({ name }) => name === 'CreditsRedeemed')) {
     return 'withdraw';
   }
   return null;
 };
 
+// TODO support mUSDSavings
 const getHistoricTransactionDescription = (
   fn: FnName,
-  { logs }: HistoricTransaction,
-  mUSD?: MassetQuery['masset'],
+  { contractAddress, logs }: HistoricTransaction,
+  {
+    mUSDSavingsAddress,
+    mUSD,
+  }: { mUSD: MassetQuery['masset']; mUSDSavingsAddress: string | null },
 ): string => {
   if (!mUSD) return LOADING;
 
-  if (fn === 'redeem') {
-    const [
-      ,
-      {
-        values: { feeQuantity },
-      },
-      ,
-      {
-        values: { mAssetQuantity, bAsset, bAssetQuantity },
-      },
-    ] = logs;
-
-    const bAssetToken = mUSD.basket.bassets.find(
-      b => b.id === bAsset.toLowerCase(),
-    );
-    if (!bAssetToken) return LOADING;
-
-    return `You redeemed ${formatExactAmount(
-      bAssetQuantity,
-      bAssetToken.token.decimals,
-      bAssetToken.token.symbol,
-    )} for ${formatExactAmount(
-      mAssetQuantity,
-      mUSD.token.decimals,
-      mUSD.token.symbol,
-    )} (fee paid: ${formatExactAmount(
-      feeQuantity,
-      mUSD.token.decimals,
-      mUSD.token.symbol,
-    )})`;
+  if (contractAddress.toLowerCase() === mUSDSavingsAddress) {
+    switch (fn) {
+      case 'depositSavings': {
+        const [
+          {
+            values: { savingsDeposited },
+          },
+        ] = logs;
+        return `You deposited ${formatExactAmount(savingsDeposited, 18)} mUSD`;
+      }
+      case 'withdraw': {
+        const [
+          {
+            values: { creditsRedeemed },
+          },
+        ] = logs;
+        return `You withdrew ${formatExactAmount(creditsRedeemed, 18)} mUSD`;
+      }
+      default:
+        return 'Unknown';
+    }
   }
 
-  if (fn === 'mint') {
-    const [
-      ,
-      {
-        values: { mAssetQuantity, bAsset, bAssetQuantity },
-      },
-    ] = logs;
-    const bAssetToken = mUSD.basket.bassets.find(
-      b => b.id === bAsset.toLowerCase(),
-    );
-    if (!bAssetToken) return LOADING;
+  switch (fn) {
+    case 'redeem': {
+      const [
+        {
+          values: { feeQuantity },
+        },
+        {
+          values: { mAssetQuantity, bAsset, bAssetQuantity },
+        },
+      ] = logs;
 
-    return `You minted ${formatExactAmount(
-      mAssetQuantity,
-      mUSD.token.decimals,
-      mUSD.token.symbol,
-    )} with ${formatExactAmount(
-      bAssetQuantity,
-      bAssetToken.token.decimals,
-      bAssetToken.token.symbol,
-    )}`;
+      const bAssetToken = mUSD.basket.bassets.find(
+        b => b.id === bAsset.toLowerCase(),
+      );
+      if (!bAssetToken) return LOADING;
+
+      return `You redeemed ${formatExactAmount(
+        bAssetQuantity,
+        bAssetToken.token.decimals,
+        bAssetToken.token.symbol,
+      )} for ${formatExactAmount(
+        mAssetQuantity,
+        mUSD.token.decimals,
+        mUSD.token.symbol,
+      )} (fee paid: ${formatExactAmount(
+        feeQuantity,
+        mUSD.token.decimals,
+        mUSD.token.symbol,
+      )})`;
+    }
+
+    case 'mint': {
+      const [
+        {
+          values: { mAssetQuantity, bAsset, bAssetQuantity },
+        },
+      ] = logs;
+      const bAssetToken = mUSD.basket.bassets.find(
+        b => b.id === bAsset.toLowerCase(),
+      );
+      if (!bAssetToken) return LOADING;
+
+      return `You minted ${formatExactAmount(
+        mAssetQuantity,
+        mUSD.token.decimals,
+        mUSD.token.symbol,
+      )} with ${formatExactAmount(
+        bAssetQuantity,
+        bAssetToken.token.decimals,
+        bAssetToken.token.symbol,
+      )}`;
+    }
+    default:
+      return 'Unknown';
   }
-
-  return 'Unknown';
 };
 
 const HistoricTx: FC<{
   tx: HistoricTransaction;
-  mUSD?: MassetQuery['masset'];
-}> = ({ tx, mUSD }) => {
+  mUSD: MassetQuery['masset'];
+  mUSDSavingsAddress: string | null;
+}> = ({ tx, mUSDSavingsAddress, mUSD }) => {
   const { description, icon } = useMemo(() => {
     const fn = getHistoricTxFn(tx);
     return {
-      description: fn ? getHistoricTransactionDescription(fn, tx, mUSD) : null,
+      description: fn
+        ? getHistoricTransactionDescription(fn, tx, {
+            mUSD,
+            mUSDSavingsAddress,
+          })
+        : null,
       icon: fn ? EMOJIS[fn] : null,
     };
-  }, [tx, mUSD]);
+  }, [tx, mUSD, mUSDSavingsAddress]);
 
   return (
     <HistoricTxContainer>
       <HistoricTxIcon>{icon}</HistoricTxIcon>
-      <EtherscanLink data={tx.hash} type="transaction" />
-      <P>{description}</P>
+      <EtherscanLink data={tx.hash} type="transaction">
+        <P>{description}</P>
+      </EtherscanLink>
     </HistoricTxContainer>
   );
 };
@@ -146,6 +179,7 @@ const HistoricTx: FC<{
 export const HistoricTransactions: FC<{}> = () => {
   const historic = useOrderedHistoricTransactions();
   const mUSD = useMUSD();
+  const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   return (
     <Container>
@@ -155,7 +189,11 @@ export const HistoricTransactions: FC<{}> = () => {
         <List>
           {historic.map(tx => (
             <Item key={tx.hash}>
-              <HistoricTx tx={tx} mUSD={mUSD} />
+              <HistoricTx
+                tx={tx}
+                mUSD={mUSD}
+                mUSDSavingsAddress={mUSDSavingsAddress}
+              />
             </Item>
           ))}
         </List>

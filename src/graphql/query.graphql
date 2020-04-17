@@ -69,5 +69,33 @@ query TokenByAddress($id: ID!) {
 query SavingsContract($id: ID!) {
     savingsContracts(where: { id: $id }) {
         id
+        totalSavings
+        totalCredits
+        exchangeRates {
+            id
+        }
+        savingsRate
+        automationEnabled
+    }
+}
+
+query CreditBalances($account: ID!) {
+    account(id: $account) {
+        id
+        creditBalances {
+            id
+            amount
+        }
+    }
+}
+
+
+query CreditBalances2 {
+    accounts {
+        id
+        creditBalances {
+            id
+            amount
+        }
     }
 }
