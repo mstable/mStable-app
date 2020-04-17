@@ -10,6 +10,9 @@ query CoreTokens {
   #    mGLD: tokens(where: { symbol: "mGLD" }) {
   #        ...TokenDetails
   #    }
+  mUSDSavings: savingsContracts(first: 1) {
+      id
+  }
 }
 
 query Masset($id: ID!) {
@@ -60,5 +63,11 @@ query TokenByAddress($id: ID!) {
         totalBurned
         totalSupply
         totalTransferred
+    }
+}
+
+query SavingsContract($id: ID!) {
+    savingsContracts(where: { id: $id }) {
+        id
     }
 }

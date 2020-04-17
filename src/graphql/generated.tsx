@@ -1061,12 +1061,12 @@ export enum Token_OrderBy {
   TotalBurned = 'totalBurned'
 }
 
-export type TokenDetailsFragment = Pick<Token, 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
+export type TokenDetailsFragment = Pick<Token, 'id' | 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
 
 export type CoreTokensQueryVariables = {};
 
 
-export type CoreTokensQuery = { mUSD: Array<TokenDetailsFragment> };
+export type CoreTokensQuery = { mUSD: Array<TokenDetailsFragment>, mUSDSavings: Array<Pick<SavingsContract, 'id'>> };
 
 export type MassetQueryVariables = {
   id: Scalars['ID']
@@ -1103,6 +1103,13 @@ export type TokenByAddressQueryVariables = {
 
 export type TokenByAddressQuery = { token: Maybe<Pick<Token, 'id' | 'address' | 'decimals' | 'name' | 'symbol' | 'totalBurned' | 'totalSupply' | 'totalTransferred'>> };
 
+export type SavingsContractQueryVariables = {
+  id: Scalars['ID']
+};
+
+
+export type SavingsContractQuery = { savingsContracts: Array<Pick<SavingsContract, 'id'>> };
+
 export type TokenSubSubscriptionVariables = {
   id: Scalars['ID']
 };
@@ -1112,6 +1119,7 @@ export type TokenSubSubscription = { token: Maybe<Pick<Token, 'id' | 'symbol' | 
 
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
+  id
   address
   decimals
   symbol
@@ -1122,6 +1130,9 @@ export const CoreTokensDocument = gql`
     query CoreTokens {
   mUSD: tokens(where: {symbol: "mUSD"}) {
     ...TokenDetails
+  }
+  mUSDSavings: savingsContracts(first: 1) {
+    id
   }
 }
     ${TokenDetailsFragmentDoc}`;
@@ -1308,6 +1319,39 @@ export function useTokenByAddressLazyQuery(baseOptions?: ApolloReactHooks.LazyQu
 export type TokenByAddressQueryHookResult = ReturnType<typeof useTokenByAddressQuery>;
 export type TokenByAddressLazyQueryHookResult = ReturnType<typeof useTokenByAddressLazyQuery>;
 export type TokenByAddressQueryResult = ApolloReactCommon.QueryResult<TokenByAddressQuery, TokenByAddressQueryVariables>;
+export const SavingsContractDocument = gql`
+    query SavingsContract($id: ID!) {
+  savingsContracts(where: {id: $id}) {
+    id
+  }
+}
+    `;
+
+/**
+ * __useSavingsContractQuery__
+ *
+ * To run a query within a React component, call `useSavingsContractQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSavingsContractQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSavingsContractQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSavingsContractQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
+        return ApolloReactHooks.useQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
+      }
+export function useSavingsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
+        }
+export type SavingsContractQueryHookResult = ReturnType<typeof useSavingsContractQuery>;
+export type SavingsContractLazyQueryHookResult = ReturnType<typeof useSavingsContractLazyQuery>;
+export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<SavingsContractQuery, SavingsContractQueryVariables>;
 export const TokenSubDocument = gql`
     subscription TokenSub($id: ID!) {
   token(id: $id) {

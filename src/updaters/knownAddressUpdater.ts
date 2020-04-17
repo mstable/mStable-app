@@ -11,7 +11,7 @@ import { ContractNames } from '../types';
 import { MUSDFactory } from '../typechain/MUSDFactory';
 import { useSignerContext } from '../context/SignerProvider';
 
-type Keys = keyof NonNullable<CoreTokensQueryResult['data']> & 'mUSDSavings';
+type Keys = keyof NonNullable<CoreTokensQueryResult['data']>;
 
 const mapping: Record<Keys, ContractNames> = {
   mUSD: ContractNames.mUSD,
@@ -19,10 +19,6 @@ const mapping: Record<Keys, ContractNames> = {
   // mGLD: ContractNames.mGLD,
   // mta: ContractNames.MTA,
 };
-
-// TODO remove this; it doesn't exist in the gql data yet,
-// but the types are smart enough to see it's needed!
-const musdSavings = [{ address: 'musd savings address' }];
 
 /**
  * Updater for `KnownAddressProvider` state.
@@ -47,6 +43,7 @@ export const KnownAddressUpdater = (): null => {
   const mUSDForgeValidatorAddress = useKnownAddress(
     ContractNames.mUSDForgeValidator,
   );
+
   useEffect(() => {
     if (signer && mUSDAddress && !mUSDForgeValidatorAddress) {
       const mUSD = MUSDFactory.connect(mUSDAddress, signer);
@@ -54,16 +51,15 @@ export const KnownAddressUpdater = (): null => {
         set(ContractNames.mUSDForgeValidator, address);
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signer, mUSDAddress, mUSDForgeValidatorAddress]);
+  }, [signer, mUSDAddress, mUSDForgeValidatorAddress, set]);
 
   // Update addresses when core tokens are fetched.
   useEffect(() => {
     if (coreTokens) {
       Object.keys(coreTokens).forEach(key => {
         const contractName = mapping[key as Keys];
-        const [{ address }] = coreTokens[key as Keys] || musdSavings;
-        set(contractName, address);
+        const [{ id }] = coreTokens[key as Keys];
+        set(contractName, id);
       });
     }
   }, [coreTokens, set]);

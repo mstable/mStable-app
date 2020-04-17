@@ -4,6 +4,7 @@ import { Connectors } from 'use-wallet';
 
 import { IERC20 } from './typechain/IERC20.d';
 import { IMasset } from './typechain/IMasset.d';
+import { ISavingsContract } from './typechain/ISavingsContract.d';
 
 export interface Transaction {
   hash: string;
@@ -51,6 +52,7 @@ export enum Interfaces {
   Masset,
   // Systok,
   ERC20,
+  SavingsContract,
 }
 
 export interface Instances {
@@ -58,6 +60,7 @@ export interface Instances {
   [Interfaces.Masset]: IMasset;
   // [Interfaces.Systok]: ISystok;
   [Interfaces.ERC20]: IERC20;
+  [Interfaces.SavingsContract]: ISavingsContract;
 }
 
 /**
