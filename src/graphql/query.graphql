@@ -78,24 +78,3 @@ query SavingsContract($id: ID!) {
         automationEnabled
     }
 }
-
-query CreditBalances($account: ID!) {
-    account(id: $account) {
-        id
-        creditBalances {
-            id
-            amount
-        }
-    }
-}
-
-
-query CreditBalances2 {
-    accounts {
-        id
-        creditBalances {
-            id
-            amount
-        }
-    }
-}

@@ -1113,30 +1113,19 @@ export type SavingsContractQuery = { savingsContracts: Array<(
     & { exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
   )> };
 
-export type CreditBalancesQueryVariables = {
-  account: Scalars['ID']
-};
-
-
-export type CreditBalancesQuery = { account: Maybe<(
-    Pick<Account, 'id'>
-    & { creditBalances: Array<Pick<CreditBalance, 'id' | 'amount'>> }
-  )> };
-
-export type CreditBalances2QueryVariables = {};
-
-
-export type CreditBalances2Query = { accounts: Array<(
-    Pick<Account, 'id'>
-    & { creditBalances: Array<Pick<CreditBalance, 'id' | 'amount'>> }
-  )> };
-
 export type TokenSubSubscriptionVariables = {
   id: Scalars['ID']
 };
 
 
 export type TokenSubSubscription = { token: Maybe<Pick<Token, 'id' | 'symbol' | 'address'>> };
+
+export type CreditBalancesSubscriptionVariables = {
+  account: Scalars['ID']
+};
+
+
+export type CreditBalancesSubscription = { account: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
 
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
@@ -1380,79 +1369,6 @@ export function useSavingsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQ
 export type SavingsContractQueryHookResult = ReturnType<typeof useSavingsContractQuery>;
 export type SavingsContractLazyQueryHookResult = ReturnType<typeof useSavingsContractLazyQuery>;
 export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<SavingsContractQuery, SavingsContractQueryVariables>;
-export const CreditBalancesDocument = gql`
-    query CreditBalances($account: ID!) {
-  account(id: $account) {
-    id
-    creditBalances {
-      id
-      amount
-    }
-  }
-}
-    `;
-
-/**
- * __useCreditBalancesQuery__
- *
- * To run a query within a React component, call `useCreditBalancesQuery` and pass it any options that fit your needs.
- * When your component renders, `useCreditBalancesQuery` returns an object from Apollo Client that contains loading, error, and data properties 
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCreditBalancesQuery({
- *   variables: {
- *      account: // value for 'account'
- *   },
- * });
- */
-export function useCreditBalancesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
-        return ApolloReactHooks.useQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
-      }
-export function useCreditBalancesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
-        }
-export type CreditBalancesQueryHookResult = ReturnType<typeof useCreditBalancesQuery>;
-export type CreditBalancesLazyQueryHookResult = ReturnType<typeof useCreditBalancesLazyQuery>;
-export type CreditBalancesQueryResult = ApolloReactCommon.QueryResult<CreditBalancesQuery, CreditBalancesQueryVariables>;
-export const CreditBalances2Document = gql`
-    query CreditBalances2 {
-  accounts {
-    id
-    creditBalances {
-      id
-      amount
-    }
-  }
-}
-    `;
-
-/**
- * __useCreditBalances2Query__
- *
- * To run a query within a React component, call `useCreditBalances2Query` and pass it any options that fit your needs.
- * When your component renders, `useCreditBalances2Query` returns an object from Apollo Client that contains loading, error, and data properties 
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCreditBalances2Query({
- *   variables: {
- *   },
- * });
- */
-export function useCreditBalances2Query(baseOptions?: ApolloReactHooks.QueryHookOptions<CreditBalances2Query, CreditBalances2QueryVariables>) {
-        return ApolloReactHooks.useQuery<CreditBalances2Query, CreditBalances2QueryVariables>(CreditBalances2Document, baseOptions);
-      }
-export function useCreditBalances2LazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CreditBalances2Query, CreditBalances2QueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<CreditBalances2Query, CreditBalances2QueryVariables>(CreditBalances2Document, baseOptions);
-        }
-export type CreditBalances2QueryHookResult = ReturnType<typeof useCreditBalances2Query>;
-export type CreditBalances2LazyQueryHookResult = ReturnType<typeof useCreditBalances2LazyQuery>;
-export type CreditBalances2QueryResult = ApolloReactCommon.QueryResult<CreditBalances2Query, CreditBalances2QueryVariables>;
 export const TokenSubDocument = gql`
     subscription TokenSub($id: ID!) {
   token(id: $id) {
@@ -1484,3 +1400,34 @@ export function useTokenSubSubscription(baseOptions?: ApolloReactHooks.Subscript
       }
 export type TokenSubSubscriptionHookResult = ReturnType<typeof useTokenSubSubscription>;
 export type TokenSubSubscriptionResult = ApolloReactCommon.SubscriptionResult<TokenSubSubscription>;
+export const CreditBalancesDocument = gql`
+    subscription CreditBalances($account: ID!) {
+  account(id: $account) {
+    creditBalances {
+      amount
+    }
+  }
+}
+    `;
+
+/**
+ * __useCreditBalancesSubscription__
+ *
+ * To run a query within a React component, call `useCreditBalancesSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useCreditBalancesSubscription` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCreditBalancesSubscription({
+ *   variables: {
+ *      account: // value for 'account'
+ *   },
+ * });
+ */
+export function useCreditBalancesSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<CreditBalancesSubscription, CreditBalancesSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<CreditBalancesSubscription, CreditBalancesSubscriptionVariables>(CreditBalancesDocument, baseOptions);
+      }
+export type CreditBalancesSubscriptionHookResult = ReturnType<typeof useCreditBalancesSubscription>;
+export type CreditBalancesSubscriptionResult = ApolloReactCommon.SubscriptionResult<CreditBalancesSubscription>;
