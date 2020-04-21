@@ -20,7 +20,7 @@ import { useTokenWithBalance } from '../../../context/TokensProvider';
 import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
 import { Button } from '../../core/Button';
 import { FontSize, Size } from '../../../theme';
-import { useCreditBalancesQuery } from '../../../graphql/generated';
+import { useCreditBalancesSubscription } from '../../../graphql/generated';
 import { parseAmounts } from '../../../web3/amounts';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
@@ -127,7 +127,7 @@ export const Save: FC<{}> = () => {
     [signer, mUSDAddress],
   );
 
-  const creditBalances = useCreditBalancesQuery({
+  const creditBalances = useCreditBalancesSubscription({
     variables: { account: account ? account.toLowerCase() : '' },
     skip: !account,
   });

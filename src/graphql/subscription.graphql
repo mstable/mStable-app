@@ -7,3 +7,11 @@ subscription TokenSub($id: ID!) {
         address
     }
 }
+
+subscription CreditBalances($account: ID!) {
+    account(id: $account) {
+        creditBalances {
+            amount
+        }
+    }
+}
