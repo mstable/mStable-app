@@ -284,8 +284,11 @@ export const AppProvider: FC<{}> = ({ children }) => {
 
     if (injected) {
       networkChangedListener = chainId => {
-        const supported = CHAIN_ID === parseInt(chainId as string, 10);
-        dispatch({ type: Actions.SupportedChainSelected, payload: supported });
+        // `chainId` from MetaMask can't be trusted in this event
+        if (!Number.isNaN(chainId as number)) {
+          const supported = CHAIN_ID === parseInt(chainId as string, 10);
+          dispatch({ type: Actions.SupportedChainSelected, payload: supported });
+        }
       };
       networkChangedListener(parseInt(injected.chainId, 16));
 
