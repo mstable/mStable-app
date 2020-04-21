@@ -88,9 +88,12 @@ export const TokenBalancesUpdater = (): null => {
     dispatch({ type: Actions.SetContracts, payload: instances });
   }, [signer, missing]);
 
-  // Update subscribed tokens on each block.
+  // Update subscribed tokens on each block, and also if the account changes
   useEffect(() => {
-    if (account && blockNumberRef.current !== blockNumber) {
+    if (
+      account && blockNumber &&
+      (blockNumberRef.current !== blockNumber || accountRef.current !== account)
+    ) {
       // Update balances
       const balancePromises = subscribedTokens
         .filter(token => contracts[token] && token !== mUSDSavingsAddress)
