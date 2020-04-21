@@ -58,6 +58,7 @@ const CreditBalance = styled.div`
   font-size: ${FontSize.insane};
   font-weight: bold;
   margin-bottom: 20px;
+  line-height: 100%;
 `;
 
 const TransactionTypeRow = styled(FormRow)`
@@ -65,7 +66,7 @@ const TransactionTypeRow = styled(FormRow)`
   justify-content: center;
   padding: ${({ theme }) => `${theme.spacing.l} 0`};
 
-  > * {
+  > :first-child {
     margin-right: ${({ theme }) => theme.spacing.l};
   }
 `;
