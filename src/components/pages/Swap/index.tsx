@@ -13,7 +13,7 @@ import { MUSDFactory } from '../../../typechain/MUSDFactory';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
-import { H3, P } from '../../core/Typography';
+import { H3, Linkarooni, P } from '../../core/Typography';
 import { ReactComponent as ArrowsSVG } from '../arrows.svg';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Fields, Reasons, TransactionType, useSwapState } from './state';
@@ -96,6 +96,7 @@ export const Swap: FC<{}> = () => {
       output,
       input: { token: { address: inputAddress } = { address: null } },
       output: { token: { address: outputAddress } = { address: null } },
+      feeAmountSimple,
     },
     transactionType,
     error,
@@ -212,8 +213,19 @@ export const Swap: FC<{}> = () => {
     [inputToken],
   );
   const outputItems = useMemo(
-    () => [{ label: 'Balance', value: outputToken?.formattedBalance }],
-    [outputToken],
+    () => [
+      { label: 'Balance', value: outputToken?.formattedBalance },
+      ...(feeAmountSimple
+        ? [
+            {
+              label: 'Note',
+              // TODO ideally 'see details' would open up the details
+              value: 'Redemption fee applies (see details below)',
+            },
+          ]
+        : []),
+    ],
+    [outputToken, feeAmountSimple],
   );
 
   /**
@@ -449,23 +461,38 @@ export const Swap: FC<{}> = () => {
           error={outputError}
         />
       </FormRow>
-      <SubmitButton type="submit" size={Size.l} disabled={submitButtonDisabled}>
-        Swap
-      </SubmitButton>
-      <TransactionDetailsDropdown>
-        <>
-          <P>
-            You are swapping {input.amount.formatted} for
-            {output.amount.formatted} (1:1).
-          </P>
-          <P>How about some more details here explaining what the deal is?</P>
-          <P>
-            Details are really nice and they might go on for a few lines. Here
-            is another sentence. Watch out, this sentence ends with an
-            exclamation mark!
-          </P>
-        </>
-      </TransactionDetailsDropdown>
+      <FormRow>
+        <SubmitButton
+          type="submit"
+          size={Size.l}
+          disabled={submitButtonDisabled}
+        >
+          Swap
+        </SubmitButton>
+        {touched.current && error === null ? (
+          <TransactionDetailsDropdown>
+            <>
+              <P>
+                You are swapping {input.amount.formatted} for{' '}
+                {output.amount.formatted}{feeAmountSimple ? '' : ' (1:1)'}.
+              </P>
+              {feeAmountSimple ? (
+                <>
+                  <P>
+                    This includes a redemption fee of {feeAmountSimple} mUSD.
+                  </P>
+                  <P>
+                    Read more about the mStable redemption fee{' '}
+                    <Linkarooni href="https://docs.mstable.org/mstable-assets/massets/minting-and-redemption#redeeming">
+                      here
+                    </Linkarooni>.
+                  </P>
+                </>
+              ) : null}
+            </>
+          </TransactionDetailsDropdown>
+        ) : null}
+      </FormRow>
     </Form>
   );
 };
