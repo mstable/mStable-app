@@ -79,6 +79,7 @@ describe('Swap form state', () => {
               simple: '10',
             },
           },
+          feeAmountSimple: null,
         },
       });
 
@@ -107,6 +108,7 @@ describe('Swap form state', () => {
               simple: null,
             },
           },
+          feeAmountSimple: null,
         },
       });
     });
@@ -147,6 +149,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: null,
           },
         });
       });
@@ -175,6 +178,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: null,
           },
         });
       });
@@ -205,6 +209,7 @@ describe('Swap form state', () => {
                 simple: '9.98',
               },
             },
+            feeAmountSimple: '0.02',
           },
         });
       });
@@ -233,6 +238,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: '0.02',
           },
         });
       });
@@ -263,6 +269,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: null,
           },
         });
 
@@ -285,6 +292,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: null,
           },
         });
       });
@@ -313,6 +321,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: null,
           },
         });
 
@@ -335,6 +344,7 @@ describe('Swap form state', () => {
                 simple: '9.98',
               },
             },
+            feeAmountSimple: '0.02',
           },
         });
       });
@@ -361,6 +371,7 @@ describe('Swap form state', () => {
             output: {
               token: USDC,
             },
+            feeAmountSimple: null,
           },
         });
       });
@@ -379,6 +390,7 @@ describe('Swap form state', () => {
             output: {
               token: DAI,
             },
+            feeAmountSimple: null,
           },
         });
 
@@ -395,6 +407,7 @@ describe('Swap form state', () => {
             output: {
               token: USDC,
             },
+            feeAmountSimple: null,
           },
         });
       });
@@ -413,6 +426,7 @@ describe('Swap form state', () => {
             output: {
               token: USDC,
             },
+            feeAmountSimple: null,
           },
         });
 
@@ -429,6 +443,7 @@ describe('Swap form state', () => {
             output: {
               token: mUSD,
             },
+            feeAmountSimple: null,
           },
         });
       });
@@ -455,6 +470,7 @@ describe('Swap form state', () => {
             output: {
               token: mUSD,
             },
+            feeAmountSimple: null,
           },
         });
       });
@@ -481,6 +497,7 @@ describe('Swap form state', () => {
                 simple: null,
               },
             },
+            feeAmountSimple: null,
           },
         });
 
@@ -505,6 +522,7 @@ describe('Swap form state', () => {
                 simple: '9.98',
               },
             },
+            feeAmountSimple: '0.02',
           },
         });
 
@@ -527,6 +545,7 @@ describe('Swap form state', () => {
                 simple: '9.98',
               },
             },
+            feeAmountSimple: '0.02',
           },
         });
       });
@@ -557,6 +576,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: null,
           },
         });
 
@@ -579,6 +599,7 @@ describe('Swap form state', () => {
                 simple: '9.98',
               },
             },
+            feeAmountSimple: '0.02',
           },
         });
 
@@ -601,6 +622,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: null,
           },
         });
       });
@@ -627,6 +649,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: null,
           },
         });
 
@@ -651,6 +674,7 @@ describe('Swap form state', () => {
                 simple: '9.98',
               },
             },
+            feeAmountSimple: '0.02',
           },
         });
 
@@ -675,6 +699,7 @@ describe('Swap form state', () => {
                 simple: '10',
               },
             },
+            feeAmountSimple: null,
           },
         });
 
@@ -699,6 +724,7 @@ describe('Swap form state', () => {
                 simple: '9.98',
               },
             },
+            feeAmountSimple: '0.02',
           },
         });
       });

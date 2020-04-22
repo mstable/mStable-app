@@ -73,6 +73,7 @@ interface State {
   values: {
     input: TokenQuantity;
     output: TokenQuantity;
+    feeAmountSimple: string | null;
   };
   mUSD: TokenDetails;
   transactionType: TransactionType;
@@ -109,6 +110,7 @@ const initialState: State = Object.freeze({
   values: {
     input: initialTokenQuantityField,
     output: initialTokenQuantityField,
+    feeAmountSimple: null,
   },
   mUSD: {
     address: null,
@@ -131,12 +133,15 @@ const getOtherTransactionType = (
 const getOtherField = (field: Fields): Fields =>
   field === Fields.Input ? Fields.Output : Fields.Input;
 
-const calculateRedemptionQuantity = (
+const calculateRedemptionAmount = (
   field: Fields,
   tokenQ: TokenQuantity,
   otherTokenQ: TokenQuantity,
   feeRate: BigNumber | null,
-): string | null => {
+): {
+  redemptionAmountSimple: string | null;
+  feeAmountSimple: string | null;
+} => {
   if (
     !(
       feeRate &&
@@ -145,7 +150,7 @@ const calculateRedemptionQuantity = (
       (field === Fields.Input || otherTokenQ.token.decimals)
     )
   ) {
-    return null;
+    return { redemptionAmountSimple: null, feeAmountSimple: null };
   }
 
   const divisorDecimals =
@@ -157,12 +162,15 @@ const calculateRedemptionQuantity = (
 
   const feeAmount = tokenQ.amount.exact.mul(feeRate).div(divisor);
 
-  return formatUnits(
-    field === Fields.Input
-      ? tokenQ.amount.exact.sub(feeAmount)
-      : tokenQ.amount.exact.add(feeAmount),
-    tokenQ.token.decimals,
-  );
+  return {
+    redemptionAmountSimple: formatUnits(
+      field === Fields.Input
+        ? tokenQ.amount.exact.sub(feeAmount)
+        : tokenQ.amount.exact.add(feeAmount),
+      tokenQ.token.decimals,
+    ),
+    feeAmountSimple: formatUnits(feeAmount, tokenQ.token.decimals),
+  };
 };
 
 const reducer: Reducer<State, Action> = (state, action) => {
@@ -216,20 +224,17 @@ const reducer: Reducer<State, Action> = (state, action) => {
         },
       });
 
+      // When redeeming, the fee must be applied
+      const { redemptionAmountSimple: otherAmountSimple, feeAmountSimple } =
+        transactionType === TransactionType.Redeem
+          ? calculateRedemptionAmount(field, tokenQ, prevOtherTokenQ, feeRate)
+          : { redemptionAmountSimple: simpleAmount, feeAmountSimple: null };
+
       const otherTokenQ = parseAmounts({
         ...prevOtherTokenQ,
         amount: {
           ...prevOtherTokenQ.amount,
-          simple:
-            // When redeeming, the fee must be applied
-            transactionType === TransactionType.Redeem
-              ? calculateRedemptionQuantity(
-                  field,
-                  tokenQ,
-                  prevOtherTokenQ,
-                  feeRate,
-                )
-              : simpleAmount,
+          simple: otherAmountSimple,
         },
       });
 
@@ -239,6 +244,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
           ...state.values,
           [field]: tokenQ,
           [otherField]: otherTokenQ,
+          feeAmountSimple,
         },
       };
     }
@@ -252,6 +258,16 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
       // Do nothing if the type is the same
       if (transactionType === prevTransactionType) return state;
+
+      // When the transaction type is being set to redeem, the fee
+      // must be applied to the output amount; otherwise, use the input amount.
+      const { redemptionAmountSimple: otherAmountSimple, feeAmountSimple } =
+        transactionType === TransactionType.Redeem
+          ? calculateRedemptionAmount(Fields.Input, output, input, feeRate)
+          : {
+              redemptionAmountSimple: input.amount.simple,
+              feeAmountSimple: null,
+            };
 
       return {
         ...state,
@@ -270,20 +286,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
             ...input,
             amount: {
               ...input.amount,
-              // When the transaction type is being set to redeem, the fee
-              // must be applied to the output amount.
-              ...(transactionType === TransactionType.Redeem
-                ? {
-                    simple: calculateRedemptionQuantity(
-                      Fields.Input,
-                      output,
-                      input,
-                      feeRate,
-                    ),
-                  }
-                : null),
+              simple: otherAmountSimple,
             },
           }),
+          feeAmountSimple,
         },
         transactionType,
       };
