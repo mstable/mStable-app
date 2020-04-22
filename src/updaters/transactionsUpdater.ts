@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useWallet } from 'use-wallet';
 import { TransactionReceipt } from 'ethers/providers';
 import { useTransactionsContext } from '../context/TransactionsProvider';
@@ -9,12 +9,27 @@ import { useWeb3Provider } from '../context/SignerProvider';
  * block number changes.
  */
 export const TransactionsUpdater = (): null => {
+  const { account } = useWallet();
   const provider = useWeb3Provider();
   const { getBlockNumber } = useWallet();
   const blockNumber = getBlockNumber();
+  const accountRef = useRef<string | null>(account);
 
-  const [{ current }, { check, finalize }] = useTransactionsContext();
+  const [{ current }, { check, finalize, reset }] = useTransactionsContext();
 
+  /**
+   * Reset transactions state on account change
+   */
+  useEffect(() => {
+    if (accountRef.current !== account) {
+      reset();
+      accountRef.current = account;
+    }
+  }, [account, accountRef, reset]);
+
+  /**
+   * Check pending transaction status on new blocks, and finalize if possible.
+   */
   useEffect(
     (): (() => void) | void => {
       if (provider && blockNumber) {
