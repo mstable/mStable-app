@@ -16,6 +16,7 @@ enum Actions {
 export enum NotificationType {
   Success,
   Error,
+  Info,
 }
 
 export interface Notification {
@@ -39,8 +40,16 @@ type Action =
     }
   | { type: Actions.RemoveNotification; payload: { id: string } };
 
+type AddNotificationCallback = (
+  title: Notification['title'],
+  body?: Notification['body'],
+  link?: Notification['link'],
+) => void;
+
 interface Dispatch {
-  addNotification(notification: Notification): void;
+  addErrorNotification: AddNotificationCallback;
+  addInfoNotification: AddNotificationCallback;
+  addSuccessNotification: AddNotificationCallback;
   removeNotification(id: string): void;
 }
 
@@ -75,8 +84,8 @@ const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 export const NotificationsProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const addNotification = useCallback<Dispatch['addNotification']>(
-    notification => {
+  const addNotification = useCallback(
+    (notification: Notification) => {
       const id = Math.random().toString();
 
       dispatch({
@@ -92,6 +101,29 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
     [dispatch],
   );
 
+  const addErrorNotification = useCallback<Dispatch['addErrorNotification']>(
+    (title, body, link) => {
+      addNotification({ title, body, link, type: NotificationType.Error });
+    },
+    [addNotification],
+  );
+
+  const addInfoNotification = useCallback<Dispatch['addInfoNotification']>(
+    (title, body, link) => {
+      addNotification({ title, body, link, type: NotificationType.Info });
+    },
+    [addNotification],
+  );
+
+  const addSuccessNotification = useCallback<
+    Dispatch['addSuccessNotification']
+  >(
+    (title, body, link) => {
+      addNotification({ title, body, link, type: NotificationType.Success });
+    },
+    [addNotification],
+  );
+
   const removeNotification = useCallback<Dispatch['removeNotification']>(
     id => {
       dispatch({ type: Actions.RemoveNotification, payload: { id } });
@@ -105,11 +137,19 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
         () => [
           state,
           {
-            addNotification,
+            addErrorNotification,
+            addInfoNotification,
+            addSuccessNotification,
             removeNotification,
           },
         ],
-        [state, addNotification, removeNotification],
+        [
+          state,
+          addErrorNotification,
+          addInfoNotification,
+          addSuccessNotification,
+          removeNotification,
+        ],
       )}
     >
       {children}
@@ -125,33 +165,14 @@ export const useNotificationsState = (): State => useNotificationsContext()[0];
 export const useNotificationsDispatch = (): Dispatch =>
   useNotificationsContext()[1];
 
-export const useAddSuccessNotification = (): ((
-  title: Notification['title'],
-  body?: Notification['body'],
-  link?: Notification['link'],
-) => void) => {
-  const { addNotification } = useNotificationsDispatch();
-  return useCallback(
-    (title, body, link) => {
-      addNotification({ type: NotificationType.Success, body, title, link });
-    },
-    [addNotification],
-  );
-};
+export const useAddErrorNotification = (): Dispatch['addErrorNotification'] =>
+  useNotificationsDispatch().addErrorNotification;
 
-export const useAddErrorNotification = (): ((
-  title: Notification['title'],
-  body?: Notification['body'],
-  link?: Notification['link'],
-) => void) => {
-  const { addNotification } = useNotificationsDispatch();
-  return useCallback(
-    (title, body, link) => {
-      addNotification({ type: NotificationType.Error, body, title, link });
-    },
-    [addNotification],
-  );
-};
+export const useAddInfoNotification = (): Dispatch['addInfoNotification'] =>
+  useNotificationsDispatch().addInfoNotification;
+
+export const useAddSuccessNotification = (): Dispatch['addSuccessNotification'] =>
+  useNotificationsDispatch().addSuccessNotification;
 
 export const useRemoveNotification = (): Dispatch['removeNotification'] =>
   useNotificationsDispatch().removeNotification;

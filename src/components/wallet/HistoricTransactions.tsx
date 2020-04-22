@@ -57,7 +57,6 @@ const getHistoricTxFn = ({ logs }: HistoricTransaction): FnName | null => {
   return null;
 };
 
-// TODO support mUSDSavings
 const getHistoricTransactionDescription = (
   fn: FnName,
   { contractAddress, logs }: HistoricTransaction,
@@ -76,7 +75,10 @@ const getHistoricTransactionDescription = (
             values: { savingsDeposited },
           },
         ] = logs;
-        return `You deposited ${formatExactAmount(savingsDeposited, 18)} mUSD`;
+        return `You deposited ${formatExactAmount(
+          savingsDeposited,
+          mUSD.token.decimals,
+        )} mUSD`;
       }
       case 'withdraw': {
         const [
@@ -84,7 +86,10 @@ const getHistoricTransactionDescription = (
             values: { creditsRedeemed },
           },
         ] = logs;
-        return `You withdrew ${formatExactAmount(creditsRedeemed, 18)} mUSD`;
+        return `You withdrew ${formatExactAmount(
+          creditsRedeemed,
+          mUSD.token.decimals,
+        )} mUSD`;
       }
       default:
         return 'Unknown';
