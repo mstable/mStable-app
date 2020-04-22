@@ -1,3 +1,4 @@
+import { FC } from 'react';
 import { TransactionResponse, Log } from 'ethers/providers';
 import { BigNumber, LogDescription } from 'ethers/utils';
 import { Connectors } from 'use-wallet';
@@ -112,5 +113,5 @@ export interface InjectedEthereum {
 export interface Connector {
   id: keyof Connectors;
   label: string;
-  icon?: string;
+  icon?: FC;
 }
