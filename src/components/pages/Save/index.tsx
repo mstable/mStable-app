@@ -19,6 +19,8 @@ import {
 import { useTokenWithBalance } from '../../../context/TokensProvider';
 import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
 import { Button } from '../../core/Button';
+import { H3, P } from '../../core/Typography';
+import { MUSDIcon } from '../../core/MUSDIcon';
 import { FontSize, Size } from '../../../theme';
 import { useCreditBalancesSubscription } from '../../../graphql/generated';
 import { parseAmounts } from '../../../web3/amounts';
@@ -27,7 +29,6 @@ import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { SavingsContractFactory } from '../../../typechain/SavingsContractFactory';
 import { MUSDFactory } from '../../../typechain/MUSDFactory';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
-import { H3, P } from '../../core/Typography';
 
 const mapReasonToMessage = (reason: Reasons): string => {
   switch (reason) {
@@ -59,6 +60,11 @@ const CreditBalance = styled.div`
   font-weight: bold;
   margin-bottom: 20px;
   line-height: 100%;
+  
+  svg {
+    top: 10px;
+    margin-right: 10px;
+  }
 `;
 
 const TransactionTypeRow = styled(FormRow)`
@@ -318,7 +324,10 @@ export const Save: FC<{}> = () => {
     <Form onSubmit={handleSubmit}>
       <CreditBalanceRow>
         <H3>Your mUSD savings balance</H3>
-        <CreditBalance>${creditBalanceQ.amount.formatted}</CreditBalance>
+        <CreditBalance>
+          <MUSDIcon />
+          {creditBalanceQ.amount.formatted}
+        </CreditBalance>
       </CreditBalanceRow>
       <TransactionTypeRow>
         <TransactionTypeButton
