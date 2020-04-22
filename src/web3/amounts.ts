@@ -1,5 +1,4 @@
 import { BigNumber, commify, parseUnits, formatUnits } from 'ethers/utils';
-import { padLeft } from 'web3-utils';
 import { TokenQuantity } from '../types';
 
 export const formatSimpleAmount = (
@@ -8,10 +7,11 @@ export const formatSimpleAmount = (
 ): string | null => {
   if (simpleAmount) {
     // Use two padded decimal places
-    const [intAmount, decimals] = simpleAmount.split('.');
-    return `${commify(
-      `${intAmount}.${padLeft((decimals || '0').slice(0, 2), 2)}`,
-    )}${symbol ? ` ${symbol}` : ''}`;
+    const [intAmount, decimals = ''] = simpleAmount.split('.');
+    const paddedDecimals = decimals.slice(0, 2).padEnd(2, '0');
+    return `${commify(`${intAmount}.${paddedDecimals}`)}${
+      symbol ? ` ${symbol}` : ''
+    }`;
   }
   return null;
 };
