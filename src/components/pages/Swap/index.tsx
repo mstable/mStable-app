@@ -316,6 +316,33 @@ export const Swap: FC<{}> = () => {
     [transactionType, mUSDContract, error, input, output, sendTransaction],
   );
 
+  // Set the `touched` state when an amount is first set
+  useEffect(() => {
+    if (touched.current) return;
+
+    if (output.amount.simple || input.amount.simple) {
+      touched.current = true;
+    }
+  }, [touched, input, output]);
+
+  // Set mUSD if the form wasn't touched
+  useEffect(() => {
+    if (touched.current) return;
+
+    if (mUSD) {
+      setMUSD({
+        address: mUSD.id,
+        decimals: mUSD.token.decimals,
+        symbol: mUSD.token.symbol,
+      });
+    }
+  }, [mUSDAddress, touched, setMUSD, mUSD]);
+
+  // Set fee rate (should just happen once)
+  useEffect(() => {
+    setFeeRate(feeRate);
+  }, [feeRate, setFeeRate]);
+
   /**
    * Effect: perform validation
    */
@@ -402,28 +429,6 @@ export const Swap: FC<{}> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input, output, touched, needsUnlock]);
 
-  // Set initial values
-  useEffect(() => {
-    if (touched.current) return;
-    if (outputAddress) {
-      touched.current = true;
-      return;
-    }
-    // Set mUSD if the form wasn't touched
-    if (mUSD) {
-      setMUSD({
-        address: mUSD.id,
-        decimals: mUSD.token.decimals,
-        symbol: mUSD.token.symbol,
-      });
-    }
-  }, [outputAddress, mUSDAddress, touched, setMUSD, mUSD]);
-
-  // Set fee rate (should just happen once)
-  useEffect(() => {
-    setFeeRate(feeRate);
-  }, [feeRate, setFeeRate]);
-
   return (
     <Form error={formError} onSubmit={handleSubmit}>
       <H3>Send</H3>
@@ -474,7 +479,8 @@ export const Swap: FC<{}> = () => {
             <>
               <P>
                 You are swapping {input.amount.formatted} for{' '}
-                {output.amount.formatted}{feeAmountSimple ? '' : ' (1:1)'}.
+                {output.amount.formatted}
+                {feeAmountSimple ? '' : ' (1:1)'}.
               </P>
               {feeAmountSimple ? (
                 <>
@@ -485,7 +491,8 @@ export const Swap: FC<{}> = () => {
                     Read more about the mStable redemption fee{' '}
                     <Linkarooni href="https://docs.mstable.org/mstable-assets/massets/minting-and-redemption#redeeming">
                       here
-                    </Linkarooni>.
+                    </Linkarooni>
+                    .
                   </P>
                 </>
               ) : null}
