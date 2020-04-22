@@ -20,7 +20,7 @@ import { useMassetToken } from '../web3/hooks';
 import { MassetNames, InjectedEthereum } from '../types';
 import { CHAIN_ID, CONNECTORS } from '../web3/constants';
 import {
-  useAddSuccessNotification,
+  useAddInfoNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
 
@@ -185,7 +185,7 @@ const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 export const AppProvider: FC<{}> = ({ children }) => {
   const { activate, deactivate } = useWallet<InjectedEthereum>();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const addSuccessNotification = useAddSuccessNotification();
+  const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
 
   const collapseWallet = useCallback<Dispatch['collapseWallet']>(() => {
@@ -214,7 +214,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
       activate(selected)
         .then(() => {
           const connector = CONNECTORS.find(c => c.id === selected);
-          addSuccessNotification(
+          addInfoNotification(
             'Connected',
             connector ? `Connected with ${connector.label}` : null,
           );
@@ -240,7 +240,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
           });
         });
     },
-    [activate, addSuccessNotification, addErrorNotification],
+    [activate, addInfoNotification, addErrorNotification],
   );
 
   const setWalletPosition = useCallback<Dispatch['setWalletPosition']>(

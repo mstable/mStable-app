@@ -18,6 +18,7 @@ import {
 } from '../types';
 import {
   useAddErrorNotification,
+  useAddInfoNotification,
   useAddSuccessNotification,
 } from './NotificationsProvider';
 import { TransactionOverrides } from '../typechain/index.d';
@@ -202,7 +203,7 @@ const getTxPurpose = (
         const [amount] = args as [BigNumber];
         return `Withdrawing ${formatExactAmount(
           amount,
-          18,
+          mUSD.token.decimals,
           mUSD.token.symbol,
         )}`;
       }
@@ -233,7 +234,9 @@ const getTxPurpose = (
     }
     case 'depositSavings': {
       const [amount] = args as [BigNumber];
-      return `Depositing ${formatExactAmount(amount, 18)} ${mUSD.token.symbol}`;
+      return `Depositing ${formatExactAmount(amount, mUSD.token.decimals)} ${
+        mUSD.token.symbol
+      }`;
     }
     default:
       return null;
@@ -253,6 +256,7 @@ const getEtherscanLinkForHash = (
 export const TransactionsProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(transactionsCtxReducer, initialState);
   const addSuccessNotification = useAddSuccessNotification();
+  const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
   const mUSD = useMUSD();
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
@@ -272,13 +276,13 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
         },
       });
 
-      addSuccessNotification(
+      addInfoNotification(
         'Transaction pending',
         purpose,
         getEtherscanLinkForHash(pendingTx.hash),
       );
     },
-    [dispatch, mUSD, addSuccessNotification, mUSDSavingsAddress],
+    [dispatch, mUSD, mUSDSavingsAddress, addInfoNotification],
   );
 
   const addHistoric = useCallback<Dispatch['addHistoric']>(

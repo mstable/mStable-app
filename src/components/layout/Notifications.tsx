@@ -35,7 +35,15 @@ const Container = styled.div`
 
 const Item = styled.div<Pick<Notification, 'type'>>`
   background: ${({ theme, type }) =>
-    type === NotificationType.Success ? theme.color.green : theme.color.red};
+    type === NotificationType.Success
+      ? theme.color.green
+      : type === NotificationType.Info
+      ? theme.color.blue
+      : theme.color.red};
+  color: ${({ theme, type }) =>
+    type === NotificationType.Info
+      ? theme.color.white
+      : theme.color.foreground};
   border-radius: 4px;
   padding: ${({ theme }) => theme.spacing.s};
   margin-bottom: ${({ theme }) => theme.spacing.m};

@@ -67,13 +67,17 @@ const getPendingTxDescription = (
         const [amount] = tx.args as [BigNumber];
         return `You ${
           tx.status ? 'withdrew' : 'are withdrawing'
-        } ${formatExactAmount(amount, 18)} ${mUSD.token.symbol}`;
+        } ${formatExactAmount(amount, mUSD.token.decimals)} ${
+          mUSD.token.symbol
+        }`;
       }
       case 'depositSavings': {
         const [amount] = tx.args as [BigNumber];
         return `You ${
           tx.status ? 'deposited' : 'are depositing'
-        } ${formatExactAmount(amount, 18)} ${mUSD.token.symbol}`;
+        } ${formatExactAmount(amount, mUSD.token.decimals)} ${
+          mUSD.token.symbol
+        }`;
       }
       default:
         return 'Unknown';
