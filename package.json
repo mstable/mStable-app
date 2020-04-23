@@ -21,6 +21,7 @@
     "ethers": "^4.0.45",
     "hookrouter": "^1.2.3",
     "react": "^16.12.0",
+    "react-context-mutex": "^1.0.7",
     "react-dom": "^16.12.0",
     "react-scripts": "3.4.0",
     "react-transition-group": "^4.3.0",
@@ -28,6 +29,7 @@
     "styled-reset": "^4.1.2",
     "subscriptions-transport-ws": "^0.9.16",
     "use-clipboard-copy": "^0.1.2",
+    "use-deep-compare-effect": "^1.3.1",
     "use-wallet": "^0.4.4",
     "web3-utils": "^1.2.6"
   },

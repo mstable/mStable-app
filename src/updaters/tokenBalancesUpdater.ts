@@ -1,5 +1,13 @@
-import { Reducer, useEffect, useMemo, useReducer, useRef } from 'react';
+import {
+  Reducer,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+} from 'react';
 import { useWallet } from 'use-wallet';
+import useDeepCompareEffect from 'use-deep-compare-effect';
 import { useSignerContext } from '../context/SignerProvider';
 import { ERC20DetailedFactory } from '../typechain/ERC20DetailedFactory';
 import {
@@ -9,6 +17,7 @@ import {
 import { ERC20Detailed } from '../typechain/ERC20Detailed.d';
 import { useKnownAddress } from '../context/KnownAddressProvider';
 import { ContractNames } from '../types';
+import { useAsyncMutex } from '../web3/hooks';
 
 interface State {
   [tokenAddress: string]: ERC20Detailed;
@@ -67,31 +76,27 @@ export const TokenBalancesUpdater = (): null => {
 
   const subscribedTokens = useSubscribedTokens();
 
-  // Tokens which are subscribed to, but don't have contract instances.
-  const missing = useRef<string[]>([]);
-  useEffect(() => {
-    missing.current = subscribedTokens.filter(token => !contracts[token]);
-  }, [subscribedTokens, contracts]);
+  // Set contract instances based on subscribed tokens.
+  useDeepCompareEffect(() => {
+    if (!signer) return;
 
-  // Set missing contract instances.
-  useEffect(() => {
-    if (!signer || missing.current.length === 0) return;
-
-    const instances = missing.current.reduce(
+    const instances = subscribedTokens.reduce(
       (_contracts, token) => ({
         ..._contracts,
         [token]: ERC20DetailedFactory.connect(token, signer),
       }),
-      {},
+      contracts,
     );
 
     dispatch({ type: Actions.SetContracts, payload: instances });
-  }, [signer, missing]);
+    // `contracts` dep intentionally left out because it's set here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signer, subscribedTokens]);
 
-  // Update subscribed tokens on each block, and also if the account changes
-  useEffect(() => {
+  const updateCallback = useCallback(async () => {
     if (
-      account && blockNumber &&
+      account &&
+      blockNumber &&
       (blockNumberRef.current !== blockNumber || accountRef.current !== account)
     ) {
       // Update balances
@@ -140,6 +145,9 @@ export const TokenBalancesUpdater = (): null => {
     updateAllowance,
     updateBalances,
   ]);
+
+  // Update subscribed tokens on each block, and also if the account changes
+  useAsyncMutex(`${account}-${blockNumber}`, updateCallback);
 
   // Clear all contracts and tokens if the account changes.
   useEffect(() => {
