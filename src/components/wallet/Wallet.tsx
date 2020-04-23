@@ -72,13 +72,19 @@ const ConnectorButton = styled(Button)`
   padding: ${props => props.theme.spacing.m};
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  img {
-    display: block;
-    max-width: 100%;
-    margin-bottom: ${({ theme }) => theme.spacing.s};
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   div {
-    display: block;
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    margin-bottom: ${({ theme }) => theme.spacing.s};
   }
 `;
 
@@ -96,7 +102,7 @@ const Disconnected: FC<{
 
   return (
     <ConnectorsList>
-      {list.map(({ id, label, icon }) => (
+      {list.map(({ id, label, icon: Icon }) => (
         <ConnectorButton
           key={id}
           type="button"
@@ -104,10 +110,8 @@ const Disconnected: FC<{
           size={Size.m}
           inverted
         >
-          {icon ? (
-            <img src={`${process.env.PUBLIC_URL}/icons/${icon}`} alt={label} />
-          ) : null}
-          <div>{label}</div>
+          <div>{Icon ? <Icon /> : null}</div>
+          <span>{label}</span>
         </ConnectorButton>
       ))}
     </ConnectorsList>
