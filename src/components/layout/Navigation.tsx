@@ -6,6 +6,7 @@ import { FontSize, ViewportWidth } from '../../theme';
 interface NavItem {
   disabled?: boolean;
   title: string;
+  alt?: string;
   path?: string;
 }
 
@@ -34,6 +35,8 @@ const Item = styled.li<{
   active: boolean;
   inverted: boolean;
 }>`
+  margin-right: ${props => props.theme.spacing.m};
+  position: relative;
   border-bottom: 4px solid transparent;
   font-weight: bold;
   text-transform: uppercase;
@@ -45,16 +48,34 @@ const Item = styled.li<{
         : theme.color.foreground
       : 'transparent'};
 
-  ${props => (props.disabled ? `opacity: 0.4; cursor: disabled` : '')};
-
-  a {
+  a,
+  span {
+    white-space: nowrap;
     color: ${({ theme, inverted }) =>
       inverted ? theme.color.background : theme.color.foreground};
+    opacity: ${({ disabled }) => (disabled ? 0.4 : 1)};
   }
 
-  margin-right: ${props => props.theme.spacing.m};
+  span {
+    cursor: not-allowed;
+  }
+
+  > div {
+    position: absolute;
+    top: 30px;
+    opacity: 0.2;
+    font-size: ${FontSize.s};
+    visibility: hidden;
+    width: 100%;
+    text-align: center;
+  }
+
   &:last-child {
     margin-right: 0;
+  }
+
+  &:hover > div {
+    visibility: visible;
   }
 
   @media (min-width: ${ViewportWidth.s}) {
@@ -63,9 +84,10 @@ const Item = styled.li<{
 `;
 
 const navItems: NavItem[] = [
-  { title: 'Swap', path: '/swap' },
-  { title: 'Save', path: '/save' },
-  { title: 'Earn', disabled: true, path: '/earn' },
+  { title: 'Swap It', path: '/swap', alt: 'Harder' },
+  { title: 'Save It', path: '/save', alt: 'Better' },
+  { title: 'Move It', path: '/move', alt: 'Faster', disabled: true },
+  { title: 'Earn It', path: '/earn', alt: 'Stronger', disabled: true },
 ];
 
 /**
@@ -88,7 +110,7 @@ export const Navigation: FC<{ walletExpanded: boolean }> = ({
   return (
     <Container>
       <List>
-        {items.map(({ title, path, disabled, active }) => (
+        {items.map(({ title, alt, path, disabled, active }) => (
           <Item
             key={title}
             disabled={disabled}
@@ -100,6 +122,7 @@ export const Navigation: FC<{ walletExpanded: boolean }> = ({
             ) : (
               <A href={path}>{title}</A>
             )}
+            {alt ? <div>{alt}</div> : null}
           </Item>
         ))}
       </List>

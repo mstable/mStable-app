@@ -7,7 +7,6 @@ import { MassetQuery } from '../../graphql/generated';
 import { useKnownAddress, useMUSD } from '../../context/KnownAddressProvider';
 import { formatExactAmount } from '../../web3/amounts';
 import { EMOJIS } from '../../web3/constants';
-import { P } from '../core/Typography';
 
 type FnName = 'mint' | 'redeem' | 'withdraw' | 'depositSavings';
 
@@ -18,11 +17,12 @@ const Container = styled.div``;
 const List = styled.ul`
   padding: 0;
   width: 100%;
+  background: rgba(255, 255, 255, 0.1);
 `;
 
 const Item = styled.li`
   border-top: 1px rgba(255, 255, 255, 0.3) solid;
-  padding: ${({ theme }) => theme.spacing.m};
+  padding: ${({ theme }) => `${theme.spacing.m} ${theme.spacing.s}`};
 `;
 
 const HistoricTxContainer = styled.div`
@@ -175,7 +175,7 @@ const HistoricTx: FC<{
     <HistoricTxContainer>
       <HistoricTxIcon>{icon}</HistoricTxIcon>
       <EtherscanLink data={tx.hash} type="transaction">
-        <P>{description}</P>
+        {description}
       </EtherscanLink>
     </HistoricTxContainer>
   );
