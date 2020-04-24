@@ -5,10 +5,7 @@ import { getWorkingPath } from 'hookrouter';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Wallet } from '../wallet/Wallet';
-import {
-  useAppStatusWarnings,
-  useWalletExpanded,
-} from '../../context/AppProvider';
+import { useWalletExpanded } from '../../context/AppProvider';
 import { Background } from './Background';
 import { StatusBar } from './StatusBar';
 import { BetaWarning } from './BetaWarning';
@@ -19,13 +16,11 @@ interface WalletExpanded {
   walletExpanded: boolean;
 }
 
-export const Container = styled.div<{ warnings: number }>`
+export const Container = styled.div<{}>`
   flex-direction: column;
   min-height: 100vh;
   align-items: flex-start;
   justify-content: center;
-  padding-top: ${({ warnings }) =>
-    warnings * 25 + 80}px; // Offset the warnings, plus fixed header
 
   ${centredLayout}
 `;
@@ -58,25 +53,37 @@ const GlobalStyle = createGlobalStyle<WalletExpanded>`
       walletExpanded ? theme.color.background : theme.color.foreground};
     line-height: 1.3rem;
   }
-  #root {
-    display: flex;
-    justify-content: center;
-  }
 `;
+
+const StickyHeader = styled.div<{ inverted: boolean }>`
+  position: sticky;
+  top: 0;
+  width: 100%;
+  box-shadow: ${({ theme, inverted }) =>
+      inverted
+        ? theme.color.backgroundTransparent
+        : theme.color.foregroundTransparent}
+    0 0 4px;
+`;
+
+const HeaderGroup: FC<{ walletExpanded: boolean }> = ({ walletExpanded }) => (
+  <StickyHeader inverted={walletExpanded}>
+    <StatusBar />
+    <Header walletExpanded={walletExpanded} />
+  </StickyHeader>
+);
 
 /**
  * App layout component.
  */
 export const Layout: FC<{}> = ({ children }) => {
   const walletExpanded = useWalletExpanded();
-  const warnings = useAppStatusWarnings();
   const activePath = getWorkingPath('');
   return (
     <>
       <Background walletExpanded={walletExpanded} />
-      <Container warnings={warnings.length}>
-        <StatusBar />
-        <Header walletExpanded={walletExpanded} />
+      <HeaderGroup walletExpanded={walletExpanded} />
+      <Container>
         {activePath !== '/' ? <BetaWarning /> : null}
         {walletExpanded ? <Wallet /> : <Main>{children}</Main>}
         <Footer walletExpanded={walletExpanded} />

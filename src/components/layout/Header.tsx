@@ -58,19 +58,11 @@ const Container = styled.header<{ inverted?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  position: fixed;
   width: 100%;
-  left: 0;
-  top: 0;
   min-height: 80px;
   min-width: ${ViewportWidth.xs};
   background: ${({ theme, inverted }) =>
     inverted ? theme.color.foreground : theme.color.background};
-  box-shadow: ${({ theme, inverted }) =>
-      inverted
-        ? theme.color.backgroundTransparent
-        : theme.color.foregroundTransparent}
-    0 0 4px;
 `;
 
 const Content = styled.div`
