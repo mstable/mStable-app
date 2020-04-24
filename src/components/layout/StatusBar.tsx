@@ -5,28 +5,29 @@ import {
   useAppStatusWarnings,
 } from '../../context/AppProvider';
 
-const StatusBarContainer = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1;
+const WARNING_HEIGHT = 30;
+
+const StatusBarContainer = styled.div<{ warnings: number }>`
+  overflow: hidden;
+  transition: height 0.3s linear;
+  height: ${({ warnings }) => warnings * WARNING_HEIGHT}px;
+  background: ${({ theme }) => theme.color.red};
 `;
 
 const StatusBarWarning = styled.div`
   padding: ${({ theme }) => theme.spacing.xs};
-  background: ${({ theme }) => theme.color.red};
   color: ${({ theme }) => theme.color.background};
   font-weight: bold;
   font-size: ${({ theme }) => theme.fontSize.s};
   text-transform: uppercase;
   text-align: center;
+  height: ${WARNING_HEIGHT};
 `;
 
 export const StatusBar: FC<{}> = () => {
   const warnings = useAppStatusWarnings();
   return (
-    <StatusBarContainer>
+    <StatusBarContainer warnings={warnings.length}>
       {warnings.map(warning => (
         <StatusBarWarning key={warning}>
           {warning === StatusWarnings.NotOnline
