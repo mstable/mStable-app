@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
+import { getWorkingPath } from 'hookrouter';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Wallet } from '../wallet/Wallet';
@@ -10,6 +11,7 @@ import {
 } from '../../context/AppProvider';
 import { Background } from './Background';
 import { StatusBar } from './StatusBar';
+import { BetaWarning } from './BetaWarning';
 import { Notifications } from './Notifications';
 import { centredLayout } from './css';
 
@@ -68,12 +70,14 @@ const GlobalStyle = createGlobalStyle<WalletExpanded>`
 export const Layout: FC<{}> = ({ children }) => {
   const walletExpanded = useWalletExpanded();
   const warnings = useAppStatusWarnings();
+  const activePath = getWorkingPath('');
   return (
     <>
       <Background walletExpanded={walletExpanded} />
       <Container warnings={warnings.length}>
         <StatusBar />
         <Header walletExpanded={walletExpanded} />
+        {activePath !== '/' ? <BetaWarning /> : null}
         {walletExpanded ? <Wallet /> : <Main>{children}</Main>}
         <Footer walletExpanded={walletExpanded} />
       </Container>
