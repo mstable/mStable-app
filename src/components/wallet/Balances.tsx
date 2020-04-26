@@ -8,19 +8,30 @@ import {
 import { formatExactAmount } from '../../web3/amounts';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { mapSizeToFontSize, Size } from '../../theme';
+import { TokenIcon } from '../icons/TokenIcon';
 
-const BalancesList = styled.ul``;
+const BalancesList = styled.ul`
+  background: rgba(255, 255, 255, 0.1);
+`;
 
 const BalanceItem = styled.li<{ size?: Size }>`
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   font-size: ${({ size = Size.m }) => mapSizeToFontSize(size)};
   border-top: 1px rgba(255, 255, 255, 0.3) solid;
-  padding: 10px 0;
+  padding: ${({ theme }) => `${theme.spacing.m} ${theme.spacing.s}`};
 `;
 
-const Symbol = styled.div``;
+const Symbol = styled.div`
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 36px;
+    margin-right: 8px;
+  }
+`;
 
 const Balance = styled.div<{ size?: Size }>`
   font-weight: bold;
@@ -73,6 +84,7 @@ export const Balances: FC<{}> = () => {
       {mUSD ? (
         <BalanceItem size={Size.xl} key={mUSD.address}>
           <Symbol>
+            <TokenIcon symbol={mUSD.symbol} />
             <span>{mUSD.symbol}</span>
             <EtherscanLink data={mUSD.address} />
           </Symbol>
@@ -82,6 +94,7 @@ export const Balances: FC<{}> = () => {
       {otherTokens.map(({ symbol, address, balanceFormatted }) => (
         <BalanceItem key={address}>
           <Symbol>
+            <TokenIcon symbol={symbol} />
             <span>{symbol}</span>
             <EtherscanLink data={address} />
           </Symbol>

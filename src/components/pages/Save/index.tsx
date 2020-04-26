@@ -20,7 +20,7 @@ import { useTokenWithBalance } from '../../../context/TokensProvider';
 import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
 import { Button } from '../../core/Button';
 import { H3, P } from '../../core/Typography';
-import { MUSDIcon } from '../../core/MUSDIcon';
+import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { FontSize, Size } from '../../../theme';
 import { useCreditBalancesSubscription } from '../../../graphql/generated';
 import { parseAmounts } from '../../../web3/amounts';
@@ -60,9 +60,9 @@ const CreditBalance = styled.div`
   font-weight: bold;
   margin-bottom: 20px;
   line-height: 100%;
-  
-  svg {
-    top: 10px;
+
+  img {
+    width: 46px;
     margin-right: 10px;
   }
 `;
@@ -325,7 +325,7 @@ export const Save: FC<{}> = () => {
       <CreditBalanceRow>
         <H3>Your mUSD savings balance</H3>
         <CreditBalance>
-          <MUSDIcon />
+          <MUSDIconTransparent />
           {creditBalanceQ.amount.formatted}
         </CreditBalance>
       </CreditBalanceRow>
