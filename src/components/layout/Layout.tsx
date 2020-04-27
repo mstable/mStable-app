@@ -18,9 +18,8 @@ interface WalletExpanded {
 
 export const Container = styled.div<{}>`
   flex-direction: column;
-  min-height: 100vh;
+  min-height: calc(100vh - 80px); // The sticky header won't always be 80px, so this is less than ideal
   align-items: flex-start;
-  justify-content: center;
 
   ${centredLayout}
 `;
