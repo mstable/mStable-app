@@ -1,6 +1,6 @@
 import { Reducer, useCallback, useMemo, useReducer } from 'react';
 import { TokenDetails, TokenQuantity } from '../../../types';
-import { parseAmounts } from '../../../web3/amounts';
+import { parseAmount } from '../../../web3/amounts';
 
 export enum TransactionType {
   Deposit,
@@ -35,7 +35,7 @@ type Action =
       type: Actions.SetError;
       payload: { reason: Reasons | null };
     }
-  | { type: Actions.SetQuantity; payload: { simpleAmount: string | null } }
+  | { type: Actions.SetQuantity; payload: { formValue: string | null } }
   | {
       type: Actions.SetToken;
       payload: TokenDetails;
@@ -47,7 +47,7 @@ type Action =
 
 interface Dispatch {
   setError(reason: Reasons | null): void;
-  setQuantity(simpleAmount: string | null): void;
+  setQuantity(formValue: string | null): void;
   setToken(token: TokenDetails): void;
   setTransactionType(transactionType: TransactionType): void;
 }
@@ -58,28 +58,27 @@ const reducer: Reducer<State, Action> = (state, action) => {
       const { reason } = action.payload;
       return { ...state, error: reason };
     }
-    case Actions.SetQuantity:
+    case Actions.SetQuantity: {
+      const { formValue } = action.payload;
       return {
         ...state,
-        input: parseAmounts({
+        input: {
           ...state.input,
-          amount: {
-            simple: action.payload.simpleAmount,
-            exact: null,
-            formatted: null,
-          },
-        }),
+          formValue,
+          amount: parseAmount(formValue, state.input.token.decimals),
+        },
       };
+    }
     case Actions.SetToken:
       return {
         ...state,
-        input:
-          action.payload === null
-            ? {
-                ...state.input,
-                token: { address: null, symbol: null, decimals: null },
-              }
-            : parseAmounts({ ...state.input, token: action.payload }),
+        input: {
+          ...state.input,
+          token:
+            action.payload === null
+              ? { address: null, symbol: null, decimals: null }
+              : action.payload,
+        },
       };
     case Actions.SetTransactionType: {
       const { transactionType } = action.payload;
@@ -94,6 +93,7 @@ const initialState: State = Object.freeze({
   error: null,
   transactionType: TransactionType.Deposit,
   input: {
+    formValue: null,
     token: {
       address: null,
       decimals: null,
@@ -102,7 +102,6 @@ const initialState: State = Object.freeze({
     amount: {
       simple: null,
       exact: null,
-      formatted: null,
     },
   },
 });
@@ -118,8 +117,8 @@ export const useSaveState = (): [State, Dispatch] => {
   );
 
   const setQuantity = useCallback<Dispatch['setQuantity']>(
-    simpleAmount => {
-      dispatch({ type: Actions.SetQuantity, payload: { simpleAmount } });
+    formValue => {
+      dispatch({ type: Actions.SetQuantity, payload: { formValue } });
     },
     [dispatch],
   );

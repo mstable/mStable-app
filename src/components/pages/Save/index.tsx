@@ -23,7 +23,7 @@ import { H3, P } from '../../core/Typography';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { FontSize, Size } from '../../../theme';
 import { useCreditBalancesSubscription } from '../../../graphql/generated';
-import { parseAmounts } from '../../../web3/amounts';
+import { parseAmount } from '../../../web3/amounts';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { SavingsContractFactory } from '../../../typechain/SavingsContractFactory';
@@ -142,11 +142,10 @@ export const Save: FC<{}> = () => {
     creditBalances.data?.account?.creditBalances[0]?.amount || '0.00';
 
   const creditBalanceQ = useMemo(
-    () =>
-      parseAmounts({
-        amount: { simple: creditBalanceDecimal, exact: null, formatted: null },
-        token: { decimals: 18, address: null, symbol: null },
-      }),
+    () => ({
+      amount: parseAmount(creditBalanceDecimal, 18),
+      token: { decimals: 18, address: null, symbol: null },
+    }),
     [creditBalanceDecimal],
   );
 
@@ -326,7 +325,7 @@ export const Save: FC<{}> = () => {
         <H3>Your mUSD savings balance</H3>
         <CreditBalance>
           <MUSDIconTransparent />
-          {creditBalanceQ.amount.formatted}
+          {creditBalanceQ.amount.simple}
         </CreditBalance>
       </CreditBalanceRow>
       <TransactionTypeRow>
@@ -356,7 +355,7 @@ export const Save: FC<{}> = () => {
         <TokenAmountInput
           name="input"
           tokenValue={input.token.address}
-          amountValue={input.amount.simple || ''}
+          amountValue={input.formValue}
           onChangeToken={handleChangeToken}
           onChangeAmount={handleChangeAmount}
           onSetMax={handleSetMax}
@@ -381,7 +380,7 @@ export const Save: FC<{}> = () => {
               {transactionType === TransactionType.Deposit
                 ? 'depositing'
                 : 'withdrawing'}{' '}
-              {input.amount.formatted}.
+              {input.amount.simple}.
             </P>
             <P>How about some more details here explaining what the deal is?</P>
             <P>

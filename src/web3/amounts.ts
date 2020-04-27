@@ -1,5 +1,5 @@
 import { BigNumber, commify, parseUnits, formatUnits } from 'ethers/utils';
-import { TokenQuantity } from '../types';
+import { Amount } from '../types';
 
 export const formatSimpleAmount = (
   simpleAmount: string | null,
@@ -25,29 +25,18 @@ export const formatExactAmount = (
     ? formatSimpleAmount(formatUnits(exactAmount, decimals), symbol)
     : null;
 
-export const parseSimpleAmount = (
-  simple: string | null,
-  decimals?: number | null,
-): BigNumber | null => {
-  if (!(simple && decimals)) return null;
-
-  try {
-    return parseUnits(simple.slice(0, decimals), decimals);
-  } catch {
-    return null;
+export const parseAmount = (
+  input: string | null,
+  decimals: number | null,
+): Amount => {
+  if (!(input && decimals)) {
+    return { exact: null, simple: null };
   }
-};
 
-export const parseAmounts = ({
-  amount: { simple },
-  token: { decimals, symbol },
-  amount,
-  token,
-}: TokenQuantity): TokenQuantity => ({
-  amount: {
-    ...amount,
-    exact: parseSimpleAmount(simple, decimals),
-    formatted: formatSimpleAmount(simple, symbol),
-  },
-  token,
-});
+  const exact = parseUnits(input.slice(0, decimals), decimals);
+  const simple = parseFloat(formatUnits(exact, decimals));
+  return {
+    exact,
+    simple,
+  };
+};

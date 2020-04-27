@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useReducer, Reducer } from 'react';
 import { BigNumber, formatUnits } from 'ethers/utils';
 import { TokenQuantity, TokenDetails } from '../../../types';
-import { parseAmounts } from '../../../web3/amounts';
+import { parseAmount } from '../../../web3/amounts';
 
 export enum Fields {
   Input = 'input',
@@ -65,7 +65,7 @@ type Action =
     }
   | {
       type: Actions.SetQuantity;
-      payload: { field: Fields; simpleAmount: string | null };
+      payload: { field: Fields; formValue: string | null };
     }
   | { type: Actions.SetTransactionType; payload: TransactionType };
 
@@ -87,17 +87,17 @@ interface Dispatch {
   setToken(field: Fields, token: NonNullable<TokenDetails> | null): void;
   setMUSD(token: NonNullable<TokenDetails>): void;
   setFeeRate(feeRate: BigNumber): void;
-  setQuantity(field: Fields, simpleAmount: string): void;
+  setQuantity(field: Fields, formValue: string): void;
   startSubmission(): void;
   endSubmission(): void;
   swapTransactionType(): void;
 }
 
 const initialTokenQuantityField: TokenQuantity = Object.freeze({
+  formValue: null,
   amount: {
     simple: null,
     exact: null,
-    formatted: null,
   },
   token: {
     address: null,
@@ -199,15 +199,16 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ...state,
         values: {
           ...state.values,
-          [field]: parseAmounts({
+          [field]: {
             ...prevTokenQ,
+            amount: parseAmount(prevTokenQ.formValue, decimals),
             token: { decimals, address, symbol },
-          }),
+          },
         },
       };
     }
     case Actions.SetQuantity: {
-      const { field, simpleAmount } = action.payload;
+      const { field, formValue } = action.payload;
 
       const otherField = getOtherField(field);
       const {
@@ -216,27 +217,23 @@ const reducer: Reducer<State, Action> = (state, action) => {
         values: { [field]: prevTokenQ, [otherField]: prevOtherTokenQ },
       } = state;
 
-      const tokenQ = parseAmounts({
+      const tokenQ = {
         ...prevTokenQ,
-        amount: {
-          ...prevOtherTokenQ.amount,
-          simple: simpleAmount,
-        },
-      });
+        formValue,
+        amount: parseAmount(formValue, prevTokenQ.token.decimals),
+      };
 
       // When redeeming, the fee must be applied
       const { redemptionAmountSimple: otherAmountSimple, feeAmountSimple } =
         transactionType === TransactionType.Redeem
           ? calculateRedemptionAmount(field, tokenQ, prevOtherTokenQ, feeRate)
-          : { redemptionAmountSimple: simpleAmount, feeAmountSimple: null };
+          : { redemptionAmountSimple: formValue, feeAmountSimple: null };
 
-      const otherTokenQ = parseAmounts({
+      const otherTokenQ = {
         ...prevOtherTokenQ,
-        amount: {
-          ...prevOtherTokenQ.amount,
-          simple: otherAmountSimple,
-        },
-      });
+        formValue: otherAmountSimple,
+        amount: parseAmount(otherAmountSimple, prevOtherTokenQ.token.decimals),
+      };
 
       return {
         ...state,
@@ -265,7 +262,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         transactionType === TransactionType.Redeem
           ? calculateRedemptionAmount(Fields.Input, output, input, feeRate)
           : {
-              redemptionAmountSimple: input.amount.simple,
+              redemptionAmountSimple: input.formValue,
               feeAmountSimple: null,
             };
 
@@ -274,21 +271,20 @@ const reducer: Reducer<State, Action> = (state, action) => {
         error: null,
         values: {
           ...state.values,
-          input: parseAmounts({
+          input: {
             // Only the token should be changed for the input, because the
             // input amount will always be greater than the output amount.
             ...input,
+            amount: parseAmount(input.formValue, output.token.decimals),
             token: output.token,
-          }),
-          output: parseAmounts({
+          },
+          output: {
             // The output takes the input values, plus special handling for
             // the amount.
             ...input,
-            amount: {
-              ...input.amount,
-              simple: otherAmountSimple,
-            },
-          }),
+            formValue: otherAmountSimple,
+            amount: parseAmount(otherAmountSimple, input.token.decimals),
+          },
           feeAmountSimple,
         },
         transactionType,
@@ -368,10 +364,10 @@ export const useSwapState = (): [State, Dispatch] => {
   );
 
   const setQuantity = useCallback(
-    (field: Fields, simpleAmount: string) => {
+    (field: Fields, formValue: string) => {
       dispatch({
         type: Actions.SetQuantity,
-        payload: { simpleAmount, field },
+        payload: { formValue, field },
       });
     },
     [dispatch],

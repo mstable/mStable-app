@@ -11,8 +11,8 @@ import { FontSize } from '../../theme';
 
 interface Props {
   error?: string;
-  value: string | void;
-  decimals: number | void;
+  value: string | null
+  decimals: number | null;
   balance?: string | null;
   name: string;
   onChange?(name: string, simpleAmount: string | null): void;

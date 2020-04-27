@@ -12,7 +12,6 @@ import {
   TokenDetailsFragment,
   useErc20TokensQuery,
 } from '../graphql/generated';
-import { formatExactAmount } from '../web3/amounts';
 
 type TokenAddress = string;
 
@@ -201,8 +200,7 @@ export const useToken = (token: TokenAddress | null): State[string] | null => {
 
 export const useTokenWithBalance = (
   token: TokenAddress | null,
-): Partial<TokenDetailsFragment &
-  State[keyof State] & { formattedBalance: string | null }> => {
+): Partial<TokenDetailsFragment & State[keyof State]> => {
   const tokenFromState = useToken(token);
   const query = useErc20TokensQuery({
     variables: { addresses: [token] },
@@ -213,10 +211,6 @@ export const useTokenWithBalance = (
     () => ({
       ...tokenFromState,
       ...tokenFromData,
-      formattedBalance: formatExactAmount(
-        tokenFromState?.balance,
-        tokenFromData?.decimals,
-      ),
     }),
     [tokenFromState, tokenFromData],
   );
