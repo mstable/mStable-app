@@ -10,14 +10,14 @@ export const P = styled.p`
 `;
 
 export const H2 = styled.h2`
-  font-size: ${FontSize.xl};
+  font-size: ${FontSize.l};
   font-weight: bold;
   line-height: 3rem;
 `;
 
 export const H3 = styled.h3`
   font-weight: bold;
-  font-size: ${FontSize.l};
+  font-size: ${FontSize.m};
   line-height: 3rem;
 `;
 
