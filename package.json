@@ -22,6 +22,7 @@
     "hookrouter": "^1.2.3",
     "react": "^16.12.0",
     "react-context-mutex": "^1.0.7",
+    "react-countup": "^4.3.3",
     "react-dom": "^16.12.0",
     "react-scripts": "3.4.0",
     "react-transition-group": "^4.3.0",

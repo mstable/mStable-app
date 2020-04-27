@@ -20,6 +20,7 @@ import { useTokenWithBalance } from '../../../context/TokensProvider';
 import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
 import { Button } from '../../core/Button';
 import { H3, P } from '../../core/Typography';
+import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { FontSize, Size } from '../../../theme';
 import { useCreditBalancesSubscription } from '../../../graphql/generated';
@@ -51,20 +52,22 @@ const mapReasonToMessage = (reason: Reasons): string => {
   }
 };
 
-const CreditBalanceRow = styled(FormRow)`
-  text-align: center;
-`;
-
 const CreditBalance = styled.div`
-  font-size: ${FontSize.insane};
-  font-weight: bold;
   margin-bottom: 20px;
-  line-height: 100%;
-
   img {
     width: 46px;
     margin-right: 10px;
   }
+`;
+
+const CreditBalanceCountUp = styled(CountUp)`
+  font-size: ${FontSize.insane};
+  font-weight: bold;
+  line-height: 100%;
+`;
+
+const CreditBalanceRow = styled(FormRow)`
+  text-align: center;
 `;
 
 const TransactionTypeRow = styled(FormRow)`
@@ -325,7 +328,7 @@ export const Save: FC<{}> = () => {
         <H3>Your mUSD savings balance</H3>
         <CreditBalance>
           <MUSDIconTransparent />
-          {creditBalanceQ.amount.simple}
+          <CreditBalanceCountUp end={creditBalanceQ.amount.simple || 0} />
         </CreditBalance>
       </CreditBalanceRow>
       <TransactionTypeRow>
