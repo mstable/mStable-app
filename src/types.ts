@@ -93,12 +93,12 @@ export interface TokenDetails {
 }
 
 export interface Amount {
-  simple: string | null;
+  simple: number | null;
   exact: BigNumber | null;
-  formatted: string | null;
 }
 
 export interface TokenQuantity {
+  formValue: string | null;
   amount: Amount;
   token: TokenDetails;
 }

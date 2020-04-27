@@ -14,7 +14,7 @@ interface Props {
   name: string;
   error?: string;
   tokenValue: string | null;
-  amountValue: string | void;
+  amountValue: string | null;
   tokenAddresses: string[];
   needsUnlock?: boolean;
   items?: { label: string; value?: string | null | undefined }[];
@@ -100,7 +100,7 @@ export const TokenAmountInput: FC<Props> = ({
             onChange={onChangeAmount}
             onSetMax={onSetMax}
             error={error}
-            decimals={selectedToken?.decimals}
+            decimals={selectedToken?.decimals || null}
           />
           <FlexRow size={Size.xs}>
             <div>

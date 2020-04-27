@@ -70,13 +70,23 @@ describe('Swap form state', () => {
         transactionType: TransactionType.Mint,
         values: {
           input: {
+            token: {
+              address: null,
+            },
+            formValue: '10',
             amount: {
-              simple: '10',
+              // These can't be set without a token
+              simple: null,
+              exact: null,
             },
           },
           output: {
+            token: {
+              address: null,
+            },
+            formValue: '10',
             amount: {
-              simple: '10',
+              simple: null,
             },
           },
           feeAmountSimple: null,
@@ -98,14 +108,17 @@ describe('Swap form state', () => {
       expect(state()).toMatchObject({
         values: {
           input: {
+            formValue: '42',
             amount: {
-              simple: '42',
+              simple: null,
             },
           },
           output: {
+            // When redeeming, this can't be inferred without a fee set
+            formValue: null,
             amount: {
-              // When redeeming, this can't be inferred without a fee set
               simple: null,
+              exact: null,
             },
           },
           feeAmountSimple: null,
@@ -139,14 +152,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: DAI,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: null,
@@ -168,14 +183,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: DAI,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: null,
@@ -199,14 +216,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: DAI,
+              formValue: '9.98',
               amount: {
-                simple: '9.98',
+                simple: 9.98,
               },
             },
             feeAmountSimple: '0.02',
@@ -228,14 +247,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: mUSD,
+              formValue: '10.02',
               amount: {
-                simple: '10.02',
+                simple: 10.02,
               },
             },
             output: {
               token: DAI,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: '0.02',
@@ -259,14 +280,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: DAI,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: null,
@@ -282,14 +305,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: USDC,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: null,
@@ -311,14 +336,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: USDC,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: null,
@@ -334,14 +361,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: USDC,
+              formValue: '9.98',
               amount: {
-                simple: '9.98',
+                simple: 9.98,
               },
             },
             feeAmountSimple: '0.02',
@@ -510,16 +539,18 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: {
                 address: null,
               },
+              formValue: '9.98',
               amount: {
-                simple: '9.98',
+                simple: null,
               },
             },
             feeAmountSimple: '0.02',
@@ -535,14 +566,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: USDC,
+              formValue: '9.98',
               amount: {
-                simple: '9.98',
+                simple: 9.98,
               },
             },
             feeAmountSimple: '0.02',
@@ -566,14 +599,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: DAI,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: null,
@@ -589,14 +624,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: DAI,
+              formValue: '9.98',
               amount: {
-                simple: '9.98',
+                simple: 9.98,
               },
             },
             feeAmountSimple: '0.02',
@@ -612,14 +649,16 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: DAI,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: null,
@@ -639,14 +678,16 @@ describe('Swap form state', () => {
               token: {
                 address: null,
               },
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: null,
               },
             },
             output: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: null,
@@ -662,16 +703,19 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             output: {
               token: {
                 address: null,
               },
+              formValue: '9.98',
               amount: {
-                simple: '9.98',
+                // The token must be set for this to be set
+                simple: null,
               },
             },
             feeAmountSimple: '0.02',
@@ -689,14 +733,16 @@ describe('Swap form state', () => {
               token: {
                 address: null,
               },
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: null,
               },
             },
             output: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                simple: 10,
               },
             },
             feeAmountSimple: null,
@@ -712,16 +758,18 @@ describe('Swap form state', () => {
           values: {
             input: {
               token: mUSD,
+              formValue: '10',
               amount: {
-                simple: '10',
+                // simple: 10,
               },
             },
             output: {
               token: {
                 address: null,
               },
+              formValue: '9.98',
               amount: {
-                simple: '9.98',
+                simple: null,
               },
             },
             feeAmountSimple: '0.02',

@@ -17,6 +17,7 @@ import { H3, Linkarooni, P } from '../../core/Typography';
 import { ReactComponent as ArrowsSVG } from '../arrows.svg';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Fields, Reasons, TransactionType, useSwapState } from './state';
+import { formatExactAmount } from '../../../web3/amounts';
 
 const mapForgeValidatorResponseToReason = (response: string): Reasons => {
   switch (response) {
@@ -209,12 +210,20 @@ export const Swap: FC<{}> = () => {
   const outputToken = useTokenWithBalance(outputAddress);
 
   const inputItems = useMemo(
-    () => [{ label: 'Balance', value: inputToken?.formattedBalance }],
+    () => [
+      {
+        label: 'Balance',
+        value: formatExactAmount(inputToken.balance, inputToken.decimals),
+      },
+    ],
     [inputToken],
   );
   const outputItems = useMemo(
     () => [
-      { label: 'Balance', value: outputToken?.formattedBalance },
+      {
+        label: 'Balance',
+        value: formatExactAmount(outputToken.balance, outputToken.decimals),
+      },
       ...(feeAmountSimple
         ? [
             {
@@ -437,7 +446,7 @@ export const Swap: FC<{}> = () => {
       <H3>Send</H3>
       <FormRow>
         <TokenAmountInput
-          amountValue={input.amount.simple || ''}
+          amountValue={input.formValue}
           tokenAddresses={allTokenAddresses}
           tokenValue={inputAddress}
           name={Fields.Input}
@@ -459,7 +468,7 @@ export const Swap: FC<{}> = () => {
       <H3>Receive</H3>
       <FormRow>
         <TokenAmountInput
-          amountValue={output.amount.simple || ''}
+          amountValue={output.formValue}
           tokenAddresses={allTokenAddresses}
           tokenValue={outputAddress}
           name={Fields.Output}
@@ -481,8 +490,8 @@ export const Swap: FC<{}> = () => {
           <TransactionDetailsDropdown>
             <>
               <P>
-                You are swapping {input.amount.formatted} for{' '}
-                {output.amount.formatted}
+                You are swapping {input.amount.simple} for{' '}
+                {output.amount.simple}
                 {feeAmountSimple ? '' : ' (1:1)'}.
               </P>
               {feeAmountSimple ? (

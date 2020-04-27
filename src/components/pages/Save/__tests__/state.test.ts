@@ -79,6 +79,7 @@ describe('Swap form state', () => {
       expect(state()).toMatchObject({
         input: {
           token: mUSD,
+          formValue: null,
           amount: {
             simple: null,
           },
@@ -102,6 +103,7 @@ describe('Swap form state', () => {
             symbol: null,
             decimals: null,
           },
+          formValue: null,
           amount: {
             simple: null,
           },
@@ -121,8 +123,11 @@ describe('Swap form state', () => {
           token: {
             address: null,
           },
+          formValue: '10',
           amount: {
-            simple: '10',
+            // These require a token to be set
+            simple: null,
+            exact: null,
           },
         },
       });
@@ -142,6 +147,7 @@ describe('Swap form state', () => {
           token: {
             address: null,
           },
+          formValue: null,
           amount: {
             simple: null,
           },
