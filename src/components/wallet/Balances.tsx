@@ -1,16 +1,15 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
+import { formatUnits } from 'ethers/utils';
 import { useTokensState } from '../../context/TokensProvider';
 import {
   TokenDetailsFragment,
   useAllErc20TokensQuery,
 } from '../../graphql/generated';
-import { formatExactAmount } from '../../web3/amounts';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
 import { TokenIcon } from '../icons/TokenIcon';
-import { formatUnits } from 'ethers/utils';
 
 const BalancesList = styled.ul`
   background: rgba(255, 255, 255, 0.1);
