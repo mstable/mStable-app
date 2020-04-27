@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
-import { parseUnits } from 'ethers/utils';
+import { formatUnits, parseUnits } from 'ethers/utils';
 import { ContractNames, SendTxManifest } from '../../../types';
 import { useKnownAddress } from '../../../context/KnownAddressProvider';
 import { useSignerContext } from '../../../context/SignerProvider';
@@ -275,8 +275,11 @@ export const Swap: FC<{}> = () => {
    * Handle setting the max amount for the input token
    */
   const handleSetMax = useCallback(() => {
-    if (inputToken?.formattedBalance) {
-      setQuantity(Fields.Input, inputToken.formattedBalance);
+    if (inputToken?.balance) {
+      setQuantity(
+        Fields.Input,
+        formatUnits(inputToken.balance, inputToken.decimals),
+      );
     }
   }, [setQuantity, inputToken]);
 
