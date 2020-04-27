@@ -6,7 +6,6 @@ import { FontSize, ViewportWidth } from '../../theme';
 interface NavItem {
   disabled?: boolean;
   title: string;
-  alt?: string;
   path?: string;
 }
 
@@ -60,16 +59,6 @@ const Item = styled.li<{
     cursor: not-allowed;
   }
 
-  > div {
-    position: absolute;
-    top: 30px;
-    opacity: 0.2;
-    font-size: ${FontSize.s};
-    visibility: hidden;
-    width: 100%;
-    text-align: center;
-  }
-
   &:last-child {
     margin-right: 0;
   }
@@ -84,10 +73,10 @@ const Item = styled.li<{
 `;
 
 const navItems: NavItem[] = [
-  { title: 'Swap It', path: '/swap', alt: 'Harder' },
-  { title: 'Save It', path: '/save', alt: 'Better' },
-  { title: 'Move It', path: '/move', alt: 'Faster', disabled: true },
-  { title: 'Earn It', path: '/earn', alt: 'Stronger', disabled: true },
+  { title: 'Swap', path: '/swap' },
+  { title: 'Save', path: '/save' },
+  { title: 'Move', path: '/move', disabled: true },
+  { title: 'Earn', path: '/earn', disabled: true },
 ];
 
 /**
@@ -110,7 +99,7 @@ export const Navigation: FC<{ walletExpanded: boolean }> = ({
   return (
     <Container>
       <List>
-        {items.map(({ title, alt, path, disabled, active }) => (
+        {items.map(({ title, path, disabled, active }) => (
           <Item
             key={title}
             disabled={disabled}
@@ -122,7 +111,6 @@ export const Navigation: FC<{ walletExpanded: boolean }> = ({
             ) : (
               <A href={path}>{title}</A>
             )}
-            {alt ? <div>{alt}</div> : null}
           </Item>
         ))}
       </List>
