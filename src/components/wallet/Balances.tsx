@@ -7,8 +7,10 @@ import {
 } from '../../graphql/generated';
 import { formatExactAmount } from '../../web3/amounts';
 import { EtherscanLink } from '../core/EtherscanLink';
+import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
 import { TokenIcon } from '../icons/TokenIcon';
+import { formatUnits } from 'ethers/utils';
 
 const BalancesList = styled.ul`
   background: rgba(255, 255, 255, 0.1);
@@ -33,14 +35,14 @@ const Symbol = styled.div`
   }
 `;
 
-const Balance = styled.div<{ size?: Size }>`
+const Balance = styled(CountUp)<{ size?: Size }>`
   font-weight: bold;
   font-size: ${({ size = Size.l }) => mapSizeToFontSize(size)};
 `;
 
-type TokenWithBalance = TokenDetailsFragment & {
-  balanceFormatted: string | null;
-};
+interface TokenWithBalance extends TokenDetailsFragment {
+  balanceSimple: number;
+}
 
 /**
  * Component to track and display the balances of tokens for the currently
@@ -57,9 +59,8 @@ export const Balances: FC<{}> = () => {
       return {
         ...token,
         ...tokenBalance,
-        balanceFormatted: formatExactAmount(
-          tokenBalance?.balance,
-          token.decimals,
+        balanceSimple: parseFloat(
+          formatUnits(tokenBalance?.balance?.toString() || '0', token.decimals),
         ),
       };
     };
@@ -88,17 +89,17 @@ export const Balances: FC<{}> = () => {
             <span>{mUSD.symbol}</span>
             <EtherscanLink data={mUSD.address} />
           </Symbol>
-          <Balance size={Size.xl}>{mUSD.balanceFormatted}</Balance>
+          <Balance size={Size.xl} end={mUSD.balanceSimple} />
         </BalanceItem>
       ) : null}
-      {otherTokens.map(({ symbol, address, balanceFormatted }) => (
+      {otherTokens.map(({ symbol, address, balanceSimple }) => (
         <BalanceItem key={address}>
           <Symbol>
             <TokenIcon symbol={symbol} />
             <span>{symbol}</span>
             <EtherscanLink data={address} />
           </Symbol>
-          <Balance>{balanceFormatted}</Balance>
+          <Balance end={balanceSimple} />
         </BalanceItem>
       ))}
     </BalancesList>
