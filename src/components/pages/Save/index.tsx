@@ -23,13 +23,16 @@ import { H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { FontSize, Size } from '../../../theme';
-import { useCreditBalancesSubscription } from '../../../graphql/generated';
-import { parseAmount } from '../../../web3/amounts';
+import {
+  useCreditBalancesSubscription,
+  useLatestExchangeRateQuery,
+} from '../../../graphql/generated';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { SavingsContractFactory } from '../../../typechain/SavingsContractFactory';
 import { MUSDFactory } from '../../../typechain/MUSDFactory';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
+import { PERCENT_SCALE } from '../../../web3/constants';
 
 const mapReasonToMessage = (reason: Reasons): string => {
   switch (reason) {
@@ -136,6 +139,8 @@ export const Save: FC<{}> = () => {
     [signer, mUSDAddress],
   );
 
+  const latestExchangeRate = useLatestExchangeRateQuery();
+
   const creditBalances = useCreditBalancesSubscription({
     variables: { account: account ? account.toLowerCase() : '' },
     skip: !account,
@@ -144,13 +149,22 @@ export const Save: FC<{}> = () => {
   const creditBalanceDecimal =
     creditBalances.data?.account?.creditBalances[0]?.amount || '0.00';
 
-  const creditBalanceQ = useMemo(
-    () => ({
-      amount: parseAmount(creditBalanceDecimal, 18),
-      token: { decimals: 18, address: null, symbol: null },
-    }),
-    [creditBalanceDecimal],
-  );
+  const creditBalanceQ = useMemo(() => {
+    const token = { decimals: 18, address: null, symbol: null };
+    const rate = latestExchangeRate.data?.exchangeRates[0];
+
+    if (rate && creditBalanceDecimal) {
+      const exchangeRate = parseUnits(rate.exchangeRate, 16).div(100);
+      const creditBalance = parseUnits(creditBalanceDecimal, token.decimals);
+
+      const exact = creditBalance.mul(exchangeRate.div(PERCENT_SCALE));
+      const simple = parseFloat(formatUnits(exact, token.decimals));
+
+      return { amount: { exact, simple }, token };
+    }
+
+    return { amount: { simple: null, exact: null }, token };
+  }, [creditBalanceDecimal, latestExchangeRate]);
 
   const tokenAddresses = useMemo<string[]>(
     () => (mUSDAddress ? [mUSDAddress] : []),

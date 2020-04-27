@@ -1103,6 +1103,11 @@ export type TokenByAddressQueryVariables = {
 
 export type TokenByAddressQuery = { token: Maybe<Pick<Token, 'id' | 'address' | 'decimals' | 'name' | 'symbol' | 'totalBurned' | 'totalSupply' | 'totalTransferred'>> };
 
+export type LatestExchangeRateQueryVariables = {};
+
+
+export type LatestExchangeRateQuery = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
+
 export type SavingsContractQueryVariables = {
   id: Scalars['ID']
 };
@@ -1329,6 +1334,39 @@ export function useTokenByAddressLazyQuery(baseOptions?: ApolloReactHooks.LazyQu
 export type TokenByAddressQueryHookResult = ReturnType<typeof useTokenByAddressQuery>;
 export type TokenByAddressLazyQueryHookResult = ReturnType<typeof useTokenByAddressLazyQuery>;
 export type TokenByAddressQueryResult = ApolloReactCommon.QueryResult<TokenByAddressQuery, TokenByAddressQueryVariables>;
+export const LatestExchangeRateDocument = gql`
+    query LatestExchangeRate {
+  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
+    exchangeRate
+    timestamp
+  }
+}
+    `;
+
+/**
+ * __useLatestExchangeRateQuery__
+ *
+ * To run a query within a React component, call `useLatestExchangeRateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLatestExchangeRateQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLatestExchangeRateQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLatestExchangeRateQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
+        return ApolloReactHooks.useQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
+      }
+export function useLatestExchangeRateLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
+        }
+export type LatestExchangeRateQueryHookResult = ReturnType<typeof useLatestExchangeRateQuery>;
+export type LatestExchangeRateLazyQueryHookResult = ReturnType<typeof useLatestExchangeRateLazyQuery>;
+export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>;
 export const SavingsContractDocument = gql`
     query SavingsContract($id: ID!) {
   savingsContracts(where: {id: $id}) {
