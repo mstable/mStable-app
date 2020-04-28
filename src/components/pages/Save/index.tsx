@@ -157,7 +157,7 @@ export const Save: FC<{}> = () => {
       const exchangeRate = parseUnits(rate.exchangeRate, 16).div(100);
       const creditBalance = parseUnits(creditBalanceDecimal, token.decimals);
 
-      const exact = creditBalance.mul(exchangeRate.div(PERCENT_SCALE));
+      const exact = creditBalance.mul(exchangeRate).div(PERCENT_SCALE);
       const simple = parseFloat(formatUnits(exact, token.decimals));
 
       return { amount: { exact, simple }, token };
