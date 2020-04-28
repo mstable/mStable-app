@@ -1,6 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { formatUnits, parseUnits } from 'ethers/utils';
+import { A } from 'hookrouter';
 import { ContractNames, SendTxManifest } from '../../../types';
 import { useKnownAddress } from '../../../context/KnownAddressProvider';
 import { useSignerContext } from '../../../context/SignerProvider';
@@ -13,11 +14,12 @@ import { MUSDFactory } from '../../../typechain/MUSDFactory';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
-import { H3, Linkarooni, P } from '../../core/Typography';
+import { H3, P } from '../../core/Typography';
 import { ReactComponent as ArrowsSVG } from '../arrows.svg';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Fields, Reasons, TransactionType, useSwapState } from './state';
 import { formatExactAmount } from '../../../web3/amounts';
+import { CountUp } from '../../core/CountUp';
 
 const mapForgeValidatorResponseToReason = (response: string): Reasons => {
   switch (response) {
@@ -79,6 +81,7 @@ const mapReasonToMessage = (reason: Reasons): string => {
 const SwapDirectionButton = styled.div`
   display: flex;
   justify-content: center;
+  padding-bottom: 50px;
 
   svg {
     width: 40px;
@@ -443,7 +446,7 @@ export const Swap: FC<{}> = () => {
 
   return (
     <Form error={formError} onSubmit={handleSubmit}>
-      <H3>Send</H3>
+      <H3 borderTop>Send</H3>
       <FormRow>
         <TokenAmountInput
           amountValue={input.formValue}
@@ -465,7 +468,7 @@ export const Swap: FC<{}> = () => {
       >
         <ArrowsSVG />
       </SwapDirectionButton>
-      <H3>Receive</H3>
+      <H3 borderTop>Receive</H3>
       <FormRow>
         <TokenAmountInput
           amountValue={output.formValue}
@@ -486,24 +489,35 @@ export const Swap: FC<{}> = () => {
         >
           Swap
         </SubmitButton>
-        {touched.current && error === null ? (
+        {input.amount.simple &&
+        input.token.symbol &&
+        output.amount.simple &&
+        output.token.symbol ? (
           <TransactionDetailsDropdown>
             <>
-              <P>
-                You are swapping {input.amount.simple} for{' '}
-                {output.amount.simple}
+              <P size={1}>
+                You are swapping{' '}
+                <CountUp
+                  end={input.amount.simple}
+                  suffix={` ${input.token.symbol}`}
+                />{' '}
+                for{' '}
+                <CountUp
+                  end={output.amount.simple}
+                  suffix={` ${output.token.symbol}`}
+                />
                 {feeAmountSimple ? '' : ' (1:1)'}.
               </P>
               {feeAmountSimple ? (
                 <>
-                  <P>
+                  <P size={1}>
                     This includes a redemption fee of {feeAmountSimple} mUSD.
                   </P>
-                  <P>
+                  <P size={1}>
                     Read more about the mStable redemption fee{' '}
-                    <Linkarooni href="https://docs.mstable.org/mstable-assets/massets/minting-and-redemption#redeeming">
+                    <A href="https://docs.mstable.org/mstable-assets/massets/minting-and-redemption#redeeming">
                       here
-                    </Linkarooni>
+                    </A>
                     .
                   </P>
                 </>

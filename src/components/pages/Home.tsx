@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { H2, Linkarooni, P } from '../core/Typography';
+import { A } from 'hookrouter';
+import { H2, P } from '../core/Typography';
 import { ViewportWidth } from '../../theme';
 import logoSVG from '../icons/mstable-logo-horizontal.svg';
 
@@ -8,7 +9,9 @@ const Section = styled.section`
   padding-bottom: ${({ theme }) => theme.spacing.xl};
 
   @media (min-width: ${ViewportWidth.m}) {
-    width: 75%;
+    ${P} {
+      width: 75%;
+    }
   }
 `;
 
@@ -25,7 +28,7 @@ export const Home: FC<{}> = () => (
   <div>
     <Logo title="mStable" src={logoSVG} />
     <Section>
-      <H2>What is mStable?</H2>
+      <H2 borderTop>What is mStable?</H2>
       <P>
         mStable is driven to make tokenized assets easy, safe and profitable.
       </P>
@@ -40,26 +43,26 @@ export const Home: FC<{}> = () => (
       </P>
     </Section>
     <Section>
-      <H2>Swap</H2>
+      <H2 borderTop>Swap</H2>
       <P>
         mStable assets are created by swapping any accepted tokenized asset for
         the corresponding mStable asset. Our first asset, mUSD, is created by
         depositing USDC, DAI, TUSD or USDT at a 1:1 ratio.
       </P>
-      <Linkarooni href="/swap">Swap assets</Linkarooni>
+      <A href="/swap">Swap assets</A>
     </Section>
     <Section>
-      <H2>Save</H2>
+      <H2 borderTop>Save</H2>
       <P>
         mStable assets can also be deposited to earn interest through the
         mStable Savings Contract, just like you would with a savings account,
         with each mStable asset balance accruing interest earned across the
         entire DeFi ecosystem.
       </P>
-      <Linkarooni href="/save">Save with mUSD</Linkarooni>
+      <A href="/save">Save with mUSD</A>
     </Section>
     <Section>
-      <H2>Earn</H2>
+      <H2 borderTop>Earn</H2>
       <P>
         mStable rewards those who contribute to its utility and growth. Whether
         that’s by swapping stablecoins for mStable assets, staking MTA to
@@ -69,7 +72,7 @@ export const Home: FC<{}> = () => (
       </P>
     </Section>
     <Section>
-      <H2>Safe</H2>
+      <H2 borderTop>Safe</H2>
       <P>
         We built mStable with safety in mind from day one. mStable assets draw
         their value from diversified collateral, making them resilient to

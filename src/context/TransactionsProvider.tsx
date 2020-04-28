@@ -27,6 +27,7 @@ import { MassetQuery } from '../graphql/generated';
 import { useKnownAddress, useMUSD } from './KnownAddressProvider';
 import { formatExactAmount } from '../web3/amounts';
 import { getEtherscanLink } from '../web3/strings';
+import { EMOJIS } from '../web3/constants';
 
 enum Actions {
   AddPending,
@@ -246,7 +247,7 @@ const getTxPurpose = (
 const getEtherscanLinkForHash = (
   hash: string,
 ): { href: string; title: string } => ({
-  title: 'View on Etherscan',
+  title: EMOJIS.link,
   href: getEtherscanLink(hash, 'transaction'),
 });
 

@@ -25,10 +25,10 @@ const Input = styled.input<{ error: string | void }>`
   background: ${({ theme, error }) =>
     error ? theme.color.redTransparent : theme.color.white};
   border: ${({ theme, error }) =>
-    `2px ${error ? theme.color.red : theme.color.blackTransparent} solid`};
-  border-radius: 4px;
+    `1px ${error ? theme.color.red : theme.color.blackTransparent} solid`};
+  border-radius: 3px;
   color: ${({ error, theme }) =>
-    error ? theme.color.red : theme.color.foreground};
+    error ? theme.color.red : theme.color.black};
   font-size: ${FontSize.l};
   font-weight: bold;
   min-width: 0;

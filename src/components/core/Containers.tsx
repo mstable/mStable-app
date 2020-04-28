@@ -8,7 +8,7 @@ export const FlexRow = styled.div<{ size?: Size }>`
   margin-bottom: ${({ size }) => mapSizeToSpacing(size || Size.s)};
 
   > * {
-    margin-right: ${({ size }) => mapSizeToSpacing(size || Size.s)};
+     margin-right: ${({ size }) => mapSizeToSpacing(size || Size.s)};
   }
   > :last-child {
     margin-right: 0;

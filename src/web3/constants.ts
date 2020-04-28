@@ -30,6 +30,7 @@ export const EMOJIS = {
   mint: '💵',
   redeem: '💱',
   withdraw: '🏧',
+  link: '🔗',
 };
 
 export const CONNECTORS: Connector[] = [

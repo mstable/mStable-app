@@ -25,7 +25,6 @@ const List = styled.ul`
 
   @media (min-width: ${ViewportWidth.m}) {
     width: auto;
-    margin: 0 ${props => props.theme.spacing.l};
   }
 `;
 
@@ -34,24 +33,24 @@ const Item = styled.li<{
   active: boolean;
   inverted: boolean;
 }>`
-  margin-right: ${props => props.theme.spacing.m};
+  margin-right: ${({ theme }) => theme.spacing.m};
   position: relative;
   border-bottom: 4px solid transparent;
   font-weight: bold;
   text-transform: uppercase;
-  padding: ${props => props.theme.spacing.xxs} 0;
+  padding: ${({ theme }) => theme.spacing.xxs} 0;
   border-bottom-color: ${({ theme, active, inverted }) =>
     active
       ? inverted
-        ? theme.color.background
-        : theme.color.foreground
+        ? theme.color.white
+        : theme.color.black
       : 'transparent'};
 
   a,
   span {
     white-space: nowrap;
     color: ${({ theme, inverted }) =>
-      inverted ? theme.color.background : theme.color.foreground};
+      inverted ? theme.color.white : theme.color.black};
     opacity: ${({ disabled }) => (disabled ? 0.4 : 1)};
   }
 

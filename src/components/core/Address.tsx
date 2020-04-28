@@ -12,14 +12,15 @@ interface Props {
   truncate?: boolean;
 }
 
-const Container = styled.div`
-  display: flex;
-  align-items: center;
+const Copy = styled(Button)`
+  margin-left: ${({ theme }) => theme.spacing.xs};
+  min-width: 60px;
 `;
 
-const Copy = styled(Button)`
-  margin-left: ${({ theme }) => theme.spacing.s};
-  min-width: 60px;
+const Container = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const Address: FC<Props> = ({

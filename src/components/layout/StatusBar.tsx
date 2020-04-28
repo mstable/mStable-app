@@ -16,7 +16,7 @@ const StatusBarContainer = styled.div<{ warnings: number }>`
 
 const StatusBarWarning = styled.div`
   padding: ${({ theme }) => theme.spacing.xs};
-  color: ${({ theme }) => theme.color.background};
+  color: ${({ theme }) => theme.color.white};
   font-weight: bold;
   font-size: ${({ theme }) => theme.fontSize.s};
   text-transform: uppercase;

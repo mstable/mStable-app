@@ -28,7 +28,7 @@ const Container = styled.div<Props>`
   z-index: -1;
   transition: background-color 0.5s linear;
   background-color: ${({ theme, walletExpanded }) =>
-    walletExpanded ? theme.color.foreground : theme.color.background};
+    walletExpanded ? theme.color.black : theme.color.offWhite};
 `;
 
 const CircleSVG = styled.svg`
@@ -37,7 +37,7 @@ const CircleSVG = styled.svg`
 `;
 
 const Animation = styled(CSSTransition)<{ cx: number; cy: number }>`
-  fill: ${({ theme }) => theme.color.foreground};
+  fill: ${({ theme }) => theme.color.black};
 
   ${({ classNames }) => `&.${classNames}-enter`} {
     animation: ${css`

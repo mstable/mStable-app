@@ -1,6 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { formatUnits } from 'ethers/utils';
+import { useWallet } from 'use-wallet';
 import { useTokensState } from '../../context/TokensProvider';
 import {
   TokenDetailsFragment,
@@ -10,19 +11,8 @@ import { EtherscanLink } from '../core/EtherscanLink';
 import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
 import { TokenIcon } from '../icons/TokenIcon';
-
-const BalancesList = styled.ul`
-  background: rgba(255, 255, 255, 0.1);
-`;
-
-const BalanceItem = styled.li<{ size?: Size }>`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: ${({ size = Size.m }) => mapSizeToFontSize(size)};
-  border-top: 1px rgba(255, 255, 255, 0.3) solid;
-  padding: ${({ theme }) => `${theme.spacing.m} ${theme.spacing.s}`};
-`;
+import { List, ListItem } from '../core/List';
+import { useSavingsBalance } from '../../web3/hooks';
 
 const Symbol = styled.div`
   display: flex;
@@ -48,9 +38,11 @@ interface TokenWithBalance extends TokenDetailsFragment {
  * selected mAsset, the mAsset itself, and MTA.
  */
 export const Balances: FC<{}> = () => {
+  const { account } = useWallet();
   const tokens = useTokensState();
   const tokensQuery = useAllErc20TokensQuery();
   const tokensData = tokensQuery.data?.tokens || [];
+  const savingsBalance = useSavingsBalance(account);
 
   const { mUSD, otherTokens } = useMemo(() => {
     const addBalance = (token: typeof tokensData[0]): TokenWithBalance => {
@@ -80,27 +72,36 @@ export const Balances: FC<{}> = () => {
   }, [tokens, tokensData]);
 
   return (
-    <BalancesList>
+    <List inverted>
       {mUSD ? (
-        <BalanceItem size={Size.xl} key={mUSD.address}>
+        <ListItem size={Size.xl} key={mUSD.address}>
           <Symbol>
             <TokenIcon symbol={mUSD.symbol} />
             <span>{mUSD.symbol}</span>
             <EtherscanLink data={mUSD.address} />
           </Symbol>
           <Balance size={Size.xl} end={mUSD.balanceSimple} />
-        </BalanceItem>
+        </ListItem>
+      ) : null}
+      {savingsBalance.amount.simple ? (
+        <ListItem size={Size.xl} key="savingsBalance">
+          <Symbol>
+            <TokenIcon symbol="mUSD" />
+            <span>mUSD Savings</span>
+          </Symbol>
+          <Balance size={Size.xl} end={savingsBalance.amount.simple} />
+        </ListItem>
       ) : null}
       {otherTokens.map(({ symbol, address, balanceSimple }) => (
-        <BalanceItem key={address}>
+        <ListItem key={address}>
           <Symbol>
             <TokenIcon symbol={symbol} />
             <span>{symbol}</span>
             <EtherscanLink data={address} />
           </Symbol>
           <Balance end={balanceSimple} />
-        </BalanceItem>
+        </ListItem>
       ))}
-    </BalancesList>
+    </List>
   );
 };

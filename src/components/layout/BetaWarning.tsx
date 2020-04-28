@@ -5,8 +5,8 @@ const STORAGE_KEY = 'acknowledged-beta-warning';
 
 const Container = styled.div`
   width: 100%;
-  border: 2px ${({ theme }) => theme.color.redTransparent} solid;
-  border-radius: 4px;
+  border: 1px ${({ theme }) => theme.color.redTransparent} solid;
+  border-radius: 3px;
   padding: ${({ theme }) => theme.spacing.s};
   margin: ${({ theme }) => theme.spacing.m} 0;
   cursor: pointer;

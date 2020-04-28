@@ -52,9 +52,9 @@ export const FormRow = styled.div`
 
 export const SubmitButton = styled(Button)`
   color: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparent : theme.color.foreground};
+    disabled ? theme.color.blackTransparent : theme.color.black};
   border-color: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparent : theme.color.foreground};
+    disabled ? theme.color.blackTransparent : theme.color.black};
   background: ${({ theme, disabled }) =>
     disabled ? 'transparent' : theme.color.green};
   width: 100%;
