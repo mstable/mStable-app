@@ -8,6 +8,8 @@ generates:
       withComponent: false
       withHOC: false
       withHooks: true
+      scalars:
+        BigDecimal: string
     plugins:
       - 'fragment-matcher'
       - 'typescript'

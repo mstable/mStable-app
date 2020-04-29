@@ -16,12 +16,8 @@ subscription CreditBalances($account: ID!) {
   }
 }
 
-query ExchangeRatesRange($start: Int!, $end: Int!) {
-  exchangeRates(
-    where: { timestamp_gt: $start, timestamp_lt: $end }
-    orderDirection: asc
-    orderBy: timestamp
-  ) {
+subscription LatestExchangeRate {
+  exchangeRates(first: 1 orderDirection: desc orderBy: timestamp) {
     exchangeRate
     timestamp
   }

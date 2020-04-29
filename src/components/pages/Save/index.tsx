@@ -28,7 +28,11 @@ import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { SavingsContractFactory } from '../../../typechain/SavingsContractFactory';
 import { MUSDFactory } from '../../../typechain/MUSDFactory';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
-import { useSavingsBalance } from '../../../web3/hooks';
+import {
+  useApy,
+  useSavingsBalance,
+  useIncreasingNumber,
+} from '../../../web3/hooks';
 
 const mapReasonToMessage = (reason: Reasons): string => {
   switch (reason) {
@@ -62,10 +66,14 @@ const CreditBalance = styled.div`
 const CreditBalanceCountUp = styled(CountUp)`
   font-size: ${FontSize.insane};
   font-weight: bold;
-  line-height: 100%;
+  font-family: monospace; // TODO get a font like the main font family, but monospace
 `;
 
-const CreditBalanceRow = styled(FormRow)`
+const APYCountUp = styled(CountUp)`
+  font-size: ${FontSize.xl};
+`;
+
+const CentredRow = styled(FormRow)`
   text-align: center;
 `;
 
@@ -137,6 +145,20 @@ export const Save: FC<{}> = () => {
   );
 
   const savingsBalance = useSavingsBalance(account);
+  const savingsBalanceIncreasing = useIncreasingNumber(
+    savingsBalance.simple,
+    // TODO we could potentially use the APY for the increment and interval;
+    // these are fake numbers.
+    0.0000001,
+    100,
+  );
+
+  const apy = useApy();
+
+  const apyPercentage = useMemo<number | null>(
+    () => (apy ? parseFloat(formatUnits(apy, 16)) : null),
+    [apy],
+  );
 
   const tokenAddresses = useMemo<string[]>(
     () => (mUSDAddress ? [mUSDAddress] : []),
@@ -205,12 +227,12 @@ export const Save: FC<{}> = () => {
     }
 
     if (transactionType === TransactionType.Withdraw) {
-      if (!savingsBalance.amount.exact) {
+      if (!savingsBalance.exact) {
         setError(Reasons.FetchingData);
         return;
       }
 
-      if (inputAmount.gt(savingsBalance.amount.exact)) {
+      if (inputAmount.gt(savingsBalance.exact)) {
         setError(Reasons.WithdrawAmountMustNotExceedSavingsBalance);
         return;
       }
@@ -284,8 +306,8 @@ export const Save: FC<{}> = () => {
       if (mUSD?.balance) {
         setQuantity(formatUnits(mUSD.balance, mUSD.decimals));
       }
-    } else if (savingsBalance.amount.simple) {
-      setQuantity(savingsBalance.amount.simple.toString());
+    } else if (savingsBalance.simple) {
+      setQuantity(savingsBalance.simple.toString());
     }
   }, [mUSD, savingsBalance, setQuantity, transactionType]);
 
@@ -295,7 +317,10 @@ export const Save: FC<{}> = () => {
     const manifest = {
       iface: mUSDContract,
       fn: 'approve',
-      args: [mUSDSavingsAddress, parseUnits(mUSD.totalSupply, mUSD.decimals)],
+      args: [
+        mUSDSavingsAddress,
+        parseUnits(mUSD.totalSupply as string, mUSD.decimals),
+      ],
     };
     sendTransaction(manifest);
   }, [mUSD, mUSDSavingsAddress, sendTransaction, mUSDContract]);
@@ -310,16 +335,24 @@ export const Save: FC<{}> = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <CreditBalanceRow>
+      <CentredRow>
         <H3 borderTop>Your mUSD savings balance</H3>
         <CreditBalance>
           <MUSDIconTransparent />
           <CreditBalanceCountUp
-            end={savingsBalance.amount.simple || 0}
-            decimals={6}
+            end={savingsBalanceIncreasing || 0}
+            decimals={8}
           />
         </CreditBalance>
-      </CreditBalanceRow>
+      </CentredRow>
+      <CentredRow>
+        <H3 borderTop>Current APY</H3>
+        <APYCountUp
+          end={apyPercentage || 0}
+          suffix="%"
+          decimals={2}
+        />
+      </CentredRow>
       <TransactionTypeRow>
         <TransactionTypeButton
           type="button"

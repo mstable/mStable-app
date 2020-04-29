@@ -12,7 +12,7 @@ import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
 import { TokenIcon } from '../icons/TokenIcon';
 import { List, ListItem } from '../core/List';
-import { useAPY, useSavingsBalance } from '../../web3/hooks';
+import { useSavingsBalance } from '../../web3/hooks';
 
 const Symbol = styled.div`
   display: flex;
@@ -33,10 +33,6 @@ interface TokenWithBalance extends TokenDetailsFragment {
   balanceSimple: number;
 }
 
-const buffer = 60 * 60; // one hour
-const end = Math.ceil(Date.now() / 1000) + buffer;
-const start = end - 24 * 60 * 60 - buffer;
-
 /**
  * Component to track and display the balances of tokens for the currently
  * selected mAsset, the mAsset itself, and MTA.
@@ -47,9 +43,6 @@ export const Balances: FC<{}> = () => {
   const tokensQuery = useAllErc20TokensQuery();
   const tokensData = tokensQuery.data?.tokens || [];
   const savingsBalance = useSavingsBalance(account);
-
-  // TODO where is this needed?
-  const apy = useAPY(start, end);
 
   const { mUSD, otherTokens } = useMemo(() => {
     const addBalance = (token: typeof tokensData[0]): TokenWithBalance => {
@@ -90,13 +83,13 @@ export const Balances: FC<{}> = () => {
           <Balance size={Size.xl} end={mUSD.balanceSimple} />
         </ListItem>
       ) : null}
-      {savingsBalance.amount.simple ? (
+      {savingsBalance.simple ? (
         <ListItem size={Size.xl} key="savingsBalance">
           <Symbol>
             <TokenIcon symbol="mUSD" />
             <span>mUSD Savings</span>
           </Symbol>
-          <Balance size={Size.xl} end={savingsBalance.amount.simple} />
+          <Balance size={Size.xl} end={savingsBalance.simple} />
         </ListItem>
       ) : null}
       {otherTokens.map(({ symbol, address, balanceSimple }) => (

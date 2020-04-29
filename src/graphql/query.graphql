@@ -66,12 +66,18 @@ query TokenByAddress($id: ID!) {
     }
 }
 
-query LatestExchangeRate {
-    exchangeRates(first: 1 orderDirection: desc orderBy: timestamp) {
+query LastExchangeRateBeforeTimestamp($timestamp: Int!) {
+    exchangeRates(
+        where: { timestamp_lt: $timestamp }
+        orderDirection: desc
+        orderBy: timestamp
+        first: 1
+    ) {
         exchangeRate
         timestamp
     }
 }
+
 
 query SavingsContract($id: ID!) {
     savingsContracts(where: { id: $id }) {
