@@ -1132,6 +1132,14 @@ export type CreditBalancesSubscriptionVariables = {
 
 export type CreditBalancesSubscription = { account: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
 
+export type ExchangeRatesRangeSubscriptionVariables = {
+  start: Scalars['Int'],
+  end: Scalars['Int']
+};
+
+
+export type ExchangeRatesRangeSubscription = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
+
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
   id
@@ -1469,3 +1477,34 @@ export function useCreditBalancesSubscription(baseOptions?: ApolloReactHooks.Sub
       }
 export type CreditBalancesSubscriptionHookResult = ReturnType<typeof useCreditBalancesSubscription>;
 export type CreditBalancesSubscriptionResult = ApolloReactCommon.SubscriptionResult<CreditBalancesSubscription>;
+export const ExchangeRatesRangeDocument = gql`
+    subscription ExchangeRatesRange($start: Int!, $end: Int!) {
+  exchangeRates(where: {timestamp_gt: $start, timestamp_lt: $end}, orderDirection: asc, orderBy: timestamp) {
+    exchangeRate
+    timestamp
+  }
+}
+    `;
+
+/**
+ * __useExchangeRatesRangeSubscription__
+ *
+ * To run a query within a React component, call `useExchangeRatesRangeSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useExchangeRatesRangeSubscription` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useExchangeRatesRangeSubscription({
+ *   variables: {
+ *      start: // value for 'start'
+ *      end: // value for 'end'
+ *   },
+ * });
+ */
+export function useExchangeRatesRangeSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<ExchangeRatesRangeSubscription, ExchangeRatesRangeSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<ExchangeRatesRangeSubscription, ExchangeRatesRangeSubscriptionVariables>(ExchangeRatesRangeDocument, baseOptions);
+      }
+export type ExchangeRatesRangeSubscriptionHookResult = ReturnType<typeof useExchangeRatesRangeSubscription>;
+export type ExchangeRatesRangeSubscriptionResult = ApolloReactCommon.SubscriptionResult<ExchangeRatesRangeSubscription>;

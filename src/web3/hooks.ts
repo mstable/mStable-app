@@ -6,11 +6,12 @@ import {
   TokenDetailsFragment,
   useCoreTokensQuery,
   useCreditBalancesSubscription,
+  useExchangeRatesRangeSubscription,
   useLatestExchangeRateQuery,
 } from '../graphql/generated';
 import { truncateAddress } from './strings';
 import { theme } from '../theme';
-import { formatUnits, parseUnits } from 'ethers/utils';
+import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { PERCENT_SCALE } from './constants';
 
 export const useMassetToken = (
@@ -97,7 +98,7 @@ export const useSavingsBalance = (
     const rate = latestExchangeRate.data?.exchangeRates[0];
 
     if (rate && creditBalanceDecimal) {
-      const exchangeRate = parseUnits(rate.exchangeRate, 16).div(100);
+      const exchangeRate = parseUnits(rate.exchangeRate, 18);
       const creditBalance = parseUnits(creditBalanceDecimal, token.decimals);
 
       const exact = creditBalance.mul(exchangeRate).div(PERCENT_SCALE);
@@ -108,4 +109,33 @@ export const useSavingsBalance = (
 
     return { amount: { simple: null, exact: null }, token };
   }, [creditBalanceDecimal, latestExchangeRate]);
+};
+
+export const useAPY = (start: number, end: number): BigNumber => {
+  // Get the exchange rates over the last 24 hours
+  const rates = useExchangeRatesRangeSubscription({
+    variables: { start, end },
+  });
+
+  // Get mean average rate
+  const exchangeRates = rates.data?.exchangeRates || [];
+  const averageRate =
+    exchangeRates.length > 0
+      ? exchangeRates
+          .reduce(
+            (_averageRate, { exchangeRate }) =>
+              _averageRate.add(parseUnits(exchangeRate, 18)),
+            new BigNumber(0),
+          )
+          .div(exchangeRates.length)
+      : new BigNumber(0);
+
+  // APY = (1 + r/n)n – 1
+  // where:
+  //   r - the interest rate
+  //   n - the number of times the interest is compounded per year
+  return new BigNumber(1)
+    .add(averageRate.div(365))
+    .mul(365)
+    .sub(1)
 };
