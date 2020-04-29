@@ -1,10 +1,17 @@
 import { useMemo, createElement, DOMElement, useEffect } from 'react';
 import blockies from 'ethereum-blockies';
 import { useMutex } from 'react-context-mutex';
-import { MassetNames } from '../types';
-import { TokenDetailsFragment, useCoreTokensQuery } from '../graphql/generated';
+import { MassetNames, TokenQuantity } from '../types';
+import {
+  TokenDetailsFragment,
+  useCoreTokensQuery,
+  useCreditBalancesSubscription,
+  useLatestExchangeRateQuery,
+} from '../graphql/generated';
 import { truncateAddress } from './strings';
 import { theme } from '../theme';
+import { formatUnits, parseUnits } from 'ethers/utils';
+import { PERCENT_SCALE } from './constants';
 
 export const useMassetToken = (
   massetName: MassetNames,
@@ -70,4 +77,35 @@ export const useAsyncMutex = (
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mutexKey]);
+};
+
+export const useSavingsBalance = (
+  account: string | null,
+): Omit<TokenQuantity, 'formValue'> => {
+  const latestExchangeRate = useLatestExchangeRateQuery();
+
+  const creditBalances = useCreditBalancesSubscription({
+    variables: { account: account ? account.toLowerCase() : '' },
+    skip: !account,
+  });
+
+  const creditBalanceDecimal =
+    creditBalances.data?.account?.creditBalances[0]?.amount || '0.00';
+
+  return useMemo(() => {
+    const token = { decimals: 18, address: null, symbol: null };
+    const rate = latestExchangeRate.data?.exchangeRates[0];
+
+    if (rate && creditBalanceDecimal) {
+      const exchangeRate = parseUnits(rate.exchangeRate, 16).div(100);
+      const creditBalance = parseUnits(creditBalanceDecimal, token.decimals);
+
+      const exact = creditBalance.mul(exchangeRate).div(PERCENT_SCALE);
+      const simple = parseFloat(formatUnits(exact, token.decimals));
+
+      return { amount: { exact, simple }, token };
+    }
+
+    return { amount: { simple: null, exact: null }, token };
+  }, [creditBalanceDecimal, latestExchangeRate]);
 };

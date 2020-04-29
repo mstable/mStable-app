@@ -43,7 +43,7 @@ const Item = styled.div<Pick<Notification, 'type'>>`
   color: ${({ theme, type }) =>
     type === NotificationType.Info
       ? theme.color.white
-      : theme.color.foreground};
+      : theme.color.black};
   border-radius: 4px;
   padding: ${({ theme }) => theme.spacing.s};
   margin-bottom: ${({ theme }) => theme.spacing.m};

@@ -1,23 +1,20 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { Linkarooni } from '../core/Typography';
+import { A } from 'hookrouter';
 
-const Container = styled.footer`
-  padding: ${props => props.theme.spacing.s} ${props => props.theme.spacing.l};
+const Container = styled.footer<{ inverted: boolean }>`
+  width: 100%;
+  padding: ${({ theme }) => `${theme.spacing.s} ${theme.spacing.l}`};
+
+  ${({ theme }) => theme.mixins.borderTop}
 `;
 
 const Links = styled.ul<{ inverted: boolean }>`
   display: flex;
-  justify-content: space-evenly;
   align-items: center;
 
   li {
     margin-right: ${({ theme }) => theme.spacing.s};
-  }
-
-  a {
-    color: ${({ inverted, theme }) =>
-      inverted ? theme.color.white : theme.color.black};
   }
 `;
 
@@ -31,11 +28,11 @@ const links = [
  * Placeholder component for footer.
  */
 export const Footer: FC<{ walletExpanded: boolean }> = ({ walletExpanded }) => (
-  <Container>
+  <Container inverted={walletExpanded}>
     <Links inverted={walletExpanded}>
       {links.map(({ title, href }) => (
         <li key={href}>
-          <Linkarooni href={href}>{title}</Linkarooni>
+          <A href={href}>{title}</A>
         </li>
       ))}
     </Links>

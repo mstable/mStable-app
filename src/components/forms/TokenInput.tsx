@@ -32,12 +32,12 @@ const Container = styled.div<Pick<Props, 'error'>>`
   background: ${({ error, theme }) =>
     error ? theme.color.redTransparent : theme.color.white};
   outline: 0;
-  border: 2px
+  border: 1px
     ${({ theme, error }) =>
       error ? theme.color.red : theme.color.blackTransparent}
     solid;
-  border-radius: 4px;
-  color: ${({ theme }) => theme.color.foreground};
+  border-radius: 3px;
+  color: ${({ theme }) => theme.color.black};
   font-size: ${({ theme }) => theme.fontSize.l};
   font-weight: bold;
   height: 3rem;
@@ -55,12 +55,12 @@ const OptionsContainer = styled.div<{ open: boolean }>`
   position: absolute;
 
   // Offset parent border, even with box-sizing: border-box
-  top: -2px;
-  left: -2px;
-  right: -2px;
+  top: -1px;
+  left: -1px;
+  right: -1px;
 
   background: ${({ theme }) => theme.color.white};
-  border: 2px ${({ theme }) => theme.color.blackTransparent} solid;
+  border: 1px ${({ theme }) => theme.color.blackTransparent} solid;
   border-radius: 0 0 4px 4px;
 `;
 
@@ -68,7 +68,7 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 44px;
+  height: 46px;
 
   padding: ${({ theme }) => theme.spacing.xs};
 

@@ -9,25 +9,25 @@ import { getTransactionStatus } from '../../web3/transactions';
 import { formatExactAmount } from '../../web3/amounts';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { EtherscanLink } from '../core/EtherscanLink';
+import { List, ListItem } from '../core/List';
 import { EMOJIS } from '../../web3/constants';
 
 const Container = styled.div``;
-
-const List = styled.ul`
-  padding: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-`;
-
-const Item = styled.li`
-  border-top: 1px rgba(255, 255, 255, 0.3) solid;
-  padding: ${({ theme }) => `${theme.spacing.m} ${theme.spacing.s}`};
-`;
 
 const PendingTxContainer = styled.div`
   display: flex;
   > * {
     margin-right: 8px;
+  }
+
+  a {
+    color: ${({ theme }) => theme.color.white};
+    font-weight: normal;
+
+    span {
+      color: ${({ theme }) => theme.color.gold};
+      font-weight: bold;
+    }
   }
 `;
 
@@ -36,7 +36,7 @@ const TxStatusContainer = styled.div`
   width: 16px;
 `;
 
-const LOADING = 'Loading...';
+const Loading = <>Loading...</>;
 
 const getStatusLabel = (status: TransactionStatus): string =>
   status === TransactionStatus.Success
@@ -54,8 +54,8 @@ const getPendingTxDescription = (
     mUSD: MassetQuery['masset'];
     mUSDSavingsAddress: string | null;
   },
-): string => {
-  if (!mUSD) return LOADING;
+): JSX.Element => {
+  if (!mUSD) return Loading;
 
   const {
     basket: { bassets },
@@ -65,76 +65,89 @@ const getPendingTxDescription = (
     switch (tx.fn) {
       case 'redeem': {
         const [amount] = tx.args as [BigNumber];
-        return `You ${
-          tx.status ? 'withdrew' : 'are withdrawing'
-        } ${formatExactAmount(amount, mUSD.token.decimals)} ${
-          mUSD.token.symbol
-        }`;
+        return (
+          <>
+            You <span>{tx.status ? 'withdrew' : 'are withdrawing'}</span>{' '}
+            {formatExactAmount(amount, mUSD.token.decimals)} $
+            {mUSD.token.symbol}
+          </>
+        );
       }
       case 'depositSavings': {
         const [amount] = tx.args as [BigNumber];
-        return `You ${
-          tx.status ? 'deposited' : 'are depositing'
-        } ${formatExactAmount(amount, mUSD.token.decimals)} ${
-          mUSD.token.symbol
-        }`;
+        return (
+          <>
+            You <span>{tx.status ? 'deposited' : 'are depositing'}</span>{' '}
+            {formatExactAmount(amount, mUSD.token.decimals)} {mUSD.token.symbol}
+          </>
+        );
       }
       default:
-        return 'Unknown';
+        return <>Unknown</>;
     }
   }
 
   switch (tx.fn) {
     case 'approve': {
       if (tx.args[0] === mUSDSavingsAddress) {
-        return `You ${
-          tx.status ? 'approved' : 'are approving'
-        } the mUSD Savings Contract to transfer ${mUSD.token.symbol}`;
+        return (
+          <>
+            You <span>{tx.status ? 'approved' : 'are approving'}</span> the mUSD
+            Savings Contract to transfer ${mUSD.token.symbol}
+          </>
+        );
       }
 
       const bAsset = bassets.find(b => b.token.address === tx.response.to);
-      if (!bAsset) return LOADING;
+      if (!bAsset) return Loading;
 
-      return `You ${tx.status ? 'approved' : 'are approving'} ${
-        mUSD.token.symbol
-      } to transfer ${bAsset.token.symbol}`;
+      return (
+        <>
+          You <span>{tx.status ? 'approved' : 'are approving'}</span>{' '}
+          {mUSD.token.symbol} to transfer {bAsset.token.symbol}
+        </>
+      );
     }
     case 'mint': {
       const [bassetAddress, bassetQ] = tx.args as [string, BigNumber];
 
       const bAsset = bassets.find(b => b.token.address === bassetAddress);
-      if (!bAsset) return LOADING;
+      if (!bAsset) return Loading;
 
-      return `You ${tx.status ? 'minted' : 'are minting'} ${formatExactAmount(
-        bassetQ,
-        bAsset.token.decimals,
-        mUSD.token.symbol,
-      )} with ${formatExactAmount(
-        bassetQ,
-        bAsset.token.decimals,
-        bAsset.token.symbol,
-      )}`;
+      return (
+        <>
+          You <span>{tx.status ? 'minted' : 'are minting'}</span>{' '}
+          {formatExactAmount(bassetQ, bAsset.token.decimals, mUSD.token.symbol)}{' '}
+          with{' '}
+          {formatExactAmount(
+            bassetQ,
+            bAsset.token.decimals,
+            bAsset.token.symbol,
+          )}
+        </>
+      );
     }
     case 'redeem': {
       const [bassetAddress, bassetQ] = tx.args as [string, BigNumber];
 
       const bAsset = bassets.find(b => b.token.address === bassetAddress);
-      if (!bAsset) return LOADING;
+      if (!bAsset) return Loading;
 
-      return `You ${
-        tx.status ? 'redeemed' : 'are redeeming'
-      } ${formatExactAmount(
-        bassetQ,
-        bAsset.token.decimals,
-        bAsset.token.symbol,
-      )} with ${formatExactAmount(
-        bassetQ,
-        bAsset.token.decimals,
-        mUSD.token.symbol,
-      )}`;
+      return (
+        <>
+          You <span>{tx.status ? 'redeemed' : 'are redeeming'}</span>{' '}
+          {formatExactAmount(
+            bassetQ,
+            bAsset.token.decimals,
+            bAsset.token.symbol,
+          )}{' '}
+          with{' '}
+          {formatExactAmount(bassetQ, bAsset.token.decimals, mUSD.token.symbol)}
+        </>
+      );
     }
     default:
-      return 'Unknown';
+      return <>Unknown</>;
   }
 };
 
@@ -176,8 +189,6 @@ const PendingTx: FC<{
 
 /**
  * List of recently-sent transactions.
- *
- * TODO: correct design
  */
 export const Transactions: FC<{}> = () => {
   const pending = useOrderedCurrentTransactions();
@@ -189,15 +200,15 @@ export const Transactions: FC<{}> = () => {
       {pending.length === 0 ? (
         'No transactions sent in the current session.'
       ) : (
-        <List>
+        <List inverted>
           {pending.map(tx => (
-            <Item key={tx.hash}>
+            <ListItem key={tx.hash}>
               <PendingTx
                 tx={tx}
                 mUSD={mUSD}
                 mUSDSavingsAddress={mUSDSavingsAddress}
               />
-            </Item>
+            </ListItem>
           ))}
         </List>
       )}

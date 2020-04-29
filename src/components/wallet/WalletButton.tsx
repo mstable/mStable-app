@@ -15,8 +15,9 @@ import { ActivitySpinner } from '../core/ActivitySpinner';
 
 const Container = styled.div`
   @media (min-width: ${ViewportWidth.s}) {
-    min-width: 140px;
+    width: 135px;
   }
+
   button {
     width: 100%;
   }
@@ -31,39 +32,43 @@ const Blockie = styled.div`
   }
 
   @media (min-width: ${ViewportWidth.s}) {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
 `;
 
-const Account = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const TruncatedAddress = styled.div`
+  font-weight: normal;
 `;
 
 const AccountButton = styled(Button)`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 4px 0 0 !important;
   line-height: 100%;
+  font-size: ${({ theme }) => theme.fontSize.xs};
+  height: 32px;
+  padding: 0 6px 0 0;
 
-  span {
-    white-space: nowrap;
+  @media (min-width: ${ViewportWidth.m}) {
+    padding: 0 6px 0 0;
+  }
+
+  > span {
+    width: 100%;
+  }
+
+  > * {
+    margin-right: 3px;
+  }
+
+  > :last-child {
+    margin-right: 0;
   }
 `;
 
 const PendingIndicatorContainer = styled.div`
   width: 16px;
-  height: 16px;
-  margin-right: ${({ theme }) => theme.spacing.xs};
-
-  @media (min-width: ${ViewportWidth.s}) {
-    width: 32px;
-    height: 32px;
-    margin-top: 4px;
-  }
 `;
 
 const PendingIndicator: FC<{}> = () => {
@@ -95,19 +100,19 @@ export const WalletButton: FC<{}> = () => {
           : expandWallet
       }
     >
-      {connected ? (
-        <Account>
-          <PendingIndicator />
-          <AccountButton size={Size.s} title="Account">
+      <AccountButton size={Size.s} title="Account">
+        {connected ? (
+          <>
             <Blockie>{blockie}</Blockie>
-            <span>{truncatedAddress}</span>
-          </AccountButton>
-        </Account>
-      ) : (
-        <Button type="button" size={Size.s}>
-          {walletExpanded ? (connecting ? 'Back' : 'Close') : 'Connect'}
-        </Button>
-      )}
+            <TruncatedAddress>{truncatedAddress}</TruncatedAddress>
+            <PendingIndicator />
+          </>
+        ) : (
+          <span>
+            {walletExpanded ? (connecting ? 'Back' : 'Close') : 'Connect'}
+          </span>
+        )}
+      </AccountButton>
     </Container>
   );
 };

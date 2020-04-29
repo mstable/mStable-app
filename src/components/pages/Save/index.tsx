@@ -23,16 +23,12 @@ import { H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { FontSize, Size } from '../../../theme';
-import {
-  useCreditBalancesSubscription,
-  useLatestExchangeRateQuery,
-} from '../../../graphql/generated';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { SavingsContractFactory } from '../../../typechain/SavingsContractFactory';
 import { MUSDFactory } from '../../../typechain/MUSDFactory';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
-import { PERCENT_SCALE } from '../../../web3/constants';
+import { useSavingsBalance } from '../../../web3/hooks';
 
 const mapReasonToMessage = (reason: Reasons): string => {
   switch (reason) {
@@ -76,10 +72,11 @@ const CreditBalanceRow = styled(FormRow)`
 const TransactionTypeRow = styled(FormRow)`
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: ${({ theme }) => `${theme.spacing.l} 0`};
 
-  > :first-child {
-    margin-right: ${({ theme }) => theme.spacing.l};
+  > * {
+    padding: 0 8px;
   }
 `;
 
@@ -139,32 +136,7 @@ export const Save: FC<{}> = () => {
     [signer, mUSDAddress],
   );
 
-  const latestExchangeRate = useLatestExchangeRateQuery();
-
-  const creditBalances = useCreditBalancesSubscription({
-    variables: { account: account ? account.toLowerCase() : '' },
-    skip: !account,
-  });
-
-  const creditBalanceDecimal =
-    creditBalances.data?.account?.creditBalances[0]?.amount || '0.00';
-
-  const creditBalanceQ = useMemo(() => {
-    const token = { decimals: 18, address: null, symbol: null };
-    const rate = latestExchangeRate.data?.exchangeRates[0];
-
-    if (rate && creditBalanceDecimal) {
-      const exchangeRate = parseUnits(rate.exchangeRate, 16).div(100);
-      const creditBalance = parseUnits(creditBalanceDecimal, token.decimals);
-
-      const exact = creditBalance.mul(exchangeRate).div(PERCENT_SCALE);
-      const simple = parseFloat(formatUnits(exact, token.decimals));
-
-      return { amount: { exact, simple }, token };
-    }
-
-    return { amount: { simple: null, exact: null }, token };
-  }, [creditBalanceDecimal, latestExchangeRate]);
+  const savingsBalance = useSavingsBalance(account);
 
   const tokenAddresses = useMemo<string[]>(
     () => (mUSDAddress ? [mUSDAddress] : []),
@@ -233,12 +205,12 @@ export const Save: FC<{}> = () => {
     }
 
     if (transactionType === TransactionType.Withdraw) {
-      if (!creditBalanceQ.amount.exact) {
+      if (!savingsBalance.amount.exact) {
         setError(Reasons.FetchingData);
         return;
       }
 
-      if (inputAmount.gt(creditBalanceQ.amount.exact)) {
+      if (inputAmount.gt(savingsBalance.amount.exact)) {
         setError(Reasons.WithdrawAmountMustNotExceedSavingsBalance);
         return;
       }
@@ -251,7 +223,7 @@ export const Save: FC<{}> = () => {
     inputAmount,
     inputAddress,
     mUSD.balance,
-    creditBalanceQ,
+    savingsBalance,
     transactionType,
     touched,
   ]);
@@ -312,10 +284,10 @@ export const Save: FC<{}> = () => {
       if (mUSD?.balance) {
         setQuantity(formatUnits(mUSD.balance, mUSD.decimals));
       }
-    } else if (creditBalanceDecimal) {
-      setQuantity(creditBalanceDecimal);
+    } else if (savingsBalance.amount.simple) {
+      setQuantity(savingsBalance.amount.simple.toString());
     }
-  }, [mUSD, creditBalanceDecimal, setQuantity, transactionType]);
+  }, [mUSD, savingsBalance, setQuantity, transactionType]);
 
   const handleUnlock = useCallback<
     NonNullable<ComponentProps<typeof TokenAmountInput>['onUnlock']>
@@ -339,10 +311,13 @@ export const Save: FC<{}> = () => {
   return (
     <Form onSubmit={handleSubmit}>
       <CreditBalanceRow>
-        <H3>Your mUSD savings balance</H3>
+        <H3 borderTop>Your mUSD savings balance</H3>
         <CreditBalance>
           <MUSDIconTransparent />
-          <CreditBalanceCountUp end={creditBalanceQ.amount.simple || 0} />
+          <CreditBalanceCountUp
+            end={savingsBalance.amount.simple || 0}
+            decimals={6}
+          />
         </CreditBalance>
       </CreditBalanceRow>
       <TransactionTypeRow>
@@ -354,6 +329,7 @@ export const Save: FC<{}> = () => {
         >
           Deposit
         </TransactionTypeButton>
+        <div>or</div>
         <TransactionTypeButton
           type="button"
           size={Size.l}
@@ -363,7 +339,7 @@ export const Save: FC<{}> = () => {
           Withdraw
         </TransactionTypeButton>
       </TransactionTypeRow>
-      <H3>
+      <H3 borderTop>
         {transactionType === TransactionType.Deposit
           ? 'Depositing'
           : 'Withdrawing'}
@@ -390,23 +366,28 @@ export const Save: FC<{}> = () => {
         >
           {transactionType === TransactionType.Deposit ? 'Deposit' : 'Withdraw'}
         </SubmitButton>
-        <TransactionDetailsDropdown>
-          <>
-            <P>
-              You are
-              {transactionType === TransactionType.Deposit
-                ? 'depositing'
-                : 'withdrawing'}{' '}
-              {input.amount.simple}.
-            </P>
-            <P>How about some more details here explaining what the deal is?</P>
-            <P>
-              Details are really nice and they might go on for a few lines. Here
-              is another sentence. Watch out, this sentence ends with an
-              exclamation mark!
-            </P>
-          </>
-        </TransactionDetailsDropdown>
+        {input.amount.simple && input.token.symbol ? (
+          <TransactionDetailsDropdown>
+            <>
+              <P size={1}>
+                You are{' '}
+                {transactionType === TransactionType.Deposit
+                  ? 'depositing'
+                  : 'withdrawing'}{' '}
+                <CountUp
+                  end={input.amount.simple}
+                  suffix={` ${input.token.symbol}`}
+                />
+                .
+              </P>
+              {transactionType === TransactionType.Deposit ? (
+                <P size={1}>
+                  This amount can be withdrawn at any time, without a fee.
+                </P>
+              ) : null}
+            </>
+          </TransactionDetailsDropdown>
+        ) : null}
       </FormRow>
     </Form>
   );

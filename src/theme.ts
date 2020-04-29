@@ -1,19 +1,19 @@
-import { DefaultTheme, CSSProp } from 'styled-components';
+import { DefaultTheme, CSSProp, css } from 'styled-components';
 
 export enum Color {
-  background = 'rgb(249, 245, 242)',
-  backgroundTransparent = 'rgba(249, 245, 242, 0.3)',
-  gold = '#ffb334',
-  green = '#52cc93',
-  blue = '#176ede',
-  blueTransparent = 'rgba(0, 92, 222, 0.3)',
-  red = '#ca001b',
-  redTransparent = 'rgba(202, 0, 27, 0.1)',
-  white = '#fff',
-  black = '#000',
-  blackTransparent = 'rgba(0, 0, 0, 0.3)',
-  foreground = '#000',
-  foregroundTransparent = 'rgba(0, 0, 0, 0.3)',
+  gold = 'rgb(255,179,52)',
+  green = 'rgb(82,204,147)',
+  greenTransparent = 'rgba(82,204,147, 0.15)',
+  blue = 'rgb(23,110,222)',
+  blueTransparent = 'rgba(0,92,222,0.15)',
+  red = 'rgb(202,0,27)',
+  redTransparent = 'rgba(202,0,27,0.15)',
+  white = 'rgb(255,255,255)',
+  black = 'rgb(0,0,0)',
+  whiteTransparent = 'rgba(255,255,255,0.15)',
+  blackTransparent = 'rgba(0,0,0,0.15)',
+  offWhite = 'rgb(249,245,242)',
+  offBlack = 'rgb(37,39,45)',
 }
 
 export enum Size {
@@ -36,9 +36,9 @@ export enum Spacing {
 export enum FontSize {
   xs = '11px',
   s = '13px',
-  m = '16px',
-  l = '20px',
-  xl = '32px',
+  m = '15px',
+  l = '18px',
+  xl = '28px',
   insane = '64px',
 }
 
@@ -50,9 +50,9 @@ export enum ViewportWidth {
   xl = '1400px',
 }
 
-export const forMinWidth = (width: ViewportWidth, css: CSSProp): CSSProp =>
+export const forMinWidth = (width: ViewportWidth, _css: CSSProp): CSSProp =>
   `@media (min-width: ${width}) {
-   ${css}
+   ${_css}
 }`;
 
 // eslint-disable-next-line consistent-return
@@ -89,10 +89,31 @@ export const mapSizeToSpacing = (size: Size): string => {
   }
 };
 
+export const mixins = {
+  roundedBorder: css<{ inverted?: boolean }>`
+    border: 1px
+      ${({ inverted, theme }) =>
+        inverted ? theme.color.offWhite : theme.color.offBlack}
+      solid;
+    border-radius: 3px;
+  `,
+  borderTop: css<{ inverted?: boolean }>`
+    border-top: 1px
+      ${({ theme, inverted }) =>
+        inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
+      solid;
+  `,
+  textAlign: css<{ center?: boolean; right?: boolean }>`
+    text-align: ${({ center, right }) =>
+      center ? 'center' : right ? 'right' : 'initial'};
+  `,
+};
+
 export const theme: DefaultTheme = {
   color: Color,
   spacing: Spacing,
   size: Size,
   fontSize: FontSize,
   viewportWidth: ViewportWidth,
+  mixins,
 };

@@ -13,7 +13,7 @@ import { centredLayout } from './css';
 
 const Logo = styled.div<{ active: boolean; inverted?: boolean }>`
   width: 25px;
-  margin-right: 115px; // Offset the wallet button
+  margin-right: 110px; // Offset the wallet button
   order: 1;
   flex-shrink: 0;
 
@@ -24,7 +24,7 @@ const Logo = styled.div<{ active: boolean; inverted?: boolean }>`
 
     path {
       fill: ${({ theme, inverted }) =>
-        inverted ? theme.color.background : theme.color.foreground};
+        inverted ? theme.color.white : theme.color.black};
     }
 
     #line {
@@ -37,7 +37,6 @@ const Centre = styled.div`
   display: flex;
   order: 3;
   width: 100%;
-  margin: 0 auto;
 
   @media (min-width: ${ViewportWidth.m}) {
     width: auto;
@@ -61,8 +60,13 @@ const Container = styled.header<{ inverted?: boolean }>`
   width: 100%;
   min-height: 80px;
   min-width: ${ViewportWidth.xs};
-  background: ${({ theme, inverted }) =>
-    inverted ? theme.color.foreground : theme.color.background};
+  background: linear-gradient(
+    90deg,
+    ${({ theme, inverted }) =>
+      inverted
+        ? `${theme.color.black}, ${theme.color.offBlack}, ${theme.color.black}`
+        : `${theme.color.offWhite}, ${theme.color.white}, ${theme.color.offWhite}`}
+  );
 `;
 
 const Content = styled.div`

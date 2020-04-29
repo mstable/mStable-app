@@ -18,7 +18,9 @@ interface WalletExpanded {
 
 export const Container = styled.div<{}>`
   flex-direction: column;
-  min-height: calc(100vh - 80px); // The sticky header won't always be 80px, so this is less than ideal
+  min-height: calc(
+    100vh - 80px
+  ); // The sticky header won't always be 80px, so this is less than ideal
   align-items: flex-start;
 
   ${centredLayout}
@@ -27,20 +29,21 @@ export const Container = styled.div<{}>`
 const Main = styled.main`
   width: 100%;
   flex: 1;
-  padding: ${props => props.theme.spacing.l};
+  padding: ${({theme}) => `80px ${theme.spacing.l} ${theme.spacing.l}`};
 `;
 
 const GlobalStyle = createGlobalStyle<WalletExpanded>`
   ${reset}
   a {
     text-decoration: none;
-    color: ${props => props.theme.color.blue};
+    color: ${({ theme }) => theme.color.gold};
+    font-weight: bold;
   }
   html {
     overflow-y: scroll;
   }
   body {
-    background: ${({ theme }) => theme.color.background};
+    background: ${({ theme }) => theme.color.offWhite};
     min-width: 320px;
   }
   * {
@@ -49,7 +52,7 @@ const GlobalStyle = createGlobalStyle<WalletExpanded>`
   body, button, input {
     font-family: 'Poppins', sans-serif;
     color: ${({ theme, walletExpanded }) =>
-      walletExpanded ? theme.color.background : theme.color.foreground};
+      walletExpanded ? theme.color.offWhite : theme.color.offBlack};
     line-height: 1.3rem;
   }
 `;
@@ -58,11 +61,9 @@ const StickyHeader = styled.div<{ inverted: boolean }>`
   position: sticky;
   top: 0;
   width: 100%;
-  box-shadow: ${({ theme, inverted }) =>
-      inverted
-        ? theme.color.backgroundTransparent
-        : theme.color.foregroundTransparent}
-    0 0 4px;
+  box-shadow: ${({ inverted, theme }) =>
+      inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
+    0 0 12px;
 `;
 
 const HeaderGroup: FC<{ walletExpanded: boolean }> = ({ walletExpanded }) => (

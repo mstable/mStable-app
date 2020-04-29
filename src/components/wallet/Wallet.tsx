@@ -2,8 +2,9 @@ import React, { FC, useMemo } from 'react';
 import { Connectors, useWallet } from 'use-wallet';
 import styled from 'styled-components';
 import {
-  useAppDispatch,
   useIsWalletConnecting,
+  useResetWallet,
+  useConnectWallet,
   useWalletState,
 } from '../../context/AppProvider';
 import { AVAILABLE_CONNECTORS, CONNECTORS } from '../../web3/constants';
@@ -19,10 +20,11 @@ import { Transactions } from './Transactions';
 import { Connector } from '../../types';
 
 const Container = styled.div`
+  flex: 1;
   width: 100%;
   height: 100%;
-  color: ${({ theme }) => theme.color.background};
-  padding: ${({ theme }) => `${theme.spacing.s} ${theme.spacing.l}`};
+  color: ${({ theme }) => theme.color.white};
+  padding: ${({ theme }) => `80px ${theme.spacing.l} ${theme.spacing.l}`};
 `;
 
 const Rows = styled.div`
@@ -30,24 +32,26 @@ const Rows = styled.div`
 `;
 
 const Row = styled.div`
-  border-top: 1px rgba(255, 255, 255, 0.3) solid;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
+  padding-bottom: ${({ theme }) => theme.spacing.xl};
+  border-top: 1px ${({ theme }) => theme.color.whiteTransparent} solid;
 `;
 
 const Header = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: ${({ theme }) => theme.spacing.xl};
-`;
-
-const HeaderTitle = styled(H2)`
-  text-align: center;
+  padding-bottom: ${({ theme }) => theme.spacing.xl};
+  border-top: 1px ${({ theme }) => theme.color.whiteTransparent} solid;
 `;
 
 const DisconnectButton = styled(Button)`
-  color: ${({ theme }) => theme.color.background};
+  color: ${({ theme }) => theme.color.white};
   background: ${({ theme }) => theme.color.red};
+`;
+
+const AddressGroup = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;
 
 const Error = styled.div`
@@ -84,6 +88,7 @@ const ConnectorButton = styled(Button)`
   svg {
     width: 100%;
     height: auto;
+    max-height: 96px;
     margin-bottom: ${({ theme }) => theme.spacing.s};
   }
 `;
@@ -118,27 +123,42 @@ const Disconnected: FC<{
   );
 };
 
-const Connected: FC<{}> = () => (
-  <Rows>
-    <Row>
-      <H3>Balances</H3>
-      <Balances />
-    </Row>
-    <Row>
-      <H3>Transactions</H3>
-      <Transactions />
-    </Row>
-    <Row>
-      <H3>Historic transactions</H3>
-      <HistoricTransactions />
-    </Row>
-  </Rows>
-);
+const Connected: FC<{ walletLabel: string; account: string }> = ({
+  walletLabel,
+  account,
+}) => {
+  const resetWallet = useResetWallet();
+  return (
+    <Rows>
+      <Row>
+        <H3>Connected with {walletLabel}</H3>
+        <AddressGroup>
+          <Address address={account} type="account" copyable />
+          <DisconnectButton size={Size.s} type="button" onClick={resetWallet}>
+            Disconnect
+          </DisconnectButton>
+        </AddressGroup>
+      </Row>
+      <Row>
+        <H3>Balances</H3>
+        <Balances />
+      </Row>
+      <Row>
+        <H3>Transactions</H3>
+        <Transactions />
+      </Row>
+      <Row>
+        <H3>Historic transactions</H3>
+        <HistoricTransactions />
+      </Row>
+    </Rows>
+  );
+};
 
 export const Wallet: FC<{}> = () => {
   const { connector, error } = useWalletState();
   const connecting = useIsWalletConnecting();
-  const { connectWallet, resetWallet } = useAppDispatch();
+  const connectWallet = useConnectWallet();
   const { connected, account } = useWallet();
   const wallet = useMemo(
     () => (connector ? CONNECTORS.find(({ id }) => id === connector) : null),
@@ -147,29 +167,19 @@ export const Wallet: FC<{}> = () => {
 
   return (
     <Container>
-      <Header>
-        <HeaderTitle>
-          {connected
-            ? 'Wallet'
-            : connecting
-            ? `Connecting to ${
-                (wallet as NonNullable<typeof wallet>).label
-              } wallet`
-            : 'Connect wallet'}
-        </HeaderTitle>
-        {connected && account ? (
-          <>
-            <Address address={account} type="account" copyable />
-            <DisconnectButton size={Size.s} type="button" onClick={resetWallet}>
-              Disconnect
-            </DisconnectButton>
-          </>
-        ) : null}
-      </Header>
+      {connected ? null : (
+        <Header>
+          <H2>
+            {connecting && wallet
+              ? `Connecting to ${wallet.label} wallet`
+              : 'Connect wallet'}
+          </H2>
+        </Header>
+      )}
       {error ? <Error>{error}</Error> : null}
       <FlexRow>
-        {connected && account ? (
-          <Connected />
+        {connected && account && wallet ? (
+          <Connected walletLabel={wallet.label} account={account} />
         ) : connecting ? (
           <Connecting>
             <ActivitySpinner />

@@ -7,23 +7,13 @@ import { MassetQuery } from '../../graphql/generated';
 import { useKnownAddress, useMUSD } from '../../context/KnownAddressProvider';
 import { formatExactAmount } from '../../web3/amounts';
 import { EMOJIS } from '../../web3/constants';
+import { List, ListItem } from '../core/List';
 
 type FnName = 'mint' | 'redeem' | 'withdraw' | 'depositSavings';
 
-const LOADING = 'Loading...';
+const LOADING: JSX.Element = <>Loading...</>;
 
 const Container = styled.div``;
-
-const List = styled.ul`
-  padding: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-`;
-
-const Item = styled.li`
-  border-top: 1px rgba(255, 255, 255, 0.3) solid;
-  padding: ${({ theme }) => `${theme.spacing.m} ${theme.spacing.s}`};
-`;
 
 const HistoricTxContainer = styled.div`
   align-items: flex-start;
@@ -33,6 +23,16 @@ const HistoricTxContainer = styled.div`
   }
   > p {
     margin-bottom: 0;
+  }
+
+  a {
+    color: ${({ theme }) => theme.color.white};
+    font-weight: normal;
+
+    span {
+      color: ${({ theme }) => theme.color.gold};
+      font-weight: bold;
+    }
   }
 `;
 
@@ -64,7 +64,7 @@ const getHistoricTransactionDescription = (
     mUSDSavingsAddress,
     mUSD,
   }: { mUSD: MassetQuery['masset']; mUSDSavingsAddress: string | null },
-): string => {
+): JSX.Element => {
   if (!mUSD) return LOADING;
 
   if (contractAddress.toLowerCase() === mUSDSavingsAddress) {
@@ -75,10 +75,12 @@ const getHistoricTransactionDescription = (
             values: { savingsDeposited },
           },
         ] = logs;
-        return `You deposited ${formatExactAmount(
-          savingsDeposited,
-          mUSD.token.decimals,
-        )} mUSD`;
+        return (
+          <>
+            You <span>deposited</span>{' '}
+            {formatExactAmount(savingsDeposited, mUSD.token.decimals)} mUSD
+          </>
+        );
       }
       case 'withdraw': {
         const [
@@ -86,13 +88,15 @@ const getHistoricTransactionDescription = (
             values: { creditsRedeemed },
           },
         ] = logs;
-        return `You withdrew ${formatExactAmount(
-          creditsRedeemed,
-          mUSD.token.decimals,
-        )} mUSD`;
+        return (
+          <>
+            You <span>withdrew</span>{' '}
+            {formatExactAmount(creditsRedeemed, mUSD.token.decimals)} mUSD
+          </>
+        );
       }
       default:
-        return 'Unknown';
+        return <>Unknown</>;
     }
   }
 
@@ -112,19 +116,29 @@ const getHistoricTransactionDescription = (
       );
       if (!bAssetToken) return LOADING;
 
-      return `You redeemed ${formatExactAmount(
-        bAssetQuantity,
-        bAssetToken.token.decimals,
-        bAssetToken.token.symbol,
-      )} for ${formatExactAmount(
-        mAssetQuantity,
-        mUSD.token.decimals,
-        mUSD.token.symbol,
-      )} (fee paid: ${formatExactAmount(
-        feeQuantity,
-        mUSD.token.decimals,
-        mUSD.token.symbol,
-      )})`;
+      return (
+        <>
+          You <span>redeemed</span>{' '}
+          {formatExactAmount(
+            bAssetQuantity,
+            bAssetToken.token.decimals,
+            bAssetToken.token.symbol,
+          )}{' '}
+          for{' '}
+          {formatExactAmount(
+            mAssetQuantity,
+            mUSD.token.decimals,
+            mUSD.token.symbol,
+          )}{' '}
+          (fee paid:{' '}
+          {formatExactAmount(
+            feeQuantity,
+            mUSD.token.decimals,
+            mUSD.token.symbol,
+          )}
+          )
+        </>
+      );
     }
 
     case 'mint': {
@@ -138,18 +152,25 @@ const getHistoricTransactionDescription = (
       );
       if (!bAssetToken) return LOADING;
 
-      return `You minted ${formatExactAmount(
-        mAssetQuantity,
-        mUSD.token.decimals,
-        mUSD.token.symbol,
-      )} with ${formatExactAmount(
-        bAssetQuantity,
-        bAssetToken.token.decimals,
-        bAssetToken.token.symbol,
-      )}`;
+      return (
+        <>
+          You <span>minted</span>{' '}
+          {formatExactAmount(
+            mAssetQuantity,
+            mUSD.token.decimals,
+            mUSD.token.symbol,
+          )}{' '}
+          with{' '}
+          {formatExactAmount(
+            bAssetQuantity,
+            bAssetToken.token.decimals,
+            bAssetToken.token.symbol,
+          )}
+        </>
+      );
     }
     default:
-      return 'Unknown';
+      return <>Unknown</>;
   }
 };
 
@@ -191,15 +212,15 @@ export const HistoricTransactions: FC<{}> = () => {
       {historic.length === 0 ? (
         'No historic transactions'
       ) : (
-        <List>
+        <List inverted>
           {historic.map(tx => (
-            <Item key={tx.hash}>
+            <ListItem key={tx.hash}>
               <HistoricTx
                 tx={tx}
                 mUSD={mUSD}
                 mUSDSavingsAddress={mUSDSavingsAddress}
               />
-            </Item>
+            </ListItem>
           ))}
         </List>
       )}

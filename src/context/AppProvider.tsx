@@ -353,6 +353,9 @@ export const useWalletPosition = (): State['wallet']['position'] =>
 
 export const useAppDispatch = (): Dispatch => useAppContext()[1];
 
+export const useConnectWallet = (): Dispatch['connectWallet'] =>
+  useAppDispatch().connectWallet;
+
 export const useCollapseWallet = (): Dispatch['collapseWallet'] =>
   useAppDispatch().collapseWallet;
 
