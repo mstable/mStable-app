@@ -1,6 +1,7 @@
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { BigNumber } from 'ethers/utils';
-import { Fields, TransactionType, useSwapState } from '../state';
+import { useSwapState } from '../state';
+import { Fields, TransactionType } from '../types';
 
 type Ctx = ReturnType<typeof useSwapState>;
 

@@ -1,97 +1,16 @@
-import { useCallback, useMemo, useReducer, Reducer } from 'react';
+import { useCallback, useMemo, Reducer } from 'react';
 import { BigNumber, formatUnits } from 'ethers/utils';
 import { TokenQuantity, TokenDetails } from '../../../types';
 import { parseAmount } from '../../../web3/amounts';
-
-export enum Fields {
-  Input = 'input',
-  Output = 'output',
-}
-
-export enum TransactionType {
-  Mint,
-  Redeem,
-}
-
-enum Actions {
-  SetError,
-  SetToken,
-  SetMUSD,
-  SetFeeRate,
-  SetQuantity,
-  SetTransactionType,
-  StartSubmission,
-  EndSubmission,
-}
-
-export enum Reasons {
-  AmountMustBeSet,
-  AmountMustBeGreaterThanZero,
-  AmountMustNotExceedBalance,
-  AmountCouldNotBeParsed,
-  TokenMustBeSelected,
-  TokenMustBeUnlocked,
-  FetchingData,
-  ValidationFailed,
-  BAssetNotAllowedInMint,
-  MustBeBelowImplicitMaxWeighting,
-  MustRedeemOverweightBAssets,
-  BAssetsMustRemainUnderMaxWeight,
-  BAssetsMustRemainAboveImplicitMinWeight,
-  InputLengthShouldBeEqual,
-}
-
-type Action =
-  | {
-      type: Actions.SetError;
-      payload: null | { reason: Reasons; field?: Fields };
-    }
-  | { type: Actions.StartSubmission }
-  | { type: Actions.EndSubmission }
-  | {
-      type: Actions.SetToken;
-      payload: {
-        field: Fields;
-        swapType?: boolean;
-      } & TokenDetails;
-    }
-  | {
-      type: Actions.SetMUSD;
-      payload: TokenDetails;
-    }
-  | {
-      type: Actions.SetFeeRate;
-      payload: BigNumber;
-    }
-  | {
-      type: Actions.SetQuantity;
-      payload: { field: Fields; formValue: string | null };
-    }
-  | { type: Actions.SetTransactionType; payload: TransactionType };
-
-interface State {
-  values: {
-    input: TokenQuantity;
-    output: TokenQuantity;
-    feeAmountSimple: string | null;
-  };
-  mUSD: TokenDetails;
-  transactionType: TransactionType;
-  error: null | { reason: Reasons; field?: Fields };
-  submitting: boolean;
-  feeRate: BigNumber | null;
-}
-
-interface Dispatch {
-  setError(reason: Reasons | null, field?: Fields): void;
-  setToken(field: Fields, token: NonNullable<TokenDetails> | null): void;
-  setMUSD(token: NonNullable<TokenDetails>): void;
-  setFeeRate(feeRate: BigNumber): void;
-  setQuantity(field: Fields, formValue: string): void;
-  startSubmission(): void;
-  endSubmission(): void;
-  swapTransactionType(): void;
-}
+import { useStorageReducer } from '../../../context/StorageProvider';
+import {
+  Action,
+  Dispatch,
+  TransactionType,
+  State,
+  Actions,
+  Fields,
+} from './types';
 
 const initialTokenQuantityField: TokenQuantity = Object.freeze({
   formValue: null,
@@ -295,8 +214,39 @@ const reducer: Reducer<State, Action> = (state, action) => {
   }
 };
 
+const hydrator = (state: State): State => ({
+  ...state,
+  values: {
+    ...state.values,
+    input: {
+      ...state.values.input,
+      amount: {
+        ...state.values.input.amount,
+        exact: state.values.input.amount.exact
+          ? new BigNumber(state.values.input.amount.exact)
+          : null,
+      },
+    },
+    output: {
+      ...state.values.output,
+      amount: {
+        ...state.values.output.amount,
+        exact: state.values.output.amount.exact
+          ? new BigNumber(state.values.output.amount.exact)
+          : null,
+      },
+    },
+  },
+  feeRate: state.feeRate ? new BigNumber(state.feeRate) : null,
+});
+
 export const useSwapState = (): [State, Dispatch] => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useStorageReducer(
+    'swap',
+    initialState,
+    reducer,
+    hydrator,
+  );
 
   const {
     transactionType,

@@ -1,56 +1,8 @@
-import { Reducer, useCallback, useMemo, useReducer } from 'react';
-import { TokenDetails, TokenQuantity } from '../../../types';
+import { Reducer, useCallback, useMemo } from 'react';
+import { BigNumber } from 'ethers/utils';
 import { parseAmount } from '../../../web3/amounts';
-
-export enum TransactionType {
-  Deposit,
-  Withdraw,
-}
-
-export enum Reasons {
-  AmountMustBeSet,
-  AmountMustBeGreaterThanZero,
-  DepositAmountMustNotExceedTokenBalance,
-  WithdrawAmountMustNotExceedSavingsBalance,
-  TokenMustBeSelected,
-  FetchingData,
-  MUSDMustBeUnlocked,
-}
-
-enum Actions {
-  SetQuantity,
-  SetToken,
-  SetTransactionType,
-  SetError,
-}
-
-interface State {
-  error: Reasons | null;
-  transactionType: TransactionType;
-  input: TokenQuantity;
-}
-
-type Action =
-  | {
-      type: Actions.SetError;
-      payload: { reason: Reasons | null };
-    }
-  | { type: Actions.SetQuantity; payload: { formValue: string | null } }
-  | {
-      type: Actions.SetToken;
-      payload: TokenDetails;
-    }
-  | {
-      type: Actions.SetTransactionType;
-      payload: { transactionType: TransactionType };
-    };
-
-interface Dispatch {
-  setError(reason: Reasons | null): void;
-  setQuantity(formValue: string | null): void;
-  setToken(token: TokenDetails): void;
-  setTransactionType(transactionType: TransactionType): void;
-}
+import { useStorageReducer } from '../../../context/StorageProvider';
+import { Actions, State, TransactionType, Dispatch, Action } from './types';
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -106,8 +58,26 @@ const initialState: State = Object.freeze({
   },
 });
 
+const hydrator = (state: State): State => ({
+  ...state,
+  input: {
+    ...state.input,
+    amount: {
+      ...state.input.amount,
+      exact: state.input.amount.exact
+        ? new BigNumber(state.input.amount.exact)
+        : null,
+    },
+  },
+});
+
 export const useSaveState = (): [State, Dispatch] => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useStorageReducer(
+    'save',
+    initialState,
+    reducer,
+    hydrator,
+  );
 
   const setError = useCallback<Dispatch['setError']>(
     reason => {

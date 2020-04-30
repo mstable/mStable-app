@@ -11,13 +11,19 @@ import { formatUnits, parseUnits } from 'ethers/utils';
 import { useWallet } from 'use-wallet';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
-import { Reasons, TransactionType, useSaveState } from './state';
+import { useSaveState } from './state';
+import { Reasons, TransactionType } from './types';
 import {
   useKnownAddress,
   useMUSDSavings,
 } from '../../../context/KnownAddressProvider';
 import { useTokenWithBalance } from '../../../context/TokensProvider';
-import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
+import {
+  Amount,
+  ContractNames,
+  Interfaces,
+  SendTxManifest,
+} from '../../../types';
 import { Button } from '../../core/Button';
 import { H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
@@ -93,6 +99,43 @@ const TransactionTypeButton = styled(Button)`
     disabled ? '1' : '0.3'}; // disabled == selected
 `;
 
+const SavingsBalances: FC<{ savingsBalance: Amount }> = ({
+  savingsBalance,
+}) => {
+  const apy = useApy();
+  const apyPercentage = useMemo<number | null>(
+    () => (apy ? parseFloat(formatUnits(apy, 16)) : null),
+    [apy],
+  );
+
+  const savingsBalanceIncreasing = useIncreasingNumber(
+    savingsBalance.simple,
+    // TODO we could potentially use the APY for the increment and interval;
+    // these are fake numbers.
+    0.0000001,
+    100,
+  );
+
+  return (
+    <>
+      <CentredRow>
+        <H3 borderTop>Your mUSD savings balance</H3>
+        <CreditBalance>
+          <MUSDIconTransparent />
+          <CreditBalanceCountUp
+            end={savingsBalanceIncreasing || 0}
+            decimals={8}
+          />
+        </CreditBalance>
+      </CentredRow>
+      <CentredRow>
+        <H3 borderTop>Current APY</H3>
+        <APYCountUp end={apyPercentage || 0} suffix="%" decimals={2} />
+      </CentredRow>
+    </>
+  );
+};
+
 /**
  * Savings form component
  *
@@ -145,20 +188,6 @@ export const Save: FC<{}> = () => {
   );
 
   const savingsBalance = useSavingsBalance(account);
-  const savingsBalanceIncreasing = useIncreasingNumber(
-    savingsBalance.simple,
-    // TODO we could potentially use the APY for the increment and interval;
-    // these are fake numbers.
-    0.0000001,
-    100,
-  );
-
-  const apy = useApy();
-
-  const apyPercentage = useMemo<number | null>(
-    () => (apy ? parseFloat(formatUnits(apy, 16)) : null),
-    [apy],
-  );
 
   const tokenAddresses = useMemo<string[]>(
     () => (mUSDAddress ? [mUSDAddress] : []),
@@ -335,24 +364,7 @@ export const Save: FC<{}> = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <CentredRow>
-        <H3 borderTop>Your mUSD savings balance</H3>
-        <CreditBalance>
-          <MUSDIconTransparent />
-          <CreditBalanceCountUp
-            end={savingsBalanceIncreasing || 0}
-            decimals={8}
-          />
-        </CreditBalance>
-      </CentredRow>
-      <CentredRow>
-        <H3 borderTop>Current APY</H3>
-        <APYCountUp
-          end={apyPercentage || 0}
-          suffix="%"
-          decimals={2}
-        />
-      </CentredRow>
+      <SavingsBalances savingsBalance={savingsBalance} />
       <TransactionTypeRow>
         <TransactionTypeButton
           type="button"

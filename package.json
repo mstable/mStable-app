@@ -21,6 +21,7 @@
     "ethereum-blockies": "^0.1.1",
     "ethers": "^4.0.45",
     "hookrouter": "^1.2.3",
+    "localforage": "^1.7.3",
     "react": "^16.12.0",
     "react-context-mutex": "^1.0.7",
     "react-countup": "^4.3.3",

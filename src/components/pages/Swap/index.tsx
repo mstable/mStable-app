@@ -17,7 +17,8 @@ import { Form, FormRow, SubmitButton } from '../../core/Form';
 import { H3, P } from '../../core/Typography';
 import { ReactComponent as ArrowsSVG } from '../arrows.svg';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
-import { Fields, Reasons, TransactionType, useSwapState } from './state';
+import { useSwapState } from './state';
+import { Fields, Reasons, TransactionType } from './types';
 import { formatExactAmount } from '../../../web3/amounts';
 import { CountUp } from '../../core/CountUp';
 

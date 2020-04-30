@@ -1,5 +1,6 @@
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
-import { Reasons, TransactionType, useSaveState } from '../state';
+import { useSaveState } from '../state';
+import { Reasons, TransactionType } from '../types';
 
 type Ctx = ReturnType<typeof useSaveState>;
 

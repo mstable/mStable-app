@@ -4,6 +4,7 @@ import { TransactionsUpdater } from './transactionsUpdater';
 import { TokenBalancesUpdater } from './tokenBalancesUpdater';
 import { TokenSubscriptionUpdater } from './tokenSubscriptionUpdater';
 import { ContractsUpdater } from './contractsUpdater';
+import { StorageUpdater } from './storageUpdater';
 
 export const Updaters: FC<{}> = () => (
   <>
@@ -12,5 +13,6 @@ export const Updaters: FC<{}> = () => (
     <KnownAddressUpdater />
     <TransactionsUpdater />
     <ContractsUpdater />
+    <StorageUpdater />
   </>
 );
