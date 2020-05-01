@@ -4,7 +4,7 @@
   "extensions": {
     "endpoints": {
       "local": {
-        "url": "http://0.0.0.0:8000/subgraphs/name/jameslefrere/mStable",
+        "url": "http://0.0.0.0:8000/subgraphs/name/mStable/mStable-protocol",
         "introspect": false
       }
     }

@@ -1,17 +1,22 @@
-import { useMemo, createElement, DOMElement, useEffect } from 'react';
+import { useMemo, createElement, DOMElement, useEffect, useState } from 'react';
 import blockies from 'ethereum-blockies';
 import { useMutex } from 'react-context-mutex';
-import { MassetNames, TokenQuantity } from '../types';
+import useInterval from '@use-it/interval';
+import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
+import { Amount, MassetNames } from '../types';
 import {
+  ExchangeRate,
   TokenDetailsFragment,
   useCoreTokensQuery,
   useCreditBalancesSubscription,
-  useLatestExchangeRateQuery,
+  useLastExchangeRateBeforeTimestampQuery,
+  useLatestExchangeRateSubscription,
 } from '../graphql/generated';
 import { truncateAddress } from './strings';
 import { theme } from '../theme';
-import { formatUnits, parseUnits } from 'ethers/utils';
-import { PERCENT_SCALE } from './constants';
+import { PERCENT_SCALE, SCALE } from './constants';
+
+type RateTimestamp = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
 
 export const useMassetToken = (
   massetName: MassetNames,
@@ -79,33 +84,84 @@ export const useAsyncMutex = (
   }, [mutexKey]);
 };
 
-export const useSavingsBalance = (
-  account: string | null,
-): Omit<TokenQuantity, 'formValue'> => {
-  const latestExchangeRate = useLatestExchangeRateQuery();
-
-  const creditBalances = useCreditBalancesSubscription({
+export const useSavingsBalance = (account: string | null): Amount => {
+  const latestSub = useLatestExchangeRateSubscription();
+  const creditBalancesSub = useCreditBalancesSubscription({
     variables: { account: account ? account.toLowerCase() : '' },
     skip: !account,
   });
 
-  const creditBalanceDecimal =
-    creditBalances.data?.account?.creditBalances[0]?.amount || '0.00';
+  const creditBalance =
+    creditBalancesSub.data?.account?.creditBalances[0]?.amount;
+  const latest = latestSub.data?.exchangeRates[0];
 
   return useMemo(() => {
-    const token = { decimals: 18, address: null, symbol: null };
-    const rate = latestExchangeRate.data?.exchangeRates[0];
+    if (latest && creditBalance) {
+      const rate = parseUnits(latest.exchangeRate);
+      const balance = parseUnits(creditBalance);
 
-    if (rate && creditBalanceDecimal) {
-      const exchangeRate = parseUnits(rate.exchangeRate, 16).div(100);
-      const creditBalance = parseUnits(creditBalanceDecimal, token.decimals);
+      const exact = balance.mul(rate).div(PERCENT_SCALE);
+      const simple = parseFloat(formatUnits(exact, 18));
 
-      const exact = creditBalance.mul(exchangeRate).div(PERCENT_SCALE);
-      const simple = parseFloat(formatUnits(exact, token.decimals));
-
-      return { amount: { exact, simple }, token };
+      return { exact, simple };
     }
 
-    return { amount: { simple: null, exact: null }, token };
-  }, [creditBalanceDecimal, latestExchangeRate]);
+    return { exact: null, simple: null };
+  }, [creditBalance, latest]);
+};
+
+export const useIncreasingNumber = (
+  value: number | null,
+  increment: number,
+  interval: number,
+): number | null => {
+  const [valueInc, setValueInc] = useState<typeof value>(null);
+
+  useEffect(() => {
+    if (value) setValueInc(value);
+  }, [value, setValueInc]);
+
+  useInterval(() => {
+    if (valueInc) setValueInc(valueInc + increment);
+  }, interval);
+
+  return valueInc;
+};
+
+// NB: Without milliseconds
+const YEAR = parseUnits((365 * 24 * 60 * 60).toString());
+
+export const calculateApy = (
+  start: RateTimestamp,
+  end: RateTimestamp,
+): BigNumber => {
+  const startRate = parseUnits(start.exchangeRate);
+  const endRate = parseUnits(end.exchangeRate);
+
+  const rateDiff = endRate
+    .mul(SCALE)
+    .div(startRate)
+    .sub(SCALE);
+
+  const timeDiff = parseUnits((end.timestamp - start.timestamp).toString());
+
+  const portionOfYear = timeDiff.mul(SCALE).div(YEAR);
+
+  return rateDiff.mul(SCALE).div(portionOfYear);
+};
+
+export const useApy = (): BigNumber | null => {
+  const latestSub = useLatestExchangeRateSubscription();
+  const latest = latestSub.data?.exchangeRates[0];
+  const timestamp = latest?.timestamp;
+
+  const previousQuery = useLastExchangeRateBeforeTimestampQuery({
+    variables: { timestamp: (timestamp as number) - 24 * 60 * 60 },
+    skip: !timestamp,
+  });
+  const previous = previousQuery.data?.exchangeRates[0];
+
+  return latest && previous && latest.timestamp > previous.timestamp
+    ? calculateApy(previous, latest)
+    : null;
 };

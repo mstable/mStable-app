@@ -277,7 +277,7 @@ export const Swap: FC<{}> = () => {
       fn: 'approve',
       args: [
         outputAddress,
-        parseUnits(inputToken.totalSupply, inputToken.decimals),
+        parseUnits(inputToken.totalSupply as string, inputToken.decimals),
       ],
     };
     sendTransaction(manifest);
@@ -410,7 +410,10 @@ export const Swap: FC<{}> = () => {
       return;
     }
 
-    const totalSupply = parseUnits(mUSD.token.totalSupply, mUSD.token.decimals);
+    const totalSupply = parseUnits(
+      mUSD.token.totalSupply as string,
+      mUSD.token.decimals,
+    );
 
     const validatePromise =
       transactionType === TransactionType.Mint

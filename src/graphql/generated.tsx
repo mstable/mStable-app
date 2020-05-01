@@ -29,7 +29,7 @@ export type Scalars = {
   Int: number,
   Float: number,
   Bytes: any,
-  BigDecimal: any,
+  BigDecimal: string,
   BigInt: any,
 };
 
@@ -1103,10 +1103,12 @@ export type TokenByAddressQueryVariables = {
 
 export type TokenByAddressQuery = { token: Maybe<Pick<Token, 'id' | 'address' | 'decimals' | 'name' | 'symbol' | 'totalBurned' | 'totalSupply' | 'totalTransferred'>> };
 
-export type LatestExchangeRateQueryVariables = {};
+export type LastExchangeRateBeforeTimestampQueryVariables = {
+  timestamp: Scalars['Int']
+};
 
 
-export type LatestExchangeRateQuery = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
+export type LastExchangeRateBeforeTimestampQuery = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
 
 export type SavingsContractQueryVariables = {
   id: Scalars['ID']
@@ -1131,6 +1133,11 @@ export type CreditBalancesSubscriptionVariables = {
 
 
 export type CreditBalancesSubscription = { account: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
+
+export type LatestExchangeRateSubscriptionVariables = {};
+
+
+export type LatestExchangeRateSubscription = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
 
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
@@ -1334,9 +1341,9 @@ export function useTokenByAddressLazyQuery(baseOptions?: ApolloReactHooks.LazyQu
 export type TokenByAddressQueryHookResult = ReturnType<typeof useTokenByAddressQuery>;
 export type TokenByAddressLazyQueryHookResult = ReturnType<typeof useTokenByAddressLazyQuery>;
 export type TokenByAddressQueryResult = ApolloReactCommon.QueryResult<TokenByAddressQuery, TokenByAddressQueryVariables>;
-export const LatestExchangeRateDocument = gql`
-    query LatestExchangeRate {
-  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
+export const LastExchangeRateBeforeTimestampDocument = gql`
+    query LastExchangeRateBeforeTimestamp($timestamp: Int!) {
+  exchangeRates(where: {timestamp_lt: $timestamp}, orderDirection: desc, orderBy: timestamp, first: 1) {
     exchangeRate
     timestamp
   }
@@ -1344,29 +1351,30 @@ export const LatestExchangeRateDocument = gql`
     `;
 
 /**
- * __useLatestExchangeRateQuery__
+ * __useLastExchangeRateBeforeTimestampQuery__
  *
- * To run a query within a React component, call `useLatestExchangeRateQuery` and pass it any options that fit your needs.
- * When your component renders, `useLatestExchangeRateQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * To run a query within a React component, call `useLastExchangeRateBeforeTimestampQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLastExchangeRateBeforeTimestampQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useLatestExchangeRateQuery({
+ * const { data, loading, error } = useLastExchangeRateBeforeTimestampQuery({
  *   variables: {
+ *      timestamp: // value for 'timestamp'
  *   },
  * });
  */
-export function useLatestExchangeRateQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
-        return ApolloReactHooks.useQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
+export function useLastExchangeRateBeforeTimestampQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
+        return ApolloReactHooks.useQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
       }
-export function useLatestExchangeRateLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
+export function useLastExchangeRateBeforeTimestampLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
         }
-export type LatestExchangeRateQueryHookResult = ReturnType<typeof useLatestExchangeRateQuery>;
-export type LatestExchangeRateLazyQueryHookResult = ReturnType<typeof useLatestExchangeRateLazyQuery>;
-export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>;
+export type LastExchangeRateBeforeTimestampQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampQuery>;
+export type LastExchangeRateBeforeTimestampLazyQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampLazyQuery>;
+export type LastExchangeRateBeforeTimestampQueryResult = ApolloReactCommon.QueryResult<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>;
 export const SavingsContractDocument = gql`
     query SavingsContract($id: ID!) {
   savingsContracts(where: {id: $id}) {
@@ -1469,3 +1477,32 @@ export function useCreditBalancesSubscription(baseOptions?: ApolloReactHooks.Sub
       }
 export type CreditBalancesSubscriptionHookResult = ReturnType<typeof useCreditBalancesSubscription>;
 export type CreditBalancesSubscriptionResult = ApolloReactCommon.SubscriptionResult<CreditBalancesSubscription>;
+export const LatestExchangeRateDocument = gql`
+    subscription LatestExchangeRate {
+  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
+    exchangeRate
+    timestamp
+  }
+}
+    `;
+
+/**
+ * __useLatestExchangeRateSubscription__
+ *
+ * To run a query within a React component, call `useLatestExchangeRateSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useLatestExchangeRateSubscription` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLatestExchangeRateSubscription({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLatestExchangeRateSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<LatestExchangeRateSubscription, LatestExchangeRateSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<LatestExchangeRateSubscription, LatestExchangeRateSubscriptionVariables>(LatestExchangeRateDocument, baseOptions);
+      }
+export type LatestExchangeRateSubscriptionHookResult = ReturnType<typeof useLatestExchangeRateSubscription>;
+export type LatestExchangeRateSubscriptionResult = ApolloReactCommon.SubscriptionResult<LatestExchangeRateSubscription>;

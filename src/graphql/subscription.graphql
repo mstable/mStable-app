@@ -1,17 +1,24 @@
 # import './fragments.graphql'
 
 subscription TokenSub($id: ID!) {
-    token(id: $id) {
-        id
-        symbol
-        address
-    }
+  token(id: $id) {
+    id
+    symbol
+    address
+  }
 }
 
 subscription CreditBalances($account: ID!) {
-    account(id: $account) {
-        creditBalances {
-            amount
-        }
+  account(id: $account) {
+    creditBalances {
+      amount
     }
+  }
+}
+
+subscription LatestExchangeRate {
+  exchangeRates(first: 1 orderDirection: desc orderBy: timestamp) {
+    exchangeRate
+    timestamp
+  }
 }

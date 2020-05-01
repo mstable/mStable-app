@@ -83,13 +83,13 @@ export const Balances: FC<{}> = () => {
           <Balance size={Size.xl} end={mUSD.balanceSimple} />
         </ListItem>
       ) : null}
-      {savingsBalance.amount.simple ? (
+      {savingsBalance.simple ? (
         <ListItem size={Size.xl} key="savingsBalance">
           <Symbol>
             <TokenIcon symbol="mUSD" />
             <span>mUSD Savings</span>
           </Symbol>
-          <Balance size={Size.xl} end={savingsBalance.amount.simple} />
+          <Balance size={Size.xl} end={savingsBalance.simple} />
         </ListItem>
       ) : null}
       {otherTokens.map(({ symbol, address, balanceSimple }) => (

@@ -8,6 +8,7 @@ import { ReactComponent as FortmaticIcon } from '../components/icons/fortmatic.s
 import { ReactComponent as PortisIcon } from '../components/icons/portis.svg';
 import { ReactComponent as SquarelinkIcon } from '../components/icons/squarelink.svg';
 
+export const SCALE = new BigNumber((1e18).toString());
 export const PERCENT_SCALE = new BigNumber((1e16).toString());
 export const RATIO_SCALE = new BigNumber((1e8).toString());
 export const EXP_SCALE = new BigNumber((1e18).toString());

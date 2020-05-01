@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import CountUpBase, { CountUpProps } from 'react-countup';
 
 const DEFAULT_DECIMALS = 2;
@@ -12,15 +12,23 @@ export const CountUp: FC<CountUpProps> = ({
   suffix,
   separator = ',',
   duration = DEFAULT_DURATION,
-}) => (
-  <CountUpBase
-    className={className}
-    start={0}
-    end={end}
-    separator={separator}
-    prefix={prefix}
-    suffix={suffix}
-    decimals={decimals}
-    duration={duration}
-  />
-);
+}) => {
+  const prevEnd = useRef<typeof end>(end);
+
+  useEffect(() => {
+    if (end) prevEnd.current = end;
+  }, [end]);
+
+  return (
+    <CountUpBase
+      className={className}
+      start={prevEnd.current}
+      end={end}
+      separator={separator}
+      prefix={prefix}
+      suffix={suffix}
+      decimals={decimals}
+      duration={duration}
+    />
+  );
+};
