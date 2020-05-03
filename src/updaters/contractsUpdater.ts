@@ -5,7 +5,7 @@ import { useTransactionsDispatch } from '../context/TransactionsProvider';
 import { useKnownAddress } from '../context/KnownAddressProvider';
 import { useSignerContext } from '../context/SignerProvider';
 import { getHistoricTransactions } from '../web3/getHistoricTransactions';
-import { MUSDFactory } from '../typechain/MUSDFactory';
+import { MusdFactory } from '../typechain/MusdFactory';
 import { ContractNames } from '../types';
 import { SavingsContractFactory } from '../typechain/SavingsContractFactory';
 
@@ -20,7 +20,7 @@ export const ContractsUpdater = (): null => {
   const mUSDAddress = useKnownAddress(ContractNames.mUSD);
   const mUSD = useMemo(
     () =>
-      mUSDAddress && signer ? MUSDFactory.connect(mUSDAddress, signer) : null,
+      mUSDAddress && signer ? MusdFactory.connect(mUSDAddress, signer) : null,
     [mUSDAddress, signer],
   );
 
