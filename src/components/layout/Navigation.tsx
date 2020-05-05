@@ -74,8 +74,8 @@ const Item = styled.li<{
 const navItems: NavItem[] = [
   { title: 'Swap', path: '/swap' },
   { title: 'Save', path: '/save' },
-  { title: 'Move', path: '/move', disabled: true },
-  { title: 'Earn', path: '/earn', disabled: true },
+  // { title: 'Move', path: '/move', disabled: true },
+  // { title: 'Earn', path: '/earn', disabled: true },
 ];
 
 /**
