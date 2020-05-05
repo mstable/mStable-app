@@ -1589,6 +1589,13 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
+"@metamask/onboarding@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@metamask/onboarding/-/onboarding-0.2.1.tgz#76e864634d6436a486fcfa743f09a25b1934a11e"
+  integrity sha512-wSwgkIfVHM6IWja0xfNbK+wMFweOazNe1Z1RVqS0ZKG5v8vCPT93N5IQF2mKCDD+RnBpremE1VYslPPQxQz25g==
+  dependencies:
+    bowser "^2.5.4"
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
@@ -4064,6 +4071,11 @@ bonjour@^3.5.0:
 boolbase@^1.0.0, boolbase@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
+
+bowser@^2.5.4:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/bowser/-/bowser-2.9.0.tgz#3bed854233b419b9a7422d9ee3e85504373821c9"
+  integrity sha512-2ld76tuLBNFekRgmJfT2+3j5MIrP6bFict8WAIT3beq+srz1gcKNAdNKMqHqauQt63NmAa88HfP1/Ypa9Er3HA==
 
 brace-expansion@^1.1.7:
   version "1.1.11"

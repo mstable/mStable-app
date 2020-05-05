@@ -15,6 +15,7 @@ import {
   UnsupportedConnectorError,
   useWallet,
 } from 'use-wallet';
+import MetamaskOnboarding from '@metamask/onboarding';
 import { TokenDetailsFragment } from '../graphql/generated';
 import { useMassetToken } from '../web3/hooks';
 import { MassetNames, InjectedEthereum } from '../types';
@@ -211,6 +212,15 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const connectWallet = useCallback<Dispatch['connectWallet']>(
     selected => {
       dispatch({ type: Actions.ConnectWallet, payload: selected });
+
+      if (selected === 'injected') {
+        const onboarding = new MetamaskOnboarding();
+        if (onboarding.state === 'NOT_INSTALLED') {
+          onboarding.startOnboarding();
+          return;
+        }
+      }
+
       activate(selected)
         .then(() => {
           const connector = CONNECTORS.find(c => c.id === selected);
