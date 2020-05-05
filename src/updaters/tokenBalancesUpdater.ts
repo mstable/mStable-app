@@ -9,18 +9,18 @@ import {
 import { useWallet } from 'use-wallet';
 import useDeepCompareEffect from 'use-deep-compare-effect';
 import { useSignerContext } from '../context/SignerProvider';
-import { ERC20DetailedFactory } from '../typechain/ERC20DetailedFactory';
+import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import {
   useSubscribedTokens,
   useTokensDispatch,
 } from '../context/TokensProvider';
-import { ERC20Detailed } from '../typechain/ERC20Detailed.d';
+import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
 import { useKnownAddress } from '../context/KnownAddressProvider';
 import { ContractNames } from '../types';
 import { useAsyncMutex } from '../web3/hooks';
 
 interface State {
-  [tokenAddress: string]: ERC20Detailed;
+  [tokenAddress: string]: Erc20Detailed;
 }
 
 enum Actions {
@@ -31,7 +31,7 @@ enum Actions {
 type Action =
   | {
       type: Actions.SetContracts;
-      payload: Record<string, ERC20Detailed>;
+      payload: Record<string, Erc20Detailed>;
     }
   | { type: Actions.Reset };
 
@@ -61,7 +61,7 @@ export const TokenBalancesUpdater = (): null => {
   const mUSD = useMemo(
     () =>
       mUSDAddress && signer
-        ? ERC20DetailedFactory.connect(mUSDAddress, signer)
+        ? Erc20DetailedFactory.connect(mUSDAddress, signer)
         : null,
     [mUSDAddress, signer],
   );
@@ -83,7 +83,7 @@ export const TokenBalancesUpdater = (): null => {
     const instances = subscribedTokens.reduce(
       (_contracts, token) => ({
         ..._contracts,
-        [token]: ERC20DetailedFactory.connect(token, signer),
+        [token]: Erc20DetailedFactory.connect(token, signer),
       }),
       contracts,
     );

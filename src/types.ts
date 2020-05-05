@@ -3,7 +3,7 @@ import { TransactionResponse, Log } from 'ethers/providers';
 import { BigNumber, LogDescription } from 'ethers/utils';
 import { Connectors } from 'use-wallet';
 
-import { IERC20 } from './typechain/IERC20.d';
+import { Ierc20 } from './typechain/Ierc20.d';
 import { IMasset } from './typechain/IMasset.d';
 import { ISavingsContract } from './typechain/ISavingsContract.d';
 
@@ -60,14 +60,14 @@ export interface Instances {
   // [Interfaces.ForgeRewards]: IForgeRewards;
   [Interfaces.Masset]: IMasset;
   // [Interfaces.Systok]: ISystok;
-  [Interfaces.ERC20]: IERC20;
+  [Interfaces.ERC20]: Ierc20;
   [Interfaces.SavingsContract]: ISavingsContract;
 }
 
 /**
  * Manifest for sending a transaction.
  *
- * @param iface: The contract interface, e.g. an instance of `IERC20`
+ * @param iface: The contract interface, e.g. an instance of `Ierc20`
  * @param fn: Name of the function on the contract interface.
  * @param args: Array of arguments for the function.
  */

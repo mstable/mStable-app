@@ -9,8 +9,8 @@ import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { useTokenWithBalance } from '../../../context/TokensProvider';
 import { useMassetQuery } from '../../../graphql/generated';
 import { ForgeValidatorFactory } from '../../../typechain/ForgeValidatorFactory';
-import { ERC20DetailedFactory } from '../../../typechain/ERC20DetailedFactory';
-import { MUSDFactory } from '../../../typechain/MUSDFactory';
+import { Erc20DetailedFactory } from '../../../typechain/Erc20DetailedFactory';
+import { MusdFactory } from '../../../typechain/MusdFactory';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
@@ -159,13 +159,13 @@ export const Swap: FC<{}> = () => {
   );
   const mUSDContract = useMemo(
     () =>
-      signer && mUSDAddress ? MUSDFactory.connect(mUSDAddress, signer) : null,
+      signer && mUSDAddress ? MusdFactory.connect(mUSDAddress, signer) : null,
     [signer, mUSDAddress],
   );
   const inputTokenContract = useMemo(
     () =>
       signer && inputAddress
-        ? ERC20DetailedFactory.connect(inputAddress, signer)
+        ? Erc20DetailedFactory.connect(inputAddress, signer)
         : null,
     [signer, inputAddress],
   );
