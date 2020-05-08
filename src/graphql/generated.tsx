@@ -30,7 +30,7 @@ export type Scalars = {
   Float: number,
   Bytes: any,
   BigDecimal: string,
-  BigInt: any,
+  BigInt: string,
 };
 
 export type Account = {

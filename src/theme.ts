@@ -3,15 +3,18 @@ import { DefaultTheme, CSSProp, css } from 'styled-components';
 export enum Color {
   gold = 'rgb(255,179,52)',
   green = 'rgb(82,204,147)',
-  greenTransparent = 'rgba(82,204,147, 0.15)',
+  greenTransparent = 'rgba(82,204,147, 0.2)',
+  coolMint = 'rgb(133,242,190)',
   blue = 'rgb(23,110,222)',
-  blueTransparent = 'rgba(0,92,222,0.15)',
+  blueTransparent = 'rgba(0,92,222,0.2)',
   red = 'rgb(202,0,27)',
-  redTransparent = 'rgba(202,0,27,0.15)',
+  redTransparent = 'rgba(202,0,27,0.2)',
+  redTransparenter = 'rgba(202,0,27,0.1)',
   white = 'rgb(255,255,255)',
   black = 'rgb(0,0,0)',
-  whiteTransparent = 'rgba(255,255,255,0.15)',
-  blackTransparent = 'rgba(0,0,0,0.15)',
+  whiteTransparent = 'rgba(255,255,255,0.2)',
+  blackTransparent = 'rgba(0,0,0,0.2)',
+  blackTransparenter = 'rgba(0,0,0,0.06)',
   offWhite = 'rgb(249,245,242)',
   offBlack = 'rgb(37,39,45)',
 }
@@ -93,7 +96,7 @@ export const mixins = {
   roundedBorder: css<{ inverted?: boolean }>`
     border: 1px
       ${({ inverted, theme }) =>
-        inverted ? theme.color.offWhite : theme.color.offBlack}
+        inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
       solid;
     border-radius: 3px;
   `,
@@ -106,6 +109,9 @@ export const mixins = {
   textAlign: css<{ center?: boolean; right?: boolean }>`
     text-align: ${({ center, right }) =>
       center ? 'center' : right ? 'right' : 'initial'};
+  `,
+  numeric: css`
+    font-family: 'DM Mono', monospace;
   `,
 };
 

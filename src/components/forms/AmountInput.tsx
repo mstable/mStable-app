@@ -11,7 +11,7 @@ import { FontSize } from '../../theme';
 
 interface Props {
   error?: string;
-  value: string | null
+  value: string | null;
   decimals: number | null;
   balance?: string | null;
   name: string;
@@ -23,12 +23,13 @@ interface Props {
 const Input = styled.input<{ error: string | void }>`
   appearance: none;
   background: ${({ theme, error }) =>
-    error ? theme.color.redTransparent : theme.color.white};
+    error ? theme.color.redTransparenter : theme.color.white};
   border: ${({ theme, error }) =>
-    `1px ${error ? theme.color.red : theme.color.blackTransparent} solid`};
+    `1px ${
+      error ? theme.color.redTransparent : theme.color.blackTransparent
+    } solid`};
   border-radius: 3px;
-  color: ${({ error, theme }) =>
-    error ? theme.color.red : theme.color.black};
+  color: ${({ error, theme }) => (error ? theme.color.red : theme.color.black)};
   font-size: ${FontSize.l};
   font-weight: bold;
   min-width: 0;
@@ -37,6 +38,8 @@ const Input = styled.input<{ error: string | void }>`
   padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.s}`};
   height: 3rem;
   margin-bottom: ${({ theme }) => theme.spacing.s};
+
+  ${({ theme }) => theme.mixins.numeric}
 `;
 
 /**

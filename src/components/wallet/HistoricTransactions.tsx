@@ -204,7 +204,8 @@ const HistoricTx: FC<{
 
 export const HistoricTransactions: FC<{}> = () => {
   const historic = useOrderedHistoricTransactions();
-  const mUSD = useMUSD();
+  const musdQuery = useMUSD();
+  const mUSD = musdQuery.data?.masset || null;
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   return (

@@ -7,7 +7,7 @@ import {
 import { Button } from './Button';
 
 interface Props {
-  onSubmit(event: FormEvent<Element>): void;
+  onSubmit?(event: FormEvent<Element>): void;
   error?: string;
 }
 
@@ -48,16 +48,28 @@ export const Form: FC<Props> = ({ children, onSubmit, error }) => {
 
 export const FormRow = styled.div`
   width: 100%;
+  padding-bottom: 40px;
+  ${({ theme }) => theme.mixins.borderTop}
 `;
 
 export const SubmitButton = styled(Button)`
   color: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparent : theme.color.black};
+    disabled ? theme.color.blackTransparent : theme.color.white};
   border-color: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparent : theme.color.black};
+    disabled ? theme.color.blackTransparent : theme.color.greenTransparent};
   background: ${({ theme, disabled }) =>
-    disabled ? 'transparent' : theme.color.green};
+    disabled ? 'initial' : theme.color.green};
   width: 100%;
   margin-bottom: ${({ theme }) => theme.spacing.m};
   line-height: 2.5rem;
+  text-transform: uppercase;
+  box-shadow: ${({ theme, disabled }) =>
+      disabled ? theme.color.blackTransparenter : theme.color.greenTransparent}
+    0 10px 20px;
+  transition: background-color 0.4s ease;
+
+  &:hover {
+    ${({ theme, disabled }) =>
+      disabled ? '' : `background: ${theme.color.coolMint}`}
+  }
 `;

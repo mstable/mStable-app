@@ -2,12 +2,12 @@ import { BigNumber, commify, parseUnits, formatUnits } from 'ethers/utils';
 import { Amount } from '../types';
 
 export const formatSimpleAmount = (
-  simpleAmount: string | null,
+  simpleAmount: number | null,
   symbol?: string | null,
 ): string | null => {
-  if (simpleAmount) {
+  if (typeof simpleAmount === 'number') {
     // Use two padded decimal places
-    const [intAmount, decimals = ''] = simpleAmount.split('.');
+    const [intAmount, decimals = ''] = simpleAmount.toString().split('.');
     const paddedDecimals = decimals.slice(0, 2).padEnd(2, '0');
     return `${commify(`${intAmount}.${paddedDecimals}`)}${
       symbol ? ` ${symbol}` : ''
@@ -22,7 +22,7 @@ export const formatExactAmount = (
   symbol?: string,
 ): string | null =>
   exactAmount && decimals
-    ? formatSimpleAmount(formatUnits(exactAmount, decimals), symbol)
+    ? formatSimpleAmount(parseFloat(formatUnits(exactAmount, decimals)), symbol)
     : null;
 
 export const parseAmount = (

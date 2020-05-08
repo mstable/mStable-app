@@ -259,7 +259,8 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   const addSuccessNotification = useAddSuccessNotification();
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
-  const mUSD = useMUSD();
+  const musdQuery = useMUSD();
+  const mUSD = musdQuery.data?.masset || null;
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   const addPending = useCallback<Dispatch['addPending']>(

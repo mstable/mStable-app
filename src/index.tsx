@@ -7,6 +7,7 @@ import { Updaters } from './updaters';
 import { Layout } from './components/layout/Layout';
 import { Home } from './components/pages/Home';
 import { Swap } from './components/pages/Swap';
+import { Mint } from './components/pages/Mint';
 import { Earn } from './components/pages/Earn';
 import { Save } from './components/pages/Save';
 import { About } from './components/pages/About';
@@ -15,6 +16,7 @@ import { NotFound } from './components/pages/NotFound';
 const routes = {
   '/': () => <Home />,
   '/swap': () => <Swap />,
+  '/mint': () => <Mint />,
   '/earn': () => <Earn />,
   '/save': () => <Save />,
   '/about': () => <About />,
