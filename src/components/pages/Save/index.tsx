@@ -56,7 +56,7 @@ const mapReasonToMessage = (reason: Reasons): string => {
 };
 
 const CreditBalance = styled.div`
-  margin-bottom: 20px;
+  margin: 8px 0;
   img {
     width: 46px;
     margin-right: 10px;
@@ -66,7 +66,6 @@ const CreditBalance = styled.div`
 const CreditBalanceCountUp = styled(CountUp)`
   font-size: ${FontSize.insane};
   font-weight: bold;
-  font-family: monospace; // TODO get a font like the main font family, but monospace
 `;
 
 const APYCountUp = styled(CountUp)`
@@ -336,7 +335,7 @@ export const Save: FC<{}> = () => {
   return (
     <Form onSubmit={handleSubmit}>
       <CentredRow>
-        <H3 borderTop>Your mUSD savings balance</H3>
+        <H3>Your mUSD savings balance</H3>
         <CreditBalance>
           <MUSDIconTransparent />
           <CreditBalanceCountUp
@@ -346,12 +345,8 @@ export const Save: FC<{}> = () => {
         </CreditBalance>
       </CentredRow>
       <CentredRow>
-        <H3 borderTop>Current APY</H3>
-        <APYCountUp
-          end={apyPercentage || 0}
-          suffix="%"
-          decimals={2}
-        />
+        <H3>Current APY</H3>
+        <APYCountUp end={apyPercentage || 0} suffix="%" decimals={2} />
       </CentredRow>
       <TransactionTypeRow>
         <TransactionTypeButton
@@ -372,12 +367,12 @@ export const Save: FC<{}> = () => {
           Withdraw
         </TransactionTypeButton>
       </TransactionTypeRow>
-      <H3 borderTop>
-        {transactionType === TransactionType.Deposit
-          ? 'Depositing'
-          : 'Withdrawing'}
-      </H3>
       <FormRow>
+        <H3>
+          {transactionType === TransactionType.Deposit
+            ? 'Depositing'
+            : 'Withdrawing'}
+        </H3>
         <TokenAmountInput
           name="input"
           tokenValue={input.token.address}
@@ -391,7 +386,7 @@ export const Save: FC<{}> = () => {
           onUnlock={handleUnlock}
         />
       </FormRow>
-      <FormRow>
+      <div>
         <SubmitButton
           type="submit"
           size={Size.l}
@@ -421,7 +416,7 @@ export const Save: FC<{}> = () => {
             </>
           </TransactionDetailsDropdown>
         ) : null}
-      </FormRow>
+      </div>
     </Form>
   );
 };

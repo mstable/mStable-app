@@ -10,7 +10,6 @@ import React, {
 import { BigNumber } from 'ethers/utils';
 import { ContractNames } from '../types';
 import {
-  MassetQuery,
   SavingsContractQuery,
   useMassetQuery,
   useSavingsContractQuery,
@@ -118,10 +117,12 @@ export const useKnownAddress = (
   return state[contractName];
 };
 
-export const useMUSD = (): MassetQuery['masset'] | null => {
+export const useMUSD = (): ReturnType<typeof useMassetQuery> => {
   const address = useKnownAddress(ContractNames.mUSD);
-  const query = useMassetQuery({ variables: { id: address || '' } });
-  return query.data?.masset || null;
+  return useMassetQuery({
+    variables: { id: address as string },
+    skip: !address,
+  });
 };
 
 export const useMUSDSavings = ():

@@ -16,6 +16,7 @@ interface Props {
   tokenValue: string | null;
   amountValue: string | null;
   tokenAddresses: string[];
+  tokenDisabled?: boolean;
   needsUnlock?: boolean;
   items?: { label: string; value?: string | null | undefined }[];
   onUnlock?(): void;
@@ -26,7 +27,7 @@ interface Props {
 
 const InputsRow = styled(FlexRow)`
   align-items: flex-start;
-  margin-bottom: 0;
+  margin-bottom: 8px;
 `;
 
 const Error = styled.div`
@@ -50,6 +51,25 @@ const ItemLabel = styled.div`
 
 const AmountInputContainer = styled.div`
   width: 100%;
+  display: flex;
+
+  input {
+    margin-bottom: 0;
+  }
+
+  ${Button} {
+    white-space: nowrap;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  > * {
+    margin-right: 8px;
+  }
+
+  > :last-child {
+    margin-right: 0;
+  }
 `;
 
 /**
@@ -60,6 +80,7 @@ const AmountInputContainer = styled.div`
  * @param needsUnlock @TODO
  * @param onUnlock @TODO
  * @param items @TODO
+ * @param tokenDisabled @TODO
  * @param error Error message, e.g. 'Amount too low'
  * @param tokenAddresses List of available token addresses
  * @param tokenValue Selected token address
@@ -75,6 +96,7 @@ export const TokenAmountInput: FC<Props> = ({
   tokenValue,
   amountValue,
   name,
+  tokenDisabled,
   needsUnlock,
   onUnlock,
   onChangeAmount,
@@ -102,37 +124,38 @@ export const TokenAmountInput: FC<Props> = ({
             error={error}
             decimals={selectedToken?.decimals || null}
           />
-          <FlexRow size={Size.xs}>
-            <div>
-              {items.map(({ label, value }) => (
-                <Item key={label}>
-                  <ItemLabel>{label}</ItemLabel>
-                  <ItemValue>{value || '—'}</ItemValue>
-                </Item>
-              ))}
-            </div>
-            <FlexRow size={Size.xs}>
-              {onSetMax ? (
-                <Button type="button" onClick={onSetMax} size={Size.xs}>
-                  Set maximum
-                </Button>
-              ) : null}
-              {needsUnlock && onUnlock ? (
-                <Button type="button" onClick={onUnlock} size={Size.xs}>
-                  Unlock
-                </Button>
-              ) : null}
-            </FlexRow>
-          </FlexRow>
+          {onSetMax ? (
+            <Button type="button" onClick={onSetMax} size={Size.xs}>
+              Max
+            </Button>
+          ) : null}
+          {needsUnlock && onUnlock ? (
+            <Button type="button" onClick={onUnlock} size={Size.xs}>
+              Unlock
+            </Button>
+          ) : null}
         </AmountInputContainer>
         <TokenInput
           name={name}
+          disabled={tokenDisabled}
           value={tokenValue}
           tokens={tokensData?.tokens || []}
           onChange={onChangeToken}
           error={error}
         />
       </InputsRow>
+      {items?.length > 0 ? (
+        <FlexRow size={Size.xs}>
+          <div>
+            {items.map(({ label, value }) => (
+              <Item key={label}>
+                <ItemLabel>{label}</ItemLabel>
+                <ItemValue>{value || '—'}</ItemValue>
+              </Item>
+            ))}
+          </div>
+        </FlexRow>
+      ) : null}
       <Error>{error}</Error>
     </>
   );

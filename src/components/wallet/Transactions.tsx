@@ -192,7 +192,8 @@ const PendingTx: FC<{
  */
 export const Transactions: FC<{}> = () => {
   const pending = useOrderedCurrentTransactions();
-  const mUSD = useMUSD();
+  const musdQuery = useMUSD();
+  const mUSD = musdQuery.data?.masset || null;
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   return (

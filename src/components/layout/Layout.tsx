@@ -22,6 +22,7 @@ export const Container = styled.div<{}>`
     100vh - 80px
   ); // The sticky header won't always be 80px, so this is less than ideal
   align-items: flex-start;
+  padding-top: 40px;
 
   ${centredLayout}
 `;
@@ -29,7 +30,7 @@ export const Container = styled.div<{}>`
 const Main = styled.main`
   width: 100%;
   flex: 1;
-  padding: ${({theme}) => `80px ${theme.spacing.l} ${theme.spacing.l}`};
+  padding: ${({ theme }) => theme.spacing.s};
 `;
 
 const GlobalStyle = createGlobalStyle<WalletExpanded>`
@@ -64,6 +65,7 @@ const StickyHeader = styled.div<{ inverted: boolean }>`
   box-shadow: ${({ inverted, theme }) =>
       inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
     0 0 12px;
+  z-index: 1;
 `;
 
 const HeaderGroup: FC<{ walletExpanded: boolean }> = ({ walletExpanded }) => (

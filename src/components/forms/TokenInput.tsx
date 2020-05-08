@@ -27,14 +27,15 @@ interface TokenOptionProps {
   onClick?(address: string): void;
 }
 
-const Container = styled.div<Pick<Props, 'error'>>`
+const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
   cursor: pointer;
   background: ${({ error, theme }) =>
-    error ? theme.color.redTransparent : theme.color.white};
+    error ? theme.color.redTransparenter : theme.color.white};
   outline: 0;
   border: 1px
     ${({ theme, error }) =>
-      error ? theme.color.red : theme.color.blackTransparent}
+      error ? theme.color.redTransparent : theme.color.blackTransparent}
     solid;
   border-radius: 3px;
   color: ${({ theme }) => theme.color.black};
@@ -53,6 +54,7 @@ const RelativeContainer = styled.div`
 const OptionsContainer = styled.div<{ open: boolean }>`
   display: ${({ open }) => (open ? 'block' : 'none')};
   position: absolute;
+  z-index: 1;
 
   // Offset parent border, even with box-sizing: border-box
   top: -1px;
@@ -183,7 +185,12 @@ export const TokenInput: FC<Props> = ({
   );
 
   return (
-    <Container onClick={handleClick} ref={container} error={error}>
+    <Container
+      onClick={handleClick}
+      ref={container}
+      error={error}
+      disabled={disabled}
+    >
       {selectedToken ? (
         <Option address={selectedToken.address} symbol={selectedToken.symbol} />
       ) : (

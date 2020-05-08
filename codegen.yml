@@ -10,6 +10,7 @@ generates:
       withHooks: true
       scalars:
         BigDecimal: string
+        BigInt: string
     plugins:
       - 'fragment-matcher'
       - 'typescript'

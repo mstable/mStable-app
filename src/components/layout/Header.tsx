@@ -26,10 +26,6 @@ const Logo = styled.div<{ active: boolean; inverted?: boolean }>`
       fill: ${({ theme, inverted }) =>
         inverted ? theme.color.white : theme.color.black};
     }
-
-    #line {
-      display: ${({ active }) => (active ? 'block' : 'none')};
-    }
   }
 `;
 
@@ -73,7 +69,7 @@ const Content = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  padding: 0 ${({ theme }) => theme.spacing.l};
+  padding: 0 ${({ theme }) => theme.spacing.s};
   height: 80px;
 
   @media (min-width: ${ViewportWidth.m}) {

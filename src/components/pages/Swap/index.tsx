@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
-import { formatUnits, parseUnits } from 'ethers/utils';
+import { bigNumberify, formatUnits, parseUnits } from 'ethers/utils';
 import { A } from 'hookrouter';
 import { ContractNames, SendTxManifest } from '../../../types';
 import { useKnownAddress } from '../../../context/KnownAddressProvider';
@@ -355,7 +355,7 @@ export const Swap: FC<{}> = () => {
 
   // Set fee rate (should just happen once)
   useEffect(() => {
-    setFeeRate(feeRate);
+    if (feeRate) setFeeRate(bigNumberify(feeRate));
   }, [feeRate, setFeeRate]);
 
   /**
@@ -449,8 +449,8 @@ export const Swap: FC<{}> = () => {
 
   return (
     <Form error={formError} onSubmit={handleSubmit}>
-      <H3 borderTop>Send</H3>
       <FormRow>
+        <H3>Send</H3>
         <TokenAmountInput
           amountValue={input.formValue}
           tokenAddresses={allTokenAddresses}
@@ -471,8 +471,8 @@ export const Swap: FC<{}> = () => {
       >
         <ArrowsSVG />
       </SwapDirectionButton>
-      <H3 borderTop>Receive</H3>
       <FormRow>
+        <H3>Receive</H3>
         <TokenAmountInput
           amountValue={output.formValue}
           tokenAddresses={allTokenAddresses}
@@ -484,7 +484,7 @@ export const Swap: FC<{}> = () => {
           error={outputError}
         />
       </FormRow>
-      <FormRow>
+      <div>
         <SubmitButton
           type="submit"
           size={Size.l}
@@ -514,7 +514,9 @@ export const Swap: FC<{}> = () => {
               {feeAmountSimple ? (
                 <>
                   <P size={1}>
-                    This includes a redemption fee of {feeAmountSimple} mUSD.
+                    This includes a redemption fee of{' '}
+                    <CountUp end={parseFloat(feeAmountSimple)} suffix=" mUSD" />
+                    .
                   </P>
                   <P size={1}>
                     Read more about the mStable redemption fee{' '}
@@ -528,7 +530,7 @@ export const Swap: FC<{}> = () => {
             </>
           </TransactionDetailsDropdown>
         ) : null}
-      </FormRow>
+      </div>
     </Form>
   );
 };
