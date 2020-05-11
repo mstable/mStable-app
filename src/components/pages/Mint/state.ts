@@ -54,16 +54,16 @@ const calcOptimalBassetQuantitiesForMint = ({
   bassets,
   basket,
 }: State): Amount[] => {
-  const enabledTargetWeightsTotal: BigNumber = bassets.reduce(
+  const enabledMaxWeightsTotal: BigNumber = bassets.reduce(
     (_total, { address, enabled }) => {
       if (!enabled) return _total;
 
       // TODO later (awaiting subgraph) - use maxWeight
-      const { targetWeight } =
+      const { maxWeight } =
         (basket as NonNullable<typeof basket>).bassets.find(
           b => b.token.address === address,
         ) || {};
-      return _total.add(targetWeight as string);
+      return _total.add(maxWeight as string);
     },
     new BigNumber(0),
   );
@@ -74,7 +74,7 @@ const calcOptimalBassetQuantitiesForMint = ({
     }
 
     const {
-      targetWeight,
+      maxWeight,
       ratio,
       token: { decimals },
     } = basket?.bassets.find(b => b.token.address === address) as NonNullable<
@@ -82,7 +82,7 @@ const calcOptimalBassetQuantitiesForMint = ({
     >['bassets'][0];
 
     // TODO later (awaiting subgraph) - use maxWeight
-    const weight = parseUnits(targetWeight).div(enabledTargetWeightsTotal);
+    const weight = parseUnits(maxWeight).div(enabledMaxWeightsTotal);
 
     const relativeUnitsToMint = masset.amount.exact?.mul(weight);
     const formattedUnits = formatUnits(relativeUnitsToMint || '0', 18);
@@ -122,14 +122,14 @@ const reducer: Reducer<State, Action> = (state, action) => {
             {
               token: { address, decimals, totalSupply },
               vaultBalance,
-              targetWeight,
+              maxWeight,
               status,
               ratio,
             },
             index,
           ) => {
             const maxWeightInUnits = parseUnits(totalSupply, decimals)
-              .mul(targetWeight)
+              .mul(maxWeight)
               .div((1e18).toString());
             const currentVaultUnits = parseUnits(vaultBalance, decimals)
               .mul(ratio)

@@ -1,8 +1,9 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
-import { bigNumberify, formatUnits, parseUnits } from 'ethers/utils';
+import { BigNumber, bigNumberify, formatUnits, parseUnits } from 'ethers/utils';
 import { A } from 'hookrouter';
-import { ContractNames, SendTxManifest } from '../../../types';
+import { useWallet } from 'use-wallet';
+import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
 import { useKnownAddress } from '../../../context/KnownAddressProvider';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
@@ -10,7 +11,7 @@ import { useTokenWithBalance } from '../../../context/TokensProvider';
 import { useMassetQuery } from '../../../graphql/generated';
 import { ForgeValidatorFactory } from '../../../typechain/ForgeValidatorFactory';
 import { Erc20DetailedFactory } from '../../../typechain/Erc20DetailedFactory';
-import { MusdFactory } from '../../../typechain/MusdFactory';
+import { MassetFactory } from '../../../typechain/MassetFactory';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
@@ -89,9 +90,6 @@ const SwapDirectionButton = styled.div`
   }
 `;
 
-// Unit based deviation allowance, where 1 == 1e18
-const grace = '1000000000000000000000000';
-
 export const Swap: FC<{}> = () => {
   const [state, dispatch] = useSwapState();
   const {
@@ -145,6 +143,7 @@ export const Swap: FC<{}> = () => {
    */
   const signer = useSignerContext();
   const sendTransaction = useSendTransaction();
+  const { account } = useWallet();
   const mUSDAddress = useKnownAddress(ContractNames.mUSD);
   const mUSDForgeValidatorAddress = useKnownAddress(
     ContractNames.mUSDForgeValidator,
@@ -159,7 +158,7 @@ export const Swap: FC<{}> = () => {
   );
   const mUSDContract = useMemo(
     () =>
-      signer && mUSDAddress ? MusdFactory.connect(mUSDAddress, signer) : null,
+      signer && mUSDAddress ? MassetFactory.connect(mUSDAddress, signer) : null,
     [signer, mUSDAddress],
   );
   const inputTokenContract = useMemo(
@@ -194,14 +193,14 @@ export const Swap: FC<{}> = () => {
           isTransferFeeCharged,
           vaultBalance,
           ratio,
-          targetWeight,
+          maxWeight,
           token: { decimals },
         }) => ({
           addr,
           isTransferFeeCharged,
           vaultBalance: parseUnits(vaultBalance, decimals),
           ratio,
-          targetWeight,
+          maxWeight,
           // TODO map basset status enum from string
           status: '1',
         }),
@@ -303,6 +302,7 @@ export const Swap: FC<{}> = () => {
       event.preventDefault();
 
       if (
+        account &&
         error === null &&
         mUSDContract &&
         input.amount.exact &&
@@ -310,21 +310,27 @@ export const Swap: FC<{}> = () => {
         output.token.address &&
         output.amount.exact
       ) {
-        if (transactionType === TransactionType.Mint) {
-          const manifest: SendTxManifest<0, 'mint'> = {
-            iface: mUSDContract,
-            fn: 'mint',
-            args: [input.token.address, input.amount.exact],
-          };
-          sendTransaction(manifest);
-        } else if (transactionType === TransactionType.Redeem) {
-          const manifest: SendTxManifest<0, 'redeem'> = {
-            iface: mUSDContract,
-            fn: 'redeem',
-            args: [output.token.address, output.amount.exact],
-          };
-          sendTransaction(manifest);
-        }
+        // TODO rename, this is rather direction than mint/redeem
+        const args: [string, string, BigNumber, string] =
+          transactionType === TransactionType.Mint
+            ? [
+                input.token.address,
+                output.token.address,
+                input.amount.exact,
+                account,
+              ]
+            : [
+                output.token.address,
+                input.token.address,
+                input.amount.exact,
+                account,
+              ];
+        const manifest: SendTxManifest<Interfaces.Masset, 'swap'> = {
+          iface: mUSDContract,
+          fn: 'swap',
+          args,
+        };
+        sendTransaction(manifest);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -415,34 +421,42 @@ export const Swap: FC<{}> = () => {
       mUSD.token.decimals,
     );
 
-    const validatePromise =
-      transactionType === TransactionType.Mint
-        ? forgeValidatorContract.validateMint(
-            totalSupply,
-            grace,
-            allBassets.find(b => b.addr === inputAddress) as NonNullable<
-              Parameters<typeof forgeValidatorContract['validateMint']>[2]
-            >,
-            input.amount.exact,
-          )
-        : forgeValidatorContract.validateRedemption(
-            mUSD.basket.failed,
-            totalSupply,
-            allBassets,
-            grace,
-            allBassets.findIndex(b => b.addr === outputAddress),
-            output.amount.exact,
-          );
-
-    validatePromise
-      .then(({ '0': isValid, '1': reason }) => {
-        setError(isValid ? null : mapForgeValidatorResponseToReason(reason));
-      })
-      .catch(error_ => {
-        // eslint-disable-next-line no-console
-        console.error(error_);
-        setError(Reasons.ValidationFailed);
-      });
+    // TODO typechain bug: return values parsed differently
+    if (transactionType === TransactionType.Mint) {
+      forgeValidatorContract
+        .validateMint(
+          totalSupply,
+          allBassets.find(b => b.addr === inputAddress) as NonNullable<
+            Parameters<typeof forgeValidatorContract['validateMint']>[1]
+          >,
+          input.amount.exact,
+        )
+        .then(({ isValid, reason }) => {
+          setError(isValid ? null : mapForgeValidatorResponseToReason(reason));
+        })
+        .catch(error_ => {
+          // eslint-disable-next-line no-console
+          console.error(error_);
+          setError(Reasons.ValidationFailed);
+        });
+    } else {
+      forgeValidatorContract
+        .validateRedemption(
+          mUSD.basket.failed,
+          totalSupply,
+          allBassets,
+          [allBassets.findIndex(b => b.addr === outputAddress) as number],
+          [output.amount.exact],
+        )
+        .then(({ '0': isValid, '1': reason }) => {
+          setError(isValid ? null : mapForgeValidatorResponseToReason(reason));
+        })
+        .catch(error_ => {
+          // eslint-disable-next-line no-console
+          console.error(error_);
+          setError(Reasons.ValidationFailed);
+        });
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input, output, touched, needsUnlock]);
