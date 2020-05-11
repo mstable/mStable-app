@@ -55,3 +55,8 @@ export const formatDecimal = (
   const value = exactValue.toString();
   return `${value.slice(0, value.length - decimals)}.${value.slice(-decimals)}`;
 };
+
+export const humanizeList = (list: string[]): string =>
+  list.length < 3
+    ? list.join(' and ')
+    : `${list.slice(0, -1).join(', ')}, and ${list[list.length - 1]}`;

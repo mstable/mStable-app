@@ -22,7 +22,7 @@ const Logo = styled.div<{ active: boolean; inverted?: boolean }>`
     top: 4px;
     position: relative;
 
-    path {
+    path, rect {
       fill: ${({ theme, inverted }) =>
         inverted ? theme.color.white : theme.color.black};
     }

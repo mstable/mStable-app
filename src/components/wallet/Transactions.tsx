@@ -10,7 +10,8 @@ import { formatExactAmount } from '../../web3/amounts';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { List, ListItem } from '../core/List';
-import { EMOJIS } from '../../web3/constants';
+import { EMOJIS, RATIO_SCALE } from '../../web3/constants';
+import { humanizeList } from '../../web3/strings';
 
 const Container = styled.div``;
 
@@ -58,7 +59,7 @@ const getPendingTxDescription = (
   if (!mUSD) return Loading;
 
   const {
-    basket: { bassets },
+    basket: { bassets: bassetsData },
   } = mUSD;
 
   if (tx.response.to === mUSDSavingsAddress) {
@@ -68,7 +69,7 @@ const getPendingTxDescription = (
         return (
           <>
             You <span>{tx.status ? 'withdrew' : 'are withdrawing'}</span>{' '}
-            {formatExactAmount(amount, mUSD.token.decimals)} $
+            {formatExactAmount(amount, mUSD.token.decimals)}
             {mUSD.token.symbol}
           </>
         );
@@ -93,36 +94,72 @@ const getPendingTxDescription = (
         return (
           <>
             You <span>{tx.status ? 'approved' : 'are approving'}</span> the mUSD
-            Savings Contract to transfer ${mUSD.token.symbol}
+            Savings Contract to transfer {mUSD.token.symbol}
           </>
         );
       }
 
-      const bAsset = bassets.find(b => b.token.address === tx.response.to);
-      if (!bAsset) return Loading;
+      const basset = bassetsData.find(b => b.token.address === tx.response.to);
+      if (!basset) return Loading;
 
       return (
         <>
           You <span>{tx.status ? 'approved' : 'are approving'}</span>{' '}
-          {mUSD.token.symbol} to transfer {bAsset.token.symbol}
+          {mUSD.token.symbol} to transfer {basset.token.symbol}
         </>
       );
     }
     case 'mint': {
       const [bassetAddress, bassetQ] = tx.args as [string, BigNumber];
 
-      const bAsset = bassets.find(b => b.token.address === bassetAddress);
-      if (!bAsset) return Loading;
+      const basset = bassetsData.find(b => b.token.address === bassetAddress);
+      if (!basset) return Loading;
 
       return (
         <>
           You <span>{tx.status ? 'minted' : 'are minting'}</span>{' '}
-          {formatExactAmount(bassetQ, bAsset.token.decimals, mUSD.token.symbol)}{' '}
+          {formatExactAmount(bassetQ, basset.token.decimals, mUSD.token.symbol)}{' '}
           with{' '}
           {formatExactAmount(
             bassetQ,
-            bAsset.token.decimals,
-            bAsset.token.symbol,
+            basset.token.decimals,
+            basset.token.symbol,
+          )}
+        </>
+      );
+    }
+    case 'mintMulti': {
+      const [bassetAddresses, bassetQs] = tx.args as [
+        string[],
+        BigNumber[],
+        string,
+      ];
+
+      const bassets = bassetAddresses.map((address, index) => ({
+        ...(bassetsData.find(b => b.token.address === address) as NonNullable<
+          typeof bassetsData
+        >[0]),
+        quantity: bassetQs[index],
+      }));
+
+      if (bassets.length === 0) return Loading;
+
+      const massetQ: BigNumber = bassets.reduce(
+        (_total, { quantity, ratio }) =>
+          _total.add(quantity.mul(ratio).div(RATIO_SCALE)),
+        new BigNumber(0),
+      );
+
+      return (
+        <>
+          You <span>{tx.status ? 'minted' : 'are minting'}</span>{' '}
+          {formatExactAmount(massetQ, mUSD.token.decimals, mUSD.token.symbol)}{' '}
+          with{' '}
+          {humanizeList(
+            bassets.map(
+              ({ quantity, token: { decimals, symbol } }) =>
+                formatExactAmount(quantity, decimals, symbol) as string,
+            ),
           )}
         </>
       );
@@ -130,19 +167,19 @@ const getPendingTxDescription = (
     case 'redeem': {
       const [bassetAddress, bassetQ] = tx.args as [string, BigNumber];
 
-      const bAsset = bassets.find(b => b.token.address === bassetAddress);
-      if (!bAsset) return Loading;
+      const basset = bassetsData.find(b => b.token.address === bassetAddress);
+      if (!basset) return Loading;
 
       return (
         <>
           You <span>{tx.status ? 'redeemed' : 'are redeeming'}</span>{' '}
           {formatExactAmount(
             bassetQ,
-            bAsset.token.decimals,
-            bAsset.token.symbol,
+            basset.token.decimals,
+            basset.token.symbol,
           )}{' '}
           with{' '}
-          {formatExactAmount(bassetQ, bAsset.token.decimals, mUSD.token.symbol)}
+          {formatExactAmount(bassetQ, mUSD.token.decimals, mUSD.token.symbol)}
         </>
       );
     }

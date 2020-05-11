@@ -8,7 +8,7 @@ import {
   useCoreTokensLazyQuery,
 } from '../graphql/generated';
 import { ContractNames } from '../types';
-import { MusdFactory } from '../typechain/MusdFactory';
+import { MassetFactory } from '../typechain/MassetFactory';
 import { useSignerContext } from '../context/SignerProvider';
 
 type Keys = keyof NonNullable<CoreTokensQueryResult['data']>;
@@ -46,7 +46,7 @@ export const KnownAddressUpdater = (): null => {
 
   useEffect(() => {
     if (signer && mUSDAddress && !mUSDForgeValidatorAddress) {
-      const mUSD = MusdFactory.connect(mUSDAddress, signer);
+      const mUSD = MassetFactory.connect(mUSDAddress, signer);
       mUSD.forgeValidator().then(address => {
         set(ContractNames.mUSDForgeValidator, address);
       });

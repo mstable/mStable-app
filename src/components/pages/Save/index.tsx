@@ -26,7 +26,7 @@ import { FontSize, Size } from '../../../theme';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { SavingsContractFactory } from '../../../typechain/SavingsContractFactory';
-import { MusdFactory } from '../../../typechain/MusdFactory';
+import { MassetFactory } from '../../../typechain/MassetFactory';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import {
   useApy,
@@ -139,7 +139,7 @@ export const Save: FC<{}> = () => {
 
   const mUSDContract = useMemo(
     () =>
-      signer && mUSDAddress ? MusdFactory.connect(mUSDAddress, signer) : null,
+      signer && mUSDAddress ? MassetFactory.connect(mUSDAddress, signer) : null,
     [signer, mUSDAddress],
   );
 

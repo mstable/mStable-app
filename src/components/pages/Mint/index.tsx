@@ -16,7 +16,7 @@ import {
   useKnownAddress,
   useMUSD,
 } from '../../../context/KnownAddressProvider';
-import { MusdFactory } from '../../../typechain/MusdFactory';
+import { MassetFactory } from '../../../typechain/MassetFactory';
 import { Erc20Factory } from '../../../typechain/Erc20Factory';
 import { Size } from '../../../theme';
 import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
@@ -94,7 +94,7 @@ export const Mint: FC<{}> = () => {
 
   const mUSDContract = useMemo(
     () =>
-      signer && mUSDAddress ? MusdFactory.connect(mUSDAddress, signer) : null,
+      signer && mUSDAddress ? MassetFactory.connect(mUSDAddress, signer) : null,
     [signer, mUSDAddress],
   );
 

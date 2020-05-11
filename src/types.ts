@@ -2,10 +2,9 @@ import { FC } from 'react';
 import { TransactionResponse, Log } from 'ethers/providers';
 import { BigNumber, LogDescription } from 'ethers/utils';
 import { Connectors } from 'use-wallet';
-
 import { Ierc20 } from './typechain/Ierc20.d';
-import { IMasset } from './typechain/IMasset.d';
 import { ISavingsContract } from './typechain/ISavingsContract.d';
+import { IMasset } from './typechain/IMasset.d';
 
 export interface Transaction {
   hash: string;

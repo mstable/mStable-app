@@ -5,12 +5,12 @@ import { useTransactionsDispatch } from '../context/TransactionsProvider';
 import { useKnownAddress } from '../context/KnownAddressProvider';
 import { useSignerContext } from '../context/SignerProvider';
 import { getHistoricTransactions } from '../web3/getHistoricTransactions';
-import { MusdFactory } from '../typechain/MusdFactory';
+import { MassetFactory } from '../typechain/MassetFactory';
 import { ContractNames } from '../types';
 import { SavingsContractFactory } from '../typechain/SavingsContractFactory';
 
 // TODO replace: when mUSD was deployed on Ropsten
-const fromBlock = process.env.REACT_APP_CHAIN_ID === '3' ? 7669838 : 0;
+const fromBlock = process.env.REACT_APP_CHAIN_ID === '3' ? 7883370 : 0;
 
 export const ContractsUpdater = (): null => {
   const { account } = useWallet();
@@ -20,7 +20,7 @@ export const ContractsUpdater = (): null => {
   const mUSDAddress = useKnownAddress(ContractNames.mUSD);
   const mUSD = useMemo(
     () =>
-      mUSDAddress && signer ? MusdFactory.connect(mUSDAddress, signer) : null,
+      mUSDAddress && signer ? MassetFactory.connect(mUSDAddress, signer) : null,
     [mUSDAddress, signer],
   );
 
@@ -45,12 +45,20 @@ export const ContractsUpdater = (): null => {
     if (mUSD && account && addHistoric) {
       const indexedAccount = hexZeroPad(account.toLowerCase(), 32);
 
-      const { Minted, Redeemed, PaidFee } = mUSD.interface.events;
+      const {
+        Minted,
+        Swapped,
+        Redeemed,
+        PaidFee,
+        MintedMulti,
+      } = mUSD.interface.events;
 
       const mUSDTopics: (string | null)[][] = [
         [Minted.topic, indexedAccount],
+        [MintedMulti.topic, indexedAccount],
         [PaidFee.topic],
         [Redeemed.topic, indexedAccount],
+        [Swapped.topic, indexedAccount],
       ];
 
       getHistoricTransactions(mUSD, account, mUSDTopics, { fromBlock }).then(
