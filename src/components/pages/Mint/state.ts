@@ -128,7 +128,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
             },
             index,
           ) => {
-            const maxWeightInUnits = parseUnits(totalSupply, decimals)
+            const maxWeightInUnits = parseUnits(
+              totalSupply,
+              (masset as NonNullable<typeof masset>).decimals as number,
+            )
               .mul(maxWeight)
               .div((1e18).toString());
             const currentVaultUnits = parseUnits(vaultBalance, decimals)

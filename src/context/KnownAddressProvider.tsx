@@ -12,6 +12,7 @@ import { ContractNames } from '../types';
 import {
   SavingsContractQuery,
   useMassetQuery,
+  useMassetSubSubscription,
   useSavingsContractQuery,
 } from '../graphql/generated';
 import { useToken } from './TokensProvider';
@@ -117,9 +118,17 @@ export const useKnownAddress = (
   return state[contractName];
 };
 
-export const useMUSD = (): ReturnType<typeof useMassetQuery> => {
+export const useMusdQuery = (): ReturnType<typeof useMassetQuery> => {
   const address = useKnownAddress(ContractNames.mUSD);
   return useMassetQuery({
+    variables: { id: address as string },
+    skip: !address,
+  });
+};
+
+export const useMusdSubscription = (): ReturnType<typeof useMassetSubSubscription> => {
+  const address = useKnownAddress(ContractNames.mUSD);
+  return useMassetSubSubscription({
     variables: { id: address as string },
     skip: !address,
   });

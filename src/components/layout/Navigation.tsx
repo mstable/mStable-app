@@ -4,7 +4,6 @@ import { A, getWorkingPath } from 'hookrouter';
 import { FontSize, ViewportWidth } from '../../theme';
 
 interface NavItem {
-  disabled?: boolean;
   title: string;
   path?: string;
 }
@@ -29,7 +28,6 @@ const List = styled.ul`
 `;
 
 const Item = styled.li<{
-  disabled?: boolean;
   active: boolean;
   inverted: boolean;
 }>`
@@ -51,7 +49,6 @@ const Item = styled.li<{
     white-space: nowrap;
     color: ${({ theme, inverted }) =>
       inverted ? theme.color.white : theme.color.black};
-    opacity: ${({ disabled }) => (disabled ? 0.4 : 1)};
   }
 
   span {
@@ -75,7 +72,7 @@ const navItems: NavItem[] = [
   { title: 'Mint', path: '/mint' },
   { title: 'Swap', path: '/swap' },
   { title: 'Save', path: '/save' },
-  // { title: 'Exit', path: '/exit', disabled: true },
+  { title: 'Exit', path: '/exit' },
 ];
 
 /**
@@ -98,18 +95,9 @@ export const Navigation: FC<{ walletExpanded: boolean }> = ({
   return (
     <Container>
       <List>
-        {items.map(({ title, path, disabled, active }) => (
-          <Item
-            key={title}
-            disabled={disabled}
-            active={active}
-            inverted={walletExpanded}
-          >
-            {disabled || !path ? (
-              <span>{title}</span>
-            ) : (
-              <A href={path}>{title}</A>
-            )}
+        {items.map(({ title, path, active }) => (
+          <Item key={title} active={active} inverted={walletExpanded}>
+            {path ? <A href={path}>{title}</A> : <span>{title}</span>}
           </Item>
         ))}
       </List>

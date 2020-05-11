@@ -17,27 +17,7 @@ query CoreTokens {
 
 query Masset($id: ID!) {
     masset(id: $id) {
-        id
-        token {
-            ...TokenDetails
-        }
-        feeRate
-        basket {
-            failed
-            collateralisationRatio
-            undergoingRecol
-            bassets {
-                id
-                vaultBalance
-                isTransferFeeCharged
-                ratio
-                status
-                maxWeight
-                token {
-                    ...TokenDetails
-                }
-            }
-        }
+        ...MassetAll
     }
 }
 

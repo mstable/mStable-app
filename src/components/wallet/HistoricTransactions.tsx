@@ -4,7 +4,7 @@ import { useOrderedHistoricTransactions } from '../../context/TransactionsProvid
 import { ContractNames, HistoricTransaction } from '../../types';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { MassetQuery } from '../../graphql/generated';
-import { useKnownAddress, useMUSD } from '../../context/KnownAddressProvider';
+import { useKnownAddress, useMusdQuery } from '../../context/KnownAddressProvider';
 import { formatExactAmount } from '../../web3/amounts';
 import { EMOJIS } from '../../web3/constants';
 import { List, ListItem } from '../core/List';
@@ -204,7 +204,7 @@ const HistoricTx: FC<{
 
 export const HistoricTransactions: FC<{}> = () => {
   const historic = useOrderedHistoricTransactions();
-  const musdQuery = useMUSD();
+  const musdQuery = useMusdQuery();
   const mUSD = musdQuery.data?.masset || null;
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 

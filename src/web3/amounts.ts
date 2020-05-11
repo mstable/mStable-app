@@ -1,4 +1,4 @@
-import { BigNumber, commify, parseUnits, formatUnits } from 'ethers/utils';
+import { BigNumber, parseUnits, formatUnits } from 'ethers/utils';
 import { Amount } from '../types';
 
 export const formatSimpleAmount = (
@@ -9,9 +9,7 @@ export const formatSimpleAmount = (
     // Use two padded decimal places
     const [intAmount, decimals = ''] = simpleAmount.toString().split('.');
     const paddedDecimals = decimals.slice(0, 2).padEnd(2, '0');
-    return `${commify(`${intAmount}.${paddedDecimals}`)}${
-      symbol ? ` ${symbol}` : ''
-    }`;
+    return `${intAmount}.${paddedDecimals}${symbol ? ` ${symbol}` : ''}`;
   }
   return null;
 };

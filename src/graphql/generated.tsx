@@ -28,7 +28,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  Bytes: any;
+  Bytes: string;
   BigDecimal: string;
   BigInt: string;
 };
@@ -1096,6 +1096,17 @@ export enum Token_OrderBy {
 
 export type TokenDetailsFragment = Pick<Token, 'id' | 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
 
+export type MassetAllFragment = (
+  Pick<Masset, 'id' | 'feeRate'>
+  & { token: TokenDetailsFragment, basket: (
+    Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
+    & { bassets: Array<(
+      Pick<Basset, 'id' | 'vaultBalance' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
+      & { token: TokenDetailsFragment }
+    )> }
+  ) }
+);
+
 export type CoreTokensQueryVariables = {};
 
 
@@ -1106,16 +1117,7 @@ export type MassetQueryVariables = {
 };
 
 
-export type MassetQuery = { masset?: Maybe<(
-    Pick<Masset, 'id' | 'feeRate'>
-    & { token: TokenDetailsFragment, basket: (
-      Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
-      & { bassets: Array<(
-        Pick<Basset, 'id' | 'vaultBalance' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
-        & { token: TokenDetailsFragment }
-      )> }
-    ) }
-  )> };
+export type MassetQuery = { masset?: Maybe<MassetAllFragment> };
 
 export type Erc20TokensQueryVariables = {
   addresses: Array<Scalars['Bytes']>;
@@ -1160,6 +1162,13 @@ export type TokenSubSubscriptionVariables = {
 
 export type TokenSubSubscription = { token?: Maybe<Pick<Token, 'id' | 'symbol' | 'address'>> };
 
+export type MassetSubSubscriptionVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type MassetSubSubscription = { masset?: Maybe<MassetAllFragment> };
+
 export type CreditBalancesSubscriptionVariables = {
   account: Scalars['ID'];
 };
@@ -1181,6 +1190,31 @@ export const TokenDetailsFragmentDoc = gql`
   totalSupply
 }
     `;
+export const MassetAllFragmentDoc = gql`
+    fragment MassetAll on Masset {
+  id
+  token {
+    ...TokenDetails
+  }
+  feeRate
+  basket {
+    failed
+    collateralisationRatio
+    undergoingRecol
+    bassets {
+      id
+      vaultBalance
+      isTransferFeeCharged
+      ratio
+      status
+      maxWeight
+      token {
+        ...TokenDetails
+      }
+    }
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
 export const CoreTokensDocument = gql`
     query CoreTokens {
   mUSD: tokens(where: {symbol: "mUSD"}) {
@@ -1219,30 +1253,10 @@ export type CoreTokensQueryResult = ApolloReactCommon.QueryResult<CoreTokensQuer
 export const MassetDocument = gql`
     query Masset($id: ID!) {
   masset(id: $id) {
-    id
-    token {
-      ...TokenDetails
-    }
-    feeRate
-    basket {
-      failed
-      collateralisationRatio
-      undergoingRecol
-      bassets {
-        id
-        vaultBalance
-        isTransferFeeCharged
-        ratio
-        status
-        maxWeight
-        token {
-          ...TokenDetails
-        }
-      }
-    }
+    ...MassetAll
   }
 }
-    ${TokenDetailsFragmentDoc}`;
+    ${MassetAllFragmentDoc}`;
 
 /**
  * __useMassetQuery__
@@ -1480,6 +1494,35 @@ export function useTokenSubSubscription(baseOptions?: ApolloReactHooks.Subscript
       }
 export type TokenSubSubscriptionHookResult = ReturnType<typeof useTokenSubSubscription>;
 export type TokenSubSubscriptionResult = ApolloReactCommon.SubscriptionResult<TokenSubSubscription>;
+export const MassetSubDocument = gql`
+    subscription MassetSub($id: ID!) {
+  masset(id: $id) {
+    ...MassetAll
+  }
+}
+    ${MassetAllFragmentDoc}`;
+
+/**
+ * __useMassetSubSubscription__
+ *
+ * To run a query within a React component, call `useMassetSubSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useMassetSubSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMassetSubSubscription({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useMassetSubSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<MassetSubSubscription, MassetSubSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<MassetSubSubscription, MassetSubSubscriptionVariables>(MassetSubDocument, baseOptions);
+      }
+export type MassetSubSubscriptionHookResult = ReturnType<typeof useMassetSubSubscription>;
+export type MassetSubSubscriptionResult = ApolloReactCommon.SubscriptionResult<MassetSubSubscription>;
 export const CreditBalancesDocument = gql`
     subscription CreditBalances($account: ID!) {
   account(id: $account) {
