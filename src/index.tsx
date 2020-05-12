@@ -8,18 +8,18 @@ import { Layout } from './components/layout/Layout';
 import { Home } from './components/pages/Home';
 import { Swap } from './components/pages/Swap';
 import { Mint } from './components/pages/Mint';
-import { Earn } from './components/pages/Earn';
 import { Save } from './components/pages/Save';
-import { About } from './components/pages/About';
+import { Exit } from './components/pages/Exit';
 import { NotFound } from './components/pages/NotFound';
+// import { Earn } from './components/pages/Earn';
 
 const routes = {
   '/': () => <Home />,
-  '/swap': () => <Swap />,
   '/mint': () => <Mint />,
-  '/earn': () => <Earn />,
   '/save': () => <Save />,
-  '/about': () => <About />,
+  '/swap': () => <Swap />,
+  '/exit': () => <Exit />,
+  // '/earn': () => <Earn />,
 };
 
 const Root: FC<{}> = () => {

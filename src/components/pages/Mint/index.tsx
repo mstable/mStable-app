@@ -14,7 +14,7 @@ import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import {
   useKnownAddress,
-  useMUSD,
+  useMusdSubscription,
 } from '../../../context/KnownAddressProvider';
 import { MassetFactory } from '../../../typechain/MassetFactory';
 import { Erc20Factory } from '../../../typechain/Erc20Factory';
@@ -26,23 +26,11 @@ import { AmountInput } from '../../forms/AmountInput';
 import { ToggleInput } from '../../forms/ToggleInput';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
 import { H3 } from '../../core/Typography';
+import { BassetsGrid } from '../../core/Bassets';
 import { BassetInput } from './BassetInput';
 import { Skeletons } from '../../core/Skeletons';
 import { Mode } from './types';
 import { useMintState } from './state';
-
-const BassetInputs = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: 1fr;
-  gap: 8px 8px;
-  overflow-x: auto;
-  padding-bottom: ${({ theme }) => theme.spacing.s};
-
-  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-`;
 
 const MintMode = styled.div`
   display: flex;
@@ -88,9 +76,9 @@ export const Mint: FC<{}> = () => {
   const sendTransaction = useSendTransaction();
 
   const mUSDAddress = useKnownAddress(ContractNames.mUSD);
-  const musdQuery = useMUSD();
-  const basket = musdQuery.data?.masset?.basket;
-  const musdToken = musdQuery.data?.masset?.token;
+  const musdSub = useMusdSubscription();
+  const basket = musdSub.data?.masset?.basket;
+  const musdToken = musdSub.data?.masset?.token;
 
   const mUSDContract = useMemo(
     () =>
@@ -219,8 +207,8 @@ export const Mint: FC<{}> = () => {
             <span>Mint with all stablecoins</span>
           </MintMode>
         </Header>
-        <BassetInputs>
-          {musdQuery.loading ? (
+        <BassetsGrid>
+          {musdSub.loading ? (
             <Skeletons skeletonCount={4} height={180} />
           ) : (
             bassets.map(basset => (
@@ -236,7 +224,7 @@ export const Mint: FC<{}> = () => {
               />
             ))
           )}
-        </BassetInputs>
+        </BassetsGrid>
       </FormRow>
       <FormRow>
         <H3>Receive</H3>

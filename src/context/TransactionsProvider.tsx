@@ -24,7 +24,7 @@ import {
 import { TransactionOverrides } from '../typechain/index.d';
 import { getTransactionStatus } from '../web3/transactions';
 import { MassetQuery } from '../graphql/generated';
-import { useKnownAddress, useMUSD } from './KnownAddressProvider';
+import { useKnownAddress, useMusdQuery } from './KnownAddressProvider';
 import { formatExactAmount } from '../web3/amounts';
 import { getEtherscanLink } from '../web3/strings';
 import { EMOJIS } from '../web3/constants';
@@ -259,7 +259,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   const addSuccessNotification = useAddSuccessNotification();
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
-  const musdQuery = useMUSD();
+  const musdQuery = useMusdQuery();
   const mUSD = musdQuery.data?.masset || null;
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 

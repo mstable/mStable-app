@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { BigNumber } from 'ethers/utils';
 import { useOrderedCurrentTransactions } from '../../context/TransactionsProvider';
-import { useKnownAddress, useMUSD } from '../../context/KnownAddressProvider';
+import { useKnownAddress, useMusdQuery } from '../../context/KnownAddressProvider';
 import { ContractNames, Transaction, TransactionStatus } from '../../types';
 import { MassetQuery } from '../../graphql/generated';
 import { getTransactionStatus } from '../../web3/transactions';
@@ -229,7 +229,7 @@ const PendingTx: FC<{
  */
 export const Transactions: FC<{}> = () => {
   const pending = useOrderedCurrentTransactions();
-  const musdQuery = useMUSD();
+  const musdQuery = useMusdQuery();
   const mUSD = musdQuery.data?.masset || null;
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 

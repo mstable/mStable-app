@@ -8,6 +8,12 @@ subscription TokenSub($id: ID!) {
   }
 }
 
+subscription MassetSub($id: ID!) {
+  masset(id: $id) {
+    ...MassetAll
+  }
+}
+
 subscription CreditBalances($account: ID!) {
   account(id: $account) {
     creditBalances {
@@ -17,7 +23,7 @@ subscription CreditBalances($account: ID!) {
 }
 
 subscription LatestExchangeRate {
-  exchangeRates(first: 1 orderDirection: desc orderBy: timestamp) {
+  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
     exchangeRate
     timestamp
   }

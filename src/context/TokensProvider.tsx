@@ -56,6 +56,8 @@ type Action =
       payload: Record<TokenAddress, BigNumber>;
     };
 
+export type TokenDetailsWithBalance = TokenDetailsFragment & State[keyof State];
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const context = createContext<[State, Dispatch]>([new Set(), {}] as any);
 
@@ -198,12 +200,27 @@ export const useToken = (token: TokenAddress | null): State[string] | null => {
   return state[token];
 };
 
+export const useTokenBalance = (
+  token: TokenAddress | null,
+): BigNumber | null => {
+  const { balance } = useToken(token) || { balance: null };
+  return balance || null;
+};
+
+
+export const useTokenAllowance = (
+  token: TokenAddress | null,
+): Allowance => {
+  const { allowance } = useToken(token) || { allowance: {} };
+  return allowance;
+};
+
 export const useTokenWithBalance = (
   token: TokenAddress | null,
-): Partial<TokenDetailsFragment & State[keyof State]> => {
+): TokenDetailsWithBalance => {
   const tokenFromState = useToken(token);
   const query = useErc20TokensQuery({
-    variables: { addresses: [token] },
+    variables: { addresses: [token as string] },
     skip: !token,
   });
   const tokenFromData = query.data?.tokens?.[0];
@@ -213,5 +230,5 @@ export const useTokenWithBalance = (
       ...tokenFromData,
     }),
     [tokenFromState, tokenFromData],
-  );
+  ) as TokenDetailsWithBalance;
 };

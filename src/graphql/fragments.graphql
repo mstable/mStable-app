@@ -7,3 +7,27 @@ fragment TokenDetails on Token {
     symbol
     totalSupply
 }
+
+fragment MassetAll on Masset {
+    id
+    token {
+        ...TokenDetails
+    }
+    feeRate
+    basket {
+        failed
+        collateralisationRatio
+        undergoingRecol
+        bassets {
+            id
+            vaultBalance
+            isTransferFeeCharged
+            ratio
+            status
+            maxWeight
+            token {
+                ...TokenDetails
+            }
+        }
+    }
+}
