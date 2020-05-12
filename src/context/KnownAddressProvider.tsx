@@ -145,7 +145,8 @@ export const useMUSDSavings = ():
   const {
     data: { savingsContracts: [fromData] = [] } = {},
   } = useSavingsContractQuery({
-    variables: { id: address || '' },
+    variables: { id: address as string },
+    skip: !address,
   });
 
   const { allowance } = useToken(address) || {};

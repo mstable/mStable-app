@@ -11,9 +11,8 @@ import { BassetOutput } from './BassetOutput';
 import { useExitContext } from './ExitProvider';
 import { formatExactAmount } from '../../../web3/amounts';
 import { Interfaces, SendTxManifest } from '../../../types';
-import { MassetFactory } from '../../../typechain/MassetFactory';
-import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
+import { useMusdContract } from '../../../context/ContractsProvider';
 
 export const ExitForm: FC<{}> = () => {
   const [
@@ -27,19 +26,12 @@ export const ExitForm: FC<{}> = () => {
     { setRedemptionAmount },
   ] = useExitContext();
 
-  const massetAddress = data?.masset?.token.address;
+  const massetAddress = data?.masset?.token.address || null;
 
-  const signer = useSignerContext();
   const { account } = useWallet();
   const sendTransaction = useSendTransaction();
 
-  const massetContract = useMemo(
-    () =>
-      signer && massetAddress
-        ? MassetFactory.connect(massetAddress, signer)
-        : null,
-    [signer, massetAddress],
-  );
+  const mUsdContract = useMusdContract();
 
   const touched = useRef<boolean>();
 
@@ -47,21 +39,16 @@ export const ExitForm: FC<{}> = () => {
     event => {
       event.preventDefault();
 
-      if (
-        account &&
-        massetContract &&
-        redemption.amount.exact &&
-        massetAddress
-      ) {
+      if (account && mUsdContract && redemption.amount.exact && massetAddress) {
         const manifest: SendTxManifest<Interfaces.Masset, 'redeemMasset'> = {
-          iface: massetContract,
+          iface: mUsdContract,
           args: [redemption.amount.exact, account],
           fn: 'redeemMasset',
         };
         sendTransaction(manifest);
       }
     },
-    [redemption, massetAddress, massetContract, account, sendTransaction],
+    [redemption, massetAddress, mUsdContract, account, sendTransaction],
   );
 
   const handleSetMax = useCallback(() => {

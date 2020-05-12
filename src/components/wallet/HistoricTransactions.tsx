@@ -1,13 +1,18 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
+import { BigNumber } from 'ethers/utils';
 import { useOrderedHistoricTransactions } from '../../context/TransactionsProvider';
 import { ContractNames, HistoricTransaction } from '../../types';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { MassetQuery } from '../../graphql/generated';
-import { useKnownAddress, useMusdQuery } from '../../context/KnownAddressProvider';
+import {
+  useKnownAddress,
+  useMusdQuery,
+} from '../../context/KnownAddressProvider';
 import { formatExactAmount } from '../../web3/amounts';
 import { EMOJIS } from '../../web3/constants';
 import { List, ListItem } from '../core/List';
+import { humanizeList } from '../../web3/strings';
 
 type FnName = 'mint' | 'redeem' | 'withdraw' | 'depositSavings';
 
@@ -102,27 +107,37 @@ const getHistoricTransactionDescription = (
 
   switch (fn) {
     case 'redeem': {
-      const [
-        {
-          values: { feeQuantity },
-        },
-        {
-          values: { mAssetQuantity, bAsset, bAssetQuantity },
-        },
-      ] = logs;
-
-      const bAssetToken = mUSD.basket.bassets.find(
-        b => b.id === bAsset.toLowerCase(),
+      const totalFee = logs.reduce(
+        (_totalFee, { values: { feeQuantity } }) =>
+          feeQuantity ? _totalFee.add(feeQuantity) : _totalFee,
+        new BigNumber(0),
       );
-      if (!bAssetToken) return LOADING;
+
+      const {
+        values: { mAssetQuantity, bAssets, bAssetQuantities },
+      } = logs[logs.length - 1];
+
+      const bassetTokens = bAssets
+        .map((address: string) =>
+          mUSD.basket.bassets.find(
+            b => b.token.address === address.toLowerCase(),
+          ),
+        )
+        .filter(Boolean);
+
+      if (bassetTokens.length !== bAssets.length) return LOADING;
 
       return (
         <>
           You <span>redeemed</span>{' '}
-          {formatExactAmount(
-            bAssetQuantity,
-            bAssetToken.token.decimals,
-            bAssetToken.token.symbol,
+          {humanizeList(
+            bAssets.map((address: string, index: number) =>
+              formatExactAmount(
+                bAssetQuantities[index],
+                bassetTokens[index].token.decimals,
+                bassetTokens[index].token.symbol,
+              ),
+            ),
           )}{' '}
           for{' '}
           {formatExactAmount(
@@ -131,12 +146,7 @@ const getHistoricTransactionDescription = (
             mUSD.token.symbol,
           )}{' '}
           (fee paid:{' '}
-          {formatExactAmount(
-            feeQuantity,
-            mUSD.token.decimals,
-            mUSD.token.symbol,
-          )}
-          )
+          {formatExactAmount(totalFee, mUSD.token.decimals, mUSD.token.symbol)})
         </>
       );
     }

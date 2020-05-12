@@ -70,8 +70,8 @@ const Item = styled.li<{
 
 const navItems: NavItem[] = [
   { title: 'Mint', path: '/mint' },
-  { title: 'Swap', path: '/swap' },
   { title: 'Save', path: '/save' },
+  { title: 'Swap', path: '/swap' },
   { title: 'Exit', path: '/exit' },
 ];
 

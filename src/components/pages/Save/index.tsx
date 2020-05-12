@@ -12,26 +12,24 @@ import { useWallet } from 'use-wallet';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Reasons, TransactionType, useSaveState } from './state';
-import {
-  useKnownAddress,
-  useMUSDSavings,
-} from '../../../context/KnownAddressProvider';
+import { useMUSDSavings } from '../../../context/KnownAddressProvider';
 import { useTokenWithBalance } from '../../../context/TokensProvider';
-import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
+import { Interfaces, SendTxManifest } from '../../../types';
 import { Button } from '../../core/Button';
 import { H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { FontSize, Size } from '../../../theme';
-import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
-import { SavingsContractFactory } from '../../../typechain/SavingsContractFactory';
-import { MassetFactory } from '../../../typechain/MassetFactory';
+import {
+  useMusdContract,
+  useSavingsContract,
+} from '../../../context/ContractsProvider';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import {
   useApy,
-  useSavingsBalance,
   useIncreasingNumber,
+  useSavingsBalance,
 } from '../../../web3/hooks';
 
 const mapReasonToMessage = (reason: Reasons): string => {
@@ -119,29 +117,16 @@ export const Save: FC<{}> = () => {
 
   const { account } = useWallet();
 
-  const signer = useSignerContext();
-
   const sendTransaction = useSendTransaction();
 
-  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
-  const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
+  const savingsContract = useSavingsContract();
+  const savingsContractAddress = savingsContract?.address || null;
 
-  const mUSD = useTokenWithBalance(mUSDAddress);
-  const mUSDSavings = useMUSDSavings();
+  const mUsdContract = useMusdContract();
+  const mUsdAddress = mUsdContract?.address || null;
 
-  const mUSDSavingsContract = useMemo(
-    () =>
-      signer && mUSDSavingsAddress
-        ? SavingsContractFactory.connect(mUSDSavingsAddress, signer)
-        : null,
-    [signer, mUSDSavingsAddress],
-  );
-
-  const mUSDContract = useMemo(
-    () =>
-      signer && mUSDAddress ? MassetFactory.connect(mUSDAddress, signer) : null,
-    [signer, mUSDAddress],
-  );
+  const mUsdToken = useTokenWithBalance(mUsdAddress);
+  const mUsdSavings = useMUSDSavings();
 
   const savingsBalance = useSavingsBalance(account);
   const savingsBalanceIncreasing = useIncreasingNumber(
@@ -160,8 +145,8 @@ export const Save: FC<{}> = () => {
   );
 
   const tokenAddresses = useMemo<string[]>(
-    () => (mUSDAddress ? [mUSDAddress] : []),
-    [mUSDAddress],
+    () => (mUsdAddress ? [mUsdAddress] : []),
+    [mUsdAddress],
   );
 
   const needsUnlock = useMemo<boolean>(
@@ -169,9 +154,9 @@ export const Save: FC<{}> = () => {
       !!(
         transactionType === TransactionType.Deposit &&
         inputAmount &&
-        mUSDSavings?.allowance?.lte(inputAmount)
+        mUsdSavings?.allowance?.lte(inputAmount)
       ),
-    [transactionType, inputAmount, mUSDSavings],
+    [transactionType, inputAmount, mUsdSavings],
   );
 
   // Set initial values and `touched` ref
@@ -184,10 +169,10 @@ export const Save: FC<{}> = () => {
     }
 
     // Set mUSD if the form wasn't touched
-    if (mUSD) {
-      setToken(mUSD as Required<typeof mUSD>);
+    if (mUsdToken) {
+      setToken(mUsdToken as Required<typeof mUsdToken>);
     }
-  }, [touched, inputAmount, setToken, mUSD]);
+  }, [touched, inputAmount, setToken, mUsdToken]);
 
   // Run validation
   useEffect(() => {
@@ -209,12 +194,12 @@ export const Save: FC<{}> = () => {
     }
 
     if (transactionType === TransactionType.Deposit) {
-      if (!mUSD.balance) {
+      if (!mUsdToken.balance) {
         setError(Reasons.FetchingData);
         return;
       }
 
-      if (inputAmount.gt(mUSD.balance)) {
+      if (inputAmount.gt(mUsdToken.balance)) {
         setError(Reasons.DepositAmountMustNotExceedTokenBalance);
         return;
       }
@@ -243,7 +228,7 @@ export const Save: FC<{}> = () => {
     setError,
     inputAmount,
     inputAddress,
-    mUSD.balance,
+    mUsdToken.balance,
     savingsBalance,
     transactionType,
     touched,
@@ -253,13 +238,13 @@ export const Save: FC<{}> = () => {
     event => {
       event.preventDefault();
 
-      if (!error && mUSDSavingsContract && inputAmount) {
+      if (!error && savingsContract && inputAmount) {
         if (transactionType === TransactionType.Deposit) {
           const manifest: SendTxManifest<
             Interfaces.SavingsContract,
             'depositSavings'
           > = {
-            iface: mUSDSavingsContract,
+            iface: savingsContract,
             args: [inputAmount],
             fn: 'depositSavings',
           };
@@ -269,7 +254,7 @@ export const Save: FC<{}> = () => {
             Interfaces.SavingsContract,
             'redeem'
           > = {
-            iface: mUSDSavingsContract,
+            iface: savingsContract,
             args: [inputAmount],
             fn: 'redeem',
           };
@@ -277,7 +262,7 @@ export const Save: FC<{}> = () => {
         }
       }
     },
-    [error, mUSDSavingsContract, inputAmount, transactionType, sendTransaction],
+    [error, savingsContract, inputAmount, transactionType, sendTransaction],
   );
 
   const handleChangeToken = useCallback<
@@ -302,27 +287,27 @@ export const Save: FC<{}> = () => {
     NonNullable<ComponentProps<typeof TokenAmountInput>['onSetMax']>
   >(() => {
     if (transactionType === TransactionType.Deposit) {
-      if (mUSD?.balance) {
-        setQuantity(formatUnits(mUSD.balance, mUSD.decimals));
+      if (mUsdToken?.balance) {
+        setQuantity(formatUnits(mUsdToken.balance, mUsdToken.decimals));
       }
     } else if (savingsBalance.simple) {
       setQuantity(savingsBalance.simple.toString());
     }
-  }, [mUSD, savingsBalance, setQuantity, transactionType]);
+  }, [mUsdToken, savingsBalance, setQuantity, transactionType]);
 
   const handleUnlock = useCallback<
     NonNullable<ComponentProps<typeof TokenAmountInput>['onUnlock']>
   >(() => {
     const manifest = {
-      iface: mUSDContract,
+      iface: mUsdContract,
       fn: 'approve',
       args: [
-        mUSDSavingsAddress,
-        parseUnits(mUSD.totalSupply as string, mUSD.decimals),
+        savingsContractAddress,
+        parseUnits(mUsdToken.totalSupply as string, mUsdToken.decimals),
       ],
     };
     sendTransaction(manifest);
-  }, [mUSD, mUSDSavingsAddress, sendTransaction, mUSDContract]);
+  }, [mUsdToken, savingsContractAddress, sendTransaction, mUsdContract]);
 
   const handleDepositButton = useCallback(() => {
     setTransactionType(TransactionType.Deposit);

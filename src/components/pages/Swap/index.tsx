@@ -1,85 +1,28 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import styled from 'styled-components';
-import { BigNumber, bigNumberify, formatUnits, parseUnits } from 'ethers/utils';
-import { A } from 'hookrouter';
+import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { useWallet } from 'use-wallet';
-import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
-import { useKnownAddress } from '../../../context/KnownAddressProvider';
-import { useSignerContext } from '../../../context/SignerProvider';
+import { A } from 'hookrouter';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { useTokenWithBalance } from '../../../context/TokensProvider';
-import { useMassetQuery } from '../../../graphql/generated';
-import { ForgeValidatorFactory } from '../../../typechain/ForgeValidatorFactory';
-import { Erc20DetailedFactory } from '../../../typechain/Erc20DetailedFactory';
-import { MassetFactory } from '../../../typechain/MassetFactory';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
 import { H3, P } from '../../core/Typography';
 import { ReactComponent as ArrowsSVG } from '../arrows.svg';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
-import { Fields, Reasons, TransactionType, useSwapState } from './state';
+import { Fields, Mode } from './types';
 import { formatExactAmount } from '../../../web3/amounts';
 import { CountUp } from '../../core/CountUp';
+import {
+  useErc20Contract,
+  useMusdContract,
+} from '../../../context/ContractsProvider';
+import { useSwapState } from './state';
+import { useMusdSubscription } from '../../../context/KnownAddressProvider';
+import { Interfaces, SendTxManifest } from '../../../types';
 
-const mapForgeValidatorResponseToReason = (response: string): Reasons => {
-  switch (response) {
-    case 'bAsset not allowed in mint':
-      return Reasons.BAssetNotAllowedInMint;
-    case 'Must be below implicit max weighting':
-      return Reasons.MustBeBelowImplicitMaxWeighting;
-    case 'Must redeem overweight bAssets':
-      return Reasons.MustRedeemOverweightBAssets;
-    case 'bAssets must remain under max weight':
-      return Reasons.BAssetsMustRemainUnderMaxWeight;
-    case 'bAssets must remain above implicit min weight':
-      return Reasons.BAssetsMustRemainAboveImplicitMinWeight;
-    case 'Input length should be equal':
-      return Reasons.InputLengthShouldBeEqual;
-    default:
-      throw new Error(`Unknown response ${response}`);
-  }
-};
-
-const mapReasonToMessage = (reason: Reasons): string => {
-  switch (reason) {
-    case Reasons.AmountMustBeSet:
-      return 'Amount must be set';
-    case Reasons.AmountMustBeGreaterThanZero:
-      return 'Amount must be greater than zero';
-    case Reasons.AmountMustNotExceedBalance:
-      return 'Amount must not exceed balance';
-    case Reasons.AmountCouldNotBeParsed:
-      return 'Amount could not be parsed';
-    case Reasons.TokenMustBeSelected:
-      return 'Token must be selected';
-    case Reasons.TokenMustBeUnlocked:
-      return 'Token must be unlocked';
-    case Reasons.FetchingData:
-      return 'Fetching data...';
-    case Reasons.ValidationFailed:
-      return 'Validation failed';
-
-    // TODO edit messages for these:
-    case Reasons.BAssetNotAllowedInMint:
-      return 'bAsset not allowed in mint';
-    case Reasons.MustBeBelowImplicitMaxWeighting:
-      return 'Must be below implicit max weighting';
-    case Reasons.MustRedeemOverweightBAssets:
-      return 'Must redeem overweight bAssets';
-    case Reasons.BAssetsMustRemainUnderMaxWeight:
-      return 'bAssets must remain under max weight';
-    case Reasons.BAssetsMustRemainAboveImplicitMinWeight:
-      return 'bAssets must remain above implicit min weight';
-    case Reasons.InputLengthShouldBeEqual:
-      return 'Input length should be equal';
-
-    default:
-      return 'Unknown reason';
-  }
-};
-
-const SwapDirectionButton = styled.div`
+const SwapDirectionButton = styled.div<{ disabled: boolean }>`
   display: flex;
   justify-content: center;
   padding-bottom: 50px;
@@ -88,37 +31,107 @@ const SwapDirectionButton = styled.div`
     width: 40px;
     height: 40px;
   }
+
+  ${({ disabled }) => (disabled ? 'opacity: 0.5; cursor: not-allowed;' : '')}
 `;
 
 export const Swap: FC<{}> = () => {
-  const [state, dispatch] = useSwapState();
-  const {
-    values: {
-      input,
-      output,
-      input: { token: { address: inputAddress } = { address: null } },
-      output: { token: { address: outputAddress } = { address: null } },
-      feeAmountSimple,
+  const [
+    {
+      mode,
+      values: {
+        input,
+        output,
+        input: { token: { address: inputAddress } = { address: null } },
+        output: { token: { address: outputAddress } = { address: null } },
+        feeAmountSimple,
+      },
+      error,
     },
-    transactionType,
-    error,
-  } = state;
-  const {
-    swapTransactionType,
-    setError,
-    setMUSD,
-    setFeeRate,
-    setToken,
-    setQuantity,
-  } = dispatch;
+    { invertDirection, setToken, setQuantity, setError, updateMassetData },
+  ] = useSwapState();
 
-  /**
-   * Ref for tracking if the form inputs were touched
-   */
+  const { data, loading } = useMusdSubscription();
+  const mUsd = data?.masset?.token;
+
+  const inputToken = useTokenWithBalance(input.token.address);
+  const outputToken = useTokenWithBalance(output.token.address);
+
+  const needsUnlock = useMemo<boolean>(
+    () =>
+      !!(
+        mode === Mode.MintSingle &&
+        input.token.address &&
+        input.amount.exact &&
+        outputToken.allowance &&
+        outputToken.allowance[input.token.address]?.lte(input.amount.exact)
+      ),
+    [mode, input, outputToken],
+  );
+
+  useEffect(() => {
+    updateMassetData(data, loading);
+  }, [updateMassetData, data, loading]);
+
   const touched = useRef<boolean>(false);
+  useEffect(() => {
+    if (touched.current) return;
+
+    if (output.amount.simple || input.amount.simple) {
+      touched.current = true;
+    }
+  }, [touched, input, output]);
+
+  // TODO this validation should also highlight invalid pairs (e.g. when
+  // weight limits are in effect)
+  useEffect(() => {
+    if (!touched.current) {
+      // No validation needed if the form wasn't touched yet
+      return;
+    }
+
+    if (input.amount.simple && !input.token.address) {
+      setError('Token must be selected', Fields.Input);
+      return;
+    }
+
+    if (!input.amount.simple) {
+      setError('Amount must be set', Fields.Input);
+      return;
+    }
+
+    if (input.amount.exact?.lte(0)) {
+      setError('Amount must be greater than zero', Fields.Input);
+      return;
+    }
+
+    if (inputToken?.balance && input.amount.exact?.gt(inputToken.balance)) {
+      setError('Insufficient balance', Fields.Input);
+      return;
+    }
+
+    if (output.amount.simple && !output.token.address) {
+      setError('Token must be selected', Fields.Output);
+      return;
+    }
+
+    if (needsUnlock) {
+      setError('Token must be approved', Fields.Input);
+      return;
+    }
+
+    // TODO this should only happen when the field is unset, but currently
+    // there is a bug that doesn't set it initially (when it could be inferred)
+    if (!input.amount.exact || (output.token.address && !output.amount.exact)) {
+      setError('Amount must be set', Fields.Output);
+      return;
+    }
+
+    setError(null);
+  }, [inputToken, mUsd, needsUnlock, setError, input, output]);
 
   /**
-   * Error message strings (mapped from reasons)
+   * Error message strings
    */
   const { formError, inputError, outputError } = useMemo<{
     formError?: string;
@@ -133,7 +146,7 @@ export const Swap: FC<{}> = () => {
               ? 'inputError'
               : error.field === Fields.Output
               ? 'outputError'
-              : 'formError']: mapReasonToMessage(error.reason),
+              : 'formError']: error.reason,
           },
     [error],
   );
@@ -141,75 +154,19 @@ export const Swap: FC<{}> = () => {
   /**
    * Blockchain goodies
    */
-  const signer = useSignerContext();
   const sendTransaction = useSendTransaction();
+  const inputTokenContract = useErc20Contract(inputAddress);
   const { account } = useWallet();
-  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
-  const mUSDForgeValidatorAddress = useKnownAddress(
-    ContractNames.mUSDForgeValidator,
-  );
+  const mUsdContract = useMusdContract();
 
-  const forgeValidatorContract = useMemo(
-    () =>
-      signer && mUSDForgeValidatorAddress
-        ? ForgeValidatorFactory.connect(mUSDForgeValidatorAddress, signer)
-        : null,
-    [signer, mUSDForgeValidatorAddress],
-  );
-  const mUSDContract = useMemo(
-    () =>
-      signer && mUSDAddress ? MassetFactory.connect(mUSDAddress, signer) : null,
-    [signer, mUSDAddress],
-  );
-  const inputTokenContract = useMemo(
-    () =>
-      signer && inputAddress
-        ? Erc20DetailedFactory.connect(inputAddress, signer)
-        : null,
-    [signer, inputAddress],
-  );
+  const [inputAddresses, outputAddresses] = useMemo<
+    [string[], string[]]
+  >(() => {
+    if (!data?.masset?.basket.bassets) return [[], []];
 
-  /**
-   * GraphQL data
-   */
-  // TODO use loading prop
-  const { data: { masset: mUSD } = {} } = useMassetQuery({
-    variables: { id: mUSDAddress || '' },
-  });
-  const allTokenAddresses = useMemo<string[]>(
-    () => (mUSD ? [mUSD.id, ...mUSD.basket.bassets.map(b => b.id)] : []),
-    [mUSD],
-  );
-  const { basket: { bassets = [] } = {}, feeRate } = mUSD || {};
-
-  /**
-   * Subsets of data from inputs/outputs
-   */
-  const allBassets = useMemo(
-    () =>
-      bassets.map(
-        ({
-          id: addr,
-          isTransferFeeCharged,
-          vaultBalance,
-          ratio,
-          maxWeight,
-          token: { decimals },
-        }) => ({
-          addr,
-          isTransferFeeCharged,
-          vaultBalance: parseUnits(vaultBalance, decimals),
-          ratio,
-          maxWeight,
-          // TODO map basset status enum from string
-          status: '1',
-        }),
-      ),
-    [bassets],
-  );
-
-  const inputToken = useTokenWithBalance(inputAddress);
-  const outputToken = useTokenWithBalance(outputAddress);
+    const bAssets = data.masset.basket.bassets.map(b => b.id);
+    return [bAssets, [data.masset.id, ...bAssets]];
+  }, [data]);
 
   const inputItems = useMemo(
     () => [
@@ -220,6 +177,7 @@ export const Swap: FC<{}> = () => {
     ],
     [inputToken],
   );
+
   const outputItems = useMemo(
     () => [
       {
@@ -231,7 +189,7 @@ export const Swap: FC<{}> = () => {
             {
               label: 'Note',
               // TODO ideally 'see details' would open up the details
-              value: 'Redemption fee applies (see details below)',
+              value: 'Swap fee applies (see details below)',
             },
           ]
         : []),
@@ -239,32 +197,16 @@ export const Swap: FC<{}> = () => {
     [outputToken, feeAmountSimple],
   );
 
-  /**
-   * Flag for whether mUSD needs approval to spend the input token (for minting)
-   */
-  const needsUnlock = useMemo<boolean>(
+  const valid = useMemo<boolean>(
     () =>
       !!(
-        transactionType === TransactionType.Mint &&
-        input.token.address &&
-        input.amount.exact &&
-        outputToken.allowance &&
-        outputToken.allowance[input.token.address]?.lte(input.amount.exact)
-      ),
-    [transactionType, input, outputToken],
-  );
-
-  const submitButtonDisabled = useMemo<boolean>(
-    () =>
-      !(
         error === null &&
         input.amount.exact &&
         input.token.address &&
         output.amount.exact &&
-        output.token.address &&
-        !needsUnlock
+        output.token.address
       ),
-    [error, needsUnlock, input, output],
+    [error, input, output],
   );
 
   /**
@@ -287,6 +229,8 @@ export const Swap: FC<{}> = () => {
    */
   const handleSetMax = useCallback(() => {
     if (inputToken?.balance) {
+      // TODO because of weight limits; under less-than-ideal
+      // conditions, the max valid swap can be lower than the user's balance
       setQuantity(
         Fields.Input,
         formatUnits(inputToken.balance, inputToken.decimals),
@@ -304,15 +248,14 @@ export const Swap: FC<{}> = () => {
       if (
         account &&
         error === null &&
-        mUSDContract &&
+        mUsdContract &&
         input.amount.exact &&
         input.token.address &&
         output.token.address &&
         output.amount.exact
       ) {
-        // TODO rename, this is rather direction than mint/redeem
         const args: [string, string, BigNumber, string] =
-          transactionType === TransactionType.Mint
+          mode === Mode.MintSingle
             ? [
                 input.token.address,
                 output.token.address,
@@ -326,140 +269,15 @@ export const Swap: FC<{}> = () => {
                 account,
               ];
         const manifest: SendTxManifest<Interfaces.Masset, 'swap'> = {
-          iface: mUSDContract,
+          iface: mUsdContract,
           fn: 'swap',
           args,
         };
         sendTransaction(manifest);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [transactionType, mUSDContract, error, input, output, sendTransaction],
+    [account, error, input, mUsdContract, mode, output, sendTransaction],
   );
-
-  // Set the `touched` state when an amount is first set
-  useEffect(() => {
-    if (touched.current) return;
-
-    if (output.amount.simple || input.amount.simple) {
-      touched.current = true;
-    }
-  }, [touched, input, output]);
-
-  // Set mUSD if the form wasn't touched
-  useEffect(() => {
-    if (touched.current) return;
-
-    if (mUSD) {
-      setMUSD({
-        address: mUSD.id,
-        decimals: mUSD.token.decimals,
-        symbol: mUSD.token.symbol,
-      });
-    }
-  }, [mUSDAddress, touched, setMUSD, mUSD]);
-
-  // Set fee rate (should just happen once)
-  useEffect(() => {
-    if (feeRate) setFeeRate(bigNumberify(feeRate));
-  }, [feeRate, setFeeRate]);
-
-  /**
-   * Effect: perform validation
-   */
-  useEffect(() => {
-    if (!touched.current) {
-      // No validation needed if the form wasn't touched yet
-      return;
-    }
-
-    if (input.amount.simple && !input.token.address) {
-      setError(Reasons.TokenMustBeSelected, Fields.Input);
-      return;
-    }
-
-    if (!input.amount.simple) {
-      setError(Reasons.AmountMustBeSet, Fields.Input);
-      return;
-    }
-
-    if (
-      (output.amount.simple || transactionType === TransactionType.Redeem) &&
-      !output.token.address
-    ) {
-      setError(Reasons.TokenMustBeSelected, Fields.Output);
-      return;
-    }
-
-    if (input.amount.exact?.lte(0)) {
-      setError(Reasons.AmountMustBeGreaterThanZero, Fields.Input);
-      return;
-    }
-
-    if (!input.amount.exact || !output.amount.exact) {
-      setError(Reasons.AmountCouldNotBeParsed, Fields.Input);
-      return;
-    }
-
-    if (inputToken?.balance && input.amount.exact?.gt(inputToken.balance)) {
-      setError(Reasons.AmountMustNotExceedBalance, Fields.Input);
-      return;
-    }
-
-    if (needsUnlock) {
-      setError(Reasons.TokenMustBeUnlocked, Fields.Input);
-      return;
-    }
-
-    if (!(mUSD && forgeValidatorContract && input.amount.simple)) {
-      setError(Reasons.FetchingData);
-      return;
-    }
-
-    const totalSupply = parseUnits(
-      mUSD.token.totalSupply as string,
-      mUSD.token.decimals,
-    );
-
-    // TODO typechain bug: return values parsed differently
-    if (transactionType === TransactionType.Mint) {
-      forgeValidatorContract
-        .validateMint(
-          totalSupply,
-          allBassets.find(b => b.addr === inputAddress) as NonNullable<
-            Parameters<typeof forgeValidatorContract['validateMint']>[1]
-          >,
-          input.amount.exact,
-        )
-        .then(({ isValid, reason }) => {
-          setError(isValid ? null : mapForgeValidatorResponseToReason(reason));
-        })
-        .catch(error_ => {
-          // eslint-disable-next-line no-console
-          console.error(error_);
-          setError(Reasons.ValidationFailed);
-        });
-    } else {
-      forgeValidatorContract
-        .validateRedemption(
-          mUSD.basket.failed,
-          totalSupply,
-          allBassets,
-          [allBassets.findIndex(b => b.addr === outputAddress) as number],
-          [output.amount.exact],
-        )
-        .then(({ '0': isValid, '1': reason }) => {
-          setError(isValid ? null : mapForgeValidatorResponseToReason(reason));
-        })
-        .catch(error_ => {
-          // eslint-disable-next-line no-console
-          console.error(error_);
-          setError(Reasons.ValidationFailed);
-        });
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [input, output, touched, needsUnlock]);
 
   return (
     <Form error={formError} onSubmit={handleSubmit}>
@@ -467,7 +285,7 @@ export const Swap: FC<{}> = () => {
         <H3>Send</H3>
         <TokenAmountInput
           amountValue={input.formValue}
-          tokenAddresses={allTokenAddresses}
+          tokenAddresses={inputAddresses}
           tokenValue={inputAddress}
           name={Fields.Input}
           onChangeAmount={setQuantity}
@@ -480,8 +298,9 @@ export const Swap: FC<{}> = () => {
         />
       </FormRow>
       <SwapDirectionButton
-        onClick={swapTransactionType}
+        onClick={invertDirection}
         title="Change direction"
+        disabled={mode === Mode.MintSingle}
       >
         <ArrowsSVG />
       </SwapDirectionButton>
@@ -489,7 +308,7 @@ export const Swap: FC<{}> = () => {
         <H3>Receive</H3>
         <TokenAmountInput
           amountValue={output.formValue}
-          tokenAddresses={allTokenAddresses}
+          tokenAddresses={outputAddresses}
           tokenValue={outputAddress}
           name={Fields.Output}
           onChangeAmount={setQuantity}
@@ -499,11 +318,7 @@ export const Swap: FC<{}> = () => {
         />
       </FormRow>
       <div>
-        <SubmitButton
-          type="submit"
-          size={Size.l}
-          disabled={submitButtonDisabled}
-        >
+        <SubmitButton type="submit" size={Size.l} disabled={!valid}>
           Swap
         </SubmitButton>
         {input.amount.simple &&
@@ -529,7 +344,7 @@ export const Swap: FC<{}> = () => {
                 <>
                   <P size={1}>
                     This includes a redemption fee of{' '}
-                    <CountUp end={parseFloat(feeAmountSimple)} suffix=" mUSD" />
+                    <CountUp end={parseFloat(feeAmountSimple)} decimals={4} suffix=" mUSD" />
                     .
                   </P>
                   <P size={1}>
