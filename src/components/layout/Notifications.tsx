@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import { A } from 'hookrouter';
 import {
   Notification,
   NotificationType,
@@ -41,9 +40,7 @@ const Item = styled.div<Pick<Notification, 'type'>>`
       ? theme.color.blue
       : theme.color.red};
   color: ${({ theme, type }) =>
-    type === NotificationType.Info
-      ? theme.color.white
-      : theme.color.black};
+    type === NotificationType.Info ? theme.color.white : theme.color.black};
   border-radius: 4px;
   padding: ${({ theme }) => theme.spacing.s};
   margin-bottom: ${({ theme }) => theme.spacing.m};
@@ -63,7 +60,7 @@ const Title = styled.div`
   font-size: ${({ theme }) => theme.fontSize.s};
 `;
 
-const Link = styled(A)`
+const Link = styled.a`
   display: block;
   font-size: ${({ theme }) => theme.fontSize.s};
 `;
