@@ -14,6 +14,7 @@ import {
   HistoricTransaction,
   SendTxManifest,
   Transaction,
+  Purpose,
   TransactionStatus,
 } from '../types';
 import {
@@ -175,8 +176,12 @@ const getTxPurpose = (
     mUSD,
     mUSDSavingsAddress,
   }: { mUSD: MassetQuery['masset'] | null; mUSDSavingsAddress: string | null },
-): string | null => {
-  if (!mUSD) return null;
+): Purpose => {
+  if (!mUSD)
+    return {
+      present: null,
+      past: null,
+    };
 
   const {
     basket: { bassets },
@@ -187,9 +192,13 @@ const getTxPurpose = (
       const [bassetAddress, bassetQ] = args as [string, BigNumber];
 
       const bAsset = bassets.find(b => b.token.address === bassetAddress);
-      if (!bAsset) return null;
+      if (!bAsset)
+        return {
+          present: null,
+          past: null,
+        };
 
-      return `Minting ${formatExactAmount(
+      const body = `${formatExactAmount(
         bassetQ,
         bAsset.token.decimals,
         mUSD.token.symbol,
@@ -198,22 +207,34 @@ const getTxPurpose = (
         bAsset.token.decimals,
         bAsset.token.symbol,
       )}`;
+      return {
+        present: `Minting ${body}`,
+        past: `Minted ${body}`,
+      };
     }
     case 'redeem': {
       if (iface.address === mUSDSavingsAddress) {
         const [amount] = args as [BigNumber];
-        return `Withdrawing ${formatExactAmount(
+        const body = `${formatExactAmount(
           amount,
           mUSD.token.decimals,
           mUSD.token.symbol,
         )}`;
+        return {
+          present: `Withdrawing ${body}`,
+          past: `Withdrew ${body}`,
+        };
       }
       const [bassetAddress, bassetQ] = args as [string, BigNumber];
 
       const bAsset = bassets.find(b => b.token.address === bassetAddress);
-      if (!bAsset) return null;
+      if (!bAsset)
+        return {
+          present: null,
+          past: null,
+        };
 
-      return `Redeeming ${formatExactAmount(
+      const body = `${formatExactAmount(
         bassetQ,
         bAsset.token.decimals,
         bAsset.token.symbol,
@@ -222,25 +243,48 @@ const getTxPurpose = (
         bAsset.token.decimals,
         mUSD.token.symbol,
       )}`;
+      return {
+        present: `Redeeming ${body}`,
+        past: `Redeemed ${body}`,
+      };
     }
     case 'approve': {
       if (args[0] === mUSDSavingsAddress) {
-        return `Approving the mUSD Savings Contract to transfer ${mUSD.token.symbol}`;
+        const body = `the mUSD Savings Contract to transfer ${mUSD.token.symbol}`;
+        return {
+          present: `Approving ${body}`,
+          past: `Approved ${body}`,
+        };
       }
 
       const bAsset = bassets.find(b => b.token.address === iface.address);
-      if (!bAsset) return null;
+      if (!bAsset)
+        return {
+          past: null,
+          present: null,
+        };
 
-      return `Approving ${mUSD.token.symbol} to transfer ${bAsset.token.symbol}`;
+      const body = `${mUSD.token.symbol} to transfer ${bAsset.token.symbol}`;
+      return {
+        present: `Approving ${body}`,
+        past: `Approved ${body}`,
+      };
     }
     case 'depositSavings': {
       const [amount] = args as [BigNumber];
-      return `Depositing ${formatExactAmount(amount, mUSD.token.decimals)} ${
+      const body = `${formatExactAmount(amount, mUSD.token.decimals)} ${
         mUSD.token.symbol
       }`;
+      return {
+        present: `Depositing ${body}`,
+        past: `Deposited ${body}`,
+      };
     }
     default:
-      return null;
+      return {
+        past: null,
+        present: null,
+      };
   }
 };
 
@@ -280,7 +324,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
 
       addInfoNotification(
         'Transaction pending',
-        purpose,
+        purpose.present,
         getEtherscanLinkForHash(pendingTx.hash),
       );
     },
@@ -312,9 +356,9 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
       const { purpose } = state.current[hash];
 
       if (status === TransactionStatus.Success) {
-        addSuccessNotification('Transaction confirmed', purpose, link);
+        addSuccessNotification('Transaction confirmed', purpose.past, link);
       } else if (status === TransactionStatus.Error) {
-        addErrorNotification('Transaction failed', purpose, link);
+        addErrorNotification('Transaction failed', purpose.present, link);
       }
 
       dispatch({ type: Actions.Finalize, payload: { hash, receipt } });

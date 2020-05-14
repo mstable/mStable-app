@@ -14,7 +14,12 @@ export interface Transaction {
   status: number | null;
   timestamp: number;
   args: unknown[];
-  purpose: string | null;
+  purpose: Purpose;
+}
+
+export interface Purpose {
+  present: string | null;
+  past: string | null;
 }
 
 export type LogWithTransactionHash = Omit<Log, 'transactionHash'> &
