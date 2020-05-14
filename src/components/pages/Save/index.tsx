@@ -133,7 +133,7 @@ export const Save: FC<{}> = () => {
   const savingsBalanceIncreasing = useIncreasingNumber(
     savingsBalance.simple,
     // TODO we could potentially use the APY for the increment and interval;
-    // these are fake numbers.
+    // these are assumed rates.
     0.0000001,
     100,
   );
@@ -298,8 +298,12 @@ export const Save: FC<{}> = () => {
       if (mUsdToken?.balance) {
         setQuantity(formatUnits(mUsdToken.balance, mUsdToken.decimals));
       }
-    } else if (savingsBalance.simple) {
-      setQuantity(savingsBalance.simple.toString());
+    } else if (savingsBalance.exact) {
+      setQuantity(
+        parseFloat(formatUnits(savingsBalance.exact, 18))
+          .toFixed(4)
+          .toString(),
+      );
     }
   }, [mUsdToken, savingsBalance, setQuantity, transactionType]);
 
