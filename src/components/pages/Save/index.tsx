@@ -103,6 +103,7 @@ export const Save: FC<{}> = () => {
   const {
     token: { address: inputAddress },
     amount: { exact: inputAmount },
+    amountInCredits,
   } = input;
 
   const errorMessage = useMemo(
@@ -238,7 +239,7 @@ export const Save: FC<{}> = () => {
     event => {
       event.preventDefault();
 
-      if (!error && savingsContract && inputAmount) {
+      if (!error && savingsContract && inputAmount && amountInCredits) {
         if (transactionType === TransactionType.Deposit) {
           const manifest: SendTxManifest<
             Interfaces.SavingsContract,
@@ -255,14 +256,21 @@ export const Save: FC<{}> = () => {
             'redeem'
           > = {
             iface: savingsContract,
-            args: [inputAmount],
+            args: [amountInCredits],
             fn: 'redeem',
           };
           sendTransaction(manifest);
         }
       }
     },
-    [error, savingsContract, inputAmount, transactionType, sendTransaction],
+    [
+      error,
+      savingsContract,
+      inputAmount,
+      amountInCredits,
+      transactionType,
+      sendTransaction,
+    ],
   );
 
   const handleChangeToken = useCallback<

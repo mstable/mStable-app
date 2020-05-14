@@ -24,14 +24,14 @@ export const formatExactAmount = (
     : null;
 
 export const parseAmount = (
-  input: string | null,
+  simpleAmount: string | null,
   decimals: number | null,
 ): Amount => {
-  if (!(input && decimals)) {
+  if (!(simpleAmount && decimals)) {
     return { exact: null, simple: null };
   }
 
-  const exact = parseUnits(input.slice(0, decimals), decimals);
+  const exact = parseUnits(simpleAmount.slice(0, decimals), decimals);
   const simple = parseFloat(formatUnits(exact, decimals));
   return {
     exact,

@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { A } from 'hookrouter';
 
 const Container = styled.footer<{ inverted: boolean }>`
   width: 100%;
@@ -32,7 +31,7 @@ export const Footer: FC<{ walletExpanded: boolean }> = ({ walletExpanded }) => (
     <Links inverted={walletExpanded}>
       {links.map(({ title, href }) => (
         <li key={href}>
-          <A href={href}>{title}</A>
+          <a href={href}>{title}</a>
         </li>
       ))}
     </Links>

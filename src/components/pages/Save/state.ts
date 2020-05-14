@@ -1,6 +1,12 @@
+import { parseUnits } from 'ethers/utils';
 import { Reducer, useCallback, useMemo, useReducer } from 'react';
-import { TokenDetails, TokenQuantity } from '../../../types';
+import { TokenDetails, SavingsQuantity } from '../../../types';
 import { parseAmount } from '../../../web3/amounts';
+import { SCALE } from '../../../web3/constants';
+import {
+  useLatestExchangeRateSubscription,
+  ExchangeRate,
+} from '../../../graphql/generated';
 
 export enum TransactionType {
   Deposit,
@@ -27,7 +33,7 @@ enum Actions {
 interface State {
   error: Reasons | null;
   transactionType: TransactionType;
-  input: TokenQuantity;
+  input: SavingsQuantity;
 }
 
 type Action =
@@ -35,7 +41,15 @@ type Action =
       type: Actions.SetError;
       payload: { reason: Reasons | null };
     }
-  | { type: Actions.SetQuantity; payload: { formValue: string | null } }
+  | {
+      type: Actions.SetQuantity;
+      payload: {
+        formValue: string | null;
+        exchangeRate:
+          | Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>
+          | undefined;
+      };
+    }
   | {
       type: Actions.SetToken;
       payload: TokenDetails;
@@ -59,13 +73,20 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return { ...state, error: reason };
     }
     case Actions.SetQuantity: {
-      const { formValue } = action.payload;
+      const { formValue, exchangeRate } = action.payload;
+      const amount = parseAmount(formValue, state.input.token.decimals);
       return {
         ...state,
         input: {
           ...state.input,
           formValue,
-          amount: parseAmount(formValue, state.input.token.decimals),
+          amount,
+          amountInCredits:
+            amount.exact && exchangeRate?.exchangeRate
+              ? amount.exact
+                  .mul(SCALE)
+                  .div(parseUnits(exchangeRate.exchangeRate))
+              : null,
         },
       };
     }
@@ -103,11 +124,14 @@ const initialState: State = Object.freeze({
       simple: null,
       exact: null,
     },
+    amountInCredits: null,
   },
 });
 
 export const useSaveState = (): [State, Dispatch] => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const latestSub = useLatestExchangeRateSubscription();
+  const latest = latestSub.data?.exchangeRates[0];
 
   const setError = useCallback<Dispatch['setError']>(
     reason => {
@@ -118,9 +142,12 @@ export const useSaveState = (): [State, Dispatch] => {
 
   const setQuantity = useCallback<Dispatch['setQuantity']>(
     formValue => {
-      dispatch({ type: Actions.SetQuantity, payload: { formValue } });
+      dispatch({
+        type: Actions.SetQuantity,
+        payload: { formValue, exchangeRate: latest },
+      });
     },
-    [dispatch],
+    [dispatch, latest],
   );
 
   const setToken = useCallback<Dispatch['setToken']>(

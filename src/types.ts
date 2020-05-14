@@ -107,6 +107,10 @@ export interface TokenQuantity {
   token: TokenDetails;
 }
 
+export interface SavingsQuantity extends TokenQuantity {
+  amountInCredits: BigNumber | null;
+}
+
 export interface InjectedEthereum {
   enable(): Promise<string[]>;
   on(event: 'networkChanged', listener: (chainId: number) => void): void;
