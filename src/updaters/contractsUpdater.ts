@@ -1,13 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useWallet } from 'use-wallet';
 import { hexZeroPad } from 'ethers/utils';
 import { useTransactionsDispatch } from '../context/TransactionsProvider';
-import { useKnownAddress } from '../context/KnownAddressProvider';
-import { useSignerContext } from '../context/SignerProvider';
 import { getHistoricTransactions } from '../web3/getHistoricTransactions';
-import { MassetFactory } from '../typechain/MassetFactory';
-import { ContractNames } from '../types';
-import { SavingsContractFactory } from '../typechain/SavingsContractFactory';
+import {
+  useMusdContract,
+  useSavingsContract,
+} from '../context/ContractsProvider';
 
 // TODO replace: when mUSD was deployed on Ropsten
 const fromBlock = process.env.REACT_APP_CHAIN_ID === '3' ? 7883370 : 0;
@@ -15,23 +14,9 @@ const fromBlock = process.env.REACT_APP_CHAIN_ID === '3' ? 7883370 : 0;
 export const ContractsUpdater = (): null => {
   const { account } = useWallet();
   const { addHistoric, reset } = useTransactionsDispatch();
-  const signer = useSignerContext();
 
-  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
-  const mUSD = useMemo(
-    () =>
-      mUSDAddress && signer ? MassetFactory.connect(mUSDAddress, signer) : null,
-    [mUSDAddress, signer],
-  );
-
-  const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
-  const mUSDSavings = useMemo(
-    () =>
-      mUSDSavingsAddress && signer
-        ? SavingsContractFactory.connect(mUSDSavingsAddress, signer)
-        : null,
-    [mUSDSavingsAddress, signer],
-  );
+  const mUsdContract = useMusdContract();
+  const savingsContract = useSavingsContract();
 
   /**
    * When the account changes, reset the transactions state.
@@ -42,7 +27,7 @@ export const ContractsUpdater = (): null => {
    * When the account changes (and mUSD exists), get historic transactions.
    */
   useEffect(() => {
-    if (mUSD && account && addHistoric) {
+    if (mUsdContract && account && addHistoric) {
       const indexedAccount = hexZeroPad(account.toLowerCase(), 32);
 
       const {
@@ -51,7 +36,7 @@ export const ContractsUpdater = (): null => {
         Redeemed,
         PaidFee,
         MintedMulti,
-      } = mUSD.interface.events;
+      } = mUsdContract.interface.events;
 
       const mUSDTopics: (string | null)[][] = [
         [Minted.topic, indexedAccount],
@@ -61,38 +46,38 @@ export const ContractsUpdater = (): null => {
         [Swapped.topic, indexedAccount],
       ];
 
-      getHistoricTransactions(mUSD, account, mUSDTopics, { fromBlock }).then(
-        logs => {
-          addHistoric(logs);
-        },
-      );
+      getHistoricTransactions(mUsdContract, account, mUSDTopics, {
+        fromBlock,
+      }).then(logs => {
+        addHistoric(logs);
+      });
     }
-  }, [addHistoric, account, mUSD]);
+  }, [addHistoric, account, mUsdContract]);
 
   /**
    * When the account changes (and mUSDSavings exists), get historic transactions.
    */
   useEffect(() => {
-    if (mUSDSavings && account && addHistoric) {
+    if (savingsContract && account && addHistoric) {
       const indexedAccount = hexZeroPad(account.toLowerCase(), 32);
 
       const {
         SavingsDeposited,
         CreditsRedeemed,
-      } = mUSDSavings.interface.events;
+      } = savingsContract.interface.events;
 
       const mUSDSavingsTopics: (string | null)[][] = [
         [SavingsDeposited.topic, indexedAccount],
         [CreditsRedeemed.topic, indexedAccount],
       ];
 
-      getHistoricTransactions(mUSDSavings, account, mUSDSavingsTopics, {
+      getHistoricTransactions(savingsContract, account, mUSDSavingsTopics, {
         fromBlock,
       }).then(logs => {
         addHistoric(logs);
       });
     }
-  }, [addHistoric, account, mUSDSavings]);
+  }, [addHistoric, account, savingsContract]);
 
   return null;
 };

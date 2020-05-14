@@ -12,14 +12,11 @@ import { BigNumber } from 'ethers/utils';
 import Skeleton from 'react-loading-skeleton';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
-import {
-  useKnownAddress,
-  useMusdSubscription,
-} from '../../../context/KnownAddressProvider';
-import { MassetFactory } from '../../../typechain/MassetFactory';
+import { useMusdSubscription } from '../../../context/KnownAddressProvider';
+import { useMusdContract } from '../../../context/ContractsProvider';
 import { Erc20Factory } from '../../../typechain/Erc20Factory';
 import { Size } from '../../../theme';
-import { ContractNames, Interfaces, SendTxManifest } from '../../../types';
+import { Interfaces, SendTxManifest } from '../../../types';
 import { formatExactAmount } from '../../../web3/amounts';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { AmountInput } from '../../forms/AmountInput';
@@ -75,16 +72,12 @@ export const Mint: FC<{}> = () => {
 
   const sendTransaction = useSendTransaction();
 
-  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
   const musdSub = useMusdSubscription();
   const basket = musdSub.data?.masset?.basket;
   const musdToken = musdSub.data?.masset?.token;
 
-  const mUSDContract = useMemo(
-    () =>
-      signer && mUSDAddress ? MassetFactory.connect(mUSDAddress, signer) : null,
-    [signer, mUSDAddress],
-  );
+  const mUsdContract = useMusdContract();
+  const mUsdAddress = mUsdContract?.address || null;
 
   const valid = useMemo(
     () =>
@@ -125,13 +118,13 @@ export const Mint: FC<{}> = () => {
     event => {
       event.preventDefault();
 
-      if (!error && mUSDContract && masset.amount.exact) {
+      if (!error && mUsdContract && masset.amount.exact) {
         const enabled = bassets.filter(b => b.enabled);
 
         // Mint single for one asset
         if (enabled.length === 1) {
           const manifest: SendTxManifest<Interfaces.Masset, 'mint'> = {
-            iface: mUSDContract,
+            iface: mUsdContract,
             args: [enabled[0].address, masset.amount.exact.toString()],
             fn: 'mint',
           };
@@ -140,7 +133,7 @@ export const Mint: FC<{}> = () => {
 
         // Mint multi for more than one asset
         const manifest: SendTxManifest<Interfaces.Masset, 'mintMulti'> = {
-          iface: mUSDContract,
+          iface: mUsdContract,
           args: enabled.reduce(
             ([_addresses, _amounts, _receipient], b) => [
               [..._addresses, b.address],
@@ -154,7 +147,7 @@ export const Mint: FC<{}> = () => {
         sendTransaction(manifest);
       }
     },
-    [error, mUSDContract, masset, bassets, sendTransaction, account],
+    [error, mUsdContract, masset, bassets, sendTransaction, account],
   );
 
   const handleChangeAmount = useCallback<
@@ -189,12 +182,12 @@ export const Mint: FC<{}> = () => {
         const manifest = {
           iface: tokenContract,
           fn: 'approve',
-          args: [mUSDAddress, totalSupply],
+          args: [mUsdAddress, totalSupply],
         };
         sendTransaction(manifest);
       });
     },
-    [sendTransaction, signer, mUSDAddress],
+    [sendTransaction, signer, mUsdAddress],
   );
 
   return (
@@ -214,7 +207,7 @@ export const Mint: FC<{}> = () => {
             bassets.map(basset => (
               <BassetInput
                 key={basset.address}
-                massetAddress={mUSDAddress}
+                massetAddress={mUsdAddress}
                 handleUnlock={handleUnlock}
                 handleToggle={toggleBassetEnabled}
                 setBassetBalance={setBassetBalance}
@@ -228,14 +221,14 @@ export const Mint: FC<{}> = () => {
       </FormRow>
       <FormRow>
         <H3>Receive</H3>
-        {mUSDAddress ? (
+        {mUsdAddress ? (
           <TokenAmountInput
             name="mUSD"
             amountValue={masset.formValue}
-            tokenValue={mUSDAddress}
+            tokenValue={mUsdAddress}
             onChangeAmount={handleChangeAmount}
             onChangeToken={() => {}}
-            tokenAddresses={[mUSDAddress]}
+            tokenAddresses={[mUsdAddress]}
             tokenDisabled
             onSetMax={handleSetMax}
             error={error || undefined}

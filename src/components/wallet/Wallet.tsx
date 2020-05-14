@@ -178,6 +178,7 @@ export const Wallet: FC<{}> = () => {
       )}
       {error ? <Error>{error}</Error> : null}
       <FlexRow>
+        { /* FIXME problem when first connecting; updates on unmounted components */ }
         {connected && account && wallet ? (
           <Connected walletLabel={wallet.label} account={account} />
         ) : connecting ? (

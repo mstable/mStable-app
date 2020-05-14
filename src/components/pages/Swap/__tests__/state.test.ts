@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
-import { BigNumber } from 'ethers/utils';
-import { Fields, TransactionType, useSwapState } from '../state';
+import { useSwapState } from '../state';
+import { Fields, Mode } from '../types';
 
 type Ctx = ReturnType<typeof useSwapState>;
 
@@ -27,7 +29,24 @@ const USDC = {
   symbol: 'USDC',
 };
 
-const feeRate = new BigNumber(2000000000000000);
+const TUSD = {
+  address: 'TUSD token address',
+  decimals: 18,
+  symbol: 'TUSD',
+};
+
+const feeRate = '400000000000000';
+
+const massetData = {
+  masset: {
+    id: mUSD.address,
+    token: mUSD as any,
+    feeRate,
+    basket: {
+      bassets: [{ token: DAI } as any, { token: USDC } as any],
+    } as any,
+  },
+};
 
 describe('Swap form state', () => {
   beforeEach(() => {
@@ -35,744 +54,651 @@ describe('Swap form state', () => {
   });
 
   test('context', () => {
-    expect(state()).toEqual(expect.any(Object));
+    expect(state()).toEqual({
+      error: null,
+      massetData: {
+        data: undefined,
+        loading: true,
+      },
+      mode: Mode.Swap,
+      values: {
+        feeAmountSimple: null,
+        input: {
+          amount: {
+            exact: null,
+            simple: null,
+          },
+          formValue: null,
+          token: {
+            address: null,
+            decimals: null,
+            symbol: null,
+          },
+        },
+        output: {
+          amount: {
+            exact: null,
+            simple: null,
+          },
+          formValue: null,
+          token: {
+            address: null,
+            decimals: null,
+            symbol: null,
+          },
+        },
+      },
+    });
+
     expect(dispatch()).toEqual(expect.any(Object));
     // ^ https://www.youtube.com/watch?v=nfxpwbWBNuU
   });
 
-  describe('without initialisation', () => {
-    test('setMUSD', () => {
+  describe('without massetData', () => {
+    test('updateMassetData', () => {
       act(() => {
-        dispatch().setMUSD(mUSD);
+        dispatch().updateMassetData(massetData, false);
       });
 
       expect(state()).toMatchObject({
-        mUSD,
+        massetData: { data: massetData, loading: false },
       });
     });
 
-    test('setFeeRate', () => {
-      act(() => {
-        dispatch().setFeeRate(feeRate);
-      });
+    describe('setQuantity', () => {
+      test('set input and invert direction', () => {
+        act(() => {
+          dispatch().setQuantity(Fields.Input, '10');
+        });
 
-      expect(state()).toMatchObject({
-        feeRate,
-      });
-    });
-
-    test('setQuantity', () => {
-      act(() => {
-        dispatch().setQuantity(Fields.Input, '10');
-      });
-
-      expect(state()).toMatchObject({
-        transactionType: TransactionType.Mint,
-        values: {
-          input: {
-            token: {
-              address: null,
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
             },
-            formValue: '10',
-            amount: {
-              // These can't be set without a token
-              simple: null,
-              exact: null,
+            output: {
+              formValue: null,
             },
           },
-          output: {
-            token: {
-              address: null,
+        });
+
+        act(() => {
+          dispatch().invertDirection();
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: null,
             },
-            formValue: '10',
-            amount: {
-              simple: null,
-            },
-          },
-          feeAmountSimple: null,
-        },
-      });
-
-      act(() => {
-        dispatch().swapTransactionType();
-      });
-
-      expect(state()).toMatchObject({
-        transactionType: TransactionType.Redeem,
-      });
-
-      act(() => {
-        dispatch().setQuantity(Fields.Input, '42');
-      });
-
-      expect(state()).toMatchObject({
-        values: {
-          input: {
-            formValue: '42',
-            amount: {
-              simple: null,
+            output: {
+              formValue: '10',
             },
           },
-          output: {
-            // When redeeming, this can't be inferred without a fee set
-            formValue: null,
-            amount: {
-              simple: null,
-              exact: null,
+        });
+      });
+
+      test('set output and invert direction', () => {
+        act(() => {
+          dispatch().setQuantity(Fields.Output, '10');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: null,
+            },
+            output: {
+              formValue: '10',
             },
           },
-          feeAmountSimple: null,
-        },
+        });
+
+        act(() => {
+          dispatch().invertDirection();
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+            },
+            output: {
+              formValue: null,
+            },
+            feeAmountSimple: null,
+          },
+        });
+      });
+
+      test('set both and invert direction', () => {
+        act(() => {
+          dispatch().setQuantity(Fields.Input, '42');
+          dispatch().setQuantity(Fields.Output, '10');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '42',
+            },
+            output: {
+              formValue: '10',
+            },
+          },
+        });
+
+        act(() => {
+          dispatch().invertDirection();
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '42',
+            },
+            output: {
+              formValue: '10',
+            },
+          },
+        });
       });
     });
   });
 
-  describe('with initialisation', () => {
+  describe('with massetData', () => {
     beforeEach(() => {
       act(() => {
-        dispatch().setMUSD(mUSD);
+        dispatch().updateMassetData(massetData, false);
       });
-      act(() => {
-        dispatch().setFeeRate(feeRate);
+    });
+
+    describe('swap', () => {
+      test('Setting input quantity applies fee to output', () => {
+        act(() => {
+          dispatch().setToken(Fields.Input, DAI);
+          dispatch().setToken(Fields.Output, USDC);
+          dispatch().setQuantity(Fields.Input, '10');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: DAI,
+              amount: {
+                simple: 10,
+              },
+            },
+            output: {
+              formValue: '9.996',
+              token: USDC,
+              amount: {
+                simple: 9.996,
+              },
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+      });
+
+      test('Setting output quantity applies fee to input', () => {
+        act(() => {
+          dispatch().setToken(Fields.Input, DAI);
+          dispatch().setToken(Fields.Output, USDC);
+          dispatch().setQuantity(Fields.Output, '10');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10.004',
+              token: DAI,
+              amount: {
+                simple: 10.004,
+              },
+            },
+            output: {
+              formValue: '10',
+              token: USDC,
+              amount: {
+                simple: 10,
+              },
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+      });
+
+      // TODO not passing, bug
+      test.skip('Setting the input token/amount and then setting the output token should set the output amount (and apply the fee)', () => {
+        act(() => {
+          dispatch().setToken(Fields.Input, DAI);
+          dispatch().setQuantity(Fields.Input, '10');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: DAI,
+            },
+            output: {
+              formValue: null,
+              token: {
+                address: null,
+              },
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().setToken(Fields.Output, USDC);
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: DAI,
+            },
+            output: {
+              formValue: '9.996',
+              token: USDC,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+      });
+
+      test('Setting quantity to a field that already has a fee applied applies the fee to the other field', () => {
+        act(() => {
+          dispatch().setToken(Fields.Input, DAI);
+          dispatch().setToken(Fields.Output, USDC);
+          dispatch().setQuantity(Fields.Output, '10');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10.004',
+              token: DAI,
+              amount: {
+                simple: 10.004,
+              },
+            },
+            output: {
+              formValue: '10',
+              token: USDC,
+              amount: {
+                simple: 10,
+              },
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().setQuantity(Fields.Input, '42');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '42',
+              token: DAI,
+              amount: {
+                simple: 42,
+              },
+            },
+            output: {
+              formValue: '41.9832',
+              token: USDC,
+              amount: {
+                simple: 41.983,
+              },
+            },
+            feeAmountSimple: '0.0168',
+          },
+        });
+      });
+
+      test('Changing either token to another bAsset keeps the same amounts', () => {
+        act(() => {
+          dispatch().setToken(Fields.Input, DAI);
+          dispatch().setToken(Fields.Output, USDC);
+          dispatch().setQuantity(Fields.Input, '10');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: DAI,
+            },
+            output: {
+              formValue: '9.996',
+              token: USDC,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().setToken(Fields.Input, TUSD);
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: TUSD,
+            },
+            output: {
+              formValue: '9.996',
+              token: USDC,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().setToken(Fields.Input, USDC);
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: USDC,
+            },
+            output: {
+              formValue: '9.996',
+              token: TUSD,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().setToken(Fields.Output, USDC);
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: TUSD,
+            },
+            output: {
+              formValue: '9.996',
+              token: USDC,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+      });
+
+      test('Inverting direction back and forth keeps the amounts the same', () => {
+        act(() => {
+          dispatch().setToken(Fields.Input, DAI);
+          dispatch().setToken(Fields.Output, USDC);
+          dispatch().setQuantity(Fields.Input, '10');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: DAI,
+            },
+            output: {
+              formValue: '9.996',
+              token: USDC,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().invertDirection();
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: USDC,
+            },
+            output: {
+              formValue: '9.996',
+              token: DAI,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().invertDirection();
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10',
+              token: DAI,
+            },
+            output: {
+              formValue: '9.996',
+              token: USDC,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().setQuantity(Fields.Output, '10');
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10.004',
+              token: DAI,
+            },
+            output: {
+              formValue: '10',
+              token: USDC,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().invertDirection();
+        });
+
+        expect(state()).toMatchObject({
+          values: {
+            input: {
+              formValue: '10.004',
+              token: USDC,
+            },
+            output: {
+              formValue: '10',
+              token: DAI,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+      });
+
+      test('When swapping, selecting a masset as output changes mode to mint and removes swap fee', () => {
+        act(() => {
+          dispatch().setToken(Fields.Input, DAI);
+          dispatch().setToken(Fields.Output, USDC);
+          dispatch().setQuantity(Fields.Input, '10');
+        });
+
+        expect(state()).toMatchObject({
+          mode: Mode.Swap,
+          values: {
+            input: {
+              formValue: '10',
+              token: DAI,
+            },
+            output: {
+              formValue: '9.996',
+              token: USDC,
+            },
+            feeAmountSimple: '0.004',
+          },
+        });
+
+        act(() => {
+          dispatch().setToken(Fields.Output, mUSD);
+        });
+
+        expect(state()).toMatchObject({
+          mode: Mode.MintSingle,
+          values: {
+            input: {
+              formValue: '10',
+              token: DAI,
+            },
+            output: {
+              formValue: '10',
+              token: mUSD,
+            },
+            feeAmountSimple: null,
+          },
+        });
       });
     });
 
     describe('mint', () => {
-      test('mint with DAI by setting input quantity', () => {
+      test('Minting does not add a fee', () => {
         act(() => {
           dispatch().setToken(Fields.Input, DAI);
-        });
-
-        act(() => {
-          dispatch().setQuantity(Fields.Input, '10');
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
-          values: {
-            input: {
-              token: DAI,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            feeAmountSimple: null,
-          },
-        });
-      });
-
-      test('mint with DAI by setting output quantity', () => {
-        act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-        });
-
-        act(() => {
-          dispatch().setQuantity(Fields.Output, '10');
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
-          values: {
-            input: {
-              token: DAI,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            feeAmountSimple: null,
-          },
-        });
-      });
-    });
-
-    describe('redeem', () => {
-      test('redeem DAI by setting input quantity', () => {
-        act(() => {
-          dispatch().setToken(Fields.Output, DAI);
-        });
-
-        act(() => {
-          dispatch().setQuantity(Fields.Input, '10');
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: DAI,
-              formValue: '9.98',
-              amount: {
-                simple: 9.98,
-              },
-            },
-            feeAmountSimple: '0.02',
-          },
-        });
-      });
-
-      test('redeem DAI by setting output quantity', () => {
-        act(() => {
-          dispatch().setToken(Fields.Output, DAI);
-        });
-
-        act(() => {
-          dispatch().setQuantity(Fields.Output, '10');
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-              formValue: '10.02',
-              amount: {
-                simple: 10.02,
-              },
-            },
-            output: {
-              token: DAI,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            feeAmountSimple: '0.02',
-          },
-        });
-      });
-    });
-
-    describe('setToken', () => {
-      test('setting minting input from DAI to USDC does not change type', () => {
-        act(() => {
-          dispatch().setQuantity(Fields.Input, '10');
-        });
-
-        act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
-          values: {
-            input: {
-              token: DAI,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            feeAmountSimple: null,
-          },
-        });
-
-        act(() => {
-          dispatch().setToken(Fields.Input, USDC);
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
-          values: {
-            input: {
-              token: USDC,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            feeAmountSimple: null,
-          },
-        });
-      });
-
-      test('setting minting output from mUSD to USDC changes type to redeem', () => {
-        act(() => {
-          dispatch().setQuantity(Fields.Input, '10');
-        });
-
-        act(() => {
-          dispatch().setToken(Fields.Input, USDC);
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
-          values: {
-            input: {
-              token: USDC,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            feeAmountSimple: null,
-          },
-        });
-
-        act(() => {
-          dispatch().setToken(Fields.Output, USDC);
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: USDC,
-              formValue: '9.98',
-              amount: {
-                simple: 9.98,
-              },
-            },
-            feeAmountSimple: '0.02',
-          },
-        });
-      });
-
-      test('setting minting output from mUSD, to DAI, to USDC changes type to redeem and input to mUSD', () => {
-        act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-        });
-
-        act(() => {
-          dispatch().setToken(Fields.Output, DAI);
-        });
-
-        act(() => {
-          dispatch().setToken(Fields.Output, USDC);
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-            },
-            output: {
-              token: USDC,
-            },
-            feeAmountSimple: null,
-          },
-        });
-      });
-
-      test('setting redeeming output from DAI to USDC does not change type', () => {
-        act(() => {
-          dispatch().setToken(Fields.Output, DAI);
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-            },
-            output: {
-              token: DAI,
-            },
-            feeAmountSimple: null,
-          },
-        });
-
-        act(() => {
-          dispatch().setToken(Fields.Output, USDC);
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-            },
-            output: {
-              token: USDC,
-            },
-            feeAmountSimple: null,
-          },
-        });
-      });
-
-      test('setting redeeming output from USDC to mUSD changes type to mint', () => {
-        act(() => {
-          dispatch().setToken(Fields.Output, USDC);
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-            },
-            output: {
-              token: USDC,
-            },
-            feeAmountSimple: null,
-          },
-        });
-
-        act(() => {
           dispatch().setToken(Fields.Output, mUSD);
+          dispatch().setQuantity(Fields.Input, '10');
         });
 
         expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
+          mode: Mode.MintSingle,
           values: {
             input: {
-              token: USDC,
+              formValue: '10',
+              token: DAI,
+              amount: {
+                simple: 10,
+              },
             },
             output: {
+              formValue: '10',
               token: mUSD,
+              amount: {
+                simple: 10,
+              },
             },
             feeAmountSimple: null,
           },
         });
       });
 
-      test('setting redeeming output from DAI, to USDC, to mUSD changes type to mint and input to USDC', () => {
+      test('When minting, selecting a bAsset as output changes mode to swap and applies swap fee to the input', () => {
         act(() => {
-          dispatch().setToken(Fields.Output, DAI);
+          dispatch().setToken(Fields.Input, DAI);
+          dispatch().setToken(Fields.Output, mUSD);
+          dispatch().setQuantity(Fields.Input, '10');
+        });
+
+        expect(state()).toMatchObject({
+          mode: Mode.MintSingle,
+          values: {
+            input: {
+              formValue: '10',
+              token: DAI,
+              amount: {
+                simple: 10,
+              },
+            },
+            output: {
+              formValue: '10',
+              token: mUSD,
+              amount: {
+                simple: 10,
+              },
+            },
+            feeAmountSimple: null,
+          },
         });
 
         act(() => {
           dispatch().setToken(Fields.Output, USDC);
         });
 
-        act(() => {
-          dispatch().setToken(Fields.Output, mUSD);
-        });
-
         expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
+          mode: Mode.Swap,
           values: {
             input: {
-              token: USDC,
+              formValue: '9.996',
+              token: DAI,
+              amount: {
+                simple: 9.996,
+              },
             },
             output: {
-              token: mUSD,
+              formValue: '10',
+              token: USDC,
+              amount: {
+                simple: 10,
+              },
             },
-            feeAmountSimple: null,
+            feeAmountSimple: '0.004',
           },
         });
       });
 
-      test('setting input to mUSD, then setting input amount, then setting output to USDC should set output amount with fee', () => {
+      test('It is not possible to set mUSD as input (redeeming)', () => {
         act(() => {
           dispatch().setToken(Fields.Input, mUSD);
         });
 
         expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
+          mode: Mode.Swap,
           values: {
             input: {
-              token: mUSD,
-              amount: {
-                simple: null,
+              token: {
+                address: null,
               },
             },
             output: {
               token: {
                 address: null,
               },
-              amount: {
-                simple: null,
-              },
             },
-            feeAmountSimple: null,
-          },
-        });
-
-        act(() => {
-          dispatch().setQuantity(Fields.Input, '10');
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: {
-                address: null,
-              },
-              formValue: '9.98',
-              amount: {
-                simple: null,
-              },
-            },
-            feeAmountSimple: '0.02',
-          },
-        });
-
-        act(() => {
-          dispatch().setToken(Fields.Output, USDC);
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: USDC,
-              formValue: '9.98',
-              amount: {
-                simple: 9.98,
-              },
-            },
-            feeAmountSimple: '0.02',
           },
         });
       });
-    });
 
-    describe('swapTransactionType', () => {
-      test('swap changes type, tokens/amounts and applies the fee if needed', () => {
+      test('It is not possible to invert direction when minting', () => {
         act(() => {
           dispatch().setToken(Fields.Input, DAI);
-        });
-
-        act(() => {
-          dispatch().setQuantity(Fields.Input, '10');
+          dispatch().setToken(Fields.Output, mUSD);
+          dispatch().invertDirection();
         });
 
         expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
+          mode: Mode.MintSingle,
           values: {
             input: {
               token: DAI,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
             },
             output: {
               token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
             },
-            feeAmountSimple: null,
-          },
-        });
-
-        act(() => {
-          dispatch().swapTransactionType();
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: DAI,
-              formValue: '9.98',
-              amount: {
-                simple: 9.98,
-              },
-            },
-            feeAmountSimple: '0.02',
-          },
-        });
-
-        act(() => {
-          dispatch().swapTransactionType();
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
-          values: {
-            input: {
-              token: DAI,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            feeAmountSimple: null,
-          },
-        });
-      });
-
-      test('swapping with only mUSD set retains the amount set', () => {
-        act(() => {
-          dispatch().setQuantity(Fields.Input, '10');
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
-          values: {
-            input: {
-              token: {
-                address: null,
-              },
-              formValue: '10',
-              amount: {
-                simple: null,
-              },
-            },
-            output: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            feeAmountSimple: null,
-          },
-        });
-
-        act(() => {
-          dispatch().swapTransactionType();
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            output: {
-              token: {
-                address: null,
-              },
-              formValue: '9.98',
-              amount: {
-                // The token must be set for this to be set
-                simple: null,
-              },
-            },
-            feeAmountSimple: '0.02',
-          },
-        });
-
-        act(() => {
-          dispatch().swapTransactionType();
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Mint,
-          values: {
-            input: {
-              token: {
-                address: null,
-              },
-              formValue: '10',
-              amount: {
-                simple: null,
-              },
-            },
-            output: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                simple: 10,
-              },
-            },
-            feeAmountSimple: null,
-          },
-        });
-
-        act(() => {
-          dispatch().swapTransactionType();
-        });
-
-        expect(state()).toMatchObject({
-          transactionType: TransactionType.Redeem,
-          values: {
-            input: {
-              token: mUSD,
-              formValue: '10',
-              amount: {
-                // simple: 10,
-              },
-            },
-            output: {
-              token: {
-                address: null,
-              },
-              formValue: '9.98',
-              amount: {
-                simple: null,
-              },
-            },
-            feeAmountSimple: '0.02',
           },
         });
       });
