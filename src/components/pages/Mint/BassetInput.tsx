@@ -143,8 +143,8 @@ export const BassetInput: FC<Props> = ({
   );
 
   const needsUnlock = useMemo<boolean>(
-    () => allowance?.[address]?.lte(0) || false,
-    [address, allowance],
+    () => (amount.exact && allowance?.[address]?.lt(amount.exact)) || false,
+    [address, allowance, amount],
   );
 
   useEffect(() => {
@@ -202,7 +202,7 @@ export const BassetInput: FC<Props> = ({
       </Rows>
       <ValidationRow>
         {needsUnlock ? (
-          <ApproveButton size={Size.s} onClick={unlock}>
+          <ApproveButton size={Size.s} onClick={unlock} type="button">
             Approve
           </ApproveButton>
         ) : null}

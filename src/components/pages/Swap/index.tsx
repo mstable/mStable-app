@@ -64,7 +64,7 @@ export const Swap: FC<{}> = () => {
         input.token.address &&
         input.amount.exact &&
         outputToken.allowance &&
-        outputToken.allowance[input.token.address]?.lte(input.amount.exact)
+        outputToken.allowance[input.token.address]?.lt(input.amount.exact)
       ),
     [mode, input, outputToken],
   );
@@ -344,7 +344,11 @@ export const Swap: FC<{}> = () => {
                 <>
                   <P size={1}>
                     This includes a redemption fee of{' '}
-                    <CountUp end={parseFloat(feeAmountSimple)} decimals={4} suffix=" mUSD" />
+                    <CountUp
+                      end={parseFloat(feeAmountSimple)}
+                      decimals={4}
+                      suffix=" mUSD"
+                    />
                     .
                   </P>
                   <P size={1}>

@@ -174,12 +174,12 @@ export const Mint: FC<{}> = () => {
 
   const handleUnlock = useCallback(
     (address: string): void => {
-      if (!signer) return;
+      if (!(signer && mUsdAddress)) return;
 
       const tokenContract = Erc20Factory.connect(address, signer);
 
       tokenContract.totalSupply().then(totalSupply => {
-        const manifest = {
+        const manifest: SendTxManifest<Interfaces.ERC20, 'approve'> = {
           iface: tokenContract,
           fn: 'approve',
           args: [mUsdAddress, totalSupply],

@@ -154,7 +154,7 @@ export const Save: FC<{}> = () => {
       !!(
         transactionType === TransactionType.Deposit &&
         inputAmount &&
-        mUsdSavings?.allowance?.lte(inputAmount)
+        mUsdSavings?.allowance?.lt(inputAmount)
       ),
     [transactionType, inputAmount, mUsdSavings],
   );
