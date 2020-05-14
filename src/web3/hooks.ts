@@ -103,7 +103,7 @@ export const useSavingsBalance = (account: string | null): Amount => {
       const exact = balance.mul(rate).div(SCALE);
       const simple = parseFloat(
         parseFloat(formatUnits(exact, 18))
-          .toFixed(4)
+          .toFixed(10)
           .toString(),
       );
 
