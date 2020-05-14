@@ -14,7 +14,7 @@ import {
 } from '../graphql/generated';
 import { truncateAddress } from './strings';
 import { theme } from '../theme';
-import { PERCENT_SCALE, SCALE } from './constants';
+import { SCALE } from './constants';
 
 type RateTimestamp = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
 
@@ -100,8 +100,12 @@ export const useSavingsBalance = (account: string | null): Amount => {
       const rate = parseUnits(latest.exchangeRate);
       const balance = parseUnits(creditBalance);
 
-      const exact = balance.mul(rate).div(PERCENT_SCALE);
-      const simple = parseFloat(formatUnits(exact, 18));
+      const exact = balance.mul(rate).div(SCALE);
+      const simple = parseFloat(
+        parseFloat(formatUnits(exact, 18))
+          .toFixed(6)
+          .toString(),
+      );
 
       return { exact, simple };
     }
