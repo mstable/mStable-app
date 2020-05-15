@@ -9,28 +9,20 @@ import React, {
   useReducer,
 } from 'react';
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
-import {
-  Action,
-  Actions,
-  BassetData,
-  BassetOutput,
-  Dispatch,
-  Mode,
-  State,
-} from './types';
-import { useMusdSubscription } from '../../../context/KnownAddressProvider';
+import { Action, Actions, BassetOutput, Dispatch, Mode, State } from './types';
+import { BassetData } from '../../../context/DataProvider/types';
 import { parseAmount } from '../../../web3/amounts';
 import { RATIO_SCALE, EXP_SCALE } from '../../../web3/constants';
 import { Amount } from '../../../types';
-import { useTokenBalance } from '../../../context/TokensProvider';
+import { useMusdData } from '../../../context/DataProvider/DataProvider';
 
 const estimateRedemptionQuantities = (
   bassets: BassetData[],
   massetAmount: BigNumber,
 ): Amount[] => {
   const scaledVaults = bassets.map(b =>
-    parseUnits(b.vaultBalance, b.token.decimals)
-      .mul(b.ratio)
+    parseUnits(b.vaultBalance as string, b.token.decimals)
+      .mul(b.ratio as string)
       .div(RATIO_SCALE),
   );
 
@@ -42,7 +34,9 @@ const estimateRedemptionQuantities = (
   return scaledVaults.map((vault, index) => {
     const percentage = vault.mul(EXP_SCALE).div(totalVault);
     const scaledAmount = percentage.mul(massetAmount).div(EXP_SCALE);
-    const exact = scaledAmount.mul(RATIO_SCALE).div(bassets[index].ratio);
+    const exact = scaledAmount
+      .mul(RATIO_SCALE)
+      .div(bassets[index].ratio as string);
     return {
       exact,
       simple: parseFloat(formatUnits(exact, bassets[index].token.decimals)),
@@ -51,18 +45,12 @@ const estimateRedemptionQuantities = (
 };
 
 const updateBassetAmounts = (state: State): State => {
-  if (!state.massetData.data?.masset?.basket) return state;
+  if (!state.massetData?.basket) return state;
 
   const {
-    bassets,
+    bAssetOutputs,
     redemption,
-    massetData: {
-      data: {
-        masset: {
-          basket: { bassets: bassetsData },
-        },
-      },
-    },
+    massetData: { bAssets: bassetsData },
   } = state;
 
   const redemptionAmounts = estimateRedemptionQuantities(
@@ -72,7 +60,7 @@ const updateBassetAmounts = (state: State): State => {
 
   return {
     ...state,
-    bassets: bassets.map((b, index) => ({
+    bAssetOutputs: bAssetOutputs.map((b, index) => ({
       ...b,
       amount: redemptionAmounts[index],
     })),
@@ -87,10 +75,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ...state,
         massetData,
         bassets:
-          state.bassets.length > 0
-            ? state.bassets
-            : massetData.data?.masset?.basket.bassets.map(b => ({
-                address: b.token.address,
+          state.bAssetOutputs.length > 0
+            ? state.bAssetOutputs
+            : massetData.bAssets.map(b => ({
+                address: b.address,
                 amount: { exact: null, simple: null },
               })) || [],
       };
@@ -103,7 +91,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
           formValue,
           amount: parseAmount(
             formValue,
-            state.massetData.data?.masset?.token.decimals || 18,
+            state.massetData?.token.decimals || 18,
           ),
         },
       });
@@ -112,23 +100,15 @@ const reducer: Reducer<State, Action> = (state, action) => {
       const { error } = action.payload;
       return { ...state, error };
     }
-    case Actions.UpdateMassetBalance: {
-      const massetBalance = action.payload;
-      return { ...state, massetBalance };
-    }
     default:
       throw new Error('Unhandled action type');
   }
 };
 
 const initialState: State = {
-  bassets: [],
+  bAssetOutputs: [],
   error: null,
-  massetData: {
-    data: undefined,
-    loading: true,
-  },
-  massetBalance: null,
+  massetData: null,
   mode: Mode.RedeemProportional,
   redemption: {
     formValue: null,
@@ -159,32 +139,25 @@ export const ExitProvider: FC<{}> = ({ children }) => {
     [dispatch],
   );
 
-  const { data, loading } = useMusdSubscription();
+  const data = useMusdData();
   useEffect(() => {
     dispatch({
       type: Actions.UpdateMassetData,
-      payload: { data, loading },
+      payload: data,
     });
-  }, [dispatch, data, loading]);
+  }, [dispatch, data]);
 
-  const massetBalance = useTokenBalance(data?.masset?.token.address || null);
+  const mUsdBalance = data?.token?.balance;
   useEffect(() => {
-    dispatch({
-      type: Actions.UpdateMassetBalance,
-      payload: massetBalance,
-    });
-  }, [dispatch, massetBalance]);
-
-  useEffect(() => {
-    if (redemption.amount.exact && massetBalance) {
-      if (redemption.amount.exact.gt(massetBalance)) {
+    if (redemption.amount.exact && mUsdBalance) {
+      if (redemption.amount.exact.gt(mUsdBalance)) {
         setError('Insufficient balance');
         return;
       }
     }
 
     if (error) setError(null);
-  }, [setError, error, redemption, massetBalance]);
+  }, [setError, error, redemption, mUsdBalance]);
 
   return (
     <context.Provider
@@ -208,20 +181,17 @@ export const useExitContext = (): [State, Dispatch] => useContext(context);
 export const useExitState = (): State => useExitContext()[0];
 
 export const useExitBassetOutput = (address: string): BassetOutput | null => {
-  const { bassets } = useExitState();
-  return useMemo(() => bassets.find(b => b.address === address) || null, [
+  const { bAssetOutputs } = useExitState();
+  return useMemo(() => bAssetOutputs.find(b => b.address === address) || null, [
     address,
-    bassets,
+    bAssetOutputs,
   ]);
 };
 
 export const useExitBassetData = (address: string): BassetData | null => {
   const { massetData } = useExitState();
   return useMemo(
-    () =>
-      massetData.data?.masset?.basket.bassets.find(
-        b => b.token.address === address,
-      ) || null,
+    () => massetData?.bAssets.find(b => b.address === address) || null,
     [massetData, address],
   );
 };

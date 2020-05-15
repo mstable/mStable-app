@@ -1,22 +1,25 @@
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { formatUnits } from 'ethers/utils';
-import { Basset, BassetStatus, Dispatch } from './types';
+import { Interfaces, SendTxManifest } from '../../../types';
+import { BassetInput as BassetInputProps } from './types';
 import { Button } from '../../core/Button';
-import { Size } from '../../../theme';
-import { TokenIcon } from '../../icons/TokenIcon';
-import { ToggleInput } from '../../forms/ToggleInput';
-import { useTokenWithBalance } from '../../../context/TokensProvider';
 import { CountUp as CountUpBase } from '../../core/CountUp';
+import { Size } from '../../../theme';
+import { ToggleInput } from '../../forms/ToggleInput';
+import { TokenIcon } from '../../icons/TokenIcon';
+import {
+  useBassetData,
+  useMusdTokenData,
+} from '../../../context/DataProvider/DataProvider';
+import { useErc20Contract } from '../../../context/DataProvider/ContractsProvider';
+import { useSendTransaction } from '../../../context/TransactionsProvider';
 
 interface Props {
-  basset: Basset;
-  setBassetBalance: Dispatch['setBassetBalance'];
-  setError: Dispatch['setError'];
-  handleToggle(address: string): void;
-  handleUnlock(address: string): void;
-  massetAddress: string | null;
+  input: BassetInputProps;
+  mAssetAddress: string | null;
   toggleDisabled: boolean;
+  handleToggle(address: string): void;
 }
 
 const CountUp = styled(CountUpBase)`
@@ -90,7 +93,7 @@ const ApproveButton = styled(Button)`
 const Rows = styled.div<{
   enabled: boolean;
   valid: boolean;
-  overweight: boolean;
+  overweight?: boolean;
 }>`
   border: 1px
     ${({ theme, valid }) =>
@@ -114,27 +117,41 @@ const Rows = styled.div<{
   }
 `;
 
-const Container = styled.div``;
-
 export const BassetInput: FC<Props> = ({
-  basset: { address, enabled, amount, error, maxWeight, status, overweight },
-  handleUnlock,
+  input: { address, amount, enabled, error },
   handleToggle,
-  massetAddress,
-  setBassetBalance,
-  setError,
+  mAssetAddress,
   toggleDisabled,
 }) => {
-  const unlock = useCallback(() => {
-    handleUnlock(address);
-  }, [handleUnlock, address]);
+  const {
+    overweight,
+    token: { balance, decimals, symbol } = {
+      balance: null,
+      decimals: null,
+      symbol: null,
+    },
+  } = useBassetData(address) || {};
+  const { allowance } = useMusdTokenData();
+
+  const sendTransaction = useSendTransaction();
+  const tokenContract = useErc20Contract(address);
+
+  const unlock = useCallback((): void => {
+    if (!(tokenContract && mAssetAddress)) return;
+
+    tokenContract.totalSupply().then(totalSupply => {
+      const manifest: SendTxManifest<Interfaces.ERC20, 'approve'> = {
+        iface: tokenContract,
+        fn: 'approve',
+        args: [mAssetAddress, totalSupply],
+      };
+      sendTransaction(manifest);
+    });
+  }, [sendTransaction, tokenContract, mAssetAddress]);
 
   const toggle = useCallback(() => {
     handleToggle(address);
   }, [handleToggle, address]);
-
-  const { allowance } = useTokenWithBalance(massetAddress);
-  const { balance, symbol, decimals } = useTokenWithBalance(address);
 
   const simpleBalance = useMemo<number>(
     () =>
@@ -147,38 +164,8 @@ export const BassetInput: FC<Props> = ({
     [address, allowance, amount],
   );
 
-  useEffect(() => {
-    if (balance) setBassetBalance(address, balance);
-  }, [address, balance, setBassetBalance]);
-
-  useEffect(() => {
-    if (!amount.exact) return;
-
-    if (amount.exact.gt(0) && status === BassetStatus.Failed) {
-      setError('Asset failed', address);
-      return;
-    }
-
-    if (balance && amount.exact.gt(balance)) {
-      setError('Insufficient balance', address);
-      return;
-    }
-
-    if (allowance?.[address] && amount.exact.gt(allowance[address])) {
-      setError('Amount exceeds allowance', address);
-      return;
-    }
-
-    if (amount.exact.gt(maxWeight)) {
-      setError('Amount exceeds max weight', address);
-      return;
-    }
-
-    setError(null, address);
-  }, [address, allowance, amount, balance, maxWeight, setError, status]);
-
   return (
-    <Container>
+    <div>
       <Rows overweight={overweight} enabled={enabled} valid={error === null}>
         <HeaderRow>
           <TokenContainer>
@@ -213,6 +200,6 @@ export const BassetInput: FC<Props> = ({
           </>
         ) : null}
       </ValidationRow>
-    </Container>
+    </div>
   );
 };

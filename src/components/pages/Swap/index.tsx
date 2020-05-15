@@ -4,23 +4,23 @@ import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { useWallet } from 'use-wallet';
 import { A } from 'hookrouter';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
-import { useTokenWithBalance } from '../../../context/TokensProvider';
+import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
+import {
+  useErc20Contract,
+  useMusdContract,
+} from '../../../context/DataProvider/ContractsProvider';
+import { useMusdData } from '../../../context/DataProvider/DataProvider';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
 import { H3, P } from '../../core/Typography';
-import { ReactComponent as ArrowsSVG } from '../arrows.svg';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
-import { Fields, Mode } from './types';
 import { formatExactAmount } from '../../../web3/amounts';
-import { CountUp } from '../../core/CountUp';
-import {
-  useErc20Contract,
-  useMusdContract,
-} from '../../../context/ContractsProvider';
-import { useSwapState } from './state';
-import { useMusdSubscription } from '../../../context/KnownAddressProvider';
 import { Interfaces, SendTxManifest } from '../../../types';
+import { CountUp } from '../../core/CountUp';
+import { ReactComponent as ArrowsSVG } from '../arrows.svg';
+import { Fields, Mode } from './types';
+import { useSwapState } from './state';
 
 const SwapDirectionButton = styled.div<{ disabled: boolean }>`
   display: flex;
@@ -51,9 +51,6 @@ export const Swap: FC<{}> = () => {
     { invertDirection, setToken, setQuantity, setError, updateMassetData },
   ] = useSwapState();
 
-  const { data, loading } = useMusdSubscription();
-  const mUsd = data?.masset?.token;
-
   const inputToken = useTokenWithBalance(input.token.address);
   const outputToken = useTokenWithBalance(output.token.address);
 
@@ -69,9 +66,11 @@ export const Swap: FC<{}> = () => {
     [mode, input, outputToken],
   );
 
+  const mUsdData = useMusdData();
+  const { token: mUsdToken, bAssets } = mUsdData;
   useEffect(() => {
-    updateMassetData(data, loading);
-  }, [updateMassetData, data, loading]);
+    updateMassetData(mUsdData);
+  }, [updateMassetData, mUsdData]);
 
   const touched = useRef<boolean>(false);
   useEffect(() => {
@@ -128,7 +127,7 @@ export const Swap: FC<{}> = () => {
     }
 
     setError(null);
-  }, [inputToken, mUsd, needsUnlock, setError, input, output]);
+  }, [inputToken, mUsdToken, needsUnlock, setError, input, output]);
 
   /**
    * Error message strings
@@ -162,11 +161,11 @@ export const Swap: FC<{}> = () => {
   const [inputAddresses, outputAddresses] = useMemo<
     [string[], string[]]
   >(() => {
-    if (!data?.masset?.basket.bassets) return [[], []];
+    if (!(bAssets && mUsdToken?.address)) return [[], []];
 
-    const bAssets = data.masset.basket.bassets.map(b => b.id);
-    return [bAssets, [data.masset.id, ...bAssets]];
-  }, [data]);
+    const bAssetAddresses = bAssets.map(b => b.address);
+    return [bAssetAddresses, [mUsdToken.address, ...bAssetAddresses]];
+  }, [bAssets, mUsdToken]);
 
   const inputItems = useMemo(
     () => [

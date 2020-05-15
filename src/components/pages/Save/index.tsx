@@ -12,8 +12,8 @@ import { useWallet } from 'use-wallet';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Reasons, TransactionType, useSaveState } from './state';
-import { useMUSDSavings } from '../../../context/KnownAddressProvider';
-import { useTokenWithBalance } from '../../../context/TokensProvider';
+import { useMUSDSavings } from '../../../context/DataProvider/DataProvider';
+import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
 import { Interfaces, SendTxManifest } from '../../../types';
 import { Button } from '../../core/Button';
 import { H3, P } from '../../core/Typography';
@@ -24,7 +24,7 @@ import { useSendTransaction } from '../../../context/TransactionsProvider';
 import {
   useMusdContract,
   useSavingsContract,
-} from '../../../context/ContractsProvider';
+} from '../../../context/DataProvider/ContractsProvider';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
 import {
   useApy,

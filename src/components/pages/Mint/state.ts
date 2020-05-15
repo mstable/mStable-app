@@ -1,4 +1,4 @@
-import { Reducer, useCallback, useMemo, useReducer } from 'react';
+import { Reducer, useCallback, useEffect, useMemo, useReducer } from 'react';
 import {
   BigNumber,
   bigNumberify,
@@ -6,18 +6,13 @@ import {
   formatUnits,
   parseUnits,
 } from 'ethers/utils';
+import { pipe } from 'ts-pipe-compose';
 import { Amount, TokenQuantity } from '../../../types';
 import { formatSimpleAmount, parseAmount } from '../../../web3/amounts';
-import {
-  Action,
-  Actions,
-  Basset,
-  BassetStatus,
-  Dispatch,
-  Mode,
-  State,
-} from './types';
 import { RATIO_SCALE } from '../../../web3/constants';
+import { useMusdData } from '../../../context/DataProvider/DataProvider';
+import { Action, Actions, Dispatch, Mode, State } from './types';
+import { applyValidation } from './validation';
 
 const initialTokenQuantity: TokenQuantity = Object.freeze({
   formValue: null,
@@ -33,12 +28,13 @@ const initialTokenQuantity: TokenQuantity = Object.freeze({
 });
 
 const initialState: State = Object.freeze({
-  initialized: false,
+  bAssetInputs: [],
   error: null,
-  masset: initialTokenQuantity,
-  bassets: [],
-  basket: null,
+  mAsset: initialTokenQuantity,
+  mAssetData: null,
   mode: Mode.Single,
+  valid: false,
+  touched: false,
 });
 
 const applyRatioMassetToBasset = (
@@ -50,54 +46,49 @@ const applyRatioMassetToBasset = (
     .div(ratio);
 
 const calcOptimalBassetQuantitiesForMint = ({
-  masset,
-  bassets,
-  basket,
+  mAsset,
+  bAssetInputs,
+  mAssetData,
 }: State): Amount[] => {
-  const enabledMaxWeightsTotal: BigNumber = bassets.reduce(
+  const enabledMaxWeightsTotal: BigNumber = bAssetInputs.reduce(
     (_total, { address, enabled }) => {
-      if (!enabled) return _total;
-
-      // TODO later (awaiting subgraph) - use maxWeight
       const { maxWeight } =
-        (basket as NonNullable<typeof basket>).bassets.find(
-          b => b.token.address === address,
-        ) || {};
-      return _total.add(maxWeight as string);
+        mAssetData?.bAssets.find(b => b.address === address) || {};
+
+      return enabled && maxWeight ? _total.add(maxWeight) : _total;
     },
     new BigNumber(0),
   );
 
-  return bassets.map(({ enabled, address }) => {
-    if (!enabled) {
+  return bAssetInputs.map(({ enabled, address }) => {
+    const { maxWeight, ratio, token } =
+      mAssetData?.bAssets.find(b => b.address === address) || {};
+
+    if (
+      !(enabled && maxWeight && ratio && token?.decimals && mAsset.amount.exact)
+    ) {
       return { exact: new BigNumber(0), simple: 0 };
     }
 
-    const {
-      maxWeight,
-      ratio,
-      token: { decimals },
-    } = basket?.bassets.find(b => b.token.address === address) as NonNullable<
-      State['basket']
-    >['bassets'][0];
-
-    // TODO later (awaiting subgraph) - use maxWeight
     const weight = parseUnits(maxWeight).div(enabledMaxWeightsTotal);
 
-    const relativeUnitsToMint = masset.amount.exact?.mul(weight);
-    const formattedUnits = formatUnits(relativeUnitsToMint || '0', 18);
+    const relativeUnitsToMint = mAsset.amount.exact?.mul(weight);
+
+    // TODO this is messy
+    const formattedUnits = formatUnits(relativeUnitsToMint, 18);
+
     const exact = applyRatioMassetToBasset(formattedUnits.slice(0, -2), ratio);
 
-    return { exact, simple: parseFloat(formatUnits(exact, decimals)) };
+    return { exact, simple: parseFloat(formatUnits(exact, token.decimals)) };
   });
 };
 
-const updateBassetQuantities = (state: State): State => {
+const updateBAssetInputs = (state: State): State => {
   const bassetAmounts = calcOptimalBassetQuantitiesForMint(state);
 
   return {
     ...state,
-    bassets: state.bassets.map((basset, index) => ({
+    bAssetInputs: state.bAssetInputs.map((basset, index) => ({
       ...basset,
       amount: bassetAmounts[index],
       formValue: formatSimpleAmount(bassetAmounts[index].simple || 0),
@@ -105,145 +96,106 @@ const updateBassetQuantities = (state: State): State => {
   };
 };
 
+const update = (state: State): State =>
+  pipe(state, updateBAssetInputs, applyValidation);
+
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case Actions.Initialize: {
-      const { masset, basket } = action.payload;
+    case Actions.UpdateMassetData: {
+      const mAssetData = action.payload;
+      const token = mAssetData?.token;
       return {
         ...state,
-        masset: {
-          ...state.masset,
-          token: masset,
+        mAssetData,
+        mAsset: {
+          ...state.mAsset,
+          token:
+            token && token.address && token.symbol && token.decimals
+              ? {
+                  address: token.address,
+                  symbol: token.symbol,
+                  decimals: token.decimals,
+                }
+              : state.mAsset.token,
         },
-        basket,
-        bassets: basket.bassets.reduce(
-          (
-            _bassets,
-            {
-              token: { address, decimals, totalSupply },
-              vaultBalance,
-              maxWeight,
-              status,
-              ratio,
-            },
-            index,
-          ) => {
-            const maxWeightInUnits = parseUnits(
-              totalSupply,
-              (masset as NonNullable<typeof masset>).decimals as number,
-            )
-              .mul(maxWeight)
-              .div((1e18).toString());
-            const currentVaultUnits = parseUnits(vaultBalance, decimals)
-              .mul(ratio)
-              .div((1e8).toString());
-            const overweight =
-              parseUnits(totalSupply, decimals).gt(0) &&
-              currentVaultUnits.gt(maxWeightInUnits);
-
-            const enabledBasset = _bassets.find(b => b.enabled);
-
-            return [
-              ..._bassets,
-              {
+        bAssetInputs:
+          state.bAssetInputs.length > 0
+            ? state.bAssetInputs
+            : mAssetData?.bAssets.map(({ address }) => ({
                 address,
-                amount: { simple: null, exact: null },
-                balance: null,
-                // TODO the basset with the highest balance should be enabled
-                //  by default.
-                enabled:
-                  (!overweight && !enabledBasset) ||
-                  (!enabledBasset && index === basket.bassets.length - 1),
+                enabled: false,
+                amount: { exact: null, simple: null },
                 error: null,
                 formValue: null,
-                maxWeight: maxWeightInUnits,
-                overweight,
-                needsUnlock: false,
-                status: status as BassetStatus,
-              },
-            ];
-          },
-          [] as Basset[],
-        ),
-        initialized: true,
+              })),
       };
     }
-    case Actions.SetBassetBalance: {
-      const { basset, balance } = action.payload;
-      return updateBassetQuantities({
-        ...state,
-        bassets: state.bassets.map(b =>
-          b.address === basset ? { ...b, balance } : b,
-        ),
-      });
-    }
-    case Actions.SetError: {
-      const { basset, reason } = action.payload;
-      return basset
-        ? {
-            ...state,
-            bassets: state.bassets.map(b =>
-              b.address === basset ? { ...b, error: reason } : b,
-            ),
-          }
-        : { ...state, error: reason };
-    }
+
     case Actions.SetMassetAmount: {
-      const massetAmount = parseAmount(
+      const mAssetAmount = parseAmount(
         action.payload,
-        state.masset.token.decimals,
+        state.mAsset.token.decimals,
       );
-      const masset = {
-        ...state.masset,
+      const mAsset = {
+        ...state.mAsset,
         formValue: action.payload,
-        amount: massetAmount,
+        amount: mAssetAmount,
       };
-      return updateBassetQuantities({ ...state, masset });
+      return update({ ...state, mAsset, touched: true });
     }
-    // TODO later: enable this action to set specific bassets amounts
+
+    // TODO later: enable this action to set specific bAssetInputs amounts
     // case Actions.SetBassetAmount: {
     //   const { amount, basset } = action.payload;
     //   return {
     //     ...state,
-    //     bassets: {
-    //       ...state.bassets,
+    //     bAssetInputs: {
+    //       ...state.bAssetInputs,
     //       [basset]: {
-    //         ...state.bassets[basset],
-    //         amount: parseAmount(amount, state.bassets[basset].token.decimals),
+    //         ...state.bAssetInputs[basset],
+    //         amount: parseAmount(amount, state.bAssetInputs[basset].token.decimals),
     //       },
     //     },
     //   };
     // }
+
     case Actions.ToggleBassetEnabled: {
       const address = action.payload;
 
       if (
         state.mode === Mode.Multi ||
-        state.bassets.find(b => b.address === address)?.overweight
+        state.mAssetData?.bAssets.find(b => b.address === address)?.overweight
       ) {
         return state;
       }
 
-      return updateBassetQuantities({
+      return update({
         ...state,
-        bassets: state.bassets.map(b => ({
+        bAssetInputs: state.bAssetInputs.map(b => ({
           ...b,
           enabled: b.address === address ? !b.enabled : false,
         })),
       });
     }
+
     case Actions.ToggleMode: {
       const mode = state.mode === Mode.Single ? Mode.Multi : Mode.Single;
-      return updateBassetQuantities({
+      return update({
         ...state,
         mode,
-        bassets: state.bassets.map(b =>
+        bAssetInputs: state.bAssetInputs.map(b =>
           mode === Mode.Single
             ? { ...b, enabled: false }
-            : { ...b, enabled: !b.overweight },
+            : {
+                ...b,
+                enabled: !state.mAssetData?.bAssets.find(
+                  _b => _b.address === b.address,
+                )?.overweight,
+              },
         ),
       });
     }
+
     default:
       throw new Error('Unhandled action type');
   }
@@ -252,33 +204,9 @@ const reducer: Reducer<State, Action> = (state, action) => {
 export const useMintState = (): [State, Dispatch] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const initialize = useCallback<Dispatch['initialize']>(
-    (masset, basket) => {
-      dispatch({ type: Actions.Initialize, payload: { masset, basket } });
-    },
-    [dispatch],
-  );
-
   const setMassetAmount = useCallback<Dispatch['setMassetAmount']>(
     amount => {
       dispatch({ type: Actions.SetMassetAmount, payload: amount });
-    },
-    [dispatch],
-  );
-
-  const setBassetBalance = useCallback<Dispatch['setBassetBalance']>(
-    (basset, balance) => {
-      dispatch({
-        type: Actions.SetBassetBalance,
-        payload: { basset, balance },
-      });
-    },
-    [dispatch],
-  );
-
-  const setError = useCallback<Dispatch['setError']>(
-    (reason, basset) => {
-      dispatch({ type: Actions.SetError, payload: { reason, basset } });
     },
     [dispatch],
   );
@@ -302,14 +230,16 @@ export const useMintState = (): [State, Dispatch] => {
     [dispatch],
   );
 
+  const mUsdData = useMusdData();
+  useEffect(() => {
+    dispatch({ type: Actions.UpdateMassetData, payload: mUsdData });
+  }, [mUsdData]);
+
   return useMemo(
     () => [
       state,
       {
-        initialize,
         // setBassetAmount,
-        setBassetBalance,
-        setError,
         setMassetAmount,
         toggleMode,
         toggleBassetEnabled,
@@ -317,10 +247,7 @@ export const useMintState = (): [State, Dispatch] => {
     ],
     [
       state,
-      initialize,
       // setBassetAmount,
-      setBassetBalance,
-      setError,
       setMassetAmount,
       toggleMode,
       toggleBassetEnabled,

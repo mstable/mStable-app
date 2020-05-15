@@ -1,10 +1,5 @@
 import { TokenDetails, TokenQuantity } from '../../../types';
-import { MassetSubSubscriptionHookResult } from '../../../graphql/generated';
-
-export type MassetData = Pick<
-  MassetSubSubscriptionHookResult,
-  'data' | 'loading'
->;
+import { MassetData } from '../../../context/DataProvider/types';
 
 export enum Fields {
   Input = 'input',
@@ -52,15 +47,12 @@ export interface State {
     feeAmountSimple: string | null;
   };
   mode: Mode;
-  massetData: MassetData;
+  mAssetData: MassetData | null;
   error: null | { reason: string; field?: Fields };
 }
 
 export interface Dispatch {
-  updateMassetData(
-    data: MassetData['data'],
-    loading: MassetData['loading'],
-  ): void;
+  updateMassetData(mAssetData: MassetData): void;
   setError(reason: string | null, field?: Fields): void;
   invertDirection(): void;
   setToken(field: Fields, token: NonNullable<TokenDetails> | null): void;

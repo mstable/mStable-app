@@ -7,15 +7,7 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import { BigNumber } from 'ethers/utils';
-import { ContractNames } from '../types';
-import {
-  SavingsContractQuery,
-  useMassetQuery,
-  useMassetSubSubscription,
-  useSavingsContractQuery,
-} from '../graphql/generated';
-import { useToken } from './TokensProvider';
+import { ContractNames } from '../../types';
 
 type State = Record<ContractNames, string | null>;
 
@@ -116,45 +108,4 @@ export const useKnownAddress = (
 ): State[typeof contractName] => {
   const state = useKnownAddressState();
   return state[contractName];
-};
-
-export const useMusdQuery = (): ReturnType<typeof useMassetQuery> => {
-  const address = useKnownAddress(ContractNames.mUSD);
-  return useMassetQuery({
-    variables: { id: address as string },
-    skip: !address,
-  });
-};
-
-export const useMusdSubscription = (): ReturnType<typeof useMassetSubSubscription> => {
-  const address = useKnownAddress(ContractNames.mUSD);
-  return useMassetSubSubscription({
-    variables: { id: address as string },
-    skip: !address,
-  });
-};
-
-export const useMUSDSavings = ():
-  | (SavingsContractQuery['savingsContracts'][0] & {
-      allowance: BigNumber | null;
-    })
-  | null => {
-  const address = useKnownAddress(ContractNames.mUSDSavings);
-  const mUSDAddress = useKnownAddress(ContractNames.mUSD);
-
-  const {
-    data: { savingsContracts: [fromData] = [] } = {},
-  } = useSavingsContractQuery({
-    variables: { id: address as string },
-    skip: !address,
-  });
-
-  const { allowance } = useToken(address) || {};
-
-  return fromData
-    ? {
-        ...fromData,
-        allowance: allowance && mUSDAddress ? allowance[mUSDAddress] : null,
-      }
-    : null;
 };

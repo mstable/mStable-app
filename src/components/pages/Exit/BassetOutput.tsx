@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 import { formatUnits } from 'ethers/utils';
 import { CountUp as CountUpBase } from '../../core/CountUp';
-import { useTokenBalance } from '../../../context/TokensProvider';
 import { TokenIcon } from '../../icons/TokenIcon';
 import { useExitBassetData, useExitBassetOutput } from './ExitProvider';
 
@@ -83,13 +82,14 @@ const Rows = styled.div<{
 `;
 
 export const BassetOutput: FC<Props> = ({ address }) => {
-  const balance = useTokenBalance(address);
   const bassetData = useExitBassetData(address);
-  const bassetOption = useExitBassetOutput(address);
+  const bassetOutput = useExitBassetOutput(address);
+
+  const balance = bassetData?.token?.balance;
 
   const simpleBalance = useMemo<number>(
     () =>
-      balance && bassetData
+      balance && bassetData?.token.decimals
         ? parseFloat(formatUnits(balance, bassetData.token.decimals))
         : 0,
     [balance, bassetData],
@@ -100,7 +100,7 @@ export const BassetOutput: FC<Props> = ({ address }) => {
       <Rows valid>
         <HeaderRow>
           <TokenContainer>
-            {!bassetData ? (
+            {!bassetData?.token?.symbol ? (
               <Skeleton />
             ) : (
               <>
@@ -112,7 +112,7 @@ export const BassetOutput: FC<Props> = ({ address }) => {
         </HeaderRow>
         <Row>
           <Label>Amount</Label>
-          <CountUp duration={0.4} end={bassetOption?.amount.simple || 0} />
+          <CountUp duration={0.4} end={bassetOutput?.amount.simple || 0} />
         </Row>
         <Row>
           <Label>Your Balance</Label>

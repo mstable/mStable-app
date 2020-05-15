@@ -25,7 +25,8 @@ import {
 import { TransactionOverrides } from '../typechain/index.d';
 import { getTransactionStatus } from '../web3/transactions';
 import { MassetQuery } from '../graphql/generated';
-import { useKnownAddress, useMusdQuery } from './KnownAddressProvider';
+import { useKnownAddress } from './DataProvider/KnownAddressProvider';
+import { useMusdQuery } from './DataProvider/DataProvider';
 import { formatExactAmount } from '../web3/amounts';
 import { getEtherscanLink } from '../web3/strings';
 import { EMOJIS } from '../web3/constants';
@@ -424,7 +425,7 @@ const isTransactionOverrides = (arg: unknown): boolean =>
   typeof arg === 'object' &&
   overrideProps.some(prop => Object.hasOwnProperty.call(arg, prop));
 
-const addGasLimit = async (
+const addGasSettings = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   manifest: SendTxManifest<any, any>,
 ): Promise<typeof manifest> => {
@@ -441,9 +442,13 @@ const addGasLimit = async (
 
   // Set the gas limit (with the calculated gas margin)
   const gasLimit = await iface.estimate[fn](...args);
+
+  // Also set the gas price, because some providers don't
+  const gasPrice = await iface.provider.getGasPrice();
+
   return {
     ...manifest,
-    args: [...args, { gasLimit: calculateGasMargin(gasLimit) }],
+    args: [...args, { gasLimit: calculateGasMargin(gasLimit), gasPrice }],
   };
 };
 
@@ -451,7 +456,7 @@ const sendTransaction = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   manifest: SendTxManifest<any, any>,
 ): Promise<TransactionResponse> => {
-  const { iface, fn, args } = await addGasLimit(manifest);
+  const { iface, fn, args } = await addGasSettings(manifest);
   return iface[fn](...args);
 };
 

@@ -12,25 +12,20 @@ import { useExitContext } from './ExitProvider';
 import { formatExactAmount } from '../../../web3/amounts';
 import { Interfaces, SendTxManifest } from '../../../types';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
-import { useMusdContract } from '../../../context/ContractsProvider';
+import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
 
 export const ExitForm: FC<{}> = () => {
   const [
-    {
-      redemption,
-      error,
-      bassets,
-      massetData: { loading, data },
-      massetBalance,
-    },
+    { redemption, error, bAssetOutputs, massetData },
     { setRedemptionAmount },
   ] = useExitContext();
 
-  const massetAddress = data?.masset?.token.address || null;
+  const { loading, token } = massetData || {};
+  const mUsdBalance = token?.balance;
+  const massetAddress = token?.address || null;
 
   const { account } = useWallet();
   const sendTransaction = useSendTransaction();
-
   const mUsdContract = useMusdContract();
 
   const touched = useRef<boolean>();
@@ -52,10 +47,10 @@ export const ExitForm: FC<{}> = () => {
   );
 
   const handleSetMax = useCallback(() => {
-    if (massetBalance) {
-      setRedemptionAmount(formatExactAmount(massetBalance, 18));
+    if (mUsdBalance) {
+      setRedemptionAmount(formatExactAmount(mUsdBalance, 18));
     }
-  }, [massetBalance, setRedemptionAmount]);
+  }, [mUsdBalance, setRedemptionAmount]);
 
   const handleSetAmount = useCallback(
     (_, amount) => {
@@ -77,14 +72,14 @@ export const ExitForm: FC<{}> = () => {
     <Form onSubmit={handleSubmit}>
       <FormRow>
         <H3>Send</H3>
-        {loading || !data?.masset ? (
+        {loading || !token?.address ? (
           <Skeleton />
         ) : (
           <TokenAmountInput
             name="redemption"
-            tokenValue={data.masset.token.address}
+            tokenValue={token.address}
             amountValue={redemption.formValue}
-            tokenAddresses={[data.masset.token.address]}
+            tokenAddresses={[token.address]}
             onChangeAmount={handleSetAmount}
             onSetMax={handleSetMax}
             tokenDisabled
@@ -98,7 +93,7 @@ export const ExitForm: FC<{}> = () => {
           {loading || !massetAddress ? (
             <Skeletons skeletonCount={4} height={180} />
           ) : (
-            bassets.map(({ address }) => (
+            bAssetOutputs.map(({ address }) => (
               <BassetOutput key={address} address={address} />
             ))
           )}
