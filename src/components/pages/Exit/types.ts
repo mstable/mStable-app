@@ -1,12 +1,5 @@
-import { BigNumber } from 'ethers/utils';
 import { Amount } from '../../../types';
-import { MassetSubSubscriptionHookResult } from '../../../graphql/generated';
-
-export type MassetData = Pick<MassetSubSubscriptionHookResult, 'data' | 'loading'>;
-
-export type BassetData = NonNullable<
-  NonNullable<MassetData['data']>['masset']
->['basket']['bassets'][0];
+import { MassetData } from '../../../context/DataProvider/types';
 
 export enum Mode {
   RedeemProportional,
@@ -19,13 +12,11 @@ export enum Actions {
   SetError,
   SetRedemptionAmount,
   UpdateMassetData,
-  UpdateMassetBalance,
 }
 
 export type Action =
   | { type: Actions.SetRedemptionAmount; payload: string | null }
   | { type: Actions.SetError; payload: { error: string | null } }
-  | { type: Actions.UpdateMassetBalance; payload: BigNumber | null }
   | {
       type: Actions.UpdateMassetData;
       payload: MassetData;
@@ -37,10 +28,9 @@ export interface BassetOutput {
 }
 
 export interface State {
-  bassets: BassetOutput[];
+  bAssetOutputs: BassetOutput[];
   error: string | null;
-  massetData: MassetData;
-  massetBalance: BigNumber | null;
+  massetData: MassetData | null;
   mode: Mode;
   redemption: {
     amount: Amount;

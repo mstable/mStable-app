@@ -37,15 +37,12 @@ const TUSD = {
 
 const feeRate = '400000000000000';
 
-const massetData = {
-  masset: {
-    id: mUSD.address,
-    token: mUSD as any,
-    feeRate,
-    basket: {
-      bassets: [{ token: DAI } as any, { token: USDC } as any],
-    } as any,
-  },
+const mAssetData = {
+  bAssets: [{ token: DAI } as any, { token: USDC } as any],
+  basket: {} as any,
+  feeRate,
+  token: mUSD as any,
+  loading: false,
 };
 
 describe('Swap form state', () => {
@@ -56,10 +53,7 @@ describe('Swap form state', () => {
   test('context', () => {
     expect(state()).toEqual({
       error: null,
-      massetData: {
-        data: undefined,
-        loading: true,
-      },
+      mAssetData: null,
       mode: Mode.Swap,
       values: {
         feeAmountSimple: null,
@@ -94,14 +88,14 @@ describe('Swap form state', () => {
     // ^ https://www.youtube.com/watch?v=nfxpwbWBNuU
   });
 
-  describe('without massetData', () => {
+  describe('without mAssetData', () => {
     test('updateMassetData', () => {
       act(() => {
-        dispatch().updateMassetData(massetData, false);
+        dispatch().updateMassetData(mAssetData);
       });
 
       expect(state()).toMatchObject({
-        massetData: { data: massetData, loading: false },
+        mAssetData,
       });
     });
 
@@ -206,10 +200,10 @@ describe('Swap form state', () => {
     });
   });
 
-  describe('with massetData', () => {
+  describe('with mAssetData', () => {
     beforeEach(() => {
       act(() => {
-        dispatch().updateMassetData(massetData, false);
+        dispatch().updateMassetData(mAssetData);
       });
     });
 

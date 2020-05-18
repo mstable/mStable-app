@@ -19,7 +19,7 @@ const initialTokenQuantityField: TokenQuantity = Object.freeze({
 
 export const initialState: State = Object.freeze({
   error: null,
-  massetData: { data: undefined, loading: true },
+  mAssetData: null,
   mode: Mode.Swap,
   values: {
     input: initialTokenQuantityField,
@@ -70,7 +70,7 @@ export const reducer: Reducer<State, Action> = (state, action) => {
       const otherField = getOtherField(field);
 
       const {
-        massetData,
+        mAssetData,
         mode: prevMode,
         values: {
           [field]: prevTokenQ,
@@ -79,7 +79,8 @@ export const reducer: Reducer<State, Action> = (state, action) => {
         },
       } = state;
 
-      const { id: massetAddress, feeRate } = massetData.data?.masset || {};
+      const { token: { address: massetAddress } = { address: null }, feeRate } =
+        mAssetData || {};
       const isMasset = address && address === massetAddress;
 
       if (isMasset && field === Fields.Input) {
@@ -94,6 +95,7 @@ export const reducer: Reducer<State, Action> = (state, action) => {
             : Mode.Swap
           : prevMode;
 
+      // TODO too complex
       const [otherAmountSimple, feeAmountSimple] = isMasset
         ? [prevOtherTokenQ.formValue, null]
         : prevMode === Mode.MintSingle && mode === Mode.Swap
@@ -101,7 +103,7 @@ export const reducer: Reducer<State, Action> = (state, action) => {
             Fields.Input,
             prevOtherTokenQ,
             prevTokenQ,
-            feeRate,
+            feeRate as string,
           )
         : [prevOtherTokenQ.formValue, prevFeeAmountSimple];
 
@@ -139,7 +141,7 @@ export const reducer: Reducer<State, Action> = (state, action) => {
     }
     case Actions.InvertDirection: {
       const {
-        massetData,
+        mAssetData,
         mode,
         values: { input, output, feeAmountSimple: prevFeeAmountSimple },
       } = state;
@@ -147,7 +149,7 @@ export const reducer: Reducer<State, Action> = (state, action) => {
       // It should not be possible to invert the direction when minting
       if (mode === Mode.MintSingle) return state;
 
-      const feeRate = massetData?.data?.masset?.feeRate;
+      const feeRate = mAssetData?.feeRate as string;
 
       const equalAmounts =
         input.amount.exact &&
@@ -203,11 +205,11 @@ export const reducer: Reducer<State, Action> = (state, action) => {
 
       const otherField = getOtherField(field);
       const {
-        massetData,
+        mAssetData,
         mode,
         values: { [field]: prevTokenQ, [otherField]: prevOtherTokenQ },
       } = state;
-      const feeRate = massetData?.data?.masset?.feeRate;
+      const feeRate = mAssetData?.feeRate as string;
 
       const tokenQ = {
         ...prevTokenQ,
@@ -245,7 +247,7 @@ export const reducer: Reducer<State, Action> = (state, action) => {
       };
     }
     case Actions.UpdateMassetData: {
-      return { ...state, massetData: action.payload };
+      return { ...state, mAssetData: action.payload };
     }
     default:
       throw new Error('Unhandled action type');

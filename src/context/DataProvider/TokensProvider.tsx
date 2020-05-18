@@ -11,7 +11,7 @@ import { BigNumber } from 'ethers/utils';
 import {
   TokenDetailsFragment,
   useErc20TokensQuery,
-} from '../graphql/generated';
+} from '../../graphql/generated';
 
 type TokenAddress = string;
 
@@ -19,7 +19,7 @@ interface Allowance {
   [spender: string]: BigNumber;
 }
 
-interface State {
+export interface State {
   [token: string]: {
     subscribed: boolean;
     balance?: BigNumber;

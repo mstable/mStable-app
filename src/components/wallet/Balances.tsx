@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { formatUnits } from 'ethers/utils';
 import { useWallet } from 'use-wallet';
-import { useTokensState } from '../../context/TokensProvider';
+import { useTokensState } from '../../context/DataProvider/TokensProvider';
 import {
   TokenDetailsFragment,
   useAllErc20TokensQuery,

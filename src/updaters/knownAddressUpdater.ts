@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import {
   useKnownAddress,
   useSetKnownAddress,
-} from '../context/KnownAddressProvider';
+} from '../context/DataProvider/KnownAddressProvider';
 import {
   CoreTokensQueryResult,
   useCoreTokensLazyQuery,

@@ -6,7 +6,7 @@ import { getHistoricTransactions } from '../web3/getHistoricTransactions';
 import {
   useMusdContract,
   useSavingsContract,
-} from '../context/ContractsProvider';
+} from '../context/DataProvider/ContractsProvider';
 
 // TODO replace: when mUSD was deployed on Ropsten
 const fromBlock = process.env.REACT_APP_CHAIN_ID === '3' ? 7883370 : 0;

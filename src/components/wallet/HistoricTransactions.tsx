@@ -5,10 +5,8 @@ import { useOrderedHistoricTransactions } from '../../context/TransactionsProvid
 import { ContractNames, HistoricTransaction } from '../../types';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { MassetQuery } from '../../graphql/generated';
-import {
-  useKnownAddress,
-  useMusdQuery,
-} from '../../context/KnownAddressProvider';
+import { useKnownAddress } from '../../context/DataProvider/KnownAddressProvider';
+import { useMusdQuery } from '../../context/DataProvider/DataProvider';
 import { formatExactAmount } from '../../web3/amounts';
 import { EMOJIS } from '../../web3/constants';
 import { List, ListItem } from '../core/List';

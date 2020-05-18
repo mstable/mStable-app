@@ -3,7 +3,7 @@ import { useAllErc20TokensQuery } from '../graphql/generated';
 import {
   useSubscribedTokens,
   useTokensDispatch,
-} from '../context/TokensProvider';
+} from '../context/DataProvider/TokensProvider';
 
 /**
  * Updater to subscribe/unsubscribe to all ERC20 tokens from the subgraph.

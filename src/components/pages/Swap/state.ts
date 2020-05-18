@@ -6,10 +6,10 @@ export const useSwapState = (): [State, Dispatch] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const updateMassetData = useCallback<Dispatch['updateMassetData']>(
-    (data, loading) => {
+    (mAssetData) => {
       dispatch({
         type: Actions.UpdateMassetData,
-        payload: { data, loading },
+        payload: mAssetData,
       });
     },
     [dispatch],

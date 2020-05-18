@@ -13,9 +13,9 @@ import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import {
   useSubscribedTokens,
   useTokensDispatch,
-} from '../context/TokensProvider';
+} from '../context/DataProvider/TokensProvider';
 import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
-import { useKnownAddress } from '../context/KnownAddressProvider';
+import { useKnownAddress } from '../context/DataProvider/KnownAddressProvider';
 import { ContractNames } from '../types';
 import { useAsyncMutex } from '../web3/hooks';
 

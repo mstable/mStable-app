@@ -1,6 +1,5 @@
-import { BigNumber } from 'ethers/utils';
-import { Amount, TokenDetails, TokenQuantity } from '../../../types';
-import { MassetQuery } from '../../../graphql/generated';
+import { Amount, TokenQuantity } from '../../../types';
+import { MassetData } from '../../../context/DataProvider/types';
 
 export enum Mode {
   Single,
@@ -8,40 +7,27 @@ export enum Mode {
 }
 
 export enum Actions {
-  Initialize,
-  SetMassetAmount,
   // SetBassetAmount,
-  SetBassetBalance,
+  SetMassetAmount,
   ToggleBassetEnabled,
   ToggleMode,
-  SetError,
+  UpdateMassetData,
 }
 
 export type Action =
-  | {
-      type: Actions.Initialize;
-      payload: {
-        masset: TokenDetails;
-        basket: NonNullable<MassetQuery['masset']>['basket'];
-      };
-    }
-  | { type: Actions.SetMassetAmount; payload: string | null }
-  | {
-      type: Actions.SetBassetBalance;
-      payload: { basset: string; balance: BigNumber };
-    }
   // | {
   //     type: Actions.SetBassetAmount;
   //     payload: { amount: string; basset: string };
   //   }
+  | { type: Actions.SetMassetAmount; payload: string | null }
   | { type: Actions.ToggleMode }
   | {
       type: Actions.ToggleBassetEnabled;
       payload: string;
     }
   | {
-      type: Actions.SetError;
-      payload: { reason: null | string; basset?: string };
+      type: Actions.UpdateMassetData;
+      payload: MassetData;
     };
 
 export enum BassetStatus {
@@ -55,36 +41,33 @@ export enum BassetStatus {
   Failed = 'Failed',
 }
 
-export interface Basset {
-  amount: Amount;
-  balance: BigNumber | null;
+export interface BassetInput {
   address: string;
+  amount: Amount;
   enabled: boolean;
   error: null | string;
   formValue: string | null;
-  maxWeight: BigNumber;
-  overweight: boolean;
-  status: BassetStatus;
 }
 
 export interface State {
-  bassets: Basset[];
-  basket: NonNullable<MassetQuery['masset']>['basket'] | null;
+  bAssetInputs: BassetInput[];
   error: null | string;
-  initialized: boolean;
-  masset: TokenQuantity;
+  mAsset: TokenQuantity;
+  mAssetData: MassetData | null;
   mode: Mode;
+  valid: boolean;
+  touched: boolean;
 }
 
 export interface Dispatch {
-  initialize(
-    masset: TokenDetails,
-    basket: NonNullable<MassetQuery['masset']>['basket'],
-  ): void;
-  setBassetBalance(basset: string, balance: BigNumber): void;
-  setError(reason: string | null, basset?: string): void;
-  setMassetAmount(amount: string | null): void;
   // setBassetAmount(basset: string, amount: string): void;
+  setMassetAmount(amount: string | null): void;
   toggleMode(): void;
   toggleBassetEnabled(basset: string): void;
 }
+
+export type ValidationResult =
+  | [boolean, string | null]
+  | [boolean, string | null, Record<string, string | null>];
+
+export type StateValidator = (state: State) => ValidationResult;

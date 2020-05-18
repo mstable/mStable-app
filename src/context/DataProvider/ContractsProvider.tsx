@@ -1,15 +1,15 @@
 import React, { createContext, useContext, FC, useMemo } from 'react';
-import { useSignerContext } from './SignerProvider';
-import { ContractNames } from '../types';
+import { useSignerContext } from '../SignerProvider';
+import { ContractNames } from '../../types';
 import { useKnownAddress } from './KnownAddressProvider';
-import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
-import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
-import { ForgeValidator } from '../typechain/ForgeValidator.d';
-import { ForgeValidatorFactory } from '../typechain/ForgeValidatorFactory';
-import { Masset } from '../typechain/Masset.d';
-import { MassetFactory } from '../typechain/MassetFactory';
-import { SavingsContract } from '../typechain/SavingsContract.d';
-import { SavingsContractFactory } from '../typechain/SavingsContractFactory';
+import { Erc20Detailed } from '../../typechain/Erc20Detailed.d';
+import { Erc20DetailedFactory } from '../../typechain/Erc20DetailedFactory';
+import { ForgeValidator } from '../../typechain/ForgeValidator.d';
+import { ForgeValidatorFactory } from '../../typechain/ForgeValidatorFactory';
+import { Masset } from '../../typechain/Masset.d';
+import { MassetFactory } from '../../typechain/MassetFactory';
+import { SavingsContract } from '../../typechain/SavingsContract.d';
+import { SavingsContractFactory } from '../../typechain/SavingsContractFactory';
 
 interface State {
   [ContractNames.mUSD]: Masset | null;

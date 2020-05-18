@@ -6,7 +6,7 @@ import { WebSocketLink } from '@apollo/link-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { ApolloLink, split, concat } from 'apollo-link';
 import { onError } from 'apollo-link-error';
-import { useAddErrorNotification } from './NotificationsProvider';
+import { useAddErrorNotification } from '../NotificationsProvider';
 
 if (!process.env.REACT_APP_GRAPHQL_ENDPOINT) {
   throw new Error(
