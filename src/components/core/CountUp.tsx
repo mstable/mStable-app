@@ -1,16 +1,20 @@
 import React, { FC, useEffect, useRef } from 'react';
-import CountUpBase, { CountUpProps } from 'react-countup';
+import { useCountUp, CountUpProps } from 'react-countup';
 import styled from 'styled-components';
+
+interface Props extends CountUpProps {
+  container?: FC;
+}
 
 const DEFAULT_DECIMALS = 2;
 const DEFAULT_DURATION = 1;
 
-const Container = styled.span`
+const StyledSpan = styled.span`
   ${({ theme }) => theme.mixins.numeric}
 `;
 
-export const CountUp: FC<CountUpProps> = ({
-  className,
+export const CountUp: FC<Props> = ({
+  container: Container = StyledSpan,
   end,
   decimals = DEFAULT_DECIMALS,
   prefix,
@@ -20,21 +24,23 @@ export const CountUp: FC<CountUpProps> = ({
 }) => {
   const prevEnd = useRef<typeof end>(end);
 
+  const { countUp, update } = useCountUp({
+    decimals,
+    duration,
+    end,
+    separator,
+    start: prevEnd.current,
+    ...(prefix ? { prefix } : null),
+    ...(suffix ? { suffix } : null),
+  });
+
   useEffect(() => {
-    if (end) prevEnd.current = end;
+    if (typeof end === 'number') {
+      prevEnd.current = end;
+      update(end);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [end]);
 
-  return (
-    <Container className={className}>
-      <CountUpBase
-        start={prevEnd.current}
-        end={end}
-        separator={separator}
-        prefix={prefix}
-        suffix={suffix}
-        decimals={decimals}
-        duration={duration}
-      />
-    </Container>
-  );
+  return <Container>{countUp}</Container>;
 };

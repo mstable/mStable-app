@@ -5,6 +5,7 @@ import { useWalletPosition } from '../../context/AppProvider';
 
 interface Props {
   walletExpanded: boolean;
+  home: boolean;
 }
 
 const wipeIn = keyframes`
@@ -27,8 +28,12 @@ const Container = styled.div<Props>`
   pointer-events: none;
   z-index: -1;
   transition: background-color 0.5s linear;
-  background-color: ${({ theme, walletExpanded }) =>
-    walletExpanded ? theme.color.black : theme.color.offWhite};
+  background-color: ${({ theme, walletExpanded, home }) =>
+    home
+      ? theme.color.offWhite
+      : walletExpanded
+      ? theme.color.black
+      : theme.color.offWhite};
 `;
 
 const CircleSVG = styled.svg`
@@ -36,7 +41,7 @@ const CircleSVG = styled.svg`
   height: 100%;
 `;
 
-const Animation = styled(CSSTransition)<{ cx: number; cy: number }>`
+const Animation = styled(CSSTransition)`
   fill: ${({ theme }) => theme.color.black};
 
   ${({ classNames }) => `&.${classNames}-enter`} {
@@ -54,7 +59,7 @@ const Animation = styled(CSSTransition)<{ cx: number; cy: number }>`
   }
 `;
 
-const Circle: FC<Props> = ({ walletExpanded }) => {
+const Circle: FC<Pick<Props, 'walletExpanded'>> = ({ walletExpanded }) => {
   const { cx, cy } = useWalletPosition();
   return (
     <CircleSVG>
@@ -69,8 +74,8 @@ const Circle: FC<Props> = ({ walletExpanded }) => {
   );
 };
 
-export const Background: FC<Props> = ({ walletExpanded }) => (
-  <Container walletExpanded={walletExpanded}>
+export const Background: FC<Props> = ({ walletExpanded, home }) => (
+  <Container walletExpanded={walletExpanded} home={home}>
     <Circle walletExpanded={walletExpanded} />
   </Container>
 );

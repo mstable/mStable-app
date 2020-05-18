@@ -18,11 +18,12 @@ const List = styled.ul`
   list-style: none;
   padding: 0;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
   width: 100%;
 
   @media (min-width: ${ViewportWidth.m}) {
+    justify-content: space-evenly;
     width: auto;
   }
 `;
@@ -72,7 +73,7 @@ const navItems: NavItem[] = [
   { title: 'Mint', path: '/mint' },
   { title: 'Save', path: '/save' },
   { title: 'Swap', path: '/swap' },
-  { title: 'Exit', path: '/exit' },
+  { title: 'Redeem', path: '/redeem' },
 ];
 
 /**

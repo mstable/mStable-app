@@ -48,7 +48,8 @@ const AccountButton = styled(Button)`
   line-height: 100%;
   font-size: ${({ theme }) => theme.fontSize.xs};
   height: 32px;
-  padding: 0 6px 0 0;
+  padding-left: 6px;
+  padding-right: 6px;
 
   @media (min-width: ${ViewportWidth.m}) {
     padding: 0 6px 0 0;
