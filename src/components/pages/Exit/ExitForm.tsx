@@ -16,11 +16,11 @@ import { useMusdContract } from '../../../context/DataProvider/ContractsProvider
 
 export const ExitForm: FC<{}> = () => {
   const [
-    { redemption, error, bAssetOutputs, massetData },
+    { redemption, error, bAssetOutputs, mAssetData },
     { setRedemptionAmount },
   ] = useExitContext();
 
-  const { loading, token } = massetData || {};
+  const { loading, token } = mAssetData || {};
   const mUsdBalance = token?.balance;
   const massetAddress = token?.address || null;
 

@@ -30,7 +30,7 @@ export interface BassetOutput {
 export interface State {
   bAssetOutputs: BassetOutput[];
   error: string | null;
-  massetData: MassetData | null;
+  mAssetData: MassetData | null;
   mode: Mode;
   redemption: {
     amount: Amount;

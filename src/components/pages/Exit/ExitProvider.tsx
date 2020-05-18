@@ -45,12 +45,12 @@ const estimateRedemptionQuantities = (
 };
 
 const updateBassetAmounts = (state: State): State => {
-  if (!state.massetData?.basket) return state;
+  if (!state.mAssetData?.basket) return state;
 
   const {
     bAssetOutputs,
     redemption,
-    massetData: { bAssets: bassetsData },
+    mAssetData: { bAssets: bassetsData },
   } = state;
 
   const redemptionAmounts = estimateRedemptionQuantities(
@@ -70,14 +70,14 @@ const updateBassetAmounts = (state: State): State => {
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.UpdateMassetData: {
-      const massetData = action.payload;
+      const mAssetData = action.payload;
       return {
         ...state,
-        massetData,
-        bassets:
+        mAssetData,
+        bAssetOutputs:
           state.bAssetOutputs.length > 0
             ? state.bAssetOutputs
-            : massetData.bAssets.map(b => ({
+            : mAssetData.bAssets.map(b => ({
                 address: b.address,
                 amount: { exact: null, simple: null },
               })) || [],
@@ -91,7 +91,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
           formValue,
           amount: parseAmount(
             formValue,
-            state.massetData?.token.decimals || 18,
+            state.mAssetData?.token.decimals || 18,
           ),
         },
       });
@@ -108,7 +108,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 const initialState: State = {
   bAssetOutputs: [],
   error: null,
-  massetData: null,
+  mAssetData: null,
   mode: Mode.RedeemProportional,
   redemption: {
     formValue: null,
@@ -189,9 +189,9 @@ export const useExitBassetOutput = (address: string): BassetOutput | null => {
 };
 
 export const useExitBassetData = (address: string): BassetData | null => {
-  const { massetData } = useExitState();
+  const { mAssetData } = useExitState();
   return useMemo(
-    () => massetData?.bAssets.find(b => b.address === address) || null,
-    [massetData, address],
+    () => mAssetData?.bAssets.find(b => b.address === address) || null,
+    [mAssetData, address],
   );
 };
