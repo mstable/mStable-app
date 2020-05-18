@@ -167,7 +167,7 @@ const mintMultiValidator: StateValidator = state => {
         .mul(data.maxWeight as string)
         .div(EXP_SCALE);
 
-      if (newBalances[index].gt(maxWeightInUnits)) {
+      if (newBalances?.[index]?.gt?.(maxWeightInUnits)) {
         return [false, 'Must be below max weighting'];
       }
 
