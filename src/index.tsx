@@ -18,7 +18,7 @@ const routes = {
   '/mint': () => <Mint />,
   '/save': () => <Save />,
   '/swap': () => <Swap />,
-  '/exit': () => <Exit />,
+  '/redeem': () => <Exit />,
   // '/earn': () => <Earn />,
 };
 

@@ -18,9 +18,10 @@ interface WalletExpanded {
 
 export const Container = styled.div<{}>`
   flex-direction: column;
-  min-height: calc(
-    100vh - 80px
-  ); // The sticky header won't always be 80px, so this is less than ideal
+
+  // The sticky header won't always be 80px, so this is less than ideal
+  min-height: calc(100vh - 80px);
+
   align-items: flex-start;
   padding-top: 40px;
 
@@ -44,7 +45,6 @@ const GlobalStyle = createGlobalStyle<WalletExpanded>`
     overflow-y: scroll;
   }
   body {
-    background: ${({ theme }) => theme.color.offWhite};
     min-width: 320px;
   }
   * {
@@ -58,20 +58,20 @@ const GlobalStyle = createGlobalStyle<WalletExpanded>`
   }
 `;
 
-const StickyHeader = styled.div<{ inverted: boolean }>`
+const StickyHeader = styled.div<{ inverted: boolean; }>`
   position: sticky;
   top: 0;
   width: 100%;
-  box-shadow: ${({ inverted, theme }) =>
-      inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
-    0 0 12px;
   z-index: 1;
 `;
 
-const HeaderGroup: FC<{ walletExpanded: boolean }> = ({ walletExpanded }) => (
+const HeaderGroup: FC<{ walletExpanded: boolean; home: boolean }> = ({
+  walletExpanded,
+  home,
+}) => (
   <StickyHeader inverted={walletExpanded}>
     <StatusBar />
-    <Header walletExpanded={walletExpanded} />
+    <Header walletExpanded={walletExpanded} home={home} />
   </StickyHeader>
 );
 
@@ -81,15 +81,20 @@ const HeaderGroup: FC<{ walletExpanded: boolean }> = ({ walletExpanded }) => (
 export const Layout: FC<{}> = ({ children }) => {
   const walletExpanded = useWalletExpanded();
   const activePath = getWorkingPath('');
+  const home = activePath === '/';
   return (
     <>
-      <Background walletExpanded={walletExpanded} />
-      <HeaderGroup walletExpanded={walletExpanded} />
-      <Container>
-        {activePath !== '/' ? <BetaWarning /> : null}
-        {walletExpanded ? <Wallet /> : <Main>{children}</Main>}
-        <Footer walletExpanded={walletExpanded} />
-      </Container>
+      <Background walletExpanded={walletExpanded} home={home} />
+      <HeaderGroup walletExpanded={walletExpanded} home={home} />
+      {home ? (
+        <>{children}</>
+      ) : (
+        <Container>
+          <BetaWarning />
+          {walletExpanded ? <Wallet /> : <Main>{children}</Main>}
+          <Footer inverted={walletExpanded} />
+        </Container>
+      )}
       <Notifications />
       <GlobalStyle walletExpanded={walletExpanded} />
     </>

@@ -111,7 +111,7 @@ export const mixins = {
       center ? 'center' : right ? 'right' : 'initial'};
   `,
   numeric: css`
-    font-family: 'DM Mono', monospace;
+    font-family: 'DM Mono', monospace !important;
   `,
 };
 
