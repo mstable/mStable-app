@@ -184,6 +184,17 @@ const getPendingTxDescription = (
         </>
       );
     }
+    case 'redeemMasset': {
+      const [massetQ] = tx.args as [BigNumber];
+
+      return (
+        <>
+          You <span>{tx.status ? 'redeemed' : 'are redeeming'}</span>{' '}
+          {formatExactAmount(massetQ, 18, mUSD.token.symbol)}
+          {' proportionately'}
+        </>
+      );
+    }
     default:
       return <>Unknown</>;
   }
