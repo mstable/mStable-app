@@ -242,12 +242,7 @@ const getTxPurpose = (
     }
     case 'redeem': {
       if (iface.address === mUSDSavingsAddress) {
-        const [amount] = args as [BigNumber];
-        const body = `${formatExactAmount(
-          amount,
-          mUSD.token.decimals,
-          mUSD.token.symbol,
-        )}`;
+        const body = `${mUSD.token.symbol} savings`;
         return {
           present: `Withdrawing ${body}`,
           past: `Withdrew ${body}`,

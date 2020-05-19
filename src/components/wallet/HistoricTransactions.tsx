@@ -109,14 +109,14 @@ const getHistoricTransactionDescription = (
       case 'withdraw': {
         const [
           {
-            values: { creditsRedeemed },
+            values: { savingsCredited },
           },
         ] = logs;
         return (
           <>
             You <span>withdrew</span>{' '}
             {formatExactAmount(
-              creditsRedeemed,
+              savingsCredited,
               mUSD.token.decimals,
               'mUSD',
               true,

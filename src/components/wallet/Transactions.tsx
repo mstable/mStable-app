@@ -66,16 +66,10 @@ const getPendingTxDescription = (
   if (tx.response.to === mUSDSavingsAddress) {
     switch (tx.fn) {
       case 'redeem': {
-        const [amount] = tx.args as [BigNumber];
         return (
           <>
             You <span>{tx.status ? 'withdrew' : 'are withdrawing'}</span>{' '}
-            {formatExactAmount(
-              amount,
-              mUSD.token.decimals,
-              mUSD.token.symbol,
-              true,
-            )}
+            {mUSD.token.symbol} savings
           </>
         );
       }

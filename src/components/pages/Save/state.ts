@@ -84,6 +84,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
           amountInCredits:
             amount.exact && exchangeRate?.exchangeRate
               ? amount.exact
+                  .add(1)
                   .mul(SCALE)
                   .div(parseUnits(exchangeRate.exchangeRate))
               : null,
