@@ -70,8 +70,12 @@ const getPendingTxDescription = (
         return (
           <>
             You <span>{tx.status ? 'withdrew' : 'are withdrawing'}</span>{' '}
-            {formatExactAmount(amount, mUSD.token.decimals)}
-            {mUSD.token.symbol}
+            {formatExactAmount(
+              amount,
+              mUSD.token.decimals,
+              mUSD.token.symbol,
+              true,
+            )}
           </>
         );
       }
@@ -80,7 +84,12 @@ const getPendingTxDescription = (
         return (
           <>
             You <span>{tx.status ? 'deposited' : 'are depositing'}</span>{' '}
-            {formatExactAmount(amount, mUSD.token.decimals)} {mUSD.token.symbol}
+            {formatExactAmount(
+              amount,
+              mUSD.token.decimals,
+              mUSD.token.symbol,
+              true,
+            )}
           </>
         );
       }
@@ -119,12 +128,18 @@ const getPendingTxDescription = (
       return (
         <>
           You <span>{tx.status ? 'minted' : 'are minting'}</span>{' '}
-          {formatExactAmount(bassetQ, basset.token.decimals, mUSD.token.symbol)}{' '}
+          {formatExactAmount(
+            bassetQ,
+            basset.token.decimals,
+            mUSD.token.symbol,
+            true,
+          )}{' '}
           with{' '}
           {formatExactAmount(
             bassetQ,
             basset.token.decimals,
             basset.token.symbol,
+            true,
           )}
         </>
       );
@@ -154,14 +169,43 @@ const getPendingTxDescription = (
       return (
         <>
           You <span>{tx.status ? 'minted' : 'are minting'}</span>{' '}
-          {formatExactAmount(massetQ, mUSD.token.decimals, mUSD.token.symbol)}{' '}
+          {formatExactAmount(
+            massetQ,
+            mUSD.token.decimals,
+            mUSD.token.symbol,
+            true,
+          )}{' '}
           with{' '}
           {humanizeList(
             bassets.map(
               ({ quantity, token: { decimals, symbol } }) =>
-                formatExactAmount(quantity, decimals, symbol) as string,
+                formatExactAmount(quantity, decimals, symbol, true) as string,
             ),
           )}
+        </>
+      );
+    }
+    case 'swap': {
+      const [input, output, inputQuantity] = tx.args as [
+        string,
+        string,
+        BigNumber,
+      ];
+
+      const inputBasset = bassetsData.find(b => b.token.address === input);
+      const outputBasset = bassetsData.find(b => b.token.address === output);
+      if (!inputBasset || !outputBasset) return Loading;
+
+      return (
+        <>
+          You <span>{tx.status ? 'swapped' : 'are swapping'}</span>{' '}
+          {formatExactAmount(
+            inputQuantity,
+            inputBasset.token.decimals,
+            inputBasset.token.symbol,
+            true,
+          )}{' '}
+          for {outputBasset.token.symbol}
         </>
       );
     }
@@ -178,9 +222,15 @@ const getPendingTxDescription = (
             bassetQ,
             basset.token.decimals,
             basset.token.symbol,
+            true,
           )}{' '}
           with{' '}
-          {formatExactAmount(bassetQ, mUSD.token.decimals, mUSD.token.symbol)}
+          {formatExactAmount(
+            bassetQ,
+            mUSD.token.decimals,
+            mUSD.token.symbol,
+            true,
+          )}
         </>
       );
     }
@@ -190,7 +240,7 @@ const getPendingTxDescription = (
       return (
         <>
           You <span>{tx.status ? 'redeemed' : 'are redeeming'}</span>{' '}
-          {formatExactAmount(massetQ, 18, mUSD.token.symbol)}
+          {formatExactAmount(massetQ, 18, mUSD.token.symbol, true)}
           {' proportionately'}
         </>
       );

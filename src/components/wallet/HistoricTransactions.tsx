@@ -15,6 +15,7 @@ import { humanizeList } from '../../web3/strings';
 type FnName =
   | 'mint'
   | 'mintMulti'
+  | 'swap'
   | 'redeem'
   | 'redeemMasset'
   | 'withdraw'
@@ -56,6 +57,9 @@ const getHistoricTxFn = ({ logs }: HistoricTransaction): FnName | null => {
   }
   if (logs.find(({ name }) => name === 'RedeemedMasset')) {
     return 'redeemMasset';
+  }
+  if (logs.find(({ name }) => name === 'Swapped')) {
+    return 'swap';
   }
   if (logs.find(({ name }) => name === 'Minted')) {
     return 'mint';
@@ -126,6 +130,80 @@ const getHistoricTransactionDescription = (
   }
 
   switch (fn) {
+    case 'mint': {
+      const [
+        {
+          values: { mAssetQuantity, bAsset, bAssetQuantity },
+        },
+      ] = logs;
+      const bAssetToken = mUSD.basket.bassets.find(
+        b => b.id === bAsset.toLowerCase(),
+      );
+      if (!bAssetToken) return LOADING;
+
+      return (
+        <>
+          You <span>minted</span>{' '}
+          {formatExactAmount(
+            mAssetQuantity,
+            mUSD.token.decimals,
+            mUSD.token.symbol,
+            true,
+          )}{' '}
+          with{' '}
+          {formatExactAmount(
+            bAssetQuantity,
+            bAssetToken.token.decimals,
+            bAssetToken.token.symbol,
+            true,
+          )}
+        </>
+      );
+    }
+    case 'mintMulti': {
+      const [
+        {
+          values: { mAssetQuantity },
+        },
+      ] = logs;
+
+      return (
+        <>
+          You <span>minted</span>{' '}
+          {formatExactAmount(
+            mAssetQuantity,
+            mUSD.token.decimals,
+            mUSD.token.symbol,
+            true,
+          )}{' '}
+          with{' multiple bAssets'}
+        </>
+      );
+    }
+    case 'swap': {
+      const {
+        values: { input, output, outputAmount },
+      } = logs[logs.length - 1];
+      const inputBasset = mUSD.basket.bassets.find(
+        b => b.id === input.toLowerCase(),
+      );
+      const outputBasset = mUSD.basket.bassets.find(
+        b => b.id === output.toLowerCase(),
+      );
+      if (!inputBasset || !outputBasset) return LOADING;
+
+      return (
+        <>
+          You <span>swapped</span> {inputBasset.token.symbol} for{' '}
+          {formatExactAmount(
+            outputAmount,
+            outputBasset.token.decimals,
+            outputBasset.token.symbol,
+            true,
+          )}
+        </>
+      );
+    }
     case 'redeem': {
       const totalFee = logs.reduce(
         (_totalFee, { values: { feeQuantity } }) =>
@@ -192,56 +270,7 @@ const getHistoricTransactionDescription = (
         </>
       );
     }
-    case 'mint': {
-      const [
-        {
-          values: { mAssetQuantity, bAsset, bAssetQuantity },
-        },
-      ] = logs;
-      const bAssetToken = mUSD.basket.bassets.find(
-        b => b.id === bAsset.toLowerCase(),
-      );
-      if (!bAssetToken) return LOADING;
 
-      return (
-        <>
-          You <span>minted</span>{' '}
-          {formatExactAmount(
-            mAssetQuantity,
-            mUSD.token.decimals,
-            mUSD.token.symbol,
-            true,
-          )}{' '}
-          with{' '}
-          {formatExactAmount(
-            bAssetQuantity,
-            bAssetToken.token.decimals,
-            bAssetToken.token.symbol,
-            true,
-          )}
-        </>
-      );
-    }
-    case 'mintMulti': {
-      const [
-        {
-          values: { mAssetQuantity },
-        },
-      ] = logs;
-
-      return (
-        <>
-          You <span>minted</span>{' '}
-          {formatExactAmount(
-            mAssetQuantity,
-            mUSD.token.decimals,
-            mUSD.token.symbol,
-            true,
-          )}{' '}
-          with{' multiple bAssets'}
-        </>
-      );
-    }
     default:
       return <>Unknown</>;
   }

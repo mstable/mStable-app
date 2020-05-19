@@ -214,6 +214,32 @@ const getTxPurpose = (
         past: `Minted ${body}`,
       };
     }
+    case 'swap': {
+      const [input, output, inputQuantity] = args as [
+        string,
+        string,
+        BigNumber,
+      ];
+
+      const inputBasset = bassets.find(b => b.token.address === input);
+      const outputBasset = bassets.find(b => b.token.address === output);
+      if (!inputBasset || !outputBasset)
+        return {
+          present: null,
+          past: null,
+        };
+
+      const body = `${formatExactAmount(
+        inputQuantity,
+        inputBasset.token.decimals,
+        inputBasset.token.symbol,
+        true,
+      )} for ${outputBasset.token.symbol}`;
+      return {
+        present: `Swapping ${body}`,
+        past: `Swapped ${body}`,
+      };
+    }
     case 'redeem': {
       if (iface.address === mUSDSavingsAddress) {
         const [amount] = args as [BigNumber];
