@@ -101,6 +101,10 @@ export interface Amount {
   exact: BigNumber | null;
 }
 
+export interface SavingsBalance extends Amount {
+  creditsExact: BigNumber | null;
+}
+
 export interface TokenQuantity {
   formValue: string | null;
   amount: Amount;

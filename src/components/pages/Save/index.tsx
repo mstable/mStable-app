@@ -341,11 +341,10 @@ export const Save: FC<{}> = () => {
       if (mUsdToken?.balance) {
         setQuantity(formatUnits(mUsdToken.balance, mUsdToken.decimals));
       }
-    } else if (savingsBalance.exact) {
+    } else if (savingsBalance.creditsExact) {
       setQuantity(
-        parseFloat(formatUnits(savingsBalance.exact, 18))
-          .toFixed(4)
-          .toString(),
+        parseFloat(formatUnits(savingsBalance.creditsExact, 18)).toString(),
+        true,
       );
     }
   }, [mUsdToken, savingsBalance, setQuantity, transactionType]);
