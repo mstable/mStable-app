@@ -28,6 +28,7 @@ export const EMOJIS = {
   error: '❌',
   approve: '✔️',
   depositSavings: '🏦',
+  swap: '🔄',
   mint: '💵',
   mintMulti: '💵',
   redeem: '💱',
