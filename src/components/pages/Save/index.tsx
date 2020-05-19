@@ -401,7 +401,7 @@ export const Save: FC<{}> = () => {
           )}
         </div>
         <div>
-          <H3 borderTop>Total mUSD</H3>
+          <H3 borderTop>Total mUSD supply</H3>
           {mUsd?.token.totalSupply ? (
             <InfoCountUp
               end={parseFloat(mUsd?.token.totalSupply)}

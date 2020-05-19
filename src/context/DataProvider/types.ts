@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers/utils';
 import {
   Masset,
   Basset,
@@ -19,7 +20,8 @@ export interface BassetData
   > {
   address: string;
   token: Partial<TokenDetailsWithBalance>;
-  overweight?: boolean;
+  overweight: boolean;
+  basketShare: BigNumber;
 }
 
 export type BasketData = Partial<
