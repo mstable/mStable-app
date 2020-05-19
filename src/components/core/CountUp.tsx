@@ -14,6 +14,7 @@ const StyledSpan = styled.span`
 `;
 
 export const CountUp: FC<Props> = ({
+  className,
   container: Container = StyledSpan,
   end,
   decimals = DEFAULT_DECIMALS,
@@ -42,5 +43,5 @@ export const CountUp: FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [end]);
 
-  return <Container>{countUp}</Container>;
+  return <Container className={className}>{countUp}</Container>;
 };

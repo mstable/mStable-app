@@ -9,10 +9,14 @@ import React, {
 import styled from 'styled-components';
 import { formatUnits, parseUnits } from 'ethers/utils';
 import { useWallet } from 'use-wallet';
+import Skeleton from 'react-loading-skeleton';
 import { Form, FormRow, SubmitButton } from '../../core/Form';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Reasons, TransactionType, useSaveState } from './state';
-import { useMUSDSavings } from '../../../context/DataProvider/DataProvider';
+import {
+  useMusdData,
+  useMUSDSavings,
+} from '../../../context/DataProvider/DataProvider';
 import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
 import { Interfaces, SendTxManifest } from '../../../types';
 import { Button } from '../../core/Button';
@@ -54,24 +58,60 @@ const mapReasonToMessage = (reason: Reasons): string => {
 };
 
 const CreditBalance = styled.div`
-  margin: 8px 0;
   img {
-    width: 46px;
+    width: 6vw;
     margin-right: 10px;
+  }
+
+  span {
+    font-weight: bold;
+    font-size: 6vw;
+  }
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
+    span {
+      font-size: 3.5vw;
+    }
+
+    img {
+      width: 2.5vw;
+    }
   }
 `;
 
-const CreditBalanceCountUp = styled(CountUp)`
-  font-size: ${FontSize.insane};
-  font-weight: bold;
-`;
+const CreditBalanceCountUp = styled(CountUp)``;
 
-const APYCountUp = styled(CountUp)`
+const InfoCountUp = styled(CountUp)`
   font-size: ${FontSize.xl};
 `;
 
-const CentredRow = styled(FormRow)`
+const InfoRow = styled.div`
   text-align: center;
+  width: 100%;
+
+  h3 {
+    padding-bottom: 10px;
+  }
+
+  > div {
+    padding: 10px 0 20px 0;
+  }
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      border-top: none;
+    }
+
+    > div {
+      flex-grow: 1;
+    }
+  }
+
+  ${({ theme }) => theme.mixins.borderTop}
 `;
 
 const TransactionTypeRow = styled(FormRow)`
@@ -124,7 +164,8 @@ export const Save: FC<{}> = () => {
   const savingsContractAddress = savingsContract?.address || null;
 
   const mUsdContract = useMusdContract();
-  const mUsdAddress = mUsdContract?.address || null;
+  const mUsd = useMusdData();
+  const mUsdAddress = mUsd?.token.address || null;
 
   const mUsdToken = useTokenWithBalance(mUsdAddress);
   const mUsdSavings = useMUSDSavings();
@@ -331,20 +372,50 @@ export const Save: FC<{}> = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      <CentredRow>
-        <H3>Your mUSD savings balance</H3>
-        <CreditBalance>
-          <MUSDIconTransparent />
-          <CreditBalanceCountUp
-            end={savingsBalanceIncreasing || 0}
-            decimals={8}
-          />
-        </CreditBalance>
-      </CentredRow>
-      <CentredRow>
-        <H3>Current APY</H3>
-        <APYCountUp end={apyPercentage || 0} suffix="%" decimals={2} />
-      </CentredRow>
+      <InfoRow>
+        <div>
+          <H3>Your mUSD savings balance</H3>
+          <CreditBalance>
+            <MUSDIconTransparent />
+            <CreditBalanceCountUp
+              end={savingsBalanceIncreasing || 0}
+              decimals={8}
+            />
+          </CreditBalance>
+        </div>
+      </InfoRow>
+      <InfoRow>
+        <div>
+          <H3>Current APY</H3>
+          {apyPercentage ? (
+            <InfoCountUp end={apyPercentage} suffix="%" decimals={2} />
+          ) : (
+            <Skeleton />
+          )}
+        </div>
+        <div>
+          <H3 borderTop>Total mUSD</H3>
+          {mUsd?.token.totalSupply ? (
+            <InfoCountUp
+              end={parseFloat(mUsd?.token.totalSupply)}
+              decimals={2}
+            />
+          ) : (
+            <Skeleton />
+          )}
+        </div>
+        <div>
+          <H3 borderTop>Total mUSD savings</H3>
+          {mUsdSavings?.totalSavings ? (
+            <InfoCountUp
+              end={parseFloat(mUsdSavings.totalSavings)}
+              decimals={2}
+            />
+          ) : (
+            <Skeleton />
+          )}
+        </div>
+      </InfoRow>
       <TransactionTypeRow>
         <TransactionTypeButton
           type="button"
