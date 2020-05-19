@@ -64,3 +64,23 @@ export const parseAmount = (
     simple,
   };
 };
+/**
+ * @dev Converts an exact amount into an object containing both Simple and Exact amounts
+ * @param exactAmount Simple amount to parse
+ * @param decimals Number of decimal places the exact amount should have
+ */
+export const parseExactAmount = (
+  exactAmount: BigNumber | null,
+  decimals: number | null,
+): Amount => {
+  if (!(exactAmount && decimals)) {
+    return { exact: null, simple: null };
+  }
+
+  const exact = exactAmount;
+  const simple = parseFloat(formatUnits(exactAmount, decimals));
+  return {
+    exact,
+    simple,
+  };
+};

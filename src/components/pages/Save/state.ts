@@ -1,7 +1,7 @@
 import { parseUnits } from 'ethers/utils';
 import { Reducer, useCallback, useMemo, useReducer } from 'react';
 import { TokenDetails, SavingsQuantity } from '../../../types';
-import { parseAmount } from '../../../web3/amounts';
+import { parseAmount, parseExactAmount } from '../../../web3/amounts';
 import { SCALE } from '../../../web3/constants';
 import {
   useLatestExchangeRateSubscription,
@@ -48,6 +48,7 @@ type Action =
         exchangeRate:
           | Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>
           | undefined;
+        isCreditAmount: boolean;
       };
     }
   | {
@@ -61,7 +62,7 @@ type Action =
 
 interface Dispatch {
   setError(reason: Reasons | null): void;
-  setQuantity(formValue: string | null): void;
+  setQuantity(formValue: string | null, isCreditAmount?: boolean): void;
   setToken(token: TokenDetails): void;
   setTransactionType(transactionType: TransactionType): void;
 }
@@ -73,21 +74,37 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return { ...state, error: reason };
     }
     case Actions.SetQuantity: {
-      const { formValue, exchangeRate } = action.payload;
-      const amount = parseAmount(formValue, state.input.token.decimals);
+      const { formValue, exchangeRate, isCreditAmount } = action.payload;
+
+      const parsedFormValue = parseAmount(formValue, 18);
+      const amount = isCreditAmount
+        ? exchangeRate?.exchangeRate && parsedFormValue?.exact
+          ? parseExactAmount(
+              parsedFormValue.exact
+                .mul(parseUnits(exchangeRate.exchangeRate).sub(100))
+                .div(SCALE),
+              18,
+            )
+          : parseExactAmount(SCALE, 18)
+        : parsedFormValue;
+      const amountInCredits = isCreditAmount
+        ? parsedFormValue?.exact
+        : amount?.exact && exchangeRate?.exchangeRate
+        ? amount.exact
+            .mul(SCALE)
+            .div(parseUnits(exchangeRate.exchangeRate).sub(100))
+        : null;
       return {
         ...state,
         input: {
           ...state.input,
-          formValue,
+          formValue: isCreditAmount
+            ? amount?.simple
+              ? amount.simple.toString()
+              : null
+            : formValue,
           amount,
-          amountInCredits:
-            amount.exact && exchangeRate?.exchangeRate
-              ? amount.exact
-                  .add(1)
-                  .mul(SCALE)
-                  .div(parseUnits(exchangeRate.exchangeRate))
-              : null,
+          amountInCredits,
         },
       };
     }
@@ -142,10 +159,10 @@ export const useSaveState = (): [State, Dispatch] => {
   );
 
   const setQuantity = useCallback<Dispatch['setQuantity']>(
-    formValue => {
+    (formValue, isCreditAmount = false) => {
       dispatch({
         type: Actions.SetQuantity,
-        payload: { formValue, exchangeRate: latest },
+        payload: { formValue, exchangeRate: latest, isCreditAmount },
       });
     },
     [dispatch, latest],

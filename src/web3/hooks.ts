@@ -3,7 +3,7 @@ import blockies from 'ethereum-blockies';
 import { useMutex } from 'react-context-mutex';
 import useInterval from '@use-it/interval';
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
-import { Amount, MassetNames } from '../types';
+import { SavingsBalance, MassetNames } from '../types';
 import {
   ExchangeRate,
   TokenDetailsFragment,
@@ -84,7 +84,7 @@ export const useAsyncMutex = (
   }, [mutexKey]);
 };
 
-export const useSavingsBalance = (account: string | null): Amount => {
+export const useSavingsBalance = (account: string | null): SavingsBalance => {
   const latestSub = useLatestExchangeRateSubscription();
   const creditBalancesSub = useCreditBalancesSubscription({
     variables: { account: account ? account.toLowerCase() : '' },
@@ -107,10 +107,10 @@ export const useSavingsBalance = (account: string | null): Amount => {
           .toString(),
       );
 
-      return { exact, simple };
+      return { exact, simple, creditsExact: balance };
     }
 
-    return { exact: null, simple: null };
+    return { exact: null, simple: null, creditsExact: null };
   }, [creditBalance, latest]);
 };
 
