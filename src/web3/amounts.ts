@@ -1,6 +1,11 @@
 import { BigNumber, parseUnits, formatUnits } from 'ethers/utils';
 import { Amount } from '../types';
 
+/**
+ * @dev Formats a simple amount to 2 decimal places
+ * @param simpleAmount Simple amount to parse
+ * @param symbol Symbol to postfix (if any)
+ */
 export const formatSimpleAmount = (
   simpleAmount: number | null,
   symbol?: string | null,
@@ -14,15 +19,36 @@ export const formatSimpleAmount = (
   return null;
 };
 
+/**
+ * @dev Converts an exact token amount into a simple amount, by dividing by 10**decimals
+ * @param exactAmount Exact amount to parse
+ * @param decimals Number of decimal places the exact amount has
+ * @param symbol Symbol of the token
+ * @param commas Add comma separators to separate thousands
+ */
 export const formatExactAmount = (
   exactAmount?: BigNumber,
   decimals?: number,
   symbol?: string,
+  commas = false,
 ): string | null =>
   exactAmount && decimals
-    ? formatSimpleAmount(parseFloat(formatUnits(exactAmount, decimals)), symbol)
+    ? commas
+      ? formatSimpleAmount(
+          parseFloat(formatUnits(exactAmount, decimals)),
+          symbol,
+        )?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') || null
+      : formatSimpleAmount(
+          parseFloat(formatUnits(exactAmount, decimals)),
+          symbol,
+        )
     : null;
 
+/**
+ * @dev Converts a simple amount into an object containing both Simple and Exact amounts
+ * @param simpleAmount Simple amount to parse
+ * @param decimals Number of decimal places the exact amount should have
+ */
 export const parseAmount = (
   simpleAmount: string | null,
   decimals: number | null,

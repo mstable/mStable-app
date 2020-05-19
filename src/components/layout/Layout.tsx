@@ -43,6 +43,7 @@ const GlobalStyle = createGlobalStyle<WalletExpanded>`
   }
   html {
     overflow-y: scroll;
+    scroll-behavior: smooth;
   }
   body {
     min-width: 320px;
@@ -58,7 +59,7 @@ const GlobalStyle = createGlobalStyle<WalletExpanded>`
   }
 `;
 
-const StickyHeader = styled.div<{ inverted: boolean; }>`
+const StickyHeader = styled.div<{ inverted: boolean }>`
   position: sticky;
   top: 0;
   width: 100%;

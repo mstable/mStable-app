@@ -29,7 +29,9 @@ export const EMOJIS = {
   approve: '✔️',
   depositSavings: '🏦',
   mint: '💵',
+  mintMulti: '💵',
   redeem: '💱',
+  redeemMasset: '💱',
   withdraw: '🏧',
   link: '🔗',
 };
