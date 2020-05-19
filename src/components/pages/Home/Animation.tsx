@@ -59,24 +59,24 @@ const CountUp: typeof CountUpBase = ({ end }) => (
   <CountUpBase
     end={end}
     container={CountUpContainer}
-    duration={1}
+    duration={4}
     decimals={0}
   />
 );
 
-export const MintAnimation: FC<{}> = () => {
-  const [animate, setAnimate] = useState<boolean>(true);
+export const MintAnimation: FC<{ forwards: boolean }> = ({ forwards }) => {
+  const [animate, setAnimate] = useState<boolean>(forwards);
 
   useLayoutEffect(() => {
     setInterval(() => {
       setAnimate(!animate);
-    }, 3000);
+    }, 5000);
   }, [animate, setAnimate]);
 
   const { dai, mUsd, tusd, usdc, usdt } = animate ? startValues : endValues;
 
   return (
-    <Container width="290" height="230" forwards={animate}>
+    <Container width="290" height="230" forwards={forwards}>
       <text>
         <tspan x="22" y="15">
           DAI

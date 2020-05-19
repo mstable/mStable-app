@@ -186,6 +186,7 @@ const getTxPurpose = (
 
   const {
     basket: { bassets },
+    token: { symbol },
   } = mUSD;
 
   switch (fn) {
@@ -244,6 +245,15 @@ const getTxPurpose = (
         bAsset.token.decimals,
         mUSD.token.symbol,
       )}`;
+      return {
+        present: `Redeeming ${body}`,
+        past: `Redeemed ${body}`,
+      };
+    }
+    case 'redeemMasset': {
+      const [massetQ] = args as [BigNumber, string];
+
+      const body = `${formatExactAmount(massetQ, 18, symbol)} proportionately`;
       return {
         present: `Redeeming ${body}`,
         past: `Redeemed ${body}`,

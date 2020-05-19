@@ -149,7 +149,7 @@ const features: { symbol: string; title: string; children: JSX.Element }[] = [
     children: (
       <>
         <Block>
-          <MintAnimation />
+          <MintAnimation forwards />
         </Block>
         <Block>
           <P>
@@ -212,7 +212,7 @@ const features: { symbol: string; title: string; children: JSX.Element }[] = [
       <>
         <Block>
           {/* TODO this should be the opposite of mint */}
-          <MintAnimation />
+          <MintAnimation forwards={false} />
         </Block>
         <Block>
           <P>You can redeem mUSD for the underlying stablecoins at any time.</P>

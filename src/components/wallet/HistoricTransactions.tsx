@@ -12,7 +12,13 @@ import { EMOJIS } from '../../web3/constants';
 import { List, ListItem } from '../core/List';
 import { humanizeList } from '../../web3/strings';
 
-type FnName = 'mint' | 'redeem' | 'withdraw' | 'depositSavings';
+type FnName =
+  | 'mint'
+  | 'mintMulti'
+  | 'redeem'
+  | 'redeemMasset'
+  | 'withdraw'
+  | 'depositSavings';
 
 const LOADING: JSX.Element = <>Loading...</>;
 
@@ -48,8 +54,14 @@ const getHistoricTxFn = ({ logs }: HistoricTransaction): FnName | null => {
   if (logs.find(({ name }) => name === 'Redeemed')) {
     return 'redeem';
   }
+  if (logs.find(({ name }) => name === 'RedeemedMasset')) {
+    return 'redeemMasset';
+  }
   if (logs.find(({ name }) => name === 'Minted')) {
     return 'mint';
+  }
+  if (logs.find(({ name }) => name === 'MintedMulti')) {
+    return 'mintMulti';
   }
   if (logs.find(({ name }) => name === 'SavingsDeposited')) {
     return 'depositSavings';
@@ -81,7 +93,12 @@ const getHistoricTransactionDescription = (
         return (
           <>
             You <span>deposited</span>{' '}
-            {formatExactAmount(savingsDeposited, mUSD.token.decimals)} mUSD
+            {formatExactAmount(
+              savingsDeposited,
+              mUSD.token.decimals,
+              'mUSD',
+              true,
+            )}
           </>
         );
       }
@@ -94,7 +111,12 @@ const getHistoricTransactionDescription = (
         return (
           <>
             You <span>withdrew</span>{' '}
-            {formatExactAmount(creditsRedeemed, mUSD.token.decimals)} mUSD
+            {formatExactAmount(
+              creditsRedeemed,
+              mUSD.token.decimals,
+              'mUSD',
+              true,
+            )}
           </>
         );
       }
@@ -134,6 +156,7 @@ const getHistoricTransactionDescription = (
                 bAssetQuantities[index],
                 bassetTokens[index].token.decimals,
                 bassetTokens[index].token.symbol,
+                true,
               ),
             ),
           )}{' '}
@@ -142,13 +165,33 @@ const getHistoricTransactionDescription = (
             mAssetQuantity,
             mUSD.token.decimals,
             mUSD.token.symbol,
+            true,
           )}{' '}
           (fee paid:{' '}
           {formatExactAmount(totalFee, mUSD.token.decimals, mUSD.token.symbol)})
         </>
       );
     }
+    case 'redeemMasset': {
+      const [
+        {
+          values: { mAssetQuantity },
+        },
+      ] = logs;
 
+      return (
+        <>
+          You <span>redeemed</span>{' '}
+          {formatExactAmount(
+            mAssetQuantity,
+            mUSD.token.decimals,
+            mUSD.token.symbol,
+            true,
+          )}
+          {' proportionately'}
+        </>
+      );
+    }
     case 'mint': {
       const [
         {
@@ -167,13 +210,35 @@ const getHistoricTransactionDescription = (
             mAssetQuantity,
             mUSD.token.decimals,
             mUSD.token.symbol,
+            true,
           )}{' '}
           with{' '}
           {formatExactAmount(
             bAssetQuantity,
             bAssetToken.token.decimals,
             bAssetToken.token.symbol,
+            true,
           )}
+        </>
+      );
+    }
+    case 'mintMulti': {
+      const [
+        {
+          values: { mAssetQuantity },
+        },
+      ] = logs;
+
+      return (
+        <>
+          You <span>minted</span>{' '}
+          {formatExactAmount(
+            mAssetQuantity,
+            mUSD.token.decimals,
+            mUSD.token.symbol,
+            true,
+          )}{' '}
+          with{' multiple bAssets'}
         </>
       );
     }
