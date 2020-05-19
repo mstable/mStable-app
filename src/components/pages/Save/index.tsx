@@ -58,6 +58,8 @@ const mapReasonToMessage = (reason: Reasons): string => {
 };
 
 const CreditBalance = styled.div`
+  line-height: 4em;
+
   img {
     width: 6vw;
     margin-right: 10px;
