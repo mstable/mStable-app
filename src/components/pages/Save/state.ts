@@ -91,7 +91,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ? parsedFormValue?.exact
         : amount?.exact && exchangeRate?.exchangeRate
         ? amount.exact
-            .add(2)
+            .add(1)
             .mul(SCALE)
             .div(parseUnits(exchangeRate.exchangeRate))
         : null;
