@@ -28,3 +28,16 @@ subscription LatestExchangeRate {
     timestamp
   }
 }
+
+subscription SavingsContractData($id: ID!) {
+  savingsContracts(where: { id: $id }) {
+    id
+    totalSavings
+    totalCredits
+    exchangeRates {
+      id
+    }
+    savingsRate
+    automationEnabled
+  }
+}

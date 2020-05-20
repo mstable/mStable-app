@@ -96,7 +96,7 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
       // Remove the notification after a delay
       setTimeout(() => {
         dispatch({ type: Actions.RemoveNotification, payload: { id } });
-      }, 5000);
+      }, 8000);
     },
     [dispatch],
   );
