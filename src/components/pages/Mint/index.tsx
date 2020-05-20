@@ -1,4 +1,4 @@
-import React, { ComponentProps, FC, useCallback } from 'react';
+import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 import { BigNumber } from 'ethers/utils';
@@ -54,6 +54,21 @@ export const Mint: FC<{}> = () => {
   const { account } = useWallet();
   const sendTransaction = useSendTransaction();
   const mUsdContract = useMusdContract();
+
+  const mAssetBalanceItem = useMemo(
+    () => [
+      {
+        label: 'Balance',
+        value: formatExactAmount(
+          mAssetData?.token?.balance,
+          mAssetData?.token?.decimals,
+          undefined,
+          true,
+        ),
+      },
+    ],
+    [mAssetData],
+  );
 
   const handleSubmit = useCallback(
     event => {
@@ -123,55 +138,59 @@ export const Mint: FC<{}> = () => {
   }, [bAssetInputs, bAssets, setMassetAmount]);
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <MusdStats totalSupply={totalSupply} />
-      <FormRow>
-        <Header>
-          <H3>Send</H3>
-          <MintMode>
-            <ToggleInput onClick={toggleMode} checked={mode === Mode.Multi} />
-            <span>Mint with all stablecoins</span>
-          </MintMode>
-        </Header>
-        <BassetsGrid>
-          {loading ? (
-            <Skeletons skeletonCount={4} height={180} />
+    <>
+      <Form onSubmit={handleSubmit}>
+        <FormRow>
+          <Header>
+            <H3>Send</H3>
+            <MintMode>
+              <ToggleInput onClick={toggleMode} checked={mode === Mode.Multi} />
+              <span>Mint with all stablecoins</span>
+            </MintMode>
+          </Header>
+          <BassetsGrid>
+            {loading ? (
+              <Skeletons skeletonCount={4} height={180} />
+            ) : (
+              bAssetInputs.map(bAssetInput => (
+                <BassetInput
+                  input={bAssetInput}
+                  handleToggle={toggleBassetEnabled}
+                  key={bAssetInput.address}
+                  mAssetAddress={mAssetAddress}
+                  toggleDisabled={isMulti || bAssetInput.enabled}
+                />
+              ))
+            )}
+          </BassetsGrid>
+        </FormRow>
+        <FormRow>
+          <H3>Receive</H3>
+          {mAssetAddress ? (
+            <TokenAmountInput
+              name="mUSD"
+              amountValue={mAsset.formValue}
+              tokenValue={mAssetAddress}
+              onChangeAmount={handleChangeAmount}
+              onChangeToken={() => {}}
+              tokenAddresses={[mAssetAddress]}
+              tokenDisabled
+              items={mAssetBalanceItem}
+              onSetMax={handleSetMax}
+              error={error || undefined}
+            />
           ) : (
-            bAssetInputs.map(bAssetInput => (
-              <BassetInput
-                input={bAssetInput}
-                handleToggle={toggleBassetEnabled}
-                key={bAssetInput.address}
-                mAssetAddress={mAssetAddress}
-                toggleDisabled={isMulti || bAssetInput.enabled}
-              />
-            ))
+            <Skeleton />
           )}
-        </BassetsGrid>
-      </FormRow>
-      <FormRow>
-        <H3>Receive</H3>
-        {mAssetAddress ? (
-          <TokenAmountInput
-            name="mUSD"
-            amountValue={mAsset.formValue}
-            tokenValue={mAssetAddress}
-            onChangeAmount={handleChangeAmount}
-            onChangeToken={() => {}}
-            tokenAddresses={[mAssetAddress]}
-            tokenDisabled
-            onSetMax={handleSetMax}
-            error={error || undefined}
-          />
-        ) : (
-          <Skeleton />
-        )}
-      </FormRow>
-      <div>
-        <SubmitButton type="submit" size={Size.l} disabled={!valid}>
-          Mint
-        </SubmitButton>
-      </div>
-    </Form>
+        </FormRow>
+        <div>
+          <SubmitButton type="submit" size={Size.l} disabled={!valid}>
+            Mint
+          </SubmitButton>
+        </div>
+      </Form>
+
+      <MusdStats totalSupply={totalSupply} />
+    </>
   );
 };

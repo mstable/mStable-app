@@ -8,6 +8,7 @@ import { Skeletons } from '../../core/Skeletons';
 import { BassetsGrid } from '../../core/Bassets';
 import { Size } from '../../../theme';
 import { BassetOutput } from './BassetOutput';
+import { formatExactAmount } from '../../../web3/amounts';
 import { useExitContext } from './ExitProvider';
 import { Interfaces, SendTxManifest } from '../../../types';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
@@ -30,6 +31,21 @@ export const ExitForm: FC<{}> = () => {
   const mUsdContract = useMusdContract();
 
   const touched = useRef<boolean>();
+
+  const musdBalanceItem = useMemo(
+    () => [
+      {
+        label: 'Balance',
+        value: formatExactAmount(
+          token?.balance,
+          token?.decimals,
+          token?.symbol,
+          true,
+        ),
+      },
+    ],
+    [token],
+  );
 
   const handleSubmit = useCallback(
     event => {
@@ -73,42 +89,45 @@ export const ExitForm: FC<{}> = () => {
   );
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <MusdStats totalSupply={totalSupply} />
-      <FormRow>
-        <H3>Send</H3>
-        {loading || !token?.address ? (
-          <Skeleton />
-        ) : (
-          <TokenAmountInput
-            name="redemption"
-            tokenValue={token.address}
-            amountValue={redemption.formValue}
-            tokenAddresses={[token.address]}
-            onChangeAmount={handleSetAmount}
-            onSetMax={handleSetMax}
-            tokenDisabled
-            error={error || undefined}
-          />
-        )}
-      </FormRow>
-      <FormRow>
-        <H3>Receive</H3>
-        <BassetsGrid>
-          {loading || !massetAddress ? (
-            <Skeletons skeletonCount={4} height={180} />
+    <>
+      <Form onSubmit={handleSubmit}>
+        <FormRow>
+          <H3>Send</H3>
+          {loading || !token?.address ? (
+            <Skeleton />
           ) : (
-            bAssetOutputs.map(({ address }) => (
-              <BassetOutput key={address} address={address} />
-            ))
+            <TokenAmountInput
+              name="redemption"
+              tokenValue={token.address}
+              amountValue={redemption.formValue}
+              tokenAddresses={[token.address]}
+              onChangeAmount={handleSetAmount}
+              onSetMax={handleSetMax}
+              items={musdBalanceItem}
+              tokenDisabled
+              error={error || undefined}
+            />
           )}
-        </BassetsGrid>
-      </FormRow>
-      <div>
-        <SubmitButton size={Size.l} disabled={!valid}>
-          Redeem
-        </SubmitButton>
-      </div>
-    </Form>
+        </FormRow>
+        <FormRow>
+          <H3>Receive</H3>
+          <BassetsGrid>
+            {loading || !massetAddress ? (
+              <Skeletons skeletonCount={4} height={180} />
+            ) : (
+              bAssetOutputs.map(({ address }) => (
+                <BassetOutput key={address} address={address} />
+              ))
+            )}
+          </BassetsGrid>
+        </FormRow>
+        <div>
+          <SubmitButton size={Size.l} disabled={!valid}>
+            Redeem
+          </SubmitButton>
+        </div>
+      </Form>
+      <MusdStats totalSupply={totalSupply} />
+    </>
   );
 };

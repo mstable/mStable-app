@@ -30,6 +30,7 @@ import {
   useSavingsContract,
 } from '../../../context/DataProvider/ContractsProvider';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
+import { formatExactAmount } from '../../../web3/amounts';
 import {
   useApy,
   useIncreasingNumber,
@@ -179,6 +180,21 @@ export const Save: FC<{}> = () => {
     // these are assumed rates.
     0.0000001,
     100,
+  );
+
+  const musdBalanceItem = useMemo(
+    () => [
+      {
+        label: 'Balance',
+        value: formatExactAmount(
+          mUsd.token.balance,
+          mUsd.token.decimals,
+          mUsd.token.symbol,
+          true,
+        ),
+      },
+    ],
+    [mUsd.token.balance, mUsd.token.decimals, mUsd.token.symbol],
   );
 
   const apy = useApy();
@@ -457,6 +473,7 @@ export const Save: FC<{}> = () => {
           onSetMax={handleSetMax}
           tokenAddresses={tokenAddresses}
           tokenDisabled
+          items={musdBalanceItem}
           error={errorMessage}
           needsUnlock={needsUnlock}
           onUnlock={handleUnlock}
