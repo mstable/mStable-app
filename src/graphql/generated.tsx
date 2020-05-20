@@ -1181,6 +1181,16 @@ export type LatestExchangeRateSubscriptionVariables = {};
 
 export type LatestExchangeRateSubscription = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
 
+export type SavingsContractDataSubscriptionVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type SavingsContractDataSubscription = { savingsContracts: Array<(
+    Pick<SavingsContract, 'id' | 'totalSavings' | 'totalCredits' | 'savingsRate' | 'automationEnabled'>
+    & { exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
+  )> };
+
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
   id
@@ -1583,3 +1593,39 @@ export function useLatestExchangeRateSubscription(baseOptions?: ApolloReactHooks
       }
 export type LatestExchangeRateSubscriptionHookResult = ReturnType<typeof useLatestExchangeRateSubscription>;
 export type LatestExchangeRateSubscriptionResult = ApolloReactCommon.SubscriptionResult<LatestExchangeRateSubscription>;
+export const SavingsContractDataDocument = gql`
+    subscription SavingsContractData($id: ID!) {
+  savingsContracts(where: {id: $id}) {
+    id
+    totalSavings
+    totalCredits
+    exchangeRates {
+      id
+    }
+    savingsRate
+    automationEnabled
+  }
+}
+    `;
+
+/**
+ * __useSavingsContractDataSubscription__
+ *
+ * To run a query within a React component, call `useSavingsContractDataSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useSavingsContractDataSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSavingsContractDataSubscription({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSavingsContractDataSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<SavingsContractDataSubscription, SavingsContractDataSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<SavingsContractDataSubscription, SavingsContractDataSubscriptionVariables>(SavingsContractDataDocument, baseOptions);
+      }
+export type SavingsContractDataSubscriptionHookResult = ReturnType<typeof useSavingsContractDataSubscription>;
+export type SavingsContractDataSubscriptionResult = ApolloReactCommon.SubscriptionResult<SavingsContractDataSubscription>;

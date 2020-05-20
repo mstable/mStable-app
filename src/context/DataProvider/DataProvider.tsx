@@ -15,7 +15,7 @@ import {
   SavingsContractQuery,
   useMassetQuery,
   useMassetSubSubscription,
-  useSavingsContractQuery,
+  useSavingsContractDataSubscription,
 } from '../../graphql/generated';
 import { useKnownAddress } from './KnownAddressProvider';
 import { EXP_SCALE, RATIO_SCALE } from '../../web3/constants';
@@ -46,7 +46,7 @@ export const useMUSDSavings = ():
 
   const {
     data: { savingsContracts: [fromData] = [] } = {},
-  } = useSavingsContractQuery({
+  } = useSavingsContractDataSubscription({
     variables: { id: address as string },
     skip: !address,
   });
@@ -108,7 +108,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
               },
               index,
             ) => {
-              const maxWeightInUnits = parseUnits(totalSupply, mUsd.token.decimals)
+              const maxWeightInUnits = parseUnits(
+                totalSupply,
+                mUsd.token.decimals,
+              )
                 .mul(maxWeight)
                 .div(EXP_SCALE);
               const currentVaultUnits = parseUnits(vaultBalance, decimals)
