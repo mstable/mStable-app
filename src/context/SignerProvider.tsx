@@ -25,18 +25,19 @@ const context = createContext<State>(null);
  */
 export const SignerProvider: FC<{}> = ({ children }) => {
   const [signer, setSigner] = useState<State>(null);
-  const { ethereum } = useWallet<InjectedEthereum>();
+  const { ethereum, account } = useWallet<InjectedEthereum>();
 
   useEffect((): void => {
-    if (!ethereum) return setSigner(null);
+    if (!ethereum) {
+      setSigner(null);
+      return;
+    }
 
     ethereum.enable().then(() => {
       const web3Provider = new EthersWeb3Provider(ethereum as AsyncSendable);
       setSigner(web3Provider.getSigner());
     });
-
-    return undefined;
-  }, [ethereum]);
+  }, [ethereum, account]);
 
   return <context.Provider value={signer}>{children}</context.Provider>;
 };
