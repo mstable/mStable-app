@@ -11,7 +11,7 @@ import React, {
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { Action, Actions, BassetOutput, Dispatch, Mode, State } from './types';
 import { BassetData } from '../../../context/DataProvider/types';
-import { parseAmount } from '../../../web3/amounts';
+import { parseAmount, parseExactAmount } from '../../../web3/amounts';
 import { RATIO_SCALE, EXP_SCALE } from '../../../web3/constants';
 import { Amount } from '../../../types';
 import { useMusdData } from '../../../context/DataProvider/DataProvider';
@@ -83,6 +83,24 @@ const reducer: Reducer<State, Action> = (state, action) => {
               })) || [],
       };
     }
+    case Actions.SetExactRedemptionAmount: {
+      const decimals = state.mAssetData?.token.decimals || 18;
+      const parsedAmount = parseExactAmount(
+        action.payload.gt(1000) ? action.payload : new BigNumber(0),
+        decimals,
+      );
+
+      return updateBassetAmounts({
+        ...state,
+        redemption: {
+          formValue: parsedAmount.simple
+            ? parsedAmount.simple.toString()
+            : null,
+          amount: parsedAmount,
+        },
+      });
+    }
+
     case Actions.SetRedemptionAmount: {
       const formValue = action.payload;
       return updateBassetAmounts({
@@ -127,7 +145,21 @@ export const ExitProvider: FC<{}> = ({ children }) => {
 
   const setRedemptionAmount = useCallback<Dispatch['setRedemptionAmount']>(
     amount => {
-      dispatch({ type: Actions.SetRedemptionAmount, payload: amount });
+      dispatch({
+        type: Actions.SetRedemptionAmount,
+        payload: amount,
+      });
+    },
+    [dispatch],
+  );
+  const setExactRedemptionAmount = useCallback<
+    Dispatch['setExactRedemptionAmount']
+  >(
+    amount => {
+      dispatch({
+        type: Actions.SetExactRedemptionAmount,
+        payload: amount,
+      });
     },
     [dispatch],
   );
@@ -154,6 +186,10 @@ export const ExitProvider: FC<{}> = ({ children }) => {
         setError('Insufficient balance');
         return;
       }
+      if (redemption.amount.exact.eq(0)) {
+        setError('Amount must be greater than zero');
+        return;
+      }
     }
 
     if (error) setError(null);
@@ -166,9 +202,10 @@ export const ExitProvider: FC<{}> = ({ children }) => {
           state,
           {
             setRedemptionAmount,
+            setExactRedemptionAmount,
           },
         ],
-        [state, setRedemptionAmount],
+        [state, setRedemptionAmount, setExactRedemptionAmount],
       )}
     >
       {children}

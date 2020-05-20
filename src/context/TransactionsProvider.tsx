@@ -204,11 +204,7 @@ const getTxPurpose = (
         bassetQ,
         bAsset.token.decimals,
         mUSD.token.symbol,
-      )} with ${formatExactAmount(
-        bassetQ,
-        bAsset.token.decimals,
-        bAsset.token.symbol,
-      )}`;
+      )} with ${bAsset.token.symbol}`;
       return {
         present: `Minting ${body}`,
         past: `Minted ${body}`,

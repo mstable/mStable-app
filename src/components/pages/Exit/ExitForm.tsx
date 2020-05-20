@@ -9,7 +9,6 @@ import { BassetsGrid } from '../../core/Bassets';
 import { Size } from '../../../theme';
 import { BassetOutput } from './BassetOutput';
 import { useExitContext } from './ExitProvider';
-import { formatExactAmount } from '../../../web3/amounts';
 import { Interfaces, SendTxManifest } from '../../../types';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
@@ -17,7 +16,7 @@ import { useMusdContract } from '../../../context/DataProvider/ContractsProvider
 export const ExitForm: FC<{}> = () => {
   const [
     { redemption, error, bAssetOutputs, mAssetData },
-    { setRedemptionAmount },
+    { setRedemptionAmount, setExactRedemptionAmount },
   ] = useExitContext();
 
   const { loading, token } = mAssetData || {};
@@ -48,9 +47,12 @@ export const ExitForm: FC<{}> = () => {
 
   const handleSetMax = useCallback(() => {
     if (mUsdBalance) {
-      setRedemptionAmount(formatExactAmount(mUsdBalance, 18));
+      setExactRedemptionAmount(mUsdBalance);
+      if (!touched.current) {
+        touched.current = true;
+      }
     }
-  }, [mUsdBalance, setRedemptionAmount]);
+  }, [mUsdBalance, setExactRedemptionAmount]);
 
   const handleSetAmount = useCallback(
     (_, amount) => {

@@ -68,9 +68,10 @@ export const MintAnimation: FC<{ forwards: boolean }> = ({ forwards }) => {
   const [animate, setAnimate] = useState<boolean>(forwards);
 
   useLayoutEffect(() => {
-    setInterval(() => {
+    const i = setInterval(() => {
       setAnimate(!animate);
     }, 5000);
+    return () => clearInterval(i);
   }, [animate, setAnimate]);
 
   const { dai, mUsd, tusd, usdc, usdt } = animate ? startValues : endValues;
