@@ -222,12 +222,12 @@ export const Save: FC<{}> = () => {
   useEffect(() => {
     if (!touched.current) return;
 
-    if (!inputAmount) {
+    if (!inputAmount || !amountInCredits) {
       setError(Reasons.AmountMustBeSet);
       return;
     }
 
-    if (!inputAmount.gte(0)) {
+    if (!inputAmount.gt(0)) {
       setError(Reasons.AmountMustBeGreaterThanZero);
       return;
     }
@@ -255,12 +255,12 @@ export const Save: FC<{}> = () => {
     }
 
     if (transactionType === TransactionType.Withdraw) {
-      if (!savingsBalance.exact) {
+      if (!savingsBalance.creditsExact) {
         setError(Reasons.FetchingData);
         return;
       }
 
-      if (inputAmount.gt(savingsBalance.exact)) {
+      if (amountInCredits.gt(savingsBalance.creditsExact)) {
         setError(Reasons.WithdrawAmountMustNotExceedSavingsBalance);
         return;
       }
@@ -271,6 +271,7 @@ export const Save: FC<{}> = () => {
     needsUnlock,
     setError,
     inputAmount,
+    amountInCredits,
     inputAddress,
     mUsdToken.balance,
     savingsBalance,
@@ -343,7 +344,12 @@ export const Save: FC<{}> = () => {
       }
     } else if (savingsBalance.creditsExact) {
       setQuantity(
-        parseFloat(formatUnits(savingsBalance.creditsExact, 18)).toString(),
+        formatUnits(
+          savingsBalance.creditsExact.gt('10000000')
+            ? savingsBalance.creditsExact
+            : 0,
+          18,
+        ),
         true,
       );
     }
