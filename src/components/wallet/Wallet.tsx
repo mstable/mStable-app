@@ -24,7 +24,7 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   color: ${({ theme }) => theme.color.white};
-  padding: ${({ theme }) => `80px ${theme.spacing.l} ${theme.spacing.l}`};
+  padding: ${({ theme }) => `20px ${theme.spacing.l} ${theme.spacing.l}`};
 `;
 
 const Rows = styled.div`
@@ -178,7 +178,7 @@ export const Wallet: FC<{}> = () => {
       )}
       {error ? <Error>{error}</Error> : null}
       <FlexRow>
-        { /* FIXME problem when first connecting; updates on unmounted components */ }
+        {/* FIXME problem when first connecting; updates on unmounted components */}
         {connected && account && wallet ? (
           <Connected walletLabel={wallet.label} account={account} />
         ) : connecting ? (

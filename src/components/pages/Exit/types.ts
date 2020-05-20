@@ -1,6 +1,6 @@
+import { BigNumber } from 'ethers/utils';
 import { Amount } from '../../../types';
 import { MassetData } from '../../../context/DataProvider/types';
-import { BigNumber } from 'ethers/utils';
 
 export enum Mode {
   RedeemProportional,
