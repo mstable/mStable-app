@@ -81,7 +81,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
       }
 
       const {
-        token,
+        token: mUsdToken,
         basket: { bassets, collateralisationRatio, failed, undergoingRecol },
         feeRate,
       } = data?.masset || {};
@@ -93,7 +93,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         [ContractNames.mUSD]: {
           ...mUsd,
           loading,
-          token: { ...mUsd.token, ...token },
+          token: { ...mUsd.token, ...mUsdToken },
           basket: { collateralisationRatio, failed, undergoingRecol },
           bAssets: bassets.map(
             (
@@ -108,19 +108,30 @@ const reducer: Reducer<State, Action> = (state, action) => {
               },
               index,
             ) => {
-              const maxWeightInUnits = parseUnits(
-                totalSupply,
-                mUsd.token.decimals,
-              )
+              const mUsdTotalSupplyExact = parseUnits(
+                mUsdToken.totalSupply as string,
+                mUsdToken.decimals,
+              );
+
+              const maxWeightInUnitsExact = mUsdTotalSupplyExact
                 .mul(maxWeight)
                 .div(EXP_SCALE);
-              const currentVaultUnits = parseUnits(vaultBalance, decimals)
+
+              const vaultBalanceExact = parseUnits(vaultBalance, decimals);
+
+              const currentVaultUnitsExact = vaultBalanceExact
                 .mul(ratio)
                 .div(RATIO_SCALE);
+
               const overweight =
                 parseUnits(totalSupply, decimals).gt(0) &&
-                currentVaultUnits.gt(maxWeightInUnits);
+                currentVaultUnitsExact.gt(maxWeightInUnitsExact);
 
+              const basketShareExact = currentVaultUnitsExact
+                .mul(EXP_SCALE)
+                .div(mUsdTotalSupplyExact);
+
+              // TODO use exact values in state
               return {
                 ...mUsd?.bAssets[index],
                 token: {
@@ -130,6 +141,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
                   symbol,
                 },
                 address,
+                basketShare: basketShareExact,
                 isTransferFeeCharged,
                 maxWeight,
                 overweight,
