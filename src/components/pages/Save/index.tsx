@@ -456,6 +456,7 @@ export const Save: FC<{}> = () => {
           onChangeAmount={handleChangeAmount}
           onSetMax={handleSetMax}
           tokenAddresses={tokenAddresses}
+          tokenDisabled
           error={errorMessage}
           needsUnlock={needsUnlock}
           onUnlock={handleUnlock}
