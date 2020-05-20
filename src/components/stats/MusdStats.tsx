@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-import { H3 } from '../core/Typography';
+import { H3, H2 } from '../core/Typography';
 import { CountUp } from '../core/CountUp';
 import { BasketStats } from './BasketStats';
 
@@ -14,6 +14,15 @@ const StatsGraphic = styled.div`
   flex-grow: 1;
   padding-bottom: 20px;
 `;
+const StatsGraphicNull = styled.div`
+  width: 10%;
+  flex-grow: 0;
+  padding-bottom: 20px;
+`;
+
+const StatsContainer = styled.div`
+  padding-top: 60px;
+`;
 
 const StatsRow = styled.div`
   display: flex;
@@ -21,18 +30,22 @@ const StatsRow = styled.div`
 `;
 
 export const MusdStats: FC<Props> = ({ totalSupply }) => (
-  <StatsRow>
-    <StatsGraphic>
-      <H3 borderTop>mUSD basket share</H3>
-      <BasketStats />
-    </StatsGraphic>
-    <StatsGraphic>
-      <H3 borderTop>Total mUSD supply</H3>
-      {totalSupply ? (
-        <CountUp end={parseFloat(totalSupply)} decimals={2} />
-      ) : (
-        <Skeleton />
-      )}
-    </StatsGraphic>
-  </StatsRow>
+  <StatsContainer>
+    <H2>Basket Stats</H2>
+    <StatsRow>
+      <StatsGraphic>
+        <H3 borderTop>mUSD basket share</H3>
+        <BasketStats />
+      </StatsGraphic>
+      <StatsGraphicNull />
+      <StatsGraphic>
+        <H3 borderTop>Total mUSD supply</H3>
+        {totalSupply ? (
+          <CountUp end={parseFloat(totalSupply)} decimals={2} />
+        ) : (
+          <Skeleton />
+        )}
+      </StatsGraphic>
+    </StatsRow>
+  </StatsContainer>
 );
