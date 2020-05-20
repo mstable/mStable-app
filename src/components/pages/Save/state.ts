@@ -90,7 +90,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
       const amountInCredits = isCreditAmount
         ? parsedFormValue?.exact
         : amount?.exact && exchangeRate?.exchangeRate
-        ? amount.exact.mul(SCALE).div(parseUnits(exchangeRate.exchangeRate))
+        ? amount.exact
+            .add(2)
+            .mul(SCALE)
+            .div(parseUnits(exchangeRate.exchangeRate))
         : null;
       return {
         ...state,
