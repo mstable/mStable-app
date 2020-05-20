@@ -6,6 +6,7 @@ import TUSD from './TUSD.svg';
 import USDT from './USDT.svg';
 import USDC from './USDC.svg';
 import DAI from './DAI.svg';
+import BUSD from './BUSD.svg';
 
 interface Props {
   symbol: string;
@@ -17,6 +18,7 @@ const ICONS: Record<string, string> = {
   USDT,
   USDC,
   DAI,
+  BUSD,
 };
 
 const Image = styled.img`
