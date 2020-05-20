@@ -4,7 +4,7 @@
  * it likely share code with the front end
  */
 
-import { BigNumber } from 'ethers/utils';
+import { BigNumber, bigNumberify, BigNumberish } from 'ethers/utils';
 import { PERCENT_SCALE, EXP_SCALE, RATIO_SCALE } from './constants';
 
 export const divideByRatio = (value: BigNumber): BigNumber =>
@@ -13,8 +13,15 @@ export const divideByRatio = (value: BigNumber): BigNumber =>
 export const percentToWeight = (percent: number): BigNumber =>
   new BigNumber(percent).mul(PERCENT_SCALE);
 
-export const convertExactToPercent = (percentExact: BigNumber): number =>
-  new BigNumber(percentExact).div(PERCENT_SCALE).toNumber();
+export const convertExactToPercent = (
+  percentExact: BigNumberish,
+  fractionDigits = 2,
+): number => {
+  const exact = bigNumberify(percentExact).div(
+    new BigNumber(10).pow(16 - fractionDigits),
+  );
+  return parseFloat((exact.toNumber() / 100).toFixed(fractionDigits));
+};
 
 export const createMultiple = (ratio: number): BigNumber =>
   new BigNumber(ratio).mul(RATIO_SCALE);

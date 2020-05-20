@@ -16,6 +16,7 @@ import { H3 } from '../../core/Typography';
 import { BassetsGrid } from '../../core/Bassets';
 import { BassetInput } from './BassetInput';
 import { Skeletons } from '../../core/Skeletons';
+import { MusdStats } from '../../stats/MusdStats';
 import { Mode } from './types';
 import { useMintState } from './state';
 
@@ -48,6 +49,7 @@ export const Mint: FC<{}> = () => {
   const loading: boolean = mAssetData == null ? true : mAssetData?.loading;
   const bAssets = mAssetData?.bAssets;
   const mAssetAddress = mAssetData?.token.address || null;
+  const totalSupply = mAssetData?.token.totalSupply || null;
 
   const { account } = useWallet();
   const sendTransaction = useSendTransaction();
@@ -122,6 +124,7 @@ export const Mint: FC<{}> = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
+      <MusdStats totalSupply={totalSupply} />
       <FormRow>
         <Header>
           <H3>Send</H3>

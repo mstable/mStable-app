@@ -13,6 +13,7 @@ import { formatExactAmount } from '../../../web3/amounts';
 import { Interfaces, SendTxManifest } from '../../../types';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
+import { MusdStats } from '../../stats/MusdStats';
 
 export const ExitForm: FC<{}> = () => {
   const [
@@ -23,6 +24,7 @@ export const ExitForm: FC<{}> = () => {
   const { loading, token } = mAssetData || {};
   const mUsdBalance = token?.balance;
   const massetAddress = token?.address || null;
+  const totalSupply = token?.totalSupply || null;
 
   const { account } = useWallet();
   const sendTransaction = useSendTransaction();
@@ -70,6 +72,7 @@ export const ExitForm: FC<{}> = () => {
 
   return (
     <Form onSubmit={handleSubmit}>
+      <MusdStats totalSupply={totalSupply} />
       <FormRow>
         <H3>Send</H3>
         {loading || !token?.address ? (
