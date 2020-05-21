@@ -6,25 +6,13 @@ export enum Fields {
   Output = 'output',
 }
 
-export enum Mode {
-  Swap,
-  MintSingle,
-}
-
 export enum Actions {
-  InvertDirection,
-  SetError,
   SetToken,
   SetQuantity,
   UpdateMassetData,
 }
 
 export type Action =
-  | { type: Actions.InvertDirection }
-  | {
-      type: Actions.SetError;
-      payload: null | { reason: string; field?: Fields };
-    }
   | {
       type: Actions.SetToken;
       payload: {
@@ -46,15 +34,24 @@ export interface State {
     output: TokenQuantity;
     feeAmountSimple: string | null;
   };
-  mode: Mode;
-  mAssetData: MassetData | null;
-  error: null | { reason: string; field?: Fields };
+  applySwapFee: boolean;
+  mAssetData: MassetData;
+  touched: boolean;
+  needsUnlock: boolean;
+  inputError?: string;
+  outputError?: string;
+  valid: boolean;
 }
 
 export interface Dispatch {
   updateMassetData(mAssetData: MassetData): void;
-  setError(reason: string | null, field?: Fields): void;
-  invertDirection(): void;
   setToken(field: Fields, token: NonNullable<TokenDetails> | null): void;
   setQuantity(field: Fields, formValue: string): void;
 }
+
+export type ValidationResult = [
+  boolean,
+  { [Fields.Input]?: string; [Fields.Output]?: string; applySwapFee?: boolean },
+];
+
+export type StateValidator = (state: State) => ValidationResult;

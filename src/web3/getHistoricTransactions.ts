@@ -70,10 +70,20 @@ export const getHistoricTransactions = async (
           contractAddress: contract.address,
           blockNumber,
           status,
-          logs: logsMap[hash].map(log => {
-            const { values, name } = contract.interface.parseLog(log);
-            return { values, name };
-          }),
+          logs: logsMap[hash]
+            .map(log => {
+              let values: unknown[] = [];
+              let name: string | undefined;
+              // FIXME symptom-fighting: parse errors for swap (feeQuantity)
+              try {
+                ({ values, name } = contract.interface.parseLog(log));
+              } catch (error) {
+                // eslint-disable-next-line no-console
+                console.log(log, error);
+              }
+              return { values, name }
+            })
+            .filter(({ name }) => !!name),
         },
       };
     }, {});

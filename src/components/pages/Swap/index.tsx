@@ -1,5 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
-import styled from 'styled-components';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { useWallet } from 'use-wallet';
 import { A } from 'hookrouter';
@@ -18,27 +17,12 @@ import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { formatExactAmount } from '../../../web3/amounts';
 import { Interfaces, SendTxManifest } from '../../../types';
 import { CountUp } from '../../core/CountUp';
-import { ReactComponent as ArrowsSVG } from '../arrows.svg';
-import { Fields, Mode } from './types';
+import { Fields } from './types';
 import { useSwapState } from './state';
-
-const SwapDirectionButton = styled.div<{ disabled: boolean }>`
-  display: flex;
-  justify-content: center;
-  padding-bottom: 50px;
-
-  svg {
-    width: 40px;
-    height: 40px;
-  }
-
-  ${({ disabled }) => (disabled ? 'opacity: 0.5; cursor: not-allowed;' : '')}
-`;
 
 export const Swap: FC<{}> = () => {
   const [
     {
-      mode,
       values: {
         input,
         output,
@@ -46,25 +30,16 @@ export const Swap: FC<{}> = () => {
         output: { token: { address: outputAddress } = { address: null } },
         feeAmountSimple,
       },
-      error,
+      valid,
+      inputError,
+      outputError,
+      needsUnlock,
     },
-    { invertDirection, setToken, setQuantity, setError, updateMassetData },
+    { setToken, setQuantity, updateMassetData },
   ] = useSwapState();
 
   const inputToken = useTokenWithBalance(input.token.address);
   const outputToken = useTokenWithBalance(output.token.address);
-
-  const needsUnlock = useMemo<boolean>(
-    () =>
-      !!(
-        mode === Mode.MintSingle &&
-        input.token.address &&
-        input.amount.exact &&
-        outputToken.allowance &&
-        outputToken.allowance[input.token.address]?.lt(input.amount.exact)
-      ),
-    [mode, input, outputToken],
-  );
 
   const mUsdData = useMusdData();
   const { token: mUsdToken, bAssets } = mUsdData;
@@ -72,83 +47,8 @@ export const Swap: FC<{}> = () => {
     updateMassetData(mUsdData);
   }, [updateMassetData, mUsdData]);
 
-  const touched = useRef<boolean>(false);
-  useEffect(() => {
-    if (touched.current) return;
-
-    if (output.amount.simple || input.amount.simple) {
-      touched.current = true;
-    }
-  }, [touched, input, output]);
-
-  // TODO this validation should also highlight invalid pairs (e.g. when
-  // weight limits are in effect)
-  useEffect(() => {
-    if (!touched.current) {
-      // No validation needed if the form wasn't touched yet
-      return;
-    }
-
-    if (input.amount.simple && !input.token.address) {
-      setError('Token must be selected', Fields.Input);
-      return;
-    }
-
-    if (!input.amount.simple) {
-      setError('Amount must be set', Fields.Input);
-      return;
-    }
-
-    if (input.amount.exact?.lte(0)) {
-      setError('Amount must be greater than zero', Fields.Input);
-      return;
-    }
-
-    if (inputToken?.balance && input.amount.exact?.gt(inputToken.balance)) {
-      setError('Insufficient balance', Fields.Input);
-      return;
-    }
-
-    if (output.amount.simple && !output.token.address) {
-      setError('Token must be selected', Fields.Output);
-      return;
-    }
-
-    if (needsUnlock) {
-      setError('Token must be approved', Fields.Input);
-      return;
-    }
-
-    // TODO this should only happen when the field is unset, but currently
-    // there is a bug that doesn't set it initially (when it could be inferred)
-    if (!input.amount.exact || (output.token.address && !output.amount.exact)) {
-      setError('Amount must be set', Fields.Output);
-      return;
-    }
-
-    setError(null);
-  }, [inputToken, mUsdToken, needsUnlock, setError, input, output]);
-
-  /**
-   * Error message strings
-   */
-  const { formError, inputError, outputError } = useMemo<{
-    formError?: string;
-    inputError?: string;
-    outputError?: string;
-  }>(
-    () =>
-      error === null
-        ? {}
-        : {
-            [error.field === Fields.Input
-              ? 'inputError'
-              : error.field === Fields.Output
-              ? 'outputError'
-              : 'formError']: error.reason,
-          },
-    [error],
-  );
+  const isMint =
+    output.token.address && output.token.address === mUsdToken.address;
 
   /**
    * Blockchain goodies
@@ -206,18 +106,6 @@ export const Swap: FC<{}> = () => {
     [outputToken, feeAmountSimple],
   );
 
-  const valid = useMemo<boolean>(
-    () =>
-      !!(
-        error === null &&
-        input.amount.exact &&
-        input.token.address &&
-        output.amount.exact &&
-        output.token.address
-      ),
-    [error, input, output],
-  );
-
   /**
    * Handle the unlocking of bAssets
    */
@@ -254,42 +142,37 @@ export const Swap: FC<{}> = () => {
     event => {
       event.preventDefault();
 
-      if (
-        account &&
-        error === null &&
-        mUsdContract &&
-        input.amount.exact &&
-        input.token.address &&
-        output.token.address &&
-        output.amount.exact
-      ) {
-        const args: [string, string, BigNumber, string] =
-          mode === Mode.MintSingle
-            ? [
-                input.token.address,
-                output.token.address,
-                input.amount.exact,
-                account,
-              ]
-            : [
-                output.token.address,
-                input.token.address,
-                input.amount.exact,
-                account,
-              ];
-        const manifest: SendTxManifest<Interfaces.Masset, 'swap'> = {
-          iface: mUsdContract,
-          fn: 'swap',
-          args,
-        };
-        sendTransaction(manifest);
+      if (account && valid && mUsdContract) {
+        if (isMint) {
+          const manifest: SendTxManifest<Interfaces.Masset, 'mint'> = {
+            iface: mUsdContract,
+            fn: 'mint',
+            args: [
+              input.token.address as string,
+              input.amount.exact as BigNumber,
+            ],
+          };
+          sendTransaction(manifest);
+        } else {
+          const manifest: SendTxManifest<Interfaces.Masset, 'swap'> = {
+            iface: mUsdContract,
+            fn: 'swap',
+            args: [
+              input.token.address as string,
+              output.token.address as string,
+              input.amount.exact as BigNumber,
+              account,
+            ],
+          };
+          sendTransaction(manifest);
+        }
       }
     },
-    [account, error, input, mUsdContract, mode, output, sendTransaction],
+    [account, valid, input, mUsdContract, isMint, output, sendTransaction],
   );
 
   return (
-    <Form error={formError} onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit}>
       <FormRow>
         <H3>Send</H3>
         <TokenAmountInput
@@ -306,13 +189,6 @@ export const Swap: FC<{}> = () => {
           error={inputError}
         />
       </FormRow>
-      <SwapDirectionButton
-        onClick={invertDirection}
-        title="Change direction"
-        disabled={mode === Mode.MintSingle}
-      >
-        <ArrowsSVG />
-      </SwapDirectionButton>
       <FormRow>
         <H3>Receive</H3>
         <TokenAmountInput

@@ -6,26 +6,10 @@ export const useSwapState = (): [State, Dispatch] => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const updateMassetData = useCallback<Dispatch['updateMassetData']>(
-    (mAssetData) => {
+    mAssetData => {
       dispatch({
         type: Actions.UpdateMassetData,
         payload: mAssetData,
-      });
-    },
-    [dispatch],
-  );
-
-  const invertDirection = useCallback<Dispatch['invertDirection']>(() => {
-    dispatch({
-      type: Actions.InvertDirection,
-    });
-  }, [dispatch]);
-
-  const setError = useCallback<Dispatch['setError']>(
-    (reason, field) => {
-      dispatch({
-        type: Actions.SetError,
-        payload: reason === null ? null : { reason, field },
       });
     },
     [dispatch],
@@ -55,10 +39,7 @@ export const useSwapState = (): [State, Dispatch] => {
   );
 
   return useMemo(
-    () => [
-      state,
-      { updateMassetData, invertDirection, setError, setQuantity, setToken },
-    ],
-    [state, updateMassetData, invertDirection, setError, setQuantity, setToken],
+    () => [state, { updateMassetData, setQuantity, setToken }],
+    [state, updateMassetData, setQuantity, setToken],
   );
 };
