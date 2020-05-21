@@ -122,7 +122,11 @@ export const useIncreasingNumber = (
   const [valueInc, setValueInc] = useState<typeof value>(null);
 
   useEffect(() => {
-    if (value) setValueInc(value);
+    if (value) {
+      setValueInc(value);
+    } else {
+      setValueInc(0);
+    }
   }, [value, setValueInc]);
 
   useInterval(() => {

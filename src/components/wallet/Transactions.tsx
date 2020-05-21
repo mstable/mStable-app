@@ -235,7 +235,6 @@ const getPendingTxDescription = (
         <>
           You <span>{tx.status ? 'redeemed' : 'are redeeming'}</span>{' '}
           {formatExactAmount(massetQ, 18, mUSD.token.symbol, true)}
-          {' proportionately'}
         </>
       );
     }

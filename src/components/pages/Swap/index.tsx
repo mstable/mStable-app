@@ -171,7 +171,12 @@ export const Swap: FC<{}> = () => {
     () => [
       {
         label: 'Balance',
-        value: formatExactAmount(inputToken.balance, inputToken.decimals),
+        value: formatExactAmount(
+          inputToken.balance,
+          inputToken.decimals,
+          inputToken.symbol,
+          true,
+        ),
       },
     ],
     [inputToken],
@@ -181,7 +186,12 @@ export const Swap: FC<{}> = () => {
     () => [
       {
         label: 'Balance',
-        value: formatExactAmount(outputToken.balance, outputToken.decimals),
+        value: formatExactAmount(
+          outputToken.balance,
+          outputToken.decimals,
+          outputToken.symbol,
+          true,
+        ),
       },
       ...(feeAmountSimple
         ? [
