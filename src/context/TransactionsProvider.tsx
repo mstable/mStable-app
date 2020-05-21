@@ -29,7 +29,6 @@ import { useKnownAddress } from './DataProvider/KnownAddressProvider';
 import { useMusdQuery } from './DataProvider/DataProvider';
 import { formatExactAmount } from '../web3/amounts';
 import { getEtherscanLink } from '../web3/strings';
-import { EMOJIS } from '../web3/constants';
 
 enum Actions {
   AddPending,

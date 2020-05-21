@@ -35,13 +35,13 @@ const Balance = styled(CountUp)<{ size?: Size }>`
 const BalanceSkeleton: FC<{ themeContext: DefaultTheme }> = ({
   themeContext: theme,
 }) => (
-    <SkeletonTheme
-      color={theme.color.blueTransparent}
-      highlightColor={theme.color.blue}
-    >
-      <Skeleton width={200} height={30} />
-    </SkeletonTheme>
-  );
+  <SkeletonTheme
+    color={theme.color.blueTransparent}
+    highlightColor={theme.color.blue}
+  >
+    <Skeleton width={200} height={30} />
+  </SkeletonTheme>
+);
 
 interface TokenWithBalance extends TokenDetailsFragment {
   balanceSimple: number | null;
