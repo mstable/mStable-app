@@ -45,19 +45,23 @@ export const formatExactAmount = (
 };
 
 /**
- * @dev Converts a simple amount into an object containing both Simple and Exact amounts
- * @param simpleAmount Simple amount to parse
+ * @dev Converts a string amount into an object containing both Simple and Exact amounts
+ * @param amountStr String amount to parse
  * @param decimals Number of decimal places the exact amount should have
  */
 export const parseAmount = (
-  simpleAmount: string | null,
+  amountStr: string | null,
   decimals: number | null,
 ): Amount => {
-  if (!(simpleAmount && decimals)) {
+  if (!(amountStr && decimals)) {
     return { exact: null, simple: null };
   }
 
-  const exact = parseUnits(simpleAmount.slice(0, decimals), decimals);
+  // Trim the fraction to the number of decimals (otherwise: underflow)
+  const [int, fraction = '0'] = amountStr.split('.');
+  const sanitizedAmount = `${int}.${fraction.slice(0, decimals)}`;
+
+  const exact = parseUnits(sanitizedAmount, decimals);
   const simple = parseFloat(formatUnits(exact, decimals));
   return {
     exact,
