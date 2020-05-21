@@ -2,7 +2,7 @@
 
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { useSwapState } from '../state';
-import { Fields, Mode } from '../types';
+import { Fields } from '../types';
 
 type Ctx = ReturnType<typeof useSwapState>;
 
@@ -52,9 +52,17 @@ describe('Swap form state', () => {
 
   test('context', () => {
     expect(state()).toEqual({
-      error: null,
-      mAssetData: null,
-      mode: Mode.Swap,
+      mAssetData: {
+        bAssets: [],
+        basket: {},
+        token: {},
+        loading: false,
+        feeRate: null,
+      },
+      applySwapFee: false,
+      needsUnlock: false,
+      touched: false,
+      valid: false,
       values: {
         feeAmountSimple: null,
         input: {
@@ -96,106 +104,6 @@ describe('Swap form state', () => {
 
       expect(state()).toMatchObject({
         mAssetData,
-      });
-    });
-
-    describe('setQuantity', () => {
-      test('set input and invert direction', () => {
-        act(() => {
-          dispatch().setQuantity(Fields.Input, '10');
-        });
-
-        expect(state()).toMatchObject({
-          values: {
-            input: {
-              formValue: '10',
-            },
-            output: {
-              formValue: null,
-            },
-          },
-        });
-
-        act(() => {
-          dispatch().invertDirection();
-        });
-
-        expect(state()).toMatchObject({
-          values: {
-            input: {
-              formValue: null,
-            },
-            output: {
-              formValue: '10',
-            },
-          },
-        });
-      });
-
-      test('set output and invert direction', () => {
-        act(() => {
-          dispatch().setQuantity(Fields.Output, '10');
-        });
-
-        expect(state()).toMatchObject({
-          values: {
-            input: {
-              formValue: null,
-            },
-            output: {
-              formValue: '10',
-            },
-          },
-        });
-
-        act(() => {
-          dispatch().invertDirection();
-        });
-
-        expect(state()).toMatchObject({
-          values: {
-            input: {
-              formValue: '10',
-            },
-            output: {
-              formValue: null,
-            },
-            feeAmountSimple: null,
-          },
-        });
-      });
-
-      test('set both and invert direction', () => {
-        act(() => {
-          dispatch().setQuantity(Fields.Input, '42');
-          dispatch().setQuantity(Fields.Output, '10');
-        });
-
-        expect(state()).toMatchObject({
-          values: {
-            input: {
-              formValue: '42',
-            },
-            output: {
-              formValue: '10',
-            },
-          },
-        });
-
-        act(() => {
-          dispatch().invertDirection();
-        });
-
-        expect(state()).toMatchObject({
-          values: {
-            input: {
-              formValue: '42',
-            },
-            output: {
-              formValue: '10',
-            },
-          },
-        });
       });
     });
   });
@@ -350,7 +258,7 @@ describe('Swap form state', () => {
               formValue: '41.9832',
               token: USDC,
               amount: {
-                simple: 41.983,
+                simple: 41.9832,
               },
             },
             feeAmountSimple: '0.0168',
@@ -456,42 +364,6 @@ describe('Swap form state', () => {
         });
 
         act(() => {
-          dispatch().invertDirection();
-        });
-
-        expect(state()).toMatchObject({
-          values: {
-            input: {
-              formValue: '10',
-              token: USDC,
-            },
-            output: {
-              formValue: '9.996',
-              token: DAI,
-            },
-            feeAmountSimple: '0.004',
-          },
-        });
-
-        act(() => {
-          dispatch().invertDirection();
-        });
-
-        expect(state()).toMatchObject({
-          values: {
-            input: {
-              formValue: '10',
-              token: DAI,
-            },
-            output: {
-              formValue: '9.996',
-              token: USDC,
-            },
-            feeAmountSimple: '0.004',
-          },
-        });
-
-        act(() => {
           dispatch().setQuantity(Fields.Output, '10');
         });
 
@@ -508,24 +380,6 @@ describe('Swap form state', () => {
             feeAmountSimple: '0.004',
           },
         });
-
-        act(() => {
-          dispatch().invertDirection();
-        });
-
-        expect(state()).toMatchObject({
-          values: {
-            input: {
-              formValue: '10.004',
-              token: USDC,
-            },
-            output: {
-              formValue: '10',
-              token: DAI,
-            },
-            feeAmountSimple: '0.004',
-          },
-        });
       });
 
       test('When swapping, selecting a masset as output changes mode to mint and removes swap fee', () => {
@@ -536,7 +390,6 @@ describe('Swap form state', () => {
         });
 
         expect(state()).toMatchObject({
-          mode: Mode.Swap,
           values: {
             input: {
               formValue: '10',
@@ -555,7 +408,6 @@ describe('Swap form state', () => {
         });
 
         expect(state()).toMatchObject({
-          mode: Mode.MintSingle,
           values: {
             input: {
               formValue: '10',
@@ -580,7 +432,6 @@ describe('Swap form state', () => {
         });
 
         expect(state()).toMatchObject({
-          mode: Mode.MintSingle,
           values: {
             input: {
               formValue: '10',
@@ -601,7 +452,7 @@ describe('Swap form state', () => {
         });
       });
 
-      test('When minting, selecting a bAsset as output changes mode to swap and applies swap fee to the input', () => {
+      test('When minting, selecting a bAsset as output applies swap fee to the input', () => {
         act(() => {
           dispatch().setToken(Fields.Input, DAI);
           dispatch().setToken(Fields.Output, mUSD);
@@ -609,7 +460,6 @@ describe('Swap form state', () => {
         });
 
         expect(state()).toMatchObject({
-          mode: Mode.MintSingle,
           values: {
             input: {
               formValue: '10',
@@ -634,13 +484,12 @@ describe('Swap form state', () => {
         });
 
         expect(state()).toMatchObject({
-          mode: Mode.Swap,
           values: {
             input: {
-              formValue: '9.996',
+              formValue: '10.004',
               token: DAI,
               amount: {
-                simple: 9.996,
+                simple: 10.004,
               },
             },
             output: {
@@ -661,7 +510,6 @@ describe('Swap form state', () => {
         });
 
         expect(state()).toMatchObject({
-          mode: Mode.Swap,
           values: {
             input: {
               token: {
@@ -681,11 +529,9 @@ describe('Swap form state', () => {
         act(() => {
           dispatch().setToken(Fields.Input, DAI);
           dispatch().setToken(Fields.Output, mUSD);
-          dispatch().invertDirection();
         });
 
         expect(state()).toMatchObject({
-          mode: Mode.MintSingle,
           values: {
             input: {
               token: DAI,
