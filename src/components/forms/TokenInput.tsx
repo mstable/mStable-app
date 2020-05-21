@@ -146,8 +146,10 @@ export const TokenInput: FC<Props> = ({
   }, [open, setOpen, disabled]);
 
   const handleUnset = useCallback(() => {
-    onChange?.(name, null);
-  }, [onChange, name]);
+    if (open) {
+      onChange?.(name, null);
+    }
+  }, [onChange, name, open]);
 
   const handleSelect = useCallback(
     (address: string) => {
