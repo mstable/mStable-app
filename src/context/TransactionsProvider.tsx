@@ -319,7 +319,7 @@ const getTxPurpose = (
 const getEtherscanLinkForHash = (
   hash: string,
 ): { href: string; title: string } => ({
-  title: EMOJIS.link,
+  title: 'View on Etherscan',
   href: getEtherscanLink(hash, 'transaction'),
 });
 

@@ -342,7 +342,7 @@ export const Swap: FC<{}> = () => {
               {feeAmountSimple ? (
                 <>
                   <P size={1}>
-                    This includes a redemption fee of{' '}
+                    This includes a swap fee of{' '}
                     <CountUp
                       end={parseFloat(feeAmountSimple)}
                       decimals={4}
@@ -351,7 +351,7 @@ export const Swap: FC<{}> = () => {
                     .
                   </P>
                   <P size={1}>
-                    Read more about the mStable redemption fee{' '}
+                    Read more about the mStable swap fee{' '}
                     <A href="https://docs.mstable.org/mstable-assets/massets/minting-and-redemption#redeeming">
                       here
                     </A>
