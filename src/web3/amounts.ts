@@ -31,18 +31,26 @@ export const formatExactAmount = (
   decimals?: number,
   symbol?: string,
   commas = false,
-): string | null =>
-  exactAmount && decimals
-    ? commas
-      ? formatSimpleAmount(
-          parseFloat(formatUnits(exactAmount, decimals)),
-          symbol,
-        )?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') || null
-      : formatSimpleAmount(
-          parseFloat(formatUnits(exactAmount, decimals)),
-          symbol,
-        )
-    : null;
+): string | null => {
+  if (exactAmount && decimals) {
+    const parsedFloat = parseFloat(formatUnits(exactAmount, decimals));
+    const min = 0.000001; // This is the min amount that is parsable by 'formatSimpleAmount'
+    const clamped = parsedFloat > min ? parsedFloat : 0;
+    const format = formatSimpleAmount(clamped, symbol);
+    return commas
+      ? format?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') || null
+      : format;
+  }
+  return null;
+};
+// exactAmount && decimals
+//   ? commas
+//     ? formatSimpleAmount(
+//         parseFloat(formatUnits(exactAmount, decimals)),
+//         symbol,
+//       )?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') || null
+//     : formatSimpleAmount(parseFloat(formatUnits(exactAmount, decimals)), symbol)
+//   : null;
 
 /**
  * @dev Converts a simple amount into an object containing both Simple and Exact amounts

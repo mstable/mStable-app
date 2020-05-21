@@ -5,7 +5,7 @@ import { Interfaces, SendTxManifest } from '../../../types';
 import { BassetInput as BassetInputProps } from './types';
 import { Button } from '../../core/Button';
 import { CountUp as CountUpBase } from '../../core/CountUp';
-import { Size } from '../../../theme';
+import { Size, ViewportWidth } from '../../../theme';
 import { ToggleInput } from '../../forms/ToggleInput';
 import { TokenIcon } from '../../icons/TokenIcon';
 import {
@@ -50,6 +50,14 @@ const ToggleRow = styled(Row)``;
 
 const ValidationRow = styled(Row)`
   min-height: 60px;
+`;
+
+const ApprovalRow = styled.div`
+  min-height: 31px;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    min-height: 43px;
+  }
 `;
 
 const TokenContainer = styled.div`
@@ -188,10 +196,14 @@ export const BassetInput: FC<Props> = ({
         </Row>
       </Rows>
       <ValidationRow>
-        {needsUnlock ? (
-          <ApproveButton size={Size.s} onClick={unlock} type="button">
-            Approve
-          </ApproveButton>
+        {needsUnlock || error || overweight ? (
+          <ApprovalRow>
+            {needsUnlock ? (
+              <ApproveButton size={Size.s} onClick={unlock} type="button">
+                Approve
+              </ApproveButton>
+            ) : null}
+          </ApprovalRow>
         ) : null}
         {error || overweight ? (
           <>
