@@ -238,7 +238,7 @@ export const Swap: FC<{}> = () => {
                   </P>
                   <P size={1}>
                     Read more about the mStable swap fee{' '}
-                    <A href="https://docs.mstable.org/mstable-assets/massets/minting-and-redemption#redeeming">
+                    <A href="https://docs.mstable.org/mstable-assets/massets/swapping#swap-fees">
                       here
                     </A>
                     .
