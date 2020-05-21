@@ -1,5 +1,6 @@
-import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
+import React, { FC, useMemo, useContext } from 'react';
+import styled, { ThemeContext, DefaultTheme } from 'styled-components';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { formatUnits } from 'ethers/utils';
 import { useWallet } from 'use-wallet';
 import { useTokensState } from '../../context/DataProvider/TokensProvider';
@@ -29,8 +30,23 @@ const Balance = styled(CountUp)<{ size?: Size }>`
   font-size: ${({ size = Size.l }) => mapSizeToFontSize(size)};
 `;
 
+// const StyledSkeleton = styled(Skeleton);
+
+const BalanceSkeleton: FC<{ themeContext: DefaultTheme }> = ({
+  themeContext: theme,
+}) => {
+  return (
+    <SkeletonTheme
+      color={theme.color.blueTransparent}
+      highlightColor={theme.color.blue}
+    >
+      <Skeleton width={200} height={30} />
+    </SkeletonTheme>
+  );
+};
+
 interface TokenWithBalance extends TokenDetailsFragment {
-  balanceSimple: number;
+  balanceSimple: number | null;
 }
 
 /**
@@ -43,6 +59,7 @@ export const Balances: FC<{}> = () => {
   const tokensQuery = useAllErc20TokensQuery();
   const tokensData = tokensQuery.data?.tokens || [];
   const savingsBalance = useSavingsBalance(account);
+  const themeContext = useContext(ThemeContext);
 
   const { mUSD, otherTokens } = useMemo(() => {
     const addBalance = (token: typeof tokensData[0]): TokenWithBalance => {
@@ -50,12 +67,13 @@ export const Balances: FC<{}> = () => {
       return {
         ...token,
         ...tokenBalance,
-        balanceSimple: parseFloat(
-          formatUnits(tokenBalance?.balance?.toString() || '0', token.decimals),
-        ),
+        balanceSimple: tokenBalance?.balance
+          ? parseFloat(
+              formatUnits(tokenBalance.balance.toString(), token.decimals),
+            )
+          : null,
       };
     };
-
     return tokensData.reduce<{
       mUSD: TokenWithBalance | null;
       otherTokens: TokenWithBalance[];
@@ -73,25 +91,38 @@ export const Balances: FC<{}> = () => {
 
   return (
     <List inverted>
-      {mUSD ? (
-        <ListItem size={Size.xl} key={mUSD.address}>
-          <Symbol>
-            <TokenIcon symbol={mUSD.symbol} />
-            <span>{mUSD.symbol}</span>
-            <EtherscanLink data={mUSD.address} />
-          </Symbol>
-          <Balance size={Size.xl} end={mUSD.balanceSimple} />
-        </ListItem>
-      ) : null}
-      {savingsBalance.simple ? (
-        <ListItem size={Size.xl} key="savingsBalance">
+      <ListItem size={Size.xl} key="mUsdBalance">
+        {!mUSD ? (
+          <Skeleton height={49} />
+        ) : (
+          <>
+            <Symbol>
+              <TokenIcon symbol={mUSD.symbol} />
+              <span>{mUSD.symbol}</span>
+              <EtherscanLink data={mUSD.address} />
+            </Symbol>
+            {mUSD.balanceSimple == null ? (
+              <BalanceSkeleton themeContext={themeContext} />
+            ) : (
+              <Balance size={Size.xl} end={mUSD.balanceSimple} />
+            )}
+          </>
+        )}
+      </ListItem>
+
+      <ListItem size={Size.xl} key="savingsBalance">
+        <>
           <Symbol>
             <TokenIcon symbol="mUSD" />
             <span>mUSD Savings</span>
           </Symbol>
-          <Balance size={Size.xl} end={savingsBalance.simple} />
-        </ListItem>
-      ) : null}
+          {savingsBalance.simple == null ? (
+            <BalanceSkeleton themeContext={themeContext} />
+          ) : (
+            <Balance size={Size.xl} end={savingsBalance.simple} />
+          )}
+        </>
+      </ListItem>
       {otherTokens.map(({ symbol, address, balanceSimple }) => (
         <ListItem key={address}>
           <Symbol>
@@ -99,7 +130,11 @@ export const Balances: FC<{}> = () => {
             <span>{symbol}</span>
             <EtherscanLink data={address} />
           </Symbol>
-          <Balance end={balanceSimple} />
+          {balanceSimple == null ? (
+            <BalanceSkeleton themeContext={themeContext} />
+          ) : (
+            <Balance end={balanceSimple} />
+          )}
         </ListItem>
       ))}
     </List>
