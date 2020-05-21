@@ -10,9 +10,14 @@ interface Props {
   address: string;
 }
 
-const CountUp = styled(CountUpBase)`
+const CountUp = styled(CountUpBase)<{
+  highlight?: boolean;
+}>`
   display: block;
   text-align: right;
+  color: ${({ theme, highlight }) =>
+    highlight ? theme.color.green : theme.color.offBlack};
+  font-weight: ${({ highlight }) => (highlight ? '600' : '400')};
 `;
 
 const Symbol = styled.div``;
@@ -112,7 +117,12 @@ export const BassetOutput: FC<Props> = ({ address }) => {
         </HeaderRow>
         <Row>
           <Label>Amount</Label>
-          <CountUp duration={0.4} end={bassetOutput?.amount.simple || 0} />
+          <CountUp
+            highlight
+            duration={0.4}
+            end={bassetOutput?.amount.simple || 0}
+            prefix="+ "
+          />
         </Row>
         <Row>
           <Label>Your Balance</Label>
