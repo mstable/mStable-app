@@ -118,7 +118,7 @@ export const BassetOutput: FC<Props> = ({ address }) => {
         <Row>
           <Label>Amount</Label>
           <CountUp
-            highlight
+            highlight={(bassetOutput?.amount.simple || 0) > 0}
             duration={0.4}
             end={bassetOutput?.amount.simple || 0}
             prefix="+ "

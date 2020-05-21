@@ -78,10 +78,10 @@ export const Mint: FC<{}> = () => {
         const enabled = bAssetInputs.filter(b => b.enabled);
 
         // Mint single for one asset
-        if (enabled.length === 1) {
+        if (enabled.length === 1 && enabled[0].amount.exact) {
           const manifest: SendTxManifest<Interfaces.Masset, 'mint'> = {
             iface: mUsdContract,
-            args: [enabled[0].address, mAsset.amount.exact.toString()],
+            args: [enabled[0].address, enabled[0].amount.exact.toString()],
             fn: 'mint',
           };
           sendTransaction(manifest);

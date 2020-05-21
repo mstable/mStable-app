@@ -60,9 +60,19 @@ const Title = styled.div`
   font-size: ${({ theme }) => theme.fontSize.s};
 `;
 
-const Link = styled.a`
+const Link = styled.a<{ nType: NotificationType }>`
   display: block;
   font-size: ${({ theme }) => theme.fontSize.s};
+  color: ${({ theme, nType }) =>
+    nType === NotificationType.Info ? theme.color.gold : theme.color.blue};
+  &:after {
+    content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==');
+    margin: 0 3px 0 5px;
+    filter: ${({ nType }) =>
+      nType === NotificationType.Info
+        ? 'invert(77%) sepia(71%) saturate(816%) hue-rotate(330deg) brightness(101%) contrast(101%)'
+        : 'invert(39%) sepia(57%) saturate(1559%) hue-rotate(191deg) brightness(85%) contrast(107%)'};
+  }
 `;
 
 const Animation = styled(CSSTransition)`
@@ -96,6 +106,7 @@ export const Notifications: FC<{}> = () => {
                 {body ? <div>{body}</div> : null}
                 {link ? (
                   <Link
+                    nType={type}
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
