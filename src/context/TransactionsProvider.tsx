@@ -269,7 +269,7 @@ const getTxPurpose = (
     case 'redeemMasset': {
       const [massetQ] = args as [BigNumber, string];
 
-      const body = `${formatExactAmount(massetQ, 18, symbol)} proportionately`;
+      const body = `${formatExactAmount(massetQ, 18, symbol)}`;
       return {
         present: `Redeeming ${body}`,
         past: `Redeemed ${body}`,

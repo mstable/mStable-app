@@ -266,7 +266,6 @@ const getHistoricTransactionDescription = (
             mUSD.token.symbol,
             true,
           )}
-          {' proportionately'}
         </>
       );
     }
