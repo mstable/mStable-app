@@ -160,10 +160,12 @@ const swapValidator: StateValidator = ({
     input.token.decimals,
   )
     .mul(inputBasset.ratio)
-    .div(RATIO_SCALE);
+    .div(RATIO_SCALE)
+    .add(inputAmountInMasset);
 
   // What is the max weight of this bAsset in the basket?
   const inputMaxWeightInUnits = parseUnits(totalVault)
+    .add(inputAmountInMasset)
     .mul(inputBasset.maxWeight)
     .div(EXP_SCALE);
 
@@ -201,9 +203,7 @@ const mintSingleValidator: StateValidator = state => {
   }
 
   if (
-    !['BrokenBelowPeg', 'Liquidating', 'Blacklisted'].includes(
-      bAssetData.status,
-    )
+    ['BrokenBelowPeg', 'Liquidating', 'Blacklisted'].includes(bAssetData.status)
   ) {
     return [false, { input: Reasons.TokenNotAllowedInMint }];
   }

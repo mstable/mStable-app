@@ -35,14 +35,12 @@ export const ContractsUpdater = (): null => {
         Swapped,
         Redeemed,
         RedeemedMasset,
-        PaidFee,
         MintedMulti,
       } = mUsdContract.interface.events;
 
       const mUSDTopics: (string | null)[][] = [
         [Minted.topic, indexedAccount],
         [MintedMulti.topic, indexedAccount],
-        [PaidFee.topic],
         [Redeemed.topic, indexedAccount],
         [RedeemedMasset.topic, indexedAccount],
         [Swapped.topic, indexedAccount],
