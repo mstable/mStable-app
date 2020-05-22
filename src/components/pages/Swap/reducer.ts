@@ -141,9 +141,9 @@ const calculateSwapValues = (
     const isInvert = address === prevOtherToken.address;
 
     // It it not possible to use mAssets as input (redeeming)
-    // if (isMint && isInputField) {
-    //   return state.values;
-    // }
+    if (isInputField && address === mAssetAddress) {
+      return state.values;
+    }
 
     const token = isInvert ? prevOtherToken : { address, decimals, symbol };
     const otherToken = isInvert
