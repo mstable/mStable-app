@@ -133,15 +133,17 @@ const calculateSwapValues = (
     const isUnsetting = address === null;
 
     // Setting this field from a bAsset to a mAsset
-    const isMint = address === mAssetAddress;
+    const isMint = isInputField
+      ? prevOtherToken.address === mAssetAddress
+      : address === mAssetAddress;
 
     // Setting this field to the other token
     const isInvert = address === prevOtherToken.address;
 
     // It it not possible to use mAssets as input (redeeming)
-    if (isMint && isInputField) {
-      return state.values;
-    }
+    // if (isMint && isInputField) {
+    //   return state.values;
+    // }
 
     const token = isInvert ? prevOtherToken : { address, decimals, symbol };
     const otherToken = isInvert
@@ -174,7 +176,7 @@ const calculateSwapValues = (
         );
       } else if (otherFormValue) {
         [formValue, feeAmountSimple] = calculateAmountAndFee(
-          isInputField,
+          !isInputField,
           parseAmount(otherFormValue, token.decimals).exact as BigNumber,
           token.decimals,
           feeRate,
