@@ -48,6 +48,13 @@ const WalletButtonContainer = styled.div`
     order: 3;
   }
 `;
+const FakeWalletButtonContainer = styled.div`
+  order: 2;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    order: 3;
+  }
+`;
 
 const Content = styled.div`
   justify-content: space-between;
@@ -134,7 +141,10 @@ export const Header: FC<{ walletExpanded: boolean; home: boolean }> = ({
           </A>
         </Logo>
         {home ? (
-          <Bar />
+          <>
+            <Bar />
+            <FakeWalletButtonContainer ref={walletButtonRef} />
+          </>
         ) : (
           <>
             <Centre>
