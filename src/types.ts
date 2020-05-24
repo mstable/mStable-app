@@ -7,6 +7,7 @@ import { ISavingsContract } from './typechain/ISavingsContract.d';
 import { IMasset } from './typechain/IMasset.d';
 
 export interface Transaction {
+  formId?: string;
   hash: string;
   response: TransactionResponse;
   blockNumberChecked?: number;
@@ -88,6 +89,7 @@ export interface SendTxManifest<
       (...args: any[]) => any
     >
   >;
+  formId?: string;
 }
 
 export interface TokenDetails {

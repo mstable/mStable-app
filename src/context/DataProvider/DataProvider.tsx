@@ -11,7 +11,11 @@ import React, {
 import { BigNumber, parseUnits } from 'ethers/utils';
 import { useWallet } from 'use-wallet';
 import { ContractNames } from '../../types';
-import { useToken, useTokensState } from './TokensProvider';
+import {
+  TokenDetailsWithBalance,
+  useToken,
+  useTokensState,
+} from './TokensProvider';
 import {
   SavingsContractQuery,
   useSavingsContractDataSubscription,
@@ -20,7 +24,7 @@ import {
 } from '../../graphql/generated';
 import { useKnownAddress } from './KnownAddressProvider';
 import { EXP_SCALE, RATIO_SCALE } from '../../web3/constants';
-import { Action, Actions, BassetData, State } from './types';
+import { Action, Actions, BassetData, MassetData, State } from './types';
 
 export const useMusdSubscription = (): ReturnType<typeof useMassetQuery> => {
   const address = useKnownAddress(ContractNames.mUSD);
@@ -64,7 +68,7 @@ export const useMusdSubscription = (): ReturnType<typeof useMassetQuery> => {
   return query;
 };
 
-export const useMUSDSavings = ():
+export const useMusdSavings = ():
   | (SavingsContractQuery['savingsContracts'][0] & {
       allowance: BigNumber | null;
     })
@@ -91,7 +95,7 @@ export const useMUSDSavings = ():
 
 const initialState: State = {
   [ContractNames.mUSD]: {
-    basket: {},
+    basket: ({} as unknown) as MassetData['basket'],
     bAssets: [],
     token: {} as never,
     feeRate: null,
@@ -188,6 +192,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
       const tokens = action.payload;
 
       const mUsd = state[ContractNames.mUSD];
+      if (!mUsd) return state;
 
       return {
         ...state,
@@ -196,7 +201,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
           token: {
             ...mUsd.token,
             ...(mUsd.token.address ? tokens[mUsd.token.address] : null),
-          },
+          } as TokenDetailsWithBalance,
           bAssets: mUsd.bAssets.map(b => ({
             ...b,
             token: { ...b.token, ...tokens[b.address] },
@@ -236,11 +241,14 @@ export const useDataContext = (): State => useContext(stateContext);
 export const useMusdData = (): State[ContractNames.mUSD] =>
   useDataContext()[ContractNames.mUSD];
 
-export const useMusdTokenData = (): State[ContractNames.mUSD]['token'] =>
-  useMusdData().token;
+export const useMusdTokenData = (): TokenDetailsWithBalance | undefined =>
+  useMusdData()?.token;
+
+export const useMusdTotalSupply = (): string | undefined =>
+  useMusdTokenData()?.totalSupply;
 
 export const useBassetData = (address: string): BassetData | null => {
-  const { bAssets } = useMusdData();
+  const { bAssets = [] } = useMusdData() || {};
 
   return useMemo(() => bAssets.find(b => b.address === address) || null, [
     bAssets,

@@ -9,7 +9,7 @@ import { Home } from './components/pages/Home';
 import { Swap } from './components/pages/Swap';
 import { Mint } from './components/pages/Mint';
 import { Save } from './components/pages/Save';
-import { Exit } from './components/pages/Exit';
+import { Redeem } from './components/pages/Redeem';
 import { NotFound } from './components/pages/NotFound';
 import { FAQ } from './components/pages/FAQ';
 
@@ -18,7 +18,7 @@ const routes = {
   '/mint': () => <Mint />,
   '/save': () => <Save />,
   '/swap': () => <Swap />,
-  '/redeem': () => <Exit />,
+  '/redeem': () => <Redeem />,
   '/faq': () => <FAQ />,
 };
 

@@ -1,4 +1,13 @@
-import { Reducer, useCallback, useEffect, useMemo, useReducer } from 'react';
+import React, {
+  createContext,
+  FC,
+  Reducer,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+} from 'react';
 import {
   BigNumber,
   bigNumberify,
@@ -7,10 +16,11 @@ import {
   parseUnits,
 } from 'ethers/utils';
 import { pipe } from 'ts-pipe-compose';
-import { Amount, TokenQuantity } from '../../../types';
+
+import { useMusdData } from '../../../context/DataProvider/DataProvider';
 import { formatSimpleAmount, parseAmount } from '../../../web3/amounts';
 import { RATIO_SCALE, SCALE } from '../../../web3/constants';
-import { useMusdData } from '../../../context/DataProvider/DataProvider';
+import { Amount, TokenQuantity } from '../../../types';
 import { Action, Actions, Dispatch, Mode, State } from './types';
 import { applyValidation } from './validation';
 
@@ -27,15 +37,14 @@ const initialTokenQuantity: TokenQuantity = Object.freeze({
   },
 });
 
-const initialState: State = Object.freeze({
+const initialState: State = {
   bAssetInputs: [],
   error: null,
   mAsset: initialTokenQuantity,
-  mAssetData: null,
   mode: Mode.Single,
   valid: false,
   touched: false,
-});
+};
 
 const applyRatioMassetToBasset = (
   input: BigNumberish,
@@ -73,9 +82,6 @@ const calcOptimalBassetQuantitiesForMint = ({
     const weight = parseUnits(maxWeight).div(enabledMaxWeightsTotal);
 
     const relativeUnitsToMint = mAsset.amount.exact?.mul(weight).div(SCALE);
-
-    // TODO this is messy
-    // const formattedUnits = parseAmount(relativeUnitsToMint, 18);
 
     const exact = applyRatioMassetToBasset(relativeUnitsToMint, ratio);
 
@@ -121,7 +127,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         bAssetInputs:
           state.bAssetInputs.length > 0
             ? state.bAssetInputs
-            : mAssetData?.bAssets.map(({ address }) => ({
+            : mAssetData.bAssets.map(({ address }) => ({
                 address,
                 enabled: false,
                 amount: { exact: null, simple: null },
@@ -201,7 +207,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
   }
 };
 
-export const useMintState = (): [State, Dispatch] => {
+const stateCtx = createContext<State>(initialState);
+const dispatchCtx = createContext<Dispatch>({} as Dispatch);
+
+export const MintProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const setMassetAmount = useCallback<Dispatch['setMassetAmount']>(
@@ -235,22 +244,24 @@ export const useMintState = (): [State, Dispatch] => {
     dispatch({ type: Actions.UpdateMassetData, payload: mUsdData });
   }, [mUsdData]);
 
-  return useMemo(
-    () => [
-      state,
-      {
-        // setBassetAmount,
-        setMassetAmount,
-        toggleMode,
-        toggleBassetEnabled,
-      },
-    ],
-    [
-      state,
-      // setBassetAmount,
-      setMassetAmount,
-      toggleMode,
-      toggleBassetEnabled,
-    ],
+  return (
+    <stateCtx.Provider value={state}>
+      <dispatchCtx.Provider
+        value={useMemo(
+          () => ({
+            setMassetAmount,
+            toggleMode,
+            toggleBassetEnabled,
+          }),
+          [setMassetAmount, toggleMode, toggleBassetEnabled],
+        )}
+      >
+        {children}
+      </dispatchCtx.Provider>
+    </stateCtx.Provider>
   );
 };
+
+export const useMintState = (): State => useContext(stateCtx);
+
+export const useMintDispatch = (): Dispatch => useContext(dispatchCtx);

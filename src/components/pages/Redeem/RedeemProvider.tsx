@@ -9,12 +9,15 @@ import React, {
   useReducer,
 } from 'react';
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
-import { Action, Actions, BassetOutput, Dispatch, Mode, State } from './types';
+import { pipe } from 'ts-pipe-compose';
+
 import { BassetData } from '../../../context/DataProvider/types';
+import { useMusdData } from '../../../context/DataProvider/DataProvider';
 import { parseAmount, parseExactAmount } from '../../../web3/amounts';
 import { RATIO_SCALE, EXP_SCALE } from '../../../web3/constants';
 import { Amount } from '../../../types';
-import { useMusdData } from '../../../context/DataProvider/DataProvider';
+import { Action, Actions, BassetOutput, Dispatch, Mode, State } from './types';
+import { applyValidation } from './validate';
 
 const estimateRedemptionQuantities = (
   bassets: BassetData[],
@@ -67,11 +70,14 @@ const updateBassetAmounts = (state: State): State => {
   };
 };
 
+const update = (state: State): State =>
+  pipe(state, updateBassetAmounts, applyValidation);
+
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.UpdateMassetData: {
       const mAssetData = action.payload;
-      return {
+      return update({
         ...state,
         mAssetData,
         bAssetOutputs:
@@ -81,8 +87,9 @@ const reducer: Reducer<State, Action> = (state, action) => {
                 address: b.address,
                 amount: { exact: null, simple: null },
               })) || [],
-      };
+      });
     }
+
     case Actions.SetExactRedemptionAmount: {
       const decimals = state.mAssetData?.token.decimals || 18;
       const parsedAmount = parseExactAmount(
@@ -90,8 +97,9 @@ const reducer: Reducer<State, Action> = (state, action) => {
         decimals,
       );
 
-      return updateBassetAmounts({
+      return update({
         ...state,
+        touched: true,
         redemption: {
           formValue: parsedAmount.simple
             ? parsedAmount.simple.toString()
@@ -103,8 +111,9 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
     case Actions.SetRedemptionAmount: {
       const formValue = action.payload;
-      return updateBassetAmounts({
+      return update({
         ...state,
+        touched: true,
         redemption: {
           formValue,
           amount: parseAmount(
@@ -114,10 +123,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         },
       });
     }
-    case Actions.SetError: {
-      const { error } = action.payload;
-      return { ...state, error };
-    }
+
     default:
       throw new Error('Unhandled action type');
   }
@@ -125,7 +131,8 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 const initialState: State = {
   bAssetOutputs: [],
-  error: null,
+  valid: false,
+  touched: false,
   mAssetData: null,
   mode: Mode.RedeemProportional,
   redemption: {
@@ -137,11 +144,11 @@ const initialState: State = {
   },
 };
 
-const context = createContext<[State, Dispatch]>([{} as State, {} as Dispatch]);
+const stateCtx = createContext<State>(initialState);
+const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
-export const ExitProvider: FC<{}> = ({ children }) => {
+export const RedeemProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { error, redemption } = state;
 
   const setRedemptionAmount = useCallback<Dispatch['setRedemptionAmount']>(
     amount => {
@@ -164,13 +171,6 @@ export const ExitProvider: FC<{}> = ({ children }) => {
     [dispatch],
   );
 
-  const setError = useCallback(
-    (_error: string | null) => {
-      dispatch({ type: Actions.SetError, payload: { error: _error } });
-    },
-    [dispatch],
-  );
-
   const data = useMusdData();
   useEffect(() => {
     dispatch({
@@ -179,54 +179,34 @@ export const ExitProvider: FC<{}> = ({ children }) => {
     });
   }, [dispatch, data]);
 
-  const mUsdBalance = data?.token?.balance;
-  useEffect(() => {
-    if (redemption.amount.exact && mUsdBalance) {
-      if (redemption.amount.exact.gt(mUsdBalance)) {
-        setError('Insufficient balance');
-        return;
-      }
-      if (redemption.amount.exact.eq(0)) {
-        setError('Amount must be greater than zero');
-        return;
-      }
-    }
-
-    if (error) setError(null);
-  }, [setError, error, redemption, mUsdBalance]);
-
   return (
-    <context.Provider
-      value={useMemo(
-        () => [
-          state,
-          {
-            setRedemptionAmount,
-            setExactRedemptionAmount,
-          },
-        ],
-        [state, setRedemptionAmount, setExactRedemptionAmount],
-      )}
-    >
-      {children}
-    </context.Provider>
+    <stateCtx.Provider value={state}>
+      <dispatchCtx.Provider
+        value={useMemo(
+          () => ({ setRedemptionAmount, setExactRedemptionAmount }),
+          [setRedemptionAmount, setExactRedemptionAmount],
+        )}
+      >
+        {children}
+      </dispatchCtx.Provider>
+    </stateCtx.Provider>
   );
 };
 
-export const useExitContext = (): [State, Dispatch] => useContext(context);
+export const useRedeemState = (): State => useContext(stateCtx);
 
-export const useExitState = (): State => useExitContext()[0];
+export const useRedeemDispatch = (): Dispatch => useContext(dispatchCtx);
 
-export const useExitBassetOutput = (address: string): BassetOutput | null => {
-  const { bAssetOutputs } = useExitState();
+export const useRedeemBassetOutput = (address: string): BassetOutput | null => {
+  const { bAssetOutputs } = useRedeemState();
   return useMemo(() => bAssetOutputs.find(b => b.address === address) || null, [
     address,
     bAssetOutputs,
   ]);
 };
 
-export const useExitBassetData = (address: string): BassetData | null => {
-  const { mAssetData } = useExitState();
+export const useRedeemBassetData = (address: string): BassetData | null => {
+  const { mAssetData } = useRedeemState();
   return useMemo(
     () => mAssetData?.bAssets.find(b => b.address === address) || null,
     [mAssetData, address],

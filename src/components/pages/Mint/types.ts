@@ -53,7 +53,7 @@ export interface State {
   bAssetInputs: BassetInput[];
   error: null | string;
   mAsset: TokenQuantity;
-  mAssetData: MassetData | null;
+  mAssetData?: MassetData;
   mode: Mode;
   valid: boolean;
   touched: boolean;

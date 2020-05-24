@@ -147,7 +147,7 @@ export const BassetInput: FC<Props> = ({
       symbol: null,
     },
   } = useBassetData(address) || {};
-  const { allowance } = useMusdTokenData();
+  const { allowance } = useMusdTokenData() || {};
 
   const sendTransaction = useSendTransaction();
   const tokenContract = useErc20Contract(address);

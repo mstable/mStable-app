@@ -349,6 +349,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
         type: Actions.AddPending,
         payload: {
           ...pendingTx,
+          ...(manifest.formId ? { formId: manifest.formId } : null),
           fn: manifest.fn,
           args: manifest.args,
           timestamp: Date.now(),
@@ -425,12 +426,18 @@ export const useTransactionsState = (): State => useTransactionsContext()[0];
 export const useTransactionsDispatch = (): Dispatch =>
   useTransactionsContext()[1];
 
-export const useOrderedCurrentTransactions = (): Transaction[] => {
+export const useOrderedCurrentTransactions = (
+  formId?: string,
+): Transaction[] => {
   const { current } = useTransactionsState();
-  return useMemo(
-    () => Object.values(current).sort((a, b) => b.timestamp - a.timestamp),
-    [current],
-  );
+  return useMemo(() => {
+    const transactions = Object.values(current).sort(
+      (a, b) => b.timestamp - a.timestamp,
+    );
+    return formId
+      ? transactions.filter(t => t.formId === formId)
+      : transactions;
+  }, [current, formId]);
 };
 
 export const useOrderedHistoricTransactions = (): HistoricTransaction[] => {
@@ -500,12 +507,12 @@ const sendTransaction = async (
  */
 export const useSendTransaction =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (): ((tx: SendTxManifest<any, any>) => void) => {
+  (): ((tx: SendTxManifest<any, any>, doneCallback?: () => void) => void) => {
     const [, { addPending }] = useTransactionsContext();
     const addErrorNotification = useAddErrorNotification();
 
     return useCallback(
-      manifest => {
+      (manifest, doneCallback) => {
         sendTransaction(manifest)
           .then(response => {
             const { hash } = response;
@@ -521,6 +528,9 @@ export const useSendTransaction =
           .catch(error => {
             // MetaMask error messages are in a `data` property
             addErrorNotification(error.data?.message || error.message);
+          })
+          .finally(() => {
+            doneCallback?.();
           });
       },
       [addPending, addErrorNotification],

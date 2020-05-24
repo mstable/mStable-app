@@ -9,8 +9,9 @@ import React, {
 } from 'react';
 
 enum Actions {
-  AddNotification,
-  RemoveNotification,
+  Add,
+  MarkAsRead,
+  HideToast,
 }
 
 export enum NotificationType {
@@ -21,12 +22,15 @@ export enum NotificationType {
 
 export interface Notification {
   type: NotificationType;
+  id?: string;
   title: string;
   body?: string | null;
   link?: {
     href: string;
     title: string;
   } | null;
+  read?: boolean;
+  hideToast?: boolean;
 }
 
 interface State {
@@ -35,10 +39,11 @@ interface State {
 
 type Action =
   | {
-      type: Actions.AddNotification;
+      type: Actions.Add;
       payload: { id: string; notification: Notification };
     }
-  | { type: Actions.RemoveNotification; payload: { id: string } };
+  | { type: Actions.MarkAsRead; payload: string }
+  | { type: Actions.HideToast; payload: string };
 
 type AddNotificationCallback = (
   title: Notification['title'],
@@ -50,24 +55,37 @@ interface Dispatch {
   addErrorNotification: AddNotificationCallback;
   addInfoNotification: AddNotificationCallback;
   addSuccessNotification: AddNotificationCallback;
-  removeNotification(id: string): void;
+  markNotificationAsRead(id: string): void;
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case Actions.AddNotification: {
+    case Actions.Add: {
       const { id, notification } = action.payload;
       return {
         ...state,
-        [id]: notification,
+        [id]: { ...notification, id },
       };
     }
-    case Actions.RemoveNotification: {
-      const { [action.payload.id]: _, ...notifications } = state;
+
+    case Actions.MarkAsRead: {
+      const id = action.payload;
+      const { [id]: notification } = state;
+      return {
+        ...state,
+        [id]: { ...notification, read: true },
+      };
+    }
+
+    case Actions.HideToast: {
+      const id = action.payload;
+      const { [id]: notification, ...notifications } = state;
       return {
         ...notifications,
+        [id]: { ...notification, hideToast: true },
       };
     }
+
     default:
       return state;
   }
@@ -89,13 +107,13 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
       const id = Math.random().toString();
 
       dispatch({
-        type: Actions.AddNotification,
+        type: Actions.Add,
         payload: { id, notification },
       });
 
-      // Remove the notification after a delay
+      // Hide the notification toast after a delay
       setTimeout(() => {
-        dispatch({ type: Actions.RemoveNotification, payload: { id } });
+        dispatch({ type: Actions.HideToast, payload: id });
       }, 8000);
     },
     [dispatch],
@@ -124,9 +142,11 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
     [addNotification],
   );
 
-  const removeNotification = useCallback<Dispatch['removeNotification']>(
+  const markNotificationAsRead = useCallback<
+    Dispatch['markNotificationAsRead']
+  >(
     id => {
-      dispatch({ type: Actions.RemoveNotification, payload: { id } });
+      dispatch({ type: Actions.MarkAsRead, payload: id });
     },
     [dispatch],
   );
@@ -140,7 +160,7 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
             addErrorNotification,
             addInfoNotification,
             addSuccessNotification,
-            removeNotification,
+            markNotificationAsRead,
           },
         ],
         [
@@ -148,7 +168,7 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
           addErrorNotification,
           addInfoNotification,
           addSuccessNotification,
-          removeNotification,
+          markNotificationAsRead,
         ],
       )}
     >
@@ -162,6 +182,20 @@ export const useNotificationsContext = (): [State, Dispatch] =>
 
 export const useNotificationsState = (): State => useNotificationsContext()[0];
 
+export const useNotification = (id: string): Notification =>
+  useNotificationsState()[id];
+
+export const useUnreadNotificationsCount = (): number => {
+  const notifications = useNotificationsState();
+  return useMemo(
+    () =>
+      Object.keys(notifications)
+        .map(id => notifications[id])
+        .filter(n => !n.read).length,
+    [notifications],
+  );
+};
+
 export const useNotificationsDispatch = (): Dispatch =>
   useNotificationsContext()[1];
 
@@ -174,5 +208,5 @@ export const useAddInfoNotification = (): Dispatch['addInfoNotification'] =>
 export const useAddSuccessNotification = (): Dispatch['addSuccessNotification'] =>
   useNotificationsDispatch().addSuccessNotification;
 
-export const useRemoveNotification = (): Dispatch['removeNotification'] =>
-  useNotificationsDispatch().removeNotification;
+export const useMarkNotificationAsRead = (): Dispatch['markNotificationAsRead'] =>
+  useNotificationsDispatch().markNotificationAsRead;

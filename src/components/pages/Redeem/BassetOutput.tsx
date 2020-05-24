@@ -4,7 +4,7 @@ import Skeleton from 'react-loading-skeleton';
 import { formatUnits } from 'ethers/utils';
 import { CountUp as CountUpBase } from '../../core/CountUp';
 import { TokenIcon } from '../../icons/TokenIcon';
-import { useExitBassetData, useExitBassetOutput } from './ExitProvider';
+import { useRedeemBassetData, useRedeemBassetOutput } from './RedeemProvider';
 
 interface Props {
   address: string;
@@ -87,8 +87,8 @@ const Rows = styled.div<{
 `;
 
 export const BassetOutput: FC<Props> = ({ address }) => {
-  const bassetData = useExitBassetData(address);
-  const bassetOutput = useExitBassetOutput(address);
+  const bassetData = useRedeemBassetData(address);
+  const bassetOutput = useRedeemBassetOutput(address);
 
   const balance = bassetData?.token?.balance;
 

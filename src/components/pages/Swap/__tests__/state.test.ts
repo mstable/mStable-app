@@ -1,15 +1,43 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { Dispatch, ReducerAction, ReducerState, useReducer } from 'react';
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
-import { useSwapState } from '../state';
-import { Fields } from '../types';
+import { Actions, Fields } from '../types';
+import { initialState, reducer } from '../reducer';
 
-type Ctx = ReturnType<typeof useSwapState>;
+type Ctx = [
+  ReducerState<typeof reducer>,
+  Dispatch<ReducerAction<typeof reducer>>,
+];
 
 let ctx: HookResult<Ctx>;
 
 const state = (): Ctx[0] => ctx.current[0];
 const dispatch = (): Ctx[1] => ctx.current[1];
+
+const setQuantity = (field: Fields, formValue: string | null): void => {
+  dispatch()({
+    type: Actions.SetQuantity,
+    payload: { formValue, field },
+  });
+};
+
+const setToken = (field: Fields, payload: any): void => {
+  dispatch()({
+    type: Actions.SetToken,
+    payload: {
+      field,
+      ...(payload ?? { address: null, symbol: null, decimals: null }),
+    },
+  });
+};
+
+const updateMassetData = (data: any): void => {
+  dispatch()({
+    type: Actions.UpdateMassetData,
+    payload: data,
+  });
+};
 
 const mUSD = {
   address: 'mUSD token address',
@@ -47,18 +75,11 @@ const mAssetData = {
 
 describe('Swap form state', () => {
   beforeEach(() => {
-    ctx = renderHook(() => useSwapState()).result;
+    ctx = renderHook(() => useReducer(reducer, initialState)).result;
   });
 
   test('context', () => {
     expect(state()).toEqual({
-      mAssetData: {
-        bAssets: [],
-        basket: {},
-        token: {},
-        loading: false,
-        feeRate: null,
-      },
       applySwapFee: false,
       needsUnlock: false,
       touched: false,
@@ -91,15 +112,12 @@ describe('Swap form state', () => {
         },
       },
     });
-
-    expect(dispatch()).toEqual(expect.any(Object));
-    // ^ https://www.youtube.com/watch?v=nfxpwbWBNuU
   });
 
   describe('without mAssetData', () => {
     test('updateMassetData', () => {
       act(() => {
-        dispatch().updateMassetData(mAssetData);
+        updateMassetData(mAssetData);
       });
 
       expect(state()).toMatchObject({
@@ -111,16 +129,16 @@ describe('Swap form state', () => {
   describe('with mAssetData', () => {
     beforeEach(() => {
       act(() => {
-        dispatch().updateMassetData(mAssetData);
+        updateMassetData(mAssetData);
       });
     });
 
     describe('swap', () => {
       test('Setting input quantity applies fee to output', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setToken(Fields.Output, USDC);
-          dispatch().setQuantity(Fields.Input, '10');
+          setToken(Fields.Input, DAI);
+          setToken(Fields.Output, USDC);
+          setQuantity(Fields.Input, '10');
         });
 
         expect(state()).toMatchObject({
@@ -146,9 +164,9 @@ describe('Swap form state', () => {
 
       test('Setting output quantity applies fee to input', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setToken(Fields.Output, USDC);
-          dispatch().setQuantity(Fields.Output, '10');
+          setToken(Fields.Input, DAI);
+          setToken(Fields.Output, USDC);
+          setQuantity(Fields.Output, '10');
         });
 
         expect(state()).toMatchObject({
@@ -175,8 +193,8 @@ describe('Swap form state', () => {
       // TODO not passing, bug
       test.skip('Setting the input token/amount and then setting the output token should set the output amount (and apply the fee)', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setQuantity(Fields.Input, '10');
+          setToken(Fields.Input, DAI);
+          setQuantity(Fields.Input, '10');
         });
 
         expect(state()).toMatchObject({
@@ -196,7 +214,7 @@ describe('Swap form state', () => {
         });
 
         act(() => {
-          dispatch().setToken(Fields.Output, USDC);
+          setToken(Fields.Output, USDC);
         });
 
         expect(state()).toMatchObject({
@@ -216,9 +234,9 @@ describe('Swap form state', () => {
 
       test('Setting quantity to a field that already has a fee applied applies the fee to the other field', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setToken(Fields.Output, USDC);
-          dispatch().setQuantity(Fields.Output, '10');
+          setToken(Fields.Input, DAI);
+          setToken(Fields.Output, USDC);
+          setQuantity(Fields.Output, '10');
         });
 
         expect(state()).toMatchObject({
@@ -242,7 +260,7 @@ describe('Swap form state', () => {
         });
 
         act(() => {
-          dispatch().setQuantity(Fields.Input, '42');
+          setQuantity(Fields.Input, '42');
         });
 
         expect(state()).toMatchObject({
@@ -268,9 +286,9 @@ describe('Swap form state', () => {
 
       test('Changing either token to another bAsset keeps the same amounts', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setToken(Fields.Output, USDC);
-          dispatch().setQuantity(Fields.Input, '10');
+          setToken(Fields.Input, DAI);
+          setToken(Fields.Output, USDC);
+          setQuantity(Fields.Input, '10');
         });
 
         expect(state()).toMatchObject({
@@ -288,7 +306,7 @@ describe('Swap form state', () => {
         });
 
         act(() => {
-          dispatch().setToken(Fields.Input, TUSD);
+          setToken(Fields.Input, TUSD);
         });
 
         expect(state()).toMatchObject({
@@ -306,7 +324,7 @@ describe('Swap form state', () => {
         });
 
         act(() => {
-          dispatch().setToken(Fields.Input, USDC);
+          setToken(Fields.Input, USDC);
         });
 
         expect(state()).toMatchObject({
@@ -324,7 +342,7 @@ describe('Swap form state', () => {
         });
 
         act(() => {
-          dispatch().setToken(Fields.Output, USDC);
+          setToken(Fields.Output, USDC);
         });
 
         expect(state()).toMatchObject({
@@ -344,9 +362,9 @@ describe('Swap form state', () => {
 
       test('Inverting direction back and forth keeps the amounts the same', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setToken(Fields.Output, USDC);
-          dispatch().setQuantity(Fields.Input, '10');
+          setToken(Fields.Input, DAI);
+          setToken(Fields.Output, USDC);
+          setQuantity(Fields.Input, '10');
         });
 
         expect(state()).toMatchObject({
@@ -364,7 +382,7 @@ describe('Swap form state', () => {
         });
 
         act(() => {
-          dispatch().setQuantity(Fields.Output, '10');
+          setQuantity(Fields.Output, '10');
         });
 
         expect(state()).toMatchObject({
@@ -384,9 +402,9 @@ describe('Swap form state', () => {
 
       test('When swapping, selecting a masset as output changes mode to mint and removes swap fee', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setToken(Fields.Output, USDC);
-          dispatch().setQuantity(Fields.Input, '10');
+          setToken(Fields.Input, DAI);
+          setToken(Fields.Output, USDC);
+          setQuantity(Fields.Input, '10');
         });
 
         expect(state()).toMatchObject({
@@ -404,7 +422,7 @@ describe('Swap form state', () => {
         });
 
         act(() => {
-          dispatch().setToken(Fields.Output, mUSD);
+          setToken(Fields.Output, mUSD);
         });
 
         expect(state()).toMatchObject({
@@ -426,9 +444,9 @@ describe('Swap form state', () => {
     describe('mint', () => {
       test('Minting does not add a fee', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setToken(Fields.Output, mUSD);
-          dispatch().setQuantity(Fields.Input, '10');
+          setToken(Fields.Input, DAI);
+          setToken(Fields.Output, mUSD);
+          setQuantity(Fields.Input, '10');
         });
 
         expect(state()).toMatchObject({
@@ -454,9 +472,9 @@ describe('Swap form state', () => {
 
       test('When minting, selecting a bAsset as output applies swap fee to the input', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setToken(Fields.Output, mUSD);
-          dispatch().setQuantity(Fields.Input, '10');
+          setToken(Fields.Input, DAI);
+          setToken(Fields.Output, mUSD);
+          setQuantity(Fields.Input, '10');
         });
 
         expect(state()).toMatchObject({
@@ -480,7 +498,7 @@ describe('Swap form state', () => {
         });
 
         act(() => {
-          dispatch().setToken(Fields.Output, USDC);
+          setToken(Fields.Output, USDC);
         });
 
         expect(state()).toMatchObject({
@@ -506,7 +524,7 @@ describe('Swap form state', () => {
 
       test('It is not possible to set mUSD as input (redeeming)', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, mUSD);
+          setToken(Fields.Input, mUSD);
         });
 
         expect(state()).toMatchObject({
@@ -527,8 +545,8 @@ describe('Swap form state', () => {
 
       test('It is not possible to invert direction when minting', () => {
         act(() => {
-          dispatch().setToken(Fields.Input, DAI);
-          dispatch().setToken(Fields.Output, mUSD);
+          setToken(Fields.Input, DAI);
+          setToken(Fields.Output, mUSD);
         });
 
         expect(state()).toMatchObject({

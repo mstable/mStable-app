@@ -10,24 +10,29 @@ import { Button } from './Button';
 interface Props {
   onSubmit?(event: FormEvent<Element>): void;
   error?: string;
+  submitting?: boolean;
 }
 
-const StyledForm = styled.form<{ disabled?: boolean }>`
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};
+const StyledForm = styled.form<{ disabled?: boolean; submitting?: boolean }>`
+  cursor: ${({ disabled, submitting }) =>
+    disabled || submitting ? 'not-allowed' : 'auto'};
 
   input,
   select,
   textarea,
   button {
-    pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+    pointer-events: ${({ disabled, submitting }) =>
+      disabled || submitting ? 'none' : 'auto'};
   }
+
+  opacity: ${({ submitting }) => (submitting ? 0.3 : 1)};
 `;
 
 const FormError = styled.div`
   color: ${({ theme }) => theme.color.red};
 `;
 
-export const Form: FC<Props> = ({ children, onSubmit, error }) => {
+export const Form: FC<Props> = ({ children, onSubmit, error, submitting }) => {
   const connected = useIsWalletConnected();
   const supportedChain = useIsSupportedChain();
   const disabled = !connected;
@@ -42,7 +47,12 @@ export const Form: FC<Props> = ({ children, onSubmit, error }) => {
   }, [connected, expandWallet, supportedChain]);
 
   return (
-    <StyledForm onClick={handleClick} onSubmit={onSubmit} disabled={disabled}>
+    <StyledForm
+      onClick={handleClick}
+      onSubmit={onSubmit}
+      disabled={disabled}
+      submitting={submitting}
+    >
       {error ? <FormError>{error}</FormError> : null}
       <div>{children}</div>
     </StyledForm>

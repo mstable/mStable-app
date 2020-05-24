@@ -11,6 +11,7 @@ import { formatExactAmount } from '../../web3/amounts';
 import { EMOJIS } from '../../web3/constants';
 import { List, ListItem } from '../core/List';
 import { humanizeList } from '../../web3/strings';
+import { P } from '../core/Typography';
 
 type FnName =
   | 'mint'
@@ -82,7 +83,7 @@ const getHistoricTransactionDescription = (
   {
     mUSDSavingsAddress,
     mUSD,
-  }: { mUSD: MassetData; mUSDSavingsAddress: string | null },
+  }: { mUSD?: MassetData; mUSDSavingsAddress: string | null },
 ): JSX.Element => {
   if (!mUSD) return LOADING;
 
@@ -269,7 +270,7 @@ const getHistoricTransactionDescription = (
 
 const HistoricTx: FC<{
   tx: HistoricTransaction;
-  mUSD: MassetData;
+  mUSD?: MassetData;
   mUSDSavingsAddress: string | null;
 }> = ({ tx, mUSDSavingsAddress, mUSD }) => {
   const { description, icon } = useMemo(() => {
@@ -303,7 +304,7 @@ export const HistoricTransactions: FC<{}> = () => {
   return (
     <Container>
       {historic.length === 0 ? (
-        'No historic transactions'
+        <P size={2}>No historic transactions.</P>
       ) : (
         <List inverted>
           {historic.map(tx => (

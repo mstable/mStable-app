@@ -1,302 +1,87 @@
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
-import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
+import React, { FC, useEffect } from 'react';
 import { useWallet } from 'use-wallet';
-import { A } from 'hookrouter';
-import { useSendTransaction } from '../../../context/TransactionsProvider';
-import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
+import { BigNumber } from 'ethers/utils';
+
 import {
-  useErc20Contract,
-  useMusdContract,
-} from '../../../context/DataProvider/ContractsProvider';
-import { RATIO_SCALE, SCALE } from '../../../web3/constants';
-import { useMusdData } from '../../../context/DataProvider/DataProvider';
-import { Size } from '../../../theme';
-import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
-import { Form, FormRow, SubmitButton } from '../../core/Form';
-import { H3, P } from '../../core/Typography';
-import { TokenAmountInput } from '../../forms/TokenAmountInput';
-import { formatExactAmount } from '../../../web3/amounts';
-import { Interfaces, SendTxManifest } from '../../../types';
-import { CountUp } from '../../core/CountUp';
-import { Fields } from './types';
-import { useSwapState } from './state';
+  FormProvider,
+  useSetFormManifest,
+} from '../../forms/TransactionForm/FormProvider';
+import { TransactionForm } from '../../forms/TransactionForm';
+import { SwapProvider, useSwapState } from './SwapProvider';
+import { SwapInput } from './SwapInput';
+import { SwapConfirm } from './SwapConfirm';
+import { Interfaces } from '../../../types';
+import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
 
-export const Swap: FC<{}> = () => {
-  const [
-    {
-      values: {
-        input,
-        output,
-        input: { token: { address: inputAddress } = { address: null } },
-        output: { token: { address: outputAddress } = { address: null } },
-        feeAmountSimple,
-      },
-      valid,
-      inputError,
-      outputError,
-      needsUnlock,
-    },
-    { setToken, setQuantity, updateMassetData },
-  ] = useSwapState();
-
-  const inputToken = useTokenWithBalance(input.token.address);
-  const outputToken = useTokenWithBalance(output.token.address);
-
-  const mUsdData = useMusdData();
-  const { token: mUsdToken, bAssets } = mUsdData;
-  useEffect(() => {
-    updateMassetData(mUsdData);
-  }, [updateMassetData, mUsdData]);
-
-  const isMint =
-    output.token.address && output.token.address === mUsdToken.address;
-
-  /**
-   * Blockchain goodies
-   */
-  const sendTransaction = useSendTransaction();
-  const inputTokenContract = useErc20Contract(inputAddress);
+const SwapForm: FC<{}> = () => {
   const { account } = useWallet();
+  const {
+    valid,
+    values: { output, input },
+    mAssetData: { token: mUsdToken } = {},
+  } = useSwapState();
+  const setFormManifest = useSetFormManifest();
   const mUsdContract = useMusdContract();
 
-  const [inputAddresses, outputAddresses] = useMemo<
-    [string[], string[]]
-  >(() => {
-    if (!(bAssets && mUsdToken?.address)) return [[], []];
+  const isMint =
+    output.token.address && output.token.address === mUsdToken?.address;
 
-    const bAssetAddresses = bAssets.map(b => b.address);
-    return [bAssetAddresses, [mUsdToken.address, ...bAssetAddresses]];
-  }, [bAssets, mUsdToken]);
+  // Set the form manifest
+  useEffect(() => {
+    if (valid && account && mUsdContract) {
+      if (isMint) {
+        setFormManifest<Interfaces.Masset, 'mint'>({
+          iface: mUsdContract,
+          fn: 'mint',
+          args: [
+            input.token.address as string,
+            input.amount.exact as BigNumber,
+          ],
+        });
+        return;
+      }
 
-  const inputItems = useMemo(
-    () => [
-      {
-        label: 'Balance',
-        value: formatExactAmount(
-          inputToken.balance,
-          inputToken.decimals,
-          inputToken.symbol,
-          true,
-        ),
-      },
-    ],
-    [inputToken],
-  );
-
-  const outputItems = useMemo(
-    () => [
-      {
-        label: 'Balance',
-        value: formatExactAmount(
-          outputToken.balance,
-          outputToken.decimals,
-          outputToken.symbol,
-          true,
-        ),
-      },
-      ...(feeAmountSimple
-        ? [
-            {
-              label: 'Note',
-              // TODO ideally 'see details' would open up the details
-              value: 'Swap fee applies (see details below)',
-            },
-          ]
-        : []),
-    ],
-    [outputToken, feeAmountSimple],
-  );
-
-  /**
-   * Handle the unlocking of bAssets
-   */
-  const handleUnlock = useCallback(() => {
-    const manifest = {
-      iface: inputTokenContract,
-      fn: 'approve',
-      args: [
-        outputAddress,
-        parseUnits(inputToken.totalSupply as string, inputToken.decimals),
-      ],
-    };
-    sendTransaction(manifest);
-  }, [inputToken, inputTokenContract, outputAddress, sendTransaction]);
-
-  /**
-   * Handle setting the max amount for the input token
-   */
-  const handleSetMax = useCallback(() => {
-    const inputBasset = bAssets.find(b => b.address === input.token.address);
-    const outputBasset = bAssets.find(b => b.address === output.token.address);
-    if (
-      mUsdToken.totalSupply &&
-      inputBasset?.token.decimals &&
-      inputBasset?.token.balance &&
-      inputBasset?.ratio &&
-      inputBasset?.vaultBalance &&
-      inputBasset?.maxWeight &&
-      outputBasset?.vaultBalance &&
-      outputBasset?.ratio
-    ) {
-      const ratioedInputBalance = inputBasset.token.balance
-        .mul(inputBasset.ratio)
-        .div(RATIO_SCALE);
-      const inputVaultBalance = parseUnits(
-        inputBasset.vaultBalance,
-        inputBasset.token.decimals,
-      )
-        .mul(inputBasset.ratio)
-        .div(RATIO_SCALE);
-
-      const outputVaultBalance = parseUnits(
-        outputBasset.vaultBalance,
-        outputBasset.token.decimals,
-      )
-        .mul(outputBasset.ratio)
-        .div(RATIO_SCALE);
-
-      const inputMaxWeight = parseUnits(mUsdToken.totalSupply, 18)
-        .mul(inputBasset.maxWeight)
-        .div(SCALE);
-
-      let maxIncrease = inputMaxWeight.gt(inputVaultBalance)
-        ? inputMaxWeight.sub(inputVaultBalance)
-        : new BigNumber(0);
-      maxIncrease = maxIncrease.gt(ratioedInputBalance)
-        ? ratioedInputBalance
-        : maxIncrease;
-      const maxDecrease = outputVaultBalance;
-
-      setQuantity(
-        Fields.Input,
-        formatUnits(
-          maxIncrease.lt(maxDecrease) ? maxIncrease : maxDecrease,
-          18,
-        ),
-      );
+      setFormManifest<Interfaces.Masset, 'swap'>({
+        iface: mUsdContract,
+        fn: 'swap',
+        args: [
+          input.token.address as string,
+          output.token.address as string,
+          input.amount.exact as BigNumber,
+          account,
+        ],
+      });
+      return;
     }
+
+    setFormManifest(null);
   }, [
-    setQuantity,
-    bAssets,
+    account,
+    input.amount.exact,
     input.token.address,
+    isMint,
+    mUsdContract,
     output.token.address,
-    mUsdToken.totalSupply,
+    setFormManifest,
+    valid,
   ]);
 
-  /**
-   * Handle form submission
-   */
-  const handleSubmit = useCallback(
-    event => {
-      event.preventDefault();
-
-      if (account && valid && mUsdContract) {
-        if (isMint) {
-          const manifest: SendTxManifest<Interfaces.Masset, 'mint'> = {
-            iface: mUsdContract,
-            fn: 'mint',
-            args: [
-              input.token.address as string,
-              input.amount.exact as BigNumber,
-            ],
-          };
-          sendTransaction(manifest);
-        } else {
-          const manifest: SendTxManifest<Interfaces.Masset, 'swap'> = {
-            iface: mUsdContract,
-            fn: 'swap',
-            args: [
-              input.token.address as string,
-              output.token.address as string,
-              input.amount.exact as BigNumber,
-              account,
-            ],
-          };
-          sendTransaction(manifest);
-        }
-      }
-    },
-    [account, valid, input, mUsdContract, isMint, output, sendTransaction],
-  );
-
   return (
-    <Form onSubmit={handleSubmit}>
-      <FormRow>
-        <H3>Send</H3>
-        <TokenAmountInput
-          amountValue={input.formValue}
-          tokenAddresses={inputAddresses}
-          tokenValue={inputAddress}
-          name={Fields.Input}
-          onChangeAmount={setQuantity}
-          onChangeToken={setToken}
-          onSetMax={handleSetMax}
-          onUnlock={handleUnlock}
-          needsUnlock={needsUnlock}
-          items={inputItems}
-          error={inputError}
-        />
-      </FormRow>
-      <FormRow>
-        <H3>Receive</H3>
-        <TokenAmountInput
-          amountValue={output.formValue}
-          tokenAddresses={outputAddresses}
-          tokenValue={outputAddress}
-          name={Fields.Output}
-          onChangeAmount={setQuantity}
-          onChangeToken={setToken}
-          items={outputItems}
-          error={outputError}
-        />
-      </FormRow>
-      <div>
-        <SubmitButton type="submit" size={Size.l} disabled={!valid}>
-          Swap
-        </SubmitButton>
-        {input.amount.simple &&
-        input.token.symbol &&
-        output.amount.simple &&
-        output.token.symbol ? (
-          <TransactionDetailsDropdown>
-            <>
-              <P size={1}>
-                You are swapping{' '}
-                <CountUp
-                  end={input.amount.simple}
-                  suffix={` ${input.token.symbol}`}
-                />{' '}
-                for{' '}
-                <CountUp
-                  end={output.amount.simple}
-                  suffix={` ${output.token.symbol}`}
-                />
-                {feeAmountSimple ? '' : ' (1:1)'}.
-              </P>
-              {feeAmountSimple ? (
-                <>
-                  <P size={1}>
-                    This includes a swap fee of{' '}
-                    <CountUp
-                      end={parseFloat(feeAmountSimple)}
-                      decimals={4}
-                      suffix=" mUSD"
-                    />
-                    .
-                  </P>
-                  <P size={1}>
-                    Read more about the mStable swap fee{' '}
-                    <A href="https://docs.mstable.org/mstable-assets/massets/swapping#swap-fees">
-                      here
-                    </A>
-                    .
-                  </P>
-                </>
-              ) : null}
-            </>
-          </TransactionDetailsDropdown>
-        ) : null}
-      </div>
-    </Form>
+    <TransactionForm
+      confirm={<SwapConfirm />}
+      confirmLabel="Swap"
+      formId="swap"
+      input={<SwapInput />}
+      transactionsLabel="Swap transactions"
+      valid={valid}
+    />
   );
 };
+
+export const Swap: FC<{}> = () => (
+  <SwapProvider>
+    <FormProvider>
+      <SwapForm />
+    </FormProvider>
+  </SwapProvider>
+);
