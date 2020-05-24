@@ -13,17 +13,17 @@ import { EtherscanLink } from '../core/EtherscanLink';
 import { List, ListItem } from '../core/List';
 import { EMOJIS, RATIO_SCALE } from '../../web3/constants';
 import { humanizeList } from '../../web3/strings';
+import { P } from '../core/Typography';
 
-const Container = styled.div``;
-
-const PendingTxContainer = styled.div`
+const PendingTxContainer = styled.div<{ inverted?: boolean }>`
   display: flex;
   > * {
     margin-right: 8px;
   }
 
   a {
-    color: ${({ theme }) => theme.color.white};
+    color: ${({ theme, inverted }) =>
+      inverted ? theme.color.white : theme.color.black};
     font-weight: normal;
 
     span {
@@ -53,7 +53,7 @@ const getPendingTxDescription = (
     mUSD,
     mUSDSavingsAddress,
   }: {
-    mUSD: MassetData;
+    mUSD?: MassetData;
     mUSDSavingsAddress: string | null;
   },
 ): JSX.Element => {
@@ -259,16 +259,17 @@ const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
 
 const PendingTx: FC<{
   tx: Transaction;
-  mUSD: MassetData;
+  mUSD?: MassetData;
   mUSDSavingsAddress: string | null;
-}> = ({ tx, mUSD, mUSDSavingsAddress }) => {
+  inverted?: boolean;
+}> = ({ tx, mUSD, mUSDSavingsAddress, inverted }) => {
   const description = useMemo(
     () => getPendingTxDescription(tx, { mUSD, mUSDSavingsAddress }),
     [tx, mUSD, mUSDSavingsAddress],
   );
 
   return (
-    <PendingTxContainer>
+    <PendingTxContainer inverted={inverted}>
       <TxStatusIndicator tx={tx} />
       <EtherscanLink data={tx.hash} type="transaction">
         {description}
@@ -280,28 +281,29 @@ const PendingTx: FC<{
 /**
  * List of recently-sent transactions.
  */
-export const Transactions: FC<{}> = () => {
-  const pending = useOrderedCurrentTransactions();
+export const Transactions: FC<{ formId?: string }> = ({ formId }) => {
+  const pending = useOrderedCurrentTransactions(formId);
   const mUSD = useMusdData();
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   return (
-    <Container>
+    <div>
       {pending.length === 0 ? (
-        'No transactions sent in the current session.'
+        <P size={2}>No transactions sent in the current session.</P>
       ) : (
-        <List inverted>
+        <List>
           {pending.map(tx => (
             <ListItem key={tx.hash}>
               <PendingTx
                 tx={tx}
                 mUSD={mUSD}
                 mUSDSavingsAddress={mUSDSavingsAddress}
+                inverted={!formId}
               />
             </ListItem>
           ))}
         </List>
       )}
-    </Container>
+    </div>
   );
 };

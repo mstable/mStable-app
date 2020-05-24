@@ -19,7 +19,7 @@ const formValidator: StateValidator = ({
   needsUnlock,
   touched,
   values: { input, output },
-  mAssetData: { loading, bAssets },
+  mAssetData: { loading, bAssets = [] } = {},
 }) => {
   if (!touched) {
     return [true, {}];
@@ -73,9 +73,9 @@ const swapValidator: StateValidator = ({
   touched,
   values: { input, output },
   mAssetData: {
-    bAssets,
-    token: { totalSupply: totalVault },
-  },
+    bAssets = [],
+    token: { totalSupply: totalVault } = { totalSupply: null },
+  } = {},
 }) => {
   let applySwapFee = true;
 
@@ -178,7 +178,7 @@ const swapValidator: StateValidator = ({
 const mintSingleValidator: StateValidator = state => {
   const {
     values: { input },
-    mAssetData: { bAssets, token: mAssetToken },
+    mAssetData: { bAssets = [], token: mAssetToken } = {},
   } = state;
 
   const bAssetData = bAssets.find(b => b.address === input.token.address);
@@ -189,12 +189,7 @@ const mintSingleValidator: StateValidator = state => {
       input.token.decimals &&
       bAssetData &&
       bAssetData.status &&
-      bAssetData.maxWeight &&
-      bAssetData.ratio &&
-      bAssetData.vaultBalance &&
-      bAssetData.token.balance &&
-      bAssetData.token.allowance &&
-      mAssetToken.decimals &&
+      mAssetToken?.decimals &&
       mAssetToken.totalSupply
     )
   ) {
@@ -240,8 +235,11 @@ export const applyValidation = (state: State): State => {
   const {
     touched,
     values: { input, output },
-    mAssetData: {
-      token: { address: mAssetAddress, allowance },
+    mAssetData: { token: { address: mAssetAddress, allowance } } = {
+      token: {
+        address: null,
+        allowance: null,
+      },
     },
   } = state;
 

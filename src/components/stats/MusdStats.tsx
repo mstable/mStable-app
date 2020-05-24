@@ -1,14 +1,11 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
+
+import { useMusdTotalSupply } from '../../context/DataProvider/DataProvider';
 import { H3, H2 } from '../core/Typography';
 import { CountUp } from '../core/CountUp';
 import { BasketStats } from './BasketStats';
-import { ViewportWidth } from '../../theme';
-
-interface Props {
-  totalSupply: string | null;
-}
 
 const StatsGraphic = styled.div`
   width: 100%;
@@ -27,29 +24,32 @@ const StatsContainer = styled.div`
 `;
 
 const StatsRow = styled.div`
-  @media (min-width: ${ViewportWidth.s}) {
+  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
     display: flex;
     justify-content: space-between;
   }
 `;
 
-export const MusdStats: FC<Props> = ({ totalSupply }) => (
-  <StatsContainer>
-    <H2>Basket Stats</H2>
-    <StatsRow>
-      <StatsGraphic>
-        <H3 borderTop>mUSD basket share</H3>
-        <BasketStats />
-      </StatsGraphic>
-      <StatsGraphicNull />
-      <StatsGraphic>
-        <H3 borderTop>Total mUSD supply</H3>
-        {totalSupply ? (
-          <CountUp end={parseFloat(totalSupply)} decimals={2} />
-        ) : (
-          <Skeleton />
-        )}
-      </StatsGraphic>
-    </StatsRow>
-  </StatsContainer>
-);
+export const MusdStats: FC<{}> = () => {
+  const totalSupply = useMusdTotalSupply();
+  return (
+    <StatsContainer>
+      <H2>Basket Stats</H2>
+      <StatsRow>
+        <StatsGraphic>
+          <H3 borderTop>mUSD basket share</H3>
+          <BasketStats />
+        </StatsGraphic>
+        <StatsGraphicNull />
+        <StatsGraphic>
+          <H3 borderTop>Total mUSD supply</H3>
+          {totalSupply ? (
+            <CountUp end={parseFloat(totalSupply)} decimals={2} />
+          ) : (
+            <Skeleton />
+          )}
+        </StatsGraphic>
+      </StatsRow>
+    </StatsContainer>
+  );
+};

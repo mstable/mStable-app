@@ -117,7 +117,7 @@ const Container: FC<VictoryContainerProps> = ({ children, ...props }) => (
 );
 
 export const BasketStats: FC<{}> = () => {
-  const { bAssets } = useMusdData();
+  const { bAssets = [] } = useMusdData() || {};
   const data: Datum[] = useMemo(
     () =>
       bAssets

@@ -48,7 +48,7 @@ const BalanceSkeleton: FC<{ themeContext: DefaultTheme }> = ({
  */
 export const Balances: FC<{}> = () => {
   const { account } = useWallet();
-  const { token: mUsd, bAssets: otherTokens } = useMusdData();
+  const { token: mUsd, bAssets: otherTokens = [] } = useMusdData() || {};
   const savingsBalance = useSavingsBalance(account);
   const themeContext = useContext(ThemeContext);
 

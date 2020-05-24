@@ -6,7 +6,7 @@ import { EXP_SCALE } from '../../../web3/constants';
 import { Action, Actions, Fields, State } from './types';
 import { applyValidation } from './validation';
 
-const initialTokenQuantityField: TokenQuantity = Object.freeze({
+const initialTokenQuantityField: TokenQuantity = {
   formValue: null,
   amount: {
     simple: null,
@@ -17,26 +17,19 @@ const initialTokenQuantityField: TokenQuantity = Object.freeze({
     decimals: null,
     symbol: null,
   },
-});
+};
 
-export const initialState: State = Object.freeze({
+export const initialState: State = {
   touched: false,
   valid: false,
   needsUnlock: false,
   applySwapFee: false,
-  mAssetData: {
-    token: {} as never,
-    basket: {},
-    bAssets: [],
-    feeRate: null,
-    loading: false,
-  },
   values: {
     input: initialTokenQuantityField,
     output: initialTokenQuantityField,
     feeAmountSimple: null,
   },
-});
+};
 
 const getOtherField = (field: Fields): Fields =>
   field === Fields.Input ? Fields.Output : Fields.Input;

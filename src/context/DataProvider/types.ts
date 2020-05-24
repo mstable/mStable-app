@@ -7,11 +7,9 @@ import {
 import { ContractNames } from '../../types';
 
 export interface BassetData
-  extends Partial<
-    Pick<
-      Basset,
-      'isTransferFeeCharged' | 'maxWeight' | 'ratio' | 'status' | 'vaultBalance'
-    >
+  extends Pick<
+    Basset,
+    'isTransferFeeCharged' | 'maxWeight' | 'ratio' | 'status' | 'vaultBalance'
   > {
   address: string;
   token: TokenDetailsWithBalance;
@@ -19,8 +17,9 @@ export interface BassetData
   basketShare: BigNumber;
 }
 
-export type BasketData = Partial<
-  Pick<Basket, 'collateralisationRatio' | 'undergoingRecol' | 'failed'>
+export type BasketData = Pick<
+  Basket,
+  'collateralisationRatio' | 'undergoingRecol' | 'failed'
 >;
 
 export interface MassetData {

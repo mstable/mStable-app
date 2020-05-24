@@ -10,7 +10,6 @@ export enum Mode {
 }
 
 export enum Actions {
-  SetError,
   SetRedemptionAmount,
   SetExactRedemptionAmount,
   UpdateMassetData,
@@ -25,7 +24,6 @@ export type Action =
       type: Actions.SetExactRedemptionAmount;
       payload: BigNumber;
     }
-  | { type: Actions.SetError; payload: { error: string | null } }
   | {
       type: Actions.UpdateMassetData;
       payload: MassetData;
@@ -38,7 +36,9 @@ export interface BassetOutput {
 
 export interface State {
   bAssetOutputs: BassetOutput[];
-  error: string | null;
+  error?: string;
+  valid: boolean;
+  touched: boolean;
   mAssetData: MassetData | null;
   mode: Mode;
   redemption: {

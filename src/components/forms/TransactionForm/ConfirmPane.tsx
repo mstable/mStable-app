@@ -1,0 +1,54 @@
+import React, { FC, useCallback } from 'react';
+import { useSendTransaction } from '../../../context/TransactionsProvider';
+import { SubmitButton } from '../../core/Form';
+import { Size } from '../../../theme';
+import { H3 } from '../../core/Typography';
+import {
+  useFormSubmitting,
+  useManifest,
+  useSubmitEnd,
+  useSubmitStart,
+} from './FormProvider';
+
+interface Props {
+  formId: string;
+  confirmLabel: string;
+  valid: boolean;
+}
+
+export const ConfirmPane: FC<Props> = ({
+  children,
+  confirmLabel,
+  formId,
+  valid,
+}) => {
+  const sendTransaction = useSendTransaction();
+  const manifest = useManifest();
+  const submitting = useFormSubmitting();
+  const submitStart = useSubmitStart();
+  const submitEnd = useSubmitEnd();
+
+  const handleSend = useCallback(() => {
+    if (valid && manifest) {
+      submitStart();
+      sendTransaction({ ...manifest, formId }, submitEnd);
+    }
+  }, [manifest, valid, sendTransaction, formId, submitEnd, submitStart]);
+
+  return (
+    <div>
+      <>
+        <H3 borderTop>Confirm transaction</H3>
+        <SubmitButton
+          type="button"
+          onClick={handleSend}
+          size={Size.l}
+          disabled={submitting || !valid}
+        >
+          {confirmLabel}
+        </SubmitButton>
+        <div>{children}</div>
+      </>
+    </div>
+  );
+};

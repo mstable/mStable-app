@@ -9,7 +9,7 @@ import { useWalletExpanded } from '../../context/AppProvider';
 import { Background } from './Background';
 import { StatusBar } from './StatusBar';
 import { BetaWarning } from './BetaWarning';
-import { Notifications } from './Notifications';
+import { NotificationToasts } from './NotificationToasts';
 import { centredLayout } from './css';
 
 interface WalletExpanded {
@@ -97,7 +97,7 @@ export const Layout: FC<{}> = ({ children }) => {
         )}
         <Footer inverted={walletExpanded} home={home} />
       </Container>
-      <Notifications />
+      <NotificationToasts />
       <GlobalStyle walletExpanded={walletExpanded} />
     </>
   );

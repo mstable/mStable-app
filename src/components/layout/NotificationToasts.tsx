@@ -4,33 +4,9 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import {
   Notification,
   NotificationType,
+  useMarkNotificationAsRead,
   useNotificationsState,
-  useRemoveNotification,
 } from '../../context/NotificationsProvider';
-
-const slideIn = keyframes`
-  0% {
-    transform: translateY(-1000px) scaleY(2.5) scaleX(0.2);
-    transform-origin: 50% 0%;
-    filter: blur(40px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0) scaleY(1) scaleX(1);
-    transform-origin: 50% 50%;
-    filter: blur(0);
-    opacity: 1;
-  }
-`;
-
-const Container = styled.div`
-  position: fixed;
-  top: 100px;
-  right: 40px;
-  width: 20%;
-  min-width: 240px;
-  z-index: 2;
-`;
 
 const Item = styled.div<Pick<Notification, 'type'>>`
   background: ${({ theme, type }) =>
@@ -74,6 +50,30 @@ const Link = styled.a<{ nType: NotificationType }>`
   }
 `;
 
+const slideIn = keyframes`
+  0% {
+    transform: translateY(-1000px) scaleY(2.5) scaleX(0.2);
+    transform-origin: 50% 0%;
+    filter: blur(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scaleY(1) scaleX(1);
+    transform-origin: 50% 50%;
+    filter: blur(0);
+    opacity: 1;
+  }
+`;
+
+const Container = styled.div`
+  position: fixed;
+  top: 24px;
+  right: 40px;
+  width: 20%;
+  min-width: 240px;
+  z-index: 2;
+`;
+
 const Animation = styled(CSSTransition)`
   ${({ classNames }) => `&.${classNames}-enter`} {
     animation: ${css`
@@ -86,37 +86,43 @@ const Animation = styled(CSSTransition)`
   }
 `;
 
-export const Notifications: FC<{}> = () => {
+export const NotificationToasts: FC<{}> = () => {
   const notifications = useNotificationsState();
-  const remove = useRemoveNotification();
+  const markAsRead = useMarkNotificationAsRead();
+  // const unreadCount = useUnreadNotificationsCount();
+
   return (
     <Container>
       <TransitionGroup>
-        {Object.keys(notifications).map(id => {
-          const { type, title, body, link } = notifications[id];
-          return (
-            <Animation
-              timeout={{ enter: 500, exit: 200 }}
-              classNames="item"
-              key={id}
-            >
-              <Item type={type} onClick={() => remove(id)}>
-                <Title>{title}</Title>
-                {body ? <div>{body}</div> : null}
-                {link ? (
-                  <Link
-                    nType={type}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {link.title}
-                  </Link>
-                ) : null}
-              </Item>
-            </Animation>
-          );
-        })}
+        {Object.keys(notifications)
+          .filter(
+            id => !(notifications[id].hideToast || notifications[id].read),
+          )
+          .map(id => {
+            const { type, title, body, link } = notifications[id];
+            return (
+              <Animation
+                timeout={{ enter: 500, exit: 200 }}
+                classNames="item"
+                key={id}
+              >
+                <Item type={type} onClick={() => markAsRead(id)}>
+                  <Title>{title}</Title>
+                  {body ? <div>{body}</div> : null}
+                  {link ? (
+                    <Link
+                      nType={type}
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {link.title}
+                    </Link>
+                  ) : null}
+                </Item>
+              </Animation>
+            );
+          })}
       </TransitionGroup>
     </Container>
   );

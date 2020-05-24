@@ -35,7 +35,7 @@ export interface State {
     feeAmountSimple: string | null;
   };
   applySwapFee: boolean;
-  mAssetData: MassetData;
+  mAssetData?: MassetData;
   touched: boolean;
   needsUnlock: boolean;
   inputError?: string;
@@ -44,7 +44,6 @@ export interface State {
 }
 
 export interface Dispatch {
-  updateMassetData(mAssetData: MassetData): void;
   setToken(field: Fields, token: NonNullable<TokenDetails> | null): void;
   setQuantity(field: Fields, formValue: string): void;
 }
