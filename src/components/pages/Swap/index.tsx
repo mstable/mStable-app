@@ -8,6 +8,7 @@ import {
   useErc20Contract,
   useMusdContract,
 } from '../../../context/DataProvider/ContractsProvider';
+import { RATIO_SCALE, SCALE } from '../../../web3/constants';
 import { useMusdData } from '../../../context/DataProvider/DataProvider';
 import { Size } from '../../../theme';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
@@ -125,15 +126,62 @@ export const Swap: FC<{}> = () => {
    * Handle setting the max amount for the input token
    */
   const handleSetMax = useCallback(() => {
-    if (inputToken?.balance) {
-      // TODO because of weight limits; under less-than-ideal
-      // conditions, the max valid swap can be lower than the user's balance
+    const inputBasset = bAssets.find(b => b.address === input.token.address);
+    const outputBasset = bAssets.find(b => b.address === output.token.address);
+    if (
+      mUsdToken.totalSupply &&
+      inputBasset?.token.decimals &&
+      inputBasset?.token.balance &&
+      inputBasset?.ratio &&
+      inputBasset?.vaultBalance &&
+      inputBasset?.maxWeight &&
+      outputBasset?.vaultBalance &&
+      outputBasset?.ratio
+    ) {
+      const ratioedInputBalance = inputBasset.token.balance
+        .mul(inputBasset.ratio)
+        .div(RATIO_SCALE);
+      const inputVaultBalance = parseUnits(
+        inputBasset.vaultBalance,
+        inputBasset.token.decimals,
+      )
+        .mul(inputBasset.ratio)
+        .div(RATIO_SCALE);
+
+      const outputVaultBalance = parseUnits(
+        outputBasset.vaultBalance,
+        outputBasset.token.decimals,
+      )
+        .mul(outputBasset.ratio)
+        .div(RATIO_SCALE);
+
+      const inputMaxWeight = parseUnits(mUsdToken.totalSupply, 18)
+        .mul(inputBasset.maxWeight)
+        .div(SCALE);
+
+      let maxIncrease = inputMaxWeight.gt(inputVaultBalance)
+        ? inputMaxWeight.sub(inputVaultBalance)
+        : new BigNumber(0);
+      maxIncrease = maxIncrease.gt(ratioedInputBalance)
+        ? ratioedInputBalance
+        : maxIncrease;
+      const maxDecrease = outputVaultBalance;
+
       setQuantity(
         Fields.Input,
-        formatUnits(inputToken.balance, inputToken.decimals),
+        formatUnits(
+          maxIncrease.lt(maxDecrease) ? maxIncrease : maxDecrease,
+          18,
+        ),
       );
     }
-  }, [setQuantity, inputToken]);
+  }, [
+    setQuantity,
+    bAssets,
+    input.token.address,
+    output.token.address,
+    mUsdToken.totalSupply,
+  ]);
 
   /**
    * Handle form submission

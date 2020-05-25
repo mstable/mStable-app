@@ -95,7 +95,9 @@ export const BasketStats: FC<{}> = () => {
           );
           // Get the remainder so that it can be stacked after the basket share
           const remainderMaxWeight =
-            maxWeightAsPercentage - basketShareAsPercentage;
+            basketShareAsPercentage > maxWeightAsPercentage
+              ? 0
+              : maxWeightAsPercentage - basketShareAsPercentage;
           return {
             symbol: symbol as string,
             basketShareAsPercentage,
