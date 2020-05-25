@@ -34,6 +34,7 @@ export const useMusdSubscription = (): ReturnType<typeof useMassetQuery> => {
   const [run, query] = useMassetLazyQuery({
     // `skip` isn't possible for lazy queries; address must be null-checked
     variables: { id: address as string },
+    fetchPolicy: 'cache-and-network',
   });
 
   // Long poll (15s interval) if the block number isn't available.
