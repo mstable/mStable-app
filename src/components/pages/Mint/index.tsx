@@ -1,7 +1,7 @@
 import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber, parseUnits } from 'ethers/utils';
 import Skeleton from 'react-loading-skeleton';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
@@ -19,6 +19,7 @@ import { Skeletons } from '../../core/Skeletons';
 import { MusdStats } from '../../stats/MusdStats';
 import { Mode } from './types';
 import { useMintState } from './state';
+import { RATIO_SCALE, SCALE } from '../../../web3/constants';
 
 const MintMode = styled.div`
   display: flex;
@@ -62,7 +63,7 @@ export const Mint: FC<{}> = () => {
         value: formatExactAmount(
           mAssetData?.token?.balance,
           mAssetData?.token?.decimals,
-          undefined,
+          mAssetData?.token?.symbol,
           true,
         ),
       },
@@ -119,23 +120,49 @@ export const Mint: FC<{}> = () => {
   const handleSetMax = useCallback<
     NonNullable<ComponentProps<typeof TokenAmountInput>['onSetMax']>
   >(() => {
-    // TODO later: this should also prevent pushing past max-weights
-    const max = bAssetInputs
-      .map(input => ({
-        input,
-        data: bAssets?.find(b => b.address === input.address),
-      }))
-      .filter(
-        ({ input, data }) =>
-          input.enabled && !input.error && data?.token.balance,
+    // TODO later: this only works for proportional mintMulti
+    const enabledBassets = bAssetInputs.filter(b => b.enabled);
+    if (enabledBassets.length === 0 || !mAssetData?.token.totalSupply) {
+      return setMassetAmount('0.00');
+    }
+    const isMintSingle = enabledBassets.length === 1;
+    const input = enabledBassets[0];
+    const data = bAssets?.find(b => b.address === input.address);
+    if (
+      isMintSingle &&
+      data?.token?.balance &&
+      data?.token?.decimals &&
+      data?.ratio &&
+      data?.vaultBalance &&
+      data?.maxWeight
+    ) {
+      const ratioedInputBalance = data.token.balance
+        .mul(data.ratio)
+        .div(RATIO_SCALE);
+      // Determining max possible mint without pushing bAsset over max weight uses below formula
+      // M = ((t * maxW) - c)/(1-maxW)
+      // num = ((t * maxW) - c)
+      const num1 = parseUnits(
+        mAssetData.token.totalSupply,
+        mAssetData.token.decimals,
       )
-      .reduce(
-        (_max: BigNumber, b) => _max.add(b.data?.token.balance as BigNumber),
-        new BigNumber(0),
-      );
+        .mul(data.maxWeight)
+        .div(SCALE);
+      const num2 = parseUnits(data.vaultBalance, data.token.decimals)
+        .mul(data.ratio)
+        .div(RATIO_SCALE);
+      const num = num1.sub(num2);
+      // den = (1-maxW)
+      const den = SCALE.sub(data.maxWeight);
 
-    setMassetAmount(formatExactAmount(max, 18));
-  }, [bAssetInputs, bAssets, setMassetAmount]);
+      const maxMint = num.mul(SCALE).div(den);
+      const clampedMax = maxMint.gt(ratioedInputBalance)
+        ? ratioedInputBalance
+        : maxMint;
+      return setMassetAmount(formatExactAmount(clampedMax, 18));
+    }
+    return setMassetAmount('0.00');
+  }, [bAssetInputs, mAssetData, bAssets, setMassetAmount]);
 
   return (
     <>

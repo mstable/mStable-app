@@ -95,6 +95,9 @@ const Value = styled.div`
 
 const ApproveButton = styled(Button)`
   width: 100%;
+`;
+
+const ErrorRow = styled.div`
   margin-bottom: 8px;
 `;
 
@@ -196,6 +199,12 @@ export const BassetInput: FC<Props> = ({
         </Row>
       </Rows>
       <ValidationRow>
+        {error || overweight ? (
+          <ErrorRow>
+            <Label>Unable to mint</Label>
+            <Value>{error || 'Asset overweight'}</Value>
+          </ErrorRow>
+        ) : null}
         {needsUnlock || error || overweight ? (
           <ApprovalRow>
             {needsUnlock ? (
@@ -204,12 +213,6 @@ export const BassetInput: FC<Props> = ({
               </ApproveButton>
             ) : null}
           </ApprovalRow>
-        ) : null}
-        {error || overweight ? (
-          <>
-            <Label>Unable to mint</Label>
-            <Value>{error || 'Asset overweight'}</Value>
-          </>
         ) : null}
       </ValidationRow>
     </div>
