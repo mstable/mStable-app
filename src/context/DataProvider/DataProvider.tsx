@@ -112,7 +112,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
         basket: { bassets, collateralisationRatio, failed, undergoingRecol },
         feeRate,
       } = data?.masset || {};
-
       const mUsd = state[ContractNames.mUSD];
 
       return {
@@ -157,7 +156,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
               const basketShareExact = currentVaultUnitsExact
                 .mul(EXP_SCALE)
                 .div(mUsdTotalSupplyExact);
-
               // TODO use exact values in state
               return {
                 ...mUsd?.bAssets[index],
