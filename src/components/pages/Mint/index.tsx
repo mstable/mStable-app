@@ -1,8 +1,16 @@
-import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
+import React, {
+  ComponentProps,
+  FC,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 import { BigNumber, parseUnits } from 'ethers/utils';
 import Skeleton from 'react-loading-skeleton';
+import { MaxUint256 } from 'ethers/constants';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
 import { Size } from '../../../theme';
@@ -20,7 +28,6 @@ import { MusdStats } from '../../stats/MusdStats';
 import { Mode } from './types';
 import { useMintState } from './state';
 import { RATIO_SCALE, SCALE } from '../../../web3/constants';
-import { MaxUint256 } from 'ethers/constants';
 
 const MintMode = styled.div`
   display: flex;
@@ -47,6 +54,8 @@ export const Mint: FC<{}> = () => {
     { setMassetAmount, toggleBassetEnabled, toggleMode },
   ] = useMintState();
 
+  const [firstLoad, setFirstLoad] = useState(true);
+
   const isMulti = mode === Mode.Multi;
   const loading: boolean = mAssetData == null ? true : mAssetData?.loading;
   const bAssets = mAssetData?.bAssets;
@@ -71,6 +80,41 @@ export const Mint: FC<{}> = () => {
     ],
     [mAssetData],
   );
+
+  useEffect(() => {
+    if (firstLoad && !loading && bAssets && bAssets.length > 0) {
+      // set bAsset to be input
+      // toggleBassetEnabled(bAsset[0])
+      const underweightBassets = bAssets.filter(
+        b => !b.overweight && b.token && b.token.balance && b.ratio,
+      );
+      const ordered = underweightBassets.sort((a, b) => {
+        if (!a.token || !a.token.balance || !a.ratio) {
+          return 0;
+        }
+        if (!b.token || !b.token.balance || !b.ratio) {
+          return 1;
+        }
+        return (
+          b.token?.balance
+            ?.mul(b.ratio as string)
+            .div(RATIO_SCALE)
+            .div(SCALE)
+            .toNumber() -
+          a.token?.balance
+            ?.mul(a.ratio as string)
+            .div(RATIO_SCALE)
+            .div(SCALE)
+            .toNumber()
+        );
+      });
+      if (ordered.length > 0) {
+        console.log(ordered);
+        toggleBassetEnabled(ordered[0].address);
+        setFirstLoad(false);
+      }
+    }
+  }, [firstLoad, loading, bAssets, toggleBassetEnabled]);
 
   const handleSubmit = useCallback(
     event => {
