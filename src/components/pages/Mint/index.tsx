@@ -20,6 +20,7 @@ import { MusdStats } from '../../stats/MusdStats';
 import { Mode } from './types';
 import { useMintState } from './state';
 import { RATIO_SCALE, SCALE } from '../../../web3/constants';
+import { MaxUint256 } from 'ethers/constants';
 
 const MintMode = styled.div`
   display: flex;
@@ -160,6 +161,27 @@ export const Mint: FC<{}> = () => {
         ? ratioedInputBalance
         : maxMint;
       return setMassetAmount(formatExactAmount(clampedMax, 18));
+    }
+    if (!isMintSingle) {
+      // max == min(ratioedBassetBalances)
+      const ratioedBalances = enabledBassets
+        .map(bAsset => ({
+          ...bAsset,
+          data: bAssets?.find(b => b.address === bAsset.address),
+        }))
+        .map(b => {
+          if (b.data?.token.balance && b.data?.ratio) {
+            return b.data?.token.balance.mul(b.data?.ratio).div(RATIO_SCALE);
+          }
+          return new BigNumber(0);
+        });
+      const minBalance = ratioedBalances.reduce(
+        (p, b) => (b.lt(p) ? b : p),
+        MaxUint256,
+      );
+      return setMassetAmount(
+        formatExactAmount(minBalance.mul(enabledBassets.length), 18),
+      );
     }
     return setMassetAmount('0.00');
   }, [bAssetInputs, mAssetData, bAssets, setMassetAmount]);

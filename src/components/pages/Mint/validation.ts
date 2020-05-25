@@ -131,46 +131,51 @@ const mintMultiValidator: StateValidator = state => {
   }));
 
   const newBalances: BigNumber[] = [];
-  let newTotalVault: BigNumber = new BigNumber(0);
+  let newTotalVault: BigNumber = parseUnits(
+    mAssetData.token.totalSupply as string,
+    mAssetData.token.decimals,
+  );
 
-  return bAssets
-    .map<ValidationResult>(({ input, data }, index) => {
-      if (!data) return [false, 'Fetching data'];
+  const initialValidation = bAssets.map<ValidationResult>(({ input, data }) => {
+    if (!data) return [false, 'Fetching data'];
 
-      if (!statusValidator(data.status))
-        return [false, 'Token not allowed in mint'];
+    if (!statusValidator(data.status))
+      return [false, 'Token not allowed in mint'];
 
-      const amountValidation = amountValidator(input, data, mAssetData);
-      if (!amountValidation[0]) return amountValidation;
+    const amountValidation = amountValidator(input, data, mAssetData);
+    if (!amountValidation[0]) return amountValidation;
 
-      // How much mAsset is this bassetquantity worth?
-      const mintAmountInMasset = (input.amount.exact as BigNumber)
+    // How much mAsset is this bassetquantity worth?
+    const mintAmountInMasset = (input.amount.exact as BigNumber)
+      .mul(data.ratio as string)
+      .div(RATIO_SCALE);
+
+    // How much of this bAsset do we have in the vault, in terms of mAsset?
+    newBalances.push(
+      parseUnits(data.vaultBalance as string, data.token.decimals)
         .mul(data.ratio as string)
-        .div(RATIO_SCALE);
+        .div(RATIO_SCALE)
+        .add(mintAmountInMasset),
+    );
 
-      // How much of this bAsset do we have in the vault, in terms of mAsset?
-      newBalances.push(
-        parseUnits(data.vaultBalance as string, data.token.decimals)
-          .mul(data.ratio as string)
-          .div(RATIO_SCALE)
-          .add(mintAmountInMasset),
-      );
+    newTotalVault = newTotalVault.add(mintAmountInMasset);
 
-      newTotalVault = newTotalVault.add(mintAmountInMasset);
-
+    return [true, null];
+  });
+  return bAssets
+    .map<ValidationResult>(({ data }, index) => {
+      if (!initialValidation[index][0]) {
+        return initialValidation[index];
+      }
+      if (!data) return [false, 'Fetching data'];
       // What is the max weight of this bAsset in the basket?
-      const maxWeightInUnits = parseUnits(
-        mAssetData.token.totalSupply as string,
-        mAssetData.token.decimals,
-      )
-        .add(mintAmountInMasset)
+      const maxWeightInUnits = newTotalVault
         .mul(data.maxWeight as string)
         .div(EXP_SCALE);
 
       if (newBalances?.[index]?.gt?.(maxWeightInUnits)) {
         return [false, 'Must be below max weighting'];
       }
-
       return [true, null];
     })
     .reduce<ValidationResult>(
