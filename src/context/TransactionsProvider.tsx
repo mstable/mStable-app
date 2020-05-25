@@ -209,6 +209,12 @@ const getTxPurpose = (
         past: `Minted ${body}`,
       };
     }
+    case 'mintMulti': {
+      return {
+        present: `Minting mUSD`,
+        past: `Minted mUSD`,
+      };
+    }
     case 'swap': {
       const [input, output, inputQuantity] = args as [
         string,
