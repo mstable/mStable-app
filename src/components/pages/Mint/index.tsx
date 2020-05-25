@@ -109,7 +109,6 @@ export const Mint: FC<{}> = () => {
         );
       });
       if (ordered.length > 0) {
-        console.log(ordered);
         toggleBassetEnabled(ordered[0].address);
         setFirstLoad(false);
       }

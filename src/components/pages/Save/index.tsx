@@ -174,13 +174,6 @@ export const Save: FC<{}> = () => {
   const mUsdSavings = useMUSDSavings();
 
   const savingsBalance = useSavingsBalance(account);
-  const savingsBalanceIncreasing = useIncreasingNumber(
-    savingsBalance.simple,
-    // TODO we could potentially use the APY for the increment and interval;
-    // these are assumed rates.
-    0.0000001,
-    100,
-  );
 
   const musdBalanceItem = useMemo(
     () => [
@@ -202,6 +195,15 @@ export const Save: FC<{}> = () => {
   const apyPercentage = useMemo<number | null>(
     () => (apy ? parseFloat(formatUnits(apy, 16)) : null),
     [apy],
+  );
+
+  const savingsBalanceIncreasing = useIncreasingNumber(
+    savingsBalance.simple,
+    // Calculate the increase per 100ms for this APY
+    savingsBalance.simple && apyPercentage
+      ? (savingsBalance.simple * apyPercentage) / 100 / 365 / 24 / 60 / 60 / 10
+      : 0.0000001,
+    100,
   );
 
   const tokenAddresses = useMemo<string[]>(
