@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { BigNumber } from 'ethers/utils';
 import { useOrderedCurrentTransactions } from '../../context/TransactionsProvider';
 import { useKnownAddress } from '../../context/DataProvider/KnownAddressProvider';
-import { useMusdQuery } from '../../context/DataProvider/DataProvider';
+import { useMusdData } from '../../context/DataProvider/DataProvider';
 import { ContractNames, Transaction, TransactionStatus } from '../../types';
-import { MassetQuery } from '../../graphql/generated';
+import { MassetData } from '../../context/DataProvider/types';
 import { getTransactionStatus } from '../../web3/transactions';
 import { formatExactAmount } from '../../web3/amounts';
 import { ActivitySpinner } from '../core/ActivitySpinner';
@@ -53,15 +53,13 @@ const getPendingTxDescription = (
     mUSD,
     mUSDSavingsAddress,
   }: {
-    mUSD: MassetQuery['masset'];
+    mUSD: MassetData;
     mUSDSavingsAddress: string | null;
   },
 ): JSX.Element => {
   if (!mUSD) return Loading;
 
-  const {
-    basket: { bassets: bassetsData },
-  } = mUSD;
+  const { bAssets } = mUSD;
 
   if (tx.response.to === mUSDSavingsAddress) {
     switch (tx.fn) {
@@ -103,7 +101,7 @@ const getPendingTxDescription = (
         );
       }
 
-      const basset = bassetsData.find(b => b.token.address === tx.response.to);
+      const basset = bAssets.find(b => b.address === tx.response.to);
       if (!basset) return Loading;
 
       return (
@@ -116,7 +114,7 @@ const getPendingTxDescription = (
     case 'mint': {
       const [bassetAddress, bassetQ] = tx.args as [string, BigNumber];
 
-      const basset = bassetsData.find(b => b.token.address === bassetAddress);
+      const basset = bAssets.find(b => b.address === bassetAddress);
       if (!basset) return Loading;
 
       return (
@@ -146,8 +144,8 @@ const getPendingTxDescription = (
       ];
 
       const bassets = bassetAddresses.map((address, index) => ({
-        ...(bassetsData.find(b => b.token.address === address) as NonNullable<
-          typeof bassetsData
+        ...(bAssets.find(b => b.address === address) as NonNullable<
+          typeof bAssets
         >[0]),
         quantity: bassetQs[index],
       }));
@@ -156,7 +154,7 @@ const getPendingTxDescription = (
 
       const massetQ: BigNumber = bassets.reduce(
         (_total, { quantity, ratio }) =>
-          _total.add(quantity.mul(ratio).div(RATIO_SCALE)),
+          _total.add(quantity.mul(ratio as string).div(RATIO_SCALE)),
         new BigNumber(0),
       );
 
@@ -186,8 +184,8 @@ const getPendingTxDescription = (
         BigNumber,
       ];
 
-      const inputBasset = bassetsData.find(b => b.token.address === input);
-      const outputBasset = bassetsData.find(b => b.token.address === output);
+      const inputBasset = bAssets.find(b => b.address === input);
+      const outputBasset = bAssets.find(b => b.address === output);
       if (!inputBasset || !outputBasset) return Loading;
 
       return (
@@ -206,7 +204,7 @@ const getPendingTxDescription = (
     case 'redeem': {
       const [bassetAddress, bassetQ] = tx.args as [string, BigNumber];
 
-      const basset = bassetsData.find(b => b.token.address === bassetAddress);
+      const basset = bAssets.find(b => b.address === bassetAddress);
       if (!basset) return Loading;
 
       return (
@@ -261,7 +259,7 @@ const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
 
 const PendingTx: FC<{
   tx: Transaction;
-  mUSD: MassetQuery['masset'];
+  mUSD: MassetData;
   mUSDSavingsAddress: string | null;
 }> = ({ tx, mUSD, mUSDSavingsAddress }) => {
   const description = useMemo(
@@ -284,8 +282,7 @@ const PendingTx: FC<{
  */
 export const Transactions: FC<{}> = () => {
   const pending = useOrderedCurrentTransactions();
-  const musdQuery = useMusdQuery();
-  const mUSD = musdQuery.data?.masset || null;
+  const mUSD = useMusdData();
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   return (

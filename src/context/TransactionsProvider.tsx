@@ -24,9 +24,9 @@ import {
 } from './NotificationsProvider';
 import { TransactionOverrides } from '../typechain/index.d';
 import { getTransactionStatus } from '../web3/transactions';
-import { MassetQuery } from '../graphql/generated';
+import { MassetData } from './DataProvider/types';
 import { useKnownAddress } from './DataProvider/KnownAddressProvider';
-import { useMusdQuery } from './DataProvider/DataProvider';
+import { useMusdData } from './DataProvider/DataProvider';
 import { formatExactAmount } from '../web3/amounts';
 import { getEtherscanLink } from '../web3/strings';
 
@@ -173,26 +173,26 @@ const getTxPurpose = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { args, fn, iface }: SendTxManifest<any, any>,
   {
-    mUSD,
+    mUsd,
     mUSDSavingsAddress,
-  }: { mUSD: MassetQuery['masset'] | null; mUSDSavingsAddress: string | null },
+  }: { mUsd: MassetData; mUSDSavingsAddress: string | null },
 ): Purpose => {
-  if (!mUSD)
+  if (!mUsd)
     return {
       present: null,
       past: null,
     };
 
   const {
-    basket: { bassets },
+    bAssets,
     token: { symbol },
-  } = mUSD;
+  } = mUsd;
 
   switch (fn) {
     case 'mint': {
       const [bassetAddress, bassetQ] = args as [string, BigNumber];
 
-      const bAsset = bassets.find(b => b.token.address === bassetAddress);
+      const bAsset = bAssets.find(b => b.address === bassetAddress);
       if (!bAsset)
         return {
           present: null,
@@ -202,7 +202,7 @@ const getTxPurpose = (
       const body = `${formatExactAmount(
         bassetQ,
         bAsset.token.decimals,
-        mUSD.token.symbol,
+        mUsd.token.symbol,
       )} with ${bAsset.token.symbol}`;
       return {
         present: `Minting ${body}`,
@@ -216,8 +216,8 @@ const getTxPurpose = (
         BigNumber,
       ];
 
-      const inputBasset = bassets.find(b => b.token.address === input);
-      const outputBasset = bassets.find(b => b.token.address === output);
+      const inputBasset = bAssets.find(b => b.address === input);
+      const outputBasset = bAssets.find(b => b.address === output);
       if (!inputBasset || !outputBasset)
         return {
           present: null,
@@ -237,7 +237,7 @@ const getTxPurpose = (
     }
     case 'redeem': {
       if (iface.address === mUSDSavingsAddress) {
-        const body = `${mUSD.token.symbol} savings`;
+        const body = `${mUsd.token.symbol} savings`;
         return {
           present: `Withdrawing ${body}`,
           past: `Withdrew ${body}`,
@@ -245,7 +245,7 @@ const getTxPurpose = (
       }
       const [bassetAddress, bassetQ] = args as [string, BigNumber];
 
-      const bAsset = bassets.find(b => b.token.address === bassetAddress);
+      const bAsset = bAssets.find(b => b.address === bassetAddress);
       if (!bAsset)
         return {
           present: null,
@@ -259,7 +259,7 @@ const getTxPurpose = (
       )} with ${formatExactAmount(
         bassetQ,
         bAsset.token.decimals,
-        mUSD.token.symbol,
+        mUsd.token.symbol,
       )}`;
       return {
         present: `Redeeming ${body}`,
@@ -277,21 +277,21 @@ const getTxPurpose = (
     }
     case 'approve': {
       if (args[0] === mUSDSavingsAddress) {
-        const body = `the mUSD Savings Contract to transfer ${mUSD.token.symbol}`;
+        const body = `the mUSD Savings Contract to transfer ${mUsd.token.symbol}`;
         return {
           present: `Approving ${body}`,
           past: `Approved ${body}`,
         };
       }
 
-      const bAsset = bassets.find(b => b.token.address === iface.address);
+      const bAsset = bAssets.find(b => b.address === iface.address);
       if (!bAsset)
         return {
           past: null,
           present: null,
         };
 
-      const body = `${mUSD.token.symbol} to transfer ${bAsset.token.symbol}`;
+      const body = `${mUsd.token.symbol} to transfer ${bAsset.token.symbol}`;
       return {
         present: `Approving ${body}`,
         past: `Approved ${body}`,
@@ -299,8 +299,8 @@ const getTxPurpose = (
     }
     case 'depositSavings': {
       const [amount] = args as [BigNumber];
-      const body = `${formatExactAmount(amount, mUSD.token.decimals)} ${
-        mUSD.token.symbol
+      const body = `${formatExactAmount(amount, mUsd.token.decimals)} ${
+        mUsd.token.symbol
       }`;
       return {
         present: `Depositing ${body}`,
@@ -330,13 +330,15 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   const addSuccessNotification = useAddSuccessNotification();
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
-  const musdQuery = useMusdQuery();
-  const mUSD = musdQuery.data?.masset || null;
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
+  const mUsd = useMusdData();
 
   const addPending = useCallback<Dispatch['addPending']>(
     (manifest, pendingTx) => {
-      const purpose = getTxPurpose(manifest, { mUSD, mUSDSavingsAddress });
+      const purpose = getTxPurpose(manifest, {
+        mUsd,
+        mUSDSavingsAddress,
+      });
       dispatch({
         type: Actions.AddPending,
         payload: {
@@ -355,7 +357,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
         getEtherscanLinkForHash(pendingTx.hash),
       );
     },
-    [dispatch, mUSD, mUSDSavingsAddress, addInfoNotification],
+    [dispatch, mUsd, mUSDSavingsAddress, addInfoNotification],
   );
 
   const addHistoric = useCallback<Dispatch['addHistoric']>(

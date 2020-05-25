@@ -1155,19 +1155,19 @@ export type SavingsContractQuery = { savingsContracts: Array<(
     & { exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
   )> };
 
-export type TokenSubSubscriptionVariables = {
+export type TokensSubscriptionVariables = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type TokensSubscription = { tokens: Array<TokenDetailsFragment> };
+
+export type TokenSubscriptionVariables = {
   id: Scalars['ID'];
 };
 
 
-export type TokenSubSubscription = { token?: Maybe<Pick<Token, 'id' | 'symbol' | 'address'>> };
-
-export type MassetSubSubscriptionVariables = {
-  id: Scalars['ID'];
-};
-
-
-export type MassetSubSubscription = { masset?: Maybe<MassetAllFragment> };
+export type TokenSubscription = { token?: Maybe<TokenDetailsFragment> };
 
 export type CreditBalancesSubscriptionVariables = {
   account: Scalars['ID'];
@@ -1473,66 +1473,64 @@ export function useSavingsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQ
 export type SavingsContractQueryHookResult = ReturnType<typeof useSavingsContractQuery>;
 export type SavingsContractLazyQueryHookResult = ReturnType<typeof useSavingsContractLazyQuery>;
 export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<SavingsContractQuery, SavingsContractQueryVariables>;
-export const TokenSubDocument = gql`
-    subscription TokenSub($id: ID!) {
+export const TokensDocument = gql`
+    subscription Tokens($ids: [ID!]!) {
+  tokens(where: {id_in: $ids}) {
+    ...TokenDetails
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
+
+/**
+ * __useTokensSubscription__
+ *
+ * To run a query within a React component, call `useTokensSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTokensSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTokensSubscription({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *   },
+ * });
+ */
+export function useTokensSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<TokensSubscription, TokensSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<TokensSubscription, TokensSubscriptionVariables>(TokensDocument, baseOptions);
+      }
+export type TokensSubscriptionHookResult = ReturnType<typeof useTokensSubscription>;
+export type TokensSubscriptionResult = ApolloReactCommon.SubscriptionResult<TokensSubscription>;
+export const TokenDocument = gql`
+    subscription Token($id: ID!) {
   token(id: $id) {
-    id
-    symbol
-    address
+    ...TokenDetails
   }
 }
-    `;
+    ${TokenDetailsFragmentDoc}`;
 
 /**
- * __useTokenSubSubscription__
+ * __useTokenSubscription__
  *
- * To run a query within a React component, call `useTokenSubSubscription` and pass it any options that fit your needs.
- * When your component renders, `useTokenSubSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useTokenSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTokenSubscription` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useTokenSubSubscription({
+ * const { data, loading, error } = useTokenSubscription({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useTokenSubSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<TokenSubSubscription, TokenSubSubscriptionVariables>) {
-        return ApolloReactHooks.useSubscription<TokenSubSubscription, TokenSubSubscriptionVariables>(TokenSubDocument, baseOptions);
+export function useTokenSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<TokenSubscription, TokenSubscriptionVariables>) {
+        return ApolloReactHooks.useSubscription<TokenSubscription, TokenSubscriptionVariables>(TokenDocument, baseOptions);
       }
-export type TokenSubSubscriptionHookResult = ReturnType<typeof useTokenSubSubscription>;
-export type TokenSubSubscriptionResult = ApolloReactCommon.SubscriptionResult<TokenSubSubscription>;
-export const MassetSubDocument = gql`
-    subscription MassetSub($id: ID!) {
-  masset(id: $id) {
-    ...MassetAll
-  }
-}
-    ${MassetAllFragmentDoc}`;
-
-/**
- * __useMassetSubSubscription__
- *
- * To run a query within a React component, call `useMassetSubSubscription` and pass it any options that fit your needs.
- * When your component renders, `useMassetSubSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useMassetSubSubscription({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useMassetSubSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<MassetSubSubscription, MassetSubSubscriptionVariables>) {
-        return ApolloReactHooks.useSubscription<MassetSubSubscription, MassetSubSubscriptionVariables>(MassetSubDocument, baseOptions);
-      }
-export type MassetSubSubscriptionHookResult = ReturnType<typeof useMassetSubSubscription>;
-export type MassetSubSubscriptionResult = ApolloReactCommon.SubscriptionResult<MassetSubSubscription>;
+export type TokenSubscriptionHookResult = ReturnType<typeof useTokenSubscription>;
+export type TokenSubscriptionResult = ApolloReactCommon.SubscriptionResult<TokenSubscription>;
 export const CreditBalancesDocument = gql`
     subscription CreditBalances($account: ID!) {
   account(id: $account) {
