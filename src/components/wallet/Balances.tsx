@@ -1,13 +1,9 @@
-import React, { FC, useMemo, useContext } from 'react';
+import React, { FC, useContext } from 'react';
 import styled, { ThemeContext, DefaultTheme } from 'styled-components';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { formatUnits } from 'ethers/utils';
 import { useWallet } from 'use-wallet';
-import { useTokensState } from '../../context/DataProvider/TokensProvider';
-import {
-  TokenDetailsFragment,
-  useAllErc20TokensQuery,
-} from '../../graphql/generated';
+import { useMusdData } from '../../context/DataProvider/DataProvider';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
@@ -43,66 +39,35 @@ const BalanceSkeleton: FC<{ themeContext: DefaultTheme }> = ({
   </SkeletonTheme>
 );
 
-interface TokenWithBalance extends TokenDetailsFragment {
-  balanceSimple: number | null;
-}
-
 /**
  * Component to track and display the balances of tokens for the currently
  * selected mAsset, the mAsset itself, and MTA.
  */
 export const Balances: FC<{}> = () => {
   const { account } = useWallet();
-  const tokens = useTokensState();
-  const tokensQuery = useAllErc20TokensQuery();
-  const tokensData = tokensQuery.data?.tokens || [];
+  const { token: mUsd, bAssets: otherTokens } = useMusdData();
   const savingsBalance = useSavingsBalance(account);
   const themeContext = useContext(ThemeContext);
-
-  const { mUSD, otherTokens } = useMemo(() => {
-    const addBalance = (token: typeof tokensData[0]): TokenWithBalance => {
-      const tokenBalance = tokens[token.address];
-      return {
-        ...token,
-        ...tokenBalance,
-        balanceSimple: tokenBalance?.balance
-          ? parseFloat(
-              formatUnits(tokenBalance.balance.toString(), token.decimals),
-            )
-          : null,
-      };
-    };
-    return tokensData.reduce<{
-      mUSD: TokenWithBalance | null;
-      otherTokens: TokenWithBalance[];
-    }>(
-      (_tokens, token) =>
-        token.symbol === 'mUSD'
-          ? { ..._tokens, mUSD: addBalance(token) }
-          : {
-              ..._tokens,
-              otherTokens: [..._tokens.otherTokens, addBalance(token)],
-            },
-      { mUSD: null, otherTokens: [] },
-    );
-  }, [tokens, tokensData]);
 
   return (
     <List inverted>
       <ListItem size={Size.xl} key="mUsdBalance">
-        {!mUSD ? (
+        {!mUsd ? (
           <Skeleton height={49} />
         ) : (
           <>
             <Symbol>
-              <TokenIcon symbol={mUSD.symbol} />
-              <span>{mUSD.symbol}</span>
-              <EtherscanLink data={mUSD.address} />
+              <TokenIcon symbol={mUsd.symbol} />
+              <span>{mUsd.symbol}</span>
+              <EtherscanLink data={mUsd.address} />
             </Symbol>
-            {mUSD.balanceSimple == null ? (
+            {mUsd.balance == null ? (
               <BalanceSkeleton themeContext={themeContext} />
             ) : (
-              <Balance size={Size.xl} end={mUSD.balanceSimple} />
+              <Balance
+                size={Size.xl}
+                end={parseFloat(formatUnits(mUsd.balance, mUsd.decimals))}
+              />
             )}
           </>
         )}
@@ -121,17 +86,17 @@ export const Balances: FC<{}> = () => {
           )}
         </>
       </ListItem>
-      {otherTokens.map(({ symbol, address, balanceSimple }) => (
+      {otherTokens.map(({ address, token: { symbol, balance, decimals } }) => (
         <ListItem key={address}>
           <Symbol>
             <TokenIcon symbol={symbol} />
             <span>{symbol}</span>
             <EtherscanLink data={address} />
           </Symbol>
-          {balanceSimple == null ? (
+          {balance == null ? (
             <BalanceSkeleton themeContext={themeContext} />
           ) : (
-            <Balance end={balanceSimple} />
+            <Balance end={parseFloat(formatUnits(balance, decimals))} />
           )}
         </ListItem>
       ))}

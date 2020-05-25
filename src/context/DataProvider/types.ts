@@ -14,7 +14,7 @@ export interface BassetData
     >
   > {
   address: string;
-  token: Partial<TokenDetailsWithBalance>;
+  token: TokenDetailsWithBalance;
   overweight: boolean;
   basketShare: BigNumber;
 }
@@ -27,7 +27,7 @@ export interface MassetData {
   bAssets: BassetData[];
   basket: BasketData;
   feeRate: Masset['feeRate'] | null;
-  token: Partial<TokenDetailsWithBalance>;
+  token: TokenDetailsWithBalance;
   loading: boolean;
 }
 
