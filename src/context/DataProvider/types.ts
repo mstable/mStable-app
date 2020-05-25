@@ -1,10 +1,5 @@
 import { BigNumber } from 'ethers/utils';
-import {
-  Masset,
-  Basset,
-  MassetSubSubscription,
-  Basket,
-} from '../../graphql/generated';
+import { Masset, Basset, MassetQuery, Basket } from '../../graphql/generated';
 import {
   TokenDetailsWithBalance,
   State as TokensState,
@@ -49,6 +44,6 @@ export enum Actions {
 export type Action =
   | {
       type: Actions.UpdateMassetData;
-      payload: { data: MassetSubSubscription | undefined; loading: boolean };
+      payload: { data?: MassetQuery; loading: boolean };
     }
   | { type: Actions.UpdateTokens; payload: TokensState };

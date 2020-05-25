@@ -1,16 +1,8 @@
 # import './fragments.graphql'
 
-subscription TokenSub($id: ID!) {
+subscription Token($id: ID!) {
   token(id: $id) {
-    id
-    symbol
-    address
-  }
-}
-
-subscription MassetSub($id: ID!) {
-  masset(id: $id) {
-    ...MassetAll
+    ...TokenDetails
   }
 }
 

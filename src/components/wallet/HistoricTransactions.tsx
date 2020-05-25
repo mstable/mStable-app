@@ -4,9 +4,9 @@ import { BigNumber } from 'ethers/utils';
 import { useOrderedHistoricTransactions } from '../../context/TransactionsProvider';
 import { ContractNames, HistoricTransaction } from '../../types';
 import { EtherscanLink } from '../core/EtherscanLink';
-import { MassetQuery } from '../../graphql/generated';
+import { MassetData } from '../../context/DataProvider/types';
 import { useKnownAddress } from '../../context/DataProvider/KnownAddressProvider';
-import { useMusdQuery } from '../../context/DataProvider/DataProvider';
+import { useMusdData } from '../../context/DataProvider/DataProvider';
 import { formatExactAmount } from '../../web3/amounts';
 import { EMOJIS } from '../../web3/constants';
 import { List, ListItem } from '../core/List';
@@ -82,7 +82,7 @@ const getHistoricTransactionDescription = (
   {
     mUSDSavingsAddress,
     mUSD,
-  }: { mUSD: MassetQuery['masset']; mUSDSavingsAddress: string | null },
+  }: { mUSD: MassetData; mUSDSavingsAddress: string | null },
 ): JSX.Element => {
   if (!mUSD) return LOADING;
 
@@ -136,8 +136,8 @@ const getHistoricTransactionDescription = (
           values: { mAssetQuantity, bAsset, bAssetQuantity },
         },
       ] = logs;
-      const bAssetToken = mUSD.basket.bassets.find(
-        b => b.id === bAsset.toLowerCase(),
+      const bAssetToken = mUSD.bAssets?.find(
+        b => b.address === bAsset.toLowerCase(),
       );
       if (!bAssetToken) return LOADING;
 
@@ -184,11 +184,11 @@ const getHistoricTransactionDescription = (
       const {
         values: { input, output, outputAmount },
       } = logs[logs.length - 1];
-      const inputBasset = mUSD.basket.bassets.find(
-        b => b.id === input.toLowerCase(),
+      const inputBasset = mUSD.bAssets.find(
+        b => b.address === input.toLowerCase(),
       );
-      const outputBasset = mUSD.basket.bassets.find(
-        b => b.id === output.toLowerCase(),
+      const outputBasset = mUSD.bAssets.find(
+        b => b.address === output.toLowerCase(),
       );
       if (!inputBasset || !outputBasset) return LOADING;
 
@@ -217,9 +217,7 @@ const getHistoricTransactionDescription = (
 
       const bassetTokens = bAssets
         .map((address: string) =>
-          mUSD.basket.bassets.find(
-            b => b.token.address === address.toLowerCase(),
-          ),
+          mUSD.bAssets.find(b => b.address === address.toLowerCase()),
         )
         .filter(Boolean);
 
@@ -277,7 +275,7 @@ const getHistoricTransactionDescription = (
 
 const HistoricTx: FC<{
   tx: HistoricTransaction;
-  mUSD: MassetQuery['masset'];
+  mUSD: MassetData;
   mUSDSavingsAddress: string | null;
 }> = ({ tx, mUSDSavingsAddress, mUSD }) => {
   const { description, icon } = useMemo(() => {
@@ -305,8 +303,7 @@ const HistoricTx: FC<{
 
 export const HistoricTransactions: FC<{}> = () => {
   const historic = useOrderedHistoricTransactions();
-  const musdQuery = useMusdQuery();
-  const mUSD = musdQuery.data?.masset || null;
+  const mUSD = useMusdData();
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   return (

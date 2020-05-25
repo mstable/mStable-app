@@ -8,31 +8,27 @@ import React, {
   useReducer,
 } from 'react';
 import { BigNumber, parseUnits } from 'ethers/utils';
-import { Action, Actions, BassetData, State } from './types';
 import { ContractNames } from '../../types';
 import { useToken, useTokensState } from './TokensProvider';
 import {
   SavingsContractQuery,
-  useMassetQuery,
-  useMassetSubSubscription,
   useSavingsContractDataSubscription,
+  useMassetQuery,
 } from '../../graphql/generated';
 import { useKnownAddress } from './KnownAddressProvider';
 import { EXP_SCALE, RATIO_SCALE } from '../../web3/constants';
+import { Action, Actions, BassetData, State } from './types';
 
-export const useMusdQuery = (): ReturnType<typeof useMassetQuery> => {
+export const useMusdSubscription = (): ReturnType<typeof useMassetQuery> => {
   const address = useKnownAddress(ContractNames.mUSD);
+
+  // We're using a long-polling query because subscriptions don't seem to be
+  // re-run when derived or nested fields change.
+  // See https://github.com/graphprotocol/graph-node/issues/1398
   return useMassetQuery({
     variables: { id: address as string },
     skip: !address,
-  });
-};
-
-export const useMusdSubscription = (): ReturnType<typeof useMassetSubSubscription> => {
-  const address = useKnownAddress(ContractNames.mUSD);
-  return useMassetSubSubscription({
-    variables: { id: address as string },
-    skip: !address,
+    pollInterval: 15000,
   });
 };
 
