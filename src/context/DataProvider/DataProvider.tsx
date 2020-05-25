@@ -92,7 +92,7 @@ const initialState: State = {
   [ContractNames.mUSD]: {
     basket: {},
     bAssets: [],
-    token: {},
+    token: {} as never,
     feeRate: null,
     loading: false,
   },

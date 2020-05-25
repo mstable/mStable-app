@@ -25,7 +25,7 @@ export const initialState: State = Object.freeze({
   needsUnlock: false,
   applySwapFee: false,
   mAssetData: {
-    token: {},
+    token: {} as never,
     basket: {},
     bAssets: [],
     feeRate: null,
