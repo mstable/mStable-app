@@ -95,14 +95,14 @@ const initialState: State = {
     bAssets: [],
     token: {} as never,
     feeRate: null,
-    loading: false,
+    loading: true,
   },
 };
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.UpdateMassetData: {
-      const { data, loading } = action.payload;
+      const data = action.payload;
 
       if (!data?.masset?.basket) {
         return state;
@@ -119,7 +119,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ...state,
         [ContractNames.mUSD]: {
           ...mUsd,
-          loading,
+          loading: false,
           token: { ...mUsd.token, ...mUsdToken },
           basket: { collateralisationRatio, failed, undergoingRecol },
           bAssets: bassets.map(
@@ -214,15 +214,15 @@ export const DataProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const tokens = useTokensState();
-  const { data, loading } = useMusdSubscription();
+  const { data } = useMusdSubscription();
 
   useEffect(() => {
     dispatch({ type: Actions.UpdateTokens, payload: tokens });
   }, [tokens, dispatch]);
 
   useEffect(() => {
-    dispatch({ type: Actions.UpdateMassetData, payload: { data, loading } });
-  }, [data, loading, dispatch]);
+    dispatch({ type: Actions.UpdateMassetData, payload: data });
+  }, [data, dispatch]);
 
   return (
     <stateContext.Provider value={state}>{children}</stateContext.Provider>
