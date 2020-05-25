@@ -11,7 +11,7 @@ import { Mint } from './components/pages/Mint';
 import { Save } from './components/pages/Save';
 import { Exit } from './components/pages/Exit';
 import { NotFound } from './components/pages/NotFound';
-// import { Earn } from './components/pages/Earn';
+import { FAQ } from './components/pages/FAQ';
 
 const routes = {
   '/': () => <Home />,
@@ -19,7 +19,7 @@ const routes = {
   '/save': () => <Save />,
   '/swap': () => <Swap />,
   '/redeem': () => <Exit />,
-  // '/earn': () => <Earn />,
+  '/faq': () => <FAQ />,
 };
 
 const Root: FC<{}> = () => {
