@@ -6,14 +6,17 @@ import React, {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
 } from 'react';
 import { BigNumber, parseUnits } from 'ethers/utils';
+import { useWallet } from 'use-wallet';
 import { ContractNames } from '../../types';
 import { useToken, useTokensState } from './TokensProvider';
 import {
   SavingsContractQuery,
   useSavingsContractDataSubscription,
   useMassetQuery,
+  useMassetLazyQuery,
 } from '../../graphql/generated';
 import { useKnownAddress } from './KnownAddressProvider';
 import { EXP_SCALE, RATIO_SCALE } from '../../web3/constants';
@@ -21,15 +24,43 @@ import { Action, Actions, BassetData, State } from './types';
 
 export const useMusdSubscription = (): ReturnType<typeof useMassetQuery> => {
   const address = useKnownAddress(ContractNames.mUSD);
+  const { getBlockNumber } = useWallet();
+  const blockNumber = getBlockNumber();
+  const blockNumberRef = useRef<number | undefined>(blockNumber);
 
   // We're using a long-polling query because subscriptions don't seem to be
   // re-run when derived or nested fields change.
   // See https://github.com/graphprotocol/graph-node/issues/1398
-  return useMassetQuery({
+  const [run, query] = useMassetLazyQuery({
+    // `skip` isn't possible for lazy queries; address must be null-checked
     variables: { id: address as string },
-    skip: !address,
-    pollInterval: 15000,
   });
+
+  // Long poll (15s interval) if the block number isn't available.
+  useEffect(() => {
+    let interval: number;
+
+    if (address && !blockNumber) {
+      run();
+      interval = setInterval(() => {
+        run();
+      }, 15000);
+    }
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [address, blockNumber, run]);
+
+  // Run the query on every block when the block number is available.
+  useEffect(() => {
+    if (address && blockNumber && blockNumber !== blockNumberRef.current) {
+      run();
+      blockNumberRef.current = blockNumber;
+    }
+  }, [address, blockNumber, run]);
+
+  return query;
 };
 
 export const useMUSDSavings = ():
