@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { A } from 'hookrouter';
 
 interface Props {
   inverted: boolean;
@@ -28,6 +29,7 @@ const links = [
   { title: 'mStable', href: 'https://mstable.org' },
   { title: 'Docs', href: 'https://docs.mstable.org' },
   { title: 'Code', href: 'https://github.com/mstable' },
+  { title: 'FAQ', href: '/faq' },
 ];
 
 export const Footer: FC<Props> = ({ inverted }) => (
@@ -35,7 +37,13 @@ export const Footer: FC<Props> = ({ inverted }) => (
     <Links>
       {links.map(({ title, href }) => (
         <li key={href}>
-          <a href={href}>{title}</a>
+          {href.startsWith('/') ? (
+            <A href={href}>{title}</A>
+          ) : (
+            <a href={href} target="_blank" rel="noopener noreferrer">
+              {title}
+            </a>
+          )}
         </li>
       ))}
     </Links>
