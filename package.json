@@ -1,7 +1,10 @@
 {
   "name": "mStable-app",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "mStable App",
+  "author": "Stability Labs Pty. Ltd. <hello@stabilitylabs.co>",
+  "license": "LGPL-3.0-or-later",
   "dependencies": {
     "@apollo/client": "^3.0.0-beta.44",
     "@apollo/link-ws": "^2.0.0-beta.3",
