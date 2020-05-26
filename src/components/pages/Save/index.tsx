@@ -82,8 +82,6 @@ const CreditBalance = styled.div`
   }
 `;
 
-const CreditBalanceCountUp = styled(CountUp)``;
-
 const InfoCountUp = styled(CountUp)`
   font-size: ${FontSize.xl};
 `;
@@ -402,10 +400,7 @@ export const Save: FC<{}> = () => {
           <H3>Your mUSD savings balance</H3>
           <CreditBalance>
             <MUSDIconTransparent />
-            <CreditBalanceCountUp
-              end={savingsBalanceIncreasing || 0}
-              decimals={8}
-            />
+            <CountUp end={savingsBalanceIncreasing || 0} decimals={8} />
           </CreditBalance>
         </div>
       </InfoRow>

@@ -1,51 +1,51 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 import { A } from 'hookrouter';
-import { H2, P } from '../../core/Typography';
+import { H2, H3, P } from '../../core/Typography';
 import { centredLayout } from '../../layout/css';
-import { Size } from '../../../theme';
 import { Footer } from '../../layout/Footer';
-import { MintAnimation } from './Animation';
+import { ReactComponent as LogoSvg } from '../../icons/mstable-logo-horizontal.svg';
+import { MintAnimation, SaveAnimation, SwapAnimation } from './Animation';
 
-const HeroText = styled(H2)`
-  font-weight: bold;
-  font-size: 36px;
-  line-height: 1.3em;
-  padding-bottom: 50px;
-
-  > span {
-    color: ${({ theme }) => theme.color.white};
-  }
+const Logo = styled(LogoSvg)`
+  max-width: 50%;
+  padding-bottom: 40px;
 `;
 
 const CTA = styled(A)`
-  padding-top: 50px;
+  display: inline-block;
+  margin: 40px 0;
+  padding: 20px;
+  background: white;
   font-size: 24px;
   font-weight: bold;
+  border-radius: 2px;
+  box-shadow: 0 1.6px 1.3px rgba(0, 0, 0, 0.1),
+    0 4.2px 5.4px rgba(0, 0, 0, 0.065), 0 9.3px 16.4px rgba(0, 0, 0, 0.05),
+    0 32px 64px rgba(0, 0, 0, 0.035);
 `;
 
-const Symbol = styled.div<{ active: boolean }>`
+const Symbol = styled.div`
   font-weight: bold;
   display: flex;
   align-items: center;
   height: 80px;
-  color: ${({ theme, active }) =>
-    active ? theme.color.black : theme.color.gold};
-  cursor: pointer;
+  color: ${({ theme }) => theme.color.black};
 
   div {
     font-size: 24px;
+    line-height: 32px;
     text-transform: lowercase;
+    padding-right: 16px;
   }
 
   i {
     font-size: 60px;
+    line-height: 80px;
     font-style: normal;
-    text-align: center;
   }
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
-    height: 100px;
     div {
       font-size: 36px;
     }
@@ -55,42 +55,16 @@ const Symbol = styled.div<{ active: boolean }>`
   }
 `;
 
-const Symbols = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  grid-column-gap: 40px;
-
-  ${Symbol} {
-    &:nth-child(odd) {
-      justify-content: flex-end;
-      div {
-        margin-right: 16px;
-      }
-    }
-    &:nth-child(even) {
-      justify-content: flex-start;
-      i {
-        order: 1;
-      }
-      div {
-        order: 2;
-        margin-left: 16px;
-      }
-    }
-  }
-`;
-
-const SymbolsContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  padding: 80px 0;
-  user-select: none;
-`;
-
 const Block = styled.div`
-  border-left: 1px ${({ theme }) => theme.color.blackTransparent} solid;
-  padding-left: 20px;
+  padding: 20px;
+
+  ${P} {
+    font-size: ${({ theme }) => theme.fontSize.l};
+  }
+  
+  ${H3} {
+    font-size: ${({ theme }) => theme.fontSize.xl};
+  }
 `;
 
 const Section = styled.section`
@@ -98,6 +72,21 @@ const Section = styled.section`
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 8px;
+  }
+`;
+
+const Lead = styled(Section)`
+  ${H2} {
+    font-size: 36px;
+    line-height: 1.3em;
+    padding-bottom: 50px;
+    color: white;
+    font-weight: bold;
+  }
+  
+  ${Block} {
+    padding-left: 0;
+    padding-right: 0;
   }
 `;
 
@@ -112,13 +101,26 @@ const FeaturesLayout = styled(CentredLayout)`
   padding-bottom: 300px; // For the benefit of the 'Learn more' link etc
 `;
 
+const Feature = styled.div`
+  background: ${({ theme }) => theme.color.white};
+  margin-bottom: 128px;
+  border-radius: 2px;
+  box-shadow: 0 1.6px 1.3px rgba(0, 0, 0, 0.1),
+    0 4.2px 5.4px rgba(0, 0, 0, 0.065), 0 9.3px 16.4px rgba(0, 0, 0, 0.05),
+    0 32px 64px rgba(0, 0, 0, 0.035);
+
+  > * {
+    padding: 20px;
+  }
+
+  > a {
+    display: flex;
+    justify-content: center;
+  }
+`;
+
 const Intro = styled.div`
   padding: 100px 0;
-  background: ${({ theme }) => theme.color.gold};
-  a {
-    color: black;
-    display: block;
-  }
 `;
 
 const Content = styled.div`
@@ -133,19 +135,25 @@ const Content = styled.div`
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-
-  // The sticky header won't always be 80px, so this is less than ideal
-  min-height: calc(100vh - 80px);
-
   align-items: flex-start;
-  height: calc(100vh - 80px);
-  color: black;
+  background: ${({ theme }) => theme.color.gold};
+  color: ${({ theme }) => theme.color.offBlack};
+
+  a {
+    color: ${({ theme }) => theme.color.offBlack};
+  }
 `;
 
-const features: { symbol: string; title: string; children: JSX.Element }[] = [
+const features: {
+  symbol: string;
+  title: string;
+  href: string;
+  children: JSX.Element;
+}[] = [
   {
     symbol: '+',
     title: 'Mint',
+    href: '/mint',
     children: (
       <>
         <Block>
@@ -165,10 +173,11 @@ const features: { symbol: string; title: string; children: JSX.Element }[] = [
   {
     symbol: '×',
     title: 'Save',
+    href: '/save',
     children: (
       <>
         <Block>
-          <P>Save graphic goes here</P>
+          <SaveAnimation />
         </Block>
         <Block>
           <P>
@@ -187,10 +196,11 @@ const features: { symbol: string; title: string; children: JSX.Element }[] = [
   {
     symbol: '=',
     title: 'Swap',
+    href: '/swap',
     children: (
       <>
         <Block>
-          <P>Swap graphic goes here</P>
+          <SwapAnimation />
         </Block>
         <Block>
           <P>
@@ -208,10 +218,10 @@ const features: { symbol: string; title: string; children: JSX.Element }[] = [
   {
     symbol: '-',
     title: 'Redeem',
+    href: '/redeem',
     children: (
       <>
         <Block>
-          {/* TODO this should be the opposite of mint */}
           <MintAnimation forwards={false} />
         </Block>
         <Block>
@@ -225,53 +235,42 @@ const features: { symbol: string; title: string; children: JSX.Element }[] = [
   },
 ];
 
-export const Home: FC<{}> = () => {
-  const [feature, setFeature] = useState(0);
-  return (
-    <Container>
-      <Content>
-        <Intro>
-          <CentredLayout>
-            <Section>
-              <HeroText>
-                mStable makes stablecoins{' '}
-                <span>easy, robust and profitable.</span>
-              </HeroText>
-              <Block>
-                <P size={Size.l}>
-                  mStable unifies stablecoins, lending and swapping into one
-                  standard.
-                </P>
-                <P>
-                  <CTA href="/mint">Get started</CTA>
-                  or
-                  <a href="#learn-more">Learn more</a>
-                </P>
-              </Block>
-            </Section>
-          </CentredLayout>
-        </Intro>
-        <FeaturesLayout>
-          <SymbolsContainer id="learn-more">
-            <Symbols>
-              {features.map(({ symbol, title }, index) => (
-                <Symbol
-                  active={feature === index}
-                  onClick={() => setFeature(index)}
-                  key={symbol}
-                >
-                  <div>{title}</div>
-                  <i>{symbol}</i>
-                </Symbol>
-              ))}
-            </Symbols>
-          </SymbolsContainer>
-          <Section>{features[feature].children}</Section>
-        </FeaturesLayout>
-      </Content>
-      <CentredLayout>
-        <Footer inverted={false} />
-      </CentredLayout>
-    </Container>
-  );
-};
+export const Home: FC<{}> = () => (
+  <Container>
+    <Content>
+      <Intro>
+        <CentredLayout>
+          <Logo title="mStable" />
+          <Lead>
+            <Block>
+              <H2>Robust, easy and profitable stablecoins</H2>
+            </Block>
+            <Block>
+              <H3>
+                mStable unifies stablecoins, lending and swapping into one
+                standard.
+              </H3>
+              <CTA href="/mint">Go to app</CTA>
+            </Block>
+          </Lead>
+        </CentredLayout>
+      </Intro>
+      <FeaturesLayout>
+        {features.map(({ symbol, title, href, children }) => (
+          <Feature key={symbol}>
+            <A href={href}>
+              <Symbol>
+                <div>{title}</div>
+                <i>{symbol}</i>
+              </Symbol>
+            </A>
+            <Section>{children}</Section>
+          </Feature>
+        ))}
+      </FeaturesLayout>
+    </Content>
+    <CentredLayout>
+      <Footer inverted={false} />
+    </CentredLayout>
+  </Container>
+);
