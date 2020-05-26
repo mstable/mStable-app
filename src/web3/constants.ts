@@ -23,8 +23,8 @@ export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 export const CHAIN_ID = parseInt(process.env.REACT_APP_CHAIN_ID, 10);
 
 export const NETWORK_NAMES = {
-  1: 'Main net',
-  3: 'Ropsten (test net)',
+  1: 'Main Ethereum network',
+  3: 'Ropsten (Test network)',
   1337: 'Local network',
 };
 
