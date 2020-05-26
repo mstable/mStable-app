@@ -7,7 +7,7 @@ import { useMusdData } from '../../context/DataProvider/DataProvider';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
-import { TokenIcon } from '../icons/TokenIcon';
+import { TokenIcon as TokenIconBase } from '../icons/TokenIcon';
 import { List, ListItem } from '../core/List';
 import { useSavingsBalance } from '../../web3/hooks';
 
@@ -26,7 +26,10 @@ const Balance = styled(CountUp)<{ size?: Size }>`
   font-size: ${({ size = Size.l }) => mapSizeToFontSize(size)};
 `;
 
-// const StyledSkeleton = styled(Skeleton);
+const TokenIcon = styled(TokenIconBase)<{ outline?: boolean }>`
+  ${({ outline }) =>
+    outline ? `border: 1px white solid; border-radius: 100%` : ''}
+`;
 
 const BalanceSkeleton: FC<{ themeContext: DefaultTheme }> = ({
   themeContext: theme,
@@ -57,7 +60,7 @@ export const Balances: FC<{}> = () => {
         ) : (
           <>
             <Symbol>
-              <TokenIcon symbol={mUsd.symbol} />
+              <TokenIcon symbol={mUsd.symbol} outline />
               <span>{mUsd.symbol}</span>
               <EtherscanLink data={mUsd.address} />
             </Symbol>
@@ -76,7 +79,7 @@ export const Balances: FC<{}> = () => {
       <ListItem size={Size.xl} key="savingsBalance">
         <>
           <Symbol>
-            <TokenIcon symbol="mUSD" />
+            <TokenIcon symbol="mUSD" outline />
             <span>mUSD Savings</span>
           </Symbol>
           {savingsBalance.simple == null ? (
@@ -89,7 +92,7 @@ export const Balances: FC<{}> = () => {
       {otherTokens.map(({ address, token: { symbol, balance, decimals } }) => (
         <ListItem key={address}>
           <Symbol>
-            <TokenIcon symbol={symbol} />
+            <TokenIcon symbol={symbol} outline={symbol === 'mUSD'} />
             <span>{symbol}</span>
             <EtherscanLink data={address} />
           </Symbol>
