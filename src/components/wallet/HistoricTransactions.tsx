@@ -133,7 +133,7 @@ const getHistoricTransactionDescription = (
     case 'mint': {
       const [
         {
-          values: { mAssetQuantity, bAsset, bAssetQuantity },
+          values: { mAssetQuantity, bAsset },
         },
       ] = logs;
       const bAssetToken = mUSD.bAssets?.find(
@@ -150,13 +150,7 @@ const getHistoricTransactionDescription = (
             mUSD.token.symbol,
             true,
           )}{' '}
-          with{' '}
-          {formatExactAmount(
-            bAssetQuantity,
-            bAssetToken.token.decimals,
-            bAssetToken.token.symbol,
-            true,
-          )}
+          with {bAssetToken.token.symbol}
         </>
       );
     }
