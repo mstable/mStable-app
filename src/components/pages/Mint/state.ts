@@ -9,7 +9,7 @@ import {
 import { pipe } from 'ts-pipe-compose';
 import { Amount, TokenQuantity } from '../../../types';
 import { formatSimpleAmount, parseAmount } from '../../../web3/amounts';
-import { RATIO_SCALE } from '../../../web3/constants';
+import { RATIO_SCALE, SCALE } from '../../../web3/constants';
 import { useMusdData } from '../../../context/DataProvider/DataProvider';
 import { Action, Actions, Dispatch, Mode, State } from './types';
 import { applyValidation } from './validation';
@@ -72,12 +72,12 @@ const calcOptimalBassetQuantitiesForMint = ({
 
     const weight = parseUnits(maxWeight).div(enabledMaxWeightsTotal);
 
-    const relativeUnitsToMint = mAsset.amount.exact?.mul(weight);
+    const relativeUnitsToMint = mAsset.amount.exact?.mul(weight).div(SCALE);
 
     // TODO this is messy
-    const formattedUnits = formatUnits(relativeUnitsToMint, 18);
+    // const formattedUnits = parseAmount(relativeUnitsToMint, 18);
 
-    const exact = applyRatioMassetToBasset(formattedUnits.slice(0, -2), ratio);
+    const exact = applyRatioMassetToBasset(relativeUnitsToMint, ratio);
 
     return { exact, simple: parseFloat(formatUnits(exact, token.decimals)) };
   });

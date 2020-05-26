@@ -165,7 +165,6 @@ const swapValidator: StateValidator = ({
 
   // What is the max weight of this bAsset in the basket?
   const inputMaxWeightInUnits = parseUnits(totalVault)
-    .add(inputAmountInMasset)
     .mul(inputBasset.maxWeight)
     .div(EXP_SCALE);
 
