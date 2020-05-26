@@ -22,9 +22,14 @@ interface Props {
   handleToggle(address: string): void;
 }
 
-const CountUp = styled(CountUpBase)`
+const CountUp = styled(CountUpBase)<{
+  highlight?: boolean;
+}>`
   display: block;
   text-align: right;
+  color: ${({ theme, highlight }) =>
+    highlight ? theme.color.blue : theme.color.offBlack};
+  font-weight: ${({ highlight }) => (highlight ? '600' : '400')};
 `;
 
 const Symbol = styled.div``;
@@ -191,7 +196,12 @@ export const BassetInput: FC<Props> = ({
         </HeaderRow>
         <Row>
           <Label>Amount</Label>
-          <CountUp duration={0.4} end={amount.simple || 0} />
+          <CountUp
+            highlight={!!amount.simple}
+            duration={0.4}
+            end={amount.simple || 0}
+            prefix="- "
+          />
         </Row>
         <Row>
           <Label>Your Balance</Label>
