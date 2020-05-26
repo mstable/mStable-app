@@ -9,6 +9,7 @@ import DAI, { ReactComponent as DaiSvg } from './DAI.svg';
 import BUSD, { ReactComponent as BusdSvg } from './BUSD.svg';
 
 interface Props {
+  className?: string;
   symbol: string;
 }
 
@@ -43,8 +44,8 @@ export const MUSDIconTransparent = (): JSX.Element => (
   <Image src={mUSDTransparent} alt="mUSD" />
 );
 
-export const TokenIcon: FC<Props> = ({ symbol }) =>
-  ICONS[symbol] ? <Image alt={symbol} src={ICONS[symbol]} /> : null;
+export const TokenIcon: FC<Props> = ({ className, symbol }) =>
+  ICONS[symbol] ? <Image alt={symbol} src={ICONS[symbol]} className={className} /> : null;
 
 export const TokenIconSvg: FC<SvgProps> = ({ symbol, ...props }) => {
   if (!SVG_ICONS[symbol]) return null;
