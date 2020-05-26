@@ -19,7 +19,7 @@ import MetamaskOnboarding from '@metamask/onboarding';
 import { TokenDetailsFragment } from '../graphql/generated';
 import { useMassetToken } from '../web3/hooks';
 import { MassetNames, InjectedEthereum } from '../types';
-import { CHAIN_ID, CONNECTORS } from '../web3/constants';
+import { CHAIN_ID, CONNECTORS, NETWORK_NAMES } from '../web3/constants';
 import {
   useAddInfoNotification,
   useAddErrorNotification,
@@ -45,10 +45,10 @@ enum WalletConnectionStatus {
 }
 
 enum Reasons {
-  RejectedActivation = 'Wallet activation rejected 😢',
-  UnsupportedChain = 'Unsupported network. 😢 Please connect to a supported network.',
-  UnsupportedConnector = 'Unsupported connector 🤔',
-  Unknown = 'Unknown error 🤔',
+  RejectedActivation = 'Wallet activation rejected',
+  UnsupportedChain = 'Unsupported network',
+  UnsupportedConnector = 'Unsupported connector',
+  Unknown = 'Unknown error',
 }
 
 export enum StatusWarnings {
@@ -61,7 +61,7 @@ interface State {
     expanded: boolean;
     connector?: keyof Connectors;
     status: WalletConnectionStatus;
-    error: Reasons | null;
+    error: string | null;
     supportedChain: boolean;
     position: {
       cx: number;
@@ -79,7 +79,7 @@ type Action =
   | { type: Actions.ResetWallet }
   | { type: Actions.SupportedChainSelected; payload: boolean }
   | { type: Actions.ConnectWallet; payload: keyof Connectors }
-  | { type: Actions.ConnectWalletError; payload: Reasons }
+  | { type: Actions.ConnectWalletError; payload: string }
   | { type: Actions.ConnectWalletSuccess }
   | { type: Actions.SetOnline; payload: boolean }
   | {
@@ -113,7 +113,11 @@ const reducer: Reducer<State, Action> = (state, action) => {
     case Actions.SupportedChainSelected:
       return {
         ...state,
-        wallet: { ...state.wallet, supportedChain: action.payload },
+        wallet: {
+          ...state.wallet,
+          supportedChain: action.payload,
+          error: null,
+        },
       };
     case Actions.SelectMasset:
       return { ...state, selectedMasset: action.payload };
@@ -231,12 +235,14 @@ export const AppProvider: FC<{}> = ({ children }) => {
           dispatch({ type: Actions.ConnectWalletSuccess });
         })
         .catch(error => {
-          let reason: Reasons;
+          let reason: string;
 
           if (error instanceof RejectedActivationError) {
             reason = Reasons.RejectedActivation;
           } else if (error instanceof UnsupportedChainError) {
-            reason = Reasons.UnsupportedChain;
+            reason = `${Reasons.UnsupportedChain}; please connect to ${
+              NETWORK_NAMES[CHAIN_ID as keyof typeof NETWORK_NAMES]
+            }`;
           } else if (error instanceof UnsupportedConnectorError) {
             reason = Reasons.UnsupportedConnector;
           } else {
@@ -297,7 +303,10 @@ export const AppProvider: FC<{}> = ({ children }) => {
         // `chainId` from MetaMask can't be trusted in this event
         if (!Number.isNaN(chainId as number)) {
           const supported = CHAIN_ID === parseInt(chainId as string, 10);
-          dispatch({ type: Actions.SupportedChainSelected, payload: supported });
+          dispatch({
+            type: Actions.SupportedChainSelected,
+            payload: supported,
+          });
         }
       };
       networkChangedListener(parseInt(injected.chainId, 16));
@@ -348,6 +357,9 @@ export const useAppContext = (): [State, Dispatch] => useContext(context);
 export const useAppState = (): State => useAppContext()[0];
 
 export const useWalletState = (): State['wallet'] => useAppState().wallet;
+
+export const useIsSupportedChain = (): boolean =>
+  useWalletState().supportedChain;
 
 export const useIsWalletConnected = (): boolean =>
   useWalletState().status === WalletConnectionStatus.Connected;

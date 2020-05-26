@@ -22,6 +22,12 @@ export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 // For now, support one chain ID per deployment; also a `use-wallet` restriction
 export const CHAIN_ID = parseInt(process.env.REACT_APP_CHAIN_ID, 10);
 
+export const NETWORK_NAMES = {
+  1: 'Main net',
+  3: 'Ropsten (test net)',
+  1337: 'Local network',
+};
+
 export const AVAILABLE_CONNECTORS: Connectors = getConnectors(CHAIN_ID);
 
 export const EMOJIS = {
