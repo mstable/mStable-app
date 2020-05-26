@@ -44,6 +44,6 @@ export enum Actions {
 export type Action =
   | {
       type: Actions.UpdateMassetData;
-      payload: { data?: MassetQuery; loading: boolean };
+      payload: MassetQuery | undefined;
     }
   | { type: Actions.UpdateTokens; payload: TokensState };
