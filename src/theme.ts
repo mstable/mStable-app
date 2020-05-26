@@ -49,7 +49,7 @@ export enum ViewportWidth {
   xs = '320px',
   s = '480px',
   m = '640px',
-  l = '900px',
+  l = '1000px',
   xl = '1400px',
 }
 
