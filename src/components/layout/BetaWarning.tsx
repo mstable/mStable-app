@@ -23,9 +23,8 @@ export const BetaWarning: FC<{}> = () => {
   }, [setHidden]);
 
   return hidden ? null : (
-    // eslint-disable-next-line jsx-a11y/accessible-emoji
     <Container onClick={handleClick}>
-      💀 This project is in beta. Use at your own risk.
+      This project is in beta. Use at your own risk.
     </Container>
   );
 };
