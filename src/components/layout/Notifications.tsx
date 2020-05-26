@@ -40,7 +40,7 @@ const Item = styled.div<Pick<Notification, 'type'>>`
       ? theme.color.blue
       : theme.color.red};
   color: ${({ theme, type }) =>
-    type === NotificationType.Info ? theme.color.white : theme.color.black};
+    type === NotificationType.Success ? theme.color.black : theme.color.white};
   border-radius: 4px;
   padding: ${({ theme }) => theme.spacing.s};
   margin-bottom: ${({ theme }) => theme.spacing.m};
@@ -56,7 +56,6 @@ const Item = styled.div<Pick<Notification, 'type'>>`
 
 const Title = styled.div`
   font-weight: bold;
-  text-transform: uppercase;
   font-size: ${({ theme }) => theme.fontSize.s};
 `;
 
