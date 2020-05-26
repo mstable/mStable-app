@@ -241,7 +241,7 @@ export const Mint: FC<{}> = () => {
             </MintMode>
           </Header>
           <BassetsGrid>
-            {loading ? (
+            {loading && !bAssetInputs ? (
               <Skeletons skeletonCount={4} height={180} />
             ) : (
               bAssetInputs.map(bAssetInput => (
