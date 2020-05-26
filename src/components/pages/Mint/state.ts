@@ -104,7 +104,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
     case Actions.UpdateMassetData: {
       const mAssetData = action.payload;
       const token = mAssetData?.token;
-      return {
+      return update({
         ...state,
         mAssetData,
         mAsset: {
@@ -128,7 +128,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
                 error: null,
                 formValue: null,
               })),
-      };
+      });
     }
 
     case Actions.SetMassetAmount: {

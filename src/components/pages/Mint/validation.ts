@@ -197,6 +197,10 @@ const mintMultiValidator: StateValidator = state => {
 const mintValidator: StateValidator = state => {
   const { mode, touched, mAsset, bAssetInputs } = state;
 
+  if (!touched) {
+    return [true, ''];
+  }
+
   if (touched && !mAsset.amount.exact) {
     return [false, 'Amount must be set'];
   }
