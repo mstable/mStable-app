@@ -16,6 +16,7 @@ import {
   useWallet,
 } from 'use-wallet';
 import MetamaskOnboarding from '@metamask/onboarding';
+import { navigate } from 'hookrouter';
 import { TokenDetailsFragment } from '../graphql/generated';
 import { useMassetToken } from '../web3/hooks';
 import { MassetNames, InjectedEthereum } from '../types';
@@ -94,6 +95,7 @@ interface Dispatch {
   selectMasset(massetName: MassetNames): void;
   collapseWallet(): void;
   expandWallet(): void;
+  expandWalletRedirect(path: string): void;
   resetWallet(): void;
   connectWallet(connector: keyof Connectors): void;
   setWalletPosition(cx: number, cy: number): void;
@@ -200,6 +202,14 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const expandWallet = useCallback<Dispatch['expandWallet']>(() => {
     dispatch({ type: Actions.ExpandWallet });
   }, [dispatch]);
+
+  const expandWalletRedirect = useCallback<Dispatch['expandWalletRedirect']>(
+    path => {
+      navigate(path);
+      dispatch({ type: Actions.ExpandWallet });
+    },
+    [dispatch],
+  );
 
   const selectMasset = useCallback<Dispatch['selectMasset']>(
     massetName => {
@@ -330,6 +340,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
           {
             collapseWallet,
             expandWallet,
+            expandWalletRedirect,
             selectMasset,
             connectWallet,
             resetWallet,
@@ -340,6 +351,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
           state,
           collapseWallet,
           expandWallet,
+          expandWalletRedirect,
           selectMasset,
           resetWallet,
           connectWallet,
@@ -399,6 +411,9 @@ export const useAppStatusWarnings = (): StatusWarnings[] => {
 
 export const useExpandWallet = (): Dispatch['expandWallet'] =>
   useAppDispatch().expandWallet;
+
+export const useExpandWalletRedirect = (): Dispatch['expandWalletRedirect'] =>
+  useAppDispatch().expandWalletRedirect;
 
 export const useResetWallet = (): Dispatch['resetWallet'] =>
   useAppDispatch().resetWallet;

@@ -4,6 +4,7 @@ import { A } from 'hookrouter';
 
 interface Props {
   inverted: boolean;
+  home: boolean;
 }
 
 const Links = styled.ul`
@@ -23,6 +24,11 @@ const Container = styled.footer<Props>`
     `1px 
       ${inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
       solid`};
+
+  a {
+    color: ${({ theme, home }) =>
+      home ? theme.color.offBlack : theme.color.gold};
+  }
 `;
 
 const links = [
@@ -32,8 +38,8 @@ const links = [
   { title: 'FAQ', href: '/faq' },
 ];
 
-export const Footer: FC<Props> = ({ inverted }) => (
-  <Container inverted={inverted}>
+export const Footer: FC<Props> = ({ inverted, home }) => (
+  <Container inverted={inverted} home={home}>
     <Links>
       {links.map(({ title, href }) => (
         <li key={href}>

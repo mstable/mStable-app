@@ -47,6 +47,7 @@ const Container = styled(UnstyledButton)`
   display: flex;
   align-items: center;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  padding: 0;
 `;
 
 export const ToggleInput: FC<Props> = ({ onClick, checked, disabled }) => (

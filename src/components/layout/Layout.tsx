@@ -23,7 +23,6 @@ export const Container = styled.div<{}>`
   min-height: calc(100vh - 80px);
 
   align-items: flex-start;
-  padding-top: 40px;
 
   ${centredLayout}
 `;
@@ -31,7 +30,7 @@ export const Container = styled.div<{}>`
 const Main = styled.main`
   width: 100%;
   flex: 1;
-  padding: ${({ theme }) => theme.spacing.s};
+  padding: 40px 20px;
 `;
 
 const GlobalStyle = createGlobalStyle<WalletExpanded>`
@@ -87,15 +86,17 @@ export const Layout: FC<{}> = ({ children }) => {
     <>
       <Background walletExpanded={walletExpanded} home={home} />
       <HeaderGroup walletExpanded={walletExpanded} home={home} />
-      {home ? (
-        <>{children}</>
-      ) : (
-        <Container>
-          <BetaWarning />
-          {walletExpanded ? <Wallet /> : <Main>{children}</Main>}
-          <Footer inverted={walletExpanded} />
-        </Container>
-      )}
+      <Container>
+        {home ? null : <BetaWarning />}
+        {home ? (
+          <>{children}</>
+        ) : walletExpanded ? (
+          <Wallet />
+        ) : (
+          <Main>{children}</Main>
+        )}
+        <Footer inverted={walletExpanded} home={home} />
+      </Container>
       <Notifications />
       <GlobalStyle walletExpanded={walletExpanded} />
     </>

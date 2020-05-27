@@ -27,10 +27,10 @@ const Container = styled.div<Props>`
   width: 100%;
   pointer-events: none;
   z-index: -1;
-  transition: background-color 0.5s linear;
+  transition: background-color 0.3s ease;
   background-color: ${({ theme, walletExpanded, home }) =>
     home
-      ? theme.color.offWhite
+      ? theme.color.gold
       : walletExpanded
       ? theme.color.black
       : theme.color.offWhite};

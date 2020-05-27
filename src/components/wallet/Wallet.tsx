@@ -23,8 +23,8 @@ const Container = styled.div`
   flex: 1;
   width: 100%;
   height: 100%;
+  padding: 40px 20px;
   color: ${({ theme }) => theme.color.white};
-  padding: ${({ theme }) => `20px ${theme.spacing.l} ${theme.spacing.l}`};
 `;
 
 const Rows = styled.div`

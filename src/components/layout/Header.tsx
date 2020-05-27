@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { A, getWorkingPath } from 'hookrouter';
-import { ReactComponent as LogoSVG } from './logo.svg';
+import { A } from 'hookrouter';
+import { ReactComponent as LogoSvg } from '../icons/mstable-logo-horizontal.svg';
 import { WalletButton } from '../wallet/WalletButton';
 import { Navigation } from './Navigation';
 import { ViewportWidth } from '../../theme';
@@ -11,22 +11,26 @@ import {
 } from '../../context/AppProvider';
 import { centredLayout } from './css';
 
-const Logo = styled.div<{ active: boolean; inverted?: boolean }>`
-  width: 25px;
+const Logo = styled.div<{ inverted?: boolean; full: boolean }>` 
+  overflow: hidden;
   order: 1;
   flex-shrink: 0;
+  width: ${({ full }) => (full ? 100 : 25)}px; // 'mSTABLE' or 'm'
 
   svg {
     // Gentle nudge to visual centre
     top: 4px;
     position: relative;
+    width: 100px;
 
     path,
     rect {
-      fill: ${({ theme, inverted }) =>
-        inverted ? theme.color.white : theme.color.black};
+      fill: ${({ theme, inverted }) => (inverted ? theme.color.white : 'auto')};
     }
-  }
+
+    #stable {
+      display: ${({ full }) => (full ? 'block' : 'none')};
+    } 
 `;
 
 const Centre = styled.div`
@@ -101,7 +105,6 @@ export const Header: FC<{ walletExpanded: boolean; home: boolean }> = ({
   walletExpanded,
   home,
 }) => {
-  const path = getWorkingPath('');
   const collapseWallet = useCollapseWallet();
   const setWalletPosition = useSetWalletPosition();
 
@@ -135,9 +138,9 @@ export const Header: FC<{ walletExpanded: boolean; home: boolean }> = ({
   return (
     <Container inverted={walletExpanded} home={home}>
       <Content>
-        <Logo active={path === '/'} inverted={walletExpanded}>
+        <Logo full={home} inverted={walletExpanded}>
           <A href="/" title="Home" onClick={collapseWallet}>
-            <LogoSVG />
+            <LogoSvg />
           </A>
         </Logo>
         {home ? (

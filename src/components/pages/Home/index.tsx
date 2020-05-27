@@ -1,36 +1,30 @@
-import React, { FC } from 'react';
+import React, {
+  createContext,
+  FC,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import styled from 'styled-components';
 import { A } from 'hookrouter';
-import { H2, H3, P } from '../../core/Typography';
-import { centredLayout } from '../../layout/css';
-import { Footer } from '../../layout/Footer';
-import { ReactComponent as LogoSvg } from '../../icons/mstable-logo-horizontal.svg';
-import { MintAnimation, SaveAnimation, SwapAnimation } from './Animation';
+import { H2, P } from '../../core/Typography';
+import { Button } from '../../core/Button';
+import { Size, ViewportWidth } from '../../../theme';
+import { useExpandWalletRedirect } from '../../../context/AppProvider';
 
-const Logo = styled(LogoSvg)`
-  max-width: 50%;
-  padding-bottom: 40px;
-`;
+const BETA_WARNING_KEY = 'acknowledged-beta-warning';
 
-const CTA = styled(A)`
-  display: inline-block;
-  margin: 40px 0;
-  padding: 20px;
-  background: white;
-  font-size: 24px;
-  font-weight: bold;
-  border-radius: 2px;
-  box-shadow: 0 1.6px 1.3px rgba(0, 0, 0, 0.1),
-    0 4.2px 5.4px rgba(0, 0, 0, 0.065), 0 9.3px 16.4px rgba(0, 0, 0, 0.05),
-    0 32px 64px rgba(0, 0, 0, 0.035);
-`;
+const ctx = createContext<{
+  acknowledgeDisclaimer(): void;
+  alreadyAcked: boolean;
+}>({} as never);
 
 const Symbol = styled.div`
-  font-weight: bold;
-  display: flex;
   align-items: center;
+  display: inline-flex;
+  font-weight: bold;
   height: 80px;
-  color: ${({ theme }) => theme.color.black};
 
   div {
     font-size: 24px;
@@ -56,109 +50,204 @@ const Symbol = styled.div`
 `;
 
 const Block = styled.div`
-  padding: 20px;
-
   ${P} {
     font-size: ${({ theme }) => theme.fontSize.l};
   }
-  
-  ${H3} {
-    font-size: ${({ theme }) => theme.fontSize.xl};
-  }
 `;
 
-const Section = styled.section`
-  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 8px;
-  }
+const SymbolBlock = styled(Block)`
+  display: flex;
+  justify-content: center;
 `;
 
-const Lead = styled(Section)`
+const CarouselItem = styled.section<{ active: boolean }>`
   ${H2} {
-    font-size: 36px;
+    font-size: 28px;
     line-height: 1.3em;
-    padding-bottom: 50px;
-    color: white;
     font-weight: bold;
-  }
-  
-  ${Block} {
-    padding-left: 0;
-    padding-right: 0;
-  }
-`;
+    padding-bottom: 32px;
 
-const CentredLayout = styled.div`
-  display: block !important;
-  padding-left: 16px;
-  padding-right: 16px;
-  ${centredLayout}
-`;
+    span {
+      color: white;
+    }
 
-const FeaturesLayout = styled(CentredLayout)`
-  padding-bottom: 300px; // For the benefit of the 'Learn more' link etc
-`;
-
-const Feature = styled.div`
-  background: ${({ theme }) => theme.color.white};
-  margin-bottom: 128px;
-  border-radius: 2px;
-  box-shadow: 0 1.6px 1.3px rgba(0, 0, 0, 0.1),
-    0 4.2px 5.4px rgba(0, 0, 0, 0.065), 0 9.3px 16.4px rgba(0, 0, 0, 0.05),
-    0 32px 64px rgba(0, 0, 0, 0.035);
-
-  > * {
-    padding: 20px;
+    @media (min-width: ${ViewportWidth.s}) {
+      font-size: 48px;
+    }
   }
 
-  > a {
+  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
+    min-height: 300px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+
+    > :first-child {
+      flex: 4 0;
+    }
+
+    > :last-child {
+      flex: 3 0;
+    }
   }
 `;
 
-const Intro = styled.div`
-  padding: 100px 0;
+const Slider = styled.div<{ activeIdx: number }>`
+  transition: transform 0.4s ease;
+  transform: translateX(${({ activeIdx }) => -1 * (activeIdx * 100)}%);
+  display: flex;
 `;
 
-const Content = styled.div`
-  width: 100%;
-  flex: 1;
-  > * {
-    padding-left: 16px;
-    padding-right: 16px;
+const SliderContainer = styled.div`
+  ${CarouselItem} {
+    width: 100%;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
   }
+
+  overflow: hidden;
+`;
+
+const StepIcons = styled.div`
+  display: flex;
+  padding: 0 32px;
+`;
+
+const StepIcon = styled.div<{ active: boolean }>`
+  width: 12px;
+  height: 12px;
+  margin: 8px;
+  cursor: pointer;
+
+  border-radius: 100%;
+  background: ${({ theme, active }) =>
+    active ? theme.color.offBlack : 'transparent'};
+  border: 1px ${({ theme }) => theme.color.offBlack} solid;
+  transition: background-color 0.3s ease;
+`;
+
+const Controls = styled.div`
+  display: flex;
+  justify-content: center;
 `;
 
 const Container = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  background: ${({ theme }) => theme.color.gold};
+  align-items: center;
+  flex: 1;
+  width: 100%;
+`;
+
+const Carousel = styled.div`
   color: ${({ theme }) => theme.color.offBlack};
 
   a {
     color: ${({ theme }) => theme.color.offBlack};
   }
+
+  ${Button} {
+    background: transparent;
+  }
+
+  padding: 0 16px;
+  width: 100%;
+  margin: 0 auto;
 `;
 
-const features: {
-  symbol: string;
-  title: string;
-  href: string;
+const Start: FC<{}> = () => {
+  const expandWallet = useExpandWalletRedirect();
+  const { alreadyAcked } = useContext(ctx);
+  return (
+    <>
+      <Block>
+        <H2>
+          mStable makes stablecoins <span>easy, robust & profitable.</span>
+        </H2>
+      </Block>
+      <Block>
+        <P>
+          mStable unifies stablecoins, lending and swapping into one standard.
+        </P>
+        {alreadyAcked ? (
+          <P>
+            <Button
+              type="button"
+              size={Size.m}
+              onClick={() => expandWallet('/mint')}
+            >
+              Connect
+            </Button>
+          </P>
+        ) : null}
+      </Block>
+    </>
+  );
+};
+
+const Disclaimer: FC<{}> = () => {
+  const { acknowledgeDisclaimer } = useContext(ctx);
+  return (
+    <>
+      <SymbolBlock>
+        <Symbol>
+          <div>Beta</div>
+          <i>!</i>
+        </Symbol>
+      </SymbolBlock>
+      <Block>
+        <P>This project is in beta. Use at your own risk.</P>
+        <P>
+          <Button type="button" size={Size.m} onClick={acknowledgeDisclaimer}>
+            I understand
+          </Button>
+        </P>
+      </Block>
+    </>
+  );
+};
+
+const GetStarted: FC<{}> = () => {
+  const expandWallet = useExpandWalletRedirect();
+  return (
+    <>
+      <SymbolBlock>
+        <Symbol>
+          <div>get started</div>
+        </Symbol>
+      </SymbolBlock>
+      <Block>
+        <P>Start by connecting your Ethereum wallet</P>
+        <P>
+          <Button
+            type="button"
+            size={Size.m}
+            onClick={() => expandWallet('/mint')}
+          >
+            Connect
+          </Button>
+        </P>
+      </Block>
+    </>
+  );
+};
+
+const HOME_STEPS: {
+  key: string;
   children: JSX.Element;
 }[] = [
   {
-    symbol: '+',
-    title: 'Mint',
-    href: '/mint',
+    key: 'start',
+    children: <Start />,
+  },
+  {
+    key: 'mint',
     children: (
       <>
-        <Block>
-          <MintAnimation forwards />
-        </Block>
+        <SymbolBlock>
+          <Symbol>
+            <div>Mint</div>
+            <i>+</i>
+          </Symbol>
+        </SymbolBlock>
         <Block>
           <P>
             Get mUSD by depositing your USDC, DAI, TUSD or USDT at a 1:1 ratio.
@@ -171,20 +260,19 @@ const features: {
     ),
   },
   {
-    symbol: '×',
-    title: 'Save',
-    href: '/save',
+    key: 'save',
     children: (
       <>
-        <Block>
-          <SaveAnimation />
-        </Block>
+        <SymbolBlock>
+          <Symbol>
+            <div>Save</div>
+            <i>×</i>
+          </Symbol>
+        </SymbolBlock>
         <Block>
           <P>
-            mStable assets can also be deposited to earn interest through the
-            mStable Savings Contract, just like you would with a savings
-            account, with each mStable asset balance accruing interest earned
-            across the entire DeFi ecosystem.
+            mStable assets can also be deposited to earn a native interest rate
+            through the mStable Savings Contract.
           </P>
           <P>
             <A href="/save">Go to save</A>
@@ -194,14 +282,15 @@ const features: {
     ),
   },
   {
-    symbol: '=',
-    title: 'Swap',
-    href: '/swap',
+    key: 'swap',
     children: (
       <>
-        <Block>
-          <SwapAnimation />
-        </Block>
+        <SymbolBlock>
+          <Symbol>
+            <div>Swap</div>
+            <i>=</i>
+          </Symbol>
+        </SymbolBlock>
         <Block>
           <P>
             mStable assets are created by swapping any accepted tokenized asset
@@ -216,61 +305,89 @@ const features: {
     ),
   },
   {
-    symbol: '-',
-    title: 'Redeem',
-    href: '/redeem',
-    children: (
-      <>
-        <Block>
-          <MintAnimation forwards={false} />
-        </Block>
-        <Block>
-          <P>You can redeem mUSD for the underlying stablecoins at any time.</P>
-          <P>
-            <A href="/redeem">Go to redeem</A>
-          </P>
-        </Block>
-      </>
-    ),
+    key: 'disclaimer',
+    children: <Disclaimer />,
+  },
+  {
+    key: 'get-started',
+    children: <GetStarted />,
   },
 ];
 
-export const Home: FC<{}> = () => (
-  <Container>
-    <Content>
-      <Intro>
-        <CentredLayout>
-          <Logo title="mStable" />
-          <Lead>
-            <Block>
-              <H2>Robust, easy and profitable stablecoins</H2>
-            </Block>
-            <Block>
-              <H3>
-                mStable unifies stablecoins, lending and swapping into one
-                standard.
-              </H3>
-              <CTA href="/mint">Go to app</CTA>
-            </Block>
-          </Lead>
-        </CentredLayout>
-      </Intro>
-      <FeaturesLayout>
-        {features.map(({ symbol, title, href, children }) => (
-          <Feature key={symbol}>
-            <A href={href}>
-              <Symbol>
-                <div>{title}</div>
-                <i>{symbol}</i>
-              </Symbol>
-            </A>
-            <Section>{children}</Section>
-          </Feature>
-        ))}
-      </FeaturesLayout>
-    </Content>
-    <CentredLayout>
-      <Footer inverted={false} />
-    </CentredLayout>
-  </Container>
-);
+export const Home: FC<{}> = () => {
+  const [activeIdx, setActiveIdx] = useState<number>(0);
+
+  const alreadyAcked = !!localStorage.getItem(BETA_WARNING_KEY);
+  const [acked, setAcked] = useState<boolean>(alreadyAcked || false);
+  const needsAck = activeIdx === 4 && !acked;
+
+  const next = useCallback(() => {
+    if (activeIdx < HOME_STEPS.length - 1) {
+      setActiveIdx(activeIdx + 1);
+    }
+  }, [setActiveIdx, activeIdx]);
+
+  const previous = useCallback(() => {
+    if (activeIdx > 0) {
+      setActiveIdx(activeIdx - 1);
+    }
+  }, [setActiveIdx, activeIdx]);
+
+  const acknowledgeDisclaimer = useCallback(() => {
+    setAcked(true);
+    localStorage.setItem(BETA_WARNING_KEY, Date.now().toString());
+    next();
+  }, [setAcked, next]);
+
+  return (
+    <ctx.Provider
+      value={useMemo(() => ({ acknowledgeDisclaimer, alreadyAcked }), [
+        alreadyAcked,
+        acknowledgeDisclaimer,
+      ])}
+    >
+      <Container>
+        <Carousel>
+          <SliderContainer>
+            <Slider activeIdx={activeIdx}>
+              {HOME_STEPS.map(({ children, key }, index) => (
+                <CarouselItem key={key} active={activeIdx === index}>
+                  {children}
+                </CarouselItem>
+              ))}
+            </Slider>
+          </SliderContainer>
+          <Controls>
+            <Button
+              onClick={previous}
+              type="button"
+              size={Size.m}
+              disabled={activeIdx === 0}
+            >
+              Previous
+            </Button>
+            <StepIcons>
+              {HOME_STEPS.map(({ key }, index) => (
+                <StepIcon
+                  key={key}
+                  active={activeIdx === index}
+                  onClick={() => setActiveIdx(index)}
+                />
+              ))}
+            </StepIcons>
+            <Button
+              onClick={next}
+              type="button"
+              size={Size.m}
+              disabled={activeIdx === HOME_STEPS.length - 1 || needsAck}
+            >
+              Next
+            </Button>
+          </Controls>
+        </Carousel>
+      </Container>
+    </ctx.Provider>
+  );
+};
+
+// <CTA href="/mint">Go to app</CTA>
