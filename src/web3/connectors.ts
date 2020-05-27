@@ -2,13 +2,13 @@ import { Connectors } from 'use-wallet';
 
 const injected = {};
 
-const walletlink = {
-  url: 'https://mstable.org',
-  // TODO a better logo URL
-  appLogoUrl:
-    'https://pbs.twimg.com/profile_images/1226087357461487616/Iq1CHt3I_400x400.jpg',
-  appName: 'mStable',
-};
+// const walletlink = {
+//   url: 'https://mstable.org',
+//   // TODO a better logo URL
+//   appLogoUrl:
+//     'https://pbs.twimg.com/profile_images/1226087357461487616/Iq1CHt3I_400x400.jpg',
+//   appName: 'mStable',
+// };
 
 const squarelink = {
   options: {},
