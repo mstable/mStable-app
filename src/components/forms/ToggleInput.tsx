@@ -6,6 +6,8 @@ interface Props {
   onClick(): void;
   checked: boolean;
   disabled?: boolean;
+  enabledColor?: string;
+  disabledColor?: string;
 }
 
 const Circle = styled.span`
@@ -21,14 +23,30 @@ const Circle = styled.span`
   box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
 `;
 
-const Toggle = styled.span<{ checked: boolean; disabled?: boolean }>`
+const Container = styled(UnstyledButton)`
+  display: flex;
+  align-items: center;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  padding: 0;
+`;
+
+const Toggle = styled.span<{
+  checked: boolean;
+  disabled?: boolean;
+  enabledColor?: string;
+  disabledColor?: string;
+}>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 40px;
   height: 20px;
-  background: ${({ checked, theme }) =>
-    checked ? theme.color.green : theme.color.blackTransparent};
+  background: ${({
+    checked,
+    theme,
+    enabledColor = theme.color.green,
+    disabledColor = theme.color.blackTransparent,
+  }) => (checked ? enabledColor : disabledColor)};
   border-radius: 40px;
   position: relative;
   transition: background-color 0.2s;
@@ -43,16 +61,20 @@ const Toggle = styled.span<{ checked: boolean; disabled?: boolean }>`
   }
 `;
 
-const Container = styled(UnstyledButton)`
-  display: flex;
-  align-items: center;
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  padding: 0;
-`;
-
-export const ToggleInput: FC<Props> = ({ onClick, checked, disabled }) => (
+export const ToggleInput: FC<Props> = ({
+  onClick,
+  checked,
+  disabled,
+  disabledColor,
+  enabledColor,
+}) => (
   <Container onClick={onClick} type="button" disabled={disabled}>
-    <Toggle checked={checked} disabled={disabled}>
+    <Toggle
+      checked={checked}
+      disabled={disabled}
+      enabledColor={enabledColor}
+      disabledColor={disabledColor}
+    >
       <Circle />
     </Toggle>
   </Container>

@@ -31,9 +31,9 @@ export const getConnectors = (chainId: number): Connectors => {
       return {
         injected,
         portis,
-        walletlink,
         squarelink,
         fortmatic: { apiKey: process.env.REACT_APP_FORTMATIC_API_KEY_MAINNET },
+        // walletlink,
         // walletconnect,
         // torus: {
         //   ...torus,
