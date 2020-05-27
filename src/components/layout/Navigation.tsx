@@ -1,6 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { A, getWorkingPath } from 'hookrouter';
+import { useCollapseWallet } from '../../context/AppProvider';
 import { FontSize, ViewportWidth } from '../../theme';
 
 interface NavItem {
@@ -82,22 +83,27 @@ const navItems: NavItem[] = [
 export const Navigation: FC<{ walletExpanded: boolean }> = ({
   walletExpanded,
 }) => {
+  const collapseWallet = useCollapseWallet();
   const activePath = getWorkingPath('');
   const items: (NavItem & { active: boolean })[] = useMemo(
     () =>
-      walletExpanded
-        ? [{ title: 'Account', active: true }]
-        : navItems.map(item => ({
-            ...item,
-            active: activePath === item.path,
-          })),
+      navItems.map(item => ({
+        ...item,
+        active: !walletExpanded && activePath === item.path,
+      })),
     [activePath, walletExpanded],
   );
+
   return (
     <Container>
       <List>
         {items.map(({ title, path, active }) => (
-          <Item key={title} active={active} inverted={walletExpanded}>
+          <Item
+            key={title}
+            active={active}
+            inverted={walletExpanded}
+            onClick={collapseWallet}
+          >
             {path ? <A href={path}>{title}</A> : <span>{title}</span>}
           </Item>
         ))}

@@ -19,17 +19,17 @@ import {
 } from '../../../context/DataProvider/DataProvider';
 import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
 import { Interfaces, SendTxManifest } from '../../../types';
-import { Button } from '../../core/Button';
 import { H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
-import { FontSize, Size } from '../../../theme';
+import { FontSize, Size, Color } from '../../../theme';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import {
   useMusdContract,
   useSavingsContract,
 } from '../../../context/DataProvider/ContractsProvider';
 import { TransactionDetailsDropdown } from '../../forms/TransactionDetailsDropdown';
+import { ToggleInput } from '../../forms/ToggleInput';
 import { formatExactAmount } from '../../../web3/amounts';
 import {
   useApy,
@@ -124,11 +124,6 @@ const TransactionTypeRow = styled(FormRow)`
   > * {
     padding: 0 8px;
   }
-`;
-
-const TransactionTypeButton = styled(Button)`
-  opacity: ${({ disabled }) =>
-    disabled ? '1' : '0.3'}; // disabled == selected
 `;
 
 /**
@@ -385,13 +380,13 @@ export const Save: FC<{}> = () => {
     sendTransaction(manifest);
   }, [mUsdToken, savingsContractAddress, sendTransaction, mUsdContract]);
 
-  const handleDepositButton = useCallback(() => {
-    setTransactionType(TransactionType.Deposit);
-  }, [setTransactionType]);
-
-  const handleWithdrawButton = useCallback(() => {
-    setTransactionType(TransactionType.Withdraw);
-  }, [setTransactionType]);
+  const toggleTransactionType = useCallback(() => {
+    setTransactionType(
+      transactionType === TransactionType.Deposit
+        ? TransactionType.Withdraw
+        : TransactionType.Deposit,
+    );
+  }, [setTransactionType, transactionType]);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -437,23 +432,14 @@ export const Save: FC<{}> = () => {
         </div>
       </InfoRow>
       <TransactionTypeRow>
-        <TransactionTypeButton
-          type="button"
-          size={Size.l}
-          disabled={transactionType === TransactionType.Deposit}
-          onClick={handleDepositButton}
-        >
-          Deposit
-        </TransactionTypeButton>
-        <div>or</div>
-        <TransactionTypeButton
-          type="button"
-          size={Size.l}
-          disabled={transactionType === TransactionType.Withdraw}
-          onClick={handleWithdrawButton}
-        >
-          Withdraw
-        </TransactionTypeButton>
+        <div>Deposit</div>
+        <ToggleInput
+          onClick={toggleTransactionType}
+          checked={transactionType === TransactionType.Withdraw}
+          enabledColor={Color.blue}
+          disabledColor={Color.green}
+        />
+        <div>Withdraw</div>
       </TransactionTypeRow>
       <FormRow>
         <H3>
