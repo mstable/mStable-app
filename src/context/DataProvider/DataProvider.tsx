@@ -136,7 +136,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
               index,
             ) => {
               const mUsdTotalSupplyExact = parseUnits(
-                mUsdToken.totalSupply as string,
+                mUsdToken.totalSupply,
                 mUsdToken.decimals,
               );
 
@@ -154,9 +154,11 @@ const reducer: Reducer<State, Action> = (state, action) => {
                 parseUnits(totalSupply, decimals).gt(0) &&
                 currentVaultUnitsExact.gt(maxWeightInUnitsExact);
 
-              const basketShareExact = currentVaultUnitsExact
-                .mul(EXP_SCALE)
-                .div(mUsdTotalSupplyExact);
+              const basketShareExact = mUsdTotalSupplyExact.gt(0)
+                ? currentVaultUnitsExact
+                    .mul(EXP_SCALE)
+                    .div(mUsdTotalSupplyExact)
+                : new BigNumber(0);
               // TODO use exact values in state
               return {
                 ...mUsd?.bAssets[index],

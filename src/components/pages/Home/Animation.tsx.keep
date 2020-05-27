@@ -1,3 +1,5 @@
+// These animations are retired for now
+
 import React, { FC, useLayoutEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { ReactComponent as DaiSvg } from '../../icons/DAI.svg';

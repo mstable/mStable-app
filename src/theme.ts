@@ -53,7 +53,7 @@ export enum ViewportWidth {
   xl = '1400px',
 }
 
-export const forMinWidth = (width: ViewportWidth, _css: CSSProp): CSSProp =>
+export const forMinWidth = (width: string, _css: CSSProp): CSSProp =>
   `@media (min-width: ${width}) {
    ${_css}
 }`;

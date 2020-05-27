@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-const STORAGE_KEY = 'acknowledged-beta-warning';
+const BETA_WARNING_KEY = 'acknowledged-beta-warning';
 
 const Container = styled.div`
   width: 100%;
@@ -13,10 +13,10 @@ const Container = styled.div`
 `;
 
 export const BetaWarning: FC<{}> = () => {
-  const [hidden, setHidden] = useState(!!localStorage.getItem(STORAGE_KEY));
+  const [hidden, setHidden] = useState(!!localStorage.getItem(BETA_WARNING_KEY));
   const handleClick = useCallback(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, Date.now().toString());
+      localStorage.setItem(BETA_WARNING_KEY, Date.now().toString());
     } finally {
       setHidden(true);
     }
