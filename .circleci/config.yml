@@ -6,7 +6,51 @@ executors:
       - image: alsco77/node-gcp-dockerfile:suite
 
 jobs:
-  build:
+  buildStaging:
+    executor: gcp
+    resource_class: medium+
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install
+          command: yarn
+      - run:
+          name: 'Provision (Mimic yarn provision)'
+          command: |
+            git submodule update --init
+            cd ./lib/mStable-subgraph
+            git submodule update --init
+            cd ./lib/mStable-contracts
+            yarn install
+            yarn compile
+      - run:
+          name: Codegen (TypeChain)
+          command: yarn codegen:typechain
+      - run:
+          name: TypeScript
+          command: yarn tsc --noEmit
+      - run:
+          name: Lint
+          command: yarn lint
+      - run:
+          name: Test
+          command: yarn test --passWithNoTests
+      - run:
+          name: Build
+          command: yarn build:staging
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/build
+            - project/public
+            - project/*
+      - save_cache:
+          key: dependency-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+  buildProd:
     executor: gcp
     resource_class: medium+
     steps:
@@ -80,20 +124,20 @@ workflows:
   version: 2.1
   staging:
     jobs:
-      - build
+      - buildStaging
       - Approval:
           type: approval
       - deployStaging:
           requires:
             - Approval
-            - build
+            - buildStaging
   prod:
     jobs:
       - Approval:
           type: approval
-      - build:
+      - buildProd:
           requires:
             - Approval
       - deployProd:
           requires:
-            - build
+            - buildProd

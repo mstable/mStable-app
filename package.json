@@ -50,6 +50,7 @@
   },
   "scripts": {
     "build": "react-scripts build",
+    "build:staging": "env-cmd -f .env.staging react-scripts build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml",
     "codegen:typechain": "yarn typechain --target ethers-v4 --outDir src/typechain './lib/mStable-subgraph/lib/mStable-contracts/build/contracts/*.json'",
@@ -92,6 +93,7 @@
     "@types/jest": "^25.2.1",
     "@types/react-transition-group": "^4.2.4",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "env-cmd": "^10.1.0",
     "eslint-config-airbnb-typescript": "^7.0.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-import": "^2.20.1",
