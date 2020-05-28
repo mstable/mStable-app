@@ -274,7 +274,7 @@ export const Save: FC<{}> = () => {
         return;
       }
 
-      if (amountInCredits.gt(savingsBalance.creditsExact)) {
+      if (amountInCredits?.gt(savingsBalance.creditsExact)) {
         setError(Reasons.WithdrawAmountMustNotExceedSavingsBalance);
         return;
       }
