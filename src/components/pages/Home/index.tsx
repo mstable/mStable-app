@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { A } from 'hookrouter';
 import { H2, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
@@ -14,6 +14,19 @@ import { Size, ViewportWidth } from '../../../theme';
 import { useExpandWalletRedirect } from '../../../context/AppProvider';
 
 const BETA_WARNING_KEY = 'acknowledged-beta-warning';
+
+const clickMe = keyframes`
+  from {
+    background: transparent;
+  }
+  to {
+    background: white;
+  }
+`;
+
+const AckButton = styled(Button)`
+  animation: ${clickMe} 2s ease infinite alternate-reverse;
+`;
 
 const ctx = createContext<{
   acknowledgeDisclaimer(): void;
@@ -170,13 +183,13 @@ const Start: FC<{}> = () => {
       </Block>
       <Block>
         <P>
-          mStable unifies stablecoins, lending and swapping into one standard.
+          mStable unites stablecoins, lending and swapping into one standard.
         </P>
         {alreadyAcked ? (
           <P>
             <Button
               type="button"
-              size={Size.m}
+              size={Size.l}
               onClick={() => expandWallet('/mint')}
             >
               Connect
@@ -199,11 +212,25 @@ const Disclaimer: FC<{}> = () => {
         </Symbol>
       </SymbolBlock>
       <Block>
-        <P>This project is in beta. Use at your own risk.</P>
         <P>
-          <Button type="button" size={Size.m} onClick={acknowledgeDisclaimer}>
+          The{' '}
+          <a
+            href="https://github.com/mstable/mstable-contracts"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            mStable protocol contracts
+          </a>{' '}
+          have been audited, but this project is still in beta.
+        </P>
+        <P>
+          <AckButton
+            type="button"
+            size={Size.l}
+            onClick={acknowledgeDisclaimer}
+          >
             I understand
-          </Button>
+          </AckButton>
         </P>
       </Block>
     </>
@@ -275,10 +302,7 @@ const HOME_STEPS: {
           </Symbol>
         </SymbolBlock>
         <Block>
-          <P>
-            mStable assets can also be deposited to earn a native interest rate
-            through the mStable Savings Contract.
-          </P>
+          <P>mUSD earns a native interest rate in the mStable SAVE Contract</P>
           <P>
             <A href="/save">Go to save</A>
           </P>
@@ -298,9 +322,8 @@ const HOME_STEPS: {
         </SymbolBlock>
         <Block>
           <P>
-            mStable assets are created by swapping any accepted tokenized asset
-            for the corresponding mStable asset. Our first asset, mUSD, is
-            created by depositing USDC, DAI, TUSD or USDT at a 1:1 ratio.
+            Apart from a trading fee and gas, swap between USDC, USDT, TUSD, DAI
+            and mUSD at zero slippage
           </P>
           <P>
             <A href="/swap">Go to swap</A>
@@ -320,6 +343,7 @@ const HOME_STEPS: {
 ];
 
 export const Home: FC<{}> = () => {
+  const expandWallet = useExpandWalletRedirect();
   const [activeIdx, setActiveIdx] = useState<number>(0);
 
   const alreadyAcked = !!localStorage.getItem(BETA_WARNING_KEY);
@@ -329,8 +353,10 @@ export const Home: FC<{}> = () => {
   const next = useCallback(() => {
     if (activeIdx < HOME_STEPS.length - 1) {
       setActiveIdx(activeIdx + 1);
+    } else {
+      expandWallet('/mint');
     }
-  }, [setActiveIdx, activeIdx]);
+  }, [setActiveIdx, activeIdx, expandWallet]);
 
   const previous = useCallback(() => {
     if (activeIdx > 0) {
@@ -376,7 +402,10 @@ export const Home: FC<{}> = () => {
                 <StepIcon
                   key={key}
                   active={activeIdx === index}
-                  onClick={() => setActiveIdx(index)}
+                  onClick={() => {
+                    if (!needsAck) setActiveIdx(index);
+                  }}
+                  disabled={index === HOME_STEPS.length - 1 && needsAck}
                 />
               ))}
             </StepIcons>
@@ -384,7 +413,7 @@ export const Home: FC<{}> = () => {
               onClick={next}
               type="button"
               size={Size.m}
-              disabled={activeIdx === HOME_STEPS.length - 1 || needsAck}
+              disabled={activeIdx === HOME_STEPS.length - 2 && needsAck}
             >
               Next
             </Button>
