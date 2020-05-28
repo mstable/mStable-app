@@ -61,11 +61,16 @@ const SymbolBlock = styled(Block)`
 `;
 
 const CarouselItem = styled.section<{ active: boolean }>`
+  min-height: 400px;
+
+  > :first-child {
+    padding-bottom: 64px;
+  }
+
   ${H2} {
     font-size: 28px;
     line-height: 1.3em;
     font-weight: bold;
-    padding-bottom: 32px;
 
     span {
       color: white;
@@ -76,8 +81,7 @@ const CarouselItem = styled.section<{ active: boolean }>`
     }
   }
 
-  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
-    min-height: 300px;
+  @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
     display: flex;
     justify-content: space-between;
 
@@ -112,16 +116,17 @@ const StepIcons = styled.div`
   padding: 0 32px;
 `;
 
-const StepIcon = styled.div<{ active: boolean }>`
+const StepIcon = styled.div<{ active: boolean; disabled: boolean }>`
   width: 12px;
   height: 12px;
-  margin: 8px;
-  cursor: pointer;
+  margin: 6px;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 
   border-radius: 100%;
   background: ${({ theme, active }) =>
     active ? theme.color.offBlack : 'transparent'};
-  border: 1px ${({ theme }) => theme.color.offBlack} solid;
+  border: 1px ${({ theme }) => theme.color.offBlack}
+    ${({ disabled }) => (disabled ? 'dotted' : 'solid')};
   transition: background-color 0.3s ease;
 `;
 
@@ -389,5 +394,3 @@ export const Home: FC<{}> = () => {
     </ctx.Provider>
   );
 };
-
-// <CTA href="/mint">Go to app</CTA>
