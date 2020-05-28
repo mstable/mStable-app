@@ -297,7 +297,7 @@ export const Save: FC<{}> = () => {
     event => {
       event.preventDefault();
 
-      if (!error && savingsContract && inputAmount && amountInCredits) {
+      if (!error && savingsContract && inputAmount) {
         if (transactionType === TransactionType.Deposit) {
           const manifest: SendTxManifest<
             Interfaces.SavingsContract,
@@ -308,7 +308,10 @@ export const Save: FC<{}> = () => {
             fn: 'depositSavings',
           };
           sendTransaction(manifest);
-        } else if (transactionType === TransactionType.Withdraw) {
+        } else if (
+          transactionType === TransactionType.Withdraw &&
+          amountInCredits
+        ) {
           const manifest: SendTxManifest<
             Interfaces.SavingsContract,
             'redeem'
