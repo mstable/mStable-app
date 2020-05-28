@@ -233,7 +233,10 @@ export const Save: FC<{}> = () => {
   useEffect(() => {
     if (!touched.current) return;
 
-    if (!inputAmount || !amountInCredits) {
+    if (
+      !inputAmount ||
+      (transactionType === TransactionType.Withdraw && !amountInCredits)
+    ) {
       setError(Reasons.AmountMustBeSet);
       return;
     }
