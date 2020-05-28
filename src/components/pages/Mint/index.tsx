@@ -199,7 +199,7 @@ export const Mint: FC<{}> = () => {
       // den = (1-maxW)
       const den = SCALE.sub(data.maxWeight);
 
-      const maxMint = num.mul(SCALE).div(den);
+      const maxMint = den.gt(0) ? num.mul(SCALE).div(den) : num;
       const clampedMax = maxMint.gt(ratioedInputBalance)
         ? ratioedInputBalance
         : maxMint;
