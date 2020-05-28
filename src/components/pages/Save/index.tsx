@@ -192,10 +192,14 @@ export const Save: FC<{}> = () => {
 
   const savingsBalanceIncreasing = useIncreasingNumber(
     savingsBalance.simple,
-    // Calculate the increase per 100ms for this APY
-    savingsBalance.simple && apyPercentage
-      ? (savingsBalance.simple * apyPercentage) / 100 / 365 / 24 / 60 / 60 / 10
-      : 0.0000001,
+    // Calculate the increase per 100ms for this APY, or fallback to 10% APY
+    ((savingsBalance.simple || 0) * (apyPercentage || 10)) /
+      100 /
+      365 /
+      24 /
+      60 /
+      60 /
+      10,
     100,
   );
 
@@ -297,7 +301,7 @@ export const Save: FC<{}> = () => {
     event => {
       event.preventDefault();
 
-      if (!error && savingsContract && inputAmount && amountInCredits) {
+      if (!error && savingsContract && inputAmount) {
         if (transactionType === TransactionType.Deposit) {
           const manifest: SendTxManifest<
             Interfaces.SavingsContract,
@@ -308,7 +312,10 @@ export const Save: FC<{}> = () => {
             fn: 'depositSavings',
           };
           sendTransaction(manifest);
-        } else if (transactionType === TransactionType.Withdraw) {
+        } else if (
+          transactionType === TransactionType.Withdraw &&
+          amountInCredits
+        ) {
           const manifest: SendTxManifest<
             Interfaces.SavingsContract,
             'redeem'
