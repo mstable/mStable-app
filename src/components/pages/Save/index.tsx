@@ -374,7 +374,7 @@ export const Save: FC<{}> = () => {
       fn: 'approve',
       args: [
         savingsContractAddress,
-        parseUnits(mUsdToken.totalSupply as string, mUsdToken.decimals),
+        parseUnits('1844674400000', mUsdToken.decimals),
       ],
     };
     sendTransaction(manifest);
