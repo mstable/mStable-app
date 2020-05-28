@@ -4,6 +4,7 @@ import Skeleton from 'react-loading-skeleton';
 import { H3, H2 } from '../core/Typography';
 import { CountUp } from '../core/CountUp';
 import { BasketStats } from './BasketStats';
+import { ViewportWidth } from '../../theme';
 
 interface Props {
   totalSupply: string | null;
@@ -14,6 +15,7 @@ const StatsGraphic = styled.div`
   flex-grow: 1;
   padding-bottom: 20px;
 `;
+
 const StatsGraphicNull = styled.div`
   width: 10%;
   flex-grow: 0;
@@ -25,8 +27,10 @@ const StatsContainer = styled.div`
 `;
 
 const StatsRow = styled.div`
-  display: flex;
-  justify-content: space-between;
+  @media (min-width: ${ViewportWidth.s}) {
+    display: flex;
+    justify-content: space-between;
+  }
 `;
 
 export const MusdStats: FC<Props> = ({ totalSupply }) => (

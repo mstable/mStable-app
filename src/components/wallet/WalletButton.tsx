@@ -47,12 +47,13 @@ const AccountButton = styled(Button)`
   justify-content: space-between;
   line-height: 100%;
   font-size: ${({ theme }) => theme.fontSize.xs};
-  height: 32px;
-  padding-left: 6px;
-  padding-right: 6px;
+  height: 24px;
+  margin-bottom: 8px;
 
   @media (min-width: ${ViewportWidth.m}) {
+    height: 32px;
     padding: 0 6px 0 0;
+    margin-bottom: 0;
   }
 
   > span {
