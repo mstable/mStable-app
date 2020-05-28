@@ -11,7 +11,7 @@ const ListItem = styled.li`
   > :first-child {
     font-weight: bold;
   }
-  
+
   padding-bottom: 32px;
 `;
 
@@ -96,7 +96,7 @@ export const FAQ: FC<{}> = () => (
             >
               USDC
             </a>
-            .
+            ).
           </P>
         </ListItem>
       </List>
