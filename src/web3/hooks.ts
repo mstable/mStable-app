@@ -96,9 +96,13 @@ export const useSavingsBalance = (account: string | null): SavingsBalance => {
   const latest = latestSub.data?.exchangeRates[0];
 
   return useMemo(() => {
-    if (latest && creditBalance) {
+    if (latest) {
+      let internalCredits = creditBalance;
+      if (!internalCredits) {
+        internalCredits = '0';
+      }
       const rate = parseUnits(latest.exchangeRate);
-      const balance = parseUnits(creditBalance);
+      const balance = parseUnits(internalCredits);
 
       const exact = balance.mul(rate).div(SCALE);
       const simple = parseFloat(
