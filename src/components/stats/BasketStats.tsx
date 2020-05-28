@@ -1,6 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
-import React, { ComponentProps, FC, useMemo } from 'react';
+import React, {
+  ComponentProps,
+  FC,
+  ReactComponentElement,
+  useMemo,
+} from 'react';
 import { VictoryBar } from 'victory-bar';
 import { VictoryChart } from 'victory-chart';
 import { VictoryStack } from 'victory-stack';
@@ -22,6 +27,14 @@ const TOKEN_COLORS = {
   USDC: '#2775CA',
 };
 
+const TOKEN_HATCH_COLORS = {
+  mUSD: '#000',
+  DAI: '#e0c184',
+  USDT: '#7dc6af',
+  TUSD: '#a6bfe5',
+  USDC: '#a7c0de',
+};
+
 interface Datum {
   symbol: string;
   basketShareAsPercentage: number;
@@ -33,6 +46,7 @@ const ICON_SIZE = 16;
 const numericLabels = {
   fontFamily: `'DM Mono', monospace`,
   fontSize: 8,
+  textAnchor: 'end',
 };
 
 const AxisLabel: FC<ComponentProps<typeof VictoryLabel>> = ({
@@ -55,29 +69,49 @@ const AxisLabel: FC<ComponentProps<typeof VictoryLabel>> = ({
       x={x}
       y={y}
       dx={16}
-      style={{ ...style, textAnchor: 'start' }}
+      style={{
+        ...style,
+        textAnchor: 'start',
+        textShadow: `0 1px 2px ${
+          TOKEN_COLORS[text as keyof typeof TOKEN_COLORS]
+        }`,
+      }}
       {...props}
     />
   </g>
 );
 
+const Hatch = ({
+  symbol,
+}: {
+  symbol: keyof typeof TOKEN_HATCH_COLORS;
+}): ReactComponentElement<'pattern'> => (
+  <pattern
+    id={`hatch-${symbol}`}
+    patternUnits="userSpaceOnUse"
+    patternTransform="rotate(45 0 0)"
+    width="4"
+    height="4"
+  >
+    <line
+      x1="0"
+      y1="0"
+      x2="0"
+      y2="4"
+      style={{
+        stroke: TOKEN_HATCH_COLORS[symbol],
+        strokeWidth: 4,
+      }}
+    />
+  </pattern>
+);
+
 const Container: FC<VictoryContainerProps> = ({ children, ...props }) => (
   <VictoryContainer {...props}>
-    <pattern
-      id="diagonalHatch"
-      patternUnits="userSpaceOnUse"
-      patternTransform="rotate(45 0 0)"
-      width="4"
-      height="4"
-    >
-      <line
-        x1="0"
-        y1="0"
-        x2="0"
-        y2="4"
-        style={{ stroke: '#d5d5d5', strokeWidth: 2 }}
-      />
-    </pattern>
+    <Hatch symbol="DAI" />
+    <Hatch symbol="USDT" />
+    <Hatch symbol="USDC" />
+    <Hatch symbol="TUSD" />
     <>{children}</>
   </VictoryContainer>
 );
@@ -123,7 +157,7 @@ export const BasketStats: FC<{}> = () => {
             },
             labels: numericLabels,
           }}
-          labelComponent={<VictoryLabel dx={5} />}
+          labelComponent={<VictoryLabel x={185} />}
           labels={({ datum: { basketShareAsPercentage } }: { datum: Datum }) =>
             `${basketShareAsPercentage.toFixed(2)}%`
           }
@@ -135,7 +169,7 @@ export const BasketStats: FC<{}> = () => {
         <VictoryBar
           style={{
             data: {
-              fill: 'url(#diagonalHatch)',
+              fill: ({ datum: { symbol } }) => `url(#hatch-${symbol})`,
             },
           }}
           labelComponent={<div />}
