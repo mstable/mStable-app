@@ -401,13 +401,13 @@ export const Save: FC<{}> = () => {
           <H3>Your mUSD savings balance</H3>
           <CreditBalance>
             <MUSDIconTransparent />
-            <CountUp end={savingsBalanceIncreasing || 0} decimals={8} />
+            <CountUp end={savingsBalanceIncreasing || 0} decimals={7} />
           </CreditBalance>
         </div>
       </InfoRow>
       <InfoRow>
         <div>
-          <H3>Current APY</H3>
+          <H3>Current APY (24h)</H3>
           {apyPercentage ? (
             <InfoCountUp end={apyPercentage} suffix="%" decimals={2} />
           ) : (
