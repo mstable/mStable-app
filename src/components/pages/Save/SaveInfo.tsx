@@ -39,8 +39,8 @@ const CreditBalance = styled.div`
   }
 `;
 
-const CreditBalanceMsg = styled.div`
-  padding-top: 8px;
+const InfoMsg = styled.div`
+  padding-top: 4px;
   font-size: 12px;
 `;
 
@@ -63,7 +63,7 @@ const InfoRow = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     display: flex;
     justify-content: space-evenly;
-    align-items: center;
+    align-items: flex-start;
 
     h3 {
       border-top: none;
@@ -102,7 +102,7 @@ export const SaveInfo: FC<{}> = () => {
           <CreditBalance>
             <MUSDIconTransparent />
             <CountUp end={savingsBalanceIncreasing || 0} decimals={7} />
-            <CreditBalanceMsg>
+            <InfoMsg>
               This amount includes notional interest. For more information{' '}
               <a
                 href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#savings-balance-increase"
@@ -112,18 +112,36 @@ export const SaveInfo: FC<{}> = () => {
                 see here
               </a>
               .
-            </CreditBalanceMsg>
+            </InfoMsg>
           </CreditBalance>
         </div>
       </InfoRow>
       <InfoRow>
         <div>
-          <H3>Current APY (24h)</H3>
+          <H3>
+            Current APY{' '}
+            <a
+              href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              (24h)
+            </a>
+          </H3>
           {apyPercentage ? (
             <InfoCountUp end={apyPercentage} suffix="%" decimals={2} />
           ) : (
             <Skeleton />
           )}
+          <InfoMsg>
+            <a
+              href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              How is this calculated?
+            </a>
+          </InfoMsg>
         </div>
         <div>
           <H3 borderTop>Total mUSD supply</H3>
