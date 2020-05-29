@@ -105,6 +105,41 @@ export const SwapInput: FC<{}> = () => {
   const handleSetMax = useCallback(() => {
     const inputBasset = bAssets.find(b => b.address === input.token.address);
     const outputBasset = bAssets.find(b => b.address === output.token.address);
+    const isMint = output.token.address === mUsdToken?.address;
+
+    if (isMint) {
+      if (inputBasset?.token.balance && mUsdToken) {
+        const ratioedInputBalance = inputBasset.token.balance
+          .mul(inputBasset.ratio)
+          .div(RATIO_SCALE);
+        // Determining max possible mint without pushing bAsset over max weight uses below formula
+        // M = ((t * maxW) - c)/(1-maxW)
+        // num = ((t * maxW) - c)
+        const num1 = parseUnits(mUsdToken.totalSupply, mUsdToken.decimals)
+          .mul(inputBasset.maxWeight)
+          .div(SCALE);
+        const num2 = parseUnits(
+          inputBasset.vaultBalance,
+          inputBasset.token.decimals,
+        )
+          .mul(inputBasset.ratio)
+          .div(RATIO_SCALE);
+        const num = num1.sub(num2);
+        // den = (1-maxW)
+        const den = SCALE.sub(inputBasset.maxWeight);
+
+        const maxMint = den.gt(0) ? num.mul(SCALE).div(den) : num;
+        const clampedMax = maxMint.gt(ratioedInputBalance)
+          ? ratioedInputBalance
+          : maxMint;
+        setQuantity(
+          Fields.Input,
+          formatUnits(clampedMax, inputBasset.token.decimals),
+        );
+      }
+      return;
+    }
+
     if (
       mUsdToken?.totalSupply &&
       inputBasset?.token.decimals &&
