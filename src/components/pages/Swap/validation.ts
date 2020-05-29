@@ -54,11 +54,11 @@ const formValidator: StateValidator = ({
   }
 
   if (needsUnlock) {
-    return [false, { output: Reasons.TokenMustBeApproved }];
+    return [false, { input: Reasons.TokenMustBeApproved }];
   }
 
   if (loading) {
-    return [false, { output: Reasons.FetchingData }];
+    return [false, { input: Reasons.FetchingData }];
   }
 
   const inputToken = bAssets.find(b => b.address === input.token.address);
