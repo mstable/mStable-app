@@ -39,6 +39,11 @@ const CreditBalance = styled.div`
   }
 `;
 
+const CreditBalanceMsg = styled.div`
+  padding-top: 8px;
+  font-size: 12px;
+`;
+
 const InfoCountUp = styled(CountUp)`
   font-size: ${FontSize.xl};
 `;
@@ -97,6 +102,17 @@ export const SaveInfo: FC<{}> = () => {
           <CreditBalance>
             <MUSDIconTransparent />
             <CountUp end={savingsBalanceIncreasing || 0} decimals={7} />
+            <CreditBalanceMsg>
+              This amount includes notional interest. For more information{' '}
+              <a
+                href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#savings-balance-increase"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                see here
+              </a>
+              .
+            </CreditBalanceMsg>
           </CreditBalance>
         </div>
       </InfoRow>
