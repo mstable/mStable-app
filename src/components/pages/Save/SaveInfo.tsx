@@ -18,8 +18,6 @@ import {
 } from '../../../context/DataProvider/DataProvider';
 
 const CreditBalance = styled.div`
-  line-height: 4em;
-
   img {
     width: 6vw;
     margin-right: 10px;
@@ -59,15 +57,11 @@ const InfoRow = styled.div`
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
 
     h3 {
       border-top: none;
-    }
-
-    > div {
-      flex-grow: 1;
     }
   }
 

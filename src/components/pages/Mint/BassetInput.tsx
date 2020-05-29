@@ -5,7 +5,7 @@ import { Interfaces, SendTxManifest } from '../../../types';
 import { BassetInput as BassetInputProps } from './types';
 import { Button } from '../../core/Button';
 import { CountUp as CountUpBase } from '../../core/CountUp';
-import { Size, ViewportWidth } from '../../../theme';
+import { Size } from '../../../theme';
 import { ToggleInput } from '../../forms/ToggleInput';
 import { TokenIcon } from '../../icons/TokenIcon';
 import {
@@ -52,18 +52,6 @@ const Row = styled.div`
 `;
 
 const ToggleRow = styled(Row)``;
-
-const ValidationRow = styled(Row)`
-  min-height: 60px;
-`;
-
-const ApprovalRow = styled.div`
-  min-height: 31px;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    min-height: 43px;
-  }
-`;
 
 const TokenContainer = styled.div`
   display: flex;
@@ -209,7 +197,7 @@ export const BassetInput: FC<Props> = ({
           <CountUp end={simpleBalance} />
         </Row>
       </Rows>
-      <ValidationRow>
+      <Row>
         {error || overweight ? (
           <ErrorRow>
             <Label>Unable to mint</Label>
@@ -217,15 +205,15 @@ export const BassetInput: FC<Props> = ({
           </ErrorRow>
         ) : null}
         {needsUnlock || error || overweight ? (
-          <ApprovalRow>
+          <div>
             {needsUnlock ? (
               <ApproveButton size={Size.s} onClick={unlock} type="button">
                 Approve
               </ApproveButton>
             ) : null}
-          </ApprovalRow>
+          </div>
         ) : null}
-      </ValidationRow>
+      </Row>
     </div>
   );
 };
