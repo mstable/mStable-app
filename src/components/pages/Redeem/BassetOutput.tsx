@@ -116,6 +116,10 @@ export const BassetOutput: FC<Props> = ({ address }) => {
           </TokenContainer>
         </HeaderRow>
         <Row>
+          <Label>Your Balance</Label>
+          <CountUp end={simpleBalance} />
+        </Row>
+        <Row>
           <Label>Amount</Label>
           <CountUp
             highlight={(bassetOutput?.amount.simple || 0) > 0}
@@ -123,10 +127,6 @@ export const BassetOutput: FC<Props> = ({ address }) => {
             end={bassetOutput?.amount.simple || 0}
             prefix="+ "
           />
-        </Row>
-        <Row>
-          <Label>Your Balance</Label>
-          <CountUp end={simpleBalance} />
         </Row>
       </Rows>
     </div>

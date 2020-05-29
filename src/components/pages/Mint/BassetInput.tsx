@@ -184,6 +184,10 @@ export const BassetInput: FC<Props> = ({
           />
         </HeaderRow>
         <Row>
+          <Label>Your Balance</Label>
+          <CountUp end={simpleBalance} />
+        </Row>
+        <Row>
           <Label>Amount</Label>
           <CountUp
             highlight={!!amount.simple}
@@ -191,10 +195,6 @@ export const BassetInput: FC<Props> = ({
             end={amount.simple || 0}
             prefix="- "
           />
-        </Row>
-        <Row>
-          <Label>Your Balance</Label>
-          <CountUp end={simpleBalance} />
         </Row>
       </Rows>
       <Row>
