@@ -4,6 +4,7 @@ import {
   Mode,
   State,
   StateValidator,
+  Reasons,
   ValidationResult,
 } from './types';
 import { BassetData, MassetData } from '../../../context/DataProvider/types';
@@ -19,7 +20,7 @@ const amountValidator = (
   mAssetData: MassetData,
 ): ValidationResult => {
   if (!statusValidator(bAssetData.status)) {
-    return [false, 'Token not allowed in mint'];
+    return [false, Reasons.TokenNotAllowedInMint];
   }
 
   if (
@@ -27,7 +28,7 @@ const amountValidator = (
       bAssetData.token.balance as BigNumber,
     )
   ) {
-    return [false, 'Amount exceeds balance'];
+    return [false, Reasons.AmountExceedsBalance];
   }
 
   if (
@@ -35,7 +36,7 @@ const amountValidator = (
       bAssetInput.amount.exact as BigNumber,
     )
   ) {
-    return [false, 'Amount exceeds approved amount'];
+    return [false, Reasons.AmountExceedsApprovedAmount];
   }
 
   return [true, null];
@@ -46,7 +47,7 @@ const mintSingleValidator: StateValidator = state => {
   const [bAssetInput] = bAssetInputs.filter(b => b.enabled);
 
   if (!bAssetInput) {
-    return [false, 'No token selected'];
+    return [false, Reasons.NoTokenSelected];
   }
 
   const bAssetData = mAssetData?.bAssets.find(
@@ -68,7 +69,7 @@ const mintSingleValidator: StateValidator = state => {
       mAssetData.token.totalSupply
     )
   ) {
-    return [false, 'Fetching data'];
+    return [false, Reasons.FetchingData];
   }
 
   const [amountValid, amountError] = amountValidator(
@@ -103,7 +104,7 @@ const mintSingleValidator: StateValidator = state => {
     .div(EXP_SCALE);
 
   if (newBalanceInMasset.gt(maxWeightInUnits)) {
-    return [false, 'Must be below max weighting'];
+    return [false, Reasons.MustBeBelowMaxWeighting];
   }
 
   return [true, null];
@@ -115,11 +116,11 @@ const mintMultiValidator: StateValidator = state => {
   const enabled = bAssetInputs.filter(b => b.enabled);
 
   if (enabled.length === 0) {
-    return [false, 'No tokens selected'];
+    return [false, Reasons.NoTokensSelected];
   }
 
   if (!mAssetData?.bAssets) {
-    return [false, 'Fetching data'];
+    return [false, Reasons.FetchingData];
   }
 
   const bAssets: {
@@ -137,10 +138,10 @@ const mintMultiValidator: StateValidator = state => {
   );
 
   const initialValidation = bAssets.map<ValidationResult>(({ input, data }) => {
-    if (!data) return [false, 'Fetching data'];
+    if (!data) return [false, Reasons.FetchingData];
 
     if (!statusValidator(data.status))
-      return [false, 'Token not allowed in mint'];
+      return [false, Reasons.TokenNotAllowedInMint];
 
     const amountValidation = amountValidator(input, data, mAssetData);
     if (!amountValidation[0]) return amountValidation;
@@ -167,14 +168,14 @@ const mintMultiValidator: StateValidator = state => {
       if (!initialValidation[index][0]) {
         return initialValidation[index];
       }
-      if (!data) return [false, 'Fetching data'];
+      if (!data) return [false, Reasons.FetchingData];
       // What is the max weight of this bAsset in the basket?
       const maxWeightInUnits = newTotalVault
         .mul(data.maxWeight as string)
         .div(EXP_SCALE);
 
       if (newBalances?.[index]?.gt?.(maxWeightInUnits)) {
-        return [false, 'Must be below max weighting'];
+        return [false, Reasons.MustBeBelowMaxWeighting];
       }
       return [true, null];
     })
@@ -202,11 +203,11 @@ const mintValidator: StateValidator = state => {
   }
 
   if (touched && !mAsset.amount.exact) {
-    return [false, 'Amount must be set'];
+    return [false, Reasons.AmountMustBeSet];
   }
 
   if (touched && mAsset.amount.exact?.lte(0)) {
-    return [false, 'Amount must be greater than zero'];
+    return [false, Reasons.AmountMustBeGreaterThanZero];
   }
 
   if (mode === Mode.Single) {
@@ -224,15 +225,15 @@ const basketValidator: StateValidator = state => {
   const { mAssetData } = state;
 
   if (!mAssetData?.basket) {
-    return [false, 'Fetching data'];
+    return [false, Reasons.FetchingData];
   }
 
   if (mAssetData.basket.failed) {
-    return [false, 'Basket failed'];
+    return [false, Reasons.BasketFailed];
   }
 
   if (mAssetData.basket.undergoingRecol) {
-    return [false, 'Basket undergoing recollateralisation'];
+    return [false, Reasons.BasketUndergoingRecollateralisation];
   }
 
   return [true, null];

@@ -1,19 +1,17 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { formatUnits } from 'ethers/utils';
-import { Interfaces, SendTxManifest } from '../../../types';
-import { BassetInput as BassetInputProps } from './types';
-import { Button } from '../../core/Button';
-import { CountUp as CountUpBase } from '../../core/CountUp';
-import { Size } from '../../../theme';
-import { ToggleInput } from '../../forms/ToggleInput';
-import { TokenIcon } from '../../icons/TokenIcon';
-import {
-  useBassetData,
-  useMusdTokenData,
-} from '../../../context/DataProvider/DataProvider';
+
+import { useBassetData } from '../../../context/DataProvider/DataProvider';
 import { useErc20Contract } from '../../../context/DataProvider/ContractsProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
+import { Interfaces, SendTxManifest } from '../../../types';
+import { Size } from '../../../theme';
+import { Button } from '../../core/Button';
+import { CountUp as CountUpBase } from '../../core/CountUp';
+import { ToggleInput } from '../../forms/ToggleInput';
+import { TokenIcon } from '../../icons/TokenIcon';
+import { BassetInput as BassetInputProps, Reasons } from './types';
 
 interface Props {
   input: BassetInputProps;
@@ -135,7 +133,6 @@ export const BassetInput: FC<Props> = ({
       symbol: null,
     },
   } = useBassetData(address) || {};
-  const { allowance } = useMusdTokenData() || {};
 
   const sendTransaction = useSendTransaction();
   const tokenContract = useErc20Contract(address);
@@ -164,10 +161,7 @@ export const BassetInput: FC<Props> = ({
     [balance, decimals],
   );
 
-  const needsUnlock = useMemo<boolean>(
-    () => (amount.exact && allowance?.[address]?.lt(amount.exact)) || false,
-    [address, allowance, amount],
-  );
+  const needsUnlock = error === Reasons.AmountExceedsApprovedAmount;
 
   return (
     <div>
