@@ -159,6 +159,7 @@ export const BassetInput: FC<Props> = ({
       const manifest: SendTxManifest<Interfaces.ERC20, 'approve'> = {
         iface: tokenContract,
         fn: 'approve',
+        formId: 'mint',
         args: [mAssetAddress, totalSupply],
       };
       sendTransaction(manifest);

@@ -283,7 +283,7 @@ const getTxPurpose = (
     }
     case 'approve': {
       if (args[0] === mUSDSavingsAddress) {
-        const body = `the mUSD Savings Contract to transfer ${mUsd.token.symbol}`;
+        const body = `the mUSD SAVE Contract to transfer ${mUsd.token.symbol}`;
         return {
           present: `Approving ${body}`,
           past: `Approved ${body}`,

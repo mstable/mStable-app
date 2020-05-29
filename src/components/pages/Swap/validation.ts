@@ -259,7 +259,6 @@ export const applyValidation = (state: State): State => {
   ] = isMint ? mintSingleValidator(state) : swapValidator(state);
 
   const needsUnlock = !!(
-    isMint &&
     input.token.address &&
     input.amount.exact &&
     allowance?.[input.token.address]?.lt(input.amount.exact)

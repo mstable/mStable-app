@@ -98,7 +98,7 @@ const getPendingTxDescription = (
         return (
           <>
             You <span>{tx.status ? 'approved' : 'are approving'}</span> the mUSD
-            Savings Contract to transfer {mUSD.token.symbol}
+            SAVE Contract to transfer {mUSD.token.symbol}
           </>
         );
       }

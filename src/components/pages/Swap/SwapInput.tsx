@@ -28,6 +28,7 @@ export const SwapInput: FC<{}> = () => {
   } = useSwapState();
   const { setToken, setQuantity } = useSwapDispatch();
 
+  const mAssetAddress = mUsdToken?.address;
   const inputToken = useTokenWithBalance(input.token.address);
   const outputToken = useTokenWithBalance(output.token.address);
 
@@ -37,11 +38,11 @@ export const SwapInput: FC<{}> = () => {
   const [inputAddresses, outputAddresses] = useMemo<
     [string[], string[]]
   >(() => {
-    if (!(bAssets && mUsdToken?.address)) return [[], []];
+    if (!(bAssets && mAssetAddress)) return [[], []];
 
     const bAssetAddresses = bAssets.map(b => b.address);
-    return [bAssetAddresses, [mUsdToken.address, ...bAssetAddresses]];
-  }, [bAssets, mUsdToken]);
+    return [bAssetAddresses, [mAssetAddress, ...bAssetAddresses]];
+  }, [bAssets, mAssetAddress]);
 
   const inputItems = useMemo(
     () => [
@@ -89,13 +90,14 @@ export const SwapInput: FC<{}> = () => {
     const manifest = {
       iface: inputTokenContract,
       fn: 'approve',
+      formId: 'swap',
       args: [
-        outputAddress,
+        mAssetAddress,
         parseUnits(inputToken.totalSupply as string, inputToken.decimals),
       ],
     };
     sendTransaction(manifest);
-  }, [inputToken, inputTokenContract, outputAddress, sendTransaction]);
+  }, [inputToken, inputTokenContract, mAssetAddress, sendTransaction]);
 
   /**
    * Handle setting the max amount for the input token
