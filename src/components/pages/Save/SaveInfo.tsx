@@ -87,10 +87,9 @@ export const SaveInfo: FC<{}> = () => {
   const savingsBalance = useSavingsBalance(account);
   const savingsBalanceIncreasing = useIncreasingNumber(
     savingsBalance.simple,
-    // Calculate the increase per 100ms for this APY
-    savingsBalance.simple && apyPercentage
-      ? (savingsBalance.simple * apyPercentage) / 100 / 365 / 24 / 60 / 60 / 10
-      : 0.0000001,
+    // TODO - re-introduce real APY after it settles down
+    // ((savingsBalance.simple || 0) * (apyPercentage || 10)) /
+    ((savingsBalance.simple || 0) * 10) / 100 / 365 / 24 / 60 / 60 / 10,
     100,
   );
 
