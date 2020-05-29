@@ -24,6 +24,10 @@ const Container = styled.div`
   ${H3} {
     padding-bottom: 16px;
   }
+  
+  ul li {
+    padding-bottom: 8px;
+  }
 `;
 
 export const FAQ: FC<{}> = () => (
