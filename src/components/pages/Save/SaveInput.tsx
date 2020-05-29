@@ -141,6 +141,7 @@ export const SaveInput: FC<{}> = () => {
     const manifest = {
       iface: mUsdContract,
       fn: 'approve',
+      formId: 'save',
       args: [
         savingsContractAddress,
         parseUnits('1844674400000', mUsdToken.decimals),
