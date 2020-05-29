@@ -36,9 +36,9 @@ const Main = styled.main`
 const GlobalStyle = createGlobalStyle<WalletExpanded>`
   ${reset}
   a {
+    color: ${({ theme }) => theme.color.offBlack};
     text-decoration: none;
-    color: ${({ theme }) => theme.color.gold};
-    font-weight: bold;
+    border-bottom: 1px ${({ theme }) => theme.color.offBlack} solid;
   }
   html {
     overflow-y: scroll;

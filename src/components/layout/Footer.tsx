@@ -26,8 +26,8 @@ const Container = styled.footer<Props>`
       solid`};
 
   a {
-    color: ${({ theme, home }) =>
-      home ? theme.color.offBlack : theme.color.gold};
+    color: ${({ theme, inverted }) =>
+      inverted ? theme.color.offWhite : theme.color.offBlack};
   }
 `;
 
