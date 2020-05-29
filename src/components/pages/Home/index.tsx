@@ -70,7 +70,6 @@ const Block = styled.div`
 
 const SymbolBlock = styled(Block)`
   display: flex;
-  justify-content: center;
 `;
 
 const CarouselItem = styled.section<{ active: boolean }>`
@@ -182,9 +181,7 @@ const Start: FC<{}> = () => {
         </H2>
       </Block>
       <Block>
-        <P>
-          mStable unites stablecoins, lending and swapping into one standard.
-        </P>
+        <P>Uniting stablecoins, lending and swapping into one standard.</P>
         {alreadyAcked ? (
           <P>
             <Button
@@ -221,7 +218,8 @@ const Disclaimer: FC<{}> = () => {
           >
             mStable protocol contracts
           </a>{' '}
-          have been audited, but this project is still in beta.
+          have been professionally audited. However, please be aware the project
+          remains in beta. Use at your own risk.
         </P>
         <P>
           <AckButton
@@ -302,7 +300,7 @@ const HOME_STEPS: {
           </Symbol>
         </SymbolBlock>
         <Block>
-          <P>mUSD earns a native interest rate in the mStable SAVE Contract</P>
+          <P>Earn mUSD&rsquo;s native interest rate.</P>
           <P>
             <A href="/save">Go to save</A>
           </P>
@@ -322,8 +320,7 @@ const HOME_STEPS: {
         </SymbolBlock>
         <Block>
           <P>
-            Apart from a trading fee and gas, swap between USDC, USDT, TUSD, DAI
-            and mUSD at zero slippage
+            Swap between stablecoins at zero slippage (a trading fee applies).
           </P>
           <P>
             <A href="/swap">Go to swap</A>
