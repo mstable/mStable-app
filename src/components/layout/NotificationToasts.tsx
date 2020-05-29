@@ -36,18 +36,18 @@ const Title = styled.div`
 `;
 
 const Link = styled.a<{ nType: NotificationType }>`
-  display: block;
   font-size: ${({ theme }) => theme.fontSize.s};
   color: ${({ theme, nType }) =>
-    nType === NotificationType.Info ? theme.color.gold : theme.color.blue};
+    nType === NotificationType.Success ? theme.color.black : theme.color.white};
+  border-color: ${({ theme, nType }) =>
+    nType === NotificationType.Success ? theme.color.black : theme.color.white};
   &:after {
     content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==');
     margin: 0 3px 0 5px;
     filter: ${({ nType }) =>
-      nType === NotificationType.Info
-        ? 'invert(77%) sepia(71%) saturate(816%) hue-rotate(330deg) brightness(101%) contrast(101%)'
-        : 'invert(39%) sepia(57%) saturate(1559%) hue-rotate(191deg) brightness(85%) contrast(107%)'};
-  }
+      nType === NotificationType.Success
+        ? 'none'
+        : 'invert(99%) sepia(1%) saturate(2%) hue-rotate(39deg) brightness(100%) contrast(101%)'}
 `;
 
 const slideIn = keyframes`

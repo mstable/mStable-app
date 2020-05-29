@@ -37,12 +37,10 @@ const HistoricTxContainer = styled.div`
   }
 
   a {
-    color: ${({ theme }) => theme.color.white};
-    font-weight: normal;
+    border-bottom: none;
 
     span {
-      color: ${({ theme }) => theme.color.gold};
-      font-weight: bold;
+      border-bottom: 1px white solid;
     }
   }
 `;

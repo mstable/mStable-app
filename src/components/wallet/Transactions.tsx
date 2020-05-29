@@ -24,11 +24,13 @@ const PendingTxContainer = styled.div<{ inverted?: boolean }>`
   a {
     color: ${({ theme, inverted }) =>
       inverted ? theme.color.white : theme.color.black};
-    font-weight: normal;
+    border-bottom: none;
 
     span {
-      color: ${({ theme }) => theme.color.gold};
-      font-weight: bold;
+      border-bottom: 1px
+        ${({ theme, inverted }) =>
+          inverted ? theme.color.white : theme.color.black}
+        solid;
     }
   }
 `;

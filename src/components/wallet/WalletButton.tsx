@@ -31,7 +31,7 @@ const Blockie = styled.div`
     height: 100%;
   }
 
-  @media (min-width: ${ViewportWidth.s}) {
+  @media (min-width: ${ViewportWidth.m}) {
     width: 30px;
     height: 30px;
   }

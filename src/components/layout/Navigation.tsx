@@ -51,6 +51,7 @@ const Item = styled.li<{
     white-space: nowrap;
     color: ${({ theme, inverted }) =>
       inverted ? theme.color.white : theme.color.black};
+    border-bottom: none;
   }
 
   span {

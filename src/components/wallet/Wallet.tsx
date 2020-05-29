@@ -24,7 +24,11 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   padding: 40px 20px;
-  color: ${({ theme }) => theme.color.white};
+  color: white;
+
+  a {
+    color: white;
+  }
 `;
 
 const Rows = styled.div`
