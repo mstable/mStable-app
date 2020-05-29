@@ -1,6 +1,20 @@
 import { Amount, TokenQuantity } from '../../../types';
 import { MassetData } from '../../../context/DataProvider/types';
 
+export enum Reasons {
+  AmountExceedsApprovedAmount = 'Amount exceeds approved amount',
+  AmountExceedsBalance = 'Amount exceeds balance',
+  AmountMustBeGreaterThanZero = 'Amount must be greater than zero',
+  AmountMustBeSet = 'Amount must be set',
+  BasketFailed = 'Basket failed',
+  BasketUndergoingRecollateralisation = 'Basket undergoing recollateralisation',
+  FetchingData = 'Fetching data',
+  MustBeBelowMaxWeighting = 'Must be below max weighting',
+  NoTokenSelected = 'No token selected',
+  NoTokensSelected = 'No tokens selected',
+  TokenNotAllowedInMint = 'Token not allowed in mint',
+}
+
 export enum Mode {
   Single,
   Multi,
