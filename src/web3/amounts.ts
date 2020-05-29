@@ -53,7 +53,7 @@ export const parseAmount = (
   amountStr: string | null,
   decimals: number | null,
 ): Amount => {
-  if (!(amountStr && decimals)) {
+  if (!(amountStr && decimals) || amountStr?.includes('e')) {
     return { exact: null, simple: null };
   }
 
