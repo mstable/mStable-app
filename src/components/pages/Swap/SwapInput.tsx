@@ -132,10 +132,7 @@ export const SwapInput: FC<{}> = () => {
         const clampedMax = maxMint.gt(ratioedInputBalance)
           ? ratioedInputBalance
           : maxMint;
-        setQuantity(
-          Fields.Input,
-          formatUnits(clampedMax, inputBasset.token.decimals),
-        );
+        setQuantity(Fields.Input, formatUnits(clampedMax, 18));
       }
       return;
     }
@@ -202,7 +199,11 @@ export const SwapInput: FC<{}> = () => {
           name={Fields.Input}
           onChangeAmount={setQuantity}
           onChangeToken={setToken}
-          onSetMax={handleSetMax}
+          onSetMax={
+            input.token.address && output.token.address
+              ? handleSetMax
+              : undefined
+          }
           onUnlock={handleUnlock}
           needsUnlock={needsUnlock}
           items={inputItems}
