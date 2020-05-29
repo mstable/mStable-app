@@ -8,6 +8,7 @@ import {
 import { TransactionForm } from '../../forms/TransactionForm';
 import { SaveProvider, useSaveState } from './SaveProvider';
 import { SaveInput } from './SaveInput';
+import { SaveInfo } from './SaveInfo';
 import { SaveConfirm } from './SaveConfirm';
 import { TransactionType } from './types';
 import { Interfaces } from '../../../types';
@@ -77,6 +78,7 @@ const SaveForm: FC<{}> = () => {
 export const Save: FC<{}> = () => (
   <SaveProvider>
     <FormProvider>
+      <SaveInfo />
       <SaveForm />
     </FormProvider>
   </SaveProvider>

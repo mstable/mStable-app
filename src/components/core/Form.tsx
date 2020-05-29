@@ -61,7 +61,7 @@ export const Form: FC<Props> = ({ children, onSubmit, error, submitting }) => {
 
 export const FormRow = styled.div`
   width: 100%;
-  padding-bottom: 40px;
+  padding-bottom: 16px;
   ${({ theme }) => theme.mixins.borderTop}
 `;
 

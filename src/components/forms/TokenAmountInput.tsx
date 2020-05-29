@@ -34,14 +34,21 @@ const Error = styled.div`
   text-align: center;
   color: ${({ theme }) => theme.color.red};
   font-size: ${({ theme }) => theme.fontSize.s};
-  min-height: 2rem;
 `;
 
-const Item = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing.s};
+const Items = styled.div`
+  > * {
+    margin-bottom: 8px;
+  }
 `;
 
-const ItemValue = styled.div``;
+const ErrorAndItems = styled.div`
+  display: flex;
+  justify-content: space-between;
+  > :first-child {
+    margin-right: 16px;
+  }
+`;
 
 const ItemLabel = styled.div`
   font-size: ${({ theme }) => theme.fontSize.s};
@@ -144,19 +151,17 @@ export const TokenAmountInput: FC<Props> = ({
           error={error}
         />
       </InputsRow>
-      {items?.length > 0 ? (
-        <FlexRow size={Size.xs}>
-          <div>
-            {items.map(({ label, value }) => (
-              <Item key={label}>
-                <ItemLabel>{label}</ItemLabel>
-                <ItemValue>{value || '—'}</ItemValue>
-              </Item>
-            ))}
-          </div>
-        </FlexRow>
-      ) : null}
-      <Error>{error}</Error>
+      <ErrorAndItems>
+        <Items>
+          {items.map(({ label, value }) => (
+            <div key={label}>
+              <ItemLabel>{label}</ItemLabel>
+              <div>{value || '—'}</div>
+            </div>
+          ))}
+        </Items>
+        <Error>{error}</Error>
+      </ErrorAndItems>
     </>
   );
 };

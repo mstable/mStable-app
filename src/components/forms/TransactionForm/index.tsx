@@ -14,10 +14,10 @@ interface Props {
 }
 
 const Container = styled.div`
-  padding-bottom: 32px;
+  padding-bottom: 16px;
 
   > * {
-    padding-bottom: 32px;
+    padding-bottom: 16px;
   }
 `;
 
