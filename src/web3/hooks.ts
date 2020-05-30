@@ -159,16 +159,16 @@ export const calculateApy = (
   const portionOfYear = timeDiff.mul(SCALE).div(YEAR);
   const portionsInYear = SCALE.div(portionOfYear);
   const rateDecimals = parseExactAmount(SCALE.add(rateDiff), 18);
-
   if (rateDecimals.simple) {
     const x = new FractionalBigNumber(rateDecimals.simple.toString());
-    const diff = x.pow(new FractionalBigNumber(portionsInYear.toString()));
+    const diff = x
+      .pow(new FractionalBigNumber(portionsInYear.toString()))
+      .decimalPlaces(10);
     const parsed = parseAmount(diff.toString(), 18);
     return parsed.exact?.sub(SCALE) || new BigNumber(0);
   }
   return new BigNumber(0);
 };
-
 export const useApy = (): BigNumber | null => {
   const latestSub = useLatestExchangeRateSubscription();
   const latest = latestSub.data?.exchangeRates[0];
