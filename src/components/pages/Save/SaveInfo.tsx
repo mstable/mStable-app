@@ -122,7 +122,7 @@ export const SaveInfo: FC<{}> = () => {
       </BalanceInfoRow>
       <InfoRow>
         <div>
-          <H3>Current APY</H3>
+          <H3>Recent APY</H3>
           {apyPercentage ? (
             <InfoCountUp end={apyPercentage} suffix="%" decimals={2} />
           ) : (
