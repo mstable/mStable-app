@@ -61,9 +61,8 @@ const InfoRow = styled.div`
   }
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
 
     h3 {
       border-top: none;
@@ -71,6 +70,12 @@ const InfoRow = styled.div`
   }
 
   ${({ theme }) => theme.mixins.borderTop}
+`;
+
+const BalanceInfoRow = styled(InfoRow)`
+  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+    display: block;
+  }
 `;
 
 export const SaveInfo: FC<{}> = () => {
@@ -95,7 +100,7 @@ export const SaveInfo: FC<{}> = () => {
 
   return (
     <>
-      <InfoRow>
+      <BalanceInfoRow>
         <div>
           <H3>Your mUSD savings balance</H3>
           <CreditBalance>
@@ -114,33 +119,29 @@ export const SaveInfo: FC<{}> = () => {
             </InfoMsg>
           </CreditBalance>
         </div>
-      </InfoRow>
+      </BalanceInfoRow>
       <InfoRow>
         <div>
-          <H3>
-            Current APY{' '}
-            <a
-              href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              (24h)
-            </a>
-          </H3>
+          <H3>Current APY</H3>
           {apyPercentage ? (
             <InfoCountUp end={apyPercentage} suffix="%" decimals={2} />
           ) : (
             <Skeleton />
           )}
-          <InfoMsg>
-            <a
-              href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              How is this calculated?
-            </a>
-          </InfoMsg>
+          {apyPercentage && apyPercentage > 25 ? (
+            <InfoMsg>
+              <a
+                href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                APY is an average over the past 24 hours.
+              </a>{' '}
+              APY is currently artificially high due to the initial growth phase
+              of mUSD and might not be representative; this should normalise
+              shortly.
+            </InfoMsg>
+          ) : null}
         </div>
         <div>
           <H3 borderTop>Total mUSD supply</H3>
