@@ -130,20 +130,15 @@ export const SaveInfo: FC<{}> = () => {
           ) : (
             <Skeleton />
           )}
-          {apyPercentage && apyPercentage > 25 ? (
-            <InfoMsg>
-              <a
-                href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                APY is an average over the past 24 hours.
-              </a>{' '}
-              APY is currently artificially high due to the initial growth phase
-              of mUSD and might not be representative; this should normalise
-              shortly.
-            </InfoMsg>
-          ) : null}
+          <InfoMsg>
+            <a
+              href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              APY is an average over the past 24 hours.
+            </a>
+          </InfoMsg>
         </div>
         <div>
           <H3 borderTop>Total mUSD supply</H3>
