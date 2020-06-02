@@ -1,12 +1,18 @@
-import { BigNumber } from 'ethers/utils';
+import { BigNumber, bigNumberify, BigNumberish } from 'ethers/utils';
 import { RATIO_SCALE } from './constants';
 
 export const applyRatioMassetToBasset = (
-  input: BigNumber,
-  ratio: BigNumber,
-): BigNumber => input.mul(RATIO_SCALE).div(ratio);
+  input: BigNumberish,
+  ratio: BigNumberish,
+): BigNumber =>
+  bigNumberify(input)
+    .mul(RATIO_SCALE)
+    .div(ratio);
 
 export const applyRatioBassetToMasset = (
-  input: BigNumber,
-  ratio: BigNumber,
-): BigNumber => input.mul(ratio).div(RATIO_SCALE);
+  input: BigNumberish,
+  ratio: BigNumberish,
+): BigNumber =>
+  bigNumberify(input)
+    .mul(ratio)
+    .div(RATIO_SCALE);

@@ -1,13 +1,18 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 import { formatUnits } from 'ethers/utils';
+
 import { CountUp as CountUpBase } from '../../core/CountUp';
 import { TokenIcon } from '../../icons/TokenIcon';
+import { ToggleInput } from '../../forms/ToggleInput';
+import { useBassetData } from '../../../context/DataProvider/DataProvider';
 import { useRedeemBassetData, useRedeemBassetOutput } from './RedeemProvider';
 
 interface Props {
   address: string;
+  toggleDisabled: boolean;
+  handleToggle(address: string): void;
 }
 
 const CountUp = styled(CountUpBase)<{
@@ -19,8 +24,6 @@ const CountUp = styled(CountUpBase)<{
     highlight ? theme.color.green : theme.color.offBlack};
   font-weight: ${({ highlight }) => (highlight ? '600' : '400')};
 `;
-
-const Symbol = styled.div``;
 
 const Row = styled.div`
   padding: 8px 0;
@@ -68,9 +71,20 @@ const Label = styled.div`
   text-transform: uppercase;
 `;
 
+const ToggleRow = styled(Row)``;
+
+const ErrorRow = styled(Row)`
+  margin-bottom: 8px;
+`;
+
+const Value = styled.div`
+  font-size: ${({ theme }) => theme.fontSize.s};
+`;
+
 const Rows = styled.div<{
   valid: boolean;
   overweight?: boolean;
+  enabled?: boolean;
 }>`
   border: 1px
     ${({ theme, valid }) =>
@@ -84,25 +98,41 @@ const Rows = styled.div<{
       ? theme.color.white
       : theme.color.redTransparenter};
   padding: ${({ theme }) => theme.spacing.xs};
+
+  ${Row} > * {
+    opacity: ${({ enabled }) => (enabled ? '1' : '0.3')};
+  }
+
+  ${ToggleRow} > * {
+    opacity: 1;
+  }
 `;
 
-export const BassetOutput: FC<Props> = ({ address }) => {
+export const BassetOutput: FC<Props> = ({
+  address,
+  handleToggle,
+  toggleDisabled,
+}) => {
   const bassetData = useRedeemBassetData(address);
-  const bassetOutput = useRedeemBassetOutput(address);
+  const { error, enabled, amount } = useRedeemBassetOutput(address) || {};
+  const { overweight } = useBassetData(address) || {};
 
   const balance = bassetData?.token?.balance;
+  const decimals = bassetData?.token?.decimals;
 
   const simpleBalance = useMemo<number>(
     () =>
-      balance && bassetData?.token.decimals
-        ? parseFloat(formatUnits(balance, bassetData.token.decimals))
-        : 0,
-    [balance, bassetData],
+      balance && decimals ? parseFloat(formatUnits(balance, decimals)) : 0,
+    [balance, decimals],
   );
+
+  const toggle = useCallback(() => {
+    handleToggle(address);
+  }, [handleToggle, address]);
 
   return (
     <div>
-      <Rows valid>
+      <Rows valid={!error} enabled={enabled} overweight={overweight}>
         <HeaderRow>
           <TokenContainer>
             {!bassetData?.token?.symbol ? (
@@ -110,10 +140,15 @@ export const BassetOutput: FC<Props> = ({ address }) => {
             ) : (
               <>
                 <TokenIcon symbol={bassetData.token.symbol} />
-                <Symbol>{bassetData.token.symbol}</Symbol>
+                <div>{bassetData.token.symbol}</div>
               </>
             )}
           </TokenContainer>
+          <ToggleInput
+            onClick={toggle}
+            disabled={toggleDisabled}
+            checked={!!enabled}
+          />
         </HeaderRow>
         <Row>
           <Label>Your Balance</Label>
@@ -122,13 +157,19 @@ export const BassetOutput: FC<Props> = ({ address }) => {
         <Row>
           <Label>Amount</Label>
           <CountUp
-            highlight={(bassetOutput?.amount.simple || 0) > 0}
+            highlight={(amount?.simple || 0) > 0}
             duration={0.4}
-            end={bassetOutput?.amount.simple || 0}
+            end={amount?.simple || 0}
             prefix="+ "
           />
         </Row>
       </Rows>
+      {error ? (
+        <ErrorRow>
+          <Label>Unable to redeem</Label>
+          <Value>{error}</Value>
+        </ErrorRow>
+      ) : null}
     </div>
   );
 };
