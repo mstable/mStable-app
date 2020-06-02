@@ -1155,41 +1155,24 @@ export type SavingsContractQuery = { savingsContracts: Array<(
     & { exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
   )> };
 
-export type TokensSubscriptionVariables = {
-  ids: Array<Scalars['ID']>;
-};
-
-
-export type TokensSubscription = { tokens: Array<TokenDetailsFragment> };
-
-export type TokenSubscriptionVariables = {
+export type TokenQueryVariables = {
   id: Scalars['ID'];
 };
 
 
-export type TokenSubscription = { token?: Maybe<TokenDetailsFragment> };
+export type TokenQuery = { token?: Maybe<TokenDetailsFragment> };
 
-export type CreditBalancesSubscriptionVariables = {
+export type CreditBalancesQueryVariables = {
   account: Scalars['ID'];
 };
 
 
-export type CreditBalancesSubscription = { account?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
+export type CreditBalancesQuery = { account?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
 
-export type LatestExchangeRateSubscriptionVariables = {};
-
-
-export type LatestExchangeRateSubscription = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
-
-export type SavingsContractDataSubscriptionVariables = {
-  id: Scalars['ID'];
-};
+export type LatestExchangeRateQueryVariables = {};
 
 
-export type SavingsContractDataSubscription = { savingsContracts: Array<(
-    Pick<SavingsContract, 'id' | 'totalSavings' | 'totalCredits' | 'savingsRate' | 'automationEnabled'>
-    & { exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
-  )> };
+export type LatestExchangeRateQuery = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
 
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
@@ -1473,37 +1456,8 @@ export function useSavingsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQ
 export type SavingsContractQueryHookResult = ReturnType<typeof useSavingsContractQuery>;
 export type SavingsContractLazyQueryHookResult = ReturnType<typeof useSavingsContractLazyQuery>;
 export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<SavingsContractQuery, SavingsContractQueryVariables>;
-export const TokensDocument = gql`
-    subscription Tokens($ids: [ID!]!) {
-  tokens(where: {id_in: $ids}) {
-    ...TokenDetails
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
-
-/**
- * __useTokensSubscription__
- *
- * To run a query within a React component, call `useTokensSubscription` and pass it any options that fit your needs.
- * When your component renders, `useTokensSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTokensSubscription({
- *   variables: {
- *      ids: // value for 'ids'
- *   },
- * });
- */
-export function useTokensSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<TokensSubscription, TokensSubscriptionVariables>) {
-        return ApolloReactHooks.useSubscription<TokensSubscription, TokensSubscriptionVariables>(TokensDocument, baseOptions);
-      }
-export type TokensSubscriptionHookResult = ReturnType<typeof useTokensSubscription>;
-export type TokensSubscriptionResult = ApolloReactCommon.SubscriptionResult<TokensSubscription>;
 export const TokenDocument = gql`
-    subscription Token($id: ID!) {
+    query Token($id: ID!) {
   token(id: $id) {
     ...TokenDetails
   }
@@ -1511,28 +1465,32 @@ export const TokenDocument = gql`
     ${TokenDetailsFragmentDoc}`;
 
 /**
- * __useTokenSubscription__
+ * __useTokenQuery__
  *
- * To run a query within a React component, call `useTokenSubscription` and pass it any options that fit your needs.
- * When your component renders, `useTokenSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useTokenSubscription({
+ * const { data, loading, error } = useTokenQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useTokenSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<TokenSubscription, TokenSubscriptionVariables>) {
-        return ApolloReactHooks.useSubscription<TokenSubscription, TokenSubscriptionVariables>(TokenDocument, baseOptions);
+export function useTokenQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TokenQuery, TokenQueryVariables>) {
+        return ApolloReactHooks.useQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
       }
-export type TokenSubscriptionHookResult = ReturnType<typeof useTokenSubscription>;
-export type TokenSubscriptionResult = ApolloReactCommon.SubscriptionResult<TokenSubscription>;
+export function useTokenLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TokenQuery, TokenQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
+        }
+export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
+export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
+export type TokenQueryResult = ApolloReactCommon.QueryResult<TokenQuery, TokenQueryVariables>;
 export const CreditBalancesDocument = gql`
-    subscription CreditBalances($account: ID!) {
+    query CreditBalances($account: ID!) {
   account(id: $account) {
     creditBalances {
       amount
@@ -1542,28 +1500,32 @@ export const CreditBalancesDocument = gql`
     `;
 
 /**
- * __useCreditBalancesSubscription__
+ * __useCreditBalancesQuery__
  *
- * To run a query within a React component, call `useCreditBalancesSubscription` and pass it any options that fit your needs.
- * When your component renders, `useCreditBalancesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useCreditBalancesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCreditBalancesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCreditBalancesSubscription({
+ * const { data, loading, error } = useCreditBalancesQuery({
  *   variables: {
  *      account: // value for 'account'
  *   },
  * });
  */
-export function useCreditBalancesSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<CreditBalancesSubscription, CreditBalancesSubscriptionVariables>) {
-        return ApolloReactHooks.useSubscription<CreditBalancesSubscription, CreditBalancesSubscriptionVariables>(CreditBalancesDocument, baseOptions);
+export function useCreditBalancesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
+        return ApolloReactHooks.useQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
       }
-export type CreditBalancesSubscriptionHookResult = ReturnType<typeof useCreditBalancesSubscription>;
-export type CreditBalancesSubscriptionResult = ApolloReactCommon.SubscriptionResult<CreditBalancesSubscription>;
+export function useCreditBalancesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
+        }
+export type CreditBalancesQueryHookResult = ReturnType<typeof useCreditBalancesQuery>;
+export type CreditBalancesLazyQueryHookResult = ReturnType<typeof useCreditBalancesLazyQuery>;
+export type CreditBalancesQueryResult = ApolloReactCommon.QueryResult<CreditBalancesQuery, CreditBalancesQueryVariables>;
 export const LatestExchangeRateDocument = gql`
-    subscription LatestExchangeRate {
+    query LatestExchangeRate {
   exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
     exchangeRate
     timestamp
@@ -1572,58 +1534,26 @@ export const LatestExchangeRateDocument = gql`
     `;
 
 /**
- * __useLatestExchangeRateSubscription__
+ * __useLatestExchangeRateQuery__
  *
- * To run a query within a React component, call `useLatestExchangeRateSubscription` and pass it any options that fit your needs.
- * When your component renders, `useLatestExchangeRateSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useLatestExchangeRateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLatestExchangeRateQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useLatestExchangeRateSubscription({
+ * const { data, loading, error } = useLatestExchangeRateQuery({
  *   variables: {
  *   },
  * });
  */
-export function useLatestExchangeRateSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<LatestExchangeRateSubscription, LatestExchangeRateSubscriptionVariables>) {
-        return ApolloReactHooks.useSubscription<LatestExchangeRateSubscription, LatestExchangeRateSubscriptionVariables>(LatestExchangeRateDocument, baseOptions);
+export function useLatestExchangeRateQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
+        return ApolloReactHooks.useQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
       }
-export type LatestExchangeRateSubscriptionHookResult = ReturnType<typeof useLatestExchangeRateSubscription>;
-export type LatestExchangeRateSubscriptionResult = ApolloReactCommon.SubscriptionResult<LatestExchangeRateSubscription>;
-export const SavingsContractDataDocument = gql`
-    subscription SavingsContractData($id: ID!) {
-  savingsContracts(where: {id: $id}) {
-    id
-    totalSavings
-    totalCredits
-    exchangeRates {
-      id
-    }
-    savingsRate
-    automationEnabled
-  }
-}
-    `;
-
-/**
- * __useSavingsContractDataSubscription__
- *
- * To run a query within a React component, call `useSavingsContractDataSubscription` and pass it any options that fit your needs.
- * When your component renders, `useSavingsContractDataSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useSavingsContractDataSubscription({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useSavingsContractDataSubscription(baseOptions?: ApolloReactHooks.SubscriptionHookOptions<SavingsContractDataSubscription, SavingsContractDataSubscriptionVariables>) {
-        return ApolloReactHooks.useSubscription<SavingsContractDataSubscription, SavingsContractDataSubscriptionVariables>(SavingsContractDataDocument, baseOptions);
-      }
-export type SavingsContractDataSubscriptionHookResult = ReturnType<typeof useSavingsContractDataSubscription>;
-export type SavingsContractDataSubscriptionResult = ApolloReactCommon.SubscriptionResult<SavingsContractDataSubscription>;
+export function useLatestExchangeRateLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
+        }
+export type LatestExchangeRateQueryHookResult = ReturnType<typeof useLatestExchangeRateQuery>;
+export type LatestExchangeRateLazyQueryHookResult = ReturnType<typeof useLatestExchangeRateLazyQuery>;
+export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>;

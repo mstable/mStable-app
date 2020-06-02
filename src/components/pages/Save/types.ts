@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers/utils';
 import { SavingsBalance, SavingsQuantity, TokenDetails } from '../../../types';
-import { LatestExchangeRateSubscriptionResult } from '../../../graphql/generated';
+import { LatestExchangeRateQueryResult } from '../../../graphql/generated';
 import { TokenDetailsWithBalance } from '../../../context/DataProvider/TokensProvider';
 
 export enum TransactionType {
@@ -28,7 +28,7 @@ export enum Actions {
 export interface State {
   data: {
     exchangeRate?: NonNullable<
-      LatestExchangeRateSubscriptionResult['data']
+      LatestExchangeRateQueryResult['data']
     >['exchangeRates'][0];
     mUsdToken?: TokenDetailsWithBalance;
     allowance?: BigNumber;

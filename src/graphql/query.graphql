@@ -72,3 +72,24 @@ query SavingsContract($id: ID!) {
         automationEnabled
     }
 }
+
+query Token($id: ID!) {
+    token(id: $id) {
+        ...TokenDetails
+    }
+}
+
+query CreditBalances($account: ID!) {
+    account(id: $account) {
+        creditBalances {
+            amount
+        }
+    }
+}
+
+query LatestExchangeRate {
+    exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
+        exchangeRate
+        timestamp
+    }
+}

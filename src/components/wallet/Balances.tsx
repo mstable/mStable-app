@@ -2,14 +2,16 @@ import React, { FC, useContext } from 'react';
 import styled, { ThemeContext, DefaultTheme } from 'styled-components';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { formatUnits } from 'ethers/utils';
-import { useWallet } from 'use-wallet';
-import { useMusdData } from '../../context/DataProvider/DataProvider';
+
+import {
+  useMusdData,
+  useSavingsBalance,
+} from '../../context/DataProvider/DataProvider';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
 import { TokenIcon as TokenIconBase } from '../icons/TokenIcon';
 import { List, ListItem } from '../core/List';
-import { useSavingsBalance } from '../../web3/hooks';
 
 const Symbol = styled.div`
   display: flex;
@@ -47,9 +49,8 @@ const BalanceSkeleton: FC<{ themeContext: DefaultTheme }> = ({
  * selected mAsset, the mAsset itself, and MTA.
  */
 export const Balances: FC<{}> = () => {
-  const { account } = useWallet();
   const { token: mUsd, bAssets: otherTokens = [] } = useMusdData() || {};
-  const savingsBalance = useSavingsBalance(account);
+  const savingsBalance = useSavingsBalance();
   const themeContext = useContext(ThemeContext);
 
   return (
