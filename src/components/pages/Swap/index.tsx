@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { useWallet } from 'use-wallet';
 import { BigNumber } from 'ethers/utils';
+import { MusdStats } from '../../stats/MusdStats';
 
 import {
   FormProvider,
@@ -82,6 +83,7 @@ export const Swap: FC<{}> = () => (
   <SwapProvider>
     <FormProvider>
       <SwapForm />
+      <MusdStats />
     </FormProvider>
   </SwapProvider>
 );
