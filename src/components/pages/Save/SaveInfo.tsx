@@ -90,11 +90,13 @@ export const SaveInfo: FC<{}> = () => {
   );
 
   const savingsBalance = useSavingsBalance(account);
+  const clampedBalance =
+    savingsBalance?.simple || 0 > 500 ? 500 : savingsBalance?.simple || 0;
   const savingsBalanceIncreasing = useIncreasingNumber(
     savingsBalance.simple,
     // TODO - re-introduce real APY after it settles down
     // ((savingsBalance.simple || 0) * (apyPercentage || 10)) /
-    ((savingsBalance.simple || 0) * 10) / 100 / 365 / 24 / 60 / 60 / 10,
+    (clampedBalance * 10) / 100 / 365 / 24 / 60 / 60 / 10,
     100,
   );
 

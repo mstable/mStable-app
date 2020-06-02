@@ -3,6 +3,7 @@ import blockies from 'ethereum-blockies';
 import { useMutex } from 'react-context-mutex';
 import useInterval from '@use-it/interval';
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
+import { BigNumber as FractionalBigNumber } from 'bignumber.js';
 import { SavingsBalance, MassetNames } from '../types';
 import {
   ExchangeRate,
@@ -15,6 +16,7 @@ import {
 import { truncateAddress } from './strings';
 import { theme } from '../theme';
 import { SCALE } from './constants';
+import { parseExactAmount, parseAmount } from './amounts';
 
 type RateTimestamp = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
 
@@ -153,11 +155,20 @@ export const calculateApy = (
 
   const timeDiff = parseUnits((end.timestamp - start.timestamp).toString());
 
+  // new calc: (1+0.001)^365-1
   const portionOfYear = timeDiff.mul(SCALE).div(YEAR);
-
-  return rateDiff.mul(SCALE).div(portionOfYear);
+  const portionsInYear = SCALE.div(portionOfYear);
+  const rateDecimals = parseExactAmount(SCALE.add(rateDiff), 18);
+  if (rateDecimals.simple) {
+    const x = new FractionalBigNumber(rateDecimals.simple.toString());
+    const diff = x
+      .pow(new FractionalBigNumber(portionsInYear.toString()))
+      .decimalPlaces(10);
+    const parsed = parseAmount(diff.toString(), 18);
+    return parsed.exact?.sub(SCALE) || new BigNumber(0);
+  }
+  return new BigNumber(0);
 };
-
 export const useApy = (): BigNumber | null => {
   const latestSub = useLatestExchangeRateSubscription();
   const latest = latestSub.data?.exchangeRates[0];
