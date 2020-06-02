@@ -12,25 +12,46 @@ import { MusdStats } from '../../stats/MusdStats';
 import { RedeemInput } from './RedeemInput';
 import { RedeemConfirm } from './RedeemConfirm';
 import { RedeemProvider, useRedeemState } from './RedeemProvider';
+import { Mode } from './types';
 
 const RedeemForm: FC<{}> = () => {
   const { account } = useWallet();
   const mUsdContract = useMusdContract();
   const setFormManifest = useSetFormManifest();
-  const { redemption, valid } = useRedeemState();
+  const { redemption, valid, mode, bAssetOutputs } = useRedeemState();
+  const enabled = bAssetOutputs.filter(b => b.enabled)[0];
 
   useEffect(() => {
     if (valid && account && mUsdContract && redemption.amount.exact) {
-      setFormManifest<Interfaces.Masset, 'redeemMasset'>({
-        iface: mUsdContract,
-        args: [redemption.amount.exact, account],
-        fn: 'redeemMasset',
-      });
-      return;
+      if (mode === Mode.RedeemMasset) {
+        setFormManifest<Interfaces.Masset, 'redeemMasset'>({
+          iface: mUsdContract,
+          args: [redemption.amount.exact, account],
+          fn: 'redeemMasset',
+        });
+        return;
+      }
+
+      if (mode === Mode.RedeemSingle && enabled?.amount.exact) {
+        setFormManifest<Interfaces.Masset, 'redeem'>({
+          iface: mUsdContract,
+          args: [enabled.address, enabled.amount.exact],
+          fn: 'redeem',
+        });
+        return;
+      }
     }
 
     setFormManifest(null);
-  }, [account, mUsdContract, redemption.amount.exact, setFormManifest, valid]);
+  }, [
+    account,
+    enabled,
+    mUsdContract,
+    mode,
+    redemption.amount.exact,
+    setFormManifest,
+    valid,
+  ]);
 
   return (
     <TransactionForm
@@ -45,10 +66,10 @@ const RedeemForm: FC<{}> = () => {
 };
 
 export const Redeem: FC<{}> = () => (
-    <RedeemProvider>
-      <FormProvider>
-        <RedeemForm />
-        <MusdStats />
-      </FormProvider>
-    </RedeemProvider>
-  );
+  <RedeemProvider>
+    <FormProvider>
+      <RedeemForm />
+      <MusdStats />
+    </FormProvider>
+  </RedeemProvider>
+);

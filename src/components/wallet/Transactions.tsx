@@ -215,16 +215,10 @@ const getPendingTxDescription = (
           {formatExactAmount(
             bassetQ,
             basset.token.decimals,
-            basset.token.symbol,
-            true,
-          )}{' '}
-          with{' '}
-          {formatExactAmount(
-            bassetQ,
-            mUSD.token.decimals,
             mUSD.token.symbol,
             true,
-          )}
+          )}{' '}
+          into {basset.token.symbol}
         </>
       );
     }

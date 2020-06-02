@@ -8,18 +8,13 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import {
-  BigNumber,
-  bigNumberify,
-  BigNumberish,
-  formatUnits,
-  parseUnits,
-} from 'ethers/utils';
+import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { pipe } from 'ts-pipe-compose';
 
 import { useMusdData } from '../../../context/DataProvider/DataProvider';
 import { formatSimpleAmount, parseAmount } from '../../../web3/amounts';
-import { RATIO_SCALE, SCALE } from '../../../web3/constants';
+import { SCALE } from '../../../web3/constants';
+import { applyRatioMassetToBasset } from '../../../web3/ratio';
 import { Amount, TokenQuantity } from '../../../types';
 import { Action, Actions, Dispatch, Mode, State } from './types';
 import { applyValidation } from './validation';
@@ -45,14 +40,6 @@ const initialState: State = {
   valid: false,
   touched: false,
 };
-
-const applyRatioMassetToBasset = (
-  input: BigNumberish,
-  ratio: BigNumberish,
-): BigNumber =>
-  bigNumberify(input)
-    .mul(RATIO_SCALE)
-    .div(ratio);
 
 const calcOptimalBassetQuantitiesForMint = ({
   mAsset,

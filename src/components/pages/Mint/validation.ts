@@ -54,21 +54,7 @@ const mintSingleValidator: StateValidator = state => {
     b => b.address === bAssetInput.address,
   );
 
-  if (
-    !(
-      bAssetInput.amount.exact &&
-      bAssetData?.status &&
-      bAssetData.maxWeight &&
-      bAssetData.ratio &&
-      bAssetData.vaultBalance &&
-      bAssetData.token.balance &&
-      bAssetData.token.allowance &&
-      bAssetData.token?.decimals &&
-      mAssetData?.token?.address &&
-      mAssetData?.token.decimals &&
-      mAssetData.token.totalSupply
-    )
-  ) {
+  if (!(bAssetInput.amount.exact && bAssetData && mAssetData?.token)) {
     return [false, Reasons.FetchingData];
   }
 
