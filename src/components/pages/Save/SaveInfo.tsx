@@ -124,21 +124,23 @@ export const SaveInfo: FC<{}> = () => {
       </BalanceInfoRow>
       <InfoRow>
         <div>
-          <H3>Recent APY</H3>
+          <H3>APY</H3>
           {apyPercentage ? (
-            <InfoCountUp end={apyPercentage} suffix="%" decimals={2} />
+            <>
+              <InfoCountUp end={apyPercentage} suffix="%" decimals={2} />
+              <InfoMsg>
+                <a
+                  href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  APY is an average over the past 24 hours
+                </a>
+              </InfoMsg>
+            </>
           ) : (
             <Skeleton />
           )}
-          <InfoMsg>
-            <a
-              href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              APY is an average over the past 24 hours.
-            </a>
-          </InfoMsg>
         </div>
         <div>
           <H3 borderTop>Total mUSD supply</H3>
