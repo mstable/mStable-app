@@ -1,20 +1,16 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-import { useWallet } from 'use-wallet';
 import { formatUnits } from 'ethers/utils';
 import { H3 } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { FontSize } from '../../../theme';
-import {
-  useApy,
-  useIncreasingNumber,
-  useSavingsBalance,
-} from '../../../web3/hooks';
+import { useApy, useIncreasingNumber } from '../../../web3/hooks';
 import {
   useMusdData,
-  useMusdSavings,
+  useMusdSavingsData,
+  useSavingsBalance,
 } from '../../../context/DataProvider/DataProvider';
 
 const CreditBalance = styled.div`
@@ -79,9 +75,8 @@ const BalanceInfoRow = styled(InfoRow)`
 `;
 
 export const SaveInfo: FC<{}> = () => {
-  const { account } = useWallet();
   const mUsd = useMusdData();
-  const mUsdSavings = useMusdSavings();
+  const mUsdSavings = useMusdSavingsData();
 
   const apy = useApy();
   const apyPercentage = useMemo<number | null>(
@@ -89,7 +84,7 @@ export const SaveInfo: FC<{}> = () => {
     [apy],
   );
 
-  const savingsBalance = useSavingsBalance(account);
+  const savingsBalance = useSavingsBalance();
   const clampedBalance =
     savingsBalance?.simple || 0 > 500 ? 500 : savingsBalance?.simple || 0;
   const savingsBalanceIncreasing = useIncreasingNumber(

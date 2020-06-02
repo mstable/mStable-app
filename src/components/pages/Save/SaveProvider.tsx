@@ -9,18 +9,19 @@ import React, {
   useReducer,
 } from 'react';
 import { parseUnits } from 'ethers/utils';
-import { useWallet } from 'use-wallet';
 import { pipe } from 'ts-pipe-compose';
 
 import {
-  useMusdSavings,
+  useLatestExchangeRate,
+  useMusdSavingsAllowance,
   useMusdTokenData,
+  useSavingsBalance,
 } from '../../../context/DataProvider/DataProvider';
+import { useKnownAddress } from '../../../context/DataProvider/KnownAddressProvider';
+import { ContractNames } from '../../../types';
 import { parseAmount, parseExactAmount } from '../../../web3/amounts';
 import { SCALE } from '../../../web3/constants';
-import { useLatestExchangeRateSubscription } from '../../../graphql/generated';
-import { useSavingsBalance } from '../../../web3/hooks';
-import { State, Actions, Action, Dispatch, TransactionType } from './types';
+import { Action, Actions, Dispatch, State, TransactionType } from './types';
 import { applyValidation } from './validate';
 
 const update = (state: State): State => pipe(state, applyValidation);
@@ -155,14 +156,12 @@ export const SaveProvider: FC<{}> = ({ children }) => {
     [dispatch],
   );
 
-  const { account } = useWallet();
-  const savingsBalance = useSavingsBalance(account);
-  const latestSub = useLatestExchangeRateSubscription();
-  const exchangeRate = latestSub.data?.exchangeRates[0];
+  const savingsBalance = useSavingsBalance();
+  const exchangeRate = useLatestExchangeRate();
   const mUsdToken = useMusdTokenData();
-  const mUsdSavings = useMusdSavings();
-  const allowance = mUsdSavings?.allowance || undefined;
-  const savingsContractAddress = mUsdSavings?.id;
+  const savingsContractAddress =
+    useKnownAddress(ContractNames.mUSDSavings) || undefined;
+  const allowance = useMusdSavingsAllowance();
 
   useEffect(() => {
     dispatch({

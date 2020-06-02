@@ -1,10 +1,18 @@
 import { BigNumber } from 'ethers/utils';
-import { Masset, Basset, MassetQuery, Basket } from '../../graphql/generated';
+import {
+  Basket,
+  Basset,
+  CreditBalance,
+  ExchangeRate,
+  Masset,
+  MassetQueryResult,
+  SavingsContractQueryResult,
+} from '../../graphql/generated';
 import {
   TokenDetailsWithBalance,
   State as TokensState,
 } from './TokensProvider';
-import { ContractNames } from '../../types';
+import { Amount } from '../../types';
 
 export interface BassetData
   extends Pick<
@@ -31,18 +39,38 @@ export interface MassetData {
 }
 
 export interface State {
-  [ContractNames.mUSD]: MassetData;
-  // Other mAssets go here
+  mUSD: MassetData;
+  mUSDSavings?: NonNullable<
+    SavingsContractQueryResult['data']
+  >['savingsContracts'][0];
+  latestExchangeRate?: Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
+  creditBalances: Pick<CreditBalance, 'amount'>[];
+  savingsBalance: Amount & { creditsExact: BigNumber | null };
 }
 
 export enum Actions {
+  UpdateCreditBalances,
+  UpdateLatestExchangeRate,
   UpdateMassetData,
+  UpdateMusdSavingsData,
   UpdateTokens,
 }
 
 export type Action =
   | {
       type: Actions.UpdateMassetData;
-      payload: MassetQuery | undefined;
+      payload: NonNullable<MassetQueryResult['data']>['masset'];
+    }
+  | {
+      type: Actions.UpdateMusdSavingsData;
+      payload: State['mUSDSavings'];
+    }
+  | {
+      type: Actions.UpdateLatestExchangeRate;
+      payload: State['latestExchangeRate'];
+    }
+  | {
+      type: Actions.UpdateCreditBalances;
+      payload: State['creditBalances'];
     }
   | { type: Actions.UpdateTokens; payload: TokensState };

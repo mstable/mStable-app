@@ -1,11 +1,11 @@
 import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { formatUnits, parseUnits } from 'ethers/utils';
-import { useWallet } from 'use-wallet';
 
 import {
   useMusdData,
-  useMusdSavings,
+  useSavingsBalance,
+  useMusdSavingsAllowance,
 } from '../../../context/DataProvider/DataProvider';
 import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
@@ -19,7 +19,6 @@ import { H3 } from '../../core/Typography';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { ToggleInput } from '../../forms/ToggleInput';
 import { formatExactAmount } from '../../../web3/amounts';
-import { useSavingsBalance } from '../../../web3/hooks';
 import { TransactionType } from './types';
 import { useSaveState, useSaveDispatch } from './SaveProvider';
 
@@ -48,8 +47,6 @@ export const SaveInput: FC<{}> = () => {
 
   const { setToken, setTransactionType, setQuantity } = useSaveDispatch();
 
-  const { account } = useWallet();
-
   const sendTransaction = useSendTransaction();
 
   const savingsContract = useSavingsContract();
@@ -60,9 +57,8 @@ export const SaveInput: FC<{}> = () => {
   const mUsdAddress = mUsd?.token.address || null;
 
   const mUsdToken = useTokenWithBalance(mUsdAddress);
-  const mUsdSavings = useMusdSavings();
-
-  const savingsBalance = useSavingsBalance(account);
+  const allowance = useMusdSavingsAllowance();
+  const savingsBalance = useSavingsBalance();
 
   const musdBalanceItem = useMemo(
     () =>
@@ -92,9 +88,9 @@ export const SaveInput: FC<{}> = () => {
       !!(
         transactionType === TransactionType.Deposit &&
         inputAmount &&
-        mUsdSavings?.allowance?.lt(inputAmount)
+        allowance?.lt(inputAmount)
       ),
-    [transactionType, inputAmount, mUsdSavings],
+    [transactionType, inputAmount, allowance],
   );
 
   const handleChangeToken = useCallback<

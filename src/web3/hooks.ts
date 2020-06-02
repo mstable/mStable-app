@@ -2,30 +2,20 @@ import { useMemo, createElement, DOMElement, useEffect, useState } from 'react';
 import blockies from 'ethereum-blockies';
 import { useMutex } from 'react-context-mutex';
 import useInterval from '@use-it/interval';
-import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
+import { BigNumber, parseUnits } from 'ethers/utils';
 import { BigNumber as FractionalBigNumber } from 'bignumber.js';
-import { SavingsBalance, MassetNames } from '../types';
+
 import {
   ExchangeRate,
-  TokenDetailsFragment,
-  useCoreTokensQuery,
-  useCreditBalancesSubscription,
   useLastExchangeRateBeforeTimestampQuery,
-  useLatestExchangeRateSubscription,
 } from '../graphql/generated';
+import { useLatestExchangeRate } from '../context/DataProvider/DataProvider';
 import { truncateAddress } from './strings';
 import { theme } from '../theme';
 import { SCALE } from './constants';
 import { parseExactAmount, parseAmount } from './amounts';
 
 type RateTimestamp = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
-
-export const useMassetToken = (
-  massetName: MassetNames,
-): TokenDetailsFragment | null => {
-  const { data } = useCoreTokensQuery();
-  return data?.[massetName]?.[0] || null;
-};
 
 export const useTruncatedAddress = (address: string | null): string | null =>
   useMemo(() => (address ? truncateAddress(address) : null), [address]);
@@ -86,40 +76,6 @@ export const useAsyncMutex = (
   }, [mutexKey]);
 };
 
-export const useSavingsBalance = (account: string | null): SavingsBalance => {
-  const latestSub = useLatestExchangeRateSubscription();
-  const creditBalancesSub = useCreditBalancesSubscription({
-    variables: { account: account ? account.toLowerCase() : '' },
-    skip: !account,
-  });
-
-  const creditBalance =
-    creditBalancesSub.data?.account?.creditBalances[0]?.amount;
-  const latest = latestSub.data?.exchangeRates[0];
-
-  return useMemo(() => {
-    if (latest) {
-      let internalCredits = creditBalance;
-      if (!internalCredits) {
-        internalCredits = '0';
-      }
-      const rate = parseUnits(latest.exchangeRate);
-      const balance = parseUnits(internalCredits);
-
-      const exact = balance.mul(rate).div(SCALE);
-      const simple = parseFloat(
-        parseFloat(formatUnits(exact, 18))
-          .toFixed(10)
-          .toString(),
-      );
-
-      return { exact, simple, creditsExact: balance };
-    }
-
-    return { exact: null, simple: null, creditsExact: null };
-  }, [creditBalance, latest]);
-};
-
 export const useIncreasingNumber = (
   value: number | null,
   increment: number,
@@ -169,14 +125,15 @@ export const calculateApy = (
   }
   return new BigNumber(0);
 };
+
 export const useApy = (): BigNumber | null => {
-  const latestSub = useLatestExchangeRateSubscription();
-  const latest = latestSub.data?.exchangeRates[0];
+  const latest = useLatestExchangeRate();
   const timestamp = latest?.timestamp;
 
   const previousQuery = useLastExchangeRateBeforeTimestampQuery({
     variables: { timestamp: (timestamp as number) - 24 * 60 * 60 },
     skip: !timestamp,
+    fetchPolicy: 'cache-and-network',
   });
   const previous = previousQuery.data?.exchangeRates[0];
 

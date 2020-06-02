@@ -26,7 +26,7 @@ const validate = ({
     return Reasons.TokenMustBeSelected;
   }
 
-  if (!(mUsdToken?.balance && exchangeRate && savingsBalance?.creditsExact)) {
+  if (!(mUsdToken?.balance && exchangeRate)) {
     return Reasons.FetchingData;
   }
 

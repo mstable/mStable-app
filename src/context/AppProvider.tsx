@@ -17,8 +17,6 @@ import {
 } from 'use-wallet';
 import MetamaskOnboarding from '@metamask/onboarding';
 import { navigate } from 'hookrouter';
-import { TokenDetailsFragment } from '../graphql/generated';
-import { useMassetToken } from '../web3/hooks';
 import { MassetNames, InjectedEthereum } from '../types';
 import { CHAIN_ID, CONNECTORS, NETWORK_NAMES } from '../web3/constants';
 import {
@@ -420,11 +418,3 @@ export const useResetWallet = (): Dispatch['resetWallet'] =>
 
 export const useSetWalletPosition = (): Dispatch['setWalletPosition'] =>
   useAppDispatch().setWalletPosition;
-
-export const useSelectMasset = (): Dispatch['selectMasset'] =>
-  useAppDispatch().selectMasset;
-
-export const useSelectedMassetToken = (): TokenDetailsFragment | null => {
-  const [{ selectedMasset }] = useAppContext();
-  return useMassetToken(selectedMasset);
-};
