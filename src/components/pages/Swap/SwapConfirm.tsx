@@ -2,11 +2,13 @@ import React, { FC } from 'react';
 import { P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { useSwapState } from './SwapProvider';
+import { formatExactAmount } from '../../../web3/amounts';
 
 export const SwapConfirm: FC<{}> = () => {
   const {
     values: { input, output, feeAmountSimple },
     valid,
+    mAssetData,
   } = useSwapState();
 
   return valid && input.amount.simple && output.amount.simple ? (
@@ -22,13 +24,14 @@ export const SwapConfirm: FC<{}> = () => {
         </span>
         {feeAmountSimple ? null : <span> (1:1)</span>}.
       </P>
-      {feeAmountSimple ? (
+      {feeAmountSimple && mAssetData?.feeRate ? (
         <>
           <P size={1}>
             This includes a swap fee of
             <span>
               {' '}
-              <CountUp end={parseFloat(feeAmountSimple)} decimals={4} /> mUSD
+              <CountUp end={parseFloat(feeAmountSimple)} decimals={4} /> mUSD (
+              {formatExactAmount(mAssetData?.feeRate, 16, '%')})
             </span>
             .
           </P>

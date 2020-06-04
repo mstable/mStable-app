@@ -27,7 +27,7 @@ export const formatSimpleAmount = (
  * @param commas Add comma separators to separate thousands
  */
 export const formatExactAmount = (
-  exactAmount?: BigNumber,
+  exactAmount?: BigNumber | string,
   decimals?: number,
   symbol?: string,
   commas = false,

@@ -71,6 +71,7 @@ export interface State {
   };
   touched?: boolean;
   valid: boolean;
+  applyFee: boolean;
   feeAmountSimple?: number;
 }
 
