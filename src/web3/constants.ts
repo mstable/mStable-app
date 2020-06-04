@@ -55,3 +55,5 @@ export const CONNECTORS: Connector[] = [
   { id: 'walletlink', label: 'WalletLink' },
   { id: 'frame', label: 'Frame' },
 ];
+
+export const DAPP_VERSION = '1.0.0';

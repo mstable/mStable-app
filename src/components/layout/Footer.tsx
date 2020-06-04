@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { A } from 'hookrouter';
+import { DAPP_VERSION } from '../../web3/constants';
 
 interface Props {
   inverted: boolean;
@@ -16,9 +17,18 @@ const Links = styled.ul`
   }
 `;
 
+const Version = styled.div`
+  font-size: 10px;
+  span {
+    font-weight: bold;
+  }
+`;
+
 const Container = styled.footer<Props>`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing.s} ${theme.spacing.l}`};
+  display: flex;
+  justify-content: space-between;
 
   border-top: ${({ theme, inverted }) =>
     `1px 
@@ -53,5 +63,8 @@ export const Footer: FC<Props> = ({ inverted, home }) => (
         </li>
       ))}
     </Links>
+    <Version>
+      Current version <span>{DAPP_VERSION}</span>
+    </Version>
   </Container>
 );
