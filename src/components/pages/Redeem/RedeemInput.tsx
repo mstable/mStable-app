@@ -36,6 +36,7 @@ export const RedeemInput: FC<{}> = () => {
     mAssetData,
     mode,
     applyFee,
+    valid,
   } = useRedeemState();
   const {
     setRedemptionAmount,
@@ -60,7 +61,7 @@ export const RedeemInput: FC<{}> = () => {
       ),
     };
 
-    return applyFee
+    return applyFee && valid
       ? [
           bal,
           {
@@ -69,7 +70,7 @@ export const RedeemInput: FC<{}> = () => {
           },
         ]
       : [bal];
-  }, [token, applyFee]);
+  }, [token, applyFee, valid]);
 
   const handleSetMax = useCallback(() => {
     if (mUsdBalance) {
