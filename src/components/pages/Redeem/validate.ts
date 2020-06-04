@@ -113,26 +113,6 @@ const redeemOutputValidator: StateValidator = state => {
     ];
   }
 
-  // const amountExceedingMassetBalance = enabled.filter(
-  //   ({
-  //     data: {
-  //       token: { balance },
-  //     },
-  //     output: {
-  //       amount: { exact },
-  //     },
-  //   }) =>
-  //     (exact as NonNullable<BigNumber>).gt(balance as NonNullable<BigNumber>),
-  // );
-
-  // if (amountExceedingMassetBalance.length > 0) {
-  //   return [
-  //     false,
-  //     Reasons.AmountExceedsBalance,
-  //     amountExceedingMassetBalance.map(b => b.data.address),
-  //   ];
-  // }
-
   const vaultBalancesExceeded = enabled.filter(
     ({
       vaultBalanceExact,

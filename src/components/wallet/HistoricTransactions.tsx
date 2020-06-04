@@ -197,12 +197,6 @@ const getHistoricTransactionDescription = (
       );
     }
     case 'redeem': {
-      // const totalFee = logs.reduce(
-      //   (_totalFee, { values: { feeQuantity } }) =>
-      //     feeQuantity ? _totalFee.add(feeQuantity) : _totalFee,
-      //   new BigNumber(0),
-      // );
-
       const {
         values: { mAssetQuantity, bAssets },
       } = logs[logs.length - 1];
