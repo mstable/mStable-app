@@ -1,6 +1,5 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { BigNumber } from 'ethers/utils';
 import { useOrderedHistoricTransactions } from '../../context/TransactionsProvider';
 import { ContractNames, HistoricTransaction } from '../../types';
 import { EtherscanLink } from '../core/EtherscanLink';
@@ -198,14 +197,14 @@ const getHistoricTransactionDescription = (
       );
     }
     case 'redeem': {
-      const totalFee = logs.reduce(
-        (_totalFee, { values: { feeQuantity } }) =>
-          feeQuantity ? _totalFee.add(feeQuantity) : _totalFee,
-        new BigNumber(0),
-      );
+      // const totalFee = logs.reduce(
+      //   (_totalFee, { values: { feeQuantity } }) =>
+      //     feeQuantity ? _totalFee.add(feeQuantity) : _totalFee,
+      //   new BigNumber(0),
+      // );
 
       const {
-        values: { mAssetQuantity, bAssets, bAssetQuantities },
+        values: { mAssetQuantity, bAssets },
       } = logs[logs.length - 1];
 
       const bassetTokens = bAssets
@@ -219,25 +218,19 @@ const getHistoricTransactionDescription = (
       return (
         <>
           You <span>redeemed</span>{' '}
-          {humanizeList(
-            bAssets.map((address: string, index: number) =>
-              formatExactAmount(
-                bAssetQuantities[index],
-                bassetTokens[index].token.decimals,
-                bassetTokens[index].token.symbol,
-                true,
-              ),
-            ),
-          )}{' '}
-          for{' '}
           {formatExactAmount(
             mAssetQuantity,
             mUSD.token.decimals,
             mUSD.token.symbol,
             true,
-          )}{' '}
-          (fee paid:{' '}
-          {formatExactAmount(totalFee, mUSD.token.decimals, mUSD.token.symbol)})
+          )}
+          {' into '}
+          {humanizeList(
+            bAssets.map(
+              (address: string, index: number) =>
+                bassetTokens[index].token.symbol,
+            ),
+          )}
         </>
       );
     }

@@ -2,13 +2,12 @@
 
 import { BigNumber, bigNumberify, parseUnits } from 'ethers/utils';
 import { BassetData, MassetData } from '../../../context/DataProvider/types';
-import { applyRatioMassetToBasset } from '../../../web3/ratio';
-import { EXP_SCALE, RATIO_SCALE } from '../../../web3/constants';
+import { applyRatioBassetToMasset } from '../../../web3/ratio';
+import { EXP_SCALE, PERCENT_SCALE } from '../../../web3/constants';
 import { BassetStatus } from '../Mint/types';
 import { BassetOutput, Mode, Reasons, State, StateValidator } from './types';
 
-// It's not possible to construct a BigNumber with `5e22`
-const WEIGHT_THRESHOLD = new BigNumber((5e20).toString()).mul(100);
+const WEIGHT_THRESHOLD = new BigNumber(50000).mul(EXP_SCALE);
 
 /**
  * Combine bAsset output state with data from the mAsset
@@ -38,7 +37,7 @@ const redeemOutputValidator: StateValidator = state => {
   const bAssets = combineBassetsData(state);
   const enabled = bAssets.filter(b => b.output.enabled);
 
-  const onePercentOfTotal = totalVault.mul(RATIO_SCALE).div(EXP_SCALE);
+  const onePercentOfTotal = totalVault.mul(PERCENT_SCALE).div(EXP_SCALE);
 
   const weightBreachThreshold = onePercentOfTotal.gt(WEIGHT_THRESHOLD)
     ? WEIGHT_THRESHOLD
@@ -50,7 +49,7 @@ const redeemOutputValidator: StateValidator = state => {
 
   const ratioedBassetVaults = bAssets.map(
     ({ data: { ratio }, vaultBalanceExact }) =>
-      applyRatioMassetToBasset(vaultBalanceExact, ratio),
+      applyRatioBassetToMasset(vaultBalanceExact, ratio),
   );
 
   const breachedBassets = bAssets.filter((_, index) => {
@@ -157,7 +156,7 @@ const redeemOutputValidator: StateValidator = state => {
       output: {
         amount: { exact },
       },
-    }) => (exact ? applyRatioMassetToBasset(exact, ratio) : new BigNumber(0)),
+    }) => (exact ? applyRatioBassetToMasset(exact, ratio) : new BigNumber(0)),
   );
 
   const newRatioedBassetVaults = ratioedBassetVaults.map((r, index) =>
@@ -283,7 +282,7 @@ const redeemMassetValidator: StateValidator = state => {
 
   const ratioedBassetVaults = bAssets.map(
     ({ vaultBalanceExact, data: { ratio } }) =>
-      applyRatioMassetToBasset(vaultBalanceExact, ratio),
+      applyRatioBassetToMasset(vaultBalanceExact, ratio),
   );
 
   const totalBassetVault = ratioedBassetVaults.reduce(
