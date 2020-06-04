@@ -261,12 +261,8 @@ const getTxPurpose = (
       const body = `${formatExactAmount(
         bassetQ,
         bAsset.token.decimals,
-        bAsset.token.symbol,
-      )} with ${formatExactAmount(
-        bassetQ,
-        bAsset.token.decimals,
         mUsd.token.symbol,
-      )}`;
+      )} into ${bAsset.token.symbol}`;
       return {
         present: `Redeeming ${body}`,
         past: `Redeemed ${body}`,

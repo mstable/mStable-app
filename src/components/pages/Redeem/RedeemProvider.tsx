@@ -115,10 +115,11 @@ const applySwapFee = (state: State): State => {
   const {
     mAssetData,
     mode,
+    bAssetOutputs,
     redemption: { amount },
   } = state;
 
-  if (mode === Mode.RedeemMasset) {
+  if (mode === Mode.RedeemMasset || !bAssetOutputs.some(b => b.enabled)) {
     return {
       ...state,
       applyFee: false,

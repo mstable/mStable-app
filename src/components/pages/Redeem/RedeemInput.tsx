@@ -49,20 +49,27 @@ export const RedeemInput: FC<{}> = () => {
   const massetAddress = token?.address || null;
   const isProportional = mode === Mode.RedeemMasset;
 
-  const musdBalanceItem = useMemo(
-    () => [
-      {
-        label: 'Balance',
-        value: formatExactAmount(
-          token?.balance,
-          token?.decimals,
-          token?.symbol,
-          true,
-        ),
-      },
-    ],
-    [token],
-  );
+  const items = useMemo(() => {
+    const bal = {
+      label: 'Balance',
+      value: formatExactAmount(
+        token?.balance,
+        token?.decimals,
+        token?.symbol,
+        true,
+      ),
+    };
+
+    return applyFee
+      ? [
+          bal,
+          {
+            label: 'NOTE',
+            value: 'Swap fee applies (see details below)',
+          },
+        ]
+      : [bal];
+  }, [token, applyFee]);
 
   const handleSetMax = useCallback(() => {
     if (mUsdBalance) {
@@ -100,7 +107,7 @@ export const RedeemInput: FC<{}> = () => {
             tokenAddresses={[token.address]}
             onChangeAmount={handleSetAmount}
             onSetMax={handleSetMax}
-            items={musdBalanceItem}
+            items={items}
             tokenDisabled
             error={error}
           />
