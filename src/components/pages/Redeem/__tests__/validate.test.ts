@@ -16,6 +16,7 @@ describe('Redeem - validate', () => {
       bAssetOutputs: [] as BassetOutput[],
       redemption: { amount: { exact: null, simple: null } },
       valid: false,
+      applyFee: false,
     };
 
     test('invalid (but no errors) with untouched state', () => {
@@ -130,6 +131,7 @@ describe('Redeem - validate', () => {
       bAssetOutputs: [] as BassetOutput[],
       redemption: { amount: { exact: null, simple: null } },
       valid: false,
+      applyFee: false,
     };
 
     test('error when no token selected', () => {
@@ -240,6 +242,7 @@ describe('Redeem - validate', () => {
       ] as BassetOutput[],
       redemption: { amount: { exact: null, simple: null } },
       valid: false,
+      applyFee: false,
     };
 
     test.only('error when output amounts are not set', () => {
