@@ -26,7 +26,7 @@ const validate = ({
     return Reasons.TokenMustBeSelected;
   }
 
-  if (!(mUsdToken?.balance && exchangeRate)) {
+  if (!mUsdToken?.balance) {
     return Reasons.FetchingData;
   }
 
@@ -41,7 +41,7 @@ const validate = ({
   }
 
   if (transactionType === TransactionType.Withdraw) {
-    if (!savingsBalance?.creditsExact) {
+    if (!savingsBalance?.creditsExact || !exchangeRate) {
       return Reasons.FetchingData;
     }
 

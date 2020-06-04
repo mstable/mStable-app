@@ -6,7 +6,6 @@ import { applyRatioMassetToBasset } from '../../../web3/ratio';
 import { EXP_SCALE, RATIO_SCALE } from '../../../web3/constants';
 import { BassetStatus } from '../Mint/types';
 import { BassetOutput, Mode, Reasons, State, StateValidator } from './types';
-import { Amount } from '../../../types';
 
 // It's not possible to construct a BigNumber with `5e22`
 const WEIGHT_THRESHOLD = new BigNumber((5e20).toString()).mul(100);
@@ -39,6 +38,54 @@ const redeemOutputValidator: StateValidator = state => {
   const bAssets = combineBassetsData(state);
   const enabled = bAssets.filter(b => b.output.enabled);
 
+  const onePercentOfTotal = totalVault.mul(RATIO_SCALE).div(EXP_SCALE);
+
+  const weightBreachThreshold = onePercentOfTotal.gt(WEIGHT_THRESHOLD)
+    ? WEIGHT_THRESHOLD
+    : onePercentOfTotal;
+
+  const maxWeightsInUnits = bAssets.map(({ data: { maxWeight } }) =>
+    totalVault.mul(maxWeight).div(EXP_SCALE),
+  );
+
+  const ratioedBassetVaults = bAssets.map(
+    ({ data: { ratio }, vaultBalanceExact }) =>
+      applyRatioMassetToBasset(vaultBalanceExact, ratio),
+  );
+
+  const breachedBassets = bAssets.filter((_, index) => {
+    const lowerBound = weightBreachThreshold.gt(maxWeightsInUnits[index])
+      ? new BigNumber(0)
+      : maxWeightsInUnits[index].sub(weightBreachThreshold);
+    return (
+      ratioedBassetVaults[index].gt(lowerBound) &&
+      ratioedBassetVaults[index].lte(maxWeightsInUnits[index])
+    );
+  });
+
+  if (
+    breachedBassets.length > 0 &&
+    bAssets.filter(b => b.data.overweight).length === 0
+  ) {
+    return [
+      false,
+      Reasons.MustRedeemProportionally,
+      breachedBassets.map(b => b.data.address),
+    ];
+  }
+
+  const overweightBassetsNotEnabled = bAssets.filter(
+    b => b.data.overweight && !b.output.enabled,
+  );
+
+  if (overweightBassetsNotEnabled.length > 0) {
+    return [
+      false,
+      Reasons.MustRedeemOverweightBassets,
+      overweightBassetsNotEnabled.map(b => b.data.address),
+    ];
+  }
+
   const amountsRequired = enabled.filter(
     ({
       output: {
@@ -67,25 +114,25 @@ const redeemOutputValidator: StateValidator = state => {
     ];
   }
 
-  const amountExceedingMassetBalance = enabled.filter(
-    ({
-      data: {
-        token: { balance },
-      },
-      output: {
-        amount: { exact },
-      },
-    }) =>
-      (exact as NonNullable<BigNumber>).gt(balance as NonNullable<BigNumber>),
-  );
+  // const amountExceedingMassetBalance = enabled.filter(
+  //   ({
+  //     data: {
+  //       token: { balance },
+  //     },
+  //     output: {
+  //       amount: { exact },
+  //     },
+  //   }) =>
+  //     (exact as NonNullable<BigNumber>).gt(balance as NonNullable<BigNumber>),
+  // );
 
-  if (amountExceedingMassetBalance.length > 0) {
-    return [
-      false,
-      Reasons.AmountExceedsBalance,
-      amountExceedingMassetBalance.map(b => b.data.address),
-    ];
-  }
+  // if (amountExceedingMassetBalance.length > 0) {
+  //   return [
+  //     false,
+  //     Reasons.AmountExceedsBalance,
+  //     amountExceedingMassetBalance.map(b => b.data.address),
+  //   ];
+  // }
 
   const vaultBalancesExceeded = enabled.filter(
     ({
@@ -104,18 +151,6 @@ const redeemOutputValidator: StateValidator = state => {
     ];
   }
 
-  const overweightBassetsNotEnabled = bAssets.filter(
-    b => b.data.overweight && !b.output.enabled,
-  );
-
-  if (overweightBassetsNotEnabled.length > 0) {
-    return [
-      false,
-      Reasons.MustRedeemOverweightBassets,
-      overweightBassetsNotEnabled.map(b => b.data.address),
-    ];
-  }
-
   const ratioedRedemptionAmounts = bAssets.map(
     ({
       data: { ratio },
@@ -125,11 +160,8 @@ const redeemOutputValidator: StateValidator = state => {
     }) => (exact ? applyRatioMassetToBasset(exact, ratio) : new BigNumber(0)),
   );
 
-  const newRatioedBassetVaults = bAssets.map(
-    ({ data: { ratio }, vaultBalanceExact }, index) =>
-      applyRatioMassetToBasset(vaultBalanceExact, ratio).sub(
-        ratioedRedemptionAmounts[index],
-      ),
+  const newRatioedBassetVaults = ratioedBassetVaults.map((r, index) =>
+    r.sub(ratioedRedemptionAmounts[index]),
   );
 
   const newTotalVault = ratioedRedemptionAmounts.reduce(
@@ -137,14 +169,14 @@ const redeemOutputValidator: StateValidator = state => {
     totalVault,
   );
 
-  const maxWeightsInUnits = bAssets.map(({ data: { maxWeight } }) =>
+  const newMaxWeightsInUnits = bAssets.map(({ data: { maxWeight } }) =>
     newTotalVault.mul(maxWeight).div(EXP_SCALE),
   );
 
   const newOverweightBassets = bAssets.filter(
     ({ data: { overweight: previouslyOverweight } }, index) => {
       const isOverweight = newRatioedBassetVaults[index].gt(
-        maxWeightsInUnits[index],
+        newMaxWeightsInUnits[index],
       );
       return !previouslyOverweight && isOverweight;
     },
@@ -155,33 +187,6 @@ const redeemOutputValidator: StateValidator = state => {
       false,
       Reasons.BassetsMustRemainBelowMaxWeight,
       newOverweightBassets.map(b => b.data.address),
-    ];
-  }
-
-  const onePercentOfTotal = totalVault.mul(RATIO_SCALE).div(EXP_SCALE);
-
-  const weightBreachThreshold = onePercentOfTotal.gt(WEIGHT_THRESHOLD)
-    ? WEIGHT_THRESHOLD
-    : onePercentOfTotal;
-
-  const breachedBassets = bAssets.filter((_, index) => {
-    const lowerBound = weightBreachThreshold.gt(maxWeightsInUnits[index])
-      ? new BigNumber(0)
-      : maxWeightsInUnits[index].sub(weightBreachThreshold);
-    return (
-      newRatioedBassetVaults[index].gt(lowerBound) &&
-      newRatioedBassetVaults[index].lte(maxWeightsInUnits[index])
-    );
-  });
-
-  if (
-    breachedBassets.length > 0 &&
-    bAssets.filter(b => b.data.overweight).length === 0
-  ) {
-    return [
-      false,
-      Reasons.MustRedeemProportionally,
-      breachedBassets.map(b => b.data.address),
     ];
   }
 
@@ -310,6 +315,10 @@ const basketValidator: StateValidator = ({ mAssetData, mode }) => {
     return [false, Reasons.BasketContainsBlacklistedAsset];
   }
 
+  if (mAssetData.basket.undergoingRecol) {
+    return [false, Reasons.RedemptionPausedDuringRecol];
+  }
+
   if (
     mode !== Mode.RedeemMasset &&
     (mAssetData.basket.failed ||
@@ -317,10 +326,6 @@ const basketValidator: StateValidator = ({ mAssetData, mode }) => {
       mAssetData.bAssets.filter(b => b.overweight).length > 1)
   ) {
     return [false, Reasons.MustRedeemProportionally];
-  }
-
-  if (mAssetData.basket.undergoingRecol) {
-    return [false, Reasons.RedemptionPausedDuringRecol];
   }
 
   return [true];
@@ -341,7 +346,7 @@ const redemptionValidator: StateValidator = state => {
   return validate.redeemMultiValidator(state);
 };
 
-const applyValidation = (state: State): State => {
+export const applyValidation = (state: State): State => {
   const [basketValid, basketError] = validate.basketValidator(state);
   const [redeemValid, redeemError, errors = []] = validate.redemptionValidator(
     state,

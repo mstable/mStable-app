@@ -8,9 +8,13 @@ import { TokenIcon } from '../../icons/TokenIcon';
 import { ToggleInput } from '../../forms/ToggleInput';
 import { useBassetData } from '../../../context/DataProvider/DataProvider';
 import { useRedeemBassetData, useRedeemBassetOutput } from './RedeemProvider';
+import { EXP_SCALE } from '../../../web3/constants';
+import { parseExactAmount } from '../../../web3/amounts';
 
 interface Props {
   address: string;
+  applyFee: boolean;
+  feeRate?: string | null;
   toggleDisabled: boolean;
   handleToggle(address: string): void;
 }
@@ -112,10 +116,20 @@ export const BassetOutput: FC<Props> = ({
   address,
   handleToggle,
   toggleDisabled,
+  applyFee,
+  feeRate,
 }) => {
   const bassetData = useRedeemBassetData(address);
   const { error, enabled, amount } = useRedeemBassetOutput(address) || {};
-  const { overweight } = useBassetData(address) || {};
+  const { overweight, token } = useBassetData(address) || {};
+
+  const amountAfterFee =
+    applyFee && feeRate && amount?.exact && token?.decimals
+      ? parseExactAmount(
+          amount.exact.sub(amount.exact.mul(feeRate).div(EXP_SCALE)),
+          token.decimals,
+        )
+      : amount;
 
   const balance = bassetData?.token?.balance;
   const decimals = bassetData?.token?.decimals;
@@ -157,9 +171,9 @@ export const BassetOutput: FC<Props> = ({
         <Row>
           <Label>Amount</Label>
           <CountUp
-            highlight={(amount?.simple || 0) > 0}
+            highlight={(amountAfterFee?.simple || 0) > 0}
             duration={0.4}
-            end={amount?.simple || 0}
+            end={amountAfterFee?.simple || 0}
             prefix="+ "
           />
         </Row>

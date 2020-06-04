@@ -114,19 +114,39 @@ const updateBAssetOutputs = (state: State): State => {
 const applySwapFee = (state: State): State => {
   const {
     mAssetData,
+    mode,
     redemption: { amount },
   } = state;
+
+  if (mode === Mode.RedeemMasset) {
+    return {
+      ...state,
+      applyFee: false,
+      feeAmountSimple: 0,
+    };
+  }
 
   const nOverweightBassets =
     mAssetData?.bAssets.filter(b => b.overweight).length || 0;
 
+  const applyFee = nOverweightBassets === 0;
+
+  if (!applyFee) {
+    return {
+      ...state,
+      applyFee: false,
+      feeAmountSimple: 0,
+    };
+  }
+
   const feeAmountExact =
-    amount.exact && mAssetData?.feeRate && nOverweightBassets === 0
+    amount.exact && mAssetData?.feeRate && applyFee
       ? amount.exact.mul(mAssetData.feeRate).div(EXP_SCALE)
       : undefined;
 
   return {
     ...state,
+    applyFee: true,
     feeAmountSimple: feeAmountExact
       ? parseFloat(formatUnits(feeAmountExact, 18))
       : undefined,
@@ -232,6 +252,7 @@ const initialState: State = {
   valid: false,
   touched: false,
   mode: Mode.RedeemMasset,
+  applyFee: false,
   redemption: {
     amount: {
       simple: null,

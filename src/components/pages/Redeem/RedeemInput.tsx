@@ -35,6 +35,7 @@ export const RedeemInput: FC<{}> = () => {
     bAssetOutputs,
     mAssetData,
     mode,
+    applyFee,
   } = useRedeemState();
   const {
     setRedemptionAmount,
@@ -113,6 +114,8 @@ export const RedeemInput: FC<{}> = () => {
           ) : (
             bAssetOutputs.map(({ address, enabled }) => (
               <BassetOutput
+                applyFee={applyFee}
+                feeRate={mAssetData?.feeRate}
                 key={address}
                 address={address}
                 handleToggle={toggleBassetEnabled}
