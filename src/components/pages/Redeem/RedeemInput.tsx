@@ -73,9 +73,13 @@ export const RedeemInput: FC<{}> = () => {
 
   const handleSetMax = useCallback(() => {
     if (mUsdBalance) {
-      setExactRedemptionAmount(mUsdBalance);
+      if (mode === Mode.RedeemMasset) {
+        setExactRedemptionAmount(mUsdBalance);
+      } else if (mode === Mode.RedeemSingle) {
+        // min (balance, vaultBalance, othersOverweight)
+      }
     }
-  }, [mUsdBalance, setExactRedemptionAmount]);
+  }, [mUsdBalance, setExactRedemptionAmount, mode]);
 
   const handleSetAmount = useCallback(
     (_, amount) => {
@@ -106,7 +110,7 @@ export const RedeemInput: FC<{}> = () => {
             amountValue={redemption.formValue || null}
             tokenAddresses={[token.address]}
             onChangeAmount={handleSetAmount}
-            onSetMax={handleSetMax}
+            onSetMax={mode === Mode.RedeemMasset ? handleSetMax : undefined}
             items={items}
             tokenDisabled
             error={error}
