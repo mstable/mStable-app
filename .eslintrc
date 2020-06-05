@@ -3,7 +3,6 @@
     "airbnb-typescript",
     "airbnb/hooks",
     "plugin:@typescript-eslint/recommended",
-    "plugin:unicorn/recommended",
     "prettier",
     "prettier/react",
     "prettier/@typescript-eslint"
@@ -29,14 +28,6 @@
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",
     "react/prop-types": "off",
-    "unicorn/prevent-abbreviations": "off",
-    "unicorn/no-nested-ternary": "off",
-    "unicorn/filename-case": [
-      "error",
-      {
-        "case": "camelCase",
-        "ignore": ["(.+).tsx"]
-      }
-    ]
+    "no-nested-ternary": "off"
   }
 }

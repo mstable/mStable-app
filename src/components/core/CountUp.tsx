@@ -2,14 +2,22 @@ import React, { FC, useEffect, useRef } from 'react';
 import { useCountUp, CountUpProps } from 'react-countup';
 import styled from 'styled-components';
 
+import { Color } from '../../theme';
+
 interface Props extends CountUpProps {
   container?: FC;
+  highlight?: boolean;
+  highlightColor?: Color;
 }
 
 const DEFAULT_DECIMALS = 2;
 const DEFAULT_DURATION = 1;
 
-const StyledSpan = styled.span`
+const StyledSpan = styled.span<Pick<Props, 'highlight' | 'highlightColor'>>`
+  color: ${({ highlight, highlightColor }) =>
+    highlight && highlightColor ? highlightColor : 'inherit'};
+  font-weight: ${({ highlight }) => (highlight ? 'bold' : 'normal')};
+
   ${({ theme }) => theme.mixins.numeric}
 `;
 
@@ -18,6 +26,8 @@ export const CountUp: FC<Props> = ({
   container: Container = StyledSpan,
   end,
   decimals = DEFAULT_DECIMALS,
+  highlight,
+  highlightColor,
   prefix,
   suffix,
   separator = ',',
@@ -43,5 +53,13 @@ export const CountUp: FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [end]);
 
-  return <Container className={className}>{countUp}</Container>;
+  return (
+    <Container
+      className={className}
+      highlight={highlight}
+      highlightColor={highlightColor}
+    >
+      {countUp}
+    </Container>
+  );
 };

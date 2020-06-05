@@ -1,99 +1,123 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { formatUnits } from 'ethers/utils';
 
-import { useBassetData } from '../../../context/DataProvider/DataProvider';
-import { useErc20Contract } from '../../../context/DataProvider/ContractsProvider';
-import { useSendTransaction } from '../../../context/TransactionsProvider';
-import { Interfaces, SendTxManifest } from '../../../types';
-import { Size } from '../../../theme';
-import { Button } from '../../core/Button';
 import { CountUp as CountUpBase } from '../../core/CountUp';
+import { Button } from '../../core/Button';
+import { Token } from '../../core/Token';
 import { ToggleInput } from '../../forms/ToggleInput';
-import { TokenIcon } from '../../icons/TokenIcon';
-import { BassetInput as BassetInputProps, Reasons } from './types';
+import { ApproveButton } from '../../forms/ApproveButton';
+import { Mode, Reasons } from './types';
+import {
+  useMintBassetData,
+  useMintBassetInput,
+  useMintMassetToken,
+  useMintMode,
+  useMintSetBassetAmount,
+  useMintSetBassetMaxAmount,
+  useMintToggleBassetEnabled,
+} from './MintProvider';
+import { AmountInput } from '../../forms/AmountInput';
+import { parseAmount } from '../../../web3/amounts';
+import { FontSize, ViewportWidth } from '../../../theme';
 
 interface Props {
-  input: BassetInputProps;
-  mAssetAddress: string | null;
-  toggleDisabled: boolean;
-  handleToggle(address: string): void;
+  address: string;
 }
 
-const CountUp = styled(CountUpBase)<{
-  highlight?: boolean;
-}>`
+const CountUp = styled(CountUpBase)`
   display: block;
   text-align: right;
-  color: ${({ theme, highlight }) =>
-    highlight ? theme.color.blue : theme.color.offBlack};
-  font-weight: ${({ highlight }) => (highlight ? '600' : '400')};
 `;
-
-const Symbol = styled.div``;
-
-const Row = styled.div`
-  padding: 8px 0;
-  border-bottom: 1px ${({ theme }) => theme.color.blackTransparent} solid;
-
-  &:first-of-type {
-    padding-top: 0;
-  }
-
-  &:last-of-type {
-    border-bottom: 0;
-  }
-
-  > * {
-    transition: opacity 0.4s ease;
-  }
-`;
-
-const ToggleRow = styled(Row)``;
 
 const TokenContainer = styled.div`
   display: flex;
   align-items: center;
-  font-size: ${({ theme }) => theme.fontSize.l};
-  font-weight: bold;
 
-  img {
-    width: 36px;
-    height: 36px;
-    padding-right: 4px;
+  > :first-child {
+    padding-right: 8px;
   }
 `;
 
-const HeaderRow = styled(Row)`
+const InputContainer = styled.div`
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 
-  button {
-    opacity: 1 !important;
+  > * {
+    margin-right: 8px;
   }
+
+  > :last-child {
+    margin-right: 0;
+  }
+
+  input {
+    margin-bottom: 0;
+    height: 100%;
+  }
+`;
+
+const Error = styled.div`
+  padding-top: 8px;
+  font-size: ${FontSize.s};
 `;
 
 const Label = styled.div`
+  display: block;
   font-size: ${({ theme }) => theme.fontSize.xs};
   font-weight: bold;
   text-transform: uppercase;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    display: none;
+  }
 `;
 
-const Value = styled.div`
-  font-size: ${({ theme }) => theme.fontSize.s};
+const BalanceContainer = styled.div``;
+
+const Grid = styled.div<{ enabled?: boolean }>`
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0 8px;
+  align-items: center;
+
+  ${TokenContainer} {
+    grid-area: 1 / 1 / 2 / 5;
+  }
+
+  ${InputContainer} {
+    grid-area: 2 / 1 / 3 / 9;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    opacity: ${({ enabled }) => (enabled ? 1 : 0)};
+    max-height: ${({ enabled }) => (enabled ? '50px' : 0)};
+    padding-top: ${({ enabled }) => (enabled ? '8px' : 0)};
+  }
+
+  ${BalanceContainer} {
+    grid-area: 1 / 5 / 2 / 9;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    ${TokenContainer} {
+      grid-area: 1 / 1 / 3 / 3;
+    }
+
+    ${InputContainer} {
+      grid-area: 1 / 3 / 3 / 7;
+      opacity: 1;
+      max-height: 100%;
+      padding-top: 0;
+    }
+
+    ${BalanceContainer} {
+      grid-area: 1 / 7 / 3 / 9;
+    }
+  }
 `;
 
-const ApproveButton = styled(Button)`
-  width: 100%;
-`;
-
-const ErrorRow = styled.div`
-  margin-bottom: 8px;
-`;
-
-const Rows = styled.div<{
-  enabled: boolean;
+const Container = styled.div<{
   valid: boolean;
   overweight?: boolean;
 }>`
@@ -109,105 +133,86 @@ const Rows = styled.div<{
       ? theme.color.white
       : theme.color.redTransparenter};
   padding: ${({ theme }) => theme.spacing.xs};
-
-  ${Row} > * {
-    opacity: ${({ enabled }) => (enabled ? '1' : '0.3')};
-  }
-
-  ${ToggleRow} > * {
-    opacity: 1;
-  }
+  margin-bottom: 8px;
 `;
 
-export const BassetInput: FC<Props> = ({
-  input: { address, amount, enabled, error },
-  handleToggle,
-  mAssetAddress,
-  toggleDisabled,
-}) => {
-  const {
-    overweight,
-    token: { balance, decimals, symbol } = {
-      balance: null,
-      decimals: null,
-      symbol: null,
-    },
-  } = useBassetData(address) || {};
+export const BassetInput: FC<Props> = ({ address }) => {
+  const { overweight, token } = useMintBassetData(address) || {};
+  const { error, enabled, formValue } = useMintBassetInput(address) || {};
+  const mode = useMintMode();
+  const mAssetToken = useMintMassetToken();
+  const toggleBassetEnabled = useMintToggleBassetEnabled();
+  const setBassetAmount = useMintSetBassetAmount();
+  const setBassetMaxAmount = useMintSetBassetMaxAmount();
 
-  const sendTransaction = useSendTransaction();
-  const tokenContract = useErc20Contract(address);
-
-  const unlock = useCallback((): void => {
-    if (!(tokenContract && mAssetAddress)) return;
-
-    tokenContract.totalSupply().then(totalSupply => {
-      const manifest: SendTxManifest<Interfaces.ERC20, 'approve'> = {
-        iface: tokenContract,
-        fn: 'approve',
-        formId: 'mint',
-        args: [mAssetAddress, totalSupply],
-      };
-      sendTransaction(manifest);
-    });
-  }, [sendTransaction, tokenContract, mAssetAddress]);
-
-  const toggle = useCallback(() => {
-    handleToggle(address);
-  }, [handleToggle, address]);
+  const mAssetAddress = mAssetToken?.address;
 
   const simpleBalance = useMemo<number>(
     () =>
-      balance && decimals ? parseFloat(formatUnits(balance, decimals)) : 0,
-    [balance, decimals],
+      token?.balance && token.decimals
+        ? parseFloat(formatUnits(token.balance, token.decimals))
+        : 0,
+    [token],
   );
 
   const needsUnlock = error === Reasons.AmountExceedsApprovedAmount;
 
+  const handleChangeAmount = useCallback<
+    NonNullable<ComponentProps<typeof AmountInput>['onChange']>
+  >(
+    (_, _formValue) => {
+      if (token) {
+        setBassetAmount(
+          address,
+          _formValue,
+          parseAmount(_formValue, token.decimals),
+        );
+      }
+    },
+    [setBassetAmount, token, address],
+  );
+
+  const handleClickInput = useCallback(() => {
+    if (!enabled) {
+      toggleBassetEnabled(address);
+    }
+  }, [enabled, address, toggleBassetEnabled]);
+
   return (
-    <div>
-      <Rows overweight={overweight} enabled={enabled} valid={error === null}>
-        <HeaderRow>
-          <TokenContainer>
-            {symbol ? <TokenIcon symbol={symbol} /> : null}
-            <Symbol>{symbol}</Symbol>
-          </TokenContainer>
+    <Container overweight={overweight} valid={!error}>
+      <Grid enabled={enabled}>
+        <TokenContainer>
           <ToggleInput
-            onClick={toggle}
-            disabled={toggleDisabled}
+            onClick={() => toggleBassetEnabled(address)}
             checked={enabled}
           />
-        </HeaderRow>
-        <Row>
-          <Label>Your Balance</Label>
-          <CountUp end={simpleBalance} />
-        </Row>
-        <Row>
+          {token?.symbol ? <Token symbol={token.symbol} /> : null}
+        </TokenContainer>
+        <InputContainer onClick={handleClickInput}>
           <Label>Amount</Label>
-          <CountUp
-            highlight={!!amount.simple}
-            duration={0.4}
-            end={amount.simple || 0}
-            prefix="- "
-          />
-        </Row>
-      </Rows>
-      <Row>
-        {error || overweight ? (
-          <ErrorRow>
-            <Label>Unable to mint</Label>
-            <Value>{error || 'Asset overweight'}</Value>
-          </ErrorRow>
-        ) : null}
-        {needsUnlock || error || overweight ? (
-          <div>
-            {needsUnlock ? (
-              <ApproveButton size={Size.s} onClick={unlock} type="button">
-                Approve
-              </ApproveButton>
-            ) : null}
-          </div>
-        ) : null}
-      </Row>
-    </div>
+          {token?.decimals ? (
+            <AmountInput
+              disabled={!enabled}
+              value={formValue || null}
+              decimals={token?.decimals}
+              name={address}
+              onChange={handleChangeAmount}
+            />
+          ) : null}
+          {needsUnlock && mAssetAddress ? (
+            <ApproveButton address={address} spender={mAssetAddress} />
+          ) : null}
+          {enabled && mode === Mode.MintSingle ? (
+            <Button onClick={setBassetMaxAmount} size={1} type="button">
+              Max
+            </Button>
+          ) : null}
+        </InputContainer>
+        <CountUp container={BalanceContainer} end={simpleBalance} />
+      </Grid>
+      {error || overweight ? (
+        <Error>{error || 'Asset overweight'}</Error>
+      ) : null}
+    </Container>
   );
 };

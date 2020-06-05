@@ -12,6 +12,7 @@ import React, {
 import { SendTxManifest } from '../../../types';
 
 interface State<TState> {
+  formId: string;
   manifest?: SendTxManifest<never, never>;
   submitting: boolean;
 }
@@ -42,11 +43,7 @@ type Action<TState> =
       type: Actions.SubmitStart;
     };
 
-const initialState: State<never> = {
-  submitting: false,
-};
-
-const stateCtx = createContext<State<any>>(initialState);
+const stateCtx = createContext<State<any>>({} as any);
 
 const dispatchCtx = createContext<Dispatch<never>>({} as Dispatch<never>);
 
@@ -68,8 +65,8 @@ const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
   }
 };
 
-export const FormProvider: FC<{}> = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+export const FormProvider: FC<{ formId: string }> = ({ children, formId }) => {
+  const [state, dispatch] = useReducer(reducer, { submitting: false, formId });
 
   const setManifest = useCallback<Dispatch<never>['setManifest']>(
     manifest => {
@@ -115,6 +112,8 @@ export const useManifest = (): State<never>['manifest'] =>
 
 export const useFormSubmitting = (): State<never>['submitting'] =>
   useStateCtx().submitting;
+
+export const useFormId = (): State<never>['formId'] => useStateCtx().formId;
 
 export const useSetFormManifest = (): Dispatch<never>['setManifest'] =>
   useDispatchCtx().setManifest;

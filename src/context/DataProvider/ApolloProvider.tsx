@@ -1,10 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import { ApolloProvider as ApolloReactProvider } from '@apollo/react-hooks';
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
-import { getMainDefinition } from 'apollo-utilities';
-import { WebSocketLink } from '@apollo/link-ws';
-import { SubscriptionClient } from 'subscriptions-transport-ws';
-import { ApolloLink, split, concat } from 'apollo-link';
+import { ApolloLink, concat } from 'apollo-link';
 import { onError } from 'apollo-link-error';
 import { useAddErrorNotification } from '../NotificationsProvider';
 
@@ -24,13 +21,6 @@ const httpLink = (new HttpLink({
   uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
 }) as unknown) as ApolloLink;
 
-const wsClient = new SubscriptionClient(
-  process.env.REACT_APP_GRAPHQL_ENDPOINT_WS,
-  { reconnect: true },
-);
-
-const wsLink = (new WebSocketLink(wsClient) as unknown) as ApolloLink;
-
 /**
  * Provider for accessing Apollo queries and subscriptions.
  */
@@ -49,20 +39,7 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
         addErrorNotification(`Network error: ${networkError.message}`);
     });
 
-    const link = concat(
-      errorLink,
-      split(
-        ({ query }) => {
-          const definition = getMainDefinition(query);
-          return (
-            definition.kind === 'OperationDefinition' &&
-            definition.operation === 'subscription'
-          );
-        },
-        wsLink,
-        httpLink,
-      ),
-    );
+    const link = concat(errorLink, httpLink);
 
     return new ApolloClient({
       cache: new InMemoryCache(),

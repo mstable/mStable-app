@@ -71,7 +71,6 @@ const SwapForm: FC<{}> = () => {
     <TransactionForm
       confirm={<SwapConfirm />}
       confirmLabel="Swap"
-      formId="swap"
       input={<SwapInput />}
       transactionsLabel="Swap transactions"
       valid={valid}
@@ -81,7 +80,7 @@ const SwapForm: FC<{}> = () => {
 
 export const Swap: FC<{}> = () => (
   <SwapProvider>
-    <FormProvider>
+    <FormProvider formId="swap">
       <SwapForm />
       <MusdStats />
     </FormProvider>

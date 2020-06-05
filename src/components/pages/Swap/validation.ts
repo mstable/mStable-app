@@ -10,7 +10,7 @@ enum Reasons {
   FetchingData = 'Fetching data',
   InsufficientBalance = 'Insufficient balance',
   MustBeBelowMaxWeighting = 'Must be below max weighting',
-  TokenMustBeApproved = 'Token must be approved',
+  TransferMustBeApproved = 'Transfer must be approved',
   TokenMustBeSelected = 'Token must be selected',
   TokenNotAllowedInMint = 'Token not allowed in mint',
 }
@@ -54,7 +54,7 @@ const formValidator: StateValidator = ({
   }
 
   if (needsUnlock) {
-    return [false, { input: Reasons.TokenMustBeApproved }];
+    return [false, { input: Reasons.TransferMustBeApproved }];
   }
 
   if (loading) {

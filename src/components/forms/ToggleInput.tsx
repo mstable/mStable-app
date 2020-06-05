@@ -4,7 +4,8 @@ import { UnstyledButton } from '../core/Button';
 
 interface Props {
   onClick(): void;
-  checked: boolean;
+  checked?: boolean;
+  className?: string;
   disabled?: boolean;
   enabledColor?: string;
   disabledColor?: string;
@@ -31,7 +32,7 @@ const Container = styled(UnstyledButton)`
 `;
 
 const Toggle = styled.span<{
-  checked: boolean;
+  checked?: boolean;
   disabled?: boolean;
   enabledColor?: string;
   disabledColor?: string;
@@ -64,11 +65,17 @@ const Toggle = styled.span<{
 export const ToggleInput: FC<Props> = ({
   onClick,
   checked,
+  className,
   disabled,
   disabledColor,
   enabledColor,
 }) => (
-  <Container onClick={onClick} type="button" disabled={disabled}>
+  <Container
+    onClick={onClick}
+    type="button"
+    disabled={disabled}
+    className={className}
+  >
     <Toggle
       checked={checked}
       disabled={disabled}

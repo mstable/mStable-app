@@ -4,6 +4,7 @@ import { SubmitButton } from '../../core/Form';
 import { Size } from '../../../theme';
 import { H3 } from '../../core/Typography';
 import {
+  useFormId,
   useFormSubmitting,
   useManifest,
   useSubmitEnd,
@@ -11,7 +12,6 @@ import {
 } from './FormProvider';
 
 interface Props {
-  formId: string;
   confirmLabel: string;
   valid: boolean;
 }
@@ -19,7 +19,6 @@ interface Props {
 export const ConfirmPane: FC<Props> = ({
   children,
   confirmLabel,
-  formId,
   valid,
 }) => {
   const sendTransaction = useSendTransaction();
@@ -27,6 +26,7 @@ export const ConfirmPane: FC<Props> = ({
   const submitting = useFormSubmitting();
   const submitStart = useSubmitStart();
   const submitEnd = useSubmitEnd();
+  const formId = useFormId();
 
   const handleSend = useCallback(() => {
     if (valid && manifest) {

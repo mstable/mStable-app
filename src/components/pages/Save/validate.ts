@@ -36,7 +36,7 @@ const validate = ({
     }
 
     if (!allowance || allowance?.lt(inputAmount)) {
-      return Reasons.MUSDMustBeUnlocked;
+      return Reasons.MUSDMustBeApproved;
     }
   }
 

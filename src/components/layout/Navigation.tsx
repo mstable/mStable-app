@@ -43,14 +43,14 @@ const Item = styled.li<{
     active
       ? inverted
         ? theme.color.white
-        : theme.color.black
+        : theme.color.offBlack
       : 'transparent'};
 
   a,
   span {
     white-space: nowrap;
     color: ${({ theme, inverted }) =>
-      inverted ? theme.color.white : theme.color.black};
+      inverted ? theme.color.white : theme.color.offBlack};
     border-bottom: none;
   }
 

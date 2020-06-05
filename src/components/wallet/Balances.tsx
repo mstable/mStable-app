@@ -1,4 +1,4 @@
-import React, { FC, useContext } from 'react';
+import React, { FC, useContext, useLayoutEffect, useState } from 'react';
 import styled, { ThemeContext, DefaultTheme } from 'styled-components';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { formatUnits } from 'ethers/utils';
@@ -49,9 +49,21 @@ const BalanceSkeleton: FC<{ themeContext: DefaultTheme }> = ({
  * selected mAsset, the mAsset itself, and MTA.
  */
 export const Balances: FC<{}> = () => {
+  const [loading, setLoading] = useState(true);
   const { token: mUsd, bAssets: otherTokens = [] } = useMusdData() || {};
   const savingsBalance = useSavingsBalance();
   const themeContext = useContext(ThemeContext);
+
+  // Use a layout effect to prevent CountUp from running if the component
+  // is quickly unmounted (e.g. on login)
+  useLayoutEffect(() => {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    return (): void => {
+      clearTimeout(timeout);
+    };
+  }, [loading, setLoading]);
 
   return (
     <List inverted>
@@ -83,7 +95,7 @@ export const Balances: FC<{}> = () => {
             <TokenIcon symbol="mUSD" outline />
             <span>mUSD Savings</span>
           </Symbol>
-          {savingsBalance.simple == null ? (
+          {loading || savingsBalance.simple == null ? (
             <BalanceSkeleton themeContext={themeContext} />
           ) : (
             <Balance size={Size.xl} end={savingsBalance.simple} />

@@ -57,7 +57,6 @@ const RedeemForm: FC<{}> = () => {
     <TransactionForm
       confirm={<RedeemConfirm />}
       confirmLabel="Redeem"
-      formId="redeem"
       input={<RedeemInput />}
       transactionsLabel="Redeem transactions"
       valid={valid}
@@ -67,7 +66,7 @@ const RedeemForm: FC<{}> = () => {
 
 export const Redeem: FC<{}> = () => (
   <RedeemProvider>
-    <FormProvider>
+    <FormProvider formId="redeem">
       <RedeemForm />
       <MusdStats />
     </FormProvider>
