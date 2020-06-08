@@ -5,26 +5,21 @@ import { CountUp } from '../../core/CountUp';
 import { formatExactAmount } from '../../../web3/amounts';
 
 export const RedeemConfirm: FC<{}> = () => {
-  const {
-    valid,
-    mAssetData,
-    redemption,
-    feeAmountSimple,
-    applyFee,
-  } = useRedeemState();
+  const { valid, amountInMasset, feeAmount, dataState } = useRedeemState();
+  const mAsset = dataState?.mAsset;
 
-  return valid && redemption.amount.simple && mAssetData?.token.symbol ? (
+  return valid && amountInMasset && mAsset ? (
     <>
       <P size={1}>
-        You are redeeming <CountUp end={redemption.amount.simple} />{' '}
-        {mAssetData.token.symbol}.
+        You are redeeming <CountUp end={amountInMasset.simple} />{' '}
+        {mAsset.symbol}.
       </P>
       <P size={1}>
-        {applyFee && feeAmountSimple && mAssetData?.feeRate ? (
+        {feeAmount ? (
           <>
             There is a swap fee of{' '}
-            <CountUp end={feeAmountSimple} decimals={4} /> mUSD (
-            {formatExactAmount(mAssetData?.feeRate, 16, '%')})
+            <CountUp end={feeAmount.simple} decimals={6} /> mUSD (
+            {formatExactAmount(mAsset.feeRate, 16, '%', true, 3)})
           </>
         ) : (
           <>There is no swap fee for this transaction.</>

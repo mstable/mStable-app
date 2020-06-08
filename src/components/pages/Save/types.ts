@@ -1,7 +1,5 @@
-import { BigNumber } from 'ethers/utils';
-import { SavingsBalance, SavingsQuantity, TokenDetails } from '../../../types';
-import { LatestExchangeRateQueryResult } from '../../../graphql/generated';
-import { TokenDetailsWithBalance } from '../../../context/DataProvider/TokensProvider';
+import { DataState } from '../../../context/DataProvider/types';
+import { BigDecimal } from '../../../web3/BigDecimal';
 
 export enum TransactionType {
   Deposit,
@@ -19,54 +17,43 @@ export enum Reasons {
 }
 
 export enum Actions {
-  SetData,
-  SetQuantity,
-  SetToken,
-  SetTransactionType,
+  Data,
+  SetAmount,
+  SetMaxAmount,
+  ToggleTransactionType,
 }
 
 export interface State {
-  data: {
-    exchangeRate?: NonNullable<
-      LatestExchangeRateQueryResult['data']
-    >['exchangeRates'][0];
-    mUsdToken?: TokenDetailsWithBalance;
-    allowance?: BigNumber;
-    savingsBalance?: SavingsBalance;
-    savingsContractAddress?: string;
-  };
   error?: string;
-  values: {
-    transactionType: TransactionType;
-    input: SavingsQuantity;
-  };
+  transactionType: TransactionType;
+  amount?: BigDecimal;
+  amountInCredits?: BigDecimal;
+  formValue: string | null;
   touched: boolean;
   valid: boolean;
+  initialized: boolean;
+  simulated?: DataState;
+  dataState?: DataState;
+  needsUnlock?: boolean;
 }
 
 export type Action =
   | {
-      type: Actions.SetData;
-      payload: State['data'];
+      type: Actions.Data;
+      payload?: DataState;
     }
   | {
-      type: Actions.SetQuantity;
+      type: Actions.SetAmount;
       payload: {
         formValue: string | null;
         isCreditAmount: boolean;
       };
     }
-  | {
-      type: Actions.SetToken;
-      payload: TokenDetails;
-    }
-  | {
-      type: Actions.SetTransactionType;
-      payload: { transactionType: TransactionType };
-    };
+  | { type: Actions.SetMaxAmount }
+  | { type: Actions.ToggleTransactionType };
 
 export interface Dispatch {
-  setQuantity(formValue: string | null, isCreditAmount?: boolean): void;
-  setToken(token: TokenDetails): void;
-  setTransactionType(transactionType: TransactionType): void;
+  setAmount(formValue: string | null, isCreditAmount?: boolean): void;
+  setMaxAmount(): void;
+  toggleTransactionType(): void;
 }

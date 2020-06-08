@@ -1,23 +1,14 @@
 import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { formatUnits, parseUnits } from 'ethers/utils';
+import { parseUnits } from 'ethers/utils';
 
-import {
-  useMusdData,
-  useMusdSavingsAllowance,
-  useSavingsBalance,
-} from '../../../context/DataProvider/DataProvider';
-import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
 import { Color } from '../../../theme';
 import { FormRow } from '../../core/Form';
 import { H3 } from '../../core/Typography';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { ToggleInput } from '../../forms/ToggleInput';
-import { formatExactAmount } from '../../../web3/amounts';
 import { TransactionType } from './types';
 import { useSaveDispatch, useSaveState } from './SaveProvider';
-import { useKnownAddress } from '../../../context/DataProvider/KnownAddressProvider';
-import { ContractNames } from '../../../types';
 
 const TransactionTypeRow = styled(FormRow)`
   display: flex;
@@ -33,107 +24,49 @@ const TransactionTypeRow = styled(FormRow)`
 export const SaveInput: FC<{}> = () => {
   const {
     error,
-    values: {
-      transactionType,
-      input: {
-        amount: { exact: inputAmount },
-      },
-      input,
-    },
+    transactionType,
+    formValue,
+    needsUnlock,
+    dataState,
   } = useSaveState();
 
-  const { setToken, setTransactionType, setQuantity } = useSaveDispatch();
+  const { toggleTransactionType, setAmount, setMaxAmount } = useSaveDispatch();
 
-  const mUsd = useMusdData();
-  const mUsdAddress = mUsd?.token.address || null;
+  const mAsset = dataState?.mAsset;
+  const mAssetAddress = mAsset?.address || null;
+  const savingsContractAddress = dataState?.savingsContract.address;
 
-  const mUsdToken = useTokenWithBalance(mUsdAddress);
-  const allowance = useMusdSavingsAllowance();
-  const savingsBalance = useSavingsBalance();
-  const savingsContractAddress = useKnownAddress(ContractNames.mUSDSavings);
   const approveQuantity = useMemo(
-    () => parseUnits('1844674400000', mUsdToken.decimals),
-    [mUsdToken],
+    () => parseUnits('1844674400000', mAsset?.decimals),
+    [mAsset],
   );
 
   const musdBalanceItem = useMemo(
     () =>
-      mUsd
+      mAsset
         ? [
             {
               label: 'Balance',
-              value: formatExactAmount(
-                mUsd.token.balance,
-                mUsd.token.decimals,
-                mUsd.token.symbol,
-                true,
-              ),
+              value: mAsset?.balance.format(),
             },
           ]
         : [],
-    [mUsd],
+    [mAsset],
   );
 
   const tokenAddresses = useMemo<string[]>(
-    () => (mUsdAddress ? [mUsdAddress] : []),
-    [mUsdAddress],
-  );
-
-  const needsUnlock = useMemo<boolean>(
-    () =>
-      !!(
-        transactionType === TransactionType.Deposit &&
-        inputAmount &&
-        allowance?.lt(inputAmount)
-      ),
-    [transactionType, inputAmount, allowance],
-  );
-
-  const handleChangeToken = useCallback<
-    NonNullable<ComponentProps<typeof TokenAmountInput>['onChangeToken']>
-  >(
-    (_, tokenDetails) => {
-      setToken(tokenDetails);
-    },
-    [setToken],
+    () => (mAssetAddress ? [mAssetAddress] : []),
+    [mAssetAddress],
   );
 
   const handleChangeAmount = useCallback<
     NonNullable<ComponentProps<typeof TokenAmountInput>['onChangeAmount']>
   >(
     (_, simpleAmount) => {
-      setQuantity(simpleAmount);
+      setAmount(simpleAmount);
     },
-    [setQuantity],
+    [setAmount],
   );
-
-  const handleSetMax = useCallback<
-    NonNullable<ComponentProps<typeof TokenAmountInput>['onSetMax']>
-  >(() => {
-    if (transactionType === TransactionType.Deposit) {
-      if (mUsdToken?.balance) {
-        setQuantity(formatUnits(mUsdToken.balance, mUsdToken.decimals));
-      }
-    } else if (savingsBalance.creditsExact) {
-      setQuantity(
-        formatUnits(
-          savingsBalance.creditsExact.gt('10000000')
-            ? savingsBalance.creditsExact
-            : 0,
-          18,
-        ),
-        true,
-      );
-    }
-  }, [mUsdToken, savingsBalance, setQuantity, transactionType]);
-
-  const toggleTransactionType = useCallback(() => {
-    setTransactionType(
-      transactionType === TransactionType.Deposit
-        ? TransactionType.Withdraw
-        : TransactionType.Deposit,
-    );
-  }, [setTransactionType, transactionType]);
 
   return (
     <>
@@ -155,11 +88,10 @@ export const SaveInput: FC<{}> = () => {
         </H3>
         <TokenAmountInput
           name="input"
-          tokenValue={input.token.address}
-          amountValue={input.formValue}
-          onChangeToken={handleChangeToken}
+          tokenValue={mAsset?.address || null}
+          amountValue={formValue}
           onChangeAmount={handleChangeAmount}
-          onSetMax={handleSetMax}
+          onSetMax={setMaxAmount}
           tokenAddresses={tokenAddresses}
           tokenDisabled
           items={musdBalanceItem}

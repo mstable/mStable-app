@@ -46,7 +46,7 @@ const Error = styled.div`
 
 const Items = styled.div`
   > * {
-    margin-bottom: 8px;
+    margin: 8px 0 16px 0;
   }
 `;
 
@@ -82,7 +82,8 @@ const Item = styled.div<{ highlight?: boolean }>`
     background: #ffeed2;
     border: 2px ${theme.color.gold} dashed;
     padding: 8px;
-    margin: 0 -8px;
+    margin-left: -8px;
+    margin-right: -8px;
   `
       : ''}
 `;

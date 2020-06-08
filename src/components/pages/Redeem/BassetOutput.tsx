@@ -1,23 +1,21 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-import { formatUnits } from 'ethers/utils';
 
 import { Color } from '../../../theme';
 import { CountUp as CountUpBase } from '../../core/CountUp';
 import { Token } from '../../core/Token';
 import { ToggleInput } from '../../forms/ToggleInput';
-import { useBassetData } from '../../../context/DataProvider/DataProvider';
-import { useRedeemBassetData, useRedeemBassetOutput } from './RedeemProvider';
-import { EXP_SCALE } from '../../../web3/constants';
-import { parseExactAmount } from '../../../web3/amounts';
+import {
+  useRedeemBassetData,
+  useRedeemBassetOutput,
+  useRedeemMode,
+  useToggleBassetEnabled,
+} from './RedeemProvider';
+import { Mode } from './types';
 
 interface Props {
   address: string;
-  applyFee: boolean;
-  feeRate?: string | null;
-  toggleDisabled: boolean;
-  handleToggle(address: string): void;
 }
 
 const CountUp = styled(CountUpBase)`
@@ -95,64 +93,35 @@ const Rows = styled.div<{
   }
 `;
 
-export const BassetOutput: FC<Props> = ({
-  address,
-  handleToggle,
-  toggleDisabled,
-  applyFee,
-  feeRate,
-}) => {
-  const bassetData = useRedeemBassetData(address);
+export const BassetOutput: FC<Props> = ({ address }) => {
+  const { overweight, balance, symbol } = useRedeemBassetData(address) || {};
   const { error, enabled, amount } = useRedeemBassetOutput(address) || {};
-  const { overweight, token } = useBassetData(address) || {};
-
-  const amountAfterFee =
-    applyFee && feeRate && amount?.exact && token?.decimals
-      ? parseExactAmount(
-          amount.exact.sub(amount.exact.mul(feeRate).div(EXP_SCALE)),
-          token.decimals,
-        )
-      : amount;
-
-  const balance = bassetData?.token?.balance;
-  const decimals = bassetData?.token?.decimals;
-
-  const simpleBalance = useMemo<number>(
-    () =>
-      balance && decimals ? parseFloat(formatUnits(balance, decimals)) : 0,
-    [balance, decimals],
-  );
-
-  const toggle = useCallback(() => {
-    handleToggle(address);
-  }, [handleToggle, address]);
+  const mode = useRedeemMode();
+  const toggle = useToggleBassetEnabled();
+  const toggleDisabled = mode === Mode.RedeemSingle && overweight;
 
   return (
     <div>
       <Rows valid={!error} enabled={enabled} overweight={overweight}>
         <HeaderRow>
-          {bassetData?.token?.symbol ? (
-            <Token symbol={bassetData.token.symbol} />
-          ) : (
-            <Skeleton />
-          )}
+          {symbol ? <Token symbol={symbol} /> : <Skeleton />}
           <ToggleInput
-            onClick={toggle}
+            onClick={() => toggle(address)}
             disabled={toggleDisabled}
             checked={!!enabled}
           />
         </HeaderRow>
         <Row>
           <Label>Your Balance</Label>
-          <CountUp end={simpleBalance} />
+          <CountUp end={balance?.simple || 0} />
         </Row>
         <Row>
           <Label>Amount</Label>
           <CountUp
-            highlight={(amountAfterFee?.simple || 0) > 0}
+            highlight={(amount?.simple || 0) > 0}
             highlightColor={Color.green}
             duration={0.4}
-            end={amountAfterFee?.simple || 0}
+            end={amount?.simple || 0}
             prefix="+ "
           />
         </Row>

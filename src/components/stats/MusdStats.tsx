@@ -6,6 +6,7 @@ import { useMusdTotalSupply } from '../../context/DataProvider/DataProvider';
 import { H3, H2 } from '../core/Typography';
 import { CountUp } from '../core/CountUp';
 import { BasketStats } from './BasketStats';
+import { DataState } from '../../context/DataProvider/types';
 
 const StatsGraphic = styled.div`
   width: 100%;
@@ -30,21 +31,23 @@ const StatsRow = styled.div`
   }
 `;
 
-export const MusdStats: FC<{}> = () => {
-  const totalSupply = useMusdTotalSupply();
+export const MusdStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
+  const realTotalSupply = useMusdTotalSupply();
+  // const simulatedTotalSupply = simulation?.mAsset.totalSupply;
+  // const totalSupply = simulatedTotalSupply || realTotalSupply;
   return (
     <StatsContainer>
       <H2>Basket Stats</H2>
       <StatsRow>
         <StatsGraphic>
           <H3 borderTop>mUSD basket share</H3>
-          <BasketStats />
+          <BasketStats simulation={simulation} />
         </StatsGraphic>
         <StatsGraphicNull />
         <StatsGraphic>
           <H3 borderTop>Total mUSD supply</H3>
-          {totalSupply ? (
-            <CountUp end={parseFloat(totalSupply)} decimals={2} />
+          {realTotalSupply ? (
+            <CountUp end={realTotalSupply.simple} decimals={2} />
           ) : (
             <Skeleton />
           )}

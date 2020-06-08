@@ -7,9 +7,9 @@ import React, {
   useContext,
   useEffect,
 } from 'react';
+import { useDataState } from '../../../context/DataProvider/DataProvider';
 import { Actions, Dispatch, State } from './types';
 import { reducer, initialState } from './reducer';
-import { useMusdData } from '../../../context/DataProvider/DataProvider';
 
 const stateCtx = createContext<State>(initialState);
 const dispatchCtx = createContext<Dispatch>({} as Dispatch);
@@ -40,13 +40,13 @@ export const SwapProvider: FC<{}> = ({ children }) => {
     [dispatch],
   );
 
-  const mUsdData = useMusdData();
+  const dataState = useDataState();
   useEffect(() => {
     dispatch({
-      type: Actions.UpdateMassetData,
-      payload: mUsdData,
+      type: Actions.Data,
+      payload: dataState,
     });
-  }, [dispatch, mUsdData]);
+  }, [dispatch, dataState]);
 
   return (
     <stateCtx.Provider value={state}>

@@ -1,5 +1,5 @@
 import { TokenDetails, TokenQuantity } from '../../../types';
-import { MassetData } from '../../../context/DataProvider/types';
+import { DataState } from '../../../context/DataProvider/types';
 
 export enum Fields {
   Input = 'input',
@@ -7,9 +7,9 @@ export enum Fields {
 }
 
 export enum Actions {
+  Data,
   SetToken,
   SetQuantity,
-  UpdateMassetData,
 }
 
 export type Action =
@@ -24,8 +24,8 @@ export type Action =
       payload: { field: Fields; formValue: string | null };
     }
   | {
-      type: Actions.UpdateMassetData;
-      payload: MassetData;
+      type: Actions.Data;
+      payload?: DataState;
     };
 
 export interface State {
@@ -35,7 +35,7 @@ export interface State {
     feeAmountSimple: string | null;
   };
   applySwapFee: boolean;
-  mAssetData?: MassetData;
+  dataState?: DataState;
   touched: boolean;
   needsUnlock: boolean;
   inputError?: string;

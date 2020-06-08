@@ -1,6 +1,5 @@
-import { BigNumber } from 'ethers/utils';
-import { Amount } from '../../../types';
-import { MassetData } from '../../../context/DataProvider/types';
+import { DataState } from '../../../context/DataProvider/types';
+import { BigDecimal } from '../../../web3/BigDecimal';
 
 export enum Reasons {
   AmountExceedsBalance = 'Amount exceeds balance',
@@ -11,7 +10,7 @@ export enum Reasons {
   CannotRedeemMoreBassetsThanAreInTheVault = 'Cannot redeem more bAssets than are in the vault',
   FetchingData = 'Fetching data',
   MustRedeemOverweightBassets = 'Redemption must use overweight bAssets',
-  MustRedeemProportionally = 'Proportional redemption is required',
+  MustRedeemWithAllBassets = 'Must redeem with all bAssets',
   NoTokenSelected = 'No token selected',
   NoTokensSelected = 'No tokens selected',
   NotEnoughLiquidity = 'Not enough liquidity',
@@ -26,58 +25,58 @@ export enum Mode {
 }
 
 export enum Actions {
-  SetExactRedemptionAmount,
+  Data,
   SetRedemptionAmount,
+  SetMaxRedemptionAmount,
   ToggleBassetEnabled,
   ToggleMode,
-  UpdateMassetData,
 }
 
 export type Action =
+  | {
+      type: Actions.Data;
+      payload?: DataState;
+    }
   | {
       type: Actions.SetRedemptionAmount;
       payload: string | null;
     }
   | {
-      type: Actions.SetExactRedemptionAmount;
-      payload: BigNumber;
+      type: Actions.SetMaxRedemptionAmount;
     }
   | { type: Actions.ToggleMode }
   | {
       type: Actions.ToggleBassetEnabled;
       payload: string;
-    }
-  | {
-      type: Actions.UpdateMassetData;
-      payload: MassetData;
     };
 
 export interface BassetOutput {
   address: string;
-  amount: Amount;
+  amount?: BigDecimal;
+  amountMinusFee?: BigDecimal;
   enabled: boolean;
   error?: string;
   formValue?: string;
 }
 
 export interface State {
-  bAssetOutputs: BassetOutput[];
+  amountInMasset?: BigDecimal;
+  amountInMassetPlusFee?: BigDecimal;
+  bAssets: { [address: string]: BassetOutput };
+  dataState?: DataState;
   error?: string;
-  mAssetData?: MassetData;
+  feeAmount?: BigDecimal;
+  formValue?: string;
+  initialized: boolean;
   mode: Mode;
-  redemption: {
-    amount: Amount;
-    formValue?: string;
-  };
+  simulated?: DataState;
   touched?: boolean;
   valid: boolean;
-  applyFee: boolean;
-  feeAmountSimple?: number;
 }
 
 export interface Dispatch {
-  setRedemptionAmount(amount: string | null): void;
-  setExactRedemptionAmount(amount: BigNumber): void;
+  setMaxRedemptionAmount(): void;
+  setRedemptionAmount(formValue: string | null): void;
   toggleMode(): void;
   toggleBassetEnabled(bAsset: string): void;
 }

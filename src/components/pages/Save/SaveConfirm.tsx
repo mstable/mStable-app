@@ -5,13 +5,9 @@ import { useSaveState } from './SaveProvider';
 import { TransactionType } from './types';
 
 export const SaveConfirm: FC<{}> = () => {
-  const {
-    touched,
-    error,
-    values: { transactionType, input },
-  } = useSaveState();
+  const { valid, transactionType, amount } = useSaveState();
 
-  return touched && !error && input?.amount.simple ? (
+  return valid && amount?.simple ? (
     <>
       <P size={1}>
         <span>
@@ -21,7 +17,7 @@ export const SaveConfirm: FC<{}> = () => {
             : 'withdrawing'}{' '}
         </span>
         <span>
-          <CountUp end={input.amount.simple} /> {input.token.symbol}
+          <CountUp end={amount.simple} /> mUSD
         </span>
         .
       </P>

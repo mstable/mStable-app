@@ -1,64 +1,63 @@
 import { State, Reasons, TransactionType } from './types';
 
-const validate = ({
-  data: { exchangeRate, mUsdToken, savingsBalance, allowance },
-  values: {
-    input: {
-      token: { address: inputAddress },
-      amount: { exact: inputAmount },
-      amountInCredits,
-    },
-    transactionType,
-  },
-}: State): string | undefined => {
+const validateSave = ({
+  dataState,
+  amount,
+  amountInCredits,
+  transactionType,
+}: State): [false, Reasons] | [true] => {
+  if (!dataState) {
+    return [false, Reasons.FetchingData];
+  }
+
+  const { mAsset, savingsContract } = dataState;
+
   if (
-    !inputAmount ||
+    !amount ||
     (transactionType === TransactionType.Withdraw && !amountInCredits)
   ) {
-    return Reasons.AmountMustBeSet;
+    return [false, Reasons.AmountMustBeSet];
   }
 
-  if (!inputAmount.gt(0)) {
-    return Reasons.AmountMustBeGreaterThanZero;
-  }
-
-  if (!inputAddress) {
-    return Reasons.TokenMustBeSelected;
-  }
-
-  if (!mUsdToken?.balance) {
-    return Reasons.FetchingData;
+  if (amount.exact.lte(0)) {
+    return [false, Reasons.AmountMustBeGreaterThanZero];
   }
 
   if (transactionType === TransactionType.Deposit) {
-    if (inputAmount.gt(mUsdToken.balance)) {
-      return Reasons.DepositAmountMustNotExceedTokenBalance;
+    if (amount.exact.gt(mAsset.balance.exact)) {
+      return [false, Reasons.DepositAmountMustNotExceedTokenBalance];
     }
 
-    if (!allowance || allowance?.lt(inputAmount)) {
-      return Reasons.MUSDMustBeApproved;
+    if (savingsContract.mAssetAllowance.exact.lt(amount.exact)) {
+      return [false, Reasons.MUSDMustBeApproved];
     }
   }
 
   if (transactionType === TransactionType.Withdraw) {
-    if (!savingsBalance?.creditsExact || !exchangeRate) {
-      return Reasons.FetchingData;
+    if (
+      !savingsContract.savingsBalance.credits ||
+      !savingsContract.latestExchangeRate
+    ) {
+      return [false, Reasons.FetchingData];
     }
 
-    if (amountInCredits?.gt(savingsBalance.creditsExact)) {
-      return Reasons.WithdrawAmountMustNotExceedSavingsBalance;
+    if (
+      amountInCredits?.exact.gt(savingsContract.savingsBalance.credits.exact)
+    ) {
+      return [false, Reasons.WithdrawAmountMustNotExceedSavingsBalance];
     }
   }
 
-  return undefined;
+  return [true];
 };
 
-export const applyValidation = (state: State): State => {
-  const { touched } = state;
-  const error = touched ? validate(state) : undefined;
+export const validate = (state: State): State => {
+  const { touched, initialized } = state;
+  const ready = touched && initialized;
+  const [valid, error] = ready ? validateSave(state) : [false];
   return {
     ...state,
     error,
-    valid: touched && !error,
+    valid,
   };
 };

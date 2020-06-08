@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
-import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
+import { BigNumber, formatUnits } from 'ethers/utils';
 
 import styled from 'styled-components';
 import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
@@ -33,20 +33,23 @@ export const SwapInput: FC<{}> = () => {
     outputError,
     needsUnlock,
     touched,
-    mAssetData: { token: mUsdToken, bAssets = [], feeRate } = {},
+    dataState,
   } = useSwapState();
   const { setToken, setQuantity } = useSwapDispatch();
 
-  const mAssetAddress = mUsdToken?.address;
   const inputToken = useTokenWithBalance(input.token.address);
   const outputToken = useTokenWithBalance(output.token.address);
+
+  const { mAsset, bAssets = {} } = dataState || {};
+  const mAssetAddress = mAsset?.address;
+  const feeRate = mAsset?.feeRate;
 
   const [inputAddresses, outputAddresses] = useMemo<
     [string[], string[]]
   >(() => {
     if (!(bAssets && mAssetAddress)) return [[], []];
 
-    const bAssetAddresses = bAssets.map(b => b.address);
+    const bAssetAddresses = Object.keys(bAssets).sort();
     return [bAssetAddresses, [mAssetAddress, ...bAssetAddresses]];
   }, [bAssets, mAssetAddress]);
 
@@ -100,25 +103,24 @@ export const SwapInput: FC<{}> = () => {
    * Handle setting the max amount for the input token
    */
   const handleSetMax = useCallback(() => {
-    const inputBasset = bAssets.find(b => b.address === input.token.address);
-    const outputBasset = bAssets.find(b => b.address === output.token.address);
-    const isMint = output.token.address === mUsdToken?.address;
+    if (!(inputAddress && outputAddress)) return;
+
+    const inputBasset = bAssets[inputAddress];
+    const outputBasset = bAssets[outputAddress];
+    const isMint = outputAddress === mAssetAddress;
 
     if (isMint) {
-      if (inputBasset?.token.balance && mUsdToken) {
-        const ratioedInputBalance = inputBasset.token.balance
+      if (inputBasset?.balance && mAsset) {
+        const ratioedInputBalance = inputBasset.balance.exact
           .mul(inputBasset.ratio)
           .div(RATIO_SCALE);
         // Determining max possible mint without pushing bAsset over max weight uses below formula
         // M = ((t * maxW) - c)/(1-maxW)
         // num = ((t * maxW) - c)
-        const num1 = parseUnits(mUsdToken.totalSupply, mUsdToken.decimals)
+        const num1 = mAsset.totalSupply.exact
           .mul(inputBasset.maxWeight)
           .div(SCALE);
-        const num2 = parseUnits(
-          inputBasset.vaultBalance,
-          inputBasset.token.decimals,
-        )
+        const num2 = inputBasset.totalVault.exact
           .mul(inputBasset.ratio)
           .div(RATIO_SCALE);
         const num = num1.sub(num2);
@@ -134,30 +136,19 @@ export const SwapInput: FC<{}> = () => {
       return;
     }
 
-    if (
-      mUsdToken?.totalSupply &&
-      inputBasset?.token.decimals &&
-      inputBasset?.token.balance &&
-      outputBasset
-    ) {
-      const ratioedInputBalance = inputBasset.token.balance
+    if (mAsset?.totalSupply && outputBasset) {
+      const ratioedInputBalance = inputBasset.balance.exact
         .mul(inputBasset.ratio)
         .div(RATIO_SCALE);
-      const inputVaultBalance = parseUnits(
-        inputBasset.vaultBalance,
-        inputBasset.token.decimals,
-      )
+      const inputVaultBalance = inputBasset.totalVault.exact
         .mul(inputBasset.ratio)
         .div(RATIO_SCALE);
 
-      const outputVaultBalance = parseUnits(
-        outputBasset.vaultBalance,
-        outputBasset.token.decimals,
-      )
+      const outputVaultBalance = outputBasset.totalVault.exact
         .mul(outputBasset.ratio)
         .div(RATIO_SCALE);
 
-      const inputMaxWeight = parseUnits(mUsdToken.totalSupply, 18)
+      const inputMaxWeight = mAsset.totalSupply.exact
         .mul(inputBasset.maxWeight)
         .div(SCALE);
 
@@ -178,18 +169,23 @@ export const SwapInput: FC<{}> = () => {
       );
     }
   }, [
-    setQuantity,
+    inputAddress,
+    outputAddress,
     bAssets,
-    input.token.address,
-    output.token.address,
-    mUsdToken,
+    mAssetAddress,
+    mAsset,
+    setQuantity,
   ]);
 
   useEffect(() => {
     if (bAssets && !inputAddress && !touched) {
-      const { token, address } = bAssets[0] || {};
-      if (token && address) {
-        setToken(Fields.Input, { ...token, address });
+      const [first] = Object.values(bAssets);
+      if (first) {
+        setToken(Fields.Input, {
+          address: first.address,
+          decimals: first.decimals,
+          symbol: first.symbol,
+        });
       }
     }
   }, [inputAddress, setToken, bAssets, touched]);

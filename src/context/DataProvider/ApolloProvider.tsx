@@ -3,6 +3,7 @@ import { ApolloProvider as ApolloReactProvider } from '@apollo/react-hooks';
 import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
 import { ApolloLink, concat } from 'apollo-link';
 import { onError } from 'apollo-link-error';
+
 import { useAddErrorNotification } from '../NotificationsProvider';
 
 if (!process.env.REACT_APP_GRAPHQL_ENDPOINT) {

@@ -1,15 +1,15 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
+
 import { useOrderedHistoricTransactions } from '../../context/TransactionsProvider';
-import { ContractNames, HistoricTransaction } from '../../types';
-import { EtherscanLink } from '../core/EtherscanLink';
-import { MassetData } from '../../context/DataProvider/types';
-import { useKnownAddress } from '../../context/DataProvider/KnownAddressProvider';
-import { useMusdData } from '../../context/DataProvider/DataProvider';
-import { formatExactAmount } from '../../web3/amounts';
-import { EMOJIS } from '../../web3/constants';
-import { List, ListItem } from '../core/List';
+import { BassetState, DataState } from '../../context/DataProvider/types';
+import { useDataState } from '../../context/DataProvider/DataProvider';
+import { HistoricTransaction } from '../../types';
 import { humanizeList } from '../../web3/strings';
+import { EMOJIS } from '../../web3/constants';
+import { BigDecimal } from '../../web3/BigDecimal';
+import { EtherscanLink } from '../core/EtherscanLink';
+import { List, ListItem } from '../core/List';
 import { P } from '../core/Typography';
 
 type FnName =
@@ -77,14 +77,13 @@ const getHistoricTxFn = ({ logs }: HistoricTransaction): FnName | null => {
 const getHistoricTransactionDescription = (
   fn: FnName,
   { contractAddress, logs }: HistoricTransaction,
-  {
-    mUSDSavingsAddress,
-    mUSD,
-  }: { mUSD?: MassetData; mUSDSavingsAddress: string | null },
+  dataState?: DataState,
 ): JSX.Element => {
-  if (!mUSD) return LOADING;
+  if (!dataState) return LOADING;
 
-  if (contractAddress.toLowerCase() === mUSDSavingsAddress) {
+  const { mAsset, savingsContract, bAssets } = dataState;
+
+  if (contractAddress.toLowerCase() === savingsContract.address) {
     switch (fn) {
       case 'depositSavings': {
         const [
@@ -92,15 +91,12 @@ const getHistoricTransactionDescription = (
             values: { savingsDeposited },
           },
         ] = logs;
+
+        const amount = new BigDecimal(savingsDeposited, mAsset.decimals);
+
         return (
           <>
-            You <span>deposited</span>{' '}
-            {formatExactAmount(
-              savingsDeposited,
-              mUSD.token.decimals,
-              'mUSD',
-              true,
-            )}
+            You <span>deposited</span> {amount.format()} {mAsset.symbol}
           </>
         );
       }
@@ -110,15 +106,12 @@ const getHistoricTransactionDescription = (
             values: { savingsCredited },
           },
         ] = logs;
+
+        const amount = new BigDecimal(savingsCredited, mAsset.decimals);
+
         return (
           <>
-            You <span>withdrew</span>{' '}
-            {formatExactAmount(
-              savingsCredited,
-              mUSD.token.decimals,
-              'mUSD',
-              true,
-            )}
+            You <span>withdrew</span> {amount.format()} {mAsset.symbol}
           </>
         );
       }
@@ -134,21 +127,17 @@ const getHistoricTransactionDescription = (
           values: { mAssetQuantity, bAsset },
         },
       ] = logs;
-      const bAssetToken = mUSD.bAssets?.find(
-        b => b.address === bAsset.toLowerCase(),
-      );
-      if (!bAssetToken) return LOADING;
+
+      const bAssetData = bAssets[bAsset.toLowerCase()];
+
+      if (!bAssetData) return LOADING;
+
+      const amount = new BigDecimal(mAssetQuantity, mAsset.decimals);
 
       return (
         <>
-          You <span>minted</span>{' '}
-          {formatExactAmount(
-            mAssetQuantity,
-            mUSD.token.decimals,
-            mUSD.token.symbol,
-            true,
-          )}{' '}
-          with {bAssetToken.token.symbol}
+          You <span>minted</span> {amount.format()} {mAsset.symbol} with{' '}
+          {bAssetData.symbol}
         </>
       );
     }
@@ -159,16 +148,12 @@ const getHistoricTransactionDescription = (
         },
       ] = logs;
 
+      const amount = new BigDecimal(mAssetQuantity, mAsset.decimals);
+
       return (
         <>
-          You <span>minted</span>{' '}
-          {formatExactAmount(
-            mAssetQuantity,
-            mUSD.token.decimals,
-            mUSD.token.symbol,
-            true,
-          )}{' '}
-          with{' multiple bAssets'}
+          You <span>minted</span> {amount.format()} {mAsset.symbol} with
+          {' multiple bAssets'}
         </>
       );
     }
@@ -176,55 +161,39 @@ const getHistoricTransactionDescription = (
       const {
         values: { input, output, outputAmount },
       } = logs[logs.length - 1];
-      const inputBasset = mUSD.bAssets.find(
-        b => b.address === input.toLowerCase(),
-      );
-      const outputBasset = mUSD.bAssets.find(
-        b => b.address === output.toLowerCase(),
-      );
+
+      const inputBasset = bAssets[input.toLowerCase()];
+      const outputBasset = bAssets[output.toLowerCase()];
+
       if (!inputBasset || !outputBasset) return LOADING;
+
+      const amount = new BigDecimal(outputAmount, outputBasset.decimals);
 
       return (
         <>
-          You <span>swapped</span> {inputBasset.token.symbol} for{' '}
-          {formatExactAmount(
-            outputAmount,
-            outputBasset.token.decimals,
-            outputBasset.token.symbol,
-            true,
-          )}
+          You <span>swapped</span> {inputBasset.symbol} for {amount.format()}{' '}
+          {outputBasset.symbol}
         </>
       );
     }
     case 'redeem': {
       const {
-        values: { mAssetQuantity, bAssets },
+        values: { mAssetQuantity, bAssets: redeemedBassets },
       } = logs[logs.length - 1];
 
-      const bassetTokens = bAssets
-        .map((address: string) =>
-          mUSD.bAssets.find(b => b.address === address.toLowerCase()),
-        )
+      const bAssetTokens: BassetState[] = redeemedBassets
+        .map((address: string) => bAssets[address.toLowerCase()])
         .filter(Boolean);
 
-      if (bassetTokens.length !== bAssets.length) return LOADING;
+      if (bAssetTokens.length === 0) return LOADING;
+
+      const amount = new BigDecimal(mAssetQuantity, mAsset.decimals);
 
       return (
         <>
-          You <span>redeemed</span>{' '}
-          {formatExactAmount(
-            mAssetQuantity,
-            mUSD.token.decimals,
-            mUSD.token.symbol,
-            true,
-          )}
+          You <span>redeemed</span> {amount.format()}
           {' into '}
-          {humanizeList(
-            bAssets.map(
-              (address: string, index: number) =>
-                bassetTokens[index].token.symbol,
-            ),
-          )}
+          {humanizeList(bAssetTokens.map(b => b.symbol))}
         </>
       );
     }
@@ -235,15 +204,11 @@ const getHistoricTransactionDescription = (
         },
       ] = logs;
 
+      const amount = new BigDecimal(mAssetQuantity, mAsset.decimals);
+
       return (
         <>
-          You <span>redeemed</span>{' '}
-          {formatExactAmount(
-            mAssetQuantity,
-            mUSD.token.decimals,
-            mUSD.token.symbol,
-            true,
-          )}
+          You <span>redeemed</span> {amount.format()}
         </>
       );
     }
@@ -255,21 +220,17 @@ const getHistoricTransactionDescription = (
 
 const HistoricTx: FC<{
   tx: HistoricTransaction;
-  mUSD?: MassetData;
-  mUSDSavingsAddress: string | null;
-}> = ({ tx, mUSDSavingsAddress, mUSD }) => {
+  dataState?: DataState;
+}> = ({ tx, dataState }) => {
   const { description, icon } = useMemo(() => {
     const fn = getHistoricTxFn(tx);
     return {
       description: fn
-        ? getHistoricTransactionDescription(fn, tx, {
-            mUSD,
-            mUSDSavingsAddress,
-          })
+        ? getHistoricTransactionDescription(fn, tx, dataState)
         : null,
       icon: fn ? EMOJIS[fn] : null,
     };
-  }, [tx, mUSD, mUSDSavingsAddress]);
+  }, [tx, dataState]);
 
   return (
     <HistoricTxContainer>
@@ -283,8 +244,7 @@ const HistoricTx: FC<{
 
 export const HistoricTransactions: FC<{}> = () => {
   const historic = useOrderedHistoricTransactions();
-  const mUSD = useMusdData();
-  const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
+  const dataState = useDataState();
 
   return (
     <Container>
@@ -294,11 +254,7 @@ export const HistoricTransactions: FC<{}> = () => {
         <List inverted>
           {historic.map(tx => (
             <ListItem key={tx.hash}>
-              <HistoricTx
-                tx={tx}
-                mUSD={mUSD}
-                mUSDSavingsAddress={mUSDSavingsAddress}
-              />
+              <HistoricTx tx={tx} dataState={dataState} />
             </ListItem>
           ))}
         </List>

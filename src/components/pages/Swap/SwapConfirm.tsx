@@ -8,8 +8,10 @@ export const SwapConfirm: FC<{}> = () => {
   const {
     values: { input, output, feeAmountSimple },
     valid,
-    mAssetData,
+    dataState,
   } = useSwapState();
+
+  const { feeRate } = dataState?.mAsset || {};
 
   return valid && input.amount.simple && output.amount.simple ? (
     <>
@@ -24,14 +26,14 @@ export const SwapConfirm: FC<{}> = () => {
         </span>
         {feeAmountSimple ? null : <span> (1:1)</span>} with zero-slippage.
       </P>
-      {feeAmountSimple && mAssetData?.feeRate ? (
+      {feeAmountSimple && feeRate ? (
         <>
           <P size={1}>
             This includes a swap fee of
             <span>
               {' '}
               <CountUp end={parseFloat(feeAmountSimple)} decimals={6} /> mUSD (
-              {formatExactAmount(mAssetData?.feeRate, 16, '%', false, 3)})
+              {formatExactAmount(feeRate, 16, '%', false, 3)})
             </span>
             .
           </P>

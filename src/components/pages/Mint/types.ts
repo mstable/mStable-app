@@ -1,5 +1,5 @@
-import { Amount } from '../../../types';
-import { MassetData } from '../../../context/DataProvider/types';
+import { BigDecimal } from '../../../web3/BigDecimal';
+import { DataState } from '../../../context/DataProvider/types';
 
 export enum Reasons {
   AmountExceedsApprovedAmount = 'Amount exceeds approved amount',
@@ -16,16 +16,17 @@ export enum Reasons {
 }
 
 export enum Actions {
+  Data,
   SetBassetAmount,
   SetBassetMaxAmount,
   ToggleBassetEnabled,
-  UpdateMassetData,
 }
 
 export type Action =
+  | { type: Actions.Data; payload?: DataState }
   | {
       type: Actions.SetBassetAmount;
-      payload: { amount: Amount; formValue: string | null; bAsset: string };
+      payload: { formValue: string | null; address: string };
     }
   | {
       type: Actions.SetBassetMaxAmount;
@@ -33,10 +34,6 @@ export type Action =
   | {
       type: Actions.ToggleBassetEnabled;
       payload: string;
-    }
-  | {
-      type: Actions.UpdateMassetData;
-      payload: MassetData;
     };
 
 export enum BassetStatus {
@@ -57,28 +54,28 @@ export enum Mode {
 
 export interface BassetInput {
   address: string;
-  amount: Amount;
+  amount?: BigDecimal;
+  formValue: string | null;
+  decimals: number;
   enabled: boolean;
   error?: string;
-  formValue: string | null;
 }
 
 export interface State {
-  bAssetInputs: BassetInput[];
+  bAssets: { [address: string]: BassetInput };
   error?: string;
-  mAssetData?: MassetData;
-  mintAmount: Amount;
+  mintAmount: BigDecimal;
   mode: Mode;
   valid: boolean;
-  touched: boolean;
+  amountTouched: boolean;
+  toggleTouched: boolean;
+  initialized: boolean;
+  dataState?: DataState;
+  simulation?: DataState;
 }
 
 export interface Dispatch {
-  setBassetAmount(
-    bAsset: string,
-    formValue: string | null,
-    amount: Amount,
-  ): void;
+  setBassetAmount(address: string, formValue: string | null): void;
   setBassetMaxAmount(): void;
   toggleBassetEnabled(bAsset: string): void;
   // setCollateralType(): void; // TODO

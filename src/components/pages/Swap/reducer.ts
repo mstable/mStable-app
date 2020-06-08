@@ -1,4 +1,4 @@
-import { BigNumber, formatUnits } from 'ethers/utils';
+import { BigNumber, BigNumberish, formatUnits } from 'ethers/utils';
 import { Reducer } from 'react';
 import { TokenQuantity } from '../../../types';
 import { parseAmount } from '../../../web3/amounts';
@@ -38,7 +38,7 @@ const calculateAmountAndFee = (
   isInputField: boolean,
   amount: BigNumber,
   decimals: number,
-  feeRate: string,
+  feeRate: BigNumberish,
 ): [string, string] => {
   const feeAmount = amount.mul(feeRate).div(EXP_SCALE);
 
@@ -61,7 +61,7 @@ const calculateSwapValues = (
 
   const {
     applySwapFee,
-    mAssetData,
+    dataState,
     values: {
       [field]: { token: prevToken, formValue: prevFormValue },
       [otherField]: { token: prevOtherToken, formValue: prevOtherFormValue },
@@ -69,8 +69,8 @@ const calculateSwapValues = (
     },
   } = state;
 
-  const feeRate = mAssetData?.feeRate;
-  const mAssetAddress = mAssetData?.token.address;
+  const { address: mAssetAddress, feeRate } = dataState?.mAsset || {};
+
   const outputAddress = state.values[Fields.Output].token.address;
   const prevIsMint = outputAddress && outputAddress === mAssetAddress;
 
@@ -211,8 +211,8 @@ export const reducer: Reducer<State, Action> = (state, action) => {
         values: calculateSwapValues(state, action),
       });
 
-    case Actions.UpdateMassetData:
-      return applyValidation({ ...state, mAssetData: action.payload });
+    case Actions.Data:
+      return applyValidation({ ...state, dataState: action.payload });
 
     default:
       throw new Error('Unhandled action type');

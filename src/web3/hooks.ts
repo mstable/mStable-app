@@ -156,7 +156,11 @@ export const useApyForPast24h = (): BigNumber | undefined => {
   );
 
   return latest && before && latest.timestamp > before.timestamp
-    ? calculateApy(before, latest)
+    ? calculateApy(before, {
+        // Normalize the type to RateTimestamp
+        timestamp: latest.timestamp,
+        exchangeRate: latest.exchangeRate.string,
+      })
     : undefined;
 };
 
@@ -197,7 +201,13 @@ export const useDailyApysForPastWeek = (): DailyApysForWeek => {
         // For the last day of the week, use the latest APY as the end rate;
         // otherwise, use the next day's start APY
         const endRate =
-          index === 6 ? latest : query.data[`day${index + 1}` as 'day0'][0];
+          index === 6 && latest
+            ? {
+                // Normalize the type to RateTimestamp
+                timestamp: latest.timestamp,
+                exchangeRate: latest.exchangeRate.string,
+              }
+            : query.data[`day${index + 1}` as 'day0'][0];
 
         const value =
           startRate && endRate && endRate.timestamp > startRate.timestamp
