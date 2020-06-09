@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { AmountInput } from './AmountInput';
-import { TokenInput } from './TokenInput';
+import { BigNumber } from 'ethers/utils';
+
 import {
   TokenDetailsFragment,
   useErc20TokensQuery,
@@ -9,6 +9,9 @@ import {
 import { Size } from '../../theme';
 import { Button } from '../core/Button';
 import { FlexRow } from '../core/Containers';
+import { AmountInput } from './AmountInput';
+import { TokenInput } from './TokenInput';
+import { ApproveButton } from './ApproveButton';
 
 interface Props {
   name: string;
@@ -19,10 +22,11 @@ interface Props {
   tokenDisabled?: boolean;
   needsUnlock?: boolean;
   items?: { label: string; value?: string | null | undefined }[];
-  onUnlock?(): void;
   onChangeAmount?(name: string, simpleAmount: string | null): void;
   onChangeToken?(name: string, token: TokenDetailsFragment): void;
   onSetMax?(): void;
+  spender?: string;
+  approveQuantity?: BigNumber;
 }
 
 const InputsRow = styled(FlexRow)`
@@ -105,10 +109,11 @@ export const TokenAmountInput: FC<Props> = ({
   name,
   tokenDisabled,
   needsUnlock,
-  onUnlock,
+  spender,
   onChangeAmount,
   onChangeToken,
   onSetMax,
+  approveQuantity,
   items = [],
 }) => {
   const { data: tokensData } = useErc20TokensQuery({
@@ -119,6 +124,7 @@ export const TokenAmountInput: FC<Props> = ({
     () => tokensData?.tokens.find(t => t.address === tokenValue),
     [tokensData, tokenValue],
   );
+
   return (
     <>
       <InputsRow>
@@ -136,10 +142,12 @@ export const TokenAmountInput: FC<Props> = ({
               Max
             </Button>
           ) : null}
-          {needsUnlock && onUnlock ? (
-            <Button type="button" onClick={onUnlock} size={Size.xs}>
-              Unlock
-            </Button>
+          {needsUnlock && tokenValue && spender ? (
+            <ApproveButton
+              address={tokenValue}
+              spender={spender}
+              approveQuantity={approveQuantity}
+            />
           ) : null}
         </AmountInputContainer>
         <TokenInput

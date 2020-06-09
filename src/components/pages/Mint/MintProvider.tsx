@@ -8,109 +8,61 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { pipe } from 'ts-pipe-compose';
+import { BigNumber, parseUnits } from 'ethers/utils';
 
-import { useMusdData } from '../../../context/DataProvider/DataProvider';
-import { formatSimpleAmount, parseAmount } from '../../../web3/amounts';
+import {
+  applyRatioBassetToMasset,
+  applyRatioMassetToBasset,
+} from '../../../web3/ratio';
+import { formatExactAmount, parseExactAmount } from '../../../web3/amounts';
 import { SCALE } from '../../../web3/constants';
-import { applyRatioMassetToBasset } from '../../../web3/ratio';
-import { Amount, TokenQuantity } from '../../../types';
-import { Action, Actions, Dispatch, Mode, State } from './types';
+import { useMusdData } from '../../../context/DataProvider/DataProvider';
+import { BassetData, MassetData } from '../../../context/DataProvider/types';
+import { Action, Actions, BassetInput, Dispatch, Mode, State } from './types';
 import { applyValidation } from './validation';
-
-const initialTokenQuantity: TokenQuantity = Object.freeze({
-  formValue: null,
-  amount: {
-    simple: null,
-    exact: null,
-  },
-  token: {
-    address: null,
-    decimals: null,
-    symbol: null,
-  },
-});
 
 const initialState: State = {
   bAssetInputs: [],
-  error: null,
-  mAsset: initialTokenQuantity,
-  mode: Mode.Single,
+  mode: Mode.MintMulti,
+  mintAmount: {
+    exact: null,
+    simple: null,
+  },
   valid: false,
   touched: false,
 };
 
-const calcOptimalBassetQuantitiesForMint = ({
-  mAsset,
-  bAssetInputs,
-  mAssetData,
-}: State): Amount[] => {
-  const enabledMaxWeightsTotal: BigNumber = bAssetInputs.reduce(
-    (_total, { address, enabled }) => {
-      const { maxWeight } =
-        mAssetData?.bAssets.find(b => b.address === address) || {};
-
-      return enabled && maxWeight ? _total.add(maxWeight) : _total;
-    },
-    new BigNumber(0),
+const updateMintAmount = (state: State): State => {
+  const ratios = (state.mAssetData?.bAssets || []).map(b => b.ratio);
+  const mintAmount = parseExactAmount(
+    state.bAssetInputs.reduce(
+      (_mintAmount, { enabled, amount: { exact } }, index) =>
+        enabled && exact
+          ? _mintAmount.add(
+              applyRatioBassetToMasset(exact, new BigNumber(ratios[index])),
+            )
+          : _mintAmount,
+      new BigNumber(0),
+    ),
+    18,
   );
-
-  return bAssetInputs.map(({ enabled, address }) => {
-    const { maxWeight, ratio, token } =
-      mAssetData?.bAssets.find(b => b.address === address) || {};
-
-    if (
-      !(enabled && maxWeight && ratio && token?.decimals && mAsset.amount.exact)
-    ) {
-      return { exact: new BigNumber(0), simple: 0 };
-    }
-
-    const weight = parseUnits(maxWeight).div(enabledMaxWeightsTotal);
-
-    const relativeUnitsToMint = mAsset.amount.exact?.mul(weight).div(SCALE);
-
-    const exact = applyRatioMassetToBasset(relativeUnitsToMint, ratio);
-
-    return { exact, simple: parseFloat(formatUnits(exact, token.decimals)) };
-  });
-};
-
-const updateBAssetInputs = (state: State): State => {
-  const bassetAmounts = calcOptimalBassetQuantitiesForMint(state);
-
   return {
     ...state,
-    bAssetInputs: state.bAssetInputs.map((basset, index) => ({
-      ...basset,
-      amount: bassetAmounts[index],
-      formValue: formatSimpleAmount(bassetAmounts[index].simple || 0),
-    })),
+    mintAmount,
   };
 };
 
 const update = (state: State): State =>
-  pipe(state, updateBAssetInputs, applyValidation);
+  pipe(state, updateMintAmount, applyValidation);
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.UpdateMassetData: {
       const mAssetData = action.payload;
-      const token = mAssetData?.token;
       return update({
         ...state,
         mAssetData,
-        mAsset: {
-          ...state.mAsset,
-          token:
-            token && token.address && token.symbol && token.decimals
-              ? {
-                  address: token.address,
-                  symbol: token.symbol,
-                  decimals: token.decimals,
-                }
-              : state.mAsset.token,
-        },
         bAssetInputs:
           state.bAssetInputs.length > 0
             ? state.bAssetInputs
@@ -118,74 +70,122 @@ const reducer: Reducer<State, Action> = (state, action) => {
                 address,
                 enabled: false,
                 amount: { exact: null, simple: null },
-                error: null,
                 formValue: null,
               })),
       });
     }
 
-    case Actions.SetMassetAmount: {
-      const mAssetAmount = parseAmount(
-        action.payload,
-        state.mAsset.token.decimals,
-      );
-      const mAsset = {
-        ...state.mAsset,
-        formValue: action.payload,
-        amount: mAssetAmount,
-      };
-      return update({ ...state, mAsset, touched: true });
+    case Actions.SetBassetAmount: {
+      const { amount, formValue, bAsset } = action.payload;
+      return update({
+        ...state,
+        touched: true,
+        bAssetInputs: state.bAssetInputs.map(b =>
+          b.address === bAsset
+            ? {
+                ...b,
+                amount,
+                formValue,
+              }
+            : b,
+        ),
+      });
     }
 
-    // TODO later: enable this action to set specific bAssetInputs amounts
-    // case Actions.SetBassetAmount: {
-    //   const { amount, basset } = action.payload;
-    //   return {
-    //     ...state,
-    //     bAssetInputs: {
-    //       ...state.bAssetInputs,
-    //       [basset]: {
-    //         ...state.bAssetInputs[basset],
-    //         amount: parseAmount(amount, state.bAssetInputs[basset].token.decimals),
-    //       },
-    //     },
-    //   };
-    // }
+    case Actions.SetBassetMaxAmount: {
+      const { mode, bAssetInputs, mAssetData } = state;
+      const [enabled] = bAssetInputs.filter(b => b.enabled);
+
+      if (mode !== Mode.MintSingle || !enabled || !mAssetData?.bAssets) {
+        return state;
+      }
+
+      const data = mAssetData.bAssets.find(b => b.address === enabled.address);
+
+      if (data?.token?.balance) {
+        const ratioedInputBalance = applyRatioBassetToMasset(
+          data.token.balance,
+          data.ratio,
+        );
+
+        // Determining max possible mint without pushing bAsset over max weight uses below formula
+        // M = ((t * maxW) - c)/(1-maxW)
+        // num = ((t * maxW) - c)
+        const num1 = parseUnits(
+          mAssetData.token.totalSupply,
+          mAssetData.token.decimals,
+        )
+          .mul(data.maxWeight)
+          .div(SCALE);
+        const num2 = applyRatioBassetToMasset(
+          parseUnits(data.vaultBalance, data.token.decimals),
+          data.ratio,
+        );
+        const num = num1.sub(num2);
+
+        // den = (1-maxW)
+        const den = SCALE.sub(data.maxWeight);
+
+        const maxMint = den.gt(0) ? num.mul(SCALE).div(den) : num;
+
+        const clampedMax = maxMint.gt(ratioedInputBalance)
+          ? ratioedInputBalance
+          : maxMint;
+
+        // Convert the max amount back to bAsset units
+        const amount = parseExactAmount(
+          applyRatioMassetToBasset(clampedMax, data.ratio),
+          data.token.decimals,
+        );
+        const formValue = formatExactAmount(
+          amount.exact as BigNumber,
+          data.token.decimals,
+        );
+
+        return update({
+          ...state,
+          touched: true,
+          bAssetInputs: state.bAssetInputs.map(b =>
+            b.address === enabled.address
+              ? {
+                  ...b,
+                  amount,
+                  formValue,
+                }
+              : b,
+          ),
+        });
+      }
+
+      return state;
+    }
 
     case Actions.ToggleBassetEnabled: {
       const address = action.payload;
 
       if (
-        state.mode === Mode.Multi ||
         state.mAssetData?.bAssets.find(b => b.address === address)?.overweight
       ) {
         return state;
       }
 
+      const bAssetInputs = state.bAssetInputs.map(b =>
+        b.address === address
+          ? {
+              ...b,
+              amount: !b.enabled ? b.amount : { exact: null, simple: null },
+              formValue: !b.enabled ? b.formValue : null,
+              enabled: !b.enabled,
+            }
+          : b,
+      );
       return update({
         ...state,
-        bAssetInputs: state.bAssetInputs.map(b => ({
-          ...b,
-          enabled: b.address === address ? !b.enabled : false,
-        })),
-      });
-    }
-
-    case Actions.ToggleMode: {
-      const mode = state.mode === Mode.Single ? Mode.Multi : Mode.Single;
-      return update({
-        ...state,
-        mode,
-        bAssetInputs: state.bAssetInputs.map(b =>
-          mode === Mode.Single
-            ? { ...b, enabled: false }
-            : {
-                ...b,
-                enabled: !state.mAssetData?.bAssets.find(
-                  _b => _b.address === b.address,
-                )?.overweight,
-              },
-        ),
+        bAssetInputs,
+        mode:
+          bAssetInputs.filter(b => b.enabled).length === 1
+            ? Mode.MintSingle
+            : Mode.MintMulti,
       });
     }
 
@@ -200,31 +200,26 @@ const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 export const MintProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const setMassetAmount = useCallback<Dispatch['setMassetAmount']>(
-    amount => {
-      dispatch({ type: Actions.SetMassetAmount, payload: amount });
+  const setBassetAmount = useCallback<Dispatch['setBassetAmount']>(
+    (bAsset, formValue, amount) => {
+      dispatch({
+        type: Actions.SetBassetAmount,
+        payload: { bAsset, amount, formValue },
+      });
     },
     [dispatch],
   );
-
-  const toggleMode = useCallback<Dispatch['toggleMode']>(() => {
-    dispatch({ type: Actions.ToggleMode });
-  }, [dispatch]);
-
-  // TODO later: enable this action to set specific bassets amounts
-  // const setBassetAmount = useCallback<Dispatch['setBassetAmount']>(
-  //   (basset, amount) => {
-  //     dispatch({ type: Actions.SetBassetAmount, payload: { basset, amount } });
-  //   },
-  //   [dispatch],
-  // );
 
   const toggleBassetEnabled = useCallback<Dispatch['toggleBassetEnabled']>(
-    basset => {
-      dispatch({ type: Actions.ToggleBassetEnabled, payload: basset });
+    bAsset => {
+      dispatch({ type: Actions.ToggleBassetEnabled, payload: bAsset });
     },
     [dispatch],
   );
+
+  const setBassetMaxAmount = useCallback<Dispatch['setBassetMaxAmount']>(() => {
+    dispatch({ type: Actions.SetBassetMaxAmount });
+  }, [dispatch]);
 
   const mUsdData = useMusdData();
   useEffect(() => {
@@ -236,11 +231,11 @@ export const MintProvider: FC<{}> = ({ children }) => {
       <dispatchCtx.Provider
         value={useMemo(
           () => ({
-            setMassetAmount,
-            toggleMode,
+            setBassetAmount,
+            setBassetMaxAmount,
             toggleBassetEnabled,
           }),
-          [setMassetAmount, toggleMode, toggleBassetEnabled],
+          [setBassetAmount, setBassetMaxAmount, toggleBassetEnabled],
         )}
       >
         {children}
@@ -251,4 +246,39 @@ export const MintProvider: FC<{}> = ({ children }) => {
 
 export const useMintState = (): State => useContext(stateCtx);
 
+export const useMintBassetInput = (
+  address: string,
+): BassetInput | undefined => {
+  const { bAssetInputs } = useMintState();
+  return useMemo(() => bAssetInputs.find(b => b.address === address), [
+    bAssetInputs,
+    address,
+  ]);
+};
+
+export const useMintBassetData = (address: string): BassetData | null => {
+  const { mAssetData } = useMintState();
+  const bAssets = mAssetData?.bAssets;
+  return useMemo(() => bAssets?.find(b => b.address === address) || null, [
+    bAssets,
+    address,
+  ]);
+};
+
+export const useMintMode = (): State['mode'] => useMintState().mode;
+
+export const useMintMassetToken = (): MassetData['token'] | undefined => {
+  const { mAssetData } = useMintState();
+  return mAssetData?.token;
+};
+
 export const useMintDispatch = (): Dispatch => useContext(dispatchCtx);
+
+export const useMintToggleBassetEnabled = (): Dispatch['toggleBassetEnabled'] =>
+  useMintDispatch().toggleBassetEnabled;
+
+export const useMintSetBassetAmount = (): Dispatch['setBassetAmount'] =>
+  useMintDispatch().setBassetAmount;
+
+export const useMintSetBassetMaxAmount = (): Dispatch['setBassetMaxAmount'] =>
+  useMintDispatch().setBassetMaxAmount;

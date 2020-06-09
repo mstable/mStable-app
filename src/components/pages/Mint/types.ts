@@ -1,4 +1,4 @@
-import { Amount, TokenQuantity } from '../../../types';
+import { Amount } from '../../../types';
 import { MassetData } from '../../../context/DataProvider/types';
 
 export enum Reasons {
@@ -15,26 +15,21 @@ export enum Reasons {
   TokenNotAllowedInMint = 'Token not allowed in mint',
 }
 
-export enum Mode {
-  Single,
-  Multi,
-}
-
 export enum Actions {
-  // SetBassetAmount,
-  SetMassetAmount,
+  SetBassetAmount,
+  SetBassetMaxAmount,
   ToggleBassetEnabled,
-  ToggleMode,
   UpdateMassetData,
 }
 
 export type Action =
-  // | {
-  //     type: Actions.SetBassetAmount;
-  //     payload: { amount: string; basset: string };
-  //   }
-  | { type: Actions.SetMassetAmount; payload: string | null }
-  | { type: Actions.ToggleMode }
+  | {
+      type: Actions.SetBassetAmount;
+      payload: { amount: Amount; formValue: string | null; bAsset: string };
+    }
+  | {
+      type: Actions.SetBassetMaxAmount;
+    }
   | {
       type: Actions.ToggleBassetEnabled;
       payload: string;
@@ -55,33 +50,43 @@ export enum BassetStatus {
   Failed = 'Failed',
 }
 
+export enum Mode {
+  MintSingle,
+  MintMulti,
+}
+
 export interface BassetInput {
   address: string;
   amount: Amount;
   enabled: boolean;
-  error: null | string;
+  error?: string;
   formValue: string | null;
 }
 
 export interface State {
   bAssetInputs: BassetInput[];
-  error: null | string;
-  mAsset: TokenQuantity;
+  error?: string;
   mAssetData?: MassetData;
+  mintAmount: Amount;
   mode: Mode;
   valid: boolean;
   touched: boolean;
 }
 
 export interface Dispatch {
-  // setBassetAmount(basset: string, amount: string): void;
-  setMassetAmount(amount: string | null): void;
-  toggleMode(): void;
-  toggleBassetEnabled(basset: string): void;
+  setBassetAmount(
+    bAsset: string,
+    formValue: string | null,
+    amount: Amount,
+  ): void;
+  setBassetMaxAmount(): void;
+  toggleBassetEnabled(bAsset: string): void;
+  // setCollateralType(): void; // TODO
 }
 
 export type ValidationResult =
-  | [boolean, string | null]
-  | [boolean, string | null, Record<string, string | null>];
+  | [boolean]
+  | [boolean, string]
+  | [boolean, string, Record<string, string | undefined>];
 
 export type StateValidator = (state: State) => ValidationResult;

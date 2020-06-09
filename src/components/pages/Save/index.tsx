@@ -67,7 +67,6 @@ const SaveForm: FC<{}> = () => {
       confirmLabel={
         transactionType === TransactionType.Deposit ? 'Deposit' : 'Withdrawal'
       }
-      formId="save"
       input={<SaveInput />}
       transactionsLabel="Save transactions"
       valid={touched && !error}
@@ -77,7 +76,7 @@ const SaveForm: FC<{}> = () => {
 
 export const Save: FC<{}> = () => (
   <SaveProvider>
-    <FormProvider>
+    <FormProvider formId="save">
       <SaveInfo />
       <SaveForm />
     </FormProvider>

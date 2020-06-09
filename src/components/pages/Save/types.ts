@@ -13,7 +13,7 @@ export enum Reasons {
   AmountMustBeSet = 'Amount must be set',
   DepositAmountMustNotExceedTokenBalance = 'Deposit amount must not exceed token balance',
   FetchingData = 'Fetching data',
-  MUSDMustBeUnlocked = 'mUSD must be unlocked',
+  MUSDMustBeApproved = 'Transfers must be approved',
   TokenMustBeSelected = 'Token must be selected',
   WithdrawAmountMustNotExceedSavingsBalance = 'Withdraw amount must not exceed savings balance',
 }

@@ -449,6 +449,20 @@ export const useHasPendingTransactions = (): boolean => {
   return !!Object.values(current).find(tx => tx.status !== 1);
 };
 
+export const useHasPendingApproval = (
+  address: string,
+  spender: string,
+): boolean => {
+  const { current } = useTransactionsState();
+  return !!Object.values(current).find(
+    tx =>
+      tx.status !== 1 &&
+      tx.fn === 'approve' &&
+      tx.args[0] === spender &&
+      tx.response.to === address,
+  );
+};
+
 const overrideProps = ['nonce', 'gasLimit', 'gasPrice', 'value', 'chainId'];
 
 export const calculateGasMargin = (value: BigNumber): BigNumber => {

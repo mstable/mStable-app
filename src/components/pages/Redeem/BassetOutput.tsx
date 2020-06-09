@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 import { formatUnits } from 'ethers/utils';
 
+import { Color } from '../../../theme';
 import { CountUp as CountUpBase } from '../../core/CountUp';
-import { TokenIcon } from '../../icons/TokenIcon';
+import { Token } from '../../core/Token';
 import { ToggleInput } from '../../forms/ToggleInput';
 import { useBassetData } from '../../../context/DataProvider/DataProvider';
 import { useRedeemBassetData, useRedeemBassetOutput } from './RedeemProvider';
@@ -19,14 +20,9 @@ interface Props {
   handleToggle(address: string): void;
 }
 
-const CountUp = styled(CountUpBase)<{
-  highlight?: boolean;
-}>`
+const CountUp = styled(CountUpBase)`
   display: block;
   text-align: right;
-  color: ${({ theme, highlight }) =>
-    highlight ? theme.color.green : theme.color.offBlack};
-  font-weight: ${({ highlight }) => (highlight ? '600' : '400')};
 `;
 
 const Row = styled.div`
@@ -43,19 +39,6 @@ const Row = styled.div`
 
   > * {
     transition: opacity 0.4s ease;
-  }
-`;
-
-const TokenContainer = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: ${({ theme }) => theme.fontSize.l};
-  font-weight: bold;
-
-  img {
-    width: 36px;
-    height: 36px;
-    padding-right: 4px;
   }
 `;
 
@@ -148,16 +131,11 @@ export const BassetOutput: FC<Props> = ({
     <div>
       <Rows valid={!error} enabled={enabled} overweight={overweight}>
         <HeaderRow>
-          <TokenContainer>
-            {!bassetData?.token?.symbol ? (
-              <Skeleton />
-            ) : (
-              <>
-                <TokenIcon symbol={bassetData.token.symbol} />
-                <div>{bassetData.token.symbol}</div>
-              </>
-            )}
-          </TokenContainer>
+          {bassetData?.token?.symbol ? (
+            <Token symbol={bassetData.token.symbol} />
+          ) : (
+            <Skeleton />
+          )}
           <ToggleInput
             onClick={toggle}
             disabled={toggleDisabled}
@@ -172,6 +150,7 @@ export const BassetOutput: FC<Props> = ({
           <Label>Amount</Label>
           <CountUp
             highlight={(amountAfterFee?.simple || 0) > 0}
+            highlightColor={Color.green}
             duration={0.4}
             end={amountAfterFee?.simple || 0}
             prefix="+ "

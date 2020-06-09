@@ -6,13 +6,18 @@ import {
   StateValidator,
   Reasons,
   ValidationResult,
+  BassetStatus,
 } from './types';
 import { BassetData, MassetData } from '../../../context/DataProvider/types';
 import { EXP_SCALE, RATIO_SCALE } from '../../../web3/constants';
 
 const statusValidator = (status: string | undefined): boolean =>
   !!status &&
-  !['BrokenBelowPeg', 'Liquidating', 'Blacklisted'].includes(status);
+  ![
+    BassetStatus.BrokenBelowPeg,
+    BassetStatus.Liquidating,
+    BassetStatus.Blacklisted,
+  ].includes(status as BassetStatus);
 
 const amountValidator = (
   bAssetInput: BassetInput,
@@ -23,11 +28,15 @@ const amountValidator = (
     return [false, Reasons.TokenNotAllowedInMint];
   }
 
-  if (
-    (bAssetInput.amount.exact as BigNumber).gt(
-      bAssetData.token.balance as BigNumber,
-    )
-  ) {
+  if (!bAssetInput.amount.exact) {
+    return [false, Reasons.AmountMustBeSet];
+  }
+
+  if (bAssetInput.amount.exact.lte(0)) {
+    return [false, Reasons.AmountMustBeGreaterThanZero];
+  }
+
+  if (bAssetInput.amount.exact.gt(bAssetData.token.balance as BigNumber)) {
     return [false, Reasons.AmountExceedsBalance];
   }
 
@@ -39,7 +48,7 @@ const amountValidator = (
     return [false, Reasons.AmountExceedsApprovedAmount];
   }
 
-  return [true, null];
+  return [true];
 };
 
 const mintSingleValidator: StateValidator = state => {
@@ -54,7 +63,14 @@ const mintSingleValidator: StateValidator = state => {
     b => b.address === bAssetInput.address,
   );
 
-  if (!(bAssetInput.amount.exact && bAssetData && mAssetData?.token)) {
+  if (
+    !(
+      bAssetData?.status &&
+      bAssetData.token.balance &&
+      bAssetData.token?.decimals &&
+      mAssetData?.token
+    )
+  ) {
     return [false, Reasons.FetchingData];
   }
 
@@ -64,10 +80,14 @@ const mintSingleValidator: StateValidator = state => {
     mAssetData,
   );
   if (!amountValid) {
-    return [amountValid, amountError];
+    return [
+      amountValid,
+      amountError as string,
+      { [bAssetInput.address]: amountError },
+    ];
   }
 
-  const mintAmountInMasset = bAssetInput.amount.exact
+  const mintAmountInMasset = (bAssetInput.amount.exact as BigNumber)
     .mul(bAssetData.ratio)
     .div(RATIO_SCALE);
 
@@ -90,10 +110,14 @@ const mintSingleValidator: StateValidator = state => {
     .div(EXP_SCALE);
 
   if (newBalanceInMasset.gt(maxWeightInUnits)) {
-    return [false, Reasons.MustBeBelowMaxWeighting];
+    return [
+      false,
+      Reasons.MustBeBelowMaxWeighting,
+      { [bAssetInput.address]: Reasons.MustBeBelowMaxWeighting },
+    ];
   }
 
-  return [true, null];
+  return [true];
 };
 
 const mintMultiValidator: StateValidator = state => {
@@ -119,7 +143,7 @@ const mintMultiValidator: StateValidator = state => {
 
   const newBalances: BigNumber[] = [];
   let newTotalVault: BigNumber = parseUnits(
-    mAssetData.token.totalSupply as string,
+    mAssetData.token.totalSupply,
     mAssetData.token.decimals,
   );
 
@@ -134,20 +158,20 @@ const mintMultiValidator: StateValidator = state => {
 
     // How much mAsset is this bassetquantity worth?
     const mintAmountInMasset = (input.amount.exact as BigNumber)
-      .mul(data.ratio as string)
+      .mul(data.ratio)
       .div(RATIO_SCALE);
 
     // How much of this bAsset do we have in the vault, in terms of mAsset?
     newBalances.push(
-      parseUnits(data.vaultBalance as string, data.token.decimals)
-        .mul(data.ratio as string)
+      parseUnits(data.vaultBalance, data.token.decimals)
+        .mul(data.ratio)
         .div(RATIO_SCALE)
         .add(mintAmountInMasset),
     );
 
     newTotalVault = newTotalVault.add(mintAmountInMasset);
 
-    return [true, null];
+    return [true];
   });
   return bAssets
     .map<ValidationResult>(({ data }, index) => {
@@ -156,14 +180,12 @@ const mintMultiValidator: StateValidator = state => {
       }
       if (!data) return [false, Reasons.FetchingData];
       // What is the max weight of this bAsset in the basket?
-      const maxWeightInUnits = newTotalVault
-        .mul(data.maxWeight as string)
-        .div(EXP_SCALE);
+      const maxWeightInUnits = newTotalVault.mul(data.maxWeight).div(EXP_SCALE);
 
       if (newBalances?.[index]?.gt?.(maxWeightInUnits)) {
         return [false, Reasons.MustBeBelowMaxWeighting];
       }
-      return [true, null];
+      return [true];
     })
     .reduce<ValidationResult>(
       ([_valid, _error, _errorMap], [bAssetValid, bAssetError], index) => {
@@ -175,33 +197,19 @@ const mintMultiValidator: StateValidator = state => {
         const valid = _valid && bAssetValid;
         const errorMap = { ..._errorMap, [address]: bAssetError };
 
-        return [valid, error, errorMap];
+        return valid ? [valid] : [valid, error as string, errorMap];
       },
-      [true, null, {}],
+      [true, '', {}],
     );
 };
 
 const mintValidator: StateValidator = state => {
-  const { mode, touched, mAsset, bAssetInputs } = state;
+  const { bAssetInputs, mode } = state;
 
-  if (!touched) {
-    return [true, ''];
-  }
-
-  if (touched && !mAsset.amount.exact) {
-    return [false, Reasons.AmountMustBeSet];
-  }
-
-  if (touched && mAsset.amount.exact?.lte(0)) {
-    return [false, Reasons.AmountMustBeGreaterThanZero];
-  }
-
-  if (mode === Mode.Single) {
+  if (mode === Mode.MintSingle) {
     const [valid, error] = mintSingleValidator(state);
-    const [enabled] = bAssetInputs.filter(b => b.enabled);
-    return enabled
-      ? [valid, error, { [enabled.address]: error }]
-      : [valid, error];
+    const [bAssetInput] = bAssetInputs.filter(b => b.enabled);
+    return [valid, error as string, { [bAssetInput.address]: error }];
   }
 
   return mintMultiValidator(state);
@@ -222,24 +230,22 @@ const basketValidator: StateValidator = state => {
     return [false, Reasons.BasketUndergoingRecollateralisation];
   }
 
-  return [true, null];
+  return [true];
 };
 
 export const applyValidation = (state: State): State => {
-  const { touched, mAsset, bAssetInputs } = state;
+  const { touched, bAssetInputs } = state;
 
   const [basketValid, basketError] = basketValidator(state);
   const [mintValid, mintError, bAssetInputErrors] = mintValidator(state);
-
-  const formValid = !!(touched && mAsset.amount.exact);
 
   return {
     ...state,
     bAssetInputs: bAssetInputs.map(b => ({
       ...b,
-      error: bAssetInputErrors?.[b.address] || null,
+      error: touched ? bAssetInputErrors?.[b.address] : undefined,
     })),
-    error: basketError || mintError || null,
-    valid: basketValid && mintValid && formValid,
+    error: touched ? basketError || mintError : undefined,
+    valid: touched && basketValid && mintValid,
   };
 };

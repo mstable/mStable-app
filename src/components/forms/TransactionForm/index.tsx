@@ -5,9 +5,8 @@ import { ConfirmPane } from './ConfirmPane';
 import { TransactionsPane } from './TransactionsPane';
 
 interface Props {
-  confirm: ReactElement;
+  confirm?: ReactElement;
   confirmLabel: string;
-  formId: string;
   input: ReactElement;
   transactionsLabel: string;
   valid: boolean;
@@ -24,16 +23,15 @@ const Container = styled.div`
 export const TransactionForm: FC<Props> = ({
   confirm,
   confirmLabel,
-  formId,
   input,
   transactionsLabel,
   valid,
 }) => (
   <Container>
-    <InputPane formId={formId}>{input}</InputPane>
-    <ConfirmPane formId={formId} confirmLabel={confirmLabel} valid={valid}>
+    <InputPane>{input}</InputPane>
+    <ConfirmPane confirmLabel={confirmLabel} valid={valid}>
       {confirm}
     </ConfirmPane>
-    <TransactionsPane formId={formId} transactionsLabel={transactionsLabel} />
+    <TransactionsPane transactionsLabel={transactionsLabel} />
   </Container>
 );

@@ -1,9 +1,7 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 
-import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
-import { useErc20Contract } from '../../../context/DataProvider/ContractsProvider';
 import { RATIO_SCALE, SCALE } from '../../../web3/constants';
 import { formatExactAmount } from '../../../web3/amounts';
 import { FormRow } from '../../core/Form';
@@ -31,9 +29,6 @@ export const SwapInput: FC<{}> = () => {
   const mAssetAddress = mUsdToken?.address;
   const inputToken = useTokenWithBalance(input.token.address);
   const outputToken = useTokenWithBalance(output.token.address);
-
-  const sendTransaction = useSendTransaction();
-  const inputTokenContract = useErc20Contract(inputAddress);
 
   const [inputAddresses, outputAddresses] = useMemo<
     [string[], string[]]
@@ -82,22 +77,6 @@ export const SwapInput: FC<{}> = () => {
     ],
     [outputToken, feeAmountSimple],
   );
-
-  /**
-   * Handle the unlocking of bAssets
-   */
-  const handleUnlock = useCallback(() => {
-    const manifest = {
-      iface: inputTokenContract,
-      fn: 'approve',
-      formId: 'swap',
-      args: [
-        mAssetAddress,
-        parseUnits(inputToken.totalSupply as string, inputToken.decimals),
-      ],
-    };
-    sendTransaction(manifest);
-  }, [inputToken, inputTokenContract, mAssetAddress, sendTransaction]);
 
   /**
    * Handle setting the max amount for the input token
@@ -204,10 +183,10 @@ export const SwapInput: FC<{}> = () => {
               ? handleSetMax
               : undefined
           }
-          onUnlock={handleUnlock}
           needsUnlock={needsUnlock}
           items={inputItems}
           error={inputError}
+          spender={mAssetAddress}
         />
       </FormRow>
       <FormRow>

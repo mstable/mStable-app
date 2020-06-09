@@ -11,18 +11,17 @@ import { TransactionForm } from '../../forms/TransactionForm';
 import { Interfaces } from '../../../types';
 import { MintProvider, useMintState } from './MintProvider';
 import { MintInput } from './MintInput';
-import { MintConfirm } from './MintConfirm';
 import { MusdStats } from '../../stats/MusdStats';
 
 const MintForm: FC<{}> = () => {
   const { account } = useWallet();
-  const { error, touched, mAsset, bAssetInputs } = useMintState();
+  const { error, touched, bAssetInputs, mintAmount } = useMintState();
   const setFormManifest = useSetFormManifest();
   const mUsdContract = useMusdContract();
 
   // Set the form manifest
   useEffect(() => {
-    if (!error && mUsdContract && mAsset.amount.exact && account) {
+    if (!error && mUsdContract && mintAmount.exact && account) {
       const enabled = bAssetInputs.filter(b => b.enabled);
 
       // Mint single for one asset
@@ -56,16 +55,14 @@ const MintForm: FC<{}> = () => {
     account,
     bAssetInputs,
     error,
-    mAsset.amount.exact,
+    mintAmount.exact,
     mUsdContract,
     setFormManifest,
   ]);
 
   return (
     <TransactionForm
-      confirm={<MintConfirm />}
       confirmLabel="Mint"
-      formId="mint"
       input={<MintInput />}
       transactionsLabel="Mint transactions"
       valid={touched && !error}
@@ -75,7 +72,7 @@ const MintForm: FC<{}> = () => {
 
 export const Mint: FC<{}> = () => (
   <MintProvider>
-    <FormProvider>
+    <FormProvider formId="mint">
       <MintForm />
       <MusdStats />
     </FormProvider>

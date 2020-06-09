@@ -4,15 +4,10 @@ import { formatUnits, parseUnits } from 'ethers/utils';
 
 import {
   useMusdData,
-  useSavingsBalance,
   useMusdSavingsAllowance,
+  useSavingsBalance,
 } from '../../../context/DataProvider/DataProvider';
 import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
-import { useSendTransaction } from '../../../context/TransactionsProvider';
-import {
-  useMusdContract,
-  useSavingsContract,
-} from '../../../context/DataProvider/ContractsProvider';
 import { Color } from '../../../theme';
 import { FormRow } from '../../core/Form';
 import { H3 } from '../../core/Typography';
@@ -20,7 +15,9 @@ import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { ToggleInput } from '../../forms/ToggleInput';
 import { formatExactAmount } from '../../../web3/amounts';
 import { TransactionType } from './types';
-import { useSaveState, useSaveDispatch } from './SaveProvider';
+import { useSaveDispatch, useSaveState } from './SaveProvider';
+import { useKnownAddress } from '../../../context/DataProvider/KnownAddressProvider';
+import { ContractNames } from '../../../types';
 
 const TransactionTypeRow = styled(FormRow)`
   display: flex;
@@ -47,18 +44,17 @@ export const SaveInput: FC<{}> = () => {
 
   const { setToken, setTransactionType, setQuantity } = useSaveDispatch();
 
-  const sendTransaction = useSendTransaction();
-
-  const savingsContract = useSavingsContract();
-  const savingsContractAddress = savingsContract?.address || null;
-
-  const mUsdContract = useMusdContract();
   const mUsd = useMusdData();
   const mUsdAddress = mUsd?.token.address || null;
 
   const mUsdToken = useTokenWithBalance(mUsdAddress);
   const allowance = useMusdSavingsAllowance();
   const savingsBalance = useSavingsBalance();
+  const savingsContractAddress = useKnownAddress(ContractNames.mUSDSavings);
+  const approveQuantity = useMemo(
+    () => parseUnits('1844674400000', mUsdToken.decimals),
+    [mUsdToken],
+  );
 
   const musdBalanceItem = useMemo(
     () =>
@@ -131,21 +127,6 @@ export const SaveInput: FC<{}> = () => {
     }
   }, [mUsdToken, savingsBalance, setQuantity, transactionType]);
 
-  const handleUnlock = useCallback<
-    NonNullable<ComponentProps<typeof TokenAmountInput>['onUnlock']>
-  >(() => {
-    const manifest = {
-      iface: mUsdContract,
-      fn: 'approve',
-      formId: 'save',
-      args: [
-        savingsContractAddress,
-        parseUnits('1844674400000', mUsdToken.decimals),
-      ],
-    };
-    sendTransaction(manifest);
-  }, [mUsdToken, savingsContractAddress, sendTransaction, mUsdContract]);
-
   const toggleTransactionType = useCallback(() => {
     setTransactionType(
       transactionType === TransactionType.Deposit
@@ -184,7 +165,8 @@ export const SaveInput: FC<{}> = () => {
           items={musdBalanceItem}
           error={error}
           needsUnlock={needsUnlock}
-          onUnlock={handleUnlock}
+          spender={savingsContractAddress as string}
+          approveQuantity={approveQuantity}
         />
       </FormRow>
     </>
