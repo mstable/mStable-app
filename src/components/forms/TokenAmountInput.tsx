@@ -6,7 +6,7 @@ import {
   TokenDetailsFragment,
   useErc20TokensQuery,
 } from '../../graphql/generated';
-import { Size } from '../../theme';
+import { Size, ViewportWidth } from '../../theme';
 import { Button } from '../core/Button';
 import { FlexRow } from '../core/Containers';
 import { AmountInput } from './AmountInput';
@@ -21,7 +21,11 @@ interface Props {
   tokenAddresses: string[];
   tokenDisabled?: boolean;
   needsUnlock?: boolean;
-  items?: { label: string; value?: string | null | undefined }[];
+  items?: {
+    label: string;
+    value?: string | null | undefined;
+    highlight?: boolean;
+  }[];
   onChangeAmount?(name: string, simpleAmount: string | null): void;
   onChangeToken?(name: string, token: TokenDetailsFragment): void;
   onSetMax?(): void;
@@ -49,8 +53,19 @@ const Items = styled.div`
 const ErrorAndItems = styled.div`
   display: flex;
   justify-content: space-between;
+
   > :first-child {
     margin-right: 16px;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    display: block;
+    > :first-child {
+      margin-right: 0;
+    }
+    > * {
+      margin: 8px 0;
+    }
   }
 `;
 
@@ -58,6 +73,18 @@ const ItemLabel = styled.div`
   font-size: ${({ theme }) => theme.fontSize.s};
   text-transform: uppercase;
   font-weight: bold;
+`;
+
+const Item = styled.div<{ highlight?: boolean }>`
+  ${({ highlight, theme }) =>
+    highlight
+      ? `
+    background: #ffeed2;
+    border: 2px ${theme.color.gold} dashed;
+    padding: 8px;
+    margin: 0 -8px;
+  `
+      : ''}
 `;
 
 const AmountInputContainer = styled.div`
@@ -161,11 +188,11 @@ export const TokenAmountInput: FC<Props> = ({
       </InputsRow>
       <ErrorAndItems>
         <Items>
-          {items.map(({ label, value }) => (
-            <div key={label}>
+          {items.map(({ label, value, highlight }) => (
+            <Item key={label} highlight={highlight}>
               <ItemLabel>{label}</ItemLabel>
               <div>{value || '—'}</div>
-            </div>
+            </Item>
           ))}
         </Items>
         <Error>{error}</Error>

@@ -1,14 +1,25 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 
+import styled from 'styled-components';
 import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
 import { RATIO_SCALE, SCALE } from '../../../web3/constants';
 import { formatExactAmount } from '../../../web3/amounts';
 import { FormRow } from '../../core/Form';
-import { H3 } from '../../core/Typography';
+import { H3, P } from '../../core/Typography';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Fields } from './types';
-import { useSwapState, useSwapDispatch } from './SwapProvider';
+import { useSwapDispatch, useSwapState } from './SwapProvider';
+
+const PromoRow = styled(FormRow)`
+  font-weight: bold;
+  h3 {
+    text-transform: uppercase;
+  }
+  p {
+    font-size: 16px;
+  }
+`;
 
 export const SwapInput: FC<{}> = () => {
   const {
@@ -17,12 +28,12 @@ export const SwapInput: FC<{}> = () => {
       output,
       input: { token: { address: inputAddress } = { address: null } },
       output: { token: { address: outputAddress } = { address: null } },
-      feeAmountSimple,
     },
     inputError,
     outputError,
     needsUnlock,
-    mAssetData: { token: mUsdToken, bAssets = [] } = {},
+    touched,
+    mAssetData: { token: mUsdToken, bAssets = [], feeRate } = {},
   } = useSwapState();
   const { setToken, setQuantity } = useSwapDispatch();
 
@@ -65,17 +76,24 @@ export const SwapInput: FC<{}> = () => {
           true,
         ),
       },
-      ...(feeAmountSimple
+      ...(feeRate
         ? [
             {
-              label: 'Note',
+              label: 'Low fee 🎉',
               // TODO ideally 'see details' would open up the details
-              value: 'Swap fee applies (see details below)',
+              value: `To celebrate our beta launch, fees are at ${formatExactAmount(
+                feeRate,
+                16,
+                '%',
+                false,
+                3,
+              )}`,
+              highlight: true,
             },
           ]
         : []),
     ],
-    [outputToken, feeAmountSimple],
+    [outputToken, feeRate],
   );
 
   /**
@@ -167,8 +185,21 @@ export const SwapInput: FC<{}> = () => {
     mUsdToken,
   ]);
 
+  useEffect(() => {
+    if (bAssets && !inputAddress && !touched) {
+      const { token, address } = bAssets[0] || {};
+      if (token && address) {
+        setToken(Fields.Input, { ...token, address });
+      }
+    }
+  }, [inputAddress, setToken, bAssets, touched]);
+
   return (
     <>
+      <PromoRow>
+        <H3>Swap</H3>
+        <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
+      </PromoRow>
       <FormRow>
         <H3>Send</H3>
         <TokenAmountInput
