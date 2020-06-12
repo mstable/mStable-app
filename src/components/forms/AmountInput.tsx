@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import { decimalsStep } from '../../web3/strings';
-import { FontSize } from '../../theme';
 
 interface Props {
   error?: string;
@@ -30,7 +29,7 @@ const Input = styled.input<{ error: string | void }>`
     } solid`};
   border-radius: 3px;
   color: ${({ error, theme }) => (error ? theme.color.red : theme.color.black)};
-  font-size: ${FontSize.m};
+  font-size: 16px;
   font-weight: bold;
   min-width: 0;
   width: 100%;

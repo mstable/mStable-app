@@ -22,7 +22,7 @@ export const SwapConfirm: FC<{}> = () => {
         <span>
           <CountUp end={output.amount.simple} /> {output.token.symbol}
         </span>
-        {feeAmountSimple ? null : <span> (1:1)</span>}.
+        {feeAmountSimple ? null : <span> (1:1)</span>} with zero-slippage.
       </P>
       {feeAmountSimple && mAssetData?.feeRate ? (
         <>
@@ -30,8 +30,8 @@ export const SwapConfirm: FC<{}> = () => {
             This includes a swap fee of
             <span>
               {' '}
-              <CountUp end={parseFloat(feeAmountSimple)} decimals={4} /> mUSD (
-              {formatExactAmount(mAssetData?.feeRate, 16, '%')})
+              <CountUp end={parseFloat(feeAmountSimple)} decimals={6} /> mUSD (
+              {formatExactAmount(mAssetData?.feeRate, 16, '%', false, 3)})
             </span>
             .
           </P>

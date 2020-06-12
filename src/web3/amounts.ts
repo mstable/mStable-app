@@ -9,11 +9,14 @@ import { Amount } from '../types';
 export const formatSimpleAmount = (
   simpleAmount: number | null,
   symbol?: string | null,
+  decimalPlaces?: number,
 ): string | null => {
   if (typeof simpleAmount === 'number') {
     // Use two padded decimal places
     const [intAmount, decimals = ''] = simpleAmount.toString().split('.');
-    const paddedDecimals = decimals.slice(0, 2).padEnd(2, '0');
+    const paddedDecimals = decimals
+      .slice(0, decimalPlaces || 2)
+      .padEnd(decimalPlaces || 2, '0');
     return `${intAmount}.${paddedDecimals}${symbol ? ` ${symbol}` : ''}`;
   }
   return null;
@@ -31,12 +34,13 @@ export const formatExactAmount = (
   decimals?: number,
   symbol?: string,
   commas = false,
+  decimalPlaces?: number,
 ): string | null => {
   if (exactAmount && decimals) {
     const parsedFloat = parseFloat(formatUnits(exactAmount, decimals));
     const min = 0.000001; // This is the min amount that is parsable by 'parseFloat'
     const clamped = parsedFloat > min ? parsedFloat : 0;
-    const format = formatSimpleAmount(clamped, symbol);
+    const format = formatSimpleAmount(clamped, symbol, decimalPlaces);
     return commas
       ? format?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') || null
       : format;
