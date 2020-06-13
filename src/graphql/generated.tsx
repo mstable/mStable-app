@@ -16,7 +16,20 @@ export type Maybe<T> = T | null;
       }
       const result: IntrospectionResultData = {
   "__schema": {
-    "types": []
+    "types": [
+      {
+        "kind": "INTERFACE",
+        "name": "Transaction",
+        "possibleTypes": [
+          {
+            "name": "SwapTransaction"
+          },
+          {
+            "name": "FeePaidTransaction"
+          }
+        ]
+      }
+    ]
   }
 };
       export default result;
@@ -454,6 +467,99 @@ export enum ExchangeRate_OrderBy {
   SavingsContract = 'savingsContract'
 }
 
+/** Log of the Fee payment */
+export type FeePaidTransaction = Transaction & {
+  id: Scalars['ID'];
+  tx: Scalars['Bytes'];
+  type: TransactionType;
+  /** Which mAsset is this tx in? */
+  mAsset: Masset;
+  mAssetUnits: Scalars['BigDecimal'];
+  timestamp: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  asset: Basset;
+};
+
+export type FeePaidTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  tx?: Maybe<Scalars['Bytes']>;
+  tx_not?: Maybe<Scalars['Bytes']>;
+  tx_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_contains?: Maybe<Scalars['Bytes']>;
+  tx_not_contains?: Maybe<Scalars['Bytes']>;
+  type?: Maybe<TransactionType>;
+  type_not?: Maybe<TransactionType>;
+  mAsset?: Maybe<Scalars['String']>;
+  mAsset_not?: Maybe<Scalars['String']>;
+  mAsset_gt?: Maybe<Scalars['String']>;
+  mAsset_lt?: Maybe<Scalars['String']>;
+  mAsset_gte?: Maybe<Scalars['String']>;
+  mAsset_lte?: Maybe<Scalars['String']>;
+  mAsset_in?: Maybe<Array<Scalars['String']>>;
+  mAsset_not_in?: Maybe<Array<Scalars['String']>>;
+  mAsset_contains?: Maybe<Scalars['String']>;
+  mAsset_not_contains?: Maybe<Scalars['String']>;
+  mAsset_starts_with?: Maybe<Scalars['String']>;
+  mAsset_not_starts_with?: Maybe<Scalars['String']>;
+  mAsset_ends_with?: Maybe<Scalars['String']>;
+  mAsset_not_ends_with?: Maybe<Scalars['String']>;
+  mAssetUnits?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_not?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_gt?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_lt?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_gte?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_lte?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  mAssetUnits_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  asset?: Maybe<Scalars['String']>;
+  asset_not?: Maybe<Scalars['String']>;
+  asset_gt?: Maybe<Scalars['String']>;
+  asset_lt?: Maybe<Scalars['String']>;
+  asset_gte?: Maybe<Scalars['String']>;
+  asset_lte?: Maybe<Scalars['String']>;
+  asset_in?: Maybe<Array<Scalars['String']>>;
+  asset_not_in?: Maybe<Array<Scalars['String']>>;
+  asset_contains?: Maybe<Scalars['String']>;
+  asset_not_contains?: Maybe<Scalars['String']>;
+  asset_starts_with?: Maybe<Scalars['String']>;
+  asset_not_starts_with?: Maybe<Scalars['String']>;
+  asset_ends_with?: Maybe<Scalars['String']>;
+  asset_not_ends_with?: Maybe<Scalars['String']>;
+};
+
+export enum FeePaidTransaction_OrderBy {
+  Id = 'id',
+  Tx = 'tx',
+  Type = 'type',
+  MAsset = 'mAsset',
+  MAssetUnits = 'mAssetUnits',
+  Timestamp = 'timestamp',
+  Sender = 'sender',
+  Asset = 'asset'
+}
+
 /** An mStable asset (e.g. mUSD) */
 export type Masset = {
   id: Scalars['ID'];
@@ -572,6 +678,12 @@ export type Query = {
   savingsContracts: Array<SavingsContract>;
   exchangeRate?: Maybe<ExchangeRate>;
   exchangeRates: Array<ExchangeRate>;
+  swapTransaction?: Maybe<SwapTransaction>;
+  swapTransactions: Array<SwapTransaction>;
+  feePaidTransaction?: Maybe<FeePaidTransaction>;
+  feePaidTransactions: Array<FeePaidTransaction>;
+  transaction?: Maybe<Transaction>;
+  transactions: Array<Transaction>;
 };
 
 
@@ -718,6 +830,54 @@ export type QueryExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
+export type QuerySwapTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QuerySwapTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<SwapTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<SwapTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFeePaidTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFeePaidTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FeePaidTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FeePaidTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Transaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<Transaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
 export type SavingsContract = {
   id: Scalars['ID'];
   masset: Masset;
@@ -830,6 +990,12 @@ export type Subscription = {
   savingsContracts: Array<SavingsContract>;
   exchangeRate?: Maybe<ExchangeRate>;
   exchangeRates: Array<ExchangeRate>;
+  swapTransaction?: Maybe<SwapTransaction>;
+  swapTransactions: Array<SwapTransaction>;
+  feePaidTransaction?: Maybe<FeePaidTransaction>;
+  feePaidTransactions: Array<FeePaidTransaction>;
+  transaction?: Maybe<Transaction>;
+  transactions: Array<Transaction>;
 };
 
 
@@ -976,6 +1142,171 @@ export type SubscriptionExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
+export type SubscriptionSwapTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionSwapTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<SwapTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<SwapTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFeePaidTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFeePaidTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FeePaidTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FeePaidTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Transaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<Transaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+/** A bAsset<>bAsset swap */
+export type SwapTransaction = Transaction & {
+  id: Scalars['ID'];
+  tx: Scalars['Bytes'];
+  type: TransactionType;
+  /** Which mAsset is this tx in? */
+  mAsset: Masset;
+  mAssetUnits: Scalars['BigDecimal'];
+  timestamp: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  inputBasset: Basset;
+  outputBasset: Basset;
+  recipient: Scalars['Bytes'];
+};
+
+export type SwapTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  tx?: Maybe<Scalars['Bytes']>;
+  tx_not?: Maybe<Scalars['Bytes']>;
+  tx_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_contains?: Maybe<Scalars['Bytes']>;
+  tx_not_contains?: Maybe<Scalars['Bytes']>;
+  type?: Maybe<TransactionType>;
+  type_not?: Maybe<TransactionType>;
+  mAsset?: Maybe<Scalars['String']>;
+  mAsset_not?: Maybe<Scalars['String']>;
+  mAsset_gt?: Maybe<Scalars['String']>;
+  mAsset_lt?: Maybe<Scalars['String']>;
+  mAsset_gte?: Maybe<Scalars['String']>;
+  mAsset_lte?: Maybe<Scalars['String']>;
+  mAsset_in?: Maybe<Array<Scalars['String']>>;
+  mAsset_not_in?: Maybe<Array<Scalars['String']>>;
+  mAsset_contains?: Maybe<Scalars['String']>;
+  mAsset_not_contains?: Maybe<Scalars['String']>;
+  mAsset_starts_with?: Maybe<Scalars['String']>;
+  mAsset_not_starts_with?: Maybe<Scalars['String']>;
+  mAsset_ends_with?: Maybe<Scalars['String']>;
+  mAsset_not_ends_with?: Maybe<Scalars['String']>;
+  mAssetUnits?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_not?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_gt?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_lt?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_gte?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_lte?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  mAssetUnits_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  inputBasset?: Maybe<Scalars['String']>;
+  inputBasset_not?: Maybe<Scalars['String']>;
+  inputBasset_gt?: Maybe<Scalars['String']>;
+  inputBasset_lt?: Maybe<Scalars['String']>;
+  inputBasset_gte?: Maybe<Scalars['String']>;
+  inputBasset_lte?: Maybe<Scalars['String']>;
+  inputBasset_in?: Maybe<Array<Scalars['String']>>;
+  inputBasset_not_in?: Maybe<Array<Scalars['String']>>;
+  inputBasset_contains?: Maybe<Scalars['String']>;
+  inputBasset_not_contains?: Maybe<Scalars['String']>;
+  inputBasset_starts_with?: Maybe<Scalars['String']>;
+  inputBasset_not_starts_with?: Maybe<Scalars['String']>;
+  inputBasset_ends_with?: Maybe<Scalars['String']>;
+  inputBasset_not_ends_with?: Maybe<Scalars['String']>;
+  outputBasset?: Maybe<Scalars['String']>;
+  outputBasset_not?: Maybe<Scalars['String']>;
+  outputBasset_gt?: Maybe<Scalars['String']>;
+  outputBasset_lt?: Maybe<Scalars['String']>;
+  outputBasset_gte?: Maybe<Scalars['String']>;
+  outputBasset_lte?: Maybe<Scalars['String']>;
+  outputBasset_in?: Maybe<Array<Scalars['String']>>;
+  outputBasset_not_in?: Maybe<Array<Scalars['String']>>;
+  outputBasset_contains?: Maybe<Scalars['String']>;
+  outputBasset_not_contains?: Maybe<Scalars['String']>;
+  outputBasset_starts_with?: Maybe<Scalars['String']>;
+  outputBasset_not_starts_with?: Maybe<Scalars['String']>;
+  outputBasset_ends_with?: Maybe<Scalars['String']>;
+  outputBasset_not_ends_with?: Maybe<Scalars['String']>;
+  recipient?: Maybe<Scalars['Bytes']>;
+  recipient_not?: Maybe<Scalars['Bytes']>;
+  recipient_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_contains?: Maybe<Scalars['Bytes']>;
+  recipient_not_contains?: Maybe<Scalars['Bytes']>;
+};
+
+export enum SwapTransaction_OrderBy {
+  Id = 'id',
+  Tx = 'tx',
+  Type = 'type',
+  MAsset = 'mAsset',
+  MAssetUnits = 'mAssetUnits',
+  Timestamp = 'timestamp',
+  Sender = 'sender',
+  InputBasset = 'inputBasset',
+  OutputBasset = 'outputBasset',
+  Recipient = 'recipient'
+}
+
 /** An ERC20-compatible token */
 export type Token = {
   id: Scalars['ID'];
@@ -1094,6 +1425,93 @@ export enum Token_OrderBy {
   TotalBurned = 'totalBurned'
 }
 
+/** A common transaction type */
+export type Transaction = {
+  id: Scalars['ID'];
+  tx: Scalars['Bytes'];
+  type: TransactionType;
+  /** Which mAsset is this tx in? */
+  mAsset: Masset;
+  mAssetUnits: Scalars['BigDecimal'];
+  timestamp: Scalars['Int'];
+  sender: Scalars['Bytes'];
+};
+
+export type Transaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  tx?: Maybe<Scalars['Bytes']>;
+  tx_not?: Maybe<Scalars['Bytes']>;
+  tx_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_contains?: Maybe<Scalars['Bytes']>;
+  tx_not_contains?: Maybe<Scalars['Bytes']>;
+  type?: Maybe<TransactionType>;
+  type_not?: Maybe<TransactionType>;
+  mAsset?: Maybe<Scalars['String']>;
+  mAsset_not?: Maybe<Scalars['String']>;
+  mAsset_gt?: Maybe<Scalars['String']>;
+  mAsset_lt?: Maybe<Scalars['String']>;
+  mAsset_gte?: Maybe<Scalars['String']>;
+  mAsset_lte?: Maybe<Scalars['String']>;
+  mAsset_in?: Maybe<Array<Scalars['String']>>;
+  mAsset_not_in?: Maybe<Array<Scalars['String']>>;
+  mAsset_contains?: Maybe<Scalars['String']>;
+  mAsset_not_contains?: Maybe<Scalars['String']>;
+  mAsset_starts_with?: Maybe<Scalars['String']>;
+  mAsset_not_starts_with?: Maybe<Scalars['String']>;
+  mAsset_ends_with?: Maybe<Scalars['String']>;
+  mAsset_not_ends_with?: Maybe<Scalars['String']>;
+  mAssetUnits?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_not?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_gt?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_lt?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_gte?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_lte?: Maybe<Scalars['BigDecimal']>;
+  mAssetUnits_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  mAssetUnits_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+};
+
+export enum Transaction_OrderBy {
+  Id = 'id',
+  Tx = 'tx',
+  Type = 'type',
+  MAsset = 'mAsset',
+  MAssetUnits = 'mAssetUnits',
+  Timestamp = 'timestamp',
+  Sender = 'sender'
+}
+
+export enum TransactionType {
+  Mint = 'MINT',
+  Swap = 'SWAP',
+  Redeem = 'REDEEM',
+  Exit = 'EXIT',
+  Paidfee = 'PAIDFEE',
+  Save = 'SAVE',
+  Withdraw = 'WITHDRAW'
+}
+
 export type TokenDetailsFragment = Pick<Token, 'id' | 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
 
 export type MassetAllFragment = (
@@ -1138,12 +1556,27 @@ export type TokenByAddressQueryVariables = {
 
 export type TokenByAddressQuery = { token?: Maybe<Pick<Token, 'id' | 'address' | 'decimals' | 'name' | 'symbol' | 'totalBurned' | 'totalSupply' | 'totalTransferred'>> };
 
+export type ErFragment = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
+
 export type LastExchangeRateBeforeTimestampQueryVariables = {
   timestamp: Scalars['Int'];
 };
 
 
-export type LastExchangeRateBeforeTimestampQuery = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
+export type LastExchangeRateBeforeTimestampQuery = { exchangeRates: Array<ErFragment> };
+
+export type WeeklyExchangeRatesQueryVariables = {
+  day0: Scalars['Int'];
+  day1: Scalars['Int'];
+  day2: Scalars['Int'];
+  day3: Scalars['Int'];
+  day4: Scalars['Int'];
+  day5: Scalars['Int'];
+  day6: Scalars['Int'];
+};
+
+
+export type WeeklyExchangeRatesQuery = { day0: Array<ErFragment>, day1: Array<ErFragment>, day2: Array<ErFragment>, day3: Array<ErFragment>, day4: Array<ErFragment>, day5: Array<ErFragment>, day6: Array<ErFragment> };
 
 export type SavingsContractQueryVariables = {
   id: Scalars['ID'];
@@ -1208,6 +1641,12 @@ export const MassetAllFragmentDoc = gql`
   }
 }
     ${TokenDetailsFragmentDoc}`;
+export const ErFragmentDoc = gql`
+    fragment ER on ExchangeRate {
+  exchangeRate
+  timestamp
+}
+    `;
 export const CoreTokensDocument = gql`
     query CoreTokens {
   mUSD: tokens(where: {symbol: "mUSD"}) {
@@ -1385,11 +1824,10 @@ export type TokenByAddressQueryResult = ApolloReactCommon.QueryResult<TokenByAdd
 export const LastExchangeRateBeforeTimestampDocument = gql`
     query LastExchangeRateBeforeTimestamp($timestamp: Int!) {
   exchangeRates(where: {timestamp_lt: $timestamp}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    exchangeRate
-    timestamp
+    ...ER
   }
 }
-    `;
+    ${ErFragmentDoc}`;
 
 /**
  * __useLastExchangeRateBeforeTimestampQuery__
@@ -1416,6 +1854,63 @@ export function useLastExchangeRateBeforeTimestampLazyQuery(baseOptions?: Apollo
 export type LastExchangeRateBeforeTimestampQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampQuery>;
 export type LastExchangeRateBeforeTimestampLazyQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampLazyQuery>;
 export type LastExchangeRateBeforeTimestampQueryResult = ApolloReactCommon.QueryResult<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>;
+export const WeeklyExchangeRatesDocument = gql`
+    query WeeklyExchangeRates($day0: Int!, $day1: Int!, $day2: Int!, $day3: Int!, $day4: Int!, $day5: Int!, $day6: Int!) {
+  day0: exchangeRates(where: {timestamp_lt: $day0}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day1: exchangeRates(where: {timestamp_lt: $day1}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day2: exchangeRates(where: {timestamp_lt: $day2}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day3: exchangeRates(where: {timestamp_lt: $day3}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day4: exchangeRates(where: {timestamp_lt: $day4}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day5: exchangeRates(where: {timestamp_lt: $day5}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day6: exchangeRates(where: {timestamp_lt: $day6}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+}
+    ${ErFragmentDoc}`;
+
+/**
+ * __useWeeklyExchangeRatesQuery__
+ *
+ * To run a query within a React component, call `useWeeklyExchangeRatesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useWeeklyExchangeRatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useWeeklyExchangeRatesQuery({
+ *   variables: {
+ *      day0: // value for 'day0'
+ *      day1: // value for 'day1'
+ *      day2: // value for 'day2'
+ *      day3: // value for 'day3'
+ *      day4: // value for 'day4'
+ *      day5: // value for 'day5'
+ *      day6: // value for 'day6'
+ *   },
+ * });
+ */
+export function useWeeklyExchangeRatesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
+        return ApolloReactHooks.useQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
+      }
+export function useWeeklyExchangeRatesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
+        }
+export type WeeklyExchangeRatesQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesQuery>;
+export type WeeklyExchangeRatesLazyQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesLazyQuery>;
+export type WeeklyExchangeRatesQueryResult = ApolloReactCommon.QueryResult<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>;
 export const SavingsContractDocument = gql`
     query SavingsContract($id: ID!) {
   savingsContracts(where: {id: $id}) {
