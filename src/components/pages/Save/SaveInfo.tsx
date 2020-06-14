@@ -6,12 +6,17 @@ import { H3 } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { FontSize } from '../../../theme';
-import { useApy, useIncreasingNumber } from '../../../web3/hooks';
+import {
+  // useApyForPast24h,
+  useAverageApyForPastWeek,
+  useIncreasingNumber,
+} from '../../../web3/hooks';
 import {
   useMusdData,
   useMusdSavingsData,
   useSavingsBalance,
 } from '../../../context/DataProvider/DataProvider';
+import { DailyApys } from './DailyApys';
 
 const CreditBalance = styled.div`
   img {
@@ -48,24 +53,22 @@ const InfoRow = styled.div`
   text-align: center;
   width: 100%;
 
-  h3 {
-    padding-bottom: 10px;
-  }
-
   > div {
-    padding: 10px 0 20px 0;
+    border-top: 1px ${({ theme }) => theme.color.blackTransparent} solid;
+    padding: 8px 0;
   }
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    display: flex;
+    justify-content: space-evenly;
 
-    h3 {
-      border-top: none;
+    border-top: 1px ${({ theme }) => theme.color.blackTransparent} solid;
+
+    > div {
+      border-top: 0;
+      padding: 8px 16px;
     }
   }
-
-  ${({ theme }) => theme.mixins.borderTop}
 `;
 
 const BalanceInfoRow = styled(InfoRow)`
@@ -78,10 +81,19 @@ export const SaveInfo: FC<{}> = () => {
   const mUsd = useMusdData();
   const mUsdSavings = useMusdSavingsData();
 
-  const apy = useApy();
-  const apyPercentage = useMemo<number | null>(
-    () => (apy ? parseFloat(formatUnits(apy, 16)) : null),
-    [apy],
+  // const apyForPast24h = useApyForPast24h();
+  const apyForPastWeek = useAverageApyForPastWeek();
+
+  const formattedApys = useMemo<{ pastWeek?: number; past24h?: number }>(
+    () => ({
+      // past24h: apyForPast24h
+      //   ? parseFloat(formatUnits(apyForPast24h, 16))
+      //   : undefined,
+      pastWeek: apyForPastWeek
+        ? parseFloat(formatUnits(apyForPastWeek, 16))
+        : undefined,
+    }),
+    [apyForPastWeek],
   );
 
   const savingsBalance = useSavingsBalance();
@@ -119,17 +131,22 @@ export const SaveInfo: FC<{}> = () => {
       </BalanceInfoRow>
       <InfoRow>
         <div>
-          <H3>APY</H3>
-          {apyPercentage ? (
+          <H3>APY (7 day average)</H3>
+          {formattedApys.pastWeek ? (
             <>
-              <InfoCountUp end={apyPercentage} suffix="%" decimals={2} />
+              <InfoCountUp
+                end={formattedApys.pastWeek}
+                suffix="%"
+                decimals={2}
+              />
               <InfoMsg>
+                {' '}
                 <a
                   href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  APY is an average over the past 24 hours
+                  Average daily APY over the past 7 days
                 </a>
               </InfoMsg>
             </>
@@ -137,8 +154,17 @@ export const SaveInfo: FC<{}> = () => {
             <Skeleton />
           )}
         </div>
+      </InfoRow>
+      <InfoRow>
         <div>
-          <H3 borderTop>Total mUSD supply</H3>
+          <H3>Historical APY</H3>
+          <InfoMsg>Daily APY over the past 7 days</InfoMsg>
+          <DailyApys />
+        </div>
+      </InfoRow>
+      <InfoRow>
+        <div>
+          <H3>Total mUSD supply</H3>
           {mUsd?.token.totalSupply ? (
             <InfoCountUp
               end={parseFloat(mUsd?.token.totalSupply)}
@@ -149,7 +175,7 @@ export const SaveInfo: FC<{}> = () => {
           )}
         </div>
         <div>
-          <H3 borderTop>Total mUSD savings</H3>
+          <H3>Total mUSD savings</H3>
           {mUsdSavings?.totalSavings ? (
             <InfoCountUp
               end={parseFloat(mUsdSavings.totalSavings)}

@@ -43,6 +43,7 @@
     "victory-axis": "^34.3.6",
     "victory-bar": "^34.3.6",
     "victory-chart": "^34.3.6",
+    "victory-line": "^34.3.6",
     "victory-core": "^34.3.6",
     "victory-stack": "^34.3.6",
     "web3-utils": "^1.2.6"

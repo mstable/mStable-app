@@ -11,85 +11,155 @@ query CoreTokens {
   #        ...TokenDetails
   #    }
   mUSDSavings: savingsContracts(first: 1) {
-      id
+    id
   }
 }
 
 query Masset($id: ID!) {
-    masset(id: $id) {
-        ...MassetAll
-    }
+  masset(id: $id) {
+    ...MassetAll
+  }
 }
 
 query Erc20Tokens($addresses: [Bytes!]!) {
-    tokens(where: { address_in: $addresses }) {
-        ...TokenDetails
-    }
+  tokens(where: { address_in: $addresses }) {
+    ...TokenDetails
+  }
 }
 
 query AllErc20Tokens {
-    tokens {
-        ...TokenDetails
-    }
+  tokens {
+    ...TokenDetails
+  }
 }
 
 query TokenByAddress($id: ID!) {
-    token(id: $id) {
-        id
-        address
-        decimals
-        name
-        symbol
-        totalBurned
-        totalBurned
-        totalSupply
-        totalTransferred
-    }
+  token(id: $id) {
+    id
+    address
+    decimals
+    name
+    symbol
+    totalBurned
+    totalBurned
+    totalSupply
+    totalTransferred
+  }
+}
+
+fragment ER on ExchangeRate {
+  exchangeRate
+  timestamp
 }
 
 query LastExchangeRateBeforeTimestamp($timestamp: Int!) {
-    exchangeRates(
-        where: { timestamp_lt: $timestamp }
-        orderDirection: desc
-        orderBy: timestamp
-        first: 1
-    ) {
-        exchangeRate
-        timestamp
-    }
+  exchangeRates(
+    where: { timestamp_lt: $timestamp }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
 }
 
+query WeeklyExchangeRates(
+  $day0: Int!
+  $day1: Int!
+  $day2: Int!
+  $day3: Int!
+  $day4: Int!
+  $day5: Int!
+  $day6: Int!
+) {
+  day0: exchangeRates(
+    where: { timestamp_lt: $day0 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day1: exchangeRates(
+    where: { timestamp_lt: $day1 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day2: exchangeRates(
+    where: { timestamp_lt: $day2 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day3: exchangeRates(
+    where: { timestamp_lt: $day3 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day4: exchangeRates(
+    where: { timestamp_lt: $day4 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day5: exchangeRates(
+    where: { timestamp_lt: $day5 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day6: exchangeRates(
+    where: { timestamp_lt: $day6 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+}
 
 query SavingsContract($id: ID!) {
-    savingsContracts(where: { id: $id }) {
-        id
-        totalSavings
-        totalCredits
-        exchangeRates {
-            id
-        }
-        savingsRate
-        automationEnabled
+  savingsContracts(where: { id: $id }) {
+    id
+    totalSavings
+    totalCredits
+    exchangeRates {
+      id
     }
+    savingsRate
+    automationEnabled
+  }
 }
 
 query Token($id: ID!) {
-    token(id: $id) {
-        ...TokenDetails
-    }
+  token(id: $id) {
+    ...TokenDetails
+  }
 }
 
 query CreditBalances($account: ID!) {
-    account(id: $account) {
-        creditBalances {
-            amount
-        }
+  account(id: $account) {
+    creditBalances {
+      amount
     }
+  }
 }
 
 query LatestExchangeRate {
-    exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
-        exchangeRate
-        timestamp
-    }
+  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
+    exchangeRate
+    timestamp
+  }
 }
