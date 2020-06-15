@@ -6,6 +6,7 @@ New features:
 
 * Adjust the mint/save/redeem forms such that a simulated state is produced based on the form inputs
 * Animate the basket stats graphic
+* Automatically reconnect the wallet once on startup (if possible)
 
 Refactors: 
 

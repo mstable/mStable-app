@@ -7,6 +7,7 @@ import React, {
   useReducer,
   Reducer,
   useEffect,
+  useRef,
 } from 'react';
 import {
   Connectors,
@@ -23,6 +24,7 @@ import {
   useAddInfoNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
+import { LocalStorage } from '../localStorage';
 
 enum Actions {
   ResetWallet,
@@ -188,7 +190,10 @@ const context = createContext<[State, Dispatch]>([initialState, {}] as any);
  * Provider for global App state and interactions.
  */
 export const AppProvider: FC<{}> = ({ children }) => {
-  const { activate, deactivate } = useWallet<InjectedEthereum>();
+  const attemptedReconnect = useRef(false);
+  const { activate, deactivate, activating, connected } = useWallet<
+    InjectedEthereum
+  >();
   const [state, dispatch] = useReducer(reducer, initialState);
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
@@ -241,6 +246,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
             connector ? `Connected with ${connector.label}` : null,
           );
           dispatch({ type: Actions.ConnectWalletSuccess });
+          LocalStorage.set('connectorId', connector?.id);
         })
         .catch(error => {
           let reason: string;
@@ -329,6 +335,19 @@ export const AppProvider: FC<{}> = ({ children }) => {
       }
     };
   }, [dispatch]);
+
+  /**
+   * Automatically reconnect once on startup (if possible)
+   */
+  useEffect(() => {
+    if (!attemptedReconnect.current && !(activating || connected)) {
+      const connector = LocalStorage.get('connectorId');
+      if (connector) {
+        connectWallet(connector);
+      }
+      attemptedReconnect.current = true;
+    }
+  }, [activating, connected, connectWallet]);
 
   return (
     <context.Provider

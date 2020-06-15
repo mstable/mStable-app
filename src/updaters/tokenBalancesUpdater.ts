@@ -97,6 +97,7 @@ export const TokenBalancesUpdater = (): null => {
     if (
       account &&
       blockNumber &&
+      subscribedTokens.length > 0 &&
       (blockNumberRef.current !== blockNumber || accountRef.current !== account)
     ) {
       // Update balances
