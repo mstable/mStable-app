@@ -33,16 +33,18 @@ const reduce: Reducer<State, Action> = (state, action) => {
 
       return {
         ...state,
-        bAssets: Object.values(state.bAssets).reduce(
-          (_bAssets, bAsset) => ({
+        touched: true,
+        bAssets: Object.values(state.bAssets).reduce((_bAssets, bAsset) => {
+          const enabled = bAsset.address === address ? !bAsset.enabled : false;
+          return {
             ..._bAssets,
             [bAsset.address]: {
               ...bAsset,
-              enabled: bAsset.address === address ? !bAsset.enabled : false,
+              enabled,
+              amount: enabled ? bAsset.amount : undefined,
             },
-          }),
-          state.bAssets,
-        ),
+          };
+        }, state.bAssets),
       };
     }
 
@@ -77,6 +79,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
             [bAsset.address]: {
               ...bAsset,
               enabled,
+              amount: enabled ? bAsset.amount : undefined,
             },
           }),
           state.bAssets,
@@ -108,7 +111,9 @@ const resetTouched = (state: State): State =>
   state.touched
     ? {
         ...state,
-        touched: Object.values(state.bAssets).some(b => b.formValue),
+        touched:
+          !!state.amountInMasset ||
+          Object.values(state.bAssets).some(b => b.enabled),
       }
     : state;
 
@@ -337,9 +342,9 @@ const simulate = (state: State): State =>
 export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
-  resetTouched,
   updateFeeAmount,
   updateBassetAmounts,
+  resetTouched,
   simulate,
   validate.applyValidation,
 );
