@@ -142,6 +142,14 @@ const initialize = (state: State): State =>
       }
     : state;
 
+const resetTouched = (state: State): State =>
+  state.amountTouched
+    ? {
+        ...state,
+        amountTouched: Object.values(state.bAssets).some(b => b.formValue),
+      }
+    : state;
+
 const updateMintAmount = (state: State): State =>
   state.dataState
     ? {
@@ -213,6 +221,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
           ...bAsset,
           enabled: !bAsset.enabled,
           amount: !bAsset.enabled ? bAsset.amount : undefined,
+          formValue: !bAsset.enabled ? bAsset.formValue : null,
         },
       };
 
@@ -237,6 +246,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
 export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
+  resetTouched,
   enableFirstBasset,
   updateMintAmount,
   simulate,

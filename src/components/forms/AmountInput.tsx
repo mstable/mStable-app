@@ -3,15 +3,12 @@ import React, {
   FC,
   KeyboardEventHandler,
   useCallback,
-  useMemo,
 } from 'react';
 import styled from 'styled-components';
-import { decimalsStep } from '../../web3/strings';
 
 interface Props {
   error?: string;
   value: string | null;
-  decimals: number | null;
   balance?: string | null;
   name: string;
   onChange?(name: string, simpleAmount: string | null): void;
@@ -45,25 +42,19 @@ const Input = styled.input<{ error: string | void }>`
  * AmountInput component
  * Form input for selecting an amount denominated in given decimals.
  *
- * @param name @TODO
- * @param value @TODO
+ * @param name Field name sent to onChange handler
+ * @param value Controlled form value
  * @param error Error message, e.g. 'Amount too low'
  * @param disabled Flag for disabling the input
- * @param decimals Given amount decimals, e.g. `18`
  * @param onChange Optional callback with the amount value
  */
 export const AmountInput: FC<Props> = ({
   name,
   error,
   disabled = false,
-  decimals,
   onChange,
   value,
 }) => {
-  const step = useMemo(() => (decimals ? decimalsStep(decimals) : ''), [
-    decimals,
-  ]);
-
   const handleKeyPress = useCallback<KeyboardEventHandler<HTMLInputElement>>(
     event => {
       // Prevent 'minus' key
@@ -88,7 +79,7 @@ export const AmountInput: FC<Props> = ({
       type="number"
       min="0"
       placeholder="0.00"
-      step={step}
+      step="0.01"
       value={value || ''}
       onKeyPress={handleKeyPress}
       onChange={handleChange}

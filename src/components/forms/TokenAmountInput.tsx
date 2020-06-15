@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 import { BigNumber } from 'ethers/utils';
 
@@ -148,10 +148,6 @@ export const TokenAmountInput: FC<Props> = ({
     variables: { addresses: tokenAddresses },
     skip: tokenAddresses.length === 0,
   });
-  const selectedToken = useMemo(
-    () => tokensData?.tokens.find(t => t.address === tokenValue),
-    [tokensData, tokenValue],
-  );
 
   return (
     <>
@@ -163,7 +159,6 @@ export const TokenAmountInput: FC<Props> = ({
             onChange={onChangeAmount}
             onSetMax={onSetMax}
             error={error}
-            decimals={selectedToken?.decimals || null}
           />
           {onSetMax ? (
             <Button type="button" onClick={onSetMax} size={Size.xs}>
