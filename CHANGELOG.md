@@ -15,6 +15,15 @@ Refactors:
 * Move 'set max' into reducers
 * Consolidate all mAsset/bAssets calculations in one place, so that the state can be recalculated when the underlying data changes; this also facilitates data simulations.
 
+Miscellaneous:
+
+* Reset form errors when amounts are unset
+* Adjust form error style
+
+Bug fixes:
+
+* Fix number input handling for increments
+
 
 ## Version 1.0
 

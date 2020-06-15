@@ -58,6 +58,7 @@ const InputContainer = styled.div`
 const Error = styled.div`
   padding-top: 8px;
   font-size: ${FontSize.s};
+  color: ${({ theme }) => theme.color.red};
 `;
 
 const Label = styled.div`
@@ -123,12 +124,8 @@ const Container = styled.div<{
       valid ? theme.color.blackTransparent : theme.color.redTransparent}
     solid;
   border-radius: 3px;
-  background: ${({ theme, valid, overweight }) =>
-    overweight
-      ? theme.color.blackTransparenter
-      : valid
-      ? theme.color.white
-      : theme.color.redTransparenter};
+  background: ${({ theme, overweight }) =>
+    overweight ? theme.color.blackTransparenter : theme.color.white};
   padding: ${({ theme }) => theme.spacing.xs};
   margin-bottom: 8px;
 `;
@@ -176,7 +173,7 @@ export const BassetInput: FC<Props> = ({ address }) => {
             <AmountInput
               disabled={!enabled}
               value={formValue}
-              decimals={decimals}
+              error={error}
               name={address}
               onChange={handleChangeAmount}
             />

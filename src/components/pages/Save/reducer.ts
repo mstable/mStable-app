@@ -77,7 +77,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
         amountInCredits,
         amount,
         formValue,
-        touched: true,
+        touched: !!formValue,
       };
     }
 
