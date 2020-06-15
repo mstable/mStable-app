@@ -9,8 +9,8 @@ import React, {
 } from 'react';
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
+
 import {
-  ContractNames,
   HistoricTransaction,
   SendTxManifest,
   Transaction,
@@ -24,11 +24,10 @@ import {
 } from './NotificationsProvider';
 import { TransactionOverrides } from '../typechain/index.d';
 import { getTransactionStatus } from '../web3/transactions';
-import { MassetData } from './DataProvider/types';
-import { useKnownAddress } from './DataProvider/KnownAddressProvider';
-import { useMusdData } from './DataProvider/DataProvider';
-import { formatExactAmount } from '../web3/amounts';
+import { DataState } from './DataProvider/types';
+import { useDataState } from './DataProvider/DataProvider';
 import { getEtherscanLink } from '../web3/strings';
+import { BigDecimal } from '../web3/BigDecimal';
 
 enum Actions {
   AddPending,
@@ -172,38 +171,30 @@ const initialState: State = Object.freeze({ historic: {}, current: {} });
 const getTxPurpose = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { args, fn, iface }: SendTxManifest<any, any>,
-  {
-    mUsd,
-    mUSDSavingsAddress,
-  }: { mUsd: MassetData; mUSDSavingsAddress: string | null },
+  dataState?: DataState,
 ): Purpose => {
-  if (!mUsd)
+  if (!dataState)
     return {
       present: null,
       past: null,
     };
 
-  const {
-    bAssets,
-    token: { symbol },
-  } = mUsd;
+  const { bAssets, mAsset } = dataState;
 
   switch (fn) {
     case 'mint': {
-      const [bassetAddress, bassetQ] = args as [string, BigNumber];
+      const [bAssetAddress, bAssetQ] = args as [string, BigNumber];
 
-      const bAsset = bAssets.find(b => b.address === bassetAddress);
+      const bAsset = bAssets[bAssetAddress];
       if (!bAsset)
         return {
           present: null,
           past: null,
         };
 
-      const body = `${formatExactAmount(
-        bassetQ,
-        bAsset.token.decimals,
-        mUsd.token.symbol,
-      )} with ${bAsset.token.symbol}`;
+      const amount = new BigDecimal(bAssetQ, bAsset.decimals);
+
+      const body = `${amount.format()} ${mAsset.symbol} with ${bAsset.symbol}`;
       return {
         present: `Minting ${body}`,
         past: `Minted ${body}`,
@@ -222,88 +213,86 @@ const getTxPurpose = (
         BigNumber,
       ];
 
-      const inputBasset = bAssets.find(b => b.address === input);
-      const outputBasset = bAssets.find(b => b.address === output);
+      const inputBasset = bAssets[input];
+      const outputBasset = bAssets[output];
+
       if (!inputBasset || !outputBasset)
         return {
           present: null,
           past: null,
         };
 
-      const body = `${formatExactAmount(
-        inputQuantity,
-        inputBasset.token.decimals,
-        inputBasset.token.symbol,
-        true,
-      )} for ${outputBasset.token.symbol}`;
+      const amount = new BigDecimal(inputQuantity, inputBasset.decimals);
+
+      const body = `${amount.format()} ${inputBasset.symbol} for ${
+        outputBasset.symbol
+      }`;
       return {
         present: `Swapping ${body}`,
         past: `Swapped ${body}`,
       };
     }
     case 'redeem': {
-      if (iface.address === mUSDSavingsAddress) {
-        const body = `${mUsd.token.symbol} savings`;
+      if (iface.address === dataState.savingsContract.address) {
+        const body = `${mAsset.symbol} savings`;
         return {
           present: `Withdrawing ${body}`,
           past: `Withdrew ${body}`,
         };
       }
-      const [bassetAddress, bassetQ] = args as [string, BigNumber];
+      const [bAssetAddress, bAssetQ] = args as [string, BigNumber];
 
-      const bAsset = bAssets.find(b => b.address === bassetAddress);
+      const bAsset = bAssets[bAssetAddress];
       if (!bAsset)
         return {
           present: null,
           past: null,
         };
 
-      const body = `${formatExactAmount(
-        bassetQ,
-        bAsset.token.decimals,
-        mUsd.token.symbol,
-      )} into ${bAsset.token.symbol}`;
+      const amount = new BigDecimal(bAssetQ, bAsset.decimals);
+
+      const body = `${amount.format()} ${mAsset.symbol} into ${bAsset.symbol}`;
       return {
         present: `Redeeming ${body}`,
         past: `Redeemed ${body}`,
       };
     }
     case 'redeemMasset': {
-      const [massetQ] = args as [BigNumber, string];
+      const [mAssetQ] = args as [BigNumber, string];
 
-      const body = `${formatExactAmount(massetQ, 18, symbol)}`;
+      const amount = new BigDecimal(mAssetQ, mAsset.decimals);
+      const body = `${amount.format()} ${mAsset.symbol}`;
       return {
         present: `Redeeming ${body}`,
         past: `Redeemed ${body}`,
       };
     }
     case 'approve': {
-      if (args[0] === mUSDSavingsAddress) {
-        const body = `the mUSD SAVE Contract to transfer ${mUsd.token.symbol}`;
+      if (args[0] === dataState.savingsContract.address) {
+        const body = `the mUSD SAVE Contract to transfer ${mAsset.symbol}`;
         return {
           present: `Approving ${body}`,
           past: `Approved ${body}`,
         };
       }
 
-      const bAsset = bAssets.find(b => b.address === iface.address);
+      const bAsset = bAssets[iface.address];
       if (!bAsset)
         return {
           past: null,
           present: null,
         };
 
-      const body = `${mUsd.token.symbol} to transfer ${bAsset.token.symbol}`;
+      const body = `${mAsset.symbol} to transfer ${bAsset.symbol}`;
       return {
         present: `Approving ${body}`,
         past: `Approved ${body}`,
       };
     }
     case 'depositSavings': {
-      const [amount] = args as [BigNumber];
-      const body = `${formatExactAmount(amount, mUsd.token.decimals)} ${
-        mUsd.token.symbol
-      }`;
+      const [quantity] = args as [BigNumber];
+      const amount = new BigDecimal(quantity, mAsset.decimals);
+      const body = `${amount.format()} ${mAsset.symbol}`;
       return {
         present: `Depositing ${body}`,
         past: `Deposited ${body}`,
@@ -332,15 +321,11 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   const addSuccessNotification = useAddSuccessNotification();
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
-  const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
-  const mUsd = useMusdData();
+  const dataState = useDataState();
 
   const addPending = useCallback<Dispatch['addPending']>(
     (manifest, pendingTx) => {
-      const purpose = getTxPurpose(manifest, {
-        mUsd,
-        mUSDSavingsAddress,
-      });
+      const purpose = getTxPurpose(manifest, dataState);
       dispatch({
         type: Actions.AddPending,
         payload: {
@@ -360,7 +345,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
         getEtherscanLinkForHash(pendingTx.hash),
       );
     },
-    [dispatch, mUsd, mUSDSavingsAddress, addInfoNotification],
+    [dispatch, dataState, addInfoNotification],
   );
 
   const addHistoric = useCallback<Dispatch['addHistoric']>(

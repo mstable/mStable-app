@@ -1,6 +1,6 @@
-import { parseUnits } from 'ethers/utils';
 import { State, StateValidator } from './types';
 import { EXP_SCALE, RATIO_SCALE } from '../../../web3/constants';
+import { BassetState, DataState } from '../../../context/DataProvider/types';
 
 enum Reasons {
   AmountMustBeGreaterThanZero = 'Amount must be greater than zero',
@@ -15,14 +15,26 @@ enum Reasons {
   TokenNotAllowedInMint = 'Token not allowed in mint',
 }
 
+// TODO later: refactor this validation to use the current state interface
+const getBassetsArr = (dataState?: DataState): BassetState[] =>
+  Object.keys(dataState?.bAssets || {})
+    .sort()
+    .map(address => (dataState as DataState).bAssets[address]);
+
 const formValidator: StateValidator = ({
   needsUnlock,
   touched,
   values: { input, output },
-  mAssetData: { loading, bAssets = [] } = {},
+  dataState,
 }) => {
+  const bAssets = getBassetsArr(dataState);
+
   if (!touched) {
     return [true, {}];
+  }
+
+  if (!dataState) {
+    return [false, { input: Reasons.FetchingData }];
   }
 
   if (!input.token.address) {
@@ -57,12 +69,8 @@ const formValidator: StateValidator = ({
     return [false, { input: Reasons.TransferMustBeApproved }];
   }
 
-  if (loading) {
-    return [false, { input: Reasons.FetchingData }];
-  }
-
   const inputToken = bAssets.find(b => b.address === input.token.address);
-  if (input.amount.exact && inputToken?.token.balance?.lt(input.amount.exact)) {
+  if (input.amount.exact && inputToken?.balance.exact.lt(input.amount.exact)) {
     return [false, { input: Reasons.InsufficientBalance }];
   }
 
@@ -72,11 +80,11 @@ const formValidator: StateValidator = ({
 const swapValidator: StateValidator = ({
   touched,
   values: { input, output },
-  mAssetData: {
-    bAssets = [],
-    token: { totalSupply: totalVault } = { totalSupply: null },
-  } = {},
+  dataState,
 }) => {
+  const bAssets = getBassetsArr(dataState);
+  const totalVault = dataState?.mAsset.totalSupply.exact;
+
   let applySwapFee = true;
 
   if (
@@ -98,10 +106,10 @@ const swapValidator: StateValidator = ({
   if (
     !(
       inputBasset?.ratio &&
-      inputBasset.vaultBalance &&
+      inputBasset.totalVault.exact &&
       inputBasset.maxWeight &&
       outputBasset?.ratio &&
-      outputBasset.vaultBalance &&
+      outputBasset.totalVault.exact &&
       outputBasset.maxWeight &&
       totalVault
     )
@@ -128,10 +136,7 @@ const swapValidator: StateValidator = ({
     .div(outputBasset.ratio)
     .mul(RATIO_SCALE);
 
-  const outputVaultBalance = parseUnits(
-    outputBasset.vaultBalance,
-    output.token.decimals,
-  );
+  const outputVaultBalance = outputBasset.totalVault.exact;
 
   if (outputAmount.gt(outputVaultBalance)) {
     return [
@@ -144,7 +149,7 @@ const swapValidator: StateValidator = ({
     .mul(outputBasset.ratio)
     .div(RATIO_SCALE);
 
-  const outputMaxWeightInUnits = parseUnits(totalVault)
+  const outputMaxWeightInUnits = totalVault
     .mul(outputBasset.maxWeight)
     .div(EXP_SCALE);
 
@@ -155,16 +160,13 @@ const swapValidator: StateValidator = ({
 
   // 2. Calculate input bAsset valid - If incoming basket goes above weight, then fail
   // How much of this bAsset do we have in the vault, in terms of mAsset?
-  const newInputBalanceInMasset = parseUnits(
-    inputBasset.vaultBalance,
-    input.token.decimals,
-  )
+  const newInputBalanceInMasset = inputBasset.totalVault.exact
     .mul(inputBasset.ratio)
     .div(RATIO_SCALE)
     .add(inputAmountInMasset);
 
   // What is the max weight of this bAsset in the basket?
-  const inputMaxWeightInUnits = parseUnits(totalVault)
+  const inputMaxWeightInUnits = totalVault
     .mul(inputBasset.maxWeight)
     .div(EXP_SCALE);
 
@@ -178,10 +180,11 @@ const swapValidator: StateValidator = ({
 const mintSingleValidator: StateValidator = state => {
   const {
     values: { input },
-    mAssetData: { bAssets = [], token: mAssetToken } = {},
+    dataState,
   } = state;
+  const mAsset = dataState?.mAsset;
 
-  const bAssetData = bAssets.find(b => b.address === input.token.address);
+  const bAssetData = dataState?.bAssets[input.token.address as string];
 
   if (
     !(
@@ -189,8 +192,8 @@ const mintSingleValidator: StateValidator = state => {
       input.token.decimals &&
       bAssetData &&
       bAssetData.status &&
-      mAssetToken?.decimals &&
-      mAssetToken.totalSupply
+      mAsset?.decimals &&
+      mAsset.totalSupply
     )
   ) {
     return [false, { input: Reasons.FetchingData }];
@@ -207,19 +210,13 @@ const mintSingleValidator: StateValidator = state => {
     .div(RATIO_SCALE);
 
   // How much of this bAsset do we have in the vault, in terms of mAsset?
-  const newBalanceInMasset = parseUnits(
-    bAssetData.vaultBalance,
-    input.token.decimals,
-  )
+  const newBalanceInMasset = bAssetData.totalVault.exact
     .mul(bAssetData.ratio)
     .div(RATIO_SCALE)
     .add(mintAmountInMasset);
 
   // What is the max weight of this bAsset in the basket?
-  const maxWeightInUnits = parseUnits(
-    mAssetToken.totalSupply,
-    mAssetToken.decimals,
-  )
+  const maxWeightInUnits = mAsset.totalSupply.exact
     .add(mintAmountInMasset)
     .mul(bAssetData.maxWeight)
     .div(EXP_SCALE);
@@ -235,13 +232,12 @@ export const applyValidation = (state: State): State => {
   const {
     touched,
     values: { input, output },
-    mAssetData: { token: { address: mAssetAddress, allowance } } = {
-      token: {
-        address: null,
-        allowance: null,
-      },
-    },
+    dataState,
   } = state;
+
+  const mAsset = dataState?.mAsset;
+  const mAssetAddress = mAsset?.address;
+  // const allowance = mAsset?.
 
   const [
     formValid,
@@ -258,10 +254,11 @@ export const applyValidation = (state: State): State => {
     { input: txInputError, output: txOutputError, applySwapFee },
   ] = isMint ? mintSingleValidator(state) : swapValidator(state);
 
+  const bAsset = dataState?.bAssets[input.token.address as string];
   const needsUnlock = !!(
     input.token.address &&
     input.amount.exact &&
-    allowance?.[input.token.address]?.lt(input.amount.exact)
+    bAsset?.mAssetAllowance?.exact.lt(input.amount.exact)
   );
 
   return {

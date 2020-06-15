@@ -15,9 +15,11 @@ import {
   VictoryContainerProps,
   VictoryContainer,
 } from 'victory-core';
-import { useMusdData } from '../../context/DataProvider/DataProvider';
+
+import { useDataState } from '../../context/DataProvider/DataProvider';
 import { TokenIconSvg } from '../icons/TokenIcon';
 import { convertExactToPercent } from '../../web3/maths';
+import { DataState } from '../../context/DataProvider/types';
 
 const TOKEN_COLORS = {
   mUSD: '#000',
@@ -116,28 +118,32 @@ const Container: FC<VictoryContainerProps> = ({ children, ...props }) => (
   </VictoryContainer>
 );
 
-export const BasketStats: FC<{}> = () => {
-  const { bAssets = [] } = useMusdData() || {};
+export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
+  const dataState = useDataState();
+  const bAssets = simulation?.bAssets || dataState?.bAssets || {};
+
   const data: Datum[] = useMemo(
     () =>
       bAssets
-        .filter(b => b.vaultBalance && b.token.symbol)
-        .map(({ basketShare, maxWeight, token: { symbol } }) => {
-          const basketShareAsPercentage = convertExactToPercent(basketShare);
-          const maxWeightAsPercentage = convertExactToPercent(
-            maxWeight as string,
-          );
-          // Get the remainder so that it can be stacked after the basket share
-          const remainderMaxWeight =
-            basketShareAsPercentage > maxWeightAsPercentage
-              ? 0
-              : maxWeightAsPercentage - basketShareAsPercentage;
-          return {
-            symbol: symbol as string,
-            basketShareAsPercentage,
-            maxWeightAsPercentage: remainderMaxWeight,
-          };
-        }),
+        ? Object.values(bAssets).map(({ basketShare, maxWeight, symbol }) => {
+            const basketShareAsPercentage = convertExactToPercent(
+              basketShare.exact,
+            );
+            const maxWeightAsPercentage = convertExactToPercent(maxWeight);
+
+            // Get the remainder so that it can be stacked after the basket share
+            const remainderMaxWeight =
+              basketShareAsPercentage > maxWeightAsPercentage
+                ? 0
+                : maxWeightAsPercentage - basketShareAsPercentage;
+
+            return {
+              symbol: symbol as string,
+              basketShareAsPercentage,
+              maxWeightAsPercentage: remainderMaxWeight,
+            };
+          })
+        : [],
     [bAssets],
   );
 
@@ -147,6 +153,7 @@ export const BasketStats: FC<{}> = () => {
       height={100}
       width={200}
       padding={{ left: 20, top: 16, bottom: 16, right: 40 }}
+      animate
     >
       <VictoryStack horizontal>
         <VictoryBar

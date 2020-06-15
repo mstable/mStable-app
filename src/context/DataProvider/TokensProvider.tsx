@@ -58,8 +58,8 @@ type Action =
 
 export type TokenDetailsWithBalance = TokenDetailsFragment & State[keyof State];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const context = createContext<[State, Dispatch]>([new Set(), {}] as any);
+const stateCtx = createContext<State>({} as State);
+const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -155,31 +155,28 @@ export const TokensProvider: FC<{}> = ({ children }) => {
   }, [dispatch]);
 
   return (
-    <context.Provider
-      value={useMemo(
-        () => [
-          state,
-          {
+    <stateCtx.Provider value={state}>
+      <dispatchCtx.Provider
+        value={useMemo(
+          () => ({
             subscribe,
             reset,
             updateAllowance,
             updateBalances,
             unsubscribe,
-          },
-        ],
-        [state, subscribe, unsubscribe, updateAllowance, updateBalances, reset],
-      )}
-    >
-      {children}
-    </context.Provider>
+          }),
+          [subscribe, unsubscribe, updateAllowance, updateBalances, reset],
+        )}
+      >
+        {children}
+      </dispatchCtx.Provider>
+    </stateCtx.Provider>
   );
 };
 
-export const useTokensContext = (): [State, Dispatch] => useContext(context);
+export const useTokensState = (): State => useContext(stateCtx);
 
-export const useTokensState = (): State => useTokensContext()[0];
-
-export const useTokensDispatch = (): Dispatch => useTokensContext()[1];
+export const useTokensDispatch = (): Dispatch => useContext(dispatchCtx);
 
 export const useSubscribedTokens = (): string[] => {
   const state = useTokensState();
@@ -207,10 +204,7 @@ export const useTokenBalance = (
   return balance || null;
 };
 
-
-export const useTokenAllowance = (
-  token: TokenAddress | null,
-): Allowance => {
+export const useTokenAllowance = (token: TokenAddress | null): Allowance => {
   const { allowance } = useToken(token) || { allowance: {} };
   return allowance;
 };

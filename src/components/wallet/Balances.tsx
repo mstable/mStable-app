@@ -1,12 +1,14 @@
-import React, { FC, useContext, useLayoutEffect, useState } from 'react';
+import React, {
+  FC,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import styled, { ThemeContext, DefaultTheme } from 'styled-components';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
-import { formatUnits } from 'ethers/utils';
 
-import {
-  useMusdData,
-  useSavingsBalance,
-} from '../../context/DataProvider/DataProvider';
+import { useDataState } from '../../context/DataProvider/DataProvider';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
@@ -50,8 +52,14 @@ const BalanceSkeleton: FC<{ themeContext: DefaultTheme }> = ({
  */
 export const Balances: FC<{}> = () => {
   const [loading, setLoading] = useState(true);
-  const { token: mUsd, bAssets: otherTokens = [] } = useMusdData() || {};
-  const savingsBalance = useSavingsBalance();
+
+  const { mAsset, savingsContract, bAssets } = useDataState() || {};
+
+  const otherTokens = useMemo(
+    () => (mAsset && bAssets ? [mAsset, ...Object.values(bAssets)] : []),
+    [mAsset, bAssets],
+  );
+
   const themeContext = useContext(ThemeContext);
 
   // Use a layout effect to prevent CountUp from running if the component
@@ -68,22 +76,19 @@ export const Balances: FC<{}> = () => {
   return (
     <List inverted>
       <ListItem size={Size.xl} key="mUsdBalance">
-        {!mUsd ? (
+        {!mAsset ? (
           <Skeleton height={49} />
         ) : (
           <>
             <Symbol>
-              <TokenIcon symbol={mUsd.symbol} outline />
-              <span>{mUsd.symbol}</span>
-              <EtherscanLink data={mUsd.address} />
+              <TokenIcon symbol={mAsset.symbol} outline />
+              <span>{mAsset.symbol}</span>
+              <EtherscanLink data={mAsset.address} />
             </Symbol>
-            {mUsd.balance == null ? (
+            {!mAsset.balance ? (
               <BalanceSkeleton themeContext={themeContext} />
             ) : (
-              <Balance
-                size={Size.xl}
-                end={parseFloat(formatUnits(mUsd.balance, mUsd.decimals))}
-              />
+              <Balance size={Size.xl} end={mAsset.balance.simple} />
             )}
           </>
         )}
@@ -95,24 +100,27 @@ export const Balances: FC<{}> = () => {
             <TokenIcon symbol="mUSD" outline />
             <span>mUSD Savings</span>
           </Symbol>
-          {loading || savingsBalance.simple == null ? (
+          {loading || !savingsContract?.savingsBalance.balance?.simple ? (
             <BalanceSkeleton themeContext={themeContext} />
           ) : (
-            <Balance size={Size.xl} end={savingsBalance.simple} />
+            <Balance
+              size={Size.xl}
+              end={savingsContract.savingsBalance.balance.simple}
+            />
           )}
         </>
       </ListItem>
-      {otherTokens.map(({ address, token: { symbol, balance, decimals } }) => (
+      {otherTokens.map(({ address, symbol, balance }) => (
         <ListItem key={address}>
           <Symbol>
             <TokenIcon symbol={symbol} outline={symbol === 'mUSD'} />
             <span>{symbol}</span>
             <EtherscanLink data={address} />
           </Symbol>
-          {balance == null ? (
-            <BalanceSkeleton themeContext={themeContext} />
+          {balance ? (
+            <Balance end={balance.simple} />
           ) : (
-            <Balance end={parseFloat(formatUnits(balance, decimals))} />
+            <BalanceSkeleton themeContext={themeContext} />
           )}
         </ListItem>
       ))}

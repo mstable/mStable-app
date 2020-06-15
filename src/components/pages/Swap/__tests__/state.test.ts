@@ -4,6 +4,7 @@ import { Dispatch, ReducerAction, ReducerState, useReducer } from 'react';
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { Actions, Fields } from '../types';
 import { initialState, reducer } from '../reducer';
+import { BigDecimal } from '../../../../web3/BigDecimal';
 
 type Ctx = [
   ReducerState<typeof reducer>,
@@ -34,7 +35,7 @@ const setToken = (field: Fields, payload: any): void => {
 
 const updateMassetData = (data: any): void => {
   dispatch()({
-    type: Actions.UpdateMassetData,
+    type: Actions.Data,
     payload: data,
   });
 };
@@ -65,12 +66,33 @@ const TUSD = {
 
 const feeRate = '400000000000000';
 
-const mAssetData = {
-  bAssets: [{ token: DAI } as any, { token: USDC } as any],
-  basket: {} as any,
-  feeRate,
-  token: mUSD as any,
-  loading: false,
+const dataState = {
+  bAssets: {
+    [DAI.address]: {
+      ...DAI,
+      totalSupply: new BigDecimal(1000, 10),
+      totalVault: new BigDecimal(100, 10),
+      balance: new BigDecimal(10, 10),
+    },
+    [USDC.address]: {
+      ...USDC,
+      totalSupply: new BigDecimal(1000, 6),
+      totalVault: new BigDecimal(100, 6),
+      balance: new BigDecimal(10, 6),
+    },
+    [TUSD.address]: {
+      ...TUSD,
+      totalSupply: new BigDecimal(1000, 18),
+      totalVault: new BigDecimal(100, 18),
+      balance: new BigDecimal(10, 18),
+    },
+  } as any,
+  mAsset: {
+    ...mUSD,
+    totalSupply: new BigDecimal(1000, 18),
+    basket: {} as any,
+    feeRate,
+  },
 };
 
 describe('Swap form state', () => {
@@ -117,11 +139,11 @@ describe('Swap form state', () => {
   describe('without mAssetData', () => {
     test('updateMassetData', () => {
       act(() => {
-        updateMassetData(mAssetData);
+        updateMassetData(dataState);
       });
 
       expect(state()).toMatchObject({
-        mAssetData,
+        dataState,
       });
     });
   });
@@ -129,7 +151,7 @@ describe('Swap form state', () => {
   describe('with mAssetData', () => {
     beforeEach(() => {
       act(() => {
-        updateMassetData(mAssetData);
+        updateMassetData(dataState);
       });
     });
 

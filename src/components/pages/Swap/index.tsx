@@ -19,13 +19,14 @@ const SwapForm: FC<{}> = () => {
   const {
     valid,
     values: { output, input },
-    mAssetData: { token: mUsdToken } = {},
+    dataState,
   } = useSwapState();
   const setFormManifest = useSetFormManifest();
   const mUsdContract = useMusdContract();
 
-  const isMint =
-    output.token.address && output.token.address === mUsdToken?.address;
+  const { address: mAssetAddress } = dataState?.mAsset || {};
+
+  const isMint = output.token.address && output.token.address === mAssetAddress;
 
   // Set the form manifest
   useEffect(() => {

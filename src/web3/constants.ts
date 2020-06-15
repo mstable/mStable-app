@@ -56,4 +56,6 @@ export const CONNECTORS: Connector[] = [
   { id: 'frame', label: 'Frame' },
 ];
 
-export const DAPP_VERSION = '1.0.0';
+export const DAPP_VERSION = process.env.REACT_APP_VERSION;
+
+export const WEIGHT_THRESHOLD = new BigNumber(50000).mul(EXP_SCALE);

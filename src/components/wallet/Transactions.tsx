@@ -1,18 +1,18 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { BigNumber } from 'ethers/utils';
+
 import { useOrderedCurrentTransactions } from '../../context/TransactionsProvider';
-import { useKnownAddress } from '../../context/DataProvider/KnownAddressProvider';
-import { useMusdData } from '../../context/DataProvider/DataProvider';
-import { ContractNames, Transaction, TransactionStatus } from '../../types';
-import { MassetData } from '../../context/DataProvider/types';
+import { useDataState } from '../../context/DataProvider/DataProvider';
+import { DataState } from '../../context/DataProvider/types';
+import { Transaction, TransactionStatus } from '../../types';
 import { getTransactionStatus } from '../../web3/transactions';
-import { formatExactAmount } from '../../web3/amounts';
+import { EMOJIS } from '../../web3/constants';
+import { humanizeList } from '../../web3/strings';
+import { BigDecimal } from '../../web3/BigDecimal';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { List, ListItem } from '../core/List';
-import { EMOJIS, RATIO_SCALE } from '../../web3/constants';
-import { humanizeList } from '../../web3/strings';
 import { P } from '../core/Typography';
 
 const PendingTxContainer = styled.div<{ inverted?: boolean }>`
@@ -51,39 +51,29 @@ const getStatusLabel = (status: TransactionStatus): string =>
 
 const getPendingTxDescription = (
   tx: Transaction,
-  {
-    mUSD,
-    mUSDSavingsAddress,
-  }: {
-    mUSD?: MassetData;
-    mUSDSavingsAddress: string | null;
-  },
+  data?: DataState,
 ): JSX.Element => {
-  if (!mUSD) return Loading;
+  if (!data) return Loading;
 
-  const { bAssets } = mUSD;
+  const { bAssets, savingsContract, mAsset } = data;
 
-  if (tx.response.to === mUSDSavingsAddress) {
+  if (tx.response.to === savingsContract.address) {
     switch (tx.fn) {
       case 'redeem': {
         return (
           <>
             You <span>{tx.status ? 'withdrew' : 'are withdrawing'}</span>{' '}
-            {mUSD.token.symbol} savings
+            {mAsset.symbol} savings
           </>
         );
       }
       case 'depositSavings': {
-        const [amount] = tx.args as [BigNumber];
+        const [quantity] = tx.args as [BigNumber];
+        const amount = new BigDecimal(quantity, mAsset.decimals);
         return (
           <>
             You <span>{tx.status ? 'deposited' : 'are depositing'}</span>{' '}
-            {formatExactAmount(
-              amount,
-              mUSD.token.decimals,
-              mUSD.token.symbol,
-              true,
-            )}
+            {amount.format()} {mAsset.symbol}
           </>
         );
       }
@@ -94,86 +84,72 @@ const getPendingTxDescription = (
 
   switch (tx.fn) {
     case 'approve': {
-      if (tx.args[0] === mUSDSavingsAddress) {
+      if (tx.args[0] === savingsContract.address) {
         return (
           <>
             You <span>{tx.status ? 'approved' : 'are approving'}</span> the mUSD
-            SAVE Contract to transfer {mUSD.token.symbol}
+            SAVE Contract to transfer {mAsset.symbol}
           </>
         );
       }
 
-      const basset = bAssets.find(b => b.address === tx.response.to);
-      if (!basset) return Loading;
+      const bAsset = bAssets[tx.response.to as string];
+      if (!bAsset) return Loading;
 
       return (
         <>
           You <span>{tx.status ? 'approved' : 'are approving'}</span>{' '}
-          {mUSD.token.symbol} to transfer {basset.token.symbol}
+          {mAsset.symbol} to transfer {bAsset.symbol}
         </>
       );
     }
     case 'mint': {
-      const [bassetAddress, bassetQ] = tx.args as [string, BigNumber];
+      const [bAssetAddress, bAssetQ] = tx.args as [string, BigNumber];
 
-      const basset = bAssets.find(b => b.address === bassetAddress);
-      if (!basset) return Loading;
+      const bAsset = bAssets[bAssetAddress];
+      if (!bAsset) return Loading;
+
+      const amount = new BigDecimal(bAssetQ, bAsset.decimals).format();
 
       return (
         <>
-          You <span>{tx.status ? 'minted' : 'are minting'}</span>{' '}
-          {formatExactAmount(
-            bassetQ,
-            basset.token.decimals,
-            mUSD.token.symbol,
-            true,
-          )}{' '}
-          with{' '}
-          {formatExactAmount(
-            bassetQ,
-            basset.token.decimals,
-            basset.token.symbol,
-            true,
-          )}
+          You <span>{tx.status ? 'minted' : 'are minting'}</span> {amount}{' '}
+          {mAsset.symbol} with {amount} {bAsset.symbol}
         </>
       );
     }
     case 'mintMulti': {
-      const [bassetAddresses, bassetQs] = tx.args as [
+      const [bAssetAddresses, bAssetQs] = tx.args as [
         string[],
         BigNumber[],
         string,
       ];
 
-      const bassets = bassetAddresses.map((address, index) => ({
-        ...(bAssets.find(b => b.address === address) as NonNullable<
-          typeof bAssets
-        >[0]),
-        quantity: bassetQs[index],
-      }));
+      const bAssetsWithAmounts = bAssetAddresses.map(
+        (bAssetAddress, index) => ({
+          ...data.bAssets[bAssetAddress],
+          amount: new BigDecimal(
+            bAssetQs[index],
+            data.bAssets[bAssetAddress].decimals,
+          ),
+        }),
+      );
 
-      if (bassets.length === 0) return Loading;
+      if (bAssetsWithAmounts.length === 0) return Loading;
 
-      const massetQ: BigNumber = bassets.reduce(
-        (_total, { quantity, ratio }) =>
-          _total.add(quantity.mul(ratio as string).div(RATIO_SCALE)),
-        new BigNumber(0),
+      const mAssetQ: BigDecimal = bAssetsWithAmounts.reduce(
+        (_total, { amount, ratio }) =>
+          _total.add(amount.mulRatioTruncate(ratio)),
+        new BigDecimal(0, mAsset.decimals),
       );
 
       return (
         <>
           You <span>{tx.status ? 'minted' : 'are minting'}</span>{' '}
-          {formatExactAmount(
-            massetQ,
-            mUSD.token.decimals,
-            mUSD.token.symbol,
-            true,
-          )}{' '}
-          with{' '}
+          {mAssetQ.format()} ${mAsset.symbol} with{' '}
           {humanizeList(
-            bassets.map(
-              ({ quantity, token: { decimals, symbol } }) =>
-                formatExactAmount(quantity, decimals, symbol, true) as string,
+            bAssetsWithAmounts.map(
+              ({ amount, symbol }) => `${amount.format()} ${symbol}`,
             ),
           )}
         </>
@@ -186,49 +162,43 @@ const getPendingTxDescription = (
         BigNumber,
       ];
 
-      const inputBasset = bAssets.find(b => b.address === input);
-      const outputBasset = bAssets.find(b => b.address === output);
+      const inputBasset = bAssets[input];
+      const outputBasset = bAssets[output];
       if (!inputBasset || !outputBasset) return Loading;
+
+      const amount = new BigDecimal(inputQuantity, inputBasset.decimals);
 
       return (
         <>
           You <span>{tx.status ? 'swapped' : 'are swapping'}</span>{' '}
-          {formatExactAmount(
-            inputQuantity,
-            inputBasset.token.decimals,
-            inputBasset.token.symbol,
-            true,
-          )}{' '}
-          for {outputBasset.token.symbol}
+          {amount.format()} {inputBasset.symbol} for {outputBasset.symbol}
         </>
       );
     }
     case 'redeem': {
-      const [bassetAddress, bassetQ] = tx.args as [string, BigNumber];
+      const [bAssetAddress, bAssetQ] = tx.args as [string, BigNumber];
 
-      const basset = bAssets.find(b => b.address === bassetAddress);
-      if (!basset) return Loading;
+      const bAsset = bAssets[bAssetAddress];
+      if (!bAsset) return Loading;
+
+      const amount = new BigDecimal(bAssetQ, bAsset.decimals);
 
       return (
         <>
           You <span>{tx.status ? 'redeemed' : 'are redeeming'}</span>{' '}
-          {formatExactAmount(
-            bassetQ,
-            basset.token.decimals,
-            mUSD.token.symbol,
-            true,
-          )}{' '}
-          into {basset.token.symbol}
+          {amount.format()} {mAsset.symbol} into {bAsset.symbol}
         </>
       );
     }
     case 'redeemMasset': {
-      const [massetQ] = tx.args as [BigNumber];
+      const [mAssetQ] = tx.args as [BigNumber];
+
+      const amount = new BigDecimal(mAssetQ, mAsset.decimals);
 
       return (
         <>
           You <span>{tx.status ? 'redeemed' : 'are redeeming'}</span>{' '}
-          {formatExactAmount(massetQ, 18, mUSD.token.symbol, true)}
+          {amount.format()} {mAsset.symbol}
         </>
       );
     }
@@ -255,14 +225,13 @@ const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
 
 const PendingTx: FC<{
   tx: Transaction;
-  mUSD?: MassetData;
-  mUSDSavingsAddress: string | null;
+  dataState?: DataState;
   inverted?: boolean;
-}> = ({ tx, mUSD, mUSDSavingsAddress, inverted }) => {
-  const description = useMemo(
-    () => getPendingTxDescription(tx, { mUSD, mUSDSavingsAddress }),
-    [tx, mUSD, mUSDSavingsAddress],
-  );
+}> = ({ tx, dataState, inverted }) => {
+  const description = useMemo(() => getPendingTxDescription(tx, dataState), [
+    tx,
+    dataState,
+  ]);
 
   return (
     <PendingTxContainer inverted={inverted}>
@@ -279,8 +248,7 @@ const PendingTx: FC<{
  */
 export const Transactions: FC<{ formId?: string }> = ({ formId }) => {
   const pending = useOrderedCurrentTransactions(formId);
-  const mUSD = useMusdData();
-  const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
+  const dataState = useDataState();
 
   return (
     <div>
@@ -290,12 +258,7 @@ export const Transactions: FC<{ formId?: string }> = ({ formId }) => {
         <List>
           {pending.map(tx => (
             <ListItem key={tx.hash}>
-              <PendingTx
-                tx={tx}
-                mUSD={mUSD}
-                mUSDSavingsAddress={mUSDSavingsAddress}
-                inverted={!formId}
-              />
+              <PendingTx tx={tx} dataState={dataState} inverted={!formId} />
             </ListItem>
           ))}
         </List>

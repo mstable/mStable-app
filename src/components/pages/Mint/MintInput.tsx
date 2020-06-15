@@ -1,15 +1,13 @@
-import React, { FC, useMemo, useEffect, useRef } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-import { BigNumber, formatUnits } from 'ethers/utils';
 
-import { RATIO_SCALE, SCALE } from '../../../web3/constants';
 import { Color, ViewportWidth } from '../../../theme';
 import { FormRow } from '../../core/Form';
 import { LineItems } from '../../core/LineItems';
 import { H3 } from '../../core/Typography';
 import { Skeletons } from '../../core/Skeletons';
-import { useMintState, useMintDispatch } from './MintProvider';
+import { useMintState } from './MintProvider';
 import { BassetInput } from './BassetInput';
 
 const Header = styled.div`
@@ -67,43 +65,15 @@ const Labels = styled.div`
 `;
 
 export const MintInput: FC<{}> = () => {
-  const { mintAmount, bAssetInputs, mAssetData } = useMintState();
-  const { toggleBassetEnabled } = useMintDispatch();
-  const mAssetToken = mAssetData?.token;
-
-  const firstLoad = useRef(true);
-
-  const loading: boolean = mAssetData == null ? true : mAssetData?.loading;
-  const bAssets = mAssetData?.bAssets;
-
-  useEffect(() => {
-    if (firstLoad.current && !loading && bAssets && bAssets.length > 0) {
-      const underweightBassets = bAssets.filter(
-        b => !b.overweight && b.token && b.token.balance && b.ratio,
-      ) as {
-        address: string;
-        token: { balance: BigNumber };
-        ratio: string;
-      }[];
-      const [first] = underweightBassets.sort(
-        (a, b) =>
-          b.token.balance
-            .mul(b.ratio)
-            .div(RATIO_SCALE)
-            .div(SCALE)
-            .toNumber() -
-          a.token.balance
-            .mul(a.ratio)
-            .div(RATIO_SCALE)
-            .div(SCALE)
-            .toNumber(),
-      );
-      if (first) {
-        toggleBassetEnabled(first.address);
-        firstLoad.current = false;
-      }
-    }
-  }, [firstLoad, loading, bAssets, toggleBassetEnabled]);
+  const {
+    mintAmount,
+    bAssets,
+    initialized,
+    dataState,
+    simulation,
+  } = useMintState();
+  const mAsset = dataState?.mAsset;
+  const simulatedMassetBalance = simulation?.mAsset.balance.simple || 0;
 
   const lineItems = useMemo(
     () => [
@@ -111,11 +81,9 @@ export const MintInput: FC<{}> = () => {
         id: 'balance',
         label: 'Current balance',
         countUp: {
-          end: mAssetToken?.balance
-            ? parseFloat(formatUnits(mAssetToken.balance, mAssetToken.decimals))
-            : 0,
+          end: mAsset?.balance ? mAsset.balance.simple : 0,
         },
-        symbol: mAssetToken?.symbol,
+        symbol: mAsset?.symbol,
       },
       {
         id: 'mintAmount',
@@ -126,28 +94,20 @@ export const MintInput: FC<{}> = () => {
           highlight: !!mintAmount.simple,
           highlightColor: Color.green,
         },
-        symbol: mAssetToken?.symbol,
+        symbol: mAsset?.symbol,
       },
       {
         id: 'newBalance',
         label: 'New balance',
         highlight: true,
         countUp: {
-          end:
-            mAssetToken?.balance && mintAmount.exact
-              ? parseFloat(
-                  formatUnits(
-                    mAssetToken.balance.add(mintAmount.exact),
-                    mAssetToken.decimals,
-                  ),
-                )
-              : 0,
+          end: simulatedMassetBalance,
           highlight: true,
         },
-        symbol: mAssetToken?.symbol,
+        symbol: mAsset?.symbol,
       },
     ],
-    [mintAmount, mAssetToken],
+    [mintAmount, mAsset, simulatedMassetBalance],
   );
 
   return (
@@ -163,20 +123,20 @@ export const MintInput: FC<{}> = () => {
             <BalanceLabel>Your balance</BalanceLabel>
           </Labels>
           <div>
-            {loading || !bAssetInputs ? (
+            {!initialized ? (
               <Skeletons skeletonCount={4} height={54} />
             ) : (
-              bAssetInputs.map(b => (
-                <BassetInput address={b.address} key={b.address} />
-              ))
+              Object.keys(bAssets)
+                .sort()
+                .map(address => <BassetInput address={address} key={address} />)
             )}
           </div>
         </div>
       </FormRow>
       <FormRow>
         <H3>Receive</H3>
-        {mAssetToken?.symbol ? (
-          <LineItems symbol={mAssetToken?.symbol} data={lineItems} />
+        {mAsset?.symbol ? (
+          <LineItems symbol={mAsset?.symbol} data={lineItems} />
         ) : (
           <Skeleton />
         )}

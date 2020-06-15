@@ -1,6 +1,5 @@
-import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
+import React, { ComponentProps, FC, useCallback } from 'react';
 import styled from 'styled-components';
-import { formatUnits } from 'ethers/utils';
 
 import { CountUp as CountUpBase } from '../../core/CountUp';
 import { Button } from '../../core/Button';
@@ -9,17 +8,15 @@ import { ToggleInput } from '../../forms/ToggleInput';
 import { ApproveButton } from '../../forms/ApproveButton';
 import { Mode, Reasons } from './types';
 import {
-  useMintBassetData,
-  useMintBassetInput,
-  useMintMassetToken,
+  useMintBasset,
   useMintMode,
   useMintSetBassetAmount,
   useMintSetBassetMaxAmount,
   useMintToggleBassetEnabled,
 } from './MintProvider';
 import { AmountInput } from '../../forms/AmountInput';
-import { parseAmount } from '../../../web3/amounts';
 import { FontSize, ViewportWidth } from '../../../theme';
+import { useBassetState } from '../../../context/DataProvider/DataProvider';
 
 interface Props {
   address: string;
@@ -137,23 +134,13 @@ const Container = styled.div<{
 `;
 
 export const BassetInput: FC<Props> = ({ address }) => {
-  const { overweight, token } = useMintBassetData(address) || {};
-  const { error, enabled, formValue } = useMintBassetInput(address) || {};
+  const { decimals, balance, symbol, overweight, mAssetAddress } =
+    useBassetState(address) || {};
+  const { error, enabled, formValue } = useMintBasset(address) || {};
   const mode = useMintMode();
-  const mAssetToken = useMintMassetToken();
   const toggleBassetEnabled = useMintToggleBassetEnabled();
   const setBassetAmount = useMintSetBassetAmount();
   const setBassetMaxAmount = useMintSetBassetMaxAmount();
-
-  const mAssetAddress = mAssetToken?.address;
-
-  const simpleBalance = useMemo<number>(
-    () =>
-      token?.balance && token.decimals
-        ? parseFloat(formatUnits(token.balance, token.decimals))
-        : 0,
-    [token],
-  );
 
   const needsUnlock = error === Reasons.AmountExceedsApprovedAmount;
 
@@ -161,15 +148,9 @@ export const BassetInput: FC<Props> = ({ address }) => {
     NonNullable<ComponentProps<typeof AmountInput>['onChange']>
   >(
     (_, _formValue) => {
-      if (token) {
-        setBassetAmount(
-          address,
-          _formValue,
-          parseAmount(_formValue, token.decimals),
-        );
-      }
+      setBassetAmount(address, _formValue);
     },
-    [setBassetAmount, token, address],
+    [setBassetAmount, address],
   );
 
   const handleClickInput = useCallback(() => {
@@ -183,18 +164,19 @@ export const BassetInput: FC<Props> = ({ address }) => {
       <Grid enabled={enabled}>
         <TokenContainer>
           <ToggleInput
+            disabled={overweight}
             onClick={() => toggleBassetEnabled(address)}
             checked={enabled}
           />
-          {token?.symbol ? <Token symbol={token.symbol} /> : null}
+          {symbol ? <Token symbol={symbol} /> : null}
         </TokenContainer>
         <InputContainer onClick={handleClickInput}>
           <Label>Amount</Label>
-          {token?.decimals ? (
+          {decimals ? (
             <AmountInput
               disabled={!enabled}
-              value={formValue || null}
-              decimals={token?.decimals}
+              value={formValue}
+              decimals={decimals}
               name={address}
               onChange={handleChangeAmount}
             />
@@ -208,7 +190,7 @@ export const BassetInput: FC<Props> = ({ address }) => {
             </Button>
           ) : null}
         </InputContainer>
-        <CountUp container={BalanceContainer} end={simpleBalance} />
+        <CountUp container={BalanceContainer} end={balance?.simple || 0} />
       </Grid>
       {error || overweight ? (
         <Error>{error || 'Asset overweight'}</Error>

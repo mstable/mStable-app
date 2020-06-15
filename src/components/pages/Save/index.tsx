@@ -6,36 +6,26 @@ import {
   useSetFormManifest,
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
+import { Interfaces } from '../../../types';
 import { SaveProvider, useSaveState } from './SaveProvider';
 import { SaveInput } from './SaveInput';
 import { SaveInfo } from './SaveInfo';
 import { SaveConfirm } from './SaveConfirm';
 import { TransactionType } from './types';
-import { Interfaces } from '../../../types';
 
 const SaveForm: FC<{}> = () => {
-  const {
-    error,
-    touched,
-    values: {
-      input: {
-        amount: { exact: inputAmount },
-        amountInCredits,
-      },
-      transactionType,
-    },
-  } = useSaveState();
+  const { amount, amountInCredits, transactionType, valid } = useSaveState();
 
   const setFormManifest = useSetFormManifest();
   const savingsContract = useSavingsContract();
 
   // Set the form manifest
   useEffect(() => {
-    if (!error && savingsContract && inputAmount) {
+    if (valid && savingsContract && amount) {
       if (transactionType === TransactionType.Deposit) {
         setFormManifest<Interfaces.SavingsContract, 'depositSavings'>({
           iface: savingsContract,
-          args: [inputAmount],
+          args: [amount.exact],
           fn: 'depositSavings',
         });
         return;
@@ -44,7 +34,7 @@ const SaveForm: FC<{}> = () => {
       if (transactionType === TransactionType.Withdraw && amountInCredits) {
         setFormManifest<Interfaces.SavingsContract, 'redeem'>({
           iface: savingsContract,
-          args: [amountInCredits],
+          args: [amountInCredits.exact],
           fn: 'redeem',
         });
         return;
@@ -54,8 +44,8 @@ const SaveForm: FC<{}> = () => {
     setFormManifest(null);
   }, [
     amountInCredits,
-    error,
-    inputAmount,
+    valid,
+    amount,
     savingsContract,
     setFormManifest,
     transactionType,
@@ -69,7 +59,7 @@ const SaveForm: FC<{}> = () => {
       }
       input={<SaveInput />}
       transactionsLabel="Save transactions"
-      valid={touched && !error}
+      valid={valid}
     />
   );
 };

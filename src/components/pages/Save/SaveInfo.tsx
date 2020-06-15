@@ -12,8 +12,8 @@ import {
   useIncreasingNumber,
 } from '../../../web3/hooks';
 import {
-  useMusdData,
-  useMusdSavingsData,
+  useMassetData,
+  useSavingsContractData,
   useSavingsBalance,
 } from '../../../context/DataProvider/DataProvider';
 import { DailyApys } from './DailyApys';
@@ -78,8 +78,8 @@ const BalanceInfoRow = styled(InfoRow)`
 `;
 
 export const SaveInfo: FC<{}> = () => {
-  const mUsd = useMusdData();
-  const mUsdSavings = useMusdSavingsData();
+  const mUsd = useMassetData();
+  const mUsdSavings = useSavingsContractData();
 
   // const apyForPast24h = useApyForPast24h();
   const apyForPastWeek = useAverageApyForPastWeek();
@@ -98,9 +98,12 @@ export const SaveInfo: FC<{}> = () => {
 
   const savingsBalance = useSavingsBalance();
   const clampedBalance =
-    savingsBalance?.simple || 0 > 500 ? 500 : savingsBalance?.simple || 0;
+    savingsBalance?.balance?.simple || 0 > 500
+      ? 500
+      : savingsBalance?.balance?.simple || 0;
+
   const savingsBalanceIncreasing = useIncreasingNumber(
-    savingsBalance.simple,
+    savingsBalance?.balance?.simple || 0,
     // TODO - re-introduce real APY after it settles down
     // ((savingsBalance.simple || 0) * (apyPercentage || 10)) /
     (clampedBalance * 10) / 100 / 365 / 24 / 60 / 60 / 10,
@@ -131,7 +134,7 @@ export const SaveInfo: FC<{}> = () => {
       </BalanceInfoRow>
       <InfoRow>
         <div>
-          <H3>APY (7 day average)</H3>
+          <H3>APY</H3>
           {formattedApys.pastWeek ? (
             <>
               <InfoCountUp
@@ -165,11 +168,8 @@ export const SaveInfo: FC<{}> = () => {
       <InfoRow>
         <div>
           <H3>Total mUSD supply</H3>
-          {mUsd?.token.totalSupply ? (
-            <InfoCountUp
-              end={parseFloat(mUsd?.token.totalSupply)}
-              decimals={2}
-            />
+          {mUsd?.totalSupply ? (
+            <InfoCountUp end={mUsd.totalSupply.simple} decimals={2} />
           ) : (
             <Skeleton />
           )}
@@ -177,10 +177,7 @@ export const SaveInfo: FC<{}> = () => {
         <div>
           <H3>Total mUSD savings</H3>
           {mUsdSavings?.totalSavings ? (
-            <InfoCountUp
-              end={parseFloat(mUsdSavings.totalSavings)}
-              decimals={2}
-            />
+            <InfoCountUp end={mUsdSavings.totalSavings.simple} decimals={2} />
           ) : (
             <Skeleton />
           )}

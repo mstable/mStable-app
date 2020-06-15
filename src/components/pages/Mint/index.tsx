@@ -9,23 +9,23 @@ import {
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
 import { Interfaces } from '../../../types';
-import { MintProvider, useMintState } from './MintProvider';
+import { MintProvider, useMintSimulation, useMintState } from "./MintProvider";
 import { MintInput } from './MintInput';
 import { MusdStats } from '../../stats/MusdStats';
 
 const MintForm: FC<{}> = () => {
   const { account } = useWallet();
-  const { error, touched, bAssetInputs, mintAmount } = useMintState();
+  const { error, amountTouched, bAssets, mintAmount } = useMintState();
   const setFormManifest = useSetFormManifest();
   const mUsdContract = useMusdContract();
 
   // Set the form manifest
   useEffect(() => {
     if (!error && mUsdContract && mintAmount.exact && account) {
-      const enabled = bAssetInputs.filter(b => b.enabled);
+      const enabled = Object.values(bAssets).filter(b => b.enabled);
 
       // Mint single for one asset
-      if (enabled.length === 1 && enabled[0].amount.exact) {
+      if (enabled.length === 1 && enabled[0].amount?.exact) {
         setFormManifest<Interfaces.Masset, 'mint'>({
           iface: mUsdContract,
           args: [enabled[0].address, enabled[0].amount.exact.toString()],
@@ -40,7 +40,7 @@ const MintForm: FC<{}> = () => {
         args: enabled.reduce(
           ([_addresses, _amounts, _receipient], b) => [
             [..._addresses, b.address],
-            [..._amounts, b.amount.exact as BigNumber],
+            [..._amounts, b.amount?.exact as BigNumber],
             _receipient,
           ],
           [[] as string[], [] as BigNumber[], account],
@@ -53,7 +53,7 @@ const MintForm: FC<{}> = () => {
     setFormManifest(null);
   }, [
     account,
-    bAssetInputs,
+    bAssets,
     error,
     mintAmount.exact,
     mUsdContract,
@@ -65,16 +65,21 @@ const MintForm: FC<{}> = () => {
       confirmLabel="Mint"
       input={<MintInput />}
       transactionsLabel="Mint transactions"
-      valid={touched && !error}
+      valid={amountTouched && !error}
     />
   );
 };
+
+const MintStats: FC<{}> = () => {
+  const simulation = useMintSimulation();
+  return <MusdStats simulation={simulation} />
+}
 
 export const Mint: FC<{}> = () => (
   <MintProvider>
     <FormProvider formId="mint">
       <MintForm />
-      <MusdStats />
+      <MintStats />
     </FormProvider>
   </MintProvider>
 );
