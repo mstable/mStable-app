@@ -62,6 +62,15 @@ export class BigDecimal {
   }
 
   /**
+   * Returns a "simple number" version of the value which has been rounded down
+   * to 2 decimal places.
+   * @return simple number value, rounded down to 2 decimals
+   */
+  get simpleRounded(): number {
+    return parseFloat(this.simple.toFixed(3).slice(0, -1));
+  }
+
+  /**
    * Returns a formatted string version of the value, without commas.
    * @return string value
    */
@@ -81,13 +90,15 @@ export class BigDecimal {
 
   /**
    * Returns a formatted value to the given decimal places, with optional commas
+   * and round it down
    * @param decimalPlaces
    * @param commas
    * @return formatted string value
    */
   format(decimalPlaces = 2, commas = true): string {
-    const fixed = this.simple.toFixed(decimalPlaces);
-    return commas ? commify(fixed) : fixed;
+    const fixed = this.simple.toFixed(decimalPlaces + 1);
+    const rounded = parseFloat(fixed.slice(0, -1)).toFixed(decimalPlaces);
+    return commas ? commify(rounded) : rounded;
   }
 
   /**

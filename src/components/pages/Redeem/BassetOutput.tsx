@@ -113,12 +113,12 @@ export const BassetOutput: FC<Props> = ({ address }) => {
         </HeaderRow>
         <Row>
           <Label>Your Balance</Label>
-          <CountUp end={balance?.simple || 0} />
+          <CountUp end={balance?.simpleRounded || 0} />
         </Row>
         <Row>
           <Label>Amount</Label>
           <CountUp
-            highlight={(amount?.simple || 0) > 0}
+            highlight={(amount?.simpleRounded || 0) > 0}
             highlightColor={Color.green}
             duration={0.4}
             end={amount?.simple || 0}

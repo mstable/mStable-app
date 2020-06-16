@@ -187,7 +187,10 @@ export const BassetInput: FC<Props> = ({ address }) => {
             </Button>
           ) : null}
         </InputContainer>
-        <CountUp container={BalanceContainer} end={balance?.simple || 0} />
+        <CountUp
+          container={BalanceContainer}
+          end={balance?.simpleRounded || 0}
+        />
       </Grid>
       {error || overweight ? (
         <Error>{error || 'Asset overweight'}</Error>
