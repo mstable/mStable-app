@@ -2,6 +2,29 @@
 
 ## Next
 
+
+Miscellaneous:
+
+* Round down simple numbers to the nearest decimal place
+* Adjust the behaviour of `useIncreasingNumber` such that the 
+number doesn't increase when under a small threshold (i.e. near-zero)
+* Make failed transactions more obvious (in the wallet view)
+* Fix line height for mUSD savings balance
+
+Bug fixes:
+
+* Fix setting the max amount for savings contract withdrawals
+* Fix the detection of breached bAssets; the one percent of the 
+total vault that forms the basis of the weight breach threshold 
+should be based on the total supply of the mAsset (i.e. total of 
+all vaults)
+* Remove mAsset from other token balances in wallet view
+
+
+## Version 1.1.0
+
+_Released 16.06.20 17.40 CEST_
+
 New features:
 
 * Adjust the mint/save/redeem forms such that a simulated state is produced based on the form inputs
@@ -26,7 +49,7 @@ Bug fixes:
 * Fix number input handling for increments
 
 
-## Version 1.0
+## Version 1.0.0
 
 _Released 27.05.20 18.38 CEST_
 
