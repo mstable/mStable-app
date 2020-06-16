@@ -61,11 +61,6 @@ const reduce: Reducer<State, Action> = (state, action) => {
 
       const maybeAmount = BigDecimal.maybeParse(formValue, decimals);
 
-      const amount =
-        isWithdraw && exchangeRate
-          ? maybeAmount?.mulTruncate(exchangeRate.exact)
-          : maybeAmount;
-
       const amountInCredits =
         isWithdraw && maybeAmount && exchangeRate
           ? maybeAmount.divPrecisely(exchangeRate)
@@ -74,7 +69,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
       return {
         ...state,
         amountInCredits,
-        amount,
+        amount: maybeAmount,
         formValue,
         touched: !!formValue,
       };
