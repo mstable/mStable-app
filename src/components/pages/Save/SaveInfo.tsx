@@ -27,6 +27,7 @@ const CreditBalance = styled.div`
   span {
     font-weight: bold;
     font-size: 6vw;
+    line-height: 1em;
   }
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
