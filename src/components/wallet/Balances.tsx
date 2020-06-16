@@ -55,10 +55,9 @@ export const Balances: FC<{}> = () => {
 
   const { mAsset, savingsContract, bAssets } = useDataState() || {};
 
-  const otherTokens = useMemo(
-    () => (mAsset && bAssets ? [mAsset, ...Object.values(bAssets)] : []),
-    [mAsset, bAssets],
-  );
+  const otherTokens = useMemo(() => (bAssets ? Object.values(bAssets) : []), [
+    bAssets,
+  ]);
 
   const themeContext = useContext(ThemeContext);
 
