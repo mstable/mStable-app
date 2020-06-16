@@ -13,7 +13,7 @@ number doesn't increase when under a small threshold (i.e. near-zero)
 
 Bug fixes:
 
-* Fix setting the max amount for savings contract withdrawals
+* Fix setting the max amount for savings contract withdrawals and for redeeming
 * Fix the detection of breached bAssets; the one percent of the 
 total vault that forms the basis of the weight breach threshold 
 should be based on the total supply of the mAsset (i.e. total of 
