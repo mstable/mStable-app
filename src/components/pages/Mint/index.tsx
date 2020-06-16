@@ -9,7 +9,7 @@ import {
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
 import { Interfaces } from '../../../types';
-import { MintProvider, useMintSimulation, useMintState } from "./MintProvider";
+import { MintProvider, useMintState } from "./MintProvider";
 import { MintInput } from './MintInput';
 import { MusdStats } from '../../stats/MusdStats';
 
@@ -70,16 +70,11 @@ const MintForm: FC<{}> = () => {
   );
 };
 
-const MintStats: FC<{}> = () => {
-  const simulation = useMintSimulation();
-  return <MusdStats simulation={simulation} />
-}
-
 export const Mint: FC<{}> = () => (
   <MintProvider>
     <FormProvider formId="mint">
       <MintForm />
-      <MintStats />
+      <MusdStats />
     </FormProvider>
   </MintProvider>
 );
