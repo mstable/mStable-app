@@ -237,6 +237,7 @@ const PendingTx: FC<{
     <PendingTxContainer inverted={inverted}>
       <TxStatusIndicator tx={tx} />
       <EtherscanLink data={tx.hash} type="transaction">
+        {tx.status === 0 ? 'Error: ' : ''}
         {description}
       </EtherscanLink>
     </PendingTxContainer>
