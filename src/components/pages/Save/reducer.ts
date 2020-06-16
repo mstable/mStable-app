@@ -48,11 +48,12 @@ const reduce: Reducer<State, Action> = (state, action) => {
       return { ...state, dataState: action.payload };
 
     case Actions.SetAmount: {
-      const { dataState } = state;
+      const { dataState, transactionType } = state;
+      const isWithdraw = transactionType === TransactionType.Withdraw;
 
       if (!dataState) return state;
 
-      const { isCreditAmount, formValue } = action.payload;
+      const { formValue } = action.payload;
 
       const { decimals } = dataState.mAsset;
       const exchangeRate =
@@ -60,17 +61,15 @@ const reduce: Reducer<State, Action> = (state, action) => {
 
       const maybeAmount = BigDecimal.maybeParse(formValue, decimals);
 
-      const amount = isCreditAmount
-        ? exchangeRate
-          ? maybeAmount?.mulRatioTruncate(exchangeRate.exact)
-          : undefined
-        : maybeAmount;
+      const amount =
+        isWithdraw && exchangeRate
+          ? maybeAmount?.mulTruncate(exchangeRate.exact)
+          : maybeAmount;
 
-      const amountInCredits = isCreditAmount
-        ? maybeAmount
-        : maybeAmount && exchangeRate
-        ? maybeAmount.divPrecisely(exchangeRate)
-        : undefined;
+      const amountInCredits =
+        isWithdraw && maybeAmount && exchangeRate
+          ? maybeAmount.divPrecisely(exchangeRate)
+          : undefined;
 
       return {
         ...state,
@@ -87,20 +86,36 @@ const reduce: Reducer<State, Action> = (state, action) => {
       if (!dataState) return state;
 
       if (transactionType === TransactionType.Deposit) {
+        const formValue = dataState.mAsset.balance.format(2, false);
         return {
           ...state,
           amount: dataState.mAsset.balance,
-          formValue: dataState.mAsset.balance.format(2, false),
+          amountInCredits: undefined,
+          formValue,
+          touched: !!formValue,
         };
       }
 
-      const { balance } = dataState.savingsContract.savingsBalance;
+      const {
+        savingsBalance: { balance },
+        latestExchangeRate: { exchangeRate } = {},
+      } = dataState.savingsContract;
 
       if (balance) {
+        const formValue = balance.format(2, false);
+        const amount = balance;
+
+        const amountInCredits =
+          amount && exchangeRate
+            ? amount.divPrecisely(exchangeRate)
+            : undefined;
+
         return {
           ...state,
-          amount: balance,
-          formValue: balance.format(2, false),
+          amount,
+          amountInCredits,
+          formValue,
+          touched: !!formValue,
         };
       }
 
@@ -114,6 +129,11 @@ const reduce: Reducer<State, Action> = (state, action) => {
           state.transactionType === TransactionType.Deposit
             ? TransactionType.Withdraw
             : TransactionType.Deposit,
+        // Reset the amounts when toggling type, and remove `touched`
+        amount: undefined,
+        amountInCredits: undefined,
+        formValue: null,
+        touched: false,
       };
     }
 

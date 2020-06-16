@@ -46,7 +46,6 @@ export type Action =
       type: Actions.SetAmount;
       payload: {
         formValue: string | null;
-        isCreditAmount: boolean;
       };
     }
   | { type: Actions.SetMaxAmount }
