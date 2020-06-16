@@ -32,10 +32,10 @@ export const SaveProvider: FC<{}> = ({ children }) => {
   }, [dataState]);
 
   const setAmount = useCallback<Dispatch['setAmount']>(
-    (formValue, isCreditAmount = false) => {
+    (formValue) => {
       dispatch({
         type: Actions.SetAmount,
-        payload: { formValue, isCreditAmount },
+        payload: { formValue },
       });
     },
     [dispatch],
