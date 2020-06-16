@@ -59,6 +59,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
         ...state,
         amountInMasset: maxAmount,
         formValue: maxAmount.format(2, false),
+        touched: true,
       };
     }
 
