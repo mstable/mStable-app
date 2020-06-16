@@ -72,7 +72,6 @@ export const TokenBalancesUpdater = (): null => {
   const accountRef = useRef<string | null>(account);
 
   const blockNumber = getBlockNumber();
-  const blockNumberRef = useRef<number>(blockNumber);
 
   const subscribedTokens = useSubscribedTokens();
 
@@ -94,14 +93,9 @@ export const TokenBalancesUpdater = (): null => {
   }, [signer, subscribedTokens]);
 
   const updateCallback = useCallback(async () => {
-    if (
-      account &&
-      blockNumber &&
-      subscribedTokens.length > 0 &&
-      (blockNumberRef.current !== blockNumber || accountRef.current !== account)
-    ) {
+    if (account) {
       // Update balances
-      const balancePromises = subscribedTokens
+      const balancePromises = Object.keys(contracts)
         .filter(token => contracts[token] && token !== mUSDSavingsAddress)
         .map(async token => ({
           [token]: await contracts[token].balanceOf(account),
@@ -109,7 +103,7 @@ export const TokenBalancesUpdater = (): null => {
 
       // Update mUSD allowances
       if (mUSDAddress) {
-        const allowancePromises = subscribedTokens
+        const allowancePromises = Object.keys(contracts)
           .filter(token => contracts[token] && token !== mUSDAddress)
           .map(async token => ({
             [token]: await contracts[token].allowance(account, mUSDAddress),
@@ -131,15 +125,11 @@ export const TokenBalancesUpdater = (): null => {
 
       Promise.all(balancePromises).then(result => {
         updateBalances(result.reduce((acc, obj) => ({ ...acc, ...obj }), {}));
-        blockNumberRef.current = blockNumber;
       });
     }
   }, [
     account,
-    blockNumber,
-    blockNumberRef,
     contracts,
-    subscribedTokens,
     mUSDAddress,
     mUSD,
     mUSDSavingsAddress,
@@ -147,8 +137,12 @@ export const TokenBalancesUpdater = (): null => {
     updateBalances,
   ]);
 
-  // Update subscribed tokens on each block, and also if the account changes
-  useAsyncMutex(`${account}-${blockNumber}`, updateCallback);
+  // Update subscribed tokens on each block, and also if the account or number
+  // of tokens changes
+  useAsyncMutex(
+    `${account}-${blockNumber}-${Object.keys(contracts).length}`,
+    updateCallback,
+  );
 
   // Clear all contracts and tokens if the account changes.
   useEffect(() => {
