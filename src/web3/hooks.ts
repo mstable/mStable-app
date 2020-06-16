@@ -98,7 +98,7 @@ export const useIncreasingNumber = (
   }, [value, setValueInc]);
 
   useInterval(() => {
-    if (valueInc) setValueInc(valueInc + increment);
+    if (valueInc && value && value > 0.001) setValueInc(valueInc + increment);
   }, interval);
 
   return valueInc;
