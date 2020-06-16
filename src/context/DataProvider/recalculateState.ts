@@ -27,7 +27,7 @@ const calculateBasset = (
     : new BigDecimal(0, mAsset.decimals)
   ).divPrecisely(mAsset.totalSupply);
 
-  const onePercentOfTotalVault = bAsset.totalVault.exact
+  const onePercentOfTotalVault = mAsset.totalSupply.exact
     .mul(PERCENT_SCALE)
     .div(SCALE);
 
