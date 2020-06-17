@@ -3,6 +3,10 @@
 ## Next
 
 
+## Version 1.1.1
+
+_Released 17.06.20 11.34 CEST_
+
 Miscellaneous:
 
 * Round down simple numbers to the nearest decimal place
