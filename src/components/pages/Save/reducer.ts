@@ -63,7 +63,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
 
       const amountInCredits =
         isWithdraw && maybeAmount && exchangeRate
-          ? maybeAmount.divPrecisely(exchangeRate)
+          ? maybeAmount.divPrecisely(exchangeRate).add(new BigDecimal(1, 0))
           : undefined;
 
       return {
