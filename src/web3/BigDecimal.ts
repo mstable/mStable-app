@@ -90,15 +90,17 @@ export class BigDecimal {
 
   /**
    * Returns a formatted value to the given decimal places, with optional commas
-   * and round it down
+   * and optional suffix, and round it down
    * @param decimalPlaces
    * @param commas
+   * @param suffix
    * @return formatted string value
    */
-  format(decimalPlaces = 2, commas = true): string {
+  format(decimalPlaces = 2, commas = true, suffix?: string): string {
     const fixed = this.simple.toFixed(decimalPlaces + 1);
     const rounded = parseFloat(fixed.slice(0, -1)).toFixed(decimalPlaces);
-    return commas ? commify(rounded) : rounded;
+    const formatted = commas ? commify(rounded) : rounded;
+    return `${formatted}${suffix ? ` ${suffix}` : ''}`;
   }
 
   /**

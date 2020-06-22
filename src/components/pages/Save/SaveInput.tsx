@@ -47,7 +47,7 @@ export const SaveInput: FC<{}> = () => {
         ? [
             {
               label: 'Balance',
-              value: mAsset?.balance.format(),
+              value: mAsset?.balance.format(2, true, 'mUSD'),
             },
           ]
         : [],
