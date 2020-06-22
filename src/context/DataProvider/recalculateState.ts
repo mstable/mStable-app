@@ -1,7 +1,4 @@
-import { BigNumber } from 'ethers/utils';
-
 import { BigDecimal } from '../../web3/BigDecimal';
-import { PERCENT_SCALE, SCALE, WEIGHT_THRESHOLD } from '../../web3/constants';
 import { BassetState, BassetStatus, DataState, MassetState } from './types';
 
 const calculateBasset = (
@@ -27,25 +24,6 @@ const calculateBasset = (
     : new BigDecimal(0, mAsset.decimals)
   ).divPrecisely(mAsset.totalSupply);
 
-  const onePercentOfTotalVault = mAsset.totalSupply.exact
-    .mul(PERCENT_SCALE)
-    .div(SCALE);
-
-  const weightBreachThreshold = new BigDecimal(
-    onePercentOfTotalVault.gt(WEIGHT_THRESHOLD)
-      ? WEIGHT_THRESHOLD
-      : onePercentOfTotalVault,
-    mAsset.decimals,
-  );
-
-  const lowerBound = weightBreachThreshold.exact.gt(maxWeightInMasset.exact)
-    ? new BigNumber(0)
-    : maxWeightInMasset.exact.sub(weightBreachThreshold.exact);
-
-  const weightBreached =
-    totalVaultInMasset.exact.gt(lowerBound) &&
-    totalVaultInMasset.exact.lte(maxWeightInMasset.exact);
-
   return {
     ...bAsset,
     balanceInMasset,
@@ -53,8 +31,6 @@ const calculateBasset = (
     maxWeightInMasset,
     overweight,
     totalVaultInMasset,
-    weightBreachThreshold,
-    weightBreached,
   };
 };
 
@@ -102,10 +78,6 @@ export const recalculateState = (dataState: DataState): DataState => {
     .filter(({ overweight }) => overweight)
     .map(b => b.address);
 
-  const breachedBassets = bAssetsArr
-    .filter(({ weightBreached }) => weightBreached)
-    .map(b => b.address);
-
   const blacklistedBassets = bAssetsArr
     .filter(({ status }) => status === BassetStatus.Blacklisted)
     .map(b => b.address);
@@ -119,7 +91,6 @@ export const recalculateState = (dataState: DataState): DataState => {
     mAsset: {
       ...dataState.mAsset,
       allBassetsNormal,
-      breachedBassets,
       blacklistedBassets,
       overweightBassets,
     },

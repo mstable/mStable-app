@@ -60,15 +60,6 @@ const redeemSingleValidator: StateValidator = state => {
     ];
   }
 
-  const { breachedBassets: currentBreachedBassets } = dataState.mAsset;
-
-  if (
-    currentBreachedBassets.length > 0 &&
-    currentOverweightBassets.length === 0
-  ) {
-    return [false, Reasons.MustRedeemWithAllBassets, currentBreachedBassets];
-  }
-
   const amountsRequired = enabledBassets.filter(({ amount }) => !amount);
 
   if (amountsRequired.length > 0) {
