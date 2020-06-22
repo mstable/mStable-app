@@ -26,6 +26,7 @@ export const SwapInput: FC<{}> = () => {
     values: {
       input,
       output,
+      feeAmountSimple,
       input: { token: { address: inputAddress } = { address: null } },
       output: { token: { address: outputAddress } = { address: null } },
     },
@@ -79,7 +80,7 @@ export const SwapInput: FC<{}> = () => {
           true,
         ),
       },
-      ...(feeRate
+      ...(feeRate && feeAmountSimple
         ? [
             {
               label: 'Low fee 🎉',
@@ -96,7 +97,7 @@ export const SwapInput: FC<{}> = () => {
           ]
         : []),
     ],
-    [outputToken, feeRate],
+    [outputToken, feeRate, feeAmountSimple],
   );
 
   /**
