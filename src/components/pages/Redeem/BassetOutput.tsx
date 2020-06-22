@@ -6,6 +6,7 @@ import { Color } from '../../../theme';
 import { CountUp as CountUpBase } from '../../core/CountUp';
 import { Token } from '../../core/Token';
 import { ToggleInput } from '../../forms/ToggleInput';
+import { useDataState } from '../../../context/DataProvider/DataProvider';
 import {
   useRedeemBassetData,
   useRedeemBassetOutput,
@@ -126,10 +127,10 @@ export const BassetOutput: FC<Props> = ({ address }) => {
           />
         </Row>
       </Rows>
-      {error ? (
+      {error || overweight ? (
         <ErrorRow>
-          <Label>Unable to redeem</Label>
-          <Value>{error}</Value>
+          {error ? <Label>Unable to redeem</Label> : null}
+          <Value>{error || 'Asset overweight'}</Value>
         </ErrorRow>
       ) : null}
     </div>
