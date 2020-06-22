@@ -2,6 +2,26 @@
 
 ## Next
 
+Bug fixes:
+
+- Ensure that overweight bAssets can be redeemed single, so long as doing so does not push 
+other bAssets past their weights
+- Clarify the redeem validation; output validation checks the simulated state, after 
+the change
+- Ensure that the overweight bAssets check overrides the breached bAssets check (i.e. so that 
+`redeemMasset` is only enforced for breached bAssets when there are no overweight bAssets)
+- Check that vault balances are not exceeded for a redemption against the current state of 
+the basket, and with the bAsset units
+- Ensure the swap fee is updated when selecting a different token in the swap form
+- Fix rounding of formatted BigDecimals
+
+Miscellaneous:
+
+- Always show token symbols with balances under inputs
+- Show the 'low fee' item when there is a fee
+- Show 'asset overweight' on redeem bAsset outputs when the bAsset is overweight
+- Do not use simulation for redeem stats
+
 ## Version 1.1.2
 
 _Released 19.06.20 17.30 CEST_
