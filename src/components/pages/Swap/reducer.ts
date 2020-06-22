@@ -196,7 +196,7 @@ const calculateSwapValues = (
   };
 };
 
-export const reducer: Reducer<State, Action> = (state, action) => {
+const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.SetToken:
       return applyValidation({
@@ -218,3 +218,9 @@ export const reducer: Reducer<State, Action> = (state, action) => {
       throw new Error('Unhandled action type');
   }
 };
+
+// XXX Each reducer action is re-run because `applyValidation` sets
+// `applySwapFee`, which is in turn checked by `calculateSwapValues`.
+// TODO later: refactor to use an explicit pipeline
+export const reducer: Reducer<State, Action> = (state, action) =>
+  reduce(reduce(state, action), action);
