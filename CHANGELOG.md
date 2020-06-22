@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.1.3
+
+_Released 22.06.20 12.48 CEST_
+
 Bug fixes:
 
 - Ensure that overweight bAssets can be redeemed single, so long as doing so does not push 
