@@ -11,11 +11,7 @@ import { TransactionForm } from '../../forms/TransactionForm';
 import { MusdStats } from '../../stats/MusdStats';
 import { RedeemInput } from './RedeemInput';
 import { RedeemConfirm } from './RedeemConfirm';
-import {
-  RedeemProvider,
-  useRedeemSimulation,
-  useRedeemState,
-} from './RedeemProvider';
+import { RedeemProvider, useRedeemState } from './RedeemProvider';
 import { Mode } from './types';
 
 const RedeemForm: FC<{}> = () => {
@@ -68,16 +64,11 @@ const RedeemForm: FC<{}> = () => {
   );
 };
 
-const RedeemStats: FC<{}> = () => {
-  const simulation = useRedeemSimulation(true);
-  return <MusdStats simulation={simulation} />;
-};
-
 export const Redeem: FC<{}> = () => (
   <RedeemProvider>
     <FormProvider formId="redeem">
       <RedeemForm />
-      <RedeemStats />
+      <MusdStats />
     </FormProvider>
   </RedeemProvider>
 );
