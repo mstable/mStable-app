@@ -8,30 +8,65 @@ import { BigDecimal } from '../../../web3/BigDecimal';
  * Validate redemption outputs state (not applicable for `redeemMasset`)
  */
 const redeemOutputValidator: StateValidator = state => {
-  const { simulated, dataState, bAssets } = state as State & {
+  const { simulated, dataState } = state as State & {
     simulated: DataState;
     dataState: DataState;
     amount: BigDecimal;
   };
 
-  const enabledBassets = Object.values(bAssets).filter(b => b.enabled);
-
-  const { breachedBassets } = simulated.mAsset;
-
-  if (breachedBassets.length > 0) {
-    return [false, Reasons.MustRedeemWithAllBassets, breachedBassets];
-  }
-
-  const overweightBassetsNotEnabled = Object.values(bAssets).filter(
-    ({ address, enabled }) => !enabled && simulated.bAssets[address].overweight,
+  const newOverweightBassets = Object.values(simulated.bAssets).filter(
+    ({ address, overweight }) =>
+      overweight && !dataState.bAssets[address].overweight,
   );
 
-  if (overweightBassetsNotEnabled.length > 0) {
+  if (newOverweightBassets.length > 0) {
+    return [
+      false,
+      Reasons.BassetsMustRemainBelowMaxWeight,
+      newOverweightBassets.map(b => b.address),
+    ];
+  }
+
+  return [true];
+};
+
+/**
+ * Validate `redeemSingle` state
+ */
+const redeemSingleValidator: StateValidator = state => {
+  const { bAssets, dataState } = state as State & {
+    dataState: DataState;
+  };
+  const enabledBassets = Object.values(bAssets).filter(b => b.enabled);
+  const enabledBasset = enabledBassets[0];
+
+  if (!enabledBasset) {
+    return [false, Reasons.NoTokenSelected];
+  }
+
+  const currentOverweightBassets = Object.values(dataState.bAssets)
+    .filter(b => b.overweight)
+    .map(b => b.address);
+
+  if (
+    currentOverweightBassets.length > 1 ||
+    (currentOverweightBassets.length === 1 &&
+      currentOverweightBassets[0] !== enabledBasset.address)
+  ) {
     return [
       false,
       Reasons.MustRedeemOverweightBassets,
-      overweightBassetsNotEnabled.map(b => b.address),
+      currentOverweightBassets,
     ];
+  }
+
+  const { breachedBassets: currentBreachedBassets } = dataState.mAsset;
+
+  if (
+    currentBreachedBassets.length > 0 &&
+    currentOverweightBassets.length === 0
+  ) {
+    return [false, Reasons.MustRedeemWithAllBassets, currentBreachedBassets];
   }
 
   const amountsRequired = enabledBassets.filter(({ amount }) => !amount);
@@ -57,7 +92,7 @@ const redeemOutputValidator: StateValidator = state => {
   }
 
   const vaultBalancesExceeded = enabledBassets.filter(({ address, amount }) =>
-    amount?.exact.gt(simulated.bAssets[address].totalVaultInMasset.exact),
+    amount?.exact.gt(dataState.bAssets[address].totalVault.exact),
   );
 
   if (vaultBalancesExceeded.length > 0) {
@@ -66,44 +101,6 @@ const redeemOutputValidator: StateValidator = state => {
       Reasons.CannotRedeemMoreBassetsThanAreInTheVault,
       vaultBalancesExceeded.map(b => b.address),
     ];
-  }
-
-  const newOverweightBassets = Object.values(simulated.bAssets).filter(
-    ({ address, overweight }) =>
-      overweight && !dataState.bAssets[address].overweight,
-  );
-
-  if (newOverweightBassets.length > 0) {
-    return [
-      false,
-      Reasons.BassetsMustRemainBelowMaxWeight,
-      newOverweightBassets.map(b => b.address),
-    ];
-  }
-
-  return [true];
-};
-
-/**
- * Validate `redeemSingle` state
- */
-const redeemSingleValidator: StateValidator = state => {
-  const { bAssets, simulated } = state as State & { simulated: DataState };
-  const enabled = Object.values(bAssets).filter(b => b.enabled)[0];
-
-  if (!enabled) {
-    return [false, Reasons.NoTokenSelected];
-  }
-
-  const overweightBassets = Object.values(simulated.bAssets)
-    .filter(b => b.overweight)
-    .map(b => b.address);
-
-  if (
-    overweightBassets.length === 1 &&
-    overweightBassets[0] !== enabled.address
-  ) {
-    return [false, Reasons.MustRedeemOverweightBassets, overweightBassets];
   }
 
   return validate.redeemOutputValidator(state);
