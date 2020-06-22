@@ -2,6 +2,11 @@
 
 ## Next
 
+Bug fixes:
+
+- Ensure that clicking on the input of an overweight (i.e. disabled) bAsset when minting
+does not enable the bAsset
+
 ## Version 1.1.3
 
 _Released 22.06.20 12.48 CEST_
