@@ -151,10 +151,10 @@ export const BassetInput: FC<Props> = ({ address }) => {
   );
 
   const handleClickInput = useCallback(() => {
-    if (!enabled) {
+    if (!enabled && !overweight) {
       toggleBassetEnabled(address);
     }
-  }, [enabled, address, toggleBassetEnabled]);
+  }, [enabled, address, toggleBassetEnabled, overweight]);
 
   return (
     <Container overweight={overweight} valid={!error}>
