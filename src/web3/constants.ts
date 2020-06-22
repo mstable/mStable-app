@@ -8,6 +8,8 @@ import { ReactComponent as MetaMaskIcon } from '../components/icons/metamask.svg
 import { ReactComponent as FortmaticIcon } from '../components/icons/fortmatic.svg';
 import { ReactComponent as PortisIcon } from '../components/icons/portis.svg';
 import { ReactComponent as SquarelinkIcon } from '../components/icons/squarelink.svg';
+import { ReactComponent as WalletConnectIcon } from '../components/icons/walletconnect.svg';
+import { ReactComponent as CoinbaseIcon } from '../components/icons/coinbase.svg';
 
 export const SCALE = new BigNumber((1e18).toString());
 export const PERCENT_SCALE = new BigNumber((1e16).toString());
@@ -63,8 +65,8 @@ export const CONNECTORS: Connector[] = [
   { id: 'authereum', label: 'Authereum' },
   { id: 'squarelink', label: 'Squarelink', icon: SquarelinkIcon },
   { id: 'torus', label: 'Torus' },
-  { id: 'walletconnect', label: 'WalletConnect' },
-  { id: 'walletlink', label: 'WalletLink' },
+  { id: 'walletconnect', label: 'WalletConnect', icon: WalletConnectIcon },
+  { id: 'walletlink', label: 'WalletLink', icon: CoinbaseIcon },
   { id: 'frame', label: 'Frame' },
 ];
 
