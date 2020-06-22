@@ -187,10 +187,10 @@ const updateBassetAmountsRedeemMasset = (
 const updateBassetAmountsRedeemSingle = (
   state: State & { dataState: DataState; amountInMasset: BigDecimal },
 ): State['bAssets'] => {
-  const { amountInMassetPlusFee, amountInMasset, feeAmount } = state;
+  const { amountInMasset, feeAmount } = state;
   const [enabledBasset] = Object.values(state.bAssets).filter(b => b.enabled);
 
-  if (!(enabledBasset && amountInMassetPlusFee && amountInMasset)) {
+  if (!(enabledBasset && amountInMasset)) {
     return state.bAssets;
   }
 

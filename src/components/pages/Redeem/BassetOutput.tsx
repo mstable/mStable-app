@@ -99,7 +99,15 @@ export const BassetOutput: FC<Props> = ({ address }) => {
   const { error, enabled, amount } = useRedeemBassetOutput(address) || {};
   const mode = useRedeemMode();
   const toggle = useToggleBassetEnabled();
-  const toggleDisabled = mode === Mode.RedeemSingle && overweight;
+
+  const { mAsset: { overweightBassets } = { overweightBassets: [] } } =
+    useDataState() || {};
+
+  const toggleDisabled = !!(
+    mode === Mode.RedeemSingle &&
+    overweightBassets.length > 0 &&
+    overweightBassets.find(b => b !== address)
+  );
 
   return (
     <div>
