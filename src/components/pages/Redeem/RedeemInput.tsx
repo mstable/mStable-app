@@ -49,7 +49,7 @@ export const RedeemInput: FC<{}> = () => {
   const items = useMemo(() => {
     const balance = {
       label: 'Balance',
-      value: mAsset?.balance.format(),
+      value: mAsset?.balance.format(2, true, 'mUSD'),
     };
 
     return feeAmount && valid
