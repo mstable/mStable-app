@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.2.0
+
+_Released 23.06.20 12.06 CEST_
+
 New Features
 
 - Removes concept of 'breached' bAssets. Basket assets within 1% of their max weighting can now
@@ -14,8 +18,8 @@ Bug fixes:
 - Shows `amountMinusFee` in the Redeem BassetOutput instead of `amount`
   does not enable the bAsset
 - Ensure that token balances and allowances are fetched as soon as they are available
-- Add `purpose` to `finalize` callback for transactions such that the callback has the 
-correct dependencies
+- Add `purpose` to `finalize` callback for transactions such that the callback has the
+  correct dependencies
 
 ## Version 1.1.3
 
