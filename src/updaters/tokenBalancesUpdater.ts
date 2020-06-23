@@ -140,7 +140,7 @@ export const TokenBalancesUpdater = (): null => {
   // Update subscribed tokens on each block, and also if the account or number
   // of tokens changes
   useAsyncMutex(
-    `${account}-${blockNumber}-${Object.keys(contracts).length}`,
+    `${account}-${blockNumber}-${mUSDAddress}-${Object.keys(contracts).length}`,
     updateCallback,
   );
 

@@ -11,7 +11,11 @@ Bug fixes:
 
 - Ensure that clicking on the input of an overweight (i.e. disabled) bAsset when minting
   does not enable the bAsset
-- Shows `amountMinusSwapFee` in the Redeem BassetOutput instead of `amount`
+- Shows `amountMinusFee` in the Redeem BassetOutput instead of `amount`
+  does not enable the bAsset
+- Ensure that token balances and allowances are fetched as soon as they are available
+- Add `purpose` to `finalize` callback for transactions such that the callback has the 
+correct dependencies
 
 ## Version 1.1.3
 
