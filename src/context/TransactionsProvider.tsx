@@ -72,8 +72,9 @@ interface Dispatch {
    * Mark a current transaction as finalized with a transaction receipt.
    * @param hash
    * @param receipt
+   * @param purpose
    */
-  finalize(hash: string, receipt: TransactionReceipt): void;
+  finalize(hash: string, receipt: TransactionReceipt, purpose: Purpose): void;
 
   /**
    * Reset the state completely.
@@ -366,11 +367,9 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   );
 
   const finalize = useCallback<Dispatch['finalize']>(
-    (hash, receipt) => {
+    (hash, receipt, purpose) => {
       const status = getTransactionStatus(receipt);
       const link = getEtherscanLinkForHash(hash);
-
-      const { purpose } = state.current[hash];
 
       if (status === TransactionStatus.Success) {
         addSuccessNotification('Transaction confirmed', purpose.past, link);
@@ -380,7 +379,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
 
       dispatch({ type: Actions.Finalize, payload: { hash, receipt } });
     },
-    [dispatch, addSuccessNotification, addErrorNotification, state],
+    [dispatch, addSuccessNotification, addErrorNotification],
   );
 
   const reset = useCallback(() => {
