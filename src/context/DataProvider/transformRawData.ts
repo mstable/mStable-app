@@ -26,7 +26,6 @@ const getMassetState = ({
 
   // Initial values
   allBassetsNormal: false,
-  breachedBassets: [],
   blacklistedBassets: [],
   overweightBassets: [],
 });
@@ -40,8 +39,8 @@ const getSavingsContractState = ({
 }: RawData): DataState['savingsContract'] => ({
   address: savingsContractData.id,
   automationEnabled: savingsContractData.automationEnabled,
-  creditBalances: (creditBalances || []).map(
-    ({ amount }) => BigDecimal.parse(amount, mAsset.token.decimals),
+  creditBalances: (creditBalances || []).map(({ amount }) =>
+    BigDecimal.parse(amount, mAsset.token.decimals),
   ),
   latestExchangeRate: latestExchangeRate
     ? {
@@ -117,8 +116,6 @@ const getBassetsState = (
         maxWeightInMasset: new BigDecimal(0, mAsset.decimals),
         overweight: false,
         totalVaultInMasset: new BigDecimal(0, mAsset.decimals),
-        weightBreachThreshold: new BigDecimal(0, mAsset.decimals),
-        weightBreached: false,
       };
 
       return {

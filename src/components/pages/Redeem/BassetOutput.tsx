@@ -96,7 +96,9 @@ const Rows = styled.div<{
 
 export const BassetOutput: FC<Props> = ({ address }) => {
   const { overweight, balance, symbol } = useRedeemBassetData(address) || {};
-  const { error, enabled, amount } = useRedeemBassetOutput(address) || {};
+  const { error, enabled, amountMinusFee } =
+    useRedeemBassetOutput(address) || {};
+
   const mode = useRedeemMode();
   const toggle = useToggleBassetEnabled();
 
@@ -127,10 +129,10 @@ export const BassetOutput: FC<Props> = ({ address }) => {
         <Row>
           <Label>Amount</Label>
           <CountUp
-            highlight={(amount?.simpleRounded || 0) > 0}
+            highlight={(amountMinusFee?.simpleRounded || 0) > 0}
             highlightColor={Color.green}
             duration={0.4}
-            end={amount?.simple || 0}
+            end={amountMinusFee?.simpleRounded || 0}
             prefix="+ "
           />
         </Row>

@@ -59,8 +59,6 @@ export interface BassetState {
   totalSupply: BigDecimal;
   totalVault: BigDecimal;
   totalVaultInMasset: BigDecimal;
-  weightBreachThreshold: BigDecimal;
-  weightBreached: boolean;
 }
 
 export interface MassetState {
@@ -71,7 +69,6 @@ export interface MassetState {
   decimals: number;
   failed: boolean;
   feeRate: BigNumber;
-  breachedBassets: string[];
   blacklistedBassets: string[];
   overweightBassets: string[];
   symbol: string;
