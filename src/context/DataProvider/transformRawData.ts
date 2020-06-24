@@ -100,7 +100,7 @@ const getBassetsState = (
         isTransferFeeCharged,
         mAssetAddress: mAsset.address,
         mAssetAllowance: new BigDecimal(
-          mAssetToken.allowance[address.toLowerCase()] || 0,
+          mAssetToken?.allowance[address.toLowerCase()] || 0,
           decimals,
         ),
         maxWeight: bigNumberify(_maxWeight),

@@ -1,8 +1,15 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { ApolloProvider as ApolloReactProvider } from '@apollo/react-hooks';
-import { ApolloClient, InMemoryCache, HttpLink } from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  HttpLink,
+  NormalizedCacheObject,
+} from '@apollo/client';
 import { ApolloLink, concat } from 'apollo-link';
 import { onError } from 'apollo-link-error';
+import { persistCache } from 'apollo-cache-persist';
+import Skeleton from 'react-loading-skeleton';
 
 import { useAddErrorNotification } from '../NotificationsProvider';
 
@@ -18,6 +25,10 @@ if (!process.env.REACT_APP_GRAPHQL_ENDPOINT_WS) {
   );
 }
 
+const cache = new InMemoryCache({
+  resultCaching: true,
+});
+
 const httpLink = (new HttpLink({
   uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
 }) as unknown) as ApolloLink;
@@ -27,13 +38,30 @@ const httpLink = (new HttpLink({
  */
 export const ApolloProvider: FC<{}> = ({ children }) => {
   const addErrorNotification = useAddErrorNotification();
+  const [persisted, setPersisted] = useState(false);
 
-  const client = useMemo(() => {
+  useEffect(() => {
+    persistCache({
+      cache: cache as never,
+      storage: window.localStorage as never,
+    })
+      // eslint-disable-next-line no-console
+      .catch(error => console.warn('Cache persist error', error))
+      .finally(() => {
+        setPersisted(true);
+      });
+  }, [setPersisted]);
+
+  const client = useMemo<
+    ApolloClient<NormalizedCacheObject> | undefined
+  >(() => {
+    if (!persisted) return undefined;
+
     const errorLink = onError(({ networkError, graphQLErrors }) => {
       if (graphQLErrors) {
-        graphQLErrors.forEach(({ message }) => {
+        graphQLErrors.forEach(({ message, ...error }) => {
           // eslint-disable-next-line no-console
-          console.error(message);
+          console.error(message, error);
         });
       }
       if (networkError)
@@ -42,14 +70,18 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
 
     const link = concat(errorLink, httpLink);
 
-    return new ApolloClient({
-      cache: new InMemoryCache(),
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore Can't be helped
-      link,
+    return new ApolloClient<NormalizedCacheObject>({
+      cache,
+      link: link as never,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [persisted]);
 
-  return <ApolloReactProvider client={client}>{children}</ApolloReactProvider>;
+  return client ? (
+    <ApolloReactProvider client={client as never}>
+      {children}
+    </ApolloReactProvider>
+  ) : (
+    <Skeleton />
+  );
 };

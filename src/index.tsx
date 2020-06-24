@@ -12,6 +12,7 @@ import { Save } from './components/pages/Save';
 import { Redeem } from './components/pages/Redeem';
 import { NotFound } from './components/pages/NotFound';
 import { FAQ } from './components/pages/FAQ';
+import { Analytics } from './components/pages/Analytics';
 
 const routes = {
   '/': () => <Home />,
@@ -20,6 +21,7 @@ const routes = {
   '/swap': () => <Swap />,
   '/redeem': () => <Redeem />,
   '/faq': () => <FAQ />,
+  '/analytics': () => <Analytics />,
 };
 
 const Root: FC<{}> = () => {

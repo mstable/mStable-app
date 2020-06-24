@@ -105,6 +105,13 @@ export class BigDecimal {
     return `${formatted}${suffix ? ` ${suffix}` : ''}`;
   }
 
+  toPercent(decimalPlaces = 2): number {
+    const percentage = this.exact.div(
+      new BigNumber(10).pow(16 - decimalPlaces),
+    );
+    return parseFloat((percentage.toNumber() / 100).toFixed(decimalPlaces));
+  }
+
   /**
    * Multiplies two precise units, and then truncates by the full scale
    * @param other Right hand input to multiplication

@@ -7,6 +7,7 @@ import { H3, H2 } from '../core/Typography';
 import { CountUp } from '../core/CountUp';
 import { BasketStats } from './BasketStats';
 import { DataState } from '../../context/DataProvider/types';
+import { AnalyticsLink } from '../pages/Analytics/AnalyticsLink';
 
 const StatsGraphic = styled.div`
   width: 100%;
@@ -53,6 +54,7 @@ export const MusdStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
           )}
         </StatsGraphic>
       </StatsRow>
+      <AnalyticsLink />
     </StatsContainer>
   );
 };

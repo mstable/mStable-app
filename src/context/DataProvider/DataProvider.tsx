@@ -93,5 +93,8 @@ export const useSavingsBalance = ():
 export const useMusdTotalSupply = (): BigDecimal | undefined =>
   useMassetData()?.totalSupply;
 
+export const useTotalSavings = (): BigDecimal | undefined =>
+  useDataState()?.savingsContract.totalSavings;
+
 export const useBassetState = (address: string): BassetState | undefined =>
   useDataState()?.bAssets[address];

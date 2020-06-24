@@ -16,10 +16,11 @@ import {
   VictoryContainer,
 } from 'victory-core';
 
+import Skeleton from 'react-loading-skeleton/lib';
 import { useDataState } from '../../context/DataProvider/DataProvider';
 import { TokenIconSvg } from '../icons/TokenIcon';
-import { convertExactToPercent } from '../../web3/maths';
 import { DataState } from '../../context/DataProvider/types';
+import { BigDecimal } from '../../web3/BigDecimal';
 
 const TOKEN_COLORS = {
   mUSD: '#000',
@@ -126,10 +127,11 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
     () =>
       bAssets
         ? Object.values(bAssets).map(({ basketShare, maxWeight, symbol }) => {
-            const basketShareAsPercentage = convertExactToPercent(
-              basketShare.exact,
-            );
-            const maxWeightAsPercentage = convertExactToPercent(maxWeight);
+            const basketShareAsPercentage = basketShare.toPercent();
+            const maxWeightAsPercentage = new BigDecimal(
+              maxWeight,
+              18,
+            ).toPercent();
 
             // Get the remainder so that it can be stacked after the basket share
             const remainderMaxWeight =
@@ -200,5 +202,7 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
         }}
       />
     </VictoryChart>
-  ) : null;
+  ) : (
+    <Skeleton height={100} />
+  );
 };

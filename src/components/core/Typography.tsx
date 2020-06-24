@@ -11,6 +11,7 @@ export const P = styled.p<{ center?: boolean; size?: Size }>`
 
 export const H2 = styled.h2<{ center?: boolean; borderTop?: boolean }>`
   font-size: ${FontSize.l};
+  font-weight: bold;
   line-height: 3rem;
 
   ${({ theme }) => theme.mixins.textAlign}

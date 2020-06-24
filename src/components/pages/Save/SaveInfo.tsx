@@ -11,12 +11,8 @@ import {
   useAverageApyForPastWeek,
   useIncreasingNumber,
 } from '../../../web3/hooks';
-import {
-  useMassetData,
-  useSavingsContractData,
-  useSavingsBalance,
-} from '../../../context/DataProvider/DataProvider';
-import { DailyApys } from './DailyApys';
+import { useSavingsBalance } from '../../../context/DataProvider/DataProvider';
+import { AnalyticsLink } from '../Analytics/AnalyticsLink';
 
 const CreditBalance = styled.div`
   img {
@@ -79,9 +75,6 @@ const BalanceInfoRow = styled(InfoRow)`
 `;
 
 export const SaveInfo: FC<{}> = () => {
-  const mUsd = useMassetData();
-  const mUsdSavings = useSavingsContractData();
-
   // const apyForPast24h = useApyForPast24h();
   const apyForPastWeek = useAverageApyForPastWeek();
 
@@ -157,31 +150,9 @@ export const SaveInfo: FC<{}> = () => {
           ) : (
             <Skeleton />
           )}
-        </div>
-      </InfoRow>
-      <InfoRow>
-        <div>
-          <H3>Historical APY</H3>
-          <InfoMsg>Daily APY over the past 7 days</InfoMsg>
-          <DailyApys />
-        </div>
-      </InfoRow>
-      <InfoRow>
-        <div>
-          <H3>Total mUSD supply</H3>
-          {mUsd?.totalSupply ? (
-            <InfoCountUp end={mUsd.totalSupply.simple} decimals={2} />
-          ) : (
-            <Skeleton />
-          )}
-        </div>
-        <div>
-          <H3>Total mUSD savings</H3>
-          {mUsdSavings?.totalSavings ? (
-            <InfoCountUp end={mUsdSavings.totalSavings.simple} decimals={2} />
-          ) : (
-            <Skeleton />
-          )}
+          <div>
+            <AnalyticsLink section="save" />
+          </div>
         </div>
       </InfoRow>
     </>
