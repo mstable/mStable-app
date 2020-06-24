@@ -2,6 +2,16 @@
 
 ## Next
 
+Features:
+
+- Add an analytics page, with various interactive charts and other metrics
+- Move various stats and charts to the analytics page, and prominently link to it
+
+Miscellaneous:
+
+- Add a Victory Charts theme (so that charts have a similar style)
+- Add caching for Apollo data
+
 ## Version 1.2.0
 
 _Released 23.06.20 12.06 CEST_

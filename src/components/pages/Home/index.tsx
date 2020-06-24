@@ -82,7 +82,6 @@ const CarouselItem = styled.section<{ active: boolean }>`
   ${H2} {
     font-size: 28px;
     line-height: 1.3em;
-    font-weight: bold;
 
     span {
       color: white;

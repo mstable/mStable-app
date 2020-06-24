@@ -17,7 +17,6 @@ const ListItem = styled.li`
 
 const Container = styled.div`
   ${H2} {
-    font-weight: bold;
     padding-bottom: 32px;
   }
 

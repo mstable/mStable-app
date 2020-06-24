@@ -7,6 +7,7 @@ export enum Color {
   coolMint = 'rgb(133,242,190)',
   blue = 'rgb(23,110,222)',
   blueTransparent = 'rgba(0,92,222,0.2)',
+  orange = 'rgb(202,94,0)',
   red = 'rgb(202,0,27)',
   redTransparent = 'rgba(202,0,27,0.2)',
   redTransparenter = 'rgba(202,0,27,0.1)',

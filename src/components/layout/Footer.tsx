@@ -46,6 +46,7 @@ const links = [
   { title: 'Docs', href: 'https://docs.mstable.org' },
   { title: 'Code', href: 'https://github.com/mstable' },
   { title: 'FAQ', href: '/faq' },
+  { title: 'Analytics', href: '/analytics' },
 ];
 
 export const Footer: FC<Props> = ({ inverted, home }) => (

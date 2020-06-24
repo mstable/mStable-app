@@ -19,6 +19,18 @@ export type Maybe<T> = T | null;
     "types": [
       {
         "kind": "INTERFACE",
+        "name": "TimeMetric",
+        "possibleTypes": [
+          {
+            "name": "VolumeMetric"
+          },
+          {
+            "name": "AggregateMetric"
+          }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
         "name": "Transaction",
         "possibleTypes": [
           {
@@ -164,6 +176,58 @@ export enum AccountBalance_OrderBy {
   Account = 'account',
   Amount = 'amount',
   Token = 'token'
+}
+
+export type AggregateMetric = TimeMetric & {
+  id: Scalars['ID'];
+  value: Scalars['BigDecimal'];
+  timestamp: Scalars['Int'];
+  period: TimeMetricPeriod;
+  type: AggregateMetricType;
+};
+
+export type AggregateMetric_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  value?: Maybe<Scalars['BigDecimal']>;
+  value_not?: Maybe<Scalars['BigDecimal']>;
+  value_gt?: Maybe<Scalars['BigDecimal']>;
+  value_lt?: Maybe<Scalars['BigDecimal']>;
+  value_gte?: Maybe<Scalars['BigDecimal']>;
+  value_lte?: Maybe<Scalars['BigDecimal']>;
+  value_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  value_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  period?: Maybe<TimeMetricPeriod>;
+  period_not?: Maybe<TimeMetricPeriod>;
+  type?: Maybe<AggregateMetricType>;
+  type_not?: Maybe<AggregateMetricType>;
+};
+
+export enum AggregateMetric_OrderBy {
+  Id = 'id',
+  Value = 'value',
+  Timestamp = 'timestamp',
+  Period = 'period',
+  Type = 'type'
+}
+
+export enum AggregateMetricType {
+  TotalSupply = 'TOTAL_SUPPLY',
+  TotalSavings = 'TOTAL_SAVINGS'
 }
 
 /** A Basket of Bassets (e.g. for mUSD) */
@@ -678,10 +742,16 @@ export type Query = {
   savingsContracts: Array<SavingsContract>;
   exchangeRate?: Maybe<ExchangeRate>;
   exchangeRates: Array<ExchangeRate>;
+  volumeMetric?: Maybe<VolumeMetric>;
+  volumeMetrics: Array<VolumeMetric>;
+  aggregateMetric?: Maybe<AggregateMetric>;
+  aggregateMetrics: Array<AggregateMetric>;
   swapTransaction?: Maybe<SwapTransaction>;
   swapTransactions: Array<SwapTransaction>;
   feePaidTransaction?: Maybe<FeePaidTransaction>;
   feePaidTransactions: Array<FeePaidTransaction>;
+  timeMetric?: Maybe<TimeMetric>;
+  timeMetrics: Array<TimeMetric>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
 };
@@ -831,6 +901,38 @@ export type QueryExchangeRatesArgs = {
 };
 
 
+export type QueryVolumeMetricArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryVolumeMetricsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<VolumeMetric_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<VolumeMetric_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryAggregateMetricArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryAggregateMetricsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<AggregateMetric_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<AggregateMetric_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
 export type QuerySwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -859,6 +961,22 @@ export type QueryFeePaidTransactionsArgs = {
   orderBy?: Maybe<FeePaidTransaction_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<FeePaidTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryTimeMetricArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryTimeMetricsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<TimeMetric_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<TimeMetric_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -990,10 +1108,16 @@ export type Subscription = {
   savingsContracts: Array<SavingsContract>;
   exchangeRate?: Maybe<ExchangeRate>;
   exchangeRates: Array<ExchangeRate>;
+  volumeMetric?: Maybe<VolumeMetric>;
+  volumeMetrics: Array<VolumeMetric>;
+  aggregateMetric?: Maybe<AggregateMetric>;
+  aggregateMetrics: Array<AggregateMetric>;
   swapTransaction?: Maybe<SwapTransaction>;
   swapTransactions: Array<SwapTransaction>;
   feePaidTransaction?: Maybe<FeePaidTransaction>;
   feePaidTransactions: Array<FeePaidTransaction>;
+  timeMetric?: Maybe<TimeMetric>;
+  timeMetrics: Array<TimeMetric>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
 };
@@ -1143,6 +1267,38 @@ export type SubscriptionExchangeRatesArgs = {
 };
 
 
+export type SubscriptionVolumeMetricArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionVolumeMetricsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<VolumeMetric_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<VolumeMetric_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionAggregateMetricArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionAggregateMetricsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<AggregateMetric_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<AggregateMetric_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
 export type SubscriptionSwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -1171,6 +1327,22 @@ export type SubscriptionFeePaidTransactionsArgs = {
   orderBy?: Maybe<FeePaidTransaction_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<FeePaidTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionTimeMetricArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionTimeMetricsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<TimeMetric_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<TimeMetric_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -1305,6 +1477,58 @@ export enum SwapTransaction_OrderBy {
   InputBasset = 'inputBasset',
   OutputBasset = 'outputBasset',
   Recipient = 'recipient'
+}
+
+export type TimeMetric = {
+  id: Scalars['ID'];
+  value: Scalars['BigDecimal'];
+  timestamp: Scalars['Int'];
+  period: TimeMetricPeriod;
+};
+
+export type TimeMetric_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  value?: Maybe<Scalars['BigDecimal']>;
+  value_not?: Maybe<Scalars['BigDecimal']>;
+  value_gt?: Maybe<Scalars['BigDecimal']>;
+  value_lt?: Maybe<Scalars['BigDecimal']>;
+  value_gte?: Maybe<Scalars['BigDecimal']>;
+  value_lte?: Maybe<Scalars['BigDecimal']>;
+  value_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  value_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  period?: Maybe<TimeMetricPeriod>;
+  period_not?: Maybe<TimeMetricPeriod>;
+};
+
+export enum TimeMetric_OrderBy {
+  Id = 'id',
+  Value = 'value',
+  Timestamp = 'timestamp',
+  Period = 'period'
+}
+
+export enum TimeMetricPeriod {
+  Hour = 'HOUR',
+  Day = 'DAY',
+  Week = 'WEEK',
+  Month = 'MONTH',
+  Quarter = 'QUARTER',
+  Year = 'YEAR'
 }
 
 /** An ERC20-compatible token */
@@ -1512,6 +1736,53 @@ export enum TransactionType {
   Withdraw = 'WITHDRAW'
 }
 
+export type VolumeMetric = TimeMetric & {
+  id: Scalars['ID'];
+  value: Scalars['BigDecimal'];
+  timestamp: Scalars['Int'];
+  period: TimeMetricPeriod;
+  type: TransactionType;
+};
+
+export type VolumeMetric_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  value?: Maybe<Scalars['BigDecimal']>;
+  value_not?: Maybe<Scalars['BigDecimal']>;
+  value_gt?: Maybe<Scalars['BigDecimal']>;
+  value_lt?: Maybe<Scalars['BigDecimal']>;
+  value_gte?: Maybe<Scalars['BigDecimal']>;
+  value_lte?: Maybe<Scalars['BigDecimal']>;
+  value_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  value_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  period?: Maybe<TimeMetricPeriod>;
+  period_not?: Maybe<TimeMetricPeriod>;
+  type?: Maybe<TransactionType>;
+  type_not?: Maybe<TransactionType>;
+};
+
+export enum VolumeMetric_OrderBy {
+  Id = 'id',
+  Value = 'value',
+  Timestamp = 'timestamp',
+  Period = 'period',
+  Type = 'type'
+}
+
 export type TokenDetailsFragment = Pick<Token, 'id' | 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
 
 export type MassetAllFragment = (
@@ -1606,6 +1877,44 @@ export type LatestExchangeRateQueryVariables = {};
 
 
 export type LatestExchangeRateQuery = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
+
+export type VolumeMetricsOfTypeQueryVariables = {
+  period: TimeMetricPeriod;
+  type: TransactionType;
+  from: Scalars['Int'];
+  to: Scalars['Int'];
+};
+
+
+export type VolumeMetricsOfTypeQuery = { volumeMetrics: Array<Pick<VolumeMetric, 'timestamp' | 'value'>> };
+
+export type VolumeMetricsQueryVariables = {
+  period: TimeMetricPeriod;
+  from: Scalars['Int'];
+  to: Scalars['Int'];
+};
+
+
+export type VolumeMetricsQuery = { volumeMetrics: Array<Pick<VolumeMetric, 'type' | 'timestamp' | 'value'>> };
+
+export type AggregateMetricsOfTypeQueryVariables = {
+  period: TimeMetricPeriod;
+  type: AggregateMetricType;
+  from: Scalars['Int'];
+  to: Scalars['Int'];
+};
+
+
+export type AggregateMetricsOfTypeQuery = { aggregateMetrics: Array<Pick<AggregateMetric, 'timestamp' | 'value'>> };
+
+export type AggregateMetricsQueryVariables = {
+  period: TimeMetricPeriod;
+  from: Scalars['Int'];
+  to: Scalars['Int'];
+};
+
+
+export type AggregateMetricsQuery = { aggregateMetrics: Array<Pick<AggregateMetric, 'type' | 'timestamp' | 'value'>> };
 
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
@@ -2052,3 +2361,151 @@ export function useLatestExchangeRateLazyQuery(baseOptions?: ApolloReactHooks.La
 export type LatestExchangeRateQueryHookResult = ReturnType<typeof useLatestExchangeRateQuery>;
 export type LatestExchangeRateLazyQueryHookResult = ReturnType<typeof useLatestExchangeRateLazyQuery>;
 export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>;
+export const VolumeMetricsOfTypeDocument = gql`
+    query VolumeMetricsOfType($period: TimeMetricPeriod!, $type: TransactionType!, $from: Int!, $to: Int!) {
+  volumeMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, type: $type, timestamp_gte: $from, timestamp_lte: $to}) {
+    timestamp
+    value
+  }
+}
+    `;
+
+/**
+ * __useVolumeMetricsOfTypeQuery__
+ *
+ * To run a query within a React component, call `useVolumeMetricsOfTypeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useVolumeMetricsOfTypeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVolumeMetricsOfTypeQuery({
+ *   variables: {
+ *      period: // value for 'period'
+ *      type: // value for 'type'
+ *      from: // value for 'from'
+ *      to: // value for 'to'
+ *   },
+ * });
+ */
+export function useVolumeMetricsOfTypeQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>) {
+        return ApolloReactHooks.useQuery<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>(VolumeMetricsOfTypeDocument, baseOptions);
+      }
+export function useVolumeMetricsOfTypeLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>(VolumeMetricsOfTypeDocument, baseOptions);
+        }
+export type VolumeMetricsOfTypeQueryHookResult = ReturnType<typeof useVolumeMetricsOfTypeQuery>;
+export type VolumeMetricsOfTypeLazyQueryHookResult = ReturnType<typeof useVolumeMetricsOfTypeLazyQuery>;
+export type VolumeMetricsOfTypeQueryResult = ApolloReactCommon.QueryResult<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>;
+export const VolumeMetricsDocument = gql`
+    query VolumeMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!) {
+  volumeMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, timestamp_gte: $from, timestamp_lte: $to}) {
+    type
+    timestamp
+    value
+  }
+}
+    `;
+
+/**
+ * __useVolumeMetricsQuery__
+ *
+ * To run a query within a React component, call `useVolumeMetricsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useVolumeMetricsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVolumeMetricsQuery({
+ *   variables: {
+ *      period: // value for 'period'
+ *      from: // value for 'from'
+ *      to: // value for 'to'
+ *   },
+ * });
+ */
+export function useVolumeMetricsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<VolumeMetricsQuery, VolumeMetricsQueryVariables>) {
+        return ApolloReactHooks.useQuery<VolumeMetricsQuery, VolumeMetricsQueryVariables>(VolumeMetricsDocument, baseOptions);
+      }
+export function useVolumeMetricsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<VolumeMetricsQuery, VolumeMetricsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<VolumeMetricsQuery, VolumeMetricsQueryVariables>(VolumeMetricsDocument, baseOptions);
+        }
+export type VolumeMetricsQueryHookResult = ReturnType<typeof useVolumeMetricsQuery>;
+export type VolumeMetricsLazyQueryHookResult = ReturnType<typeof useVolumeMetricsLazyQuery>;
+export type VolumeMetricsQueryResult = ApolloReactCommon.QueryResult<VolumeMetricsQuery, VolumeMetricsQueryVariables>;
+export const AggregateMetricsOfTypeDocument = gql`
+    query AggregateMetricsOfType($period: TimeMetricPeriod!, $type: AggregateMetricType!, $from: Int!, $to: Int!) {
+  aggregateMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, type: $type, timestamp_gte: $from, timestamp_lte: $to}) {
+    timestamp
+    value
+  }
+}
+    `;
+
+/**
+ * __useAggregateMetricsOfTypeQuery__
+ *
+ * To run a query within a React component, call `useAggregateMetricsOfTypeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAggregateMetricsOfTypeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAggregateMetricsOfTypeQuery({
+ *   variables: {
+ *      period: // value for 'period'
+ *      type: // value for 'type'
+ *      from: // value for 'from'
+ *      to: // value for 'to'
+ *   },
+ * });
+ */
+export function useAggregateMetricsOfTypeQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>) {
+        return ApolloReactHooks.useQuery<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>(AggregateMetricsOfTypeDocument, baseOptions);
+      }
+export function useAggregateMetricsOfTypeLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>(AggregateMetricsOfTypeDocument, baseOptions);
+        }
+export type AggregateMetricsOfTypeQueryHookResult = ReturnType<typeof useAggregateMetricsOfTypeQuery>;
+export type AggregateMetricsOfTypeLazyQueryHookResult = ReturnType<typeof useAggregateMetricsOfTypeLazyQuery>;
+export type AggregateMetricsOfTypeQueryResult = ApolloReactCommon.QueryResult<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>;
+export const AggregateMetricsDocument = gql`
+    query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!) {
+  aggregateMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, timestamp_gte: $from, timestamp_lte: $to}) {
+    type
+    timestamp
+    value
+  }
+}
+    `;
+
+/**
+ * __useAggregateMetricsQuery__
+ *
+ * To run a query within a React component, call `useAggregateMetricsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAggregateMetricsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAggregateMetricsQuery({
+ *   variables: {
+ *      period: // value for 'period'
+ *      from: // value for 'from'
+ *      to: // value for 'to'
+ *   },
+ * });
+ */
+export function useAggregateMetricsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AggregateMetricsQuery, AggregateMetricsQueryVariables>) {
+        return ApolloReactHooks.useQuery<AggregateMetricsQuery, AggregateMetricsQueryVariables>(AggregateMetricsDocument, baseOptions);
+      }
+export function useAggregateMetricsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AggregateMetricsQuery, AggregateMetricsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<AggregateMetricsQuery, AggregateMetricsQueryVariables>(AggregateMetricsDocument, baseOptions);
+        }
+export type AggregateMetricsQueryHookResult = ReturnType<typeof useAggregateMetricsQuery>;
+export type AggregateMetricsLazyQueryHookResult = ReturnType<typeof useAggregateMetricsLazyQuery>;
+export type AggregateMetricsQueryResult = ApolloReactCommon.QueryResult<AggregateMetricsQuery, AggregateMetricsQueryVariables>;
