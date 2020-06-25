@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.3.0
+
+_Released 25.06.20 12.18 CEST_
+
 Features:
 
 - Add an analytics page, with various interactive charts and other metrics
