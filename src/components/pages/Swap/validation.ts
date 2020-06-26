@@ -130,15 +130,9 @@ const swapValidator: StateValidator = ({
     .mul(inputBasset.ratio)
     .div(RATIO_SCALE);
 
-  // 1. Determine output bAsset valid
-  //  - Enough units in the bank
-  const outputAmount = inputAmountInMasset
-    .div(outputBasset.ratio)
-    .mul(RATIO_SCALE);
-
   const outputVaultBalance = outputBasset.totalVault.exact;
 
-  if (outputAmount.gt(outputVaultBalance)) {
+  if (inputAmountInMasset.gt(outputBasset.totalVaultInMasset.exact)) {
     return [false, { output: Reasons.CannotRedeemMoreAssetsThanAreInTheVault }];
   }
 
