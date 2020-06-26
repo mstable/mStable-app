@@ -21,7 +21,11 @@ import {
   victoryTheme,
 } from './VictoryTheme';
 import { Metrics, Metric, useDateFilter, useMetrics } from './Metrics';
-import { abbreviateNumber, useDateFilterTickFormat, useDateFilterTickValues } from './utils';
+import {
+  abbreviateNumber,
+  useDateFilterTickFormat,
+  useDateFilterTickValues,
+} from './utils';
 
 interface Datum {
   x: number;
@@ -119,14 +123,6 @@ const Chart: FC<{}> = () => {
 
   const loading = groups.some(g => g.loading);
 
-  const maxY = useMemo(() => {
-    const arr: number[] = groups
-      .map(g => g.data.map(d => d.y))
-      .flat()
-      .sort();
-    return Math.max(arr[arr.length - 1] || 0, 1);
-  }, [groups]);
-
   return (
     <ResponsiveVictoryContainer>
       {loading ? (
@@ -136,7 +132,6 @@ const Chart: FC<{}> = () => {
           theme={victoryTheme}
           scale="sqrt"
           height={300}
-          domain={{ y: [0, maxY] }}
           domainPadding={{ y: 50 }}
           containerComponent={
             <VictoryVoronoiContainer
