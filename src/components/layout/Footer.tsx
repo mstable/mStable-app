@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 import { A } from 'hookrouter';
 import { DAPP_VERSION } from '../../web3/constants';
+import { ViewportWidth } from '../../theme';
 
 interface Props {
   inverted: boolean;
@@ -11,6 +12,7 @@ interface Props {
 const Links = styled.ul`
   display: flex;
   align-items: center;
+  padding-bottom: 16px;
 
   li {
     margin-right: ${({ theme }) => theme.spacing.s};
@@ -27,8 +29,6 @@ const Version = styled.div`
 const Container = styled.footer<Props>`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing.s} ${theme.spacing.l}`};
-  display: flex;
-  justify-content: space-between;
 
   border-top: ${({ theme, inverted }) =>
     `1px 
@@ -38,6 +38,11 @@ const Container = styled.footer<Props>`
   a {
     color: ${({ theme, inverted }) =>
       inverted ? theme.color.offWhite : theme.color.offBlack};
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    display: flex;
+    justify-content: space-between;
   }
 `;
 
