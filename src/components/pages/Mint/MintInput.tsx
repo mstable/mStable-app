@@ -9,6 +9,7 @@ import { H3 } from '../../core/Typography';
 import { Skeletons } from '../../core/Skeletons';
 import { useMintState } from './MintProvider';
 import { BassetInput } from './BassetInput';
+import { Tooltip } from '../../core/ReactTooltip';
 
 const Header = styled.div`
   display: flex;
@@ -114,11 +115,15 @@ export const MintInput: FC<{}> = () => {
     <>
       <FormRow>
         <Header>
-          <H3>Send</H3>
+          <H3>Send assets</H3>
         </Header>
         <div>
           <Labels>
-            <AssetLabel>Asset</AssetLabel>
+            <AssetLabel>
+              <Tooltip tip="These assets will be used as collateral">
+                Asset
+              </Tooltip>
+            </AssetLabel>
             <AmountLabel>Amount</AmountLabel>
             <BalanceLabel>Your balance</BalanceLabel>
           </Labels>
@@ -134,7 +139,7 @@ export const MintInput: FC<{}> = () => {
         </div>
       </FormRow>
       <FormRow>
-        <H3>Receive</H3>
+        <H3>Receive mUSD</H3>
         {mAsset?.symbol ? (
           <LineItems symbol={mAsset?.symbol} data={lineItems} />
         ) : (
