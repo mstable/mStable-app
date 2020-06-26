@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import { getWorkingPath } from 'hookrouter';
+import { ReactTooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Wallet } from '../wallet/Wallet';
@@ -98,6 +99,7 @@ export const Layout: FC<{}> = ({ children }) => {
         <Footer inverted={walletExpanded} home={home} />
       </Container>
       <NotificationToasts />
+      <ReactTooltip id="global" />
       <GlobalStyle walletExpanded={walletExpanded} />
     </>
   );
