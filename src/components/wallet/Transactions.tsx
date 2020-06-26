@@ -146,7 +146,7 @@ const getPendingTxDescription = (
       return (
         <>
           You <span>{tx.status ? 'minted' : 'are minting'}</span>{' '}
-          {mAssetQ.format()} ${mAsset.symbol} with{' '}
+          {mAssetQ.format()} {mAsset.symbol} with{' '}
           {humanizeList(
             bAssetsWithAmounts.map(
               ({ amount, symbol }) => `${amount.format()} ${symbol}`,
