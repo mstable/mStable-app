@@ -65,6 +65,7 @@ const useGroup = (
   const query = useAggregateMetricsOfTypeQuery({
     variables: { ...variables, type: metric?.type },
     skip: !metric?.enabled,
+    fetchPolicy: 'cache-and-network',
   });
 
   return useMemo(
