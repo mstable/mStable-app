@@ -5,7 +5,7 @@ import { VictoryLine } from 'victory-line';
 import { VictoryChart } from 'victory-chart';
 import { VictoryAxis } from 'victory-axis';
 import Skeleton from 'react-loading-skeleton';
-import { endOfHour, fromUnixTime, subWeeks } from 'date-fns';
+import { endOfHour, fromUnixTime, subDays } from 'date-fns';
 
 import { useDailyApysForPastWeek } from '../../web3/hooks';
 import { Color } from '../../theme';
@@ -27,7 +27,7 @@ const dateFilter = {
   dateRange: DateRange.Week,
   period: TimeMetricPeriod.Day,
   label: '7 day',
-  from: subWeeks(new Date(), 1),
+  from: subDays(new Date(), 6),
   end: endOfHour(new Date()),
 };
 
@@ -40,10 +40,15 @@ export const DailyApys: FC<{}> = () => {
     () =>
       dailyApys
         .filter(a => a.value && a.start)
-        .map(({ value, start }) => ({
-          x: fromUnixTime(start as number),
-          y: parseFloat(formatUnits(value as BigNumber, 16)),
-        })),
+        .map(({ value, start }) => {
+          const percentage = parseFloat(formatUnits(value as BigNumber, 16));
+          const cappedY = Math.min(percentage, 100);
+          return {
+            x: fromUnixTime(start as number),
+            y: cappedY,
+            percentage,
+          };
+        }),
 
     [dailyApys],
   );
@@ -76,7 +81,11 @@ export const DailyApys: FC<{}> = () => {
           <VictoryLine
             data={data}
             labelComponent={<VictoryLabel />}
-            labels={({ datum }) => percentageFormat(datum.y)}
+            labels={({
+              datum: { percentage },
+            }: {
+              datum: { y: number; percentage: number };
+            }) => (percentage > 100 ? '>100%' : percentageFormat(percentage))}
             style={{
               data: {
                 stroke: Color.gold,
