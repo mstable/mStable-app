@@ -2,7 +2,7 @@ import { Reducer } from 'react';
 import { pipe, pipeline } from 'ts-pipe-compose';
 
 import { Action, Actions, Mode, State } from './types';
-import { validate } from './validate';
+import { applyValidation } from './validate';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { DataState } from '../../../context/DataProvider/types';
 import { recalculateState } from '../../../context/DataProvider/recalculateState';
@@ -347,5 +347,5 @@ export const reducer: Reducer<State, Action> = pipeline(
   updateBassetAmounts,
   resetTouched,
   simulate,
-  validate.applyValidation,
+  applyValidation,
 );

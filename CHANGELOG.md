@@ -2,6 +2,22 @@
 
 ## Next
 
+Features:
+
+- Improve validation messages for mint and redeem to clarify which actions
+  are currently possible (and why)
+- Standardise and simplify the language in validation messages and UI elements
+- Add tooltips
+
+Bug fixes:
+
+- Fix footer layout on smaller viewports
+- Fix y-axis for aggregate chart
+
+Miscellaneous:
+
+- Change fetch policy for analytics data (first retrive from cache, then network)
+
 ## Version 1.3.0
 
 _Released 25.06.20 12.18 CEST_

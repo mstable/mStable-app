@@ -5,14 +5,14 @@ import { BassetState, DataState } from '../../../context/DataProvider/types';
 enum Reasons {
   AmountMustBeGreaterThanZero = 'Amount must be greater than zero',
   AmountMustBeSet = 'Amount must be set',
-  BAssetNotAllowedInSwap = 'bAsset not allowed in swap',
-  CannotRedeemMoreBAssetsThanAreInTheVault = 'Cannot redeem more bAssets than are in the vault',
+  AssetNotAllowedInSwap = 'Asset not allowed in swap',
+  CannotRedeemMoreAssetsThanAreInTheVault = 'Cannot redeem more assets than are in the vault',
   FetchingData = 'Fetching data',
   InsufficientBalance = 'Insufficient balance',
   MustBeBelowMaxWeighting = 'Must be below max weighting',
   TransferMustBeApproved = 'Transfer must be approved',
-  TokenMustBeSelected = 'Token must be selected',
-  TokenNotAllowedInMint = 'Token not allowed in mint',
+  AssetMustBeSelected = 'Asset must be selected',
+  AssetNotAllowedInMint = 'Asset not allowed in mint',
 }
 
 // TODO later: refactor this validation to use the current state interface
@@ -38,11 +38,11 @@ const formValidator: StateValidator = ({
   }
 
   if (!input.token.address) {
-    return [false, { input: Reasons.TokenMustBeSelected }];
+    return [false, { input: Reasons.AssetMustBeSelected }];
   }
 
   if (!output.token.address) {
-    return [false, { output: Reasons.TokenMustBeSelected }];
+    return [false, { output: Reasons.AssetMustBeSelected }];
   }
 
   if (!input.formValue) {
@@ -118,11 +118,11 @@ const swapValidator: StateValidator = ({
   }
 
   if (inputBasset.status !== 'Normal') {
-    return [false, { input: Reasons.BAssetNotAllowedInSwap }];
+    return [false, { input: Reasons.AssetNotAllowedInSwap }];
   }
 
   if (outputBasset.status !== 'Normal') {
-    return [false, { output: Reasons.BAssetNotAllowedInSwap }];
+    return [false, { output: Reasons.AssetNotAllowedInSwap }];
   }
 
   // How much mAsset is this bAsset quantity worth?
@@ -139,10 +139,7 @@ const swapValidator: StateValidator = ({
   const outputVaultBalance = outputBasset.totalVault.exact;
 
   if (outputAmount.gt(outputVaultBalance)) {
-    return [
-      false,
-      { output: Reasons.CannotRedeemMoreBAssetsThanAreInTheVault },
-    ];
+    return [false, { output: Reasons.CannotRedeemMoreAssetsThanAreInTheVault }];
   }
 
   const outputBalanceInMasset = outputVaultBalance
@@ -202,7 +199,7 @@ const mintSingleValidator: StateValidator = state => {
   if (
     ['BrokenBelowPeg', 'Liquidating', 'Blacklisted'].includes(bAssetData.status)
   ) {
-    return [false, { input: Reasons.TokenNotAllowedInMint }];
+    return [false, { input: Reasons.AssetNotAllowedInMint }];
   }
 
   const mintAmountInMasset = input.amount.exact

@@ -2,20 +2,19 @@ import { DataState } from '../../../context/DataProvider/types';
 import { BigDecimal } from '../../../web3/BigDecimal';
 
 export enum Reasons {
-  AmountExceedsBalance = 'Amount exceeds balance',
-  AmountMustBeGreaterThanZero = 'Amount must be greater than zero',
-  AmountMustBeSet = 'Amount must be set',
-  BasketContainsBlacklistedAsset = 'Basket contains blacklisted asset',
-  BassetsMustRemainBelowMaxWeight = 'bAssets must remain below max weight',
-  CannotRedeemMoreBassetsThanAreInTheVault = 'Cannot redeem more bAssets than are in the vault',
-  FetchingData = 'Fetching data',
-  MustRedeemOverweightBassets = 'Redemption must use overweight bAssets',
-  MustRedeemWithAllBassets = 'Must redeem with all bAssets',
-  NoTokenSelected = 'No token selected',
-  NoTokensSelected = 'No tokens selected',
-  NotEnoughLiquidity = 'Not enough liquidity',
-  NothingInTheBasketToRedeem = 'Nothing in the basket to redeem',
-  RedemptionPausedDuringRecol = 'Redemption paused during recollateralisation',
+  AmountExceedsBalance,
+  AmountMustBeGreaterThanZero,
+  AmountMustBeSet,
+  BasketContainsBlacklistedAsset,
+  AssetsMustRemainBelowMaxWeight,
+  CannotRedeemMoreAssetsThanAreInTheVault,
+  FetchingData,
+  MustRedeemOverweightAssets,
+  MustRedeemWithAllAssets,
+  NoAssetSelected,
+  NoAssetsSelected,
+  NothingInTheBasketToRedeem,
+  RedemptionPausedDuringRecol,
 }
 
 export enum Mode {
@@ -55,7 +54,7 @@ export interface BassetOutput {
   amount?: BigDecimal;
   amountMinusFee?: BigDecimal;
   enabled: boolean;
-  error?: string;
+  hasError?: boolean;
   formValue?: string;
 }
 
@@ -83,7 +82,7 @@ export interface Dispatch {
 
 export type ValidationResult =
   | [boolean]
-  | [boolean, string]
-  | [boolean, string, string[]];
+  | [boolean, Reasons]
+  | [boolean, Reasons, string[]];
 
 export type StateValidator = (state: State) => ValidationResult;

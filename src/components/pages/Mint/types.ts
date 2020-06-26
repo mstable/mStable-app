@@ -2,17 +2,17 @@ import { BigDecimal } from '../../../web3/BigDecimal';
 import { DataState } from '../../../context/DataProvider/types';
 
 export enum Reasons {
-  AmountExceedsApprovedAmount = 'Amount exceeds approved amount',
-  AmountExceedsBalance = 'Amount exceeds balance',
-  AmountMustBeGreaterThanZero = 'Amount must be greater than zero',
-  AmountMustBeSet = 'Amount must be set',
-  BasketFailed = 'Basket failed',
-  BasketUndergoingRecollateralisation = 'Basket undergoing recollateralisation',
-  FetchingData = 'Fetching data',
-  MustBeBelowMaxWeighting = 'Must be below max weighting',
-  NoTokenSelected = 'No token selected',
-  NoTokensSelected = 'No tokens selected',
-  TokenNotAllowedInMint = 'Token not allowed in mint',
+  AmountExceedsApprovedAmount,
+  AmountExceedsBalance,
+  AmountMustBeGreaterThanZero,
+  AmountMustBeSet,
+  BasketFailed,
+  BasketUndergoingRecollateralisation,
+  FetchingData,
+  MustBeBelowMaxWeighting,
+  NoAssetSelected,
+  NoAssetsSelected,
+  AssetNotAllowedInMint,
 }
 
 export enum Actions {
@@ -59,6 +59,7 @@ export interface BassetInput {
   decimals: number;
   enabled: boolean;
   error?: string;
+  reason?: Reasons;
 }
 
 export interface State {
@@ -83,7 +84,7 @@ export interface Dispatch {
 
 export type ValidationResult =
   | [boolean]
-  | [boolean, string]
-  | [boolean, string, Record<string, string | undefined>];
+  | [boolean, Reasons]
+  | [boolean, Reasons | undefined, { [address: string]: Reasons | undefined }];
 
 export type StateValidator = (state: State) => ValidationResult;
