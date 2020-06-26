@@ -90,6 +90,7 @@ const useGroup = (
   const query = useVolumeMetricsOfTypeQuery({
     variables: { ...variables, type: metric?.type },
     skip: !metric?.enabled,
+    fetchPolicy: 'cache-and-network',
   });
 
   return useMemo(
