@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.4.0
+
+_Released 26.06.20 17.26 CEST_
+
 Features:
 
 - Improve validation messages for mint and redeem to clarify which actions
