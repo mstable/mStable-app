@@ -13,6 +13,7 @@ Bug fixes:
 
 - Fix footer layout on smaller viewports
 - Fix y-axis for aggregate chart
+- Fix swap vault balance validation
 
 Miscellaneous:
 
