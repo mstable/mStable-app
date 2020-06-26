@@ -225,11 +225,18 @@ export const useDailyApysForPastWeek = (): DailyApysForWeek => {
   );
 };
 
+const ONE_HUNDRED = new BigNumber((1e18).toString());
+
 export const useAverageApyForPastWeek = (): BigNumber | undefined => {
   const dailyApys = useDailyApysForPastWeek();
 
   return useMemo(() => {
-    const filtered = dailyApys.map(a => a.value).filter(Boolean) as BigNumber[];
+    const filtered = dailyApys
+      .map(a =>
+        // Cap numbers at 100
+        a.value ? (a.value.gt(ONE_HUNDRED) ? ONE_HUNDRED : a.value) : undefined,
+      )
+      .filter(Boolean) as BigNumber[];
 
     if (filtered.length < 2) {
       // Not enough data to sample an average

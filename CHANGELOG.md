@@ -16,7 +16,8 @@ Bug fixes:
 
 Miscellaneous:
 
-- Change fetch policy for analytics data (first retrive from cache, then network)
+- Change fetch policy for analytics data (first retrieve from cache, then network)
+- Capped APY chart values to avoid confusion 
 
 ## Version 1.3.0
 
