@@ -24,11 +24,11 @@ export const getReasonMessage = (
 
     case Reasons.AssetsMustRemainBelowMaxWeight: {
       const plural = affectedBassets.length > 1;
-      return `The balance${plural ? 's' : ''} of ${getBassetSymbols(
+      return `Redeeming would cause ${getBassetSymbols(
         affectedBassets,
-      )} cannot be pushed past ${
+      )} to exceed ${
         plural ? 'their' : 'its'
-      } maximum limit; this limit helps to ensure diversification and reduce risk.`;
+      } maximum limit; this limit helps to ensure diversification and reduce risk. Try redeeming with all assets.`;
     }
 
     case Reasons.BasketContainsBlacklistedAsset:
