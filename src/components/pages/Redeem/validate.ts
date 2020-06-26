@@ -1,8 +1,13 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
-
-import { Mode, Reasons, State, StateValidator } from './types';
+import {
+  Mode,
+  Reasons,
+  State,
+  StateValidator,
+  ValidationResult,
+} from './types';
 import { DataState } from '../../../context/DataProvider/types';
 import { BigDecimal } from '../../../web3/BigDecimal';
+import { getReasonMessage } from './getReasonMessage';
 
 /**
  * Validate redemption outputs state (not applicable for `redeemMasset`)
@@ -22,7 +27,7 @@ const redeemOutputValidator: StateValidator = state => {
   if (newOverweightBassets.length > 0) {
     return [
       false,
-      Reasons.BassetsMustRemainBelowMaxWeight,
+      Reasons.AssetsMustRemainBelowMaxWeight,
       newOverweightBassets.map(b => b.address),
     ];
   }
@@ -41,7 +46,7 @@ const redeemSingleValidator: StateValidator = state => {
   const enabledBasset = enabledBassets[0];
 
   if (!enabledBasset) {
-    return [false, Reasons.NoTokenSelected];
+    return [false, Reasons.NoAssetSelected];
   }
 
   const currentOverweightBassets = Object.values(dataState.bAssets)
@@ -55,7 +60,7 @@ const redeemSingleValidator: StateValidator = state => {
   ) {
     return [
       false,
-      Reasons.MustRedeemOverweightBassets,
+      Reasons.MustRedeemOverweightAssets,
       currentOverweightBassets,
     ];
   }
@@ -89,12 +94,12 @@ const redeemSingleValidator: StateValidator = state => {
   if (vaultBalancesExceeded.length > 0) {
     return [
       false,
-      Reasons.CannotRedeemMoreBassetsThanAreInTheVault,
+      Reasons.CannotRedeemMoreAssetsThanAreInTheVault,
       vaultBalancesExceeded.map(b => b.address),
     ];
   }
 
-  return validate.redeemOutputValidator(state);
+  return redeemOutputValidator(state);
 };
 
 /**
@@ -131,20 +136,16 @@ const amountValidator: StateValidator = state => {
  * Validate `redeemMasset` state
  */
 const redeemMassetValidator: StateValidator = state => {
-  const { amountInMasset, simulated } = state as State & {
+  const { dataState } = state as State & {
     amountInMasset: BigDecimal;
-    simulated: DataState;
+    dataState: DataState;
   };
 
   const {
-    mAsset: { collateralisationRatio, decimals },
-  } = simulated;
+    mAsset: { decimals },
+  } = dataState;
 
-  const collateralisedMassetQuantity = amountInMasset.mulTruncate(
-    collateralisationRatio,
-  );
-
-  const totalBassetVault = Object.values(simulated.bAssets).reduce(
+  const totalBassetVault = Object.values(dataState.bAssets).reduce(
     (_totalBassetVault, { totalVaultInMasset }) =>
       _totalBassetVault.add(totalVaultInMasset),
     new BigDecimal(0, decimals),
@@ -152,10 +153,6 @@ const redeemMassetValidator: StateValidator = state => {
 
   if (totalBassetVault.exact.eq(0)) {
     return [false, Reasons.NothingInTheBasketToRedeem];
-  }
-
-  if (collateralisedMassetQuantity.exact.gt(totalBassetVault.exact)) {
-    return [false, Reasons.NotEnoughLiquidity];
   }
 
   return [true];
@@ -187,42 +184,56 @@ const basketValidator: StateValidator = ({ simulated, mode }) => {
     return [false, Reasons.RedemptionPausedDuringRecol];
   }
 
-  if (
-    mode !== Mode.RedeemMasset &&
-    (failed || !allBassetsNormal || overweightBassets.length > 1)
-  ) {
-    return [false, Reasons.MustRedeemWithAllBassets, overweightBassets];
-  }
+  if (mode !== Mode.RedeemMasset) {
+    if (overweightBassets.length > 1) {
+      return [false, Reasons.MustRedeemOverweightAssets, overweightBassets];
+    }
 
+    if (failed || !allBassetsNormal) {
+      return [false, Reasons.MustRedeemWithAllAssets];
+    }
+  }
   return [true];
 };
 
 const redemptionValidator: StateValidator = state => {
-  const amountValidation = validate.amountValidator(state);
+  const amountValidation = amountValidator(state);
   if (!amountValidation[0]) return amountValidation;
 
   if (state.mode === Mode.RedeemMasset) {
-    return validate.redeemMassetValidator(state);
+    return redeemMassetValidator(state);
   }
 
   if (state.mode === Mode.RedeemSingle) {
-    return validate.redeemSingleValidator(state);
+    return redeemSingleValidator(state);
   }
 
-  return validate.redeemMultiValidator(state);
+  return redeemMultiValidator(state);
+};
+
+const getValidationResult = (state: State): ValidationResult => {
+  const ready = state.touched && state.initialized;
+
+  if (!ready) return [false];
+
+  const basketValidation = basketValidator(state);
+
+  if (!basketValidation[0]) return basketValidation;
+
+  return redemptionValidator(state);
 };
 
 export const applyValidation = (state: State): State => {
-  const { touched, initialized, bAssets } = state;
-  const ready = touched && initialized;
+  const { bAssets, dataState } = state;
 
-  const [basketValid, basketError] = validate.basketValidator(state);
-  const [redeemValid, redeemError, bAssetErrors] = validate.redemptionValidator(
-    state,
-  );
+  const [valid, reason, affectedBassets = []] = getValidationResult(state);
 
-  const error = ready ? redeemError || basketError : undefined;
-  const valid = !!(ready && redeemValid && basketValid);
+  const error = valid
+    ? undefined
+    : getReasonMessage(
+        reason,
+        dataState ? affectedBassets.map(b => dataState.bAssets[b]) : undefined,
+      );
 
   return {
     ...state,
@@ -231,8 +242,7 @@ export const applyValidation = (state: State): State => {
         ..._bAssets,
         [bAsset.address]: {
           ...bAsset,
-          error:
-            error && bAssetErrors?.includes(bAsset.address) ? error : undefined,
+          hasError: affectedBassets.includes(bAsset.address),
         },
       }),
       bAssets,
@@ -240,15 +250,4 @@ export const applyValidation = (state: State): State => {
     error,
     valid,
   };
-};
-
-export const validate = {
-  applyValidation,
-  amountValidator,
-  basketValidator,
-  redeemMassetValidator,
-  redeemMultiValidator,
-  redeemSingleValidator,
-  redeemOutputValidator,
-  redemptionValidator,
 };

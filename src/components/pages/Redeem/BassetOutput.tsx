@@ -96,7 +96,7 @@ const Rows = styled.div<{
 
 export const BassetOutput: FC<Props> = ({ address }) => {
   const { overweight, balance, symbol } = useRedeemBassetData(address) || {};
-  const { error, enabled, amountMinusFee } =
+  const { hasError, enabled, amountMinusFee } =
     useRedeemBassetOutput(address) || {};
 
   const mode = useRedeemMode();
@@ -113,7 +113,7 @@ export const BassetOutput: FC<Props> = ({ address }) => {
 
   return (
     <div>
-      <Rows valid={!error} enabled={enabled} overweight={overweight}>
+      <Rows valid={!hasError} enabled={enabled} overweight={overweight}>
         <HeaderRow>
           {symbol ? <Token symbol={symbol} /> : <Skeleton />}
           <ToggleInput
@@ -137,10 +137,9 @@ export const BassetOutput: FC<Props> = ({ address }) => {
           />
         </Row>
       </Rows>
-      {error || overweight ? (
+      {overweight ? (
         <ErrorRow>
-          {error ? <Label>Unable to redeem</Label> : null}
-          <Value>{error || 'Asset overweight'}</Value>
+          <Value>Asset overweight</Value>
         </ErrorRow>
       ) : null}
     </div>

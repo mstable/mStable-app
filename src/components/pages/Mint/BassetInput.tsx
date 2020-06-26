@@ -133,13 +133,13 @@ const Container = styled.div<{
 export const BassetInput: FC<Props> = ({ address }) => {
   const { decimals, balance, symbol, overweight, mAssetAddress } =
     useBassetState(address) || {};
-  const { error, enabled, formValue } = useMintBasset(address) || {};
+  const { error, enabled, formValue, reason } = useMintBasset(address) || {};
   const mode = useMintMode();
   const toggleBassetEnabled = useMintToggleBassetEnabled();
   const setBassetAmount = useMintSetBassetAmount();
   const setBassetMaxAmount = useMintSetBassetMaxAmount();
 
-  const needsUnlock = error === Reasons.AmountExceedsApprovedAmount;
+  const needsUnlock = reason === Reasons.AmountExceedsApprovedAmount;
 
   const handleChangeAmount = useCallback<
     NonNullable<ComponentProps<typeof AmountInput>['onChange']>

@@ -2,6 +2,7 @@ import React, { FC, useCallback, useMemo } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 
+import { humanizeList } from '../../../web3/strings';
 import { FormRow } from '../../core/Form';
 import { H3 } from '../../core/Typography';
 import { Skeletons } from '../../core/Skeletons';
@@ -45,6 +46,31 @@ export const RedeemInput: FC<{}> = () => {
   } = useRedeemDispatch();
 
   const mAsset = dataState?.mAsset;
+  const bAssetsData = dataState?.bAssets;
+
+  const enabledBassets = useMemo(
+    () =>
+      Object.values(bAssets)
+        .filter(b => b.enabled && bAssetsData?.[b.address])
+        .map(b => (bAssetsData as NonNullable<typeof bAssetsData>)[b.address]),
+    [bAssets, bAssetsData],
+  );
+
+  const errorLabel = useMemo<string | undefined>(
+    () =>
+      error
+        ? `Unable to redeem${
+            enabledBassets.length > 0
+              ? ` with ${
+                  mode === Mode.RedeemMasset
+                    ? 'all assets'
+                    : humanizeList(enabledBassets.map(b => b.symbol))
+                }`
+              : ''
+          }`
+        : undefined,
+    [error, enabledBassets, mode],
+  );
 
   const items = useMemo(() => {
     const balance = {
@@ -74,13 +100,13 @@ export const RedeemInput: FC<{}> = () => {
     <>
       <FormRow>
         <Header>
-          <H3>Send</H3>
+          <H3>Send mUSD</H3>
           <RedeemMode>
             <ToggleInput
               onClick={toggleMode}
               checked={mode === Mode.RedeemMasset}
             />
-            <span>Redeem with all bAssets</span>
+            <span>Redeem with all assets</span>
           </RedeemMode>
         </Header>
         {initialized && mAsset ? (
@@ -95,6 +121,7 @@ export const RedeemInput: FC<{}> = () => {
             }
             items={items}
             tokenDisabled
+            errorLabel={errorLabel}
             error={error}
           />
         ) : (
@@ -102,7 +129,7 @@ export const RedeemInput: FC<{}> = () => {
         )}
       </FormRow>
       <FormRow>
-        <H3>Receive</H3>
+        <H3>Receive assets</H3>
         <BassetsGrid>
           {initialized && mAsset ? (
             Object.keys(bAssets)

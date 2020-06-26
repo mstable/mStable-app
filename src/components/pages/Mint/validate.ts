@@ -7,6 +7,7 @@ import {
   ValidationResult,
   BassetStatus,
 } from './types';
+import { getReasonMessage } from './getReasonMessage';
 
 const amountValidator = (
   bAsset: BassetInput,
@@ -21,7 +22,7 @@ const amountValidator = (
       BassetStatus.Blacklisted,
     ].includes(bAssetData.status)
   ) {
-    return [false, Reasons.TokenNotAllowedInMint];
+    return [false, Reasons.AssetNotAllowedInMint];
   }
 
   if (!bAsset.amount) {
@@ -50,15 +51,15 @@ const mintSingleValidator: StateValidator = state => {
 
   const [enabled] = Object.values(bAssets).filter(b => b.enabled);
 
-  if (!enabled) return [false, Reasons.NoTokenSelected];
+  if (!enabled) return [false, Reasons.NoAssetSelected];
 
-  const [amountValid, amountError] = amountValidator(enabled, dataState);
+  const [amountValid, amountReason] = amountValidator(enabled, dataState);
   if (!amountValid) {
     return [
       amountValid,
-      amountError as string,
-      { [enabled.address]: amountError },
-    ];
+      amountReason,
+      { [enabled.address]: amountReason },
+    ] as ValidationResult;
   }
 
   const { totalVaultInMasset, maxWeightInMasset } = simulation.bAssets[
@@ -84,7 +85,7 @@ const mintMultiValidator: StateValidator = state => {
   const enabled = Object.values(bAssets).filter(b => b.enabled);
 
   if (enabled.length === 0) {
-    return [false, Reasons.NoTokensSelected];
+    return [false, Reasons.NoAssetsSelected];
   }
 
   const bAssetsArr = Object.values(bAssets);
@@ -110,16 +111,16 @@ const mintMultiValidator: StateValidator = state => {
       return [true];
     })
     .reduce<ValidationResult>(
-      ([_valid, _error, _errorMap], [bAssetValid, bAssetError], index) => {
+      ([_valid, _reason, _errorMap], [bAssetValid, bAssetReason], index) => {
         const { address } = bAssetsArr[index];
 
-        const error = _error || bAssetError;
+        const reason = typeof _reason !== 'undefined' ? _reason : bAssetReason;
         const valid = _valid && bAssetValid;
-        const errorMap = { ..._errorMap, [address]: bAssetError };
+        const errorMap = { ..._errorMap, [address]: bAssetReason };
 
-        return valid ? [valid] : [valid, error as string, errorMap];
+        return valid ? [valid] : [valid, reason, errorMap];
       },
-      [true, '', {}],
+      [true, undefined, {}],
     );
 };
 
@@ -129,7 +130,7 @@ const mintValidator: StateValidator = state => {
   if (mode === Mode.MintSingle) {
     const [valid, error] = mintSingleValidator(state);
     const [bAssetInput] = Object.values(bAssets).filter(b => b.enabled);
-    return [valid, error as string, { [bAssetInput.address]: error }];
+    return [valid, error, { [bAssetInput.address]: error }];
   }
 
   return mintMultiValidator(state);
@@ -153,12 +154,29 @@ const basketValidator: StateValidator = state => {
   return [true];
 };
 
-export const validate = (state: State): State => {
-  const { amountTouched, initialized, bAssets } = state;
-  const ready = amountTouched && initialized;
+const getValidationResult = (state: State): ValidationResult => {
+  const ready = state.amountTouched && state.initialized;
 
-  const [basketValid, basketError] = basketValidator(state);
-  const [mintValid, mintError, bAssetErrors] = mintValidator(state);
+  if (!ready) return [false];
+
+  const basketValidation = basketValidator(state);
+  if (!basketValidation[0]) return basketValidation;
+
+  return mintValidator(state);
+};
+
+export const validate = (state: State): State => {
+  const { bAssets, dataState } = state;
+
+  const [valid, reason, affectedBassets = {}] = getValidationResult(state);
+
+  const affectedBassetsData = dataState
+    ? Object.keys(affectedBassets).map(b => dataState.bAssets[b])
+    : undefined;
+
+  const error = valid
+    ? undefined
+    : getReasonMessage(reason, affectedBassetsData);
 
   return {
     ...state,
@@ -167,12 +185,16 @@ export const validate = (state: State): State => {
         ..._bAssets,
         [bAsset.address]: {
           ...bAsset,
-          error: ready ? bAssetErrors?.[bAsset.address] : undefined,
+          error: getReasonMessage(
+            affectedBassets[bAsset.address],
+            affectedBassetsData,
+          ),
+          reason: affectedBassets[bAsset.address],
         },
       }),
       bAssets,
     ),
-    error: ready ? mintError || basketError : undefined,
-    valid: ready && mintValid && basketValid,
+    error,
+    valid,
   };
 };

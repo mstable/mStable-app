@@ -16,6 +16,7 @@ import { ApproveButton } from './ApproveButton';
 interface Props {
   name: string;
   error?: string;
+  errorLabel?: string;
   tokenValue: string | null;
   amountValue: string | null;
   tokenAddresses: string[];
@@ -42,6 +43,11 @@ const Error = styled.div`
   text-align: center;
   color: ${({ theme }) => theme.color.red};
   font-size: ${({ theme }) => theme.fontSize.s};
+`;
+
+const ErrorLabel = styled.div`
+  font-weight: bold;
+  text-transform: uppercase;
 `;
 
 const Items = styled.div`
@@ -130,7 +136,7 @@ const AmountInputContainer = styled.div`
  */
 export const TokenAmountInput: FC<Props> = ({
   error,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  errorLabel,
   tokenAddresses,
   tokenValue,
   amountValue,
@@ -191,7 +197,10 @@ export const TokenAmountInput: FC<Props> = ({
             </Item>
           ))}
         </Items>
-        <Error>{error}</Error>
+        <Error>
+          {error && errorLabel ? <ErrorLabel>{errorLabel}</ErrorLabel> : null}
+          <div>{error}</div>
+        </Error>
       </ErrorAndItems>
     </>
   );
