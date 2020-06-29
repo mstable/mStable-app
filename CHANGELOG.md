@@ -15,6 +15,7 @@ Miscellaneous:
 - Identify and disable Dapper wallet (currently incompatible 
   with `use-wallet` / `web3-react`)
 - Parse failing transaction errors to provide a more useful message
+- Default to 30 days for totals chart
 
 ## Version 1.4.0
 

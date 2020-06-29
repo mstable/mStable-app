@@ -20,7 +20,13 @@ import {
   VictoryFilters,
   victoryTheme,
 } from './VictoryTheme';
-import { Metrics, Metric, useDateFilter, useMetrics } from './Metrics';
+import {
+  DateRange,
+  Metric,
+  Metrics,
+  useDateFilter,
+  useMetrics,
+} from './Metrics';
 import {
   abbreviateNumber,
   useDateFilterTickFormat,
@@ -185,7 +191,7 @@ const Chart: FC<{}> = () => {
 };
 
 export const AggregateChart: FC<{}> = () => (
-  <Metrics metrics={aggregateMetrics}>
+  <Metrics metrics={aggregateMetrics} defaultDateRange={DateRange.Month}>
     <Chart />
   </Metrics>
 );
