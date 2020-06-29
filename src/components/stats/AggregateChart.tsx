@@ -132,7 +132,7 @@ const Chart: FC<{}> = () => {
   return (
     <ResponsiveVictoryContainer>
       {loading ? (
-        <Skeleton height={300} />
+        <Skeleton height={400} />
       ) : (
         <VictoryChart
           theme={victoryTheme}

@@ -203,6 +203,6 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
       />
     </VictoryChart>
   ) : (
-    <Skeleton height={100} />
+    <Skeleton height={132} />
   );
 };

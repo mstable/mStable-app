@@ -95,7 +95,7 @@ export const DailyApys: FC<{}> = () => {
           />
         </VictoryChart>
       ) : (
-        <Skeleton height={300} />
+        <Skeleton height={270} />
       )}
     </ResponsiveVictoryContainer>
   );
