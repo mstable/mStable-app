@@ -1,8 +1,14 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { A } from 'hookrouter';
+
 import { DAPP_VERSION } from '../../web3/constants';
 import { ViewportWidth } from '../../theme';
+import Medium from '../icons/medium.svg';
+import Github from '../icons/github.svg';
+import Discord from '../icons/discord.svg';
+import Twitter from '../icons/twitter.svg';
+import Email from '../icons/email.svg';
 
 interface Props {
   inverted: boolean;
@@ -16,6 +22,18 @@ const Links = styled.ul`
 
   li {
     margin-right: ${({ theme }) => theme.spacing.s};
+  }
+`;
+
+const SocialIcons = styled(Links)`
+  a {
+    border-bottom: 0;
+  }
+
+  img {
+    display: block;
+    width: 24px;
+    height: auto;
   }
 `;
 
@@ -40,9 +58,11 @@ const Container = styled.footer<Props>`
       inverted ? theme.color.offWhite : theme.color.offBlack};
   }
 
-  @media (min-width: ${ViewportWidth.s}) {
-    display: flex;
-    justify-content: space-between;
+  > :first-child {
+    @media (min-width: ${ViewportWidth.m}) {
+      display: flex;
+      justify-content: space-between;
+    }
   }
 `;
 
@@ -54,21 +74,40 @@ const links = [
   { title: 'Analytics', href: '/analytics' },
 ];
 
+const socialIcons = [
+  { title: 'Github', icon: Github, href: 'https://github.com/mstable' },
+  { title: 'Discord', icon: Discord, href: 'https://discord.gg/pgCVG7e' },
+  { title: 'Twitter', icon: Twitter, href: 'https://twitter.com/mstable_' },
+  { title: 'Medium', icon: Medium, href: 'https://medium.com/mstable' },
+  { title: 'Email', icon: Email, href: 'mailto:info@mstable.org' },
+];
+
 export const Footer: FC<Props> = ({ inverted, home }) => (
   <Container inverted={inverted} home={home}>
-    <Links>
-      {links.map(({ title, href }) => (
-        <li key={href}>
-          {href.startsWith('/') ? (
-            <A href={href}>{title}</A>
-          ) : (
+    <div>
+      <Links>
+        {links.map(({ title, href }) => (
+          <li key={href}>
+            {href.startsWith('/') ? (
+              <A href={href}>{title}</A>
+            ) : (
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                {title}
+              </a>
+            )}
+          </li>
+        ))}
+      </Links>
+      <SocialIcons>
+        {socialIcons.map(({ title, href, icon }) => (
+          <li key={href}>
             <a href={href} target="_blank" rel="noopener noreferrer">
-              {title}
+              <img src={icon} alt={title} />
             </a>
-          )}
-        </li>
-      ))}
-    </Links>
+          </li>
+        ))}
+      </SocialIcons>
+    </div>
     <Version>
       Current version <span>{DAPP_VERSION}</span>
     </Version>
