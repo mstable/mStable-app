@@ -7646,6 +7646,11 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
+github-buttons@^2.8.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/github-buttons/-/github-buttons-2.11.0.tgz#e05acef43e670be0a93912a1ec67c5432acccfa7"
+  integrity sha512-tbCpCh1SiI2yK0u1wzDHVhI7V/O52dDlIEF9h8zj7dcmLI6nb8wcEJfENrZy0wKGc/m4sYKSbNVoJNh+AxFdCQ==
+
 glob-parent@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-3.1.0.tgz#9e6af6299d8d3bd2bd40430832bd113df906c5ae"
@@ -12022,6 +12027,13 @@ react-fast-compare@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-2.0.4.tgz#e84b4d455b0fec113e0402c329352715196f81f9"
   integrity sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==
+
+react-github-btn@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-github-btn/-/react-github-btn-1.2.0.tgz#464066f999a77c0eed27980260601b51cbe15614"
+  integrity sha512-/b2TGTeek5Ky+KtuP5BxOaXgb1FGhbwgZNI6rkwkGk7+xtCtsNMkdchOcCnC3qU1JGTWPKzYZWpPBIouVhXAoQ==
+  dependencies:
+    github-buttons "^2.8.0"
 
 react-is@^16.12.0, react-is@^16.8.6:
   version "16.13.1"

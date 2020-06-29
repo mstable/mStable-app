@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { A } from 'hookrouter';
+import GitHubButton from 'react-github-btn';
 
 import { DAPP_VERSION } from '../../web3/constants';
 import { ViewportWidth } from '../../theme';
@@ -39,6 +40,7 @@ const SocialIcons = styled(Links)`
 
 const Version = styled.div`
   font-size: 10px;
+
   span {
     font-weight: bold;
   }
@@ -58,9 +60,19 @@ const Container = styled.footer<Props>`
       inverted ? theme.color.offWhite : theme.color.offBlack};
   }
 
-  > :first-child {
+  > div {
     @media (min-width: ${ViewportWidth.m}) {
       display: flex;
+      align-items: center;
+
+      > * {
+        margin-right: 16px;
+      }
+      > :last-child {
+        margin-right: 0;
+      }
+    }
+    &:first-child {
       justify-content: space-between;
     }
   }
@@ -108,8 +120,18 @@ export const Footer: FC<Props> = ({ inverted, home }) => (
         ))}
       </SocialIcons>
     </div>
-    <Version>
-      Current version <span>{DAPP_VERSION}</span>
-    </Version>
+    <div>
+      <Version>
+        Current version <span>{DAPP_VERSION}</span>
+      </Version>
+      <GitHubButton
+        href="https://github.com/mstable/mStable-contracts"
+        data-icon="octicon-star"
+        data-show-count
+        aria-label="Star mstable/mStable-contracts on GitHub"
+      >
+        Star
+      </GitHubButton>
+    </div>
   </Container>
 );
