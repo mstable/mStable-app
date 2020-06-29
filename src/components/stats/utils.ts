@@ -36,18 +36,16 @@ const periodFormatMapping: Record<TimeMetricPeriod, string> = {
 };
 
 export const abbreviateNumber = (value: number): string => {
-  const valueStr = value.toFixed(0);
-
   if (value >= 1e3 && value < 1e6) {
-    return `${valueStr.slice(0, valueStr.length - 3)}k`;
+    return `${(value / 1e3).toFixed(0)}k`;
   }
 
   if (value >= 1e6 && value < 1e9) {
-    return `${valueStr.slice(0, 1)}.${valueStr.slice(1, 3)}m`;
+    return `${(value / 1e6).toFixed(2)}m`;
   }
 
   if (value >= 1e9) {
-    return `${valueStr.slice(0, 1)}.${valueStr.slice(1, 3)}b`;
+    return `${(value / 1e9).toFixed(2)}b`;
   }
 
   return value.toFixed(0);

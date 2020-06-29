@@ -2,6 +2,10 @@
 
 ## Next
 
+Bug fixes:
+
+- Fix number abbreviation for charts
+
 ## Version 1.4.0
 
 _Released 26.06.20 17.26 CEST_
