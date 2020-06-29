@@ -179,47 +179,62 @@ const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
 const END_OF_HOUR = endOfHour(new Date());
 const END_OF_DAY = endOfDay(new Date());
 
-const initialState: State<never> = {
-  metrics: [],
-  dates: [
-    {
-      dateRange: DateRange.Day,
-      period: TimeMetricPeriod.Hour,
-      label: '24 hour',
-      from: startOfHour(subHours(new Date(), 23)),
-      end: END_OF_HOUR,
-    },
-    {
-      dateRange: DateRange.Week,
-      period: TimeMetricPeriod.Day,
-      label: '7 day',
-      from: startOfDay(subDays(new Date(), 6)),
-      end: END_OF_DAY,
-      enabled: true,
-    },
-    {
-      dateRange: DateRange.Month,
-      period: TimeMetricPeriod.Day,
-      label: '30 day',
-      from: startOfDay(subDays(new Date(), 29)),
-      end: END_OF_DAY,
-    },
-  ],
-};
+const DATE_RANGES: State<never>['dates'] = [
+  {
+    dateRange: DateRange.Day,
+    period: TimeMetricPeriod.Hour,
+    label: '24 hour',
+    from: startOfHour(subHours(new Date(), 23)),
+    end: END_OF_HOUR,
+  },
+  {
+    dateRange: DateRange.Week,
+    period: TimeMetricPeriod.Day,
+    label: '7 day',
+    from: startOfDay(subDays(new Date(), 6)),
+    end: END_OF_DAY,
+  },
+  {
+    dateRange: DateRange.Month,
+    period: TimeMetricPeriod.Day,
+    label: '30 day',
+    from: startOfDay(subDays(new Date(), 29)),
+    end: END_OF_DAY,
+  },
+];
 
 interface Props<T extends string> {
   metrics: Metric<T>[];
+  defaultDateRange?: DateRange;
 }
 
-const stateCtx = createContext<State<any>>(initialState);
+const stateCtx = createContext<State<any>>({} as State<any>);
 
 const dispatchCtx = createContext<Dispatch<any>>({} as Dispatch<any>);
 
+const initializer = <T extends string>({
+  metrics,
+  defaultDateRange = DateRange.Week,
+}: {
+  metrics: Metric<T>[];
+  defaultDateRange?: DateRange;
+}): State<T> => ({
+  metrics,
+  dates: DATE_RANGES.map(date =>
+    date.dateRange === defaultDateRange ? { ...date, enabled: true } : date,
+  ),
+});
+
 export const Metrics = <T extends string>({
   metrics,
+  defaultDateRange,
   children,
 }: PropsWithChildren<Props<T>>): ReactElement => {
-  const [state, dispatch] = useReducer(reducer, { ...initialState, metrics });
+  const [state, dispatch] = useReducer(
+    reducer,
+    { metrics, defaultDateRange },
+    initializer,
+  );
 
   const toggleType = useCallback<Dispatch<T>['toggleType']>(
     type => {
