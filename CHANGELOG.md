@@ -7,6 +7,10 @@ Bug fixes:
 - Use Multi-collateral DAI logo
 - Fix number abbreviation for charts
 
+Miscellaneous:
+
+- Add footer social icons
+
 ## Version 1.4.0
 
 _Released 26.06.20 17.26 CEST_
