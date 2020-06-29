@@ -148,11 +148,11 @@ const useGroups = (): Group[] => {
     () =>
       [
         mint,
-        // Redeem and Exit (`redeemMasset`) are treated as one
-        { ...redeem, data: redeem.data.concat(exit.data) },
-        swap,
         deposit,
         withdraw,
+        swap,
+        // Redeem and Exit (`redeemMasset`) are treated as one
+        { ...redeem, data: redeem.data.concat(exit.data) },
       ].filter(g => g.metric.enabled),
     [mint, redeem, swap, deposit, withdraw, exit],
   );

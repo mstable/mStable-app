@@ -17,6 +17,7 @@ Miscellaneous:
 - Parse failing transaction errors to provide a more useful message
 - Default to 30 days for totals chart
 - Improve presentation of chart labels on different viewports
+- Fix order of volumes to match toggles
 
 ## Version 1.4.0
 
