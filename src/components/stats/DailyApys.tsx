@@ -9,11 +9,7 @@ import { endOfHour, fromUnixTime, subDays } from 'date-fns';
 
 import { useDailyApysForPastWeek } from '../../web3/hooks';
 import { Color } from '../../theme';
-import {
-  ResponsiveVictoryContainer,
-  VictoryFilters,
-  victoryTheme,
-} from './VictoryTheme';
+import { useVictoryTheme } from '../../context/ThemeProvider';
 import {
   abbreviateNumber,
   percentageFormat,
@@ -35,6 +31,7 @@ export const DailyApys: FC<{}> = () => {
   const dailyApys = useDailyApysForPastWeek();
   const tickValues = useDateFilterTickValues(dateFilter);
   const tickFormat = useDateFilterTickFormat(dateFilter);
+  const victoryTheme = useVictoryTheme();
 
   const data = useMemo<{ x: Date; y: number }[]>(
     () =>
@@ -54,7 +51,7 @@ export const DailyApys: FC<{}> = () => {
   );
 
   return (
-    <ResponsiveVictoryContainer>
+    <div>
       {data.length ? (
         <VictoryChart
           theme={victoryTheme}
@@ -62,7 +59,6 @@ export const DailyApys: FC<{}> = () => {
           domainPadding={25}
           padding={{ left: 45, top: 0, right: 20, bottom: 40 }}
         >
-          <VictoryFilters />
           <VictoryAxis
             dependentAxis
             tickFormat={abbreviateNumber}
@@ -97,6 +93,6 @@ export const DailyApys: FC<{}> = () => {
       ) : (
         <Skeleton height={270} />
       )}
-    </ResponsiveVictoryContainer>
+    </div>
   );
 };

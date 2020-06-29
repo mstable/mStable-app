@@ -9,6 +9,7 @@ import Skeleton from 'react-loading-skeleton';
 import { fromUnixTime, getUnixTime } from 'date-fns';
 import { commify } from 'ethers/utils';
 
+import { useVictoryTheme } from '../../context/ThemeProvider';
 import { Color } from '../../theme';
 import {
   TransactionType,
@@ -16,9 +17,18 @@ import {
   VolumeMetricsOfTypeQuery,
   VolumeMetricsOfTypeQueryVariables,
 } from '../../graphql/generated';
-import { DateRange, Metric, Metrics, useDateFilter, useMetrics } from './Metrics';
-import { ResponsiveVictoryContainer, VictoryFilters, victoryTheme } from './VictoryTheme';
-import { abbreviateNumber, useDateFilterTickFormat, useDateFilterTickValues } from './utils';
+import {
+  DateRange,
+  Metric,
+  Metrics,
+  useDateFilter,
+  useMetrics,
+} from './Metrics';
+import {
+  abbreviateNumber,
+  useDateFilterTickFormat,
+  useDateFilterTickValues,
+} from './utils';
 
 interface Datum {
   x: number;
@@ -155,9 +165,10 @@ const Chart: FC<{}> = () => {
   const tickValues = useDateFilterTickValues(dateFilter);
   const tickFormat = useDateFilterTickFormat(dateFilter);
   const barWidth = dateFilter.dateRange === DateRange.Week ? 8 : 2;
+  const victoryTheme = useVictoryTheme();
 
   return (
-    <ResponsiveVictoryContainer>
+    <div>
       {loading ? (
         <Skeleton height={300} />
       ) : (
@@ -184,7 +195,6 @@ const Chart: FC<{}> = () => {
             />
           }
         >
-          <VictoryFilters />
           <VictoryAxis
             dependentAxis
             tickFormat={abbreviateNumber}
@@ -199,6 +209,7 @@ const Chart: FC<{}> = () => {
             fixLabelOverlap
             style={{
               grid: { stroke: 'none' },
+              tickLabels: { padding: 6 },
             }}
           />
           <VictoryGroup offset={barWidth}>
@@ -220,7 +231,7 @@ const Chart: FC<{}> = () => {
           </VictoryGroup>
         </VictoryChart>
       )}
-    </ResponsiveVictoryContainer>
+    </div>
   );
 };
 

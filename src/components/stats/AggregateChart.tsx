@@ -2,12 +2,13 @@ import React, { FC, useMemo } from 'react';
 import { VictoryChart } from 'victory-chart';
 import { VictoryLine } from 'victory-line';
 import { VictoryAxis } from 'victory-axis';
+import { VictoryTooltip } from 'victory-tooltip';
 import { VictoryVoronoiContainer } from 'victory-voronoi-container';
 import { addDays, fromUnixTime, getUnixTime } from 'date-fns';
 import { commify } from 'ethers/utils';
 import Skeleton from 'react-loading-skeleton';
 
-import { VictoryTooltip } from 'victory-tooltip/es';
+import { useVictoryTheme } from '../../context/ThemeProvider';
 import { Color } from '../../theme';
 import {
   AggregateMetricsOfTypeQuery,
@@ -15,11 +16,6 @@ import {
   AggregateMetricType,
   useAggregateMetricsOfTypeQuery,
 } from '../../graphql/generated';
-import {
-  ResponsiveVictoryContainer,
-  VictoryFilters,
-  victoryTheme,
-} from './VictoryTheme';
 import {
   DateRange,
   Metric,
@@ -129,8 +125,10 @@ const Chart: FC<{}> = () => {
 
   const loading = groups.some(g => g.loading);
 
+  const victoryTheme = useVictoryTheme();
+
   return (
-    <ResponsiveVictoryContainer>
+    <div>
       {loading ? (
         <Skeleton height={400} />
       ) : (
@@ -155,7 +153,6 @@ const Chart: FC<{}> = () => {
             />
           }
         >
-          <VictoryFilters />
           <VictoryAxis
             dependentAxis
             tickFormat={abbreviateNumber}
@@ -171,6 +168,7 @@ const Chart: FC<{}> = () => {
             fixLabelOverlap
             style={{
               grid: { stroke: 'none' },
+              tickLabels: { padding: 6 },
             }}
           />
           {groups.map(({ metric: { type, color }, data }) => (
@@ -186,7 +184,7 @@ const Chart: FC<{}> = () => {
           ))}
         </VictoryChart>
       )}
-    </ResponsiveVictoryContainer>
+    </div>
   );
 };
 
