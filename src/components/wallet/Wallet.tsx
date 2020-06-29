@@ -1,6 +1,7 @@
 import React, { FC, useMemo } from 'react';
-import { Connectors, useWallet } from 'use-wallet';
+import { useWallet } from 'use-wallet';
 import styled from 'styled-components';
+
 import {
   useIsWalletConnecting,
   useResetWallet,
@@ -75,6 +76,21 @@ const ConnectorsList = styled.div`
   grid-column-gap: ${({ theme }) => theme.spacing.m};
 `;
 
+const ConnectorIcon = styled.div`
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+
+  svg {
+    width: 100%;
+    height: auto;
+    max-height: 96px;
+    margin-bottom: ${({ theme }) => theme.spacing.s};
+  }
+`;
+
+const ConnectorLabel = styled.div``;
+
 const ConnectorButton = styled(Button)`
   margin-bottom: ${props => props.theme.spacing.s};
   padding: ${props => props.theme.spacing.m};
@@ -84,26 +100,14 @@ const ConnectorButton = styled(Button)`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  div {
-    display: flex;
-    flex-grow: 1;
-    align-items: center;
-  }
-  svg {
-    width: 100%;
-    height: auto;
-    max-height: 96px;
-    margin-bottom: ${({ theme }) => theme.spacing.s};
-  }
 `;
 
 const Connecting = styled.div`
   width: 120px;
 `;
 
-const Disconnected: FC<{
-  connect(connector: keyof Connectors): void;
-}> = ({ connect }) => {
+const Disconnected: FC<{}> = () => {
+  const connectWallet = useConnectWallet();
   const list: Connector[] = useMemo(
     () => CONNECTORS.filter(({ id }) => !!AVAILABLE_CONNECTORS[id]),
     [],
@@ -111,16 +115,16 @@ const Disconnected: FC<{
 
   return (
     <ConnectorsList>
-      {list.map(({ id, label, icon: Icon }) => (
+      {list.map(({ id, label, subType, icon: Icon }) => (
         <ConnectorButton
-          key={id}
+          key={subType ?? id}
           type="button"
-          onClick={() => connect(id)}
+          onClick={() => connectWallet(id, subType)}
           size={Size.m}
           inverted
         >
-          <div>{Icon ? <Icon /> : null}</div>
-          <span>{label}</span>
+          <ConnectorIcon>{Icon ? <Icon /> : null}</ConnectorIcon>
+          <ConnectorLabel>{label}</ConnectorLabel>
         </ConnectorButton>
       ))}
     </ConnectorsList>
@@ -162,10 +166,15 @@ const Connected: FC<{ walletLabel: string; account: string }> = ({
 export const Wallet: FC<{}> = () => {
   const { connector, error } = useWalletState();
   const connecting = useIsWalletConnecting();
-  const connectWallet = useConnectWallet();
   const { connected, account } = useWallet();
   const wallet = useMemo(
-    () => (connector ? CONNECTORS.find(({ id }) => id === connector) : null),
+    () =>
+      connector
+        ? CONNECTORS.find(
+            ({ id, subType }) =>
+              id === connector.id && subType === connector.subType,
+          )
+        : null,
     [connector],
   );
 
@@ -190,7 +199,7 @@ export const Wallet: FC<{}> = () => {
             <ActivitySpinner />
           </Connecting>
         ) : (
-          <Disconnected connect={connectWallet} />
+          <Disconnected />
         )}
       </FlexRow>
     </Container>

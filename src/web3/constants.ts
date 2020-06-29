@@ -3,6 +3,7 @@ import { Connectors } from 'use-wallet';
 import { asciiToHex as aToH } from 'web3-utils';
 import { getConnectors } from './connectors';
 import { Connector } from '../types';
+import { ReactComponent as BraveIcon } from '../components/icons/brave.svg';
 import { ReactComponent as MetaMaskIcon } from '../components/icons/metamask.svg';
 import { ReactComponent as FortmaticIcon } from '../components/icons/fortmatic.svg';
 import { ReactComponent as PortisIcon } from '../components/icons/portis.svg';
@@ -44,7 +45,18 @@ export const EMOJIS = {
 };
 
 export const CONNECTORS: Connector[] = [
-  { id: 'injected', label: 'MetaMask', icon: MetaMaskIcon },
+  {
+    id: 'injected',
+    subType: 'metamask',
+    label: 'MetaMask',
+    icon: MetaMaskIcon,
+  },
+  {
+    id: 'injected',
+    subType: 'brave',
+    label: 'Brave',
+    icon: BraveIcon,
+  },
   { id: 'fortmatic', label: 'Fortmatic', icon: FortmaticIcon },
   { id: 'portis', label: 'Portis', icon: PortisIcon },
   // TODO add missing icons

@@ -114,10 +114,15 @@ export interface InjectedEthereum {
   on(event: 'networkChanged', listener: (chainId: number) => void): void;
   autoRefreshOnNetworkChange: boolean;
   removeListener(event: 'networkChanged', listener: Function): void;
+  isMetaMask?: boolean;
+  isBrave?: boolean;
+  isTrust?: boolean;
+  isDapper?: boolean;
 }
 
 export interface Connector {
-  id: keyof Connectors;
+  id: keyof Required<Connectors>;
+  subType?: string;
   label: string;
   icon?: FC;
 }
