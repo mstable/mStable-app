@@ -495,6 +495,17 @@ const sendTransaction = async (
   return iface[fn](...args);
 };
 
+const parseTxError = (
+  error: Error & { data?: { message: string } },
+): string => {
+  // MetaMask error messages are in a `data` property
+  const txMessage = error.data?.message || error.message;
+
+  return txMessage.includes('always failing transaction')
+    ? 'Transaction failed - if this problem persists, contact mStable team.'
+    : txMessage;
+};
+
 /**
  * Returns a callback that, given a manifest to send a transaction,
  * will create a promise to send the transaction, and add the response to state.
@@ -520,8 +531,8 @@ export const useSendTransaction =
             });
           })
           .catch(error => {
-            // MetaMask error messages are in a `data` property
-            addErrorNotification(error.data?.message || error.message);
+            const message = parseTxError(error);
+            addErrorNotification(message);
           })
           .finally(() => {
             doneCallback?.();
