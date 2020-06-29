@@ -10,6 +10,10 @@ Bug fixes:
 Miscellaneous:
 
 - Add footer social icons
+- Add Brave button to wallet connectors
+- Add migration for localStorage
+- Identify and disable Dapper wallet (currently incompatible 
+  with `use-wallet` / `web3-react`)
 
 ## Version 1.4.0
 

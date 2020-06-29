@@ -18,13 +18,13 @@ import {
 } from 'use-wallet';
 import MetamaskOnboarding from '@metamask/onboarding';
 import { navigate } from 'hookrouter';
-import { MassetNames, InjectedEthereum } from '../types';
+import { MassetNames, InjectedEthereum, Connector } from '../types';
 import { CHAIN_ID, CONNECTORS, NETWORK_NAMES } from '../web3/constants';
 import {
   useAddInfoNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
-import { LocalStorage } from '../localStorage';
+import { LocalStorage, Storage } from '../localStorage';
 
 enum Actions {
   ResetWallet,
@@ -32,6 +32,7 @@ enum Actions {
   ConnectWalletError,
   ConnectWalletSuccess,
   SetWalletPosition,
+  SetWalletSubType,
   ExpandWallet,
   CollapseWallet,
   SelectMasset,
@@ -60,7 +61,10 @@ export enum StatusWarnings {
 interface State {
   wallet: {
     expanded: boolean;
-    connector?: keyof Connectors;
+    connector?: {
+      id: keyof Connectors;
+      subType?: string;
+    };
     status: WalletConnectionStatus;
     error: string | null;
     supportedChain: boolean;
@@ -79,7 +83,14 @@ type Action =
   | { type: Actions.CollapseWallet }
   | { type: Actions.ResetWallet }
   | { type: Actions.SupportedChainSelected; payload: boolean }
-  | { type: Actions.ConnectWallet; payload: keyof Connectors }
+  | {
+      type: Actions.ConnectWallet;
+      payload: { id: keyof Connectors; subType?: string };
+    }
+  | {
+      type: Actions.SetWalletSubType;
+      payload?: string;
+    }
   | { type: Actions.ConnectWalletError; payload: string }
   | { type: Actions.ConnectWalletSuccess }
   | { type: Actions.SetOnline; payload: boolean }
@@ -97,7 +108,7 @@ interface Dispatch {
   expandWallet(): void;
   expandWalletRedirect(path: string): void;
   resetWallet(): void;
-  connectWallet(connector: keyof Connectors): void;
+  connectWallet(connector: keyof Connectors, subType?: string): void;
   setWalletPosition(cx: number, cy: number): void;
 }
 
@@ -128,6 +139,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ...state,
         wallet: {
           ...state.wallet,
+          connector: undefined,
           status: WalletConnectionStatus.Disconnected,
           error: null,
         },
@@ -161,6 +173,19 @@ const reducer: Reducer<State, Action> = (state, action) => {
           error: null,
         },
       };
+    case Actions.SetWalletSubType:
+      return state.wallet.connector
+        ? {
+            ...state,
+            wallet: {
+              ...state.wallet,
+              connector: {
+                ...state.wallet.connector,
+                subType: action.payload,
+              },
+            },
+          }
+        : state;
     case Actions.SetOnline:
       return { ...state, online: action.payload };
     default:
@@ -185,6 +210,17 @@ const initialState: State = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const context = createContext<[State, Dispatch]>([initialState, {}] as any);
+
+const identifyInjectedSubType = (
+  injected: InjectedEthereum,
+): string | undefined => {
+  if (injected.isMetaMask) return 'metamask';
+  if (injected.isBrave) return 'brave';
+  if (injected.isTrust) return 'trust';
+  if (injected.isDapper) return 'dapper';
+
+  return undefined;
+};
 
 /**
  * Provider for global App state and interactions.
@@ -227,10 +263,10 @@ export const AppProvider: FC<{}> = ({ children }) => {
   }, [dispatch, deactivate]);
 
   const connectWallet = useCallback<Dispatch['connectWallet']>(
-    selected => {
-      dispatch({ type: Actions.ConnectWallet, payload: selected });
+    (id, subType) => {
+      dispatch({ type: Actions.ConnectWallet, payload: { id, subType } });
 
-      if (selected === 'injected') {
+      if (id === 'injected' && subType === 'metamask') {
         const onboarding = new MetamaskOnboarding();
         if (onboarding.state === 'NOT_INSTALLED') {
           onboarding.startOnboarding();
@@ -238,15 +274,25 @@ export const AppProvider: FC<{}> = ({ children }) => {
         }
       }
 
-      activate(selected)
+      activate(id)
         .then(() => {
-          const connector = CONNECTORS.find(c => c.id === selected);
+          const connector = CONNECTORS.find(
+            c => c.id === id && c.subType === subType,
+          );
+
           addInfoNotification(
             'Connected',
             connector ? `Connected with ${connector.label}` : null,
           );
+
           dispatch({ type: Actions.ConnectWalletSuccess });
-          LocalStorage.set('connectorId', connector?.id);
+
+          if (connector) {
+            LocalStorage.set<Storage, 'connector'>('connector', {
+              id,
+              subType,
+            });
+          }
         })
         .catch(error => {
           let reason: string;
@@ -325,8 +371,19 @@ export const AppProvider: FC<{}> = ({ children }) => {
       };
       networkChangedListener(parseInt(injected.chainId, 16));
 
-      injected.on('networkChanged', networkChangedListener);
-      injected.autoRefreshOnNetworkChange = false;
+      const subType = identifyInjectedSubType(injected);
+      if (subType === 'dapper') {
+        addErrorNotification(Reasons.UnsupportedConnector);
+        dispatch({
+          type: Actions.ConnectWalletError,
+          payload: Reasons.UnsupportedConnector,
+        });
+      } else {
+        dispatch({ type: Actions.SetWalletSubType, payload: subType });
+
+        injected.on('networkChanged', networkChangedListener);
+        injected.autoRefreshOnNetworkChange = false;
+      }
     }
 
     return () => {
@@ -334,16 +391,17 @@ export const AppProvider: FC<{}> = ({ children }) => {
         injected.removeListener('networkChanged', networkChangedListener);
       }
     };
-  }, [dispatch]);
+  }, [dispatch, addErrorNotification]);
 
   /**
    * Automatically reconnect once on startup (if possible)
    */
   useEffect(() => {
     if (!attemptedReconnect.current && !(activating || connected)) {
-      const connector = LocalStorage.get('connectorId');
-      if (connector) {
-        connectWallet(connector);
+      const { id, subType } =
+        LocalStorage.get<Storage, 'connector'>('connector') || {};
+      if (id) {
+        connectWallet(id, subType);
       }
       attemptedReconnect.current = true;
     }
@@ -401,6 +459,17 @@ export const useWalletExpanded = (): State['wallet']['expanded'] =>
 
 export const useWalletPosition = (): State['wallet']['position'] =>
   useWalletState().position;
+
+export const useWalletConnector = (): Connector | undefined => {
+  const {
+    connector: { id, subType } = { id: undefined, subType: undefined },
+  } = useWalletState();
+
+  return useMemo(
+    () => id && CONNECTORS.find(c => c.id === id && c.subType === subType),
+    [id, subType],
+  );
+};
 
 export const useAppDispatch = (): Dispatch => useAppContext()[1];
 
