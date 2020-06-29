@@ -14,6 +14,7 @@ Miscellaneous:
 - Add migration for localStorage
 - Identify and disable Dapper wallet (currently incompatible 
   with `use-wallet` / `web3-react`)
+- Parse failing transaction errors to provide a more useful message
 
 ## Version 1.4.0
 
