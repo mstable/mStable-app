@@ -19,10 +19,12 @@ const calculateBasset = (
     bAsset.totalSupply.exact.gt(0) &&
     totalVaultInMasset.exact.gt(maxWeightInMasset.exact);
 
-  const basketShare = (mAsset.totalSupply.exact.gt(0)
-    ? totalVaultInMasset
-    : new BigDecimal(0, mAsset.decimals)
-  ).divPrecisely(mAsset.totalSupply);
+  const basketShare = mAsset.totalSupply.exact.eq(0)
+    ? new BigDecimal(0, 18)
+    : (mAsset.totalSupply.exact.gt(0)
+        ? totalVaultInMasset
+        : new BigDecimal(0, mAsset.decimals)
+      ).divPrecisely(mAsset.totalSupply);
 
   return {
     ...bAsset,

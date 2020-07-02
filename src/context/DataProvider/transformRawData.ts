@@ -7,6 +7,7 @@ const getMassetState = ({
   mAsset: {
     basket: { collateralisationRatio, failed, undergoingRecol },
     feeRate,
+    redemptionFeeRate,
     token: mAssetToken,
   },
   tokens,
@@ -20,6 +21,7 @@ const getMassetState = ({
   decimals: mAssetToken.decimals,
   failed,
   feeRate: bigNumberify(feeRate),
+  redemptionFeeRate: bigNumberify(redemptionFeeRate),
   symbol: mAssetToken.symbol,
   totalSupply: BigDecimal.parse(mAssetToken.totalSupply, mAssetToken.decimals),
   undergoingRecol,

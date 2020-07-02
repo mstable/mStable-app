@@ -69,6 +69,7 @@ export interface MassetState {
   decimals: number;
   failed: boolean;
   feeRate: BigNumber;
+  redemptionFeeRate: BigNumber;
   blacklistedBassets: string[];
   overweightBassets: string[];
   symbol: string;

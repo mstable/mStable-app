@@ -1,11 +1,18 @@
 import React, { FC } from 'react';
 import { useRedeemState } from './RedeemProvider';
+import { Mode } from './types';
 import { P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { formatExactAmount } from '../../../web3/amounts';
 
 export const RedeemConfirm: FC<{}> = () => {
-  const { valid, amountInMasset, feeAmount, dataState } = useRedeemState();
+  const {
+    valid,
+    amountInMasset,
+    feeAmount,
+    dataState,
+    mode,
+  } = useRedeemState();
   const mAsset = dataState?.mAsset;
 
   return valid && amountInMasset && mAsset ? (
@@ -16,13 +23,21 @@ export const RedeemConfirm: FC<{}> = () => {
       </P>
       <P size={1}>
         {feeAmount ? (
-          <>
-            There is a swap fee of{' '}
-            <CountUp end={feeAmount.simple} decimals={6} /> mUSD (
-            {formatExactAmount(mAsset.feeRate, 16, '%', true, 3)})
-          </>
+          mode === Mode.RedeemMasset ? (
+            <>
+              There is a redemption fee of{' '}
+              <CountUp end={feeAmount.simple} decimals={6} /> mUSD (
+              {formatExactAmount(mAsset.redemptionFeeRate, 16, '%', true, 3)})
+            </>
+          ) : (
+            <>
+              There is a swap fee of{' '}
+              <CountUp end={feeAmount.simple} decimals={6} /> mUSD (
+              {formatExactAmount(mAsset.feeRate, 16, '%', true, 3)})
+            </>
+          )
         ) : (
-          <>There is no swap fee for this transaction.</>
+          <>There is no fee for this transaction.</>
         )}
       </P>
     </>
