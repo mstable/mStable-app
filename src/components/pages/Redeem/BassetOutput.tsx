@@ -14,6 +14,7 @@ import {
   useToggleBassetEnabled,
 } from './RedeemProvider';
 import { Mode } from './types';
+import { Tooltip } from '../../core/ReactTooltip';
 
 interface Props {
   address: string;
@@ -59,17 +60,9 @@ const Label = styled.div`
 
 const ToggleRow = styled(Row)``;
 
-const ErrorRow = styled(Row)`
-  margin-bottom: 8px;
-`;
-
-const Value = styled.div`
-  font-size: ${({ theme }) => theme.fontSize.s};
-`;
-
 const Rows = styled.div<{
   valid: boolean;
-  overweight?: boolean;
+  cannotRedeem?: boolean;
   enabled?: boolean;
 }>`
   border: 1px
@@ -77,8 +70,8 @@ const Rows = styled.div<{
       valid ? theme.color.blackTransparent : theme.color.redTransparent}
     solid;
   border-radius: 3px;
-  background: ${({ theme, valid, overweight }) =>
-    overweight
+  background: ${({ theme, valid, cannotRedeem }) =>
+    cannotRedeem
       ? theme.color.blackTransparenter
       : valid
       ? theme.color.white
@@ -94,8 +87,24 @@ const Rows = styled.div<{
   }
 `;
 
+const ToggleWrapper: FC<{ cannotRedeem: boolean; symbol?: string }> = ({
+  children,
+  cannotRedeem,
+  symbol,
+}) =>
+  cannotRedeem && symbol ? (
+    <Tooltip
+      tip={`It is not possible to redeem with ${symbol}, because other assets are overweight`}
+      hideIcon
+    >
+      {children}
+    </Tooltip>
+  ) : (
+    <>{children}</>
+  );
+
 export const BassetOutput: FC<Props> = ({ address }) => {
-  const { overweight, balance, symbol } = useRedeemBassetData(address) || {};
+  const { balance, symbol } = useRedeemBassetData(address) || {};
   const { hasError, enabled, amountMinusFee } =
     useRedeemBassetOutput(address) || {};
 
@@ -105,7 +114,7 @@ export const BassetOutput: FC<Props> = ({ address }) => {
   const { mAsset: { overweightBassets } = { overweightBassets: [] } } =
     useDataState() || {};
 
-  const toggleDisabled = !!(
+  const cannotRedeem = !!(
     mode === Mode.RedeemSingle &&
     overweightBassets.length > 0 &&
     overweightBassets.find(b => b !== address)
@@ -113,14 +122,16 @@ export const BassetOutput: FC<Props> = ({ address }) => {
 
   return (
     <div>
-      <Rows valid={!hasError} enabled={enabled} overweight={overweight}>
+      <Rows valid={!hasError} enabled={enabled} cannotRedeem={cannotRedeem}>
         <HeaderRow>
           {symbol ? <Token symbol={symbol} /> : <Skeleton />}
-          <ToggleInput
-            onClick={() => toggle(address)}
-            disabled={toggleDisabled}
-            checked={!!enabled}
-          />
+          <ToggleWrapper cannotRedeem={cannotRedeem} symbol={symbol}>
+            <ToggleInput
+              onClick={() => toggle(address)}
+              disabled={cannotRedeem}
+              checked={!!enabled}
+            />
+          </ToggleWrapper>
         </HeaderRow>
         <Row>
           <Label>Your Balance</Label>
@@ -137,11 +148,6 @@ export const BassetOutput: FC<Props> = ({ address }) => {
           />
         </Row>
       </Rows>
-      {overweight ? (
-        <ErrorRow>
-          <Value>Asset overweight</Value>
-        </ErrorRow>
-      ) : null}
     </div>
   );
 };
