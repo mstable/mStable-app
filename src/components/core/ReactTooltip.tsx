@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useLayoutEffect } from 'react';
 import ReactTooltipBase from 'react-tooltip';
 import styled from 'styled-components';
 
@@ -11,6 +11,7 @@ export const ReactTooltip = styled(ReactTooltipBase)`
   padding: 4px 8px;
   font-size: ${FontSize.s};
   font-weight: bold;
+  max-width: 200px;
 `;
 
 const TooltipSpan = styled.span`
@@ -25,12 +26,18 @@ const TooltipSpan = styled.span`
   }
 `;
 
-export const Tooltip: FC<{ tip: string }> = ({ tip, children }) => {
-  ReactTooltipBase.rebuild();
+export const Tooltip: FC<{ tip: string; hideIcon?: boolean }> = ({
+  tip,
+  hideIcon,
+  children,
+}) => {
+  useLayoutEffect(() => {
+    ReactTooltipBase.rebuild();
+  }, []);
   return (
-    <TooltipSpan>
+    <TooltipSpan data-tip={tip} data-for="global">
       <span>{children}</span>
-      <img src={TooltipIcon} data-tip={tip} data-for="global" alt="" />
+      {hideIcon ? null : <img src={TooltipIcon} alt="" />}
     </TooltipSpan>
   );
 };

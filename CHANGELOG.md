@@ -2,6 +2,10 @@
 
 ## Next
 
+Miscellaneous:
+
+- Improve and clarify UX for redeeming with a single asset when assets are overweight
+
 ## Version 1.5.0
 
 _Released 03.07.20 13.56 CEST_
