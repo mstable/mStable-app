@@ -7,7 +7,11 @@ handlers:
     static_files: build/\1
     secure: always
     upload: build/(.*)
+    http_headers:
+      X-Frame-Options: deny
   - url: /(.*)
     static_files: build/index.html
     secure: always
     upload: build/index.html
+    http_headers:
+      X-Frame-Options: deny
