@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.5.0
+
+_Released 03.07.20 13.56 CEST_
+
 Features:
 
 - Enable WalletConnect and WalletLink wallets
