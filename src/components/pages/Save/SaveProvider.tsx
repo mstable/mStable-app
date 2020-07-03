@@ -40,7 +40,7 @@ export const SaveProvider: FC<{}> = ({ children }) => {
     },
     [dispatch],
   );
-
+  // bump
   const setMaxAmount = useCallback<Dispatch['setMaxAmount']>(() => {
     dispatch({ type: Actions.SetMaxAmount });
   }, [dispatch]);
