@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.5.1
+
+_Released 03.07.20 17.35 CEST_
+
 Miscellaneous:
 
 - Improve and clarify UX for redeeming with a single asset when
