@@ -69,7 +69,7 @@
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "provision": "sh ./scripts/provision.sh",
     "start": "react-scripts start",
-    "test": "react-scripts test",
+    "test": "env-cmd -f .env.staging react-scripts test",
     "truffle:migrate": "cd ./lib/mStable-subgraph && yarn truffle:migrate",
     "truffle:script": "cd ./lib/mStable-subgraph && yarn truffle:script"
   },
