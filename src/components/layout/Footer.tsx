@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { A } from 'hookrouter';
 import GitHubButton from 'react-github-btn';
 
+import { useCollapseWallet } from '../../context/AppProvider';
 import { DAPP_VERSION } from '../../web3/constants';
 import { ViewportWidth } from '../../theme';
 import Medium from '../icons/medium.svg';
@@ -94,44 +95,56 @@ const socialIcons = [
   { title: 'Email', icon: Email, href: 'mailto:info@mstable.org' },
 ];
 
-export const Footer: FC<Props> = ({ inverted, home }) => (
-  <Container inverted={inverted} home={home}>
-    <div>
-      <Links>
-        {links.map(({ title, href }) => (
-          <li key={href}>
-            {href.startsWith('/') ? (
-              <A href={href}>{title}</A>
-            ) : (
+export const Footer: FC<Props> = ({ inverted, home }) => {
+  const collapseWallet = useCollapseWallet();
+  return (
+    <Container inverted={inverted} home={home}>
+      <div>
+        <Links>
+          {links.map(({ title, href }) => (
+            <li key={href}>
+              {href.startsWith('/') ? (
+                <A href={href} onClick={collapseWallet}>
+                  {title}
+                </A>
+              ) : (
+                <a href={href} target="_blank" rel="noopener noreferrer">
+                  {title}
+                </a>
+              )}
+            </li>
+          ))}
+        </Links>
+        <SocialIcons>
+          {socialIcons.map(({ title, href, icon }) => (
+            <li key={href}>
               <a href={href} target="_blank" rel="noopener noreferrer">
-                {title}
+                <img src={icon} alt={title} />
               </a>
-            )}
-          </li>
-        ))}
-      </Links>
-      <SocialIcons>
-        {socialIcons.map(({ title, href, icon }) => (
-          <li key={href}>
-            <a href={href} target="_blank" rel="noopener noreferrer">
-              <img src={icon} alt={title} />
-            </a>
-          </li>
-        ))}
-      </SocialIcons>
-    </div>
-    <div>
-      <Version>
-        Current version <span>{DAPP_VERSION}</span>
-      </Version>
-      <GitHubButton
-        href="https://github.com/mstable/mStable-contracts"
-        data-icon="octicon-star"
-        data-show-count
-        aria-label="Star mstable/mStable-contracts on GitHub"
-      >
-        Star
-      </GitHubButton>
-    </div>
-  </Container>
-);
+            </li>
+          ))}
+        </SocialIcons>
+      </div>
+      <div>
+        <Version>
+          Current version{' '}
+          <a
+            href={`https://github.com/mstable/mStable-app/releases/tag/v${DAPP_VERSION}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span>{DAPP_VERSION}</span>
+          </a>
+        </Version>
+        <GitHubButton
+          href="https://github.com/mstable/mStable-contracts"
+          data-icon="octicon-star"
+          data-show-count
+          aria-label="Star mstable/mStable-contracts on GitHub"
+        >
+          mStable-contracts
+        </GitHubButton>
+      </div>
+    </Container>
+  );
+};

@@ -2,6 +2,10 @@
 
 ## Next
 
+Features:
+
+- Enable WalletConnect and WalletLink wallets
+
 Bug fixes:
 
 - Use Multi-collateral DAI logo
@@ -12,12 +16,21 @@ Miscellaneous:
 - Add footer social icons
 - Add Brave button to wallet connectors
 - Add migration for localStorage
+- Reduce wallet icon size
 - Identify and disable Dapper wallet (currently incompatible 
   with `use-wallet` / `web3-react`)
 - Parse failing transaction errors to provide a more useful message
 - Default to 30 days for totals chart
 - Improve presentation of chart labels on different viewports
 - Fix order of volumes to match toggles
+- Clear the recently used wallet from local storage after disconnecting (so that 
+  users are not automatically reconnected on the next page load with the 
+  previous wallet type)
+- Upgrade `use-wallet`
+- Remove `use-wallet` types (now in the package itself)
+- Add `REACT_APP_RPC_URL` env var for connectors that need it
+- Add release link to footer
+- Add Github star button to footer
 
 ## Version 1.4.0
 

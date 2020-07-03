@@ -24,7 +24,7 @@ import {
   useAddInfoNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
-import { LocalStorage, Storage } from '../localStorage';
+import { LocalStorage, Storage, StorageV0 } from '../localStorage';
 
 enum Actions {
   ResetWallet,
@@ -227,7 +227,7 @@ const identifyInjectedSubType = (
  */
 export const AppProvider: FC<{}> = ({ children }) => {
   const attemptedReconnect = useRef(false);
-  const { activate, deactivate, activating, connected } = useWallet<
+  const { activate, deactivate, activating, connected, activated } = useWallet<
     InjectedEthereum
   >();
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -260,6 +260,8 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const resetWallet = useCallback<Dispatch['resetWallet']>(() => {
     deactivate();
     dispatch({ type: Actions.ResetWallet });
+    LocalStorage.removeItem<StorageV0, 'connectorId'>('connectorId');
+    LocalStorage.removeItem<Storage, 'connector'>('connector');
   }, [dispatch, deactivate]);
 
   const connectWallet = useCallback<Dispatch['connectWallet']>(
@@ -358,7 +360,9 @@ export const AppProvider: FC<{}> = ({ children }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const injected = (window as any).ethereum;
 
-    if (injected) {
+    // The network change listener is only valid when the injected connector is
+    // used, or it's present but no connector is activated.
+    if (injected && (!activated || activated === 'injected')) {
       networkChangedListener = chainId => {
         // `chainId` from MetaMask can't be trusted in this event
         if (!Number.isNaN(chainId as number)) {
@@ -391,7 +395,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
         injected.removeListener('networkChanged', networkChangedListener);
       }
     };
-  }, [dispatch, addErrorNotification]);
+  }, [dispatch, activated, addErrorNotification]);
 
   /**
    * Automatically reconnect once on startup (if possible)

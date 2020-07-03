@@ -7,6 +7,7 @@ import {
   useResetWallet,
   useConnectWallet,
   useWalletState,
+  useWalletConnector,
 } from '../../context/AppProvider';
 import { AVAILABLE_CONNECTORS, CONNECTORS } from '../../web3/constants';
 import { Button } from '../core/Button';
@@ -14,7 +15,7 @@ import { H2, H3 } from '../core/Typography';
 import { Address } from '../core/Address';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { FlexRow } from '../core/Containers';
-import { Size } from '../../theme';
+import { FontSize, Size } from '../../theme';
 import { Balances } from './Balances';
 import { HistoricTransactions } from './HistoricTransactions';
 import { Transactions } from './Transactions';
@@ -80,26 +81,27 @@ const ConnectorIcon = styled.div`
   display: flex;
   flex-grow: 1;
   align-items: center;
+  justify-content: center;
+  height: 96px;
 
-  svg {
-    width: 100%;
+  > * {
+    width: 50%;
     height: auto;
-    max-height: 96px;
-    margin-bottom: ${({ theme }) => theme.spacing.s};
   }
 `;
 
 const ConnectorLabel = styled.div``;
 
 const ConnectorButton = styled(Button)`
-  margin-bottom: ${props => props.theme.spacing.s};
-  padding: ${props => props.theme.spacing.m};
+  margin-bottom: 16px;
+  padding: 8px;
   background: rgba(255, 255, 255, 0.1);
   border: none;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  font-size: ${FontSize.s};
 `;
 
 const Connecting = styled.div`
@@ -115,7 +117,7 @@ const Disconnected: FC<{}> = () => {
 
   return (
     <ConnectorsList>
-      {list.map(({ id, label, subType, icon: Icon }) => (
+      {list.map(({ id, subType, label, icon: Icon }) => (
         <ConnectorButton
           key={subType ?? id}
           type="button"
@@ -164,19 +166,10 @@ const Connected: FC<{ walletLabel: string; account: string }> = ({
 };
 
 export const Wallet: FC<{}> = () => {
-  const { connector, error } = useWalletState();
+  const { error } = useWalletState();
   const connecting = useIsWalletConnecting();
   const { connected, account } = useWallet();
-  const wallet = useMemo(
-    () =>
-      connector
-        ? CONNECTORS.find(
-            ({ id, subType }) =>
-              id === connector.id && subType === connector.subType,
-          )
-        : null,
-    [connector],
-  );
+  const wallet = useWalletConnector();
 
   return (
     <Container>

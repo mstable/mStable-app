@@ -8,16 +8,16 @@ interface BaseStorage {
   version?: number;
 }
 
-interface StorageV0 extends BaseStorage {
+export interface StorageV0 extends BaseStorage {
   connectorId?: keyof Connectors;
 }
 
-interface StorageV1 extends BaseStorage {
+export interface StorageV1 extends BaseStorage {
   version: 1;
   connector?: { id: keyof Connectors; subType?: string };
 }
 
-type AllStorage = StorageV0 | StorageV1;
+export type AllStorage = StorageV0 | StorageV1;
 
 export type Storage = Extract<AllStorage, { version: typeof STORAGE_VERSION }>;
 

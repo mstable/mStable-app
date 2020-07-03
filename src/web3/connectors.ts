@@ -2,13 +2,15 @@ import { Connectors } from 'use-wallet';
 
 const injected = {};
 
-// const walletlink = {
-//   url: 'https://mstable.org',
-//   // TODO a better logo URL
-//   appLogoUrl:
-//     'https://pbs.twimg.com/profile_images/1226087357461487616/Iq1CHt3I_400x400.jpg',
-//   appName: 'mStable',
-// };
+if (!process.env.REACT_APP_RPC_URL) {
+  throw new Error('`REACT_APP_RPC_URL` must be set');
+}
+
+const walletlink = {
+  url: process.env.REACT_APP_RPC_URL,
+  appLogoUrl: 'https://app.mstable.org/icons/apple-icon-180x180.png',
+  appName: 'mStable',
+};
 
 const squarelink = {
   options: {},
@@ -17,13 +19,16 @@ const squarelink = {
 
 const portis = { dAppId: process.env.REACT_APP_PORTIS_DAPP_ID };
 
+const walletconnect = {
+  rpcUrl: process.env.REACT_APP_RPC_URL,
+};
+
 // These connectors are currently not fully supported by `use-wallet`
 // const torus = {
 //   initOptions: {
 //     showTorusButton: true,
 //   },
 // };
-// const walletconnect = {};
 
 export const getConnectors = (chainId: number): Connectors => {
   switch (chainId) {
@@ -33,8 +38,8 @@ export const getConnectors = (chainId: number): Connectors => {
         portis,
         squarelink,
         fortmatic: { apiKey: process.env.REACT_APP_FORTMATIC_API_KEY_MAINNET },
-        // walletlink,
-        // walletconnect,
+        walletlink,
+        walletconnect,
         // torus: {
         //   ...torus,
         //   chainId,
@@ -46,6 +51,8 @@ export const getConnectors = (chainId: number): Connectors => {
         portis,
         squarelink,
         fortmatic: { apiKey: process.env.REACT_APP_FORTMATIC_API_KEY_ROPSTEN },
+        walletconnect,
+        // walletlink, // In theory it supports Ropsten; in reality the tx gas is broken :(
         // torus: {
         //   ...torus,
         //   chainId,
