@@ -4,6 +4,7 @@ executors:
   gcp:
     docker:
       - image: alsco77/node-gcp-dockerfile:suite
+    resource_class: medium+
 
 jobs:
   buildStaging:
