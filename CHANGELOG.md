@@ -4,7 +4,10 @@
 
 Miscellaneous:
 
-- Improve and clarify UX for redeeming with a single asset when assets are overweight
+- Improve and clarify UX for redeeming with a single asset when
+  assets are overweight
+- Improve and clarify UX for swapping and minting when assets are overweight
+  or their vault balances are exceeded
 
 ## Version 1.5.0
 
@@ -25,14 +28,14 @@ Miscellaneous:
 - Add Brave button to wallet connectors
 - Add migration for localStorage
 - Reduce wallet icon size
-- Identify and disable Dapper wallet (currently incompatible 
+- Identify and disable Dapper wallet (currently incompatible
   with `use-wallet` / `web3-react`)
 - Parse failing transaction errors to provide a more useful message
 - Default to 30 days for totals chart
 - Improve presentation of chart labels on different viewports
 - Fix order of volumes to match toggles
-- Clear the recently used wallet from local storage after disconnecting (so that 
-  users are not automatically reconnected on the next page load with the 
+- Clear the recently used wallet from local storage after disconnecting (so that
+  users are not automatically reconnected on the next page load with the
   previous wallet type)
 - Upgrade `use-wallet`
 - Remove `use-wallet` types (now in the package itself)
@@ -60,7 +63,7 @@ Bug fixes:
 Miscellaneous:
 
 - Change fetch policy for analytics data (first retrieve from cache, then network)
-- Capped APY chart values to avoid confusion 
+- Capped APY chart values to avoid confusion
 
 ## Version 1.3.0
 
