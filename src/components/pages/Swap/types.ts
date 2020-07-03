@@ -48,9 +48,22 @@ export interface Dispatch {
   setQuantity(field: Fields, formValue: string): void;
 }
 
+export enum Reasons {
+  AmountMustBeGreaterThanZero,
+  AmountMustBeSet,
+  AssetNotAllowedInSwap,
+  CannotRedeemMoreAssetsThanAreInTheVault,
+  FetchingData,
+  AmountExceedsBalance,
+  AssetsMustRemainBelowMaxWeight,
+  TransferMustBeApproved,
+  AssetMustBeSelected,
+  AssetNotAllowedInMint,
+}
+
 export type ValidationResult = [
   boolean,
-  { [Fields.Input]?: string; [Fields.Output]?: string; applySwapFee?: boolean },
+  { [Fields.Input]?: Reasons; [Fields.Output]?: Reasons; applySwapFee?: boolean },
 ];
 
 export type StateValidator = (state: State) => ValidationResult;
