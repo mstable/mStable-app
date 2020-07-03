@@ -360,7 +360,9 @@ export const AppProvider: FC<{}> = ({ children }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const injected = (window as any).ethereum;
 
-    if (injected && activated === 'injected') {
+    // The network change listener is only valid when the injected connector is
+    // used, or it's present but no connector is activated.
+    if (injected && (!activated || activated === 'injected')) {
       networkChangedListener = chainId => {
         // `chainId` from MetaMask can't be trusted in this event
         if (!Number.isNaN(chainId as number)) {
