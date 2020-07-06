@@ -26,7 +26,7 @@ import {
   useAddInfoNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
-import { LocalStorage, Storage, StorageV0 } from '../localStorage';
+import { LocalStorage, Storage } from '../localStorage';
 
 enum Actions {
   ResetWallet,
@@ -267,8 +267,8 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const resetWallet = useCallback<Dispatch['resetWallet']>(() => {
     deactivate();
     dispatch({ type: Actions.ResetWallet });
-    LocalStorage.removeItem<StorageV0, 'connectorId'>('connectorId');
-    LocalStorage.removeItem<Storage, 'connector'>('connector');
+    LocalStorage.removeItem<'connectorId'>('connectorId');
+    LocalStorage.removeItem<'connector'>('connector');
   }, [dispatch, deactivate]);
 
   const connectWallet = useCallback<Dispatch['connectWallet']>(
@@ -409,8 +409,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
    */
   useEffect(() => {
     if (!attemptedReconnect.current && !(activating || connected)) {
-      const { id, subType } =
-        LocalStorage.get<Storage, 'connector'>('connector') || {};
+      const { id, subType } = LocalStorage.get('connector') || {};
       if (id) {
         connectWallet(id, subType);
       }
@@ -423,7 +422,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
    */
   useEffect(() => {
     configureScope(scope => {
-      const connector = LocalStorage.get<Storage, 'connector'>('connector');
+      const connector = LocalStorage.get<'connector'>('connector');
       scope.setUser({
         id: account || 'NOT_CONNECTED',
       });

@@ -6,6 +6,8 @@ Bug fixes:
 
 - Ensure the 'network changed' event listener is not added for injected providers that
   aren't event listeners.
+- Ensure the Apollo cache is purged when the app version is changed or the app is
+  being run on a different chain.
 
 ## Version 1.5.2
 
