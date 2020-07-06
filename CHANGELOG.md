@@ -2,6 +2,11 @@
 
 ## Next
 
+Bug fixes:
+
+- Ensure the 'network changed' event listener is not added for injected providers that
+  aren't event listeners.
+
 ## Version 1.5.2
 
 _Released 06.07.20 15.43 CEST_
