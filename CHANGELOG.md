@@ -2,6 +2,10 @@
 
 ## Next
 
+Miscellaneous:
+
+- Add support for Sentry.io error tracking service
+
 ## Version 1.5.1
 
 _Released 03.07.20 17.35 CEST_
