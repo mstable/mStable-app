@@ -8,8 +8,13 @@ import {
   useSavingsContract,
 } from '../context/DataProvider/ContractsProvider';
 
-// TODO replace: when mUSD was deployed on Ropsten
-const fromBlock = process.env.REACT_APP_CHAIN_ID === '3' ? 7883370 : 0;
+// When mUSD was deployed
+const fromBlock =
+  process.env.REACT_APP_CHAIN_ID === '1'
+    ? 10152900
+    : process.env.REACT_APP_CHAIN_ID === '3'
+    ? 7883370
+    : 0;
 
 export const ContractsUpdater = (): null => {
   const { account } = useWallet();

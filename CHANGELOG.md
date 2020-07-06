@@ -2,6 +2,10 @@
 
 ## Next
 
+Bug fixes:
+
+- Restrict getting historic transaction logs to just before mUSD was deployed (on mainnet)
+
 Miscellaneous:
 
 - Add support for Sentry.io error tracking service
