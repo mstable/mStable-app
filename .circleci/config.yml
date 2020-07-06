@@ -108,6 +108,13 @@ jobs:
             gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
             gcloud config set project $S_GCP_PROJECT_ID
             gcloud --quiet app deploy app.yml
+      - persist_to_workspace:
+         root: ~/
+         paths:
+           - project/build
+           - project/public
+           - project/package.json
+           - project/*
   deployProd:
     executor: gcp
     steps:
@@ -121,6 +128,13 @@ jobs:
             gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
             gcloud config set project $P_GCP_PROJECT_ID
             gcloud --quiet app deploy app.yml
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/build
+            - project/public
+            - project/package.json
+            - project/*
   sentryRelease:
     executor: sentry
     steps:
@@ -129,16 +143,13 @@ jobs:
       - run:
           name: 'Sentry release'
           command: |
-            PACKAGE_VERSION=$(cat package.json \
-              | grep version \
-              | head -1 \
-              | awk -F: '{ print $2 }' \
-              | sed 's/[",]//g')
-            SENTRY_RELEASE="$PACKAGE_VERSION-$(sentry-cli releases propose-version)"
+            PACKAGE_VERSION=$(sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./package.json)
+            export SENTRY_RELEASE="$PACKAGE_VERSION-$(sentry-cli releases propose-version)"
             sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
             sentry-cli releases set-commits --auto $SENTRY_RELEASE
             sentry-cli releases files $PACKAGE_VERSION upload-sourcemaps './build/static/js' --rewrite --url-prefix './build/static/js'
             sentry-cli releases finalize $SENTRY_RELEASE
+            exit 0
 workflows:
   version: 2.1
   staging:
