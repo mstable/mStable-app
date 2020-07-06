@@ -5,6 +5,8 @@
 Bug fixes:
 
 - Restrict getting historic transaction logs to just before mUSD was deployed (on mainnet)
+- Ensure that local transactions state is reset when changing account, or the activated account
+  changes, or the account is disconnected
 
 Miscellaneous:
 
