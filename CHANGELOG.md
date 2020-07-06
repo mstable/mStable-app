@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.5.2
+
+_Released 06.07.20 15.43 CEST_
+
 Bug fixes:
 
 - Restrict getting historic transaction logs to just before mUSD was deployed (on mainnet)
