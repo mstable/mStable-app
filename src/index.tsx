@@ -1,6 +1,8 @@
 import React, { FC } from 'react';
 import ReactDOM from 'react-dom';
 import { useRoutes } from 'hookrouter';
+import * as Sentry from '@sentry/react';
+
 import * as serviceWorker from './serviceWorker';
 import { Providers } from './context';
 import { Updaters } from './updaters';
@@ -13,6 +15,11 @@ import { Redeem } from './components/pages/Redeem';
 import { NotFound } from './components/pages/NotFound';
 import { FAQ } from './components/pages/FAQ';
 import { Analytics } from './components/pages/Analytics';
+
+Sentry.init({
+  dsn: process.env.REACT_APP_SENTRY_DSN,
+  release: `mStable-app@${process.env.npm_package_version}`,
+});
 
 const routes = {
   '/': () => <Home />,

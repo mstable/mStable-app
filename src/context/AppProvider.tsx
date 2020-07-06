@@ -18,6 +18,8 @@ import {
 } from 'use-wallet';
 import MetamaskOnboarding from '@metamask/onboarding';
 import { navigate } from 'hookrouter';
+import { configureScope } from '@sentry/react';
+
 import { MassetNames, InjectedEthereum, Connector } from '../types';
 import { CHAIN_ID, CONNECTORS, NETWORK_NAMES } from '../web3/constants';
 import {
@@ -227,9 +229,14 @@ const identifyInjectedSubType = (
  */
 export const AppProvider: FC<{}> = ({ children }) => {
   const attemptedReconnect = useRef(false);
-  const { activate, deactivate, activating, connected, activated } = useWallet<
-    InjectedEthereum
-  >();
+  const {
+    activate,
+    deactivate,
+    activating,
+    connected,
+    activated,
+    account,
+  } = useWallet<InjectedEthereum>();
   const [state, dispatch] = useReducer(reducer, initialState);
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
@@ -410,6 +417,22 @@ export const AppProvider: FC<{}> = ({ children }) => {
       attemptedReconnect.current = true;
     }
   }, [activating, connected, connectWallet]);
+
+  /**
+   * Set then Sentry user scope when the account changes
+   */
+  useEffect(() => {
+    configureScope(scope => {
+      const connector = LocalStorage.get<Storage, 'connector'>('connector');
+      scope.setUser({
+        id: account || 'NOT_CONNECTED',
+      });
+      scope.setTags({
+        activated,
+        connector: JSON.stringify(connector),
+      });
+    });
+  }, [account, activated]);
 
   return (
     <context.Provider

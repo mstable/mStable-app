@@ -5,6 +5,10 @@ executors:
     docker:
       - image: alsco77/node-gcp-dockerfile:suite
     resource_class: medium+
+  sentry:
+    docker:
+      - image: getsentry/sentry-cli:1.55.0
+    resource_class: small
 
 jobs:
   buildStaging:
@@ -22,10 +26,7 @@ jobs:
           command: |
             git submodule update --init
             cd ./lib/mStable-subgraph
-            git submodule update --init
-            cd ./lib/mStable-contracts
-            yarn install
-            yarn compile
+            yarn provision
       - run:
           name: Codegen (TypeChain)
           command: yarn codegen:typechain
@@ -46,6 +47,7 @@ jobs:
           paths:
             - project/build
             - project/public
+            - project/package.json
             - project/*
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
@@ -66,10 +68,7 @@ jobs:
           command: |
             git submodule update --init
             cd ./lib/mStable-subgraph
-            git submodule update --init
-            cd ./lib/mStable-contracts
-            yarn install
-            yarn compile
+            yarn provision
       - run:
           name: Codegen (TypeChain)
           command: yarn codegen:typechain
@@ -90,6 +89,7 @@ jobs:
           paths:
             - project/build
             - project/public
+            - project/package.json
             - project/*
       - save_cache:
           key: dependency-cache-{{ checksum "yarn.lock" }}
@@ -121,6 +121,24 @@ jobs:
             gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
             gcloud config set project $P_GCP_PROJECT_ID
             gcloud --quiet app deploy app.yml
+  sentryRelease:
+    executor: sentry
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: 'Sentry release'
+          command: |
+            PACKAGE_VERSION=$(cat package.json \
+              | grep version \
+              | head -1 \
+              | awk -F: '{ print $2 }' \
+              | sed 's/[",]//g')
+            SENTRY_RELEASE="$PACKAGE_VERSION-$(sentry-cli releases propose-version)"
+            sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
+            sentry-cli releases set-commits --auto $SENTRY_RELEASE
+            sentry-cli releases files $PACKAGE_VERSION upload-sourcemaps './build/static/js' --rewrite --url-prefix './build/static/js'
+            sentry-cli releases finalize $SENTRY_RELEASE
 workflows:
   version: 2.1
   staging:
@@ -142,3 +160,6 @@ workflows:
       - deployProd:
           requires:
             - buildProd
+      - sentryRelease:
+          requires:
+            - deployProd
