@@ -3,6 +3,7 @@ import { useWallet } from 'use-wallet';
 import { TransactionReceipt } from 'ethers/providers';
 import { useTransactionsContext } from '../context/TransactionsProvider';
 import { useWeb3Provider } from '../context/SignerProvider';
+import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 
 /**
  * Update the state of affected transactions when the provider or
@@ -11,8 +12,7 @@ import { useWeb3Provider } from '../context/SignerProvider';
 export const TransactionsUpdater = (): null => {
   const { account } = useWallet();
   const provider = useWeb3Provider();
-  const { getBlockNumber } = useWallet();
-  const blockNumber = getBlockNumber();
+  const blockNumber = useBlockNumber();
   const accountRef = useRef<string | null>(account);
 
   const [{ current }, { check, finalize, reset }] = useTransactionsContext();
@@ -63,9 +63,10 @@ export const TransactionsUpdater = (): null => {
       }
       return undefined;
     },
-    // blockNumber should be the *only* dep; otherwise it will check too often.
+    // `blockNumber` and `provider` should be the only deps; otherwise it will
+    // check too often.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [blockNumber],
+    [blockNumber, provider],
   );
 
   return null;

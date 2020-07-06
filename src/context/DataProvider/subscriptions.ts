@@ -5,7 +5,7 @@ import {
 import * as ApolloReactHooks from '@apollo/react-hooks';
 import { QueryResult } from '@apollo/react-common';
 import { useWallet } from 'use-wallet';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 import {
   CreditBalancesQueryResult,
@@ -17,6 +17,7 @@ import {
 } from '../../graphql/generated';
 import { ContractNames } from '../../types';
 import { useKnownAddress } from './KnownAddressProvider';
+import { useBlockNumber } from './BlockProvider';
 
 export const useBlockPollingSubscription = <TData, TVariables>(
   lazyQuery: (
@@ -27,9 +28,7 @@ export const useBlockPollingSubscription = <TData, TVariables>(
   baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TData, TVariables>,
   skip?: boolean,
 ): QueryResult<TData, TVariables> => {
-  const { getBlockNumber } = useWallet();
-  const blockNumber = getBlockNumber();
-  const blockNumberRef = useRef<number | undefined>(blockNumber);
+  const blockNumber = useBlockNumber();
   const hasBlock = !!blockNumber;
 
   // We're using a long-polling query because subscriptions don't seem to be
@@ -58,9 +57,8 @@ export const useBlockPollingSubscription = <TData, TVariables>(
 
   // Run the query on every block when the block number is available.
   useEffect(() => {
-    if (!skip && blockNumber && blockNumber !== blockNumberRef.current) {
+    if (!skip && blockNumber) {
       run();
-      blockNumberRef.current = blockNumber;
     }
   }, [skip, blockNumber, run]);
 

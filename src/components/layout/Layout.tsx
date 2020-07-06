@@ -7,6 +7,7 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { Wallet } from '../wallet/Wallet';
 import { useWalletExpanded } from '../../context/AppProvider';
+import { useUserActivityContext } from '../../context/UserActivityProvider';
 import { Background } from './Background';
 import { StatusBar } from './StatusBar';
 import { BetaWarning } from './BetaWarning';
@@ -34,7 +35,7 @@ const Main = styled.main`
   padding: 40px 20px;
 `;
 
-const GlobalStyle = createGlobalStyle<WalletExpanded>`
+const GlobalStyle = createGlobalStyle<WalletExpanded & { idle: boolean }>`
   ${reset}
   a {
     color: ${({ theme }) => theme.color.offBlack};
@@ -47,6 +48,7 @@ const GlobalStyle = createGlobalStyle<WalletExpanded>`
   }
   body {
     min-width: 320px;
+    filter: ${({ idle }) => (idle ? 'grayscale(100%)' : 'none')};
   }
   * {
       box-sizing: border-box;
@@ -81,6 +83,7 @@ const HeaderGroup: FC<{ walletExpanded: boolean; home: boolean }> = ({
  */
 export const Layout: FC<{}> = ({ children }) => {
   const walletExpanded = useWalletExpanded();
+  const { idle } = useUserActivityContext();
   const activePath = getWorkingPath('');
   const home = activePath === '/';
   return (
@@ -100,7 +103,7 @@ export const Layout: FC<{}> = ({ children }) => {
       </Container>
       <NotificationToasts />
       <ReactTooltip id="global" />
-      <GlobalStyle walletExpanded={walletExpanded} />
+      <GlobalStyle walletExpanded={walletExpanded} idle={idle} />
     </>
   );
 };
