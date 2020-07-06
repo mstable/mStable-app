@@ -22,6 +22,7 @@ import { configureScope } from '@sentry/react';
 
 import { MassetNames, InjectedEthereum, Connector } from '../types';
 import { CHAIN_ID, CONNECTORS, NETWORK_NAMES } from '../web3/constants';
+import { useUserActivityContext } from './UserActivityProvider';
 import {
   useAddInfoNotification,
   useAddErrorNotification,
@@ -58,6 +59,7 @@ enum Reasons {
 export enum StatusWarnings {
   NotOnline,
   UnsupportedChain,
+  Idle,
 }
 
 interface State {
@@ -510,15 +512,17 @@ export const useAppStatusWarnings = (): StatusWarnings[] => {
     online,
     wallet: { supportedChain },
   } = useAppState();
+  const { idle } = useUserActivityContext();
 
   return useMemo(() => {
     const warnings = [];
 
     if (!online) warnings.push(StatusWarnings.NotOnline);
     if (!supportedChain) warnings.push(StatusWarnings.UnsupportedChain);
+    if (idle) warnings.push(StatusWarnings.Idle);
 
     return warnings;
-  }, [online, supportedChain]);
+  }, [online, supportedChain, idle]);
 };
 
 export const useExpandWallet = (): Dispatch['expandWallet'] =>

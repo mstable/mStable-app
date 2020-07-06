@@ -2,6 +2,11 @@
 
 ## Next
 
+Features:
+
+- Detect when the page is idle and avoid making new requests until the page is
+  active again, and also provide visual feedback that the app is paused. 
+
 Bug fixes:
 
 - Ensure the 'network changed' event listener is not added for injected providers that
