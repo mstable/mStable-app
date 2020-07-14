@@ -1,6 +1,6 @@
 overwrite: true
-schema: "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol"
-documents: "src/graphql/**/*.graphql"
+schema: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol'
+documents: 'src/graphql/**/*.graphql'
 generates:
   ./src/graphql/generated.tsx:
     config:

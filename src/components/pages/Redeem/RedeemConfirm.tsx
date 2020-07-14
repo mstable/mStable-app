@@ -22,7 +22,7 @@ export const RedeemConfirm: FC<{}> = () => {
         {mAsset.symbol}.
       </P>
       <P size={1}>
-        {feeAmount ? (
+        {feeAmount?.exact.gt(0) ? (
           mode === Mode.RedeemMasset ? (
             <>
               There is a redemption fee of{' '}
