@@ -430,7 +430,7 @@ export const useOrderedHistoricTransactions = (): HistoricTransaction[] => {
 
 export const useHasPendingTransactions = (): boolean => {
   const { current } = useTransactionsState();
-  return !!Object.values(current).find(tx => tx.status !== 1);
+  return Object.values(current).some(tx => tx.status !== 1);
 };
 
 export const useHasPendingApproval = (
@@ -438,7 +438,7 @@ export const useHasPendingApproval = (
   spender: string,
 ): boolean => {
   const { current } = useTransactionsState();
-  return !!Object.values(current).find(
+  return Object.values(current).some(
     tx =>
       tx.status !== 1 &&
       tx.fn === 'approve' &&

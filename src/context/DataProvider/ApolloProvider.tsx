@@ -12,6 +12,7 @@ import { persistCache } from 'apollo-cache-persist';
 import Skeleton from 'react-loading-skeleton';
 
 import { useAddErrorNotification } from '../NotificationsProvider';
+import { DAPP_VERSION } from '../../web3/constants';
 
 if (!process.env.REACT_APP_GRAPHQL_ENDPOINT) {
   throw new Error(
@@ -19,11 +20,9 @@ if (!process.env.REACT_APP_GRAPHQL_ENDPOINT) {
   );
 }
 
-if (!process.env.REACT_APP_GRAPHQL_ENDPOINT_WS) {
-  throw new Error(
-    'REACT_APP_GRAPHQL_ENDPOINT_WS environment variable not defined',
-  );
-}
+const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
+
+const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}.DAPP_VERSION_${DAPP_VERSION}`;
 
 const cache = new InMemoryCache({
   resultCaching: true,
@@ -44,6 +43,7 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
     persistCache({
       cache: cache as never,
       storage: window.localStorage as never,
+      key: CACHE_KEY,
     })
       // eslint-disable-next-line no-console
       .catch(error => console.warn('Cache persist error', error))

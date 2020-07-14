@@ -176,11 +176,14 @@ const Start: FC<{}> = () => {
     <>
       <Block>
         <H2>
-          mStable makes stablecoins <span>easy, robust & profitable.</span>
+          mStable unites stablecoins, lending and swapping into one standard.
         </H2>
       </Block>
       <Block>
-        <P>Uniting stablecoins, lending and swapping into one standard.</P>
+        <P>
+          By reducing complexity and fragmentation, mStable is a step-change in
+          the usability of stablecoins.
+        </P>
         {alreadyAcked ? (
           <P>
             <Button

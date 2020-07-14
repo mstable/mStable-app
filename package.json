@@ -1,6 +1,6 @@
 {
   "name": "mStable-app",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "private": true,
   "description": "mStable App",
   "author": "Stability Labs Pty. Ltd. <hello@stabilitylabs.co>",
@@ -10,6 +10,7 @@
     "@apollo/react-common": "^3.1.4",
     "@apollo/react-hooks": "^3.1.5",
     "@metamask/onboarding": "^0.3.0",
+    "@sentry/react": "^5.19.0",
     "@sevenoutman/use-debounced-memo": "^1.0.0",
     "@testing-library/jest-dom": "^5.7.0",
     "@testing-library/react": "^10.0.4",
@@ -39,6 +40,7 @@
     "react-scripts": "3.4.1",
     "react-tooltip": "^4.2.7",
     "react-transition-group": "^4.4.1",
+    "react-use": "^15.3.2",
     "styled-components": "^5.1.0",
     "styled-reset": "^4.1.4",
     "subscriptions-transport-ws": "^0.9.16",
@@ -46,7 +48,7 @@
     "use-clipboard-copy": "^0.1.2",
     "use-deep-compare-effect": "^1.3.1",
     "use-onclickoutside": "^0.3.1",
-    "use-wallet": "^0.5.0",
+    "use-wallet": "^0.6.0",
     "utility-types": "^3.10.0",
     "victory-axis": "^34.3.6",
     "victory-bar": "^34.3.6",
@@ -60,8 +62,8 @@
     "web3-utils": "^1.2.6"
   },
   "scripts": {
-    "build": "react-scripts build",
-    "build:staging": "env-cmd -f .env.staging react-scripts build",
+    "build": "react-scripts --max_old_space_size=4096 build",
+    "build:staging": "env-cmd -f .env.staging react-scripts --max_old_space_size=4096 build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml",
     "codegen:typechain": "yarn typechain --target ethers-v4 --outDir src/typechain './lib/mStable-subgraph/lib/mStable-contracts/build/contracts/*.json'",
@@ -69,7 +71,7 @@
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "provision": "sh ./scripts/provision.sh",
     "start": "react-scripts start",
-    "test": "react-scripts test",
+    "test": "env-cmd -f .env.staging react-scripts test",
     "truffle:migrate": "cd ./lib/mStable-subgraph && yarn truffle:migrate",
     "truffle:script": "cd ./lib/mStable-subgraph && yarn truffle:script"
   },

@@ -16,6 +16,7 @@ import {
 } from '../context/DataProvider/TokensProvider';
 import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
 import { useKnownAddress } from '../context/DataProvider/KnownAddressProvider';
+import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 import { ContractNames } from '../types';
 import { useAsyncMutex } from '../web3/hooks';
 
@@ -68,10 +69,10 @@ export const TokenBalancesUpdater = (): null => {
 
   const [contracts, dispatch] = useReducer(reducer, initialState);
 
-  const { account, getBlockNumber } = useWallet();
+  const { account } = useWallet();
   const accountRef = useRef<string | null>(account);
 
-  const blockNumber = getBlockNumber();
+  const blockNumber = useBlockNumber();
 
   const subscribedTokens = useSubscribedTokens();
 
@@ -140,7 +141,7 @@ export const TokenBalancesUpdater = (): null => {
   // Update subscribed tokens on each block, and also if the account or number
   // of tokens changes
   useAsyncMutex(
-    `${account}-${blockNumber}-${mUSDAddress}-${Object.keys(contracts).length}`,
+    [account, blockNumber, mUSDAddress, Object.keys(contracts).length].join(),
     updateCallback,
   );
 

@@ -7,14 +7,29 @@ import {
 
 const WARNING_HEIGHT = 30;
 
+const statusWarnings: Record<
+  StatusWarnings,
+  { label: string; error?: boolean }
+> = {
+  [StatusWarnings.UnsupportedChain]: {
+    label: 'Unsupported chain',
+    error: true,
+  },
+  [StatusWarnings.NotOnline]: {
+    label: 'Not online',
+  },
+  [StatusWarnings.Idle]: {
+    label: 'Idle',
+  },
+};
+
 const StatusBarContainer = styled.div<{ warnings: number }>`
   overflow: hidden;
-  transition: height 0.3s linear;
+  transition: height 0.1s linear;
   height: ${({ warnings }) => warnings * WARNING_HEIGHT}px;
-  background: ${({ theme }) => theme.color.red};
 `;
 
-const StatusBarWarning = styled.div`
+const StatusBarWarning = styled.div<{ error?: boolean }>`
   padding: ${({ theme }) => theme.spacing.xs};
   color: ${({ theme }) => theme.color.white};
   font-weight: bold;
@@ -22,6 +37,8 @@ const StatusBarWarning = styled.div`
   text-transform: uppercase;
   text-align: center;
   height: ${WARNING_HEIGHT};
+  background: ${({ theme, error }) =>
+    error ? theme.color.red : theme.color.blue};
 `;
 
 export const StatusBar: FC<{}> = () => {
@@ -29,12 +46,8 @@ export const StatusBar: FC<{}> = () => {
   return (
     <StatusBarContainer warnings={warnings.length}>
       {warnings.map(warning => (
-        <StatusBarWarning key={warning}>
-          {warning === StatusWarnings.NotOnline
-            ? 'Not online'
-            : warning === StatusWarnings.UnsupportedChain
-            ? 'Unsupported chain'
-            : 'Unknown'}
+        <StatusBarWarning key={warning} error={statusWarnings[warning].error}>
+          {statusWarnings[warning].label}
         </StatusBarWarning>
       ))}
     </StatusBarContainer>

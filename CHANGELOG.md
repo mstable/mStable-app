@@ -2,6 +2,55 @@
 
 ## Next
 
+## Version 1.6.0
+
+_Released 06.07.20 19.30 CEST_
+
+Features:
+
+- Detect when the page is idle and avoid making new requests until the page is
+  active again, and also provide visual feedback that the app is paused. 
+
+Bug fixes:
+
+- Ensure the 'network changed' event listener is not added for injected providers that
+  aren't event listeners.
+- Ensure the Apollo cache is purged when the app version is changed or the app is
+  being run on a different chain.
+
+## Version 1.5.2
+
+_Released 06.07.20 15.43 CEST_
+
+Bug fixes:
+
+- Restrict getting historic transaction logs to just before mUSD was deployed (on mainnet)
+- Ensure that local transactions state is reset when changing account, or the activated account
+  changes, or the account is disconnected
+
+Miscellaneous:
+
+- Add support for Sentry.io error tracking service
+
+## Version 1.5.1
+
+_Released 03.07.20 17.35 CEST_
+
+Miscellaneous:
+
+- Improve and clarify UX for redeeming with a single asset when
+  assets are overweight
+- Improve and clarify UX for swapping and minting when assets are overweight
+  or their vault balances are exceeded
+
+## Version 1.5.0
+
+_Released 03.07.20 13.56 CEST_
+
+Features:
+
+- Enable WalletConnect and WalletLink wallets
+
 Bug fixes:
 
 - Use Multi-collateral DAI logo
@@ -12,12 +61,21 @@ Miscellaneous:
 - Add footer social icons
 - Add Brave button to wallet connectors
 - Add migration for localStorage
-- Identify and disable Dapper wallet (currently incompatible 
+- Reduce wallet icon size
+- Identify and disable Dapper wallet (currently incompatible
   with `use-wallet` / `web3-react`)
 - Parse failing transaction errors to provide a more useful message
 - Default to 30 days for totals chart
 - Improve presentation of chart labels on different viewports
 - Fix order of volumes to match toggles
+- Clear the recently used wallet from local storage after disconnecting (so that
+  users are not automatically reconnected on the next page load with the
+  previous wallet type)
+- Upgrade `use-wallet`
+- Remove `use-wallet` types (now in the package itself)
+- Add `REACT_APP_RPC_URL` env var for connectors that need it
+- Add release link to footer
+- Add Github star button to footer
 
 ## Version 1.4.0
 
@@ -39,7 +97,7 @@ Bug fixes:
 Miscellaneous:
 
 - Change fetch policy for analytics data (first retrieve from cache, then network)
-- Capped APY chart values to avoid confusion 
+- Capped APY chart values to avoid confusion
 
 ## Version 1.3.0
 

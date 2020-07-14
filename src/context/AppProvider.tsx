@@ -18,8 +18,11 @@ import {
 } from 'use-wallet';
 import MetamaskOnboarding from '@metamask/onboarding';
 import { navigate } from 'hookrouter';
+import { configureScope } from '@sentry/react';
+
 import { MassetNames, InjectedEthereum, Connector } from '../types';
 import { CHAIN_ID, CONNECTORS, NETWORK_NAMES } from '../web3/constants';
+import { useUserActivityContext } from './UserActivityProvider';
 import {
   useAddInfoNotification,
   useAddErrorNotification,
@@ -56,6 +59,7 @@ enum Reasons {
 export enum StatusWarnings {
   NotOnline,
   UnsupportedChain,
+  Idle,
 }
 
 interface State {
@@ -227,9 +231,14 @@ const identifyInjectedSubType = (
  */
 export const AppProvider: FC<{}> = ({ children }) => {
   const attemptedReconnect = useRef(false);
-  const { activate, deactivate, activating, connected } = useWallet<
-    InjectedEthereum
-  >();
+  const {
+    activate,
+    deactivate,
+    activating,
+    connected,
+    activated,
+    account,
+  } = useWallet<InjectedEthereum>();
   const [state, dispatch] = useReducer(reducer, initialState);
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
@@ -260,6 +269,8 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const resetWallet = useCallback<Dispatch['resetWallet']>(() => {
     deactivate();
     dispatch({ type: Actions.ResetWallet });
+    LocalStorage.removeItem<'connectorId'>('connectorId');
+    LocalStorage.removeItem<'connector'>('connector');
   }, [dispatch, deactivate]);
 
   const connectWallet = useCallback<Dispatch['connectWallet']>(
@@ -358,7 +369,9 @@ export const AppProvider: FC<{}> = ({ children }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const injected = (window as any).ethereum;
 
-    if (injected) {
+    // The network change listener is only valid when the injected connector is
+    // used, or it's present but no connector is activated.
+    if (injected && (!activated || activated === 'injected')) {
       networkChangedListener = chainId => {
         // `chainId` from MetaMask can't be trusted in this event
         if (!Number.isNaN(chainId as number)) {
@@ -381,31 +394,46 @@ export const AppProvider: FC<{}> = ({ children }) => {
       } else {
         dispatch({ type: Actions.SetWalletSubType, payload: subType });
 
-        injected.on('networkChanged', networkChangedListener);
+        injected.on?.('networkChanged', networkChangedListener);
         injected.autoRefreshOnNetworkChange = false;
       }
     }
 
     return () => {
       if (injected && networkChangedListener) {
-        injected.removeListener('networkChanged', networkChangedListener);
+        injected.removeListener?.('networkChanged', networkChangedListener);
       }
     };
-  }, [dispatch, addErrorNotification]);
+  }, [dispatch, activated, addErrorNotification]);
 
   /**
    * Automatically reconnect once on startup (if possible)
    */
   useEffect(() => {
     if (!attemptedReconnect.current && !(activating || connected)) {
-      const { id, subType } =
-        LocalStorage.get<Storage, 'connector'>('connector') || {};
+      const { id, subType } = LocalStorage.get('connector') || {};
       if (id) {
         connectWallet(id, subType);
       }
       attemptedReconnect.current = true;
     }
   }, [activating, connected, connectWallet]);
+
+  /**
+   * Set then Sentry user scope when the account changes
+   */
+  useEffect(() => {
+    configureScope(scope => {
+      const connector = LocalStorage.get<'connector'>('connector');
+      scope.setUser({
+        id: account || 'NOT_CONNECTED',
+      });
+      scope.setTags({
+        activated,
+        connector: JSON.stringify(connector),
+      });
+    });
+  }, [account, activated]);
 
   return (
     <context.Provider
@@ -484,15 +512,17 @@ export const useAppStatusWarnings = (): StatusWarnings[] => {
     online,
     wallet: { supportedChain },
   } = useAppState();
+  const { idle } = useUserActivityContext();
 
   return useMemo(() => {
     const warnings = [];
 
     if (!online) warnings.push(StatusWarnings.NotOnline);
     if (!supportedChain) warnings.push(StatusWarnings.UnsupportedChain);
+    if (idle) warnings.push(StatusWarnings.Idle);
 
     return warnings;
-  }, [online, supportedChain]);
+  }, [online, supportedChain, idle]);
 };
 
 export const useExpandWallet = (): Dispatch['expandWallet'] =>

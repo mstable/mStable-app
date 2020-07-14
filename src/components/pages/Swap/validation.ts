@@ -1,19 +1,7 @@
-import { State, StateValidator } from './types';
+import { State, StateValidator, Reasons } from './types';
 import { EXP_SCALE, RATIO_SCALE } from '../../../web3/constants';
 import { BassetState, DataState } from '../../../context/DataProvider/types';
-
-enum Reasons {
-  AmountMustBeGreaterThanZero = 'Amount must be greater than zero',
-  AmountMustBeSet = 'Amount must be set',
-  AssetNotAllowedInSwap = 'Asset not allowed in swap',
-  CannotRedeemMoreAssetsThanAreInTheVault = 'Cannot redeem more assets than are in the vault',
-  FetchingData = 'Fetching data',
-  InsufficientBalance = 'Insufficient balance',
-  MustBeBelowMaxWeighting = 'Must be below max weighting',
-  TransferMustBeApproved = 'Transfer must be approved',
-  AssetMustBeSelected = 'Asset must be selected',
-  AssetNotAllowedInMint = 'Asset not allowed in mint',
-}
+import { getReasonMessage } from './getReasonMessage';
 
 // TODO later: refactor this validation to use the current state interface
 const getBassetsArr = (dataState?: DataState): BassetState[] =>
@@ -71,7 +59,7 @@ const formValidator: StateValidator = ({
 
   const inputToken = bAssets.find(b => b.address === input.token.address);
   if (input.amount.exact && inputToken?.balance.exact.lt(input.amount.exact)) {
-    return [false, { input: Reasons.InsufficientBalance }];
+    return [false, { input: Reasons.AmountExceedsBalance }];
   }
 
   return [true, {}];
@@ -162,7 +150,7 @@ const swapValidator: StateValidator = ({
     .div(EXP_SCALE);
 
   if (newInputBalanceInMasset.gt(inputMaxWeightInUnits)) {
-    return [false, { input: Reasons.MustBeBelowMaxWeighting }];
+    return [false, { input: Reasons.AssetsMustRemainBelowMaxWeight }];
   }
 
   return [true, { applySwapFee }];
@@ -213,7 +201,7 @@ const mintSingleValidator: StateValidator = state => {
     .div(EXP_SCALE);
 
   if (newBalanceInMasset.gt(maxWeightInUnits)) {
-    return [false, { input: Reasons.MustBeBelowMaxWeighting }];
+    return [false, { input: Reasons.AssetsMustRemainBelowMaxWeight }];
   }
 
   return [true, {}];
@@ -245,11 +233,24 @@ export const applyValidation = (state: State): State => {
     { input: txInputError, output: txOutputError, applySwapFee },
   ] = isMint ? mintSingleValidator(state) : swapValidator(state);
 
-  const bAsset = dataState?.bAssets[input.token.address as string];
+  const inputAsset = dataState?.bAssets[input.token.address as string];
+  const outputAsset = isMint
+    ? dataState?.mAsset
+    : dataState?.bAssets[output.token.address as string];
+
   const needsUnlock = !!(
     input.token.address &&
     input.amount.exact &&
-    bAsset?.mAssetAllowance?.exact.lt(input.amount.exact)
+    inputAsset?.mAssetAllowance?.exact.lt(input.amount.exact)
+  );
+
+  const inputError = getReasonMessage(
+    typeof formInputError !== 'undefined' ? formInputError : txInputError,
+    inputAsset,
+  );
+  const outputError = getReasonMessage(
+    typeof formOutputError !== 'undefined' ? formOutputError : txOutputError,
+    outputAsset,
   );
 
   return {
@@ -259,8 +260,8 @@ export const applyValidation = (state: State): State => {
       : // FIXME: Defaulting to true as symptom-fighting (see above)
         { applySwapFee: true }),
     needsUnlock,
-    inputError: formInputError || txInputError,
-    outputError: formOutputError || txOutputError,
+    inputError,
+    outputError,
     valid: touched && formValid && txValid,
   };
 };
