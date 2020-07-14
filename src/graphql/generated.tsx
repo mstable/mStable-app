@@ -629,8 +629,10 @@ export type Masset = {
   id: Scalars['ID'];
   /** The Basket of Bassets for this Masset */
   basket: Basket;
-  /** The redemption fee rate */
+  /** The swap fee rate */
   feeRate: Scalars['BigInt'];
+  /** The swap fee rate */
+  redemptionFeeRate: Scalars['BigInt'];
   /** The underlying Token for this Masset */
   token: Token;
   /** The token symbol */
@@ -679,6 +681,14 @@ export type Masset_Filter = {
   feeRate_lte?: Maybe<Scalars['BigInt']>;
   feeRate_in?: Maybe<Array<Scalars['BigInt']>>;
   feeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  redemptionFeeRate?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_not?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_gt?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_lt?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_gte?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_lte?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_in?: Maybe<Array<Scalars['BigInt']>>;
+  redemptionFeeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
   token?: Maybe<Scalars['String']>;
   token_not?: Maybe<Scalars['String']>;
   token_gt?: Maybe<Scalars['String']>;
@@ -713,6 +723,7 @@ export enum Masset_OrderBy {
   Id = 'id',
   Basket = 'basket',
   FeeRate = 'feeRate',
+  RedemptionFeeRate = 'redemptionFeeRate',
   Token = 'token',
   TokenSymbol = 'tokenSymbol',
   SavingsContracts = 'savingsContracts'
@@ -1786,7 +1797,7 @@ export enum VolumeMetric_OrderBy {
 export type TokenDetailsFragment = Pick<Token, 'id' | 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
 
 export type MassetAllFragment = (
-  Pick<Masset, 'id' | 'feeRate'>
+  Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
   & { token: TokenDetailsFragment, basket: (
     Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
     & { bassets: Array<(
@@ -1932,6 +1943,7 @@ export const MassetAllFragmentDoc = gql`
     ...TokenDetails
   }
   feeRate
+  redemptionFeeRate
   basket {
     failed
     collateralisationRatio

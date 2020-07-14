@@ -2,6 +2,10 @@
 
 ## Next
 
+Miscellaneous:
+
+- Add redemption fee for proportional redemptions
+
 ## Version 1.6.0
 
 _Released 06.07.20 19.30 CEST_
@@ -9,7 +13,7 @@ _Released 06.07.20 19.30 CEST_
 Features:
 
 - Detect when the page is idle and avoid making new requests until the page is
-  active again, and also provide visual feedback that the app is paused. 
+  active again, and also provide visual feedback that the app is paused.
 
 Bug fixes:
 

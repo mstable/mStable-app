@@ -4,6 +4,7 @@ import { pipe, pipeline } from 'ts-pipe-compose';
 import { Action, Actions, Mode, State } from './types';
 import { applyValidation } from './validate';
 import { BigDecimal } from '../../../web3/BigDecimal';
+import { SCALE } from '../../../web3/constants';
 import { DataState } from '../../../context/DataProvider/types';
 import { recalculateState } from '../../../context/DataProvider/recalculateState';
 
@@ -120,22 +121,33 @@ const resetTouched = (state: State): State =>
 
 const updateFeeAmount = (state: State): State => {
   if (state.initialized && state.dataState) {
-    if (
-      state.amountInMasset &&
-      state.mode !== Mode.RedeemMasset &&
-      state.dataState.mAsset.overweightBassets.length === 0
-    ) {
-      const feeAmount = state.amountInMasset.mulTruncate(
-        state.dataState.mAsset.feeRate,
-      );
+    if (state.amountInMasset) {
+      if (state.mode === Mode.RedeemMasset) {
+        const feeAmount = state.amountInMasset.mulTruncate(
+          state.dataState.mAsset.redemptionFeeRate,
+        );
 
-      const amountInMassetPlusFee = state.amountInMasset.sub(feeAmount);
+        const amountInMassetPlusFee = state.amountInMasset.sub(feeAmount);
 
-      return {
-        ...state,
-        feeAmount,
-        amountInMassetPlusFee,
-      };
+        return {
+          ...state,
+          feeAmount,
+          amountInMassetPlusFee,
+        };
+      }
+      if (state.dataState.mAsset.overweightBassets.length === 0) {
+        const feeAmount = state.amountInMasset.mulTruncate(
+          state.dataState.mAsset.feeRate,
+        );
+
+        const amountInMassetPlusFee = state.amountInMasset.sub(feeAmount);
+
+        return {
+          ...state,
+          feeAmount,
+          amountInMassetPlusFee,
+        };
+      }
     }
 
     // Reset the values if necessary
@@ -172,13 +184,18 @@ const updateBassetAmountsRedeemMasset = (
     const percentage = totalVaultInMasset.divPrecisely(total);
     const scaledAmount = percentage.mulTruncate(amountInMasset.exact);
     const amount = scaledAmount.divRatioPrecisely(ratio).setDecimals(decimals);
+    // e.g. (1e8 * (1000e15-1e15)) / 1e18 = (1e8 * (999e15)) / 1e18 = 9.99e7
+    // e.g. (1e8 * (1e18-0)) / 1e18 = 1e8
+    const amountMinusFee = amount.mulTruncate(
+      SCALE.sub(mAsset.redemptionFeeRate),
+    );
 
     return {
       ..._bAssets,
       [address]: {
         ...state.bAssets[address],
         amount,
-        amountMinusFee: amount,
+        amountMinusFee,
       },
     };
   }, state.bAssets);

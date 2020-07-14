@@ -78,16 +78,18 @@ export const RedeemInput: FC<{}> = () => {
       value: mAsset?.balance.format(2, true, 'mUSD'),
     };
 
-    return feeAmount && valid
+    return feeAmount?.exact.gt(0) && valid
       ? [
           balance,
           {
             label: 'NOTE',
-            value: 'Swap fee applies (see details below)',
+            value: `${
+              mode === Mode.RedeemMasset ? 'Redemption' : 'Swap'
+            } fee applies (see details below)`,
           },
         ]
       : [balance];
-  }, [mAsset, feeAmount, valid]);
+  }, [mAsset, mode, feeAmount, valid]);
 
   const handleSetAmount = useCallback(
     (_, _formValue) => {
