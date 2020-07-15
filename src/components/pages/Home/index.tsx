@@ -176,7 +176,8 @@ const Start: FC<{}> = () => {
     <>
       <Block>
         <H2>
-          mStable unites stablecoins, lending and swapping into one standard.
+          mStable unites stablecoins, lending and swapping{' '}
+          <span>into one standard.</span>
         </H2>
       </Block>
       <Block>
