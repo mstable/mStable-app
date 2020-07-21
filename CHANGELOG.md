@@ -4,6 +4,9 @@
 
 Miscellaneous:
 
+- Add Alchemy API JSON-RPC provider
+- Remove Infura endpoint
+- Upgrade `ethers` to version 5
 - Add redemption fee for proportional redemptions
 
 ## Version 1.6.0

@@ -2,12 +2,18 @@ import { Connectors } from 'use-wallet';
 
 const injected = {};
 
-if (!process.env.REACT_APP_RPC_URL) {
-  throw new Error('`REACT_APP_RPC_URL` must be set');
+if (!process.env.REACT_APP_ALCHEMY_KEY) {
+  throw new Error('Missing env var: `REACT_APP_ALCHEMY_KEY`');
 }
 
+if (!process.env.REACT_APP_ALCHEMY_URL_HTTP) {
+  throw new Error('Missing env var: `REACT_APP_ALCHEMY_URL_HTTP`');
+}
+
+const rpcUrl = `${process.env.REACT_APP_ALCHEMY_URL_HTTP}/${process.env.REACT_APP_ALCHEMY_KEY}`;
+
 const walletlink = {
-  url: process.env.REACT_APP_RPC_URL,
+  url: rpcUrl,
   appLogoUrl: 'https://app.mstable.org/icons/apple-icon-180x180.png',
   appName: 'mStable',
 };
@@ -20,7 +26,7 @@ const squarelink = {
 const portis = { dAppId: process.env.REACT_APP_PORTIS_DAPP_ID };
 
 const walletconnect = {
-  rpcUrl: process.env.REACT_APP_RPC_URL,
+  rpcUrl,
 };
 
 // These connectors are currently not fully supported by `use-wallet`

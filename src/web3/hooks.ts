@@ -2,7 +2,8 @@ import { useMemo, createElement, DOMElement, useEffect, useState } from 'react';
 import blockies from 'ethereum-blockies';
 import { useMutex } from 'react-context-mutex';
 import useInterval from '@use-it/interval';
-import { BigNumber, parseUnits } from 'ethers/utils';
+import { BigNumber } from 'ethers';
+import { parseUnits } from 'ethers/lib/utils';
 import { BigNumber as FractionalBigNumber } from 'bignumber.js';
 
 import {
@@ -131,9 +132,9 @@ export const calculateApy = (
       .pow(new FractionalBigNumber(portionsInYear.toString()))
       .decimalPlaces(10);
     const parsed = parseAmount(diff.toString(), 18);
-    return parsed.exact?.sub(SCALE) || new BigNumber(0);
+    return parsed.exact?.sub(SCALE) || BigNumber.from(0);
   }
-  return new BigNumber(0);
+  return BigNumber.from(0);
 };
 
 const useLastExchangeRateBeforeTimestamp = (
@@ -225,7 +226,7 @@ export const useDailyApysForPastWeek = (): DailyApysForWeek => {
   );
 };
 
-const ONE_HUNDRED = new BigNumber((1e18).toString());
+const ONE_HUNDRED = BigNumber.from((1e18).toString());
 
 export const useAverageApyForPastWeek = (): BigNumber | undefined => {
   const dailyApys = useDailyApysForPastWeek();
@@ -244,7 +245,7 @@ export const useAverageApyForPastWeek = (): BigNumber | undefined => {
     }
 
     return filtered
-      .reduce((_average, apy) => _average.add(apy), new BigNumber(0))
+      .reduce((_average, apy) => _average.add(apy), BigNumber.from(0))
       .div(filtered.length);
   }, [dailyApys]);
 };

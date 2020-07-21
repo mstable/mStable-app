@@ -1,10 +1,11 @@
 import { FC } from 'react';
-import { TransactionResponse, Log } from 'ethers/providers';
-import { BigNumber, LogDescription } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 import { Connectors } from 'use-wallet';
-import { Ierc20 } from './typechain/Ierc20.d';
-import { ISavingsContract } from './typechain/ISavingsContract.d';
-import { IMasset } from './typechain/IMasset.d';
+import type { TransactionResponse, Log } from '@ethersproject/providers';
+import type { LogDescription } from 'ethers/lib/utils';
+import type { Masset } from './typechain/Masset.d';
+import type { SavingsContract } from './typechain/SavingsContract.d';
+import type { Erc20Detailed } from './typechain/Erc20Detailed.d';
 
 export interface Transaction {
   formId?: string;
@@ -55,18 +56,20 @@ export enum ContractNames {
 
 export enum Interfaces {
   // ForgeRewards,
+  // eslint-disable-next-line no-shadow
   Masset,
   // Systok,
   ERC20,
+  // eslint-disable-next-line no-shadow
   SavingsContract,
 }
 
 export interface Instances {
   // [Interfaces.ForgeRewards]: IForgeRewards;
-  [Interfaces.Masset]: IMasset;
+  [Interfaces.Masset]: Masset;
   // [Interfaces.Systok]: ISystok;
-  [Interfaces.ERC20]: Ierc20;
-  [Interfaces.SavingsContract]: ISavingsContract;
+  [Interfaces.ERC20]: Erc20Detailed;
+  [Interfaces.SavingsContract]: SavingsContract;
 }
 
 /**
@@ -80,7 +83,7 @@ export interface SendTxManifest<
   TIface extends Interfaces,
   TFn extends keyof Instances[TIface]['functions']
 > {
-  iface: Instances[TIface];
+  iface: Instances[TIface]
   fn: Extract<keyof Instances[TIface]['functions'], TFn> & string;
   args: Parameters<
     Extract<

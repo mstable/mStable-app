@@ -7,8 +7,8 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
+import type { TransactionRequest, TransactionReceipt, TransactionResponse } from '@ethersproject/providers';
 
 import {
   HistoricTransaction,
@@ -22,7 +22,6 @@ import {
   useAddInfoNotification,
   useAddSuccessNotification,
 } from './NotificationsProvider';
-import { TransactionOverrides } from '../typechain/index.d';
 import { getTransactionStatus } from '../web3/transactions';
 import { DataState } from './DataProvider/types';
 import { useDataState } from './DataProvider/DataProvider';
@@ -450,12 +449,12 @@ export const useHasPendingApproval = (
 const overrideProps = ['nonce', 'gasLimit', 'gasPrice', 'value', 'chainId'];
 
 export const calculateGasMargin = (value: BigNumber): BigNumber => {
-  const GAS_MARGIN = new BigNumber(1000);
-  const offset = value.mul(GAS_MARGIN).div(new BigNumber(10000));
+  const GAS_MARGIN = BigNumber.from(1000);
+  const offset = value.mul(GAS_MARGIN).div(BigNumber.from(10000));
   return value.add(offset);
 };
 
-const isTransactionOverrides = (arg: unknown): boolean =>
+const isTransactionRequest = (arg: unknown): boolean =>
   arg != null &&
   typeof arg === 'object' &&
   overrideProps.some(prop => Object.hasOwnProperty.call(arg, prop));
@@ -468,15 +467,15 @@ const addGasSettings = async (
   const last = args[args.length - 1];
 
   if (
-    isTransactionOverrides(last) &&
-    !(last as TransactionOverrides).gasLimit
+    isTransactionRequest(last) &&
+    !(last as TransactionRequest).gasLimit
   ) {
     // Don't alter the manifest if the gas limit is already set
     return manifest;
   }
 
   // Set the gas limit (with the calculated gas margin)
-  const gasLimit = await iface.estimate[fn](...args);
+  const gasLimit = await iface.estimateGas[fn](...args);
 
   // Also set the gas price, because some providers don't
   const gasPrice = await iface.provider.getGasPrice();

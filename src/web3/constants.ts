@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 import { Connectors } from 'use-wallet';
 import { asciiToHex as aToH } from 'web3-utils';
 import { getConnectors } from './connectors';
@@ -11,10 +11,10 @@ import { ReactComponent as SquarelinkIcon } from '../components/icons/squarelink
 import { ReactComponent as WalletConnectIcon } from '../components/icons/walletconnect.svg';
 import { ReactComponent as CoinbaseIcon } from '../components/icons/coinbase.svg';
 
-export const SCALE = new BigNumber((1e18).toString());
-export const PERCENT_SCALE = new BigNumber((1e16).toString());
-export const RATIO_SCALE = new BigNumber((1e8).toString());
-export const EXP_SCALE = new BigNumber((1e18).toString());
+export const SCALE = BigNumber.from((1e18).toString());
+export const PERCENT_SCALE = BigNumber.from((1e16).toString());
+export const RATIO_SCALE = BigNumber.from((1e8).toString());
+export const EXP_SCALE = BigNumber.from((1e18).toString());
 
 export const KEY_META = aToH('MTA');
 export const KEY_MUSD = aToH('mUSD');
@@ -29,6 +29,12 @@ export const NETWORK_NAMES = {
   1: 'Main Ethereum network',
   3: 'Ropsten (Test network)',
   1337: 'Local network',
+};
+
+export const NETWORKS = {
+  1: 'mainnet',
+  3: 'ropsten',
+  1337: 'local',
 };
 
 export const AVAILABLE_CONNECTORS: Connectors = getConnectors(CHAIN_ID);

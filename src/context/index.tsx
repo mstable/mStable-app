@@ -4,7 +4,7 @@ import { AVAILABLE_CONNECTORS, CHAIN_ID } from '../web3/constants';
 import { AppProvider } from './AppProvider';
 import { AllDataProviders } from './DataProvider';
 import { NotificationsProvider } from './NotificationsProvider';
-import { SignerProvider } from './SignerProvider';
+import { EthereumProvider } from './EthereumProvider';
 import { TransactionsProvider } from './TransactionsProvider';
 import { UserActivityProvider } from './UserActivityProvider';
 import { ThemeProvider } from './ThemeProvider';
@@ -13,7 +13,7 @@ export const Providers: FC<{}> = ({ children }) => (
   <NotificationsProvider>
     <UseWalletProvider chainId={CHAIN_ID} connectors={AVAILABLE_CONNECTORS}>
       <UserActivityProvider>
-        <SignerProvider>
+        <EthereumProvider>
           <AllDataProviders>
             <TransactionsProvider>
               <AppProvider>
@@ -21,7 +21,7 @@ export const Providers: FC<{}> = ({ children }) => (
               </AppProvider>
             </TransactionsProvider>
           </AllDataProviders>
-        </SignerProvider>
+        </EthereumProvider>
       </UserActivityProvider>
     </UseWalletProvider>
   </NotificationsProvider>

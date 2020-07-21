@@ -1,4 +1,5 @@
-import { BigNumber, parseUnits, formatUnits } from 'ethers/utils';
+import { BigNumber } from 'ethers';
+import { parseUnits, formatUnits } from 'ethers/lib/utils';
 import { Amount } from '../types';
 
 /**

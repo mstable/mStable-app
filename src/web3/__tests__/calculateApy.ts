@@ -1,4 +1,4 @@
-import { formatUnits } from 'ethers/utils';
+import { formatUnits } from 'ethers/lib/utils';
 import { calculateApy } from '../hooks';
 
 describe('calculateAPY', () => {
