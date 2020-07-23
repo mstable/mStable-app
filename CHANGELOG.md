@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.7.0
+
+_Released 23.07.20 16.00 CEST_
+
 Miscellaneous:
 
 - Add Alchemy API JSON-RPC provider
