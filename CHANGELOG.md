@@ -8,6 +8,7 @@ _Released 23.07.20 16.00 CEST_
 
 Miscellaneous:
 
+- Add environment variables for various services
 - Add redemption fee for proportional redemptions
 
 ## Version 1.6.0
