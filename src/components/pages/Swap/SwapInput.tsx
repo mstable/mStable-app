@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
-import { BigNumber } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils';
+import { BigNumber, formatUnits } from 'ethers/utils';
 
 import styled from 'styled-components';
 import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
@@ -156,7 +155,7 @@ export const SwapInput: FC<{}> = () => {
 
       let maxIncrease = inputMaxWeight.gt(inputVaultBalance)
         ? inputMaxWeight.sub(inputVaultBalance)
-        : BigNumber.from(0);
+        : new BigNumber(0);
       maxIncrease = maxIncrease.gt(ratioedInputBalance)
         ? ratioedInputBalance
         : maxIncrease;

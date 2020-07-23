@@ -154,8 +154,7 @@ workflows:
   version: 2.1
   staging:
     jobs:
-      - buildStaging:
-          context: mstable-app-staging
+      - buildStaging
       - Approval:
           type: approval
       - deployStaging:
@@ -167,7 +166,6 @@ workflows:
       - Approval:
           type: approval
       - buildProd:
-          context: mstable-app-production
           requires:
             - Approval
       - deployProd:

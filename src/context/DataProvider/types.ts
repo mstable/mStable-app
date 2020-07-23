@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers';
+import { BigNumber } from 'ethers/utils';
 import { BigDecimal } from '../../web3/BigDecimal';
 import {
   CreditBalancesQueryResult,

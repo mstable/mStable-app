@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from 'react';
-import { BigNumber } from 'ethers';
+import { BigNumber } from 'ethers/utils';
 
 import { useFormId } from './TransactionForm/FormProvider';
 import { useErc20Contract } from '../../context/DataProvider/ContractsProvider';

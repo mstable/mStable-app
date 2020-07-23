@@ -8,11 +8,7 @@ _Released 23.07.20 16.00 CEST_
 
 Miscellaneous:
 
-- Add Alchemy API JSON-RPC provider
-- Remove Infura endpoint
-- Move env vars to CircleCI
-- Upgrade `ethers` to version 5
-- Add redemption fee for proportional redemptions and update FAQ
+- Add redemption fee for proportional redemptions
 
 ## Version 1.6.0
 

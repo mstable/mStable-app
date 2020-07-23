@@ -1,14 +1,12 @@
 import { useEffect } from 'react';
 import { useWallet } from 'use-wallet';
+import { hexZeroPad } from 'ethers/utils';
 import { useTransactionsDispatch } from '../context/TransactionsProvider';
 import { getHistoricTransactions } from '../web3/getHistoricTransactions';
 import {
   useMusdContract,
   useSavingsContract,
 } from '../context/DataProvider/ContractsProvider';
-import { useProviderContext } from '../context/EthereumProvider';
-
-type Topics = (string | string[])[];
 
 // When mUSD was deployed
 const fromBlock =
@@ -21,7 +19,6 @@ const fromBlock =
 export const ContractsUpdater = (): null => {
   const { account, activated, connected } = useWallet();
   const { addHistoric, reset } = useTransactionsDispatch();
-  const provider = useProviderContext();
 
   const mUsdContract = useMusdContract();
   const savingsContract = useSavingsContract();
@@ -36,56 +33,56 @@ export const ContractsUpdater = (): null => {
    */
   useEffect(() => {
     if (mUsdContract && account && addHistoric) {
-      const indexedAccount = account.toLowerCase();
+      const indexedAccount = hexZeroPad(account.toLowerCase(), 32);
 
-      const mUSDTopics: Topics[] = [
-        mUsdContract.filters.Minted(indexedAccount, null, null, null, null)
-          .topics as Topics,
-        mUsdContract.filters.Swapped(indexedAccount, null, null, null, null)
-          .topics as Topics,
-        mUsdContract.filters.Redeemed(indexedAccount, null, null, null, null)
-          .topics as Topics,
-        mUsdContract.filters.RedeemedMasset(indexedAccount, null, null)
-          .topics as Topics,
-        mUsdContract.filters.MintedMulti(indexedAccount, null, null, null, null)
-          .topics as Topics,
+      const {
+        Minted,
+        Swapped,
+        Redeemed,
+        RedeemedMasset,
+        MintedMulti,
+      } = mUsdContract.interface.events;
+
+      const mUSDTopics: (string | null)[][] = [
+        [Minted.topic, indexedAccount],
+        [MintedMulti.topic, indexedAccount],
+        [Redeemed.topic, indexedAccount],
+        [RedeemedMasset.topic, indexedAccount],
+        [Swapped.topic, indexedAccount],
       ];
 
-      getHistoricTransactions(provider, mUsdContract, account, mUSDTopics, {
+      getHistoricTransactions(mUsdContract, account, mUSDTopics, {
         fromBlock,
       }).then(logs => {
         addHistoric(logs);
       });
     }
-  }, [addHistoric, account, mUsdContract, provider]);
+  }, [addHistoric, account, mUsdContract]);
 
   /**
    * When the account changes (and mUSDSavings exists), get historic transactions.
    */
   useEffect(() => {
     if (savingsContract && account && addHistoric) {
-      const indexedAccount = account.toLowerCase();
+      const indexedAccount = hexZeroPad(account.toLowerCase(), 32);
 
-      const mUSDSavingsTopics: Topics[] = [
-        savingsContract.filters.CreditsRedeemed(indexedAccount, null, null)
-          .topics as Topics,
-        savingsContract.filters.SavingsDeposited(indexedAccount, null, null)
-          .topics as Topics,
+      const {
+        SavingsDeposited,
+        CreditsRedeemed,
+      } = savingsContract.interface.events;
+
+      const mUSDSavingsTopics: (string | null)[][] = [
+        [SavingsDeposited.topic, indexedAccount],
+        [CreditsRedeemed.topic, indexedAccount],
       ];
 
-      getHistoricTransactions(
-        provider,
-        savingsContract,
-        account,
-        mUSDSavingsTopics,
-        {
-          fromBlock,
-        },
-      ).then(logs => {
+      getHistoricTransactions(savingsContract, account, mUSDSavingsTopics, {
+        fromBlock,
+      }).then(logs => {
         addHistoric(logs);
       });
     }
-  }, [addHistoric, account, savingsContract, provider]);
+  }, [addHistoric, account, savingsContract]);
 
   return null;
 };

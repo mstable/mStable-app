@@ -88,7 +88,7 @@ const getHistoricTransactionDescription = (
       case 'depositSavings': {
         const [
           {
-            args: { savingsDeposited },
+            values: { savingsDeposited },
           },
         ] = logs;
 
@@ -103,7 +103,7 @@ const getHistoricTransactionDescription = (
       case 'withdraw': {
         const [
           {
-            args: { savingsCredited },
+            values: { savingsCredited },
           },
         ] = logs;
 
@@ -124,7 +124,7 @@ const getHistoricTransactionDescription = (
     case 'mint': {
       const [
         {
-          args: { mAssetQuantity, bAsset },
+          values: { mAssetQuantity, bAsset },
         },
       ] = logs;
 
@@ -144,7 +144,7 @@ const getHistoricTransactionDescription = (
     case 'mintMulti': {
       const [
         {
-          args: { mAssetQuantity },
+          values: { mAssetQuantity },
         },
       ] = logs;
 
@@ -159,7 +159,7 @@ const getHistoricTransactionDescription = (
     }
     case 'swap': {
       const {
-        args: { input, output, outputAmount },
+        values: { input, output, outputAmount },
       } = logs[logs.length - 1];
 
       const inputBasset = bAssets[input.toLowerCase()];
@@ -178,7 +178,7 @@ const getHistoricTransactionDescription = (
     }
     case 'redeem': {
       const {
-        args: { mAssetQuantity, bAssets: redeemedBassets },
+        values: { mAssetQuantity, bAssets: redeemedBassets },
       } = logs[logs.length - 1];
 
       const bAssetTokens: BassetState[] = redeemedBassets
@@ -200,7 +200,7 @@ const getHistoricTransactionDescription = (
     case 'redeemMasset': {
       const [
         {
-          args: { mAssetQuantity },
+          values: { mAssetQuantity },
         },
       ] = logs;
 

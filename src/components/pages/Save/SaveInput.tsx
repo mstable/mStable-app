@@ -1,6 +1,6 @@
 import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { parseUnits } from 'ethers/lib/utils';
+import { parseUnits } from 'ethers/utils';
 
 import { Color } from '../../../theme';
 import { FormRow } from '../../core/Form';
