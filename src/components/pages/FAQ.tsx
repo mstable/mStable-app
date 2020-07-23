@@ -181,16 +181,18 @@ export const FAQ: FC<{}> = () => (
           <P>How do I redeem mUSD for an underlying stablecoin?</P>
           <P>
             You can redeem your mUSD at any time for the basket of underlying
-            stablecoins that it represents, at no fee. All that you need to do
-            this is to navigate to the Redeem section of our app, choose the
-            amount of mUSD you wish to redeem, and go. The amounts of underlying
-            stablecoins you receive will be automatically paid out at the
-            current basket weight ratios.
+            stablecoins that it represents. All that you need to do this is to
+            navigate to the Redeem section of our app, choose the amount of mUSD
+            you wish to redeem, and go. The amounts of underlying stablecoins
+            you receive will be automatically paid out at the current basket
+            weight ratios with a fee subtracted. This fee is in place to avoid
+            gaming of the SWAP mechanism that benefits all savers.
           </P>
           <P>
-            In future, we will introduce added functionality allowing single or
-            selected USD stablecoin redemptions. As with minting and swapping in
-            our system, these redemptions will be subject to “max weight” rules.
+            In future, we will introduce functionality allowing custom
+            redemption with selections of USD stablecoins. As with minting and
+            swapping in our system, these redemptions will be subject to “max
+            weight” rules.
           </P>
         </ListItem>
       </List>
