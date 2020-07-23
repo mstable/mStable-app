@@ -7,7 +7,7 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 import {
   TokenDetailsFragment,
   useErc20TokensQuery,

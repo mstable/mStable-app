@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { useWallet } from 'use-wallet';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 import { MusdStats } from '../../stats/MusdStats';
 
 import {

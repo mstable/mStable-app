@@ -8,8 +8,8 @@ import {
   useCoreTokensLazyQuery,
 } from '../graphql/generated';
 import { ContractNames } from '../types';
-import { MassetFactory } from '../typechain/MassetFactory';
-import { useSignerContext } from '../context/SignerProvider';
+import { MassetFactory } from '../typechain';
+import { useProviderContext } from '../context/EthereumProvider';
 
 type Keys = keyof NonNullable<CoreTokensQueryResult['data']>;
 
@@ -27,7 +27,7 @@ const mapping: Record<Keys, ContractNames> = {
  */
 export const KnownAddressUpdater = (): null => {
   const set = useSetKnownAddress();
-  const signer = useSignerContext();
+  const provider = useProviderContext();
 
   // Use a lazy query because this data should never change during a session
   // (caveat: if we support network switching without a refresh, this will
@@ -45,13 +45,13 @@ export const KnownAddressUpdater = (): null => {
   );
 
   useEffect(() => {
-    if (signer && mUSDAddress && !mUSDForgeValidatorAddress) {
-      const mUSD = MassetFactory.connect(mUSDAddress, signer);
+    if (provider && mUSDAddress && !mUSDForgeValidatorAddress) {
+      const mUSD = MassetFactory.connect(mUSDAddress, provider);
       mUSD.forgeValidator().then(address => {
         set(ContractNames.mUSDForgeValidator, address);
       });
     }
-  }, [signer, mUSDAddress, mUSDForgeValidatorAddress, set]);
+  }, [provider, mUSDAddress, mUSDForgeValidatorAddress, set]);
 
   // Update addresses when core tokens are fetched.
   useEffect(() => {

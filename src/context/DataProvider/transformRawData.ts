@@ -1,5 +1,4 @@
-import { bigNumberify } from 'ethers/utils';
-
+import { BigNumber } from 'ethers';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { BassetState, DataState, BassetStatus, RawData } from './types';
 
@@ -17,11 +16,11 @@ const getMassetState = ({
     tokens[mAssetToken.address]?.balance || 0,
     mAssetToken.decimals,
   ),
-  collateralisationRatio: bigNumberify(collateralisationRatio),
+  collateralisationRatio: BigNumber.from(collateralisationRatio),
   decimals: mAssetToken.decimals,
   failed,
-  feeRate: bigNumberify(feeRate),
-  redemptionFeeRate: bigNumberify(redemptionFeeRate),
+  feeRate: BigNumber.from(feeRate),
+  redemptionFeeRate: BigNumber.from(redemptionFeeRate),
   symbol: mAssetToken.symbol,
   totalSupply: BigDecimal.parse(mAssetToken.totalSupply, mAssetToken.decimals),
   undergoingRecol,
@@ -105,8 +104,8 @@ const getBassetsState = (
           mAssetToken?.allowance[address.toLowerCase()] || 0,
           decimals,
         ),
-        maxWeight: bigNumberify(_maxWeight),
-        ratio: bigNumberify(_ratio),
+        maxWeight: BigNumber.from(_maxWeight),
+        ratio: BigNumber.from(_ratio),
         status: status as BassetStatus,
         symbol,
         totalSupply: BigDecimal.parse(_totalSupply, decimals),

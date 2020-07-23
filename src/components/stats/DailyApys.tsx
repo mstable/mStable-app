@@ -1,5 +1,6 @@
 import React, { FC, useMemo } from 'react';
-import { BigNumber, formatUnits } from 'ethers/utils';
+import { BigNumber } from 'ethers';
+import { formatUnits } from 'ethers/lib/utils';
 import { VictoryLabel } from 'victory-core';
 import { VictoryLine } from 'victory-line';
 import { VictoryChart } from 'victory-chart';

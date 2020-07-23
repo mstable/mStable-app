@@ -4,7 +4,11 @@
 
 Miscellaneous:
 
-- Add redemption fee for proportional redemptions
+- Add Alchemy API JSON-RPC provider
+- Remove Infura endpoint
+- Move env vars to CircleCI
+- Upgrade `ethers` to version 5
+- Add redemption fee for proportional redemptions and update FAQ
 
 ## Version 1.6.0
 

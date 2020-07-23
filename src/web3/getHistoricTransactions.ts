@@ -1,26 +1,30 @@
-import { Contract } from 'ethers';
-import { Filter } from 'ethers/providers';
+import type { Contract } from 'ethers';
+import type { Filter , JsonRpcProvider } from '@ethersproject/providers';
+
 import { HistoricTransaction, LogWithTransactionHash } from '../types';
+
 
 /**
  * For a given contract, account and optional log filter, get historic
  * transactions with parsed logs.
  *
+ * @param provider JSON RPC provider instance
  * @param contract ethers.Contract instance
  * @param account Ethereum account address
  * @param topics Array of topic filters
  * @param filter Optional log filter (without `topics`)
  */
 export const getHistoricTransactions = async (
+  provider: JsonRpcProvider,
   contract: Contract,
   account: string,
-  topics: (string | null)[][],
+  topics: ((string | string[])[])[],
   filter: Omit<Filter, 'topic'>,
 ): Promise<Record<string, HistoricTransaction>> => {
   // TODO later: This is probably not a scalable solution
   const allLogs = await Promise.all(
     topics.map(_topics =>
-      contract.provider.getLogs({
+      provider.getLogs({
         ...filter,
         topics: _topics as string[],
         address: contract.address,
@@ -51,7 +55,7 @@ export const getHistoricTransactions = async (
   // Get all transaction receipts for the unique hashes, so that further
   // lookups can be reduced
   const receipts = await Promise.all(
-    hashes.map(hash => contract.provider.getTransactionReceipt(hash)),
+    hashes.map(hash => provider.getTransactionReceipt(hash)),
   );
 
   return hashes
@@ -72,16 +76,16 @@ export const getHistoricTransactions = async (
           status,
           logs: logsMap[hash]
             .map(log => {
-              let values: unknown[] = [];
+              let args: {} = {};
               let name: string | undefined;
               // FIXME symptom-fighting: parse errors for swap (feeQuantity)
               try {
-                ({ values, name } = contract.interface.parseLog(log));
+                ({ args, name } = contract.interface.parseLog(log));
               } catch (error) {
                 // eslint-disable-next-line no-console
                 console.log(log, error);
               }
-              return { values, name }
+              return { args, name }
             })
             .filter(({ name }) => !!name),
         },
