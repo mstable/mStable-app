@@ -43,7 +43,7 @@ export const getConnectors = (chainId: number): Connectors => {
         injected,
         portis,
         squarelink,
-        fortmatic: { apiKey: process.env.REACT_APP_FORTMATIC_API_KEY_MAINNET },
+        fortmatic: { apiKey: process.env.REACT_APP_FORTMATIC_API_KEY },
         walletlink,
         walletconnect,
         // torus: {
@@ -56,7 +56,7 @@ export const getConnectors = (chainId: number): Connectors => {
         injected,
         portis,
         squarelink,
-        fortmatic: { apiKey: process.env.REACT_APP_FORTMATIC_API_KEY_ROPSTEN },
+        fortmatic: { apiKey: process.env.REACT_APP_FORTMATIC_API_KEY },
         walletconnect,
         // walletlink, // In theory it supports Ropsten; in reality the tx gas is broken :(
         // torus: {
