@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { BigNumber } from 'ethers';
+import { BigNumber } from 'ethers/utils';
 
 import { useOrderedCurrentTransactions } from '../../context/TransactionsProvider';
 import { useDataState } from '../../context/DataProvider/DataProvider';

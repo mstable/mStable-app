@@ -7,7 +7,7 @@ import { VictoryBar } from 'victory-bar';
 import { VictoryVoronoiContainer } from 'victory-voronoi-container';
 import Skeleton from 'react-loading-skeleton';
 import { fromUnixTime, getUnixTime } from 'date-fns';
-import { commify } from 'ethers/lib/utils';
+import { commify } from 'ethers/utils';
 
 import { useVictoryTheme } from '../../context/ThemeProvider';
 import { Color } from '../../theme';

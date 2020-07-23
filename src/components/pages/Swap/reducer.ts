@@ -1,7 +1,5 @@
-import { BigNumber, BigNumberish } from 'ethers';
-import { formatUnits } from 'ethers/lib/utils';
+import { BigNumber, BigNumberish, formatUnits } from 'ethers/utils';
 import { Reducer } from 'react';
-
 import { TokenQuantity } from '../../../types';
 import { parseAmount } from '../../../web3/amounts';
 import { EXP_SCALE } from '../../../web3/constants';

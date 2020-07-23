@@ -1,5 +1,11 @@
-import { BigNumberish, BigNumber } from 'ethers';
-import { commify, formatUnits, parseUnits } from 'ethers/lib/utils';
+import {
+  BigNumber,
+  bigNumberify,
+  BigNumberish,
+  commify,
+  formatUnits,
+  parseUnits,
+} from 'ethers/utils';
 
 import { RATIO_SCALE, SCALE } from './constants';
 
@@ -43,7 +49,7 @@ export class BigDecimal {
   exact: BigNumber;
 
   constructor(num: BigNumberish, decimals: number) {
-    this.exact = BigNumber.from(num);
+    this.exact = bigNumberify(num);
     this.decimals = decimals;
   }
 
@@ -101,7 +107,7 @@ export class BigDecimal {
 
   toPercent(decimalPlaces = 2): number {
     const percentage = this.exact.div(
-      BigNumber.from(10).pow(16 - decimalPlaces),
+      new BigNumber(10).pow(16 - decimalPlaces),
     );
     return parseFloat((percentage.toNumber() / 100).toFixed(decimalPlaces));
   }

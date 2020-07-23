@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { BigNumber } from 'ethers';
+import { BigNumber } from 'ethers/utils';
 
 import {
   TokenDetailsFragment,

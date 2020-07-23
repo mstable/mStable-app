@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useWallet } from 'use-wallet';
-import type { TransactionReceipt } from '@ethersproject/providers';
-
+import { TransactionReceipt } from 'ethers/providers';
 import { useTransactionsContext } from '../context/TransactionsProvider';
-import { useProviderContext } from '../context/EthereumProvider';
+import { useWeb3Provider } from '../context/SignerProvider';
 import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 
 /**
@@ -12,7 +11,7 @@ import { useBlockNumber } from '../context/DataProvider/BlockProvider';
  */
 export const TransactionsUpdater = (): null => {
   const { account } = useWallet();
-  const provider = useProviderContext();
+  const provider = useWeb3Provider();
   const blockNumber = useBlockNumber();
   const accountRef = useRef<string | null>(account);
 

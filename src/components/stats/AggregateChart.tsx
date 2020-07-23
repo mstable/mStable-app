@@ -5,7 +5,7 @@ import { VictoryAxis } from 'victory-axis';
 import { VictoryTooltip } from 'victory-tooltip';
 import { VictoryVoronoiContainer } from 'victory-voronoi-container';
 import { addDays, fromUnixTime, getUnixTime } from 'date-fns';
-import { commify } from 'ethers/lib/utils';
+import { commify } from 'ethers/utils';
 import Skeleton from 'react-loading-skeleton';
 
 import { useVictoryTheme } from '../../context/ThemeProvider';

@@ -8,8 +8,8 @@ import {
 } from 'react';
 import { useWallet } from 'use-wallet';
 import useDeepCompareEffect from 'use-deep-compare-effect';
-import { useProviderContext } from '../context/EthereumProvider';
-import { Erc20DetailedFactory } from '../typechain/Erc20DetailedContract';
+import { useSignerContext } from '../context/SignerProvider';
+import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import {
   useSubscribedTokens,
   useTokensDispatch,
@@ -55,16 +55,16 @@ const reducer: Reducer<State, Action> = (state, action) => {
  */
 export const TokenBalancesUpdater = (): null => {
   const { reset, updateBalances, updateAllowance } = useTokensDispatch();
-  const provider = useProviderContext();
+  const signer = useSignerContext();
   const mUSDAddress = useKnownAddress(ContractNames.mUSD);
   const mUSDSavingsAddress = useKnownAddress(ContractNames.mUSDSavings);
 
   const mUSD = useMemo(
     () =>
-      mUSDAddress && provider
-        ? Erc20DetailedFactory.connect(mUSDAddress, provider)
+      mUSDAddress && signer
+        ? Erc20DetailedFactory.connect(mUSDAddress, signer)
         : null,
-    [mUSDAddress, provider],
+    [mUSDAddress, signer],
   );
 
   const [contracts, dispatch] = useReducer(reducer, initialState);
@@ -78,12 +78,12 @@ export const TokenBalancesUpdater = (): null => {
 
   // Set contract instances based on subscribed tokens.
   useDeepCompareEffect(() => {
-    if (!provider) return;
+    if (!signer) return;
 
     const instances = subscribedTokens.reduce(
       (_contracts, token) => ({
         ..._contracts,
-        [token]: Erc20DetailedFactory.connect(token, provider),
+        [token]: Erc20DetailedFactory.connect(token, signer),
       }),
       contracts,
     );
@@ -91,7 +91,7 @@ export const TokenBalancesUpdater = (): null => {
     dispatch({ type: Actions.SetContracts, payload: instances });
     // `contracts` dep intentionally left out because it's set here.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider, subscribedTokens]);
+  }, [signer, subscribedTokens]);
 
   const updateCallback = useCallback(async () => {
     if (account) {
