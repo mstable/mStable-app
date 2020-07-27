@@ -9,7 +9,7 @@ import {
 } from 'date-fns';
 
 import { useMemo } from 'react';
-import { TimeMetricPeriod } from '../../graphql/generated';
+import { TimeMetricPeriod } from '../../graphql/mstable';
 import { DateFilter } from './Metrics';
 
 type TickFormatFn = (timestamp: number) => string;

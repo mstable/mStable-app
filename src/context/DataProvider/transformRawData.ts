@@ -1,115 +1,116 @@
 import { bigNumberify } from 'ethers/utils';
 
 import { BigDecimal } from '../../web3/BigDecimal';
-import { BassetState, DataState, BassetStatus, RawData } from './types';
+import { BassetState, BassetStatus, DataState, RawData } from './types';
 
-const getMassetState = ({
-  mAsset: {
-    basket: { collateralisationRatio, failed, undergoingRecol },
-    feeRate,
-    redemptionFeeRate,
-    token: mAssetToken,
+type TransformFn<T extends keyof DataState> = (
+  rawData: RawData,
+  dataState: DataState,
+) => DataState[T];
+
+type TransformPipelineItem<T extends keyof DataState> = [T, TransformFn<T>];
+
+const getMassetState: TransformFn<'mAsset'> = ({
+ mAsset: {
+   basket: { collateralisationRatio, failed, undergoingRecol },
+   feeRate,
+   redemptionFeeRate,
+   token: { totalSupply, address, decimals, symbol },
+ },
+ tokens,
+}) => {
+  const { allowances, balance } = tokens[address] ?? {
+    balance: new BigDecimal(0, decimals),
+    allowances: {},
+  };
+  return {
+    address,
+    balance,
+    allowances,
+    collateralisationRatio: bigNumberify(collateralisationRatio),
+    decimals,
+    failed,
+    feeRate: bigNumberify(feeRate),
+    redemptionFeeRate: bigNumberify(redemptionFeeRate),
+    symbol,
+    totalSupply: BigDecimal.parse(totalSupply, decimals),
+    undergoingRecol,
+
+    // Initial values
+    allBassetsNormal: false,
+    blacklistedBassets: [],
+    overweightBassets: [],
+  };
+};
+
+const getSavingsContract: TransformFn<'savingsContract'> = (
+  {
+    creditBalances,
+    latestExchangeRate,
+    savingsContract: savingsContractData,
+    tokens: { [savingsContractData.id]: savingsContract },
   },
-  tokens,
-}: RawData): DataState['mAsset'] => ({
-  address: mAssetToken.address,
-  balance: new BigDecimal(
-    tokens[mAssetToken.address]?.balance || 0,
-    mAssetToken.decimals,
-  ),
-  collateralisationRatio: bigNumberify(collateralisationRatio),
-  decimals: mAssetToken.decimals,
-  failed,
-  feeRate: bigNumberify(feeRate),
-  redemptionFeeRate: bigNumberify(redemptionFeeRate),
-  symbol: mAssetToken.symbol,
-  totalSupply: BigDecimal.parse(mAssetToken.totalSupply, mAssetToken.decimals),
-  undergoingRecol,
-
-  // Initial values
-  allBassetsNormal: false,
-  blacklistedBassets: [],
-  overweightBassets: [],
-});
-
-const getSavingsContractState = ({
-  creditBalances,
-  latestExchangeRate,
-  mAsset,
-  savingsContract: savingsContractData,
-  tokens: { [savingsContractData.id]: savingsContract },
-}: RawData): DataState['savingsContract'] => ({
+  { mAsset: { address: mAssetAddress, decimals } },
+) => ({
   address: savingsContractData.id,
   automationEnabled: savingsContractData.automationEnabled,
   creditBalances: (creditBalances || []).map(({ amount }) =>
-    BigDecimal.parse(amount, mAsset.token.decimals),
+    BigDecimal.parse(amount, decimals),
   ),
   latestExchangeRate: latestExchangeRate
     ? {
-        exchangeRate: BigDecimal.parse(
-          latestExchangeRate.exchangeRate,
-          mAsset.token.decimals,
-        ),
-        timestamp: latestExchangeRate.timestamp,
-      }
+      exchangeRate: BigDecimal.parse(
+        latestExchangeRate.exchangeRate,
+        decimals,
+      ),
+      timestamp: latestExchangeRate.timestamp,
+    }
     : undefined,
-  mAssetAllowance: new BigDecimal(
-    savingsContract?.allowance[mAsset.token.address] || 0,
-    mAsset.token.decimals,
-  ),
-  savingsRate: BigDecimal.parse(
-    savingsContractData.savingsRate,
-    mAsset.token.decimals,
-  ),
-  totalCredits: BigDecimal.parse(
-    savingsContractData.totalCredits,
-    mAsset.token.decimals,
-  ),
-  totalSavings: BigDecimal.parse(
-    savingsContractData.totalSavings,
-    mAsset.token.decimals,
-  ),
+  mAssetAllowance:
+    savingsContract?.allowances[mAssetAddress] || new BigDecimal(0, decimals),
+  savingsRate: BigDecimal.parse(savingsContractData.savingsRate, decimals),
+  totalCredits: BigDecimal.parse(savingsContractData.totalCredits, decimals),
+  totalSavings: BigDecimal.parse(savingsContractData.totalSavings, decimals),
   savingsBalance: {},
 });
 
-const getBassetsState = (
+const getBassetsState: TransformFn<'bAssets'> = (
   {
     mAsset: {
       basket: { bassets },
     },
     tokens,
-  }: RawData,
-  mAsset: DataState['mAsset'],
-): DataState['bAssets'] =>
+  },
+  { mAsset },
+) =>
   bassets.reduce(
     (
       _bAssets,
       {
         isTransferFeeCharged,
-        maxWeight: _maxWeight,
-        ratio: _ratio,
+        maxWeight,
+        ratio,
         status,
-        token: { address, decimals, symbol, totalSupply: _totalSupply },
+        token: { address, decimals, symbol, totalSupply },
         vaultBalance,
       },
     ) => {
-      const token = tokens[address];
-      const mAssetToken = tokens[mAsset.address];
+      const { balance, allowances } = tokens[address] ?? {
+        balance: new BigDecimal(0, decimals),
+        allowances: {},
+      };
       const bAsset: BassetState = {
         address,
-        balance: new BigDecimal(token?.balance || 0, decimals),
+        allowances,
+        balance,
         decimals,
         isTransferFeeCharged,
         mAssetAddress: mAsset.address,
-        mAssetAllowance: new BigDecimal(
-          mAssetToken?.allowance[address.toLowerCase()] || 0,
-          decimals,
-        ),
-        maxWeight: bigNumberify(_maxWeight),
-        ratio: bigNumberify(_ratio),
+        maxWeight: bigNumberify(maxWeight),
+        ratio: bigNumberify(ratio),
         status: status as BassetStatus,
         symbol,
-        totalSupply: BigDecimal.parse(_totalSupply, decimals),
+        totalSupply: BigDecimal.parse(totalSupply, decimals),
         totalVault: BigDecimal.parse(vaultBalance, decimals),
 
         // Initial values
@@ -128,13 +129,17 @@ const getBassetsState = (
     {},
   );
 
-export const transformRawData = (rawData: RawData): DataState => {
-  const mAsset = getMassetState(rawData);
-  const savingsContract = getSavingsContractState(rawData);
-  const bAssets = getBassetsState(rawData, mAsset);
-  return {
-    mAsset,
-    savingsContract,
-    bAssets,
-  };
-};
+const pipelineItems: TransformPipelineItem<keyof DataState>[] = [
+  ['mAsset', getMassetState],
+  ['bAssets', getBassetsState],
+  ['savingsContract', getSavingsContract],
+];
+
+export const transformRawData = (rawData: RawData): DataState =>
+  pipelineItems.reduce(
+    (_dataState, [key, transform]) => ({
+      ..._dataState,
+      [key]: transform(rawData, _dataState as DataState),
+    }),
+    {} as Partial<DataState>,
+  ) as DataState;

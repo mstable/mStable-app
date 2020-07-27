@@ -1,13 +1,13 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 import { InputPane } from './InputPane';
 import { ConfirmPane } from './ConfirmPane';
 import { TransactionsPane } from './TransactionsPane';
 
 interface Props {
-  confirm?: ReactElement;
+  confirm?: ReactNode;
   confirmLabel: string;
-  input: ReactElement;
+  input?: ReactNode;
   transactionsLabel: string;
   valid: boolean;
 }
@@ -28,9 +28,9 @@ export const TransactionForm: FC<Props> = ({
   valid,
 }) => (
   <Container>
-    <InputPane>{input}</InputPane>
+    {input ? <InputPane>{input}</InputPane> : null}
     <ConfirmPane confirmLabel={confirmLabel} valid={valid}>
-      {confirm}
+      {valid ? confirm : null}
     </ConfirmPane>
     <TransactionsPane transactionsLabel={transactionsLabel} />
   </Container>

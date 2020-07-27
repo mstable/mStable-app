@@ -17,7 +17,13 @@ const StyledSpan = styled.span<Pick<Props, 'highlight' | 'highlightColor'>>`
   color: ${({ highlight, highlightColor }) =>
     highlight && highlightColor ? highlightColor : 'inherit'};
   font-weight: ${({ highlight }) => (highlight ? 'bold' : 'normal')};
+`;
 
+const PrefixOrSuffix = styled.span`
+  font-family: 'Poppins', sans-serif;
+`;
+
+const Number = styled.span`
   ${({ theme }) => theme.mixins.numeric}
 `;
 
@@ -41,8 +47,8 @@ export const CountUp: FC<Props> = ({
     end,
     separator,
     start: prevEnd.current,
-    ...(prefix ? { prefix } : null),
-    ...(suffix ? { suffix } : null),
+    // ...(prefix ? { prefix } : null),
+    // ...(suffix ? { suffix } : null),
   });
 
   useEffect(() => {
@@ -59,7 +65,9 @@ export const CountUp: FC<Props> = ({
       highlight={highlight}
       highlightColor={highlightColor}
     >
-      {countUp}
+      {prefix ? <PrefixOrSuffix>{prefix}</PrefixOrSuffix> : null}
+      <Number>{countUp}</Number>
+      {suffix ? <PrefixOrSuffix>{suffix}</PrefixOrSuffix> : null}
     </Container>
   );
 };

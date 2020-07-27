@@ -2,7 +2,8 @@ import React, { createContext, FC, useContext, useMemo } from 'react';
 import { pipe } from 'ts-pipe-compose';
 import useDebouncedMemo from '@sevenoutman/use-debounced-memo';
 
-import { useLatestExchangeRateLazyQuery } from '../../graphql/generated';
+import { useLatestExchangeRateLazyQuery } from '../../graphql/mstable';
+import { BigDecimal } from '../../web3/BigDecimal';
 import { useTokensState } from './TokensProvider';
 import {
   RawData,
@@ -20,7 +21,6 @@ import {
   useMusdSubscription,
   useMusdSavingsSubscription,
 } from './subscriptions';
-import { BigDecimal } from '../../web3/BigDecimal';
 
 const dataStateCtx = createContext<DataState | undefined>(undefined);
 
@@ -36,17 +36,20 @@ const setDataState = (data: PartialRawData): DataState | undefined => {
 };
 
 const useRawData = (): PartialRawData => {
-  const tokens = useTokensState();
+  const { tokens } = useTokensState();
+
   const mUsdSub = useMusdSubscription();
+  const mAsset = mUsdSub.data?.masset || undefined;
+
   const mUsdSavingsSub = useMusdSavingsSubscription();
+  const savingsContract = mUsdSavingsSub.data?.savingsContracts[0];
+
   const creditBalancesSub = useCreditBalancesSubscription();
+  const creditBalances = creditBalancesSub.data?.account?.creditBalances;
+
   const latestExchangeRateSub = useBlockPollingSubscription(
     useLatestExchangeRateLazyQuery,
   );
-
-  const mAsset = mUsdSub.data?.masset || undefined;
-  const savingsContract = mUsdSavingsSub.data?.savingsContracts[0];
-  const creditBalances = creditBalancesSub.data?.account?.creditBalances;
   const latestExchangeRate = latestExchangeRateSub.data?.exchangeRates[0];
 
   return useDebouncedMemo(
@@ -57,8 +60,8 @@ const useRawData = (): PartialRawData => {
       savingsContract,
       tokens,
     }),
-    [tokens, mAsset, savingsContract, creditBalances, latestExchangeRate],
-    500,
+    [creditBalances, latestExchangeRate, mAsset, savingsContract, tokens],
+    1000,
   );
 };
 

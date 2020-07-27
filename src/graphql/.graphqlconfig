@@ -1,11 +1,57 @@
 {
   "name": "mStable",
-  "schemaPath": "schema.graphql",
-  "extensions": {
-    "endpoints": {
-      "local": {
-        "url": "http://0.0.0.0:8000/subgraphs/name/mStable/mStable-protocol",
-        "introspect": false
+  "projects": {
+    "mstable": {
+      "includes": ["./shared/*", "./mstable/*"],
+      "schemaPath": "remote-schema.graphql",
+      "extensions": {
+        "endpoints": {
+          "ropsten": {
+            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-ropsten",
+            "introspect": false
+          },
+          "mainnet-production": {
+            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
+            "introspect": false
+          },
+          "mainnet-staging": {
+            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging",
+            "introspect": false
+          }
+        }
+      }
+    },
+    "balancer": {
+      "includes": ["./shared/*", "./balancer/*"],
+      "extensions": {
+        "endpoints": {
+          "mainnet": {
+            "url": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
+            "introspect": false
+          }
+        }
+      }
+    },
+    "uniswap": {
+      "includes": ["./shared/*", "./uniswap/*"],
+      "extensions": {
+        "endpoints": {
+          "mainnet": {
+            "url": "https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2",
+            "introspect": false
+          }
+        }
+      }
+    },
+    "blocks": {
+      "includes": ["./shared/*", "./blocks/*"],
+      "extensions": {
+        "endpoints": {
+          "mainnet": {
+            "url": "https://api.thegraph.com/subgraphs/name/blocklytics/ropsten-blocks",
+            "introspect": false
+          }
+        }
       }
     }
   }

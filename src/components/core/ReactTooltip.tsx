@@ -15,7 +15,7 @@ export const ReactTooltip = styled(ReactTooltipBase)`
 `;
 
 const TooltipSpan = styled.span`
-  display: flex;
+  display: inline-flex;
   align-items: center;
   > span {
     margin-right: 4px;
@@ -26,18 +26,18 @@ const TooltipSpan = styled.span`
   }
 `;
 
-export const Tooltip: FC<{ tip: string; hideIcon?: boolean }> = ({
-  tip,
-  hideIcon,
-  children,
-}) => {
+export const Tooltip: FC<{
+  className?: string;
+  tip?: string;
+  hideIcon?: boolean;
+}> = ({ tip, hideIcon, children, className }) => {
   useLayoutEffect(() => {
     ReactTooltipBase.rebuild();
   }, []);
   return (
-    <TooltipSpan data-tip={tip} data-for="global">
+    <TooltipSpan data-tip={tip} data-for="global" className={className}>
       <span>{children}</span>
-      {hideIcon ? null : <img src={TooltipIcon} alt="" />}
+      {hideIcon || !tip ? null : <img src={TooltipIcon} alt="" />}
     </TooltipSpan>
   );
 };

@@ -2,6 +2,30 @@
 
 ## Next
 
+Features:
+
+- Add EARN feature
+  - This is a major change and includes new data sources and data 
+    processing, new contracts, a new top-level navigation item, 
+    and various components and forms.
+  - Update `mStable-subgraph` submodule
+  - Add another localStorage version
+- App header/navigation updates
+  - Use the connected wallet icon instead of the connected address blockie
+  - Show transaction status success/pending/error icon by wallet
+  - Add notifications section
+  - Improve layout for navigation items
+
+Miscellaneous:
+
+- Add multiple Subgraph endpoints, to use data from connected
+  projects (Balancer, Uniswap) and block timestamps.
+- Improve GraphQL code generation
+- Add more token icons
+- Improve abstractions for common tasks (tokens, amounts, allowances, etc)
+- Reduce query volume for fetching data, particularly token balances/allowances
+- Add easter egg
+
 ## Version 1.7.0
 
 _Released 23.07.20 16.00 CEST_

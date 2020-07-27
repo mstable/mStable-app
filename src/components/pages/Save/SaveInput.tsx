@@ -41,19 +41,6 @@ export const SaveInput: FC<{}> = () => {
     [mAsset],
   );
 
-  const musdBalanceItem = useMemo(
-    () =>
-      mAsset
-        ? [
-            {
-              label: 'Balance',
-              value: mAsset?.balance.format(2, true, 'mUSD'),
-            },
-          ]
-        : [],
-    [mAsset],
-  );
-
   const tokenAddresses = useMemo<string[]>(
     () => (mAssetAddress ? [mAssetAddress] : []),
     [mAssetAddress],
@@ -94,7 +81,6 @@ export const SaveInput: FC<{}> = () => {
           onSetMax={setMaxAmount}
           tokenAddresses={tokenAddresses}
           tokenDisabled
-          items={musdBalanceItem}
           error={error}
           needsUnlock={needsUnlock}
           spender={savingsContractAddress as string}

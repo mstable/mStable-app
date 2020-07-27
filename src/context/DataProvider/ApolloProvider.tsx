@@ -1,36 +1,26 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { ApolloProvider as ApolloReactProvider } from '@apollo/react-hooks';
+import { MultiAPILink } from '@habx/apollo-multi-endpoint-link';
 import {
   ApolloClient,
   InMemoryCache,
   HttpLink,
   NormalizedCacheObject,
 } from '@apollo/client';
-import { ApolloLink, concat } from 'apollo-link';
+import { ApolloLink } from 'apollo-link';
 import { onError } from 'apollo-link-error';
 import { persistCache } from 'apollo-cache-persist';
 import Skeleton from 'react-loading-skeleton';
 
 import { useAddErrorNotification } from '../NotificationsProvider';
-import { DAPP_VERSION } from '../../web3/constants';
-
-if (!process.env.REACT_APP_GRAPHQL_ENDPOINT) {
-  throw new Error(
-    'REACT_APP_GRAPHQL_ENDPOINT environment variable not defined',
-  );
-}
 
 const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
 
-const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}.DAPP_VERSION_${DAPP_VERSION}`;
+const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}`;
 
 const cache = new InMemoryCache({
   resultCaching: true,
 });
-
-const httpLink = (new HttpLink({
-  uri: process.env.REACT_APP_GRAPHQL_ENDPOINT,
-}) as unknown) as ApolloLink;
 
 /**
  * Provider for accessing Apollo queries and subscriptions.
@@ -38,6 +28,32 @@ const httpLink = (new HttpLink({
 export const ApolloProvider: FC<{}> = ({ children }) => {
   const addErrorNotification = useAddErrorNotification();
   const [persisted, setPersisted] = useState(false);
+
+  const errorLink = onError(({ networkError, graphQLErrors }) => {
+    if (graphQLErrors) {
+      graphQLErrors.forEach(({ message, ...error }) => {
+        // eslint-disable-next-line no-console
+        console.error(message, error);
+      });
+    }
+    if (networkError) {
+      addErrorNotification(`Network error: ${networkError.message}`);
+    }
+  });
+
+  const apolloLink = ApolloLink.from([
+    new MultiAPILink({
+      endpoints: {
+        mstable: process.env.REACT_APP_GRAPHQL_ENDPOINT_MSTABLE as string,
+        balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
+        uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
+        blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,
+      },
+      httpSuffix: '', // By default, this library adds `/graphql` as a suffix
+      createHttpLink: () => (new HttpLink() as unknown) as ApolloLink,
+    }),
+    errorLink,
+  ]);
 
   useEffect(() => {
     persistCache({
@@ -57,22 +73,9 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
   >(() => {
     if (!persisted) return undefined;
 
-    const errorLink = onError(({ networkError, graphQLErrors }) => {
-      if (graphQLErrors) {
-        graphQLErrors.forEach(({ message, ...error }) => {
-          // eslint-disable-next-line no-console
-          console.error(message, error);
-        });
-      }
-      if (networkError)
-        addErrorNotification(`Network error: ${networkError.message}`);
-    });
-
-    const link = concat(errorLink, httpLink);
-
     return new ApolloClient<NormalizedCacheObject>({
       cache,
-      link: link as never,
+      link: apolloLink as never,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [persisted]);

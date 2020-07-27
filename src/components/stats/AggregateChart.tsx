@@ -15,7 +15,7 @@ import {
   AggregateMetricsOfTypeQueryVariables,
   AggregateMetricType,
   useAggregateMetricsOfTypeQuery,
-} from '../../graphql/generated';
+} from '../../graphql/mstable';
 import {
   DateRange,
   Metric,

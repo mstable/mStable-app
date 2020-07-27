@@ -1,15 +1,9 @@
-import React, {
-  FC,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
-import { TokenDetailsFragment } from '../../graphql/generated';
+import { TokenDetailsFragment } from '../../graphql/mstable';
 import { TokenIcon } from '../icons/TokenIcon';
+import { useToken } from '../../context/DataProvider/TokensProvider';
 
 interface Props {
   name: string;
@@ -68,7 +62,6 @@ const OptionsContainer = styled.div<{ open: boolean }>`
 
 const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   height: 46px;
 
@@ -81,14 +74,13 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
     background: ${({ theme }) => theme.color.blueTransparent};
   }
 
-  > img {
-    width: 30px;
-    margin-right: ${({ theme }) => theme.spacing.xs};
+  > :first-child {
+    padding-right: 6px;
   }
-`;
 
-const TokenSymbol = styled.div`
-  width: 100%;
+  img {
+    width: 36px;
+  }
 `;
 
 const Placeholder = styled(OptionContainer)`
@@ -107,7 +99,7 @@ const Option: FC<TokenOptionProps> = ({
   return (
     <OptionContainer onClick={handleClick} selected={selected}>
       <TokenIcon symbol={symbol} />
-      <TokenSymbol>{symbol}</TokenSymbol>
+      <div>{symbol}</div>
     </OptionContainer>
   );
 };
@@ -181,10 +173,7 @@ export const TokenInput: FC<Props> = ({
     };
   }, [handleKeyPress]);
 
-  const selectedToken = useMemo(
-    () => (value ? tokens.find(t => t.address === value) : null),
-    [tokens, value],
-  );
+  const token = useToken(value);
 
   return (
     <Container
@@ -193,8 +182,8 @@ export const TokenInput: FC<Props> = ({
       error={error}
       disabled={disabled}
     >
-      {selectedToken ? (
-        <Option address={selectedToken.address} symbol={selectedToken.symbol} />
+      {token ? (
+        <Option address={token.address} symbol={token.symbol} />
       ) : (
         <Placeholder onClick={handleUnset}>{placeholderText}</Placeholder>
       )}

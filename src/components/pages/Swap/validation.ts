@@ -216,7 +216,6 @@ export const applyValidation = (state: State): State => {
 
   const mAsset = dataState?.mAsset;
   const mAssetAddress = mAsset?.address;
-  // const allowance = mAsset?.
 
   const [
     formValid,
@@ -241,7 +240,8 @@ export const applyValidation = (state: State): State => {
   const needsUnlock = !!(
     input.token.address &&
     input.amount.exact &&
-    inputAsset?.mAssetAllowance?.exact.lt(input.amount.exact)
+    mAssetAddress &&
+    inputAsset?.allowances[mAssetAddress]?.exact.lt(input.amount.exact)
   );
 
   const inputError = getReasonMessage(

@@ -1,5 +1,5 @@
 import { Connectors } from 'use-wallet';
-import { CONNECTORS } from './web3/constants';
+import { CONNECTORS } from './web3/connectors';
 
 const STORAGE_PREFIX = '__mStable-app__';
 const STORAGE_VERSION = 1;
@@ -16,9 +16,8 @@ export interface StorageV1 extends VersionedStorage<1, {}> {
   connector?: { id: keyof Connectors; subType?: string };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface StorageV2 extends VersionedStorage<2, StorageV1> {
-  // Storage V2 goes here
+  viewedEarnOnboarding?: boolean;
 }
 
 export type AllStorage = StorageV0 & StorageV1 & StorageV2;

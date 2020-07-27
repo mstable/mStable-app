@@ -1,0 +1,245 @@
+schema {
+  query: Query
+  subscription: Subscription
+}
+type Query {
+  block(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Block
+  blocks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Block_orderBy
+    orderDirection: OrderDirection
+    where: Block_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Block!]!
+}
+input Block_height {
+  hash: Bytes
+  number: Int
+}
+scalar Bytes
+type Block {
+  id: ID!
+  number: BigInt!
+  timestamp: BigInt!
+  parentHash: String
+  author: String
+  difficulty: BigInt
+  totalDifficulty: BigInt
+  gasUsed: BigInt
+  gasLimit: BigInt
+  receiptsRoot: String
+  transactionsRoot: String
+  stateRoot: String
+  size: BigInt
+  unclesHash: String
+}
+scalar BigInt
+enum Block_orderBy {
+  id
+  number
+  timestamp
+  parentHash
+  author
+  difficulty
+  totalDifficulty
+  gasUsed
+  gasLimit
+  receiptsRoot
+  transactionsRoot
+  stateRoot
+  size
+  unclesHash
+}
+enum OrderDirection {
+  asc
+  desc
+}
+input Block_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  number: BigInt
+  number_not: BigInt
+  number_gt: BigInt
+  number_lt: BigInt
+  number_gte: BigInt
+  number_lte: BigInt
+  number_in: [BigInt!]
+  number_not_in: [BigInt!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  parentHash: String
+  parentHash_not: String
+  parentHash_gt: String
+  parentHash_lt: String
+  parentHash_gte: String
+  parentHash_lte: String
+  parentHash_in: [String!]
+  parentHash_not_in: [String!]
+  parentHash_contains: String
+  parentHash_not_contains: String
+  parentHash_starts_with: String
+  parentHash_not_starts_with: String
+  parentHash_ends_with: String
+  parentHash_not_ends_with: String
+  author: String
+  author_not: String
+  author_gt: String
+  author_lt: String
+  author_gte: String
+  author_lte: String
+  author_in: [String!]
+  author_not_in: [String!]
+  author_contains: String
+  author_not_contains: String
+  author_starts_with: String
+  author_not_starts_with: String
+  author_ends_with: String
+  author_not_ends_with: String
+  difficulty: BigInt
+  difficulty_not: BigInt
+  difficulty_gt: BigInt
+  difficulty_lt: BigInt
+  difficulty_gte: BigInt
+  difficulty_lte: BigInt
+  difficulty_in: [BigInt!]
+  difficulty_not_in: [BigInt!]
+  totalDifficulty: BigInt
+  totalDifficulty_not: BigInt
+  totalDifficulty_gt: BigInt
+  totalDifficulty_lt: BigInt
+  totalDifficulty_gte: BigInt
+  totalDifficulty_lte: BigInt
+  totalDifficulty_in: [BigInt!]
+  totalDifficulty_not_in: [BigInt!]
+  gasUsed: BigInt
+  gasUsed_not: BigInt
+  gasUsed_gt: BigInt
+  gasUsed_lt: BigInt
+  gasUsed_gte: BigInt
+  gasUsed_lte: BigInt
+  gasUsed_in: [BigInt!]
+  gasUsed_not_in: [BigInt!]
+  gasLimit: BigInt
+  gasLimit_not: BigInt
+  gasLimit_gt: BigInt
+  gasLimit_lt: BigInt
+  gasLimit_gte: BigInt
+  gasLimit_lte: BigInt
+  gasLimit_in: [BigInt!]
+  gasLimit_not_in: [BigInt!]
+  receiptsRoot: String
+  receiptsRoot_not: String
+  receiptsRoot_gt: String
+  receiptsRoot_lt: String
+  receiptsRoot_gte: String
+  receiptsRoot_lte: String
+  receiptsRoot_in: [String!]
+  receiptsRoot_not_in: [String!]
+  receiptsRoot_contains: String
+  receiptsRoot_not_contains: String
+  receiptsRoot_starts_with: String
+  receiptsRoot_not_starts_with: String
+  receiptsRoot_ends_with: String
+  receiptsRoot_not_ends_with: String
+  transactionsRoot: String
+  transactionsRoot_not: String
+  transactionsRoot_gt: String
+  transactionsRoot_lt: String
+  transactionsRoot_gte: String
+  transactionsRoot_lte: String
+  transactionsRoot_in: [String!]
+  transactionsRoot_not_in: [String!]
+  transactionsRoot_contains: String
+  transactionsRoot_not_contains: String
+  transactionsRoot_starts_with: String
+  transactionsRoot_not_starts_with: String
+  transactionsRoot_ends_with: String
+  transactionsRoot_not_ends_with: String
+  stateRoot: String
+  stateRoot_not: String
+  stateRoot_gt: String
+  stateRoot_lt: String
+  stateRoot_gte: String
+  stateRoot_lte: String
+  stateRoot_in: [String!]
+  stateRoot_not_in: [String!]
+  stateRoot_contains: String
+  stateRoot_not_contains: String
+  stateRoot_starts_with: String
+  stateRoot_not_starts_with: String
+  stateRoot_ends_with: String
+  stateRoot_not_ends_with: String
+  size: BigInt
+  size_not: BigInt
+  size_gt: BigInt
+  size_lt: BigInt
+  size_gte: BigInt
+  size_lte: BigInt
+  size_in: [BigInt!]
+  size_not_in: [BigInt!]
+  unclesHash: String
+  unclesHash_not: String
+  unclesHash_gt: String
+  unclesHash_lt: String
+  unclesHash_gte: String
+  unclesHash_lte: String
+  unclesHash_in: [String!]
+  unclesHash_not_in: [String!]
+  unclesHash_contains: String
+  unclesHash_not_contains: String
+  unclesHash_starts_with: String
+  unclesHash_not_starts_with: String
+  unclesHash_ends_with: String
+  unclesHash_not_ends_with: String
+}
+type Subscription {
+  block(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Block
+  blocks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Block_orderBy
+    orderDirection: OrderDirection
+    where: Block_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Block!]!
+}
+scalar BigDecimal

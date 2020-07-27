@@ -5,13 +5,17 @@ import { BigNumber } from 'ethers/utils';
 import {
   TokenDetailsFragment,
   useErc20TokensQuery,
-} from '../../graphql/generated';
+} from '../../graphql/mstable';
 import { Size, ViewportWidth } from '../../theme';
 import { Button } from '../core/Button';
 import { FlexRow } from '../core/Containers';
 import { AmountInput } from './AmountInput';
 import { TokenInput } from './TokenInput';
 import { ApproveButton } from './ApproveButton';
+import {
+  useToken,
+  useTokenAllowance,
+} from '../../context/DataProvider/TokensProvider';
 
 interface Props {
   name: string;
@@ -155,6 +159,9 @@ export const TokenAmountInput: FC<Props> = ({
     skip: tokenAddresses.length === 0,
   });
 
+  const token = useToken(tokenValue);
+  useTokenAllowance(tokenValue, spender);
+
   return (
     <>
       <InputsRow>
@@ -190,6 +197,12 @@ export const TokenAmountInput: FC<Props> = ({
       </InputsRow>
       <ErrorAndItems>
         <Items>
+          <Item key="balance">
+            <ItemLabel>Balance</ItemLabel>
+            <div>
+              {token ? token.balance.format(2, true, token.symbol) : '—'}
+            </div>
+          </Item>
           {items.map(({ label, value, highlight }) => (
             <Item key={label} highlight={highlight}>
               <ItemLabel>{label}</ItemLabel>

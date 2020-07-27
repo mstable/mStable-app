@@ -1,0 +1,32 @@
+fragment TokenDetails on Token {
+  id
+  address
+  decimals
+  symbol
+  totalSupply
+}
+
+fragment MassetAll on Masset {
+  id
+  token {
+    ...TokenDetails
+  }
+  feeRate
+  redemptionFeeRate
+  basket {
+    failed
+    collateralisationRatio
+    undergoingRecol
+    bassets {
+      id
+      vaultBalance
+      isTransferFeeCharged
+      ratio
+      status
+      maxWeight
+      token {
+        ...TokenDetails
+      }
+    }
+  }
+}

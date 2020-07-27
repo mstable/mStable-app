@@ -1,5 +1,4 @@
-import { useMemo, createElement, DOMElement, useEffect, useState } from 'react';
-import blockies from 'ethereum-blockies';
+import { useMemo, useEffect, useState } from 'react';
 import { useMutex } from 'react-context-mutex';
 import useInterval from '@use-it/interval';
 import { BigNumber, parseUnits } from 'ethers/utils';
@@ -10,12 +9,12 @@ import {
   useLastExchangeRateBeforeTimestampQuery,
   useWeeklyExchangeRatesQuery,
   WeeklyExchangeRatesQueryVariables,
-} from '../graphql/generated';
+} from '../graphql/mstable';
 import { useLatestExchangeRate } from '../context/DataProvider/DataProvider';
 import { truncateAddress } from './strings';
-import { theme } from '../theme';
 import { SCALE } from './constants';
 import { parseExactAmount, parseAmount } from './amounts';
+import { BigDecimal } from './BigDecimal';
 
 interface Apy {
   value?: BigNumber;
@@ -29,31 +28,6 @@ type RateTimestamp = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
 
 export const useTruncatedAddress = (address: string | null): string | null =>
   useMemo(() => (address ? truncateAddress(address) : null), [address]);
-
-export const useBlockie = (
-  address: string | null,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): DOMElement<any, any> | null =>
-  useMemo(() => {
-    if (!address) return null;
-    return createElement('canvas', {
-      ref: (canvas: HTMLCanvasElement) => {
-        if (canvas) {
-          blockies.render(
-            {
-              seed: address,
-              color: theme.color.green,
-              bgcolor: theme.color.blue,
-              size: 8,
-              scale: 4,
-              spotcolor: theme.color.gold,
-            },
-            canvas,
-          );
-        }
-      },
-    });
-  }, [address]);
 
 /**
  * Given a unique key and a promise, run the promise within a mutex
@@ -247,4 +221,15 @@ export const useAverageApyForPastWeek = (): BigNumber | undefined => {
       .reduce((_average, apy) => _average.add(apy), new BigNumber(0))
       .div(filtered.length);
   }, [dailyApys]);
+};
+
+export const annualiseValue = (
+  value: BigDecimal,
+  startSeconds: number,
+  endSeconds = Math.floor(Date.now() / 1e3),
+): BigDecimal => {
+  const timeDiff = parseUnits((endSeconds - startSeconds).toString());
+  const portionOfYear = timeDiff.mul(SCALE).div(YEAR);
+  const portionsInYear = SCALE.div(portionOfYear);
+  return value.mulTruncate(portionsInYear);
 };

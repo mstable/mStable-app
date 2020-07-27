@@ -1,3 +1,6 @@
-src/graphql/generated.tsx
+src/graphql/mstable.tsx
+src/graphql/balancer.tsx
+src/graphql/uniswap.tsx
+src/graphql/blocks.tsx
 src/react-app-env.d.ts
 src/typechain

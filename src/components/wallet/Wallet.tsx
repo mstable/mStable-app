@@ -9,7 +9,7 @@ import {
   useWalletState,
   useWalletConnector,
 } from '../../context/AppProvider';
-import { AVAILABLE_CONNECTORS, CONNECTORS } from '../../web3/constants';
+import { AVAILABLE_CONNECTORS, CONNECTORS } from '../../web3/connectors';
 import { Button } from '../core/Button';
 import { H2, H3 } from '../core/Typography';
 import { Address } from '../core/Address';
@@ -25,7 +25,6 @@ const Container = styled.div`
   flex: 1;
   width: 100%;
   height: 100%;
-  padding: 40px 20px;
   color: white;
 
   a {
@@ -189,7 +188,7 @@ export const Wallet: FC<{}> = () => {
           <Connected walletLabel={wallet.label} account={account} />
         ) : connecting ? (
           <Connecting>
-            <ActivitySpinner />
+            <ActivitySpinner pending />
           </Connecting>
         ) : (
           <Disconnected />

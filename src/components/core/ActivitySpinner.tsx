@@ -1,17 +1,34 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-const Spinner = styled.svg`
-  animation: rotate 2s linear infinite;
+interface Props {
+  className?: string;
+  error?: boolean;
+  success?: boolean;
+  pending?: boolean;
+}
+
+const Spinner = styled.svg<Props>`
+  animation: ${({ pending }) =>
+    pending ? 'rotate 2s linear infinite' : 'none'};
   width: 50px;
   height: 50px;
 
   circle {
-    stroke: ${({ theme }) => theme.color.blue};
-    stroke-width: 6px;
+    stroke: ${({ theme, error, success, pending }) =>
+      error
+        ? theme.color.red
+        : success
+        ? theme.color.green
+        : pending
+        ? theme.color.blue
+        : theme.color.greyTransparent};
+    stroke-width: 8px;
     stroke-linecap: round;
     fill: none;
-    animation: dash 1.5s ease-in-out infinite;
+    animation: ${({ pending }) =>
+      pending ? 'dash 1.5s ease-in-out infinite' : 'none'};
+    transition: stroke 0.5s ease;
   }
 
   @keyframes rotate {
@@ -19,6 +36,7 @@ const Spinner = styled.svg`
       transform: rotate(360deg);
     }
   }
+
   @keyframes dash {
     0% {
       stroke-dasharray: 1, 150;
@@ -42,10 +60,15 @@ const Container = styled.div`
   }
 `;
 
-export const ActivitySpinner: FC<{}> = () => (
-   <Container>
-     <Spinner viewBox="0 0 50 50">
-       <circle cx="25" cy="25" r="20" />
-     </Spinner>
-   </Container>
- );
+export const ActivitySpinner: FC<Props> = ({ error, success, pending, className }) => (
+  <Container className={className}>
+    <Spinner
+      viewBox="0 0 50 50"
+      error={error}
+      pending={pending}
+      success={success}
+    >
+      <circle cx="25" cy="25" r="20" />
+    </Spinner>
+  </Container>
+);

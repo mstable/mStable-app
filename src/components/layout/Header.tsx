@@ -1,66 +1,11 @@
 import React, { FC, useCallback, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { A } from 'hookrouter';
-import { ReactComponent as LogoSvg } from '../icons/mstable-logo-horizontal.svg';
-import { WalletButton } from '../wallet/WalletButton';
 import { Navigation } from './Navigation';
 import { ViewportWidth } from '../../theme';
-import {
-  useCollapseWallet,
-  useSetWalletPosition,
-} from '../../context/AppProvider';
+import { useSetWalletPosition } from '../../context/AppProvider';
 import { centredLayout } from './css';
 
-const Logo = styled.div<{ inverted?: boolean; full: boolean }>` 
-  overflow: hidden;
-  order: 1;
-  flex-shrink: 0;
-  width: ${({ full }) => (full ? 100 : 25)}px; // 'mSTABLE' or 'm'
-
-  svg {
-    // Gentle nudge to visual centre
-    top: 4px;
-    position: relative;
-    width: 100px;
-
-    path,
-    rect {
-      fill: ${({ theme, inverted }) => (inverted ? theme.color.white : 'auto')};
-    }
-
-    #stable {
-      display: ${({ full }) => (full ? 'block' : 'none')};
-    } 
-`;
-
-const Centre = styled.div`
-  display: flex;
-  order: 3;
-  width: 100%;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    width: auto;
-    order: 2;
-  }
-`;
-
-const WalletButtonContainer = styled.div`
-  cursor: pointer;
-  order: 2;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    order: 3;
-  }
-`;
-const FakeWalletButtonContainer = styled.div`
-  order: 2;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    order: 3;
-  }
-`;
-
-const Content = styled.div`
+const Content = styled.div<{ stretch: boolean }>`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
@@ -79,7 +24,7 @@ const Container = styled.header<{ inverted?: boolean; home: boolean }>`
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 80px;
+  min-height: 48px;
   min-width: ${ViewportWidth.xs};
   background: ${({ home, inverted, theme }) =>
     home
@@ -87,25 +32,9 @@ const Container = styled.header<{ inverted?: boolean; home: boolean }>`
       : inverted
       ? theme.color.black
       : theme.color.offWhite};
-
-  ${Logo} {
-    margin-right: ${
-      ({ home }) => (home ? '0' : '110px') // Offset the wallet button'
-    }
 `;
 
-const Bar = styled.div`
-  flex-grow: 1;
-  order: 3;
-  margin-left: 24px;
-  border-top: 1px ${({ theme }) => theme.color.blackTransparent} solid;
-`;
-
-export const Header: FC<{ walletExpanded: boolean; home: boolean }> = ({
-  walletExpanded,
-  home,
-}) => {
-  const collapseWallet = useCollapseWallet();
+export const Header: FC<{ home: boolean }> = ({ home }) => {
   const setWalletPosition = useSetWalletPosition();
 
   const walletButtonRef = useRef<HTMLDivElement>(null);
@@ -136,28 +65,9 @@ export const Header: FC<{ walletExpanded: boolean; home: boolean }> = ({
   }, [handleResize]);
 
   return (
-    <Container inverted={walletExpanded} home={home}>
-      <Content>
-        <Logo full={home} inverted={walletExpanded}>
-          <A href="/" title="Home" onClick={collapseWallet}>
-            <LogoSvg />
-          </A>
-        </Logo>
-        {home ? (
-          <>
-            <Bar />
-            <FakeWalletButtonContainer ref={walletButtonRef} />
-          </>
-        ) : (
-          <>
-            <Centre>
-              <Navigation walletExpanded={walletExpanded} />
-            </Centre>
-            <WalletButtonContainer ref={walletButtonRef}>
-              <WalletButton />
-            </WalletButtonContainer>
-          </>
-        )}
+    <Container home={home}>
+      <Content stretch={false}>
+        {home ? null : (<Navigation />)}
       </Content>
     </Container>
   );

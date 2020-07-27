@@ -12,9 +12,9 @@ import { BigNumber } from 'ethers/utils';
 
 import {
   HistoricTransaction,
+  Purpose,
   SendTxManifest,
   Transaction,
-  Purpose,
   TransactionStatus,
 } from '../types';
 import {
@@ -35,12 +35,14 @@ enum Actions {
   Check,
   Finalize,
   Reset,
+  ResetLatestStatus,
 }
 
 type TransactionHash = string;
 
 interface State {
   current: Record<TransactionHash, Transaction>;
+  latestStatus: { status?: TransactionStatus; blockNumber?: number };
   historic: Record<TransactionHash, HistoricTransaction>;
 }
 
@@ -80,6 +82,11 @@ interface Dispatch {
    * Reset the state completely.
    */
   reset(): void;
+
+  /**
+   * Reset just the `latestStatus.status` field.
+   */
+  resetLatestStatus(): void;
 }
 
 type Action =
@@ -100,9 +107,11 @@ type Action =
       payload: {
         hash: string;
         receipt: TransactionReceipt;
+        status: TransactionStatus;
       };
     }
-  | { type: Actions.Reset };
+  | { type: Actions.Reset }
+  | { type: Actions.ResetLatestStatus };
 
 const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -112,6 +121,10 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
         current: {
           ...state.current,
           [action.payload.hash]: action.payload,
+        },
+        latestStatus: {
+          ...state.latestStatus,
+          status: TransactionStatus.Pending,
         },
       };
     }
@@ -140,7 +153,8 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
     case Actions.Finalize: {
       const {
         hash,
-        receipt: { status, blockNumber },
+        receipt: { status: rawStatus, blockNumber },
+        status,
       } = action.payload;
       return {
         ...state,
@@ -148,16 +162,26 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
           ...state.current,
           [hash]: {
             ...state.current[hash],
-            status: status as number,
+            status: rawStatus as number,
             blockNumberChecked: blockNumber as number,
           },
         },
+        latestStatus: { ...state.latestStatus, status },
       };
     }
     case Actions.Reset:
       return {
         historic: {},
         current: {},
+        latestStatus: {},
+      };
+    case Actions.ResetLatestStatus:
+      return {
+        ...state,
+        latestStatus: {
+          ...state.latestStatus,
+          status: undefined,
+        },
       };
     default:
       throw new Error('Unhandled action');
@@ -167,7 +191,11 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const context = createContext<[State, Dispatch]>(null as any);
 
-const initialState: State = Object.freeze({ historic: {}, current: {} });
+const initialState: State = {
+  historic: {},
+  current: {},
+  latestStatus: {},
+};
 
 const getTxPurpose = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -377,7 +405,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
         addErrorNotification('Transaction failed', purpose.present, link);
       }
 
-      dispatch({ type: Actions.Finalize, payload: { hash, receipt } });
+      dispatch({ type: Actions.Finalize, payload: { hash, receipt, status } });
     },
     [dispatch, addSuccessNotification, addErrorNotification],
   );
@@ -386,11 +414,15 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
     dispatch({ type: Actions.Reset });
   }, [dispatch]);
 
+  const resetLatestStatus = useCallback(() => {
+    dispatch({ type: Actions.ResetLatestStatus });
+  }, [dispatch])
+
   return (
     <context.Provider
       value={useMemo(
-        () => [state, { addPending, addHistoric, check, finalize, reset }],
-        [state, addPending, addHistoric, check, finalize, reset],
+        () => [state, { addPending, addHistoric, check, finalize, reset, resetLatestStatus }],
+        [state, addPending, addHistoric, check, finalize, reset, resetLatestStatus],
       )}
     >
       {children}
@@ -428,9 +460,22 @@ export const useOrderedHistoricTransactions = (): HistoricTransaction[] => {
   );
 };
 
-export const useHasPendingTransactions = (): boolean => {
-  const { current } = useTransactionsState();
-  return Object.values(current).some(tx => tx.status !== 1);
+export const usePendingTxState = (): {
+  latestStatus?: TransactionStatus;
+  pendingCount: number;
+} => {
+  const {
+    latestStatus: { status },
+    current,
+  } = useTransactionsState();
+  return useMemo(
+    () => ({
+      latestStatus: status,
+      pendingCount: Object.values(current).filter(tx => tx.status === null)
+        .length,
+    }),
+    [status, current],
+  );
 };
 
 export const useHasPendingApproval = (

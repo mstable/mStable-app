@@ -1,7 +1,7 @@
 import React, { FC, FormEvent, useCallback } from 'react';
 import styled from 'styled-components';
 import {
-  useExpandWallet,
+  useToggleWallet,
   useIsSupportedChain,
   useIsWalletConnected,
 } from '../../context/AppProvider';
@@ -36,15 +36,15 @@ export const Form: FC<Props> = ({ children, onSubmit, error, submitting }) => {
   const connected = useIsWalletConnected();
   const supportedChain = useIsSupportedChain();
   const disabled = !connected;
-  const expandWallet = useExpandWallet();
+  const openWallet = useToggleWallet();
 
   const handleClick = useCallback(() => {
     // If not connected on a supported chain, forms should start
     // the wallet connection
     if (!(connected && supportedChain)) {
-      expandWallet();
+      openWallet();
     }
-  }, [connected, expandWallet, supportedChain]);
+  }, [connected, openWallet, supportedChain]);
 
   return (
     <StyledForm

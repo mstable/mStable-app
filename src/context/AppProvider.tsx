@@ -21,13 +21,18 @@ import { navigate } from 'hookrouter';
 import { configureScope } from '@sentry/react';
 
 import { MassetNames, InjectedEthereum, Connector } from '../types';
-import { CHAIN_ID, CONNECTORS, NETWORK_NAMES } from '../web3/constants';
-import { useUserActivityContext } from './UserActivityProvider';
+import { CHAIN_ID, NETWORK_NAMES } from '../web3/constants';
+import { CONNECTORS } from '../web3/connectors';
 import {
   useAddInfoNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
 import { LocalStorage, Storage } from '../localStorage';
+
+export enum OverlayItems {
+  Notifications,
+  Wallet,
+}
 
 enum Actions {
   ResetWallet,
@@ -36,11 +41,11 @@ enum Actions {
   ConnectWalletSuccess,
   SetWalletPosition,
   SetWalletSubType,
-  ExpandWallet,
-  CollapseWallet,
   SelectMasset,
   SupportedChainSelected,
   SetOnline,
+  SetOverlay,
+  ToggleOverlay,
 }
 
 enum WalletConnectionStatus {
@@ -59,12 +64,10 @@ enum Reasons {
 export enum StatusWarnings {
   NotOnline,
   UnsupportedChain,
-  Idle,
 }
 
 interface State {
   wallet: {
-    expanded: boolean;
     connector?: {
       id: keyof Connectors;
       subType?: string;
@@ -77,14 +80,15 @@ interface State {
       cy: number;
     };
   };
+  overlay: OverlayItems | null;
   online: boolean;
   selectedMasset: MassetNames;
 }
 
 type Action =
   | { type: Actions.SelectMasset; payload: MassetNames }
-  | { type: Actions.ExpandWallet }
-  | { type: Actions.CollapseWallet }
+  | { type: Actions.SetOverlay; payload: OverlayItems | null }
+  | { type: Actions.ToggleOverlay; payload: OverlayItems }
   | { type: Actions.ResetWallet }
   | { type: Actions.SupportedChainSelected; payload: boolean }
   | {
@@ -107,21 +111,28 @@ type Action =
     };
 
 interface Dispatch {
-  selectMasset(massetName: MassetNames): void;
-  collapseWallet(): void;
-  expandWallet(): void;
-  expandWalletRedirect(path: string): void;
-  resetWallet(): void;
+  closeOverlay(): void;
   connectWallet(connector: keyof Connectors, subType?: string): void;
+  openWalletRedirect(redirect: string): void;
+  resetWallet(): void;
+  selectMasset(massetName: MassetNames): void;
   setWalletPosition(cx: number, cy: number): void;
+  toggleNotifications(): void;
+  toggleWallet(): void;
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case Actions.CollapseWallet:
-      return { ...state, wallet: { ...state.wallet, expanded: false } };
-    case Actions.ExpandWallet:
-      return { ...state, wallet: { ...state.wallet, expanded: true } };
+    case Actions.SetOverlay:
+      return {
+        ...state,
+        overlay: action.payload,
+      };
+    case Actions.ToggleOverlay:
+      return {
+        ...state,
+        overlay: state.overlay === action.payload ? null : action.payload,
+      };
     case Actions.SetWalletPosition:
       return {
         ...state,
@@ -199,7 +210,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 const initialState: State = {
   wallet: {
-    expanded: false,
     status: WalletConnectionStatus.Disconnected,
     error: null,
     supportedChain: true,
@@ -208,6 +218,7 @@ const initialState: State = {
       cy: 0,
     },
   },
+  overlay: null,
   selectedMasset: MassetNames.mUSD,
   online: true,
 };
@@ -243,18 +254,27 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
 
-  const collapseWallet = useCallback<Dispatch['collapseWallet']>(() => {
-    dispatch({ type: Actions.CollapseWallet });
+  const closeOverlay = useCallback<Dispatch['closeOverlay']>(() => {
+    dispatch({ type: Actions.SetOverlay, payload: null });
   }, [dispatch]);
 
-  const expandWallet = useCallback<Dispatch['expandWallet']>(() => {
-    dispatch({ type: Actions.ExpandWallet });
+  const toggleNotifications = useCallback<
+    Dispatch['toggleNotifications']
+  >(() => {
+    dispatch({
+      type: Actions.ToggleOverlay,
+      payload: OverlayItems.Notifications,
+    });
   }, [dispatch]);
 
-  const expandWalletRedirect = useCallback<Dispatch['expandWalletRedirect']>(
+  const toggleWallet = useCallback<Dispatch['toggleWallet']>(() => {
+    dispatch({ type: Actions.ToggleOverlay, payload: OverlayItems.Wallet });
+  }, [dispatch]);
+
+  const openWalletRedirect = useCallback<Dispatch['openWalletRedirect']>(
     path => {
       navigate(path);
-      dispatch({ type: Actions.ExpandWallet });
+      dispatch({ type: Actions.SetOverlay, payload: OverlayItems.Wallet });
     },
     [dispatch],
   );
@@ -365,14 +385,14 @@ export const AppProvider: FC<{}> = ({ children }) => {
    * https://docs.metamask.io/guide/ethereum-provider.html#methods-current-api
    */
   useEffect(() => {
-    let networkChangedListener: (chainId: number | string) => void;
+    let chainChangedListener: (chainId: number | string) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const injected = (window as any).ethereum;
 
     // The network change listener is only valid when the injected connector is
     // used, or it's present but no connector is activated.
     if (injected && (!activated || activated === 'injected')) {
-      networkChangedListener = chainId => {
+      chainChangedListener = chainId => {
         // `chainId` from MetaMask can't be trusted in this event
         if (!Number.isNaN(chainId as number)) {
           const supported = CHAIN_ID === parseInt(chainId as string, 10);
@@ -382,7 +402,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
           });
         }
       };
-      networkChangedListener(parseInt(injected.chainId, 16));
+      chainChangedListener(parseInt(injected.chainId, 16));
 
       const subType = identifyInjectedSubType(injected);
       if (subType === 'dapper') {
@@ -394,14 +414,14 @@ export const AppProvider: FC<{}> = ({ children }) => {
       } else {
         dispatch({ type: Actions.SetWalletSubType, payload: subType });
 
-        injected.on?.('networkChanged', networkChangedListener);
+        injected.on?.('chainChanged', chainChangedListener);
         injected.autoRefreshOnNetworkChange = false;
       }
     }
 
     return () => {
-      if (injected && networkChangedListener) {
-        injected.removeListener?.('networkChanged', networkChangedListener);
+      if (injected && chainChangedListener) {
+        injected.removeListener?.('chainChanged', chainChangedListener);
       }
     };
   }, [dispatch, activated, addErrorNotification]);
@@ -441,24 +461,26 @@ export const AppProvider: FC<{}> = ({ children }) => {
         () => [
           state,
           {
-            collapseWallet,
-            expandWallet,
-            expandWalletRedirect,
-            selectMasset,
+            closeOverlay,
             connectWallet,
+            openWalletRedirect,
             resetWallet,
+            selectMasset,
             setWalletPosition,
+            toggleNotifications,
+            toggleWallet,
           },
         ],
         [
           state,
-          collapseWallet,
-          expandWallet,
-          expandWalletRedirect,
-          selectMasset,
-          resetWallet,
+          closeOverlay,
           connectWallet,
+          openWalletRedirect,
+          resetWallet,
+          selectMasset,
           setWalletPosition,
+          toggleNotifications,
+          toggleWallet,
         ],
       )}
     >
@@ -482,8 +504,9 @@ export const useIsWalletConnected = (): boolean =>
 export const useIsWalletConnecting = (): boolean =>
   useWalletState().status === WalletConnectionStatus.Connecting;
 
-export const useWalletExpanded = (): State['wallet']['expanded'] =>
-  useWalletState().expanded;
+export const useOverlayOpen = (): boolean => useAppState().overlay !== null;
+
+export const useOverlayItem = (): State['overlay'] => useAppState().overlay;
 
 export const useWalletPosition = (): State['wallet']['position'] =>
   useWalletState().position;
@@ -504,32 +527,33 @@ export const useAppDispatch = (): Dispatch => useAppContext()[1];
 export const useConnectWallet = (): Dispatch['connectWallet'] =>
   useAppDispatch().connectWallet;
 
-export const useCollapseWallet = (): Dispatch['collapseWallet'] =>
-  useAppDispatch().collapseWallet;
+export const useCloseOverlay = (): Dispatch['closeOverlay'] =>
+  useAppDispatch().closeOverlay;
 
 export const useAppStatusWarnings = (): StatusWarnings[] => {
   const {
     online,
     wallet: { supportedChain },
   } = useAppState();
-  const { idle } = useUserActivityContext();
 
   return useMemo(() => {
     const warnings = [];
 
     if (!online) warnings.push(StatusWarnings.NotOnline);
     if (!supportedChain) warnings.push(StatusWarnings.UnsupportedChain);
-    if (idle) warnings.push(StatusWarnings.Idle);
 
     return warnings;
-  }, [online, supportedChain, idle]);
+  }, [online, supportedChain]);
 };
 
-export const useExpandWallet = (): Dispatch['expandWallet'] =>
-  useAppDispatch().expandWallet;
+export const useToggleWallet = (): Dispatch['toggleWallet'] =>
+  useAppDispatch().toggleWallet;
 
-export const useExpandWalletRedirect = (): Dispatch['expandWalletRedirect'] =>
-  useAppDispatch().expandWalletRedirect;
+export const useOpenWalletRedirect = (): Dispatch['openWalletRedirect'] =>
+  useAppDispatch().openWalletRedirect;
+
+export const useToggleNotifications = (): Dispatch['toggleNotifications'] =>
+  useAppDispatch().toggleNotifications;
 
 export const useResetWallet = (): Dispatch['resetWallet'] =>
   useAppDispatch().resetWallet;

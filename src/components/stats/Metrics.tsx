@@ -20,7 +20,7 @@ import {
   startOfHour,
 } from 'date-fns';
 
-import { TimeMetricPeriod } from '../../graphql/generated';
+import { TimeMetricPeriod } from '../../graphql/mstable';
 import { ToggleInput } from '../forms/ToggleInput';
 import { H3 } from '../core/Typography';
 import { Color, FontSize, Size, ViewportWidth } from '../../theme';

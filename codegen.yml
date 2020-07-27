@@ -1,19 +1,82 @@
-overwrite: true
-schema: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol'
-documents: 'src/graphql/**/*.graphql'
+config:
+  skipTypename: true
+  withComponent: false
+  withHOC: false
+  withHooks: true
+  scalars:
+    BigDecimal: string
+    BigInt: string
+    Bytes: string
+    Address: string
+    ID: string
+
 generates:
-  ./src/graphql/generated.tsx:
+  ./src/graphql/mstable/schema.graphql:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_MSTABLE}
+    plugins:
+      - 'schema-ast'
     config:
-      skipTypename: true
-      withComponent: false
-      withHOC: false
-      withHooks: true
-      scalars:
-        BigDecimal: string
-        BigInt: string
-        Bytes: string
-        Address: string
-        ID: string
+      includeDirectives: true
+
+  ./src/graphql/uniswap/schema.graphql:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_UNISWAP}
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
+  ./src/graphql/balancer/schema.graphql:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_BALANCER}
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
+  ./src/graphql/blocks/schema.graphql:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_BLOCKS}
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
+  ./src/graphql/mstable.tsx:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_MSTABLE}
+    documents: 'src/graphql/mstable/*.graphql'
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+
+  ./src/graphql/uniswap.tsx:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_UNISWAP}
+    documents: 'src/graphql/uniswap/*.graphql'
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+
+  ./src/graphql/balancer.tsx:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_BALANCER}
+    documents: 'src/graphql/balancer/*.graphql'
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+
+  ./src/graphql/blocks.tsx:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_BLOCKS}
+    documents: 'src/graphql/blocks/*.graphql'
     plugins:
       - 'fragment-matcher'
       - 'typescript'

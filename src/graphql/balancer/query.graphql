@@ -1,0 +1,30 @@
+query Pools($ids: [ID!]!) @api(name: balancer) {
+  pools(where: { id_in: $ids }) {
+    id
+    totalShares
+    totalSwapVolume
+    swapFee
+    tokens {
+      address
+      balance
+      decimals
+      symbol
+    }
+  }
+}
+
+query TokenPrices($tokens: [ID!]!) @api(name: balancer) {
+  tokenPrices(where: { id_in: $tokens }) {
+    id
+    price
+    decimals
+  }
+}
+
+query TokenPrice($token: ID!) @api(name: balancer) {
+  tokenPrice(id: $token) {
+    id
+    price
+    decimals
+  }
+}
