@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { A, getWorkingPath } from 'hookrouter';
-import { useCollapseWallet } from '../../context/AppProvider';
+import { useCloseOverlay } from '../../context/AppProvider';
 import { FontSize, ViewportWidth } from '../../theme';
 
 interface NavItem {
@@ -31,26 +31,20 @@ const List = styled.ul`
 
 const Item = styled.li<{
   active: boolean;
-  inverted: boolean;
 }>`
-  margin-right: ${({ theme }) => theme.spacing.m};
+  margin-right: 16px;
   position: relative;
   border-bottom: 4px solid transparent;
   font-weight: bold;
   text-transform: uppercase;
-  padding: ${({ theme }) => theme.spacing.xxs} 0;
-  border-bottom-color: ${({ theme, active, inverted }) =>
-    active
-      ? inverted
-        ? theme.color.white
-        : theme.color.offBlack
-      : 'transparent'};
+  padding: 2px 0;
+  border-bottom-color: ${({ theme, active }) =>
+    active ? theme.color.offBlack : 'transparent'};
 
   a,
   span {
     white-space: nowrap;
-    color: ${({ theme, inverted }) =>
-      inverted ? theme.color.white : theme.color.offBlack};
+    color: ${({ theme }) => theme.color.offBlack};
     border-bottom: none;
   }
 
@@ -73,6 +67,7 @@ const Item = styled.li<{
 
 const navItems: NavItem[] = [
   { title: 'Mint', path: '/mint' },
+  { title: 'Earn', path: '/earn' },
   { title: 'Save', path: '/save' },
   { title: 'Swap', path: '/swap' },
   { title: 'Redeem', path: '/redeem' },
@@ -81,30 +76,23 @@ const navItems: NavItem[] = [
 /**
  * Placeholder component for app navigation.
  */
-export const Navigation: FC<{ walletExpanded: boolean }> = ({
-  walletExpanded,
-}) => {
-  const collapseWallet = useCollapseWallet();
+export const Navigation: FC<{}> = () => {
+  const collapseWallet = useCloseOverlay();
   const activePath = getWorkingPath('');
   const items: (NavItem & { active: boolean })[] = useMemo(
     () =>
       navItems.map(item => ({
         ...item,
-        active: !walletExpanded && activePath === item.path,
+        active: !!(item?.path && activePath.startsWith(item.path)),
       })),
-    [activePath, walletExpanded],
+    [activePath],
   );
 
   return (
     <Container>
       <List>
         {items.map(({ title, path, active }) => (
-          <Item
-            key={title}
-            active={active}
-            inverted={walletExpanded}
-            onClick={collapseWallet}
-          >
+          <Item key={title} active={active} onClick={collapseWallet}>
             {path ? <A href={path}>{title}</A> : <span>{title}</span>}
           </Item>
         ))}

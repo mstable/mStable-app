@@ -3,18 +3,18 @@ import styled from 'styled-components';
 import { A } from 'hookrouter';
 import GitHubButton from 'react-github-btn';
 
-import { useCollapseWallet } from '../../context/AppProvider';
+import { useCloseOverlay } from '../../context/AppProvider';
 import { DAPP_VERSION } from '../../web3/constants';
 import { ViewportWidth } from '../../theme';
-import Medium from '../icons/medium.svg';
-import Github from '../icons/github.svg';
-import Discord from '../icons/discord.svg';
-import Twitter from '../icons/twitter.svg';
-import Email from '../icons/email.svg';
+import Medium from '../icons/social/medium.svg';
+import Github from '../icons/social/github.svg';
+import Discord from '../icons/social/discord.svg';
+import Twitter from '../icons/social/twitter.svg';
+import Email from '../icons/social/email.svg';
+import { centredLayout } from './css';
 
 interface Props {
   inverted: boolean;
-  home: boolean;
 }
 
 const Links = styled.ul`
@@ -47,6 +47,12 @@ const Version = styled.div`
   }
 `;
 
+const Gubbins = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
 const Container = styled.footer<Props>`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing.s} ${theme.spacing.l}`};
@@ -61,7 +67,7 @@ const Container = styled.footer<Props>`
       inverted ? theme.color.offWhite : theme.color.offBlack};
   }
 
-  > div {
+  > div > div {
     @media (min-width: ${ViewportWidth.m}) {
       display: flex;
       align-items: center;
@@ -77,6 +83,8 @@ const Container = styled.footer<Props>`
       justify-content: space-between;
     }
   }
+
+  ${centredLayout}
 `;
 
 const links = [
@@ -95,55 +103,57 @@ const socialIcons = [
   { title: 'Email', icon: Email, href: 'mailto:info@mstable.org' },
 ];
 
-export const Footer: FC<Props> = ({ inverted, home }) => {
-  const collapseWallet = useCollapseWallet();
+export const Footer: FC<Props> = ({ inverted }) => {
+  const collapseWallet = useCloseOverlay();
   return (
-    <Container inverted={inverted} home={home}>
+    <Container inverted={inverted}>
       <div>
-        <Links>
-          {links.map(({ title, href }) => (
-            <li key={href}>
-              {href.startsWith('/') ? (
-                <A href={href} onClick={collapseWallet}>
-                  {title}
-                </A>
-              ) : (
+        <div>
+          <Links>
+            {links.map(({ title, href }) => (
+              <li key={href}>
+                {href.startsWith('/') ? (
+                  <A href={href} onClick={collapseWallet}>
+                    {title}
+                  </A>
+                ) : (
+                  <a href={href} target="_blank" rel="noopener noreferrer">
+                    {title}
+                  </a>
+                )}
+              </li>
+            ))}
+          </Links>
+          <SocialIcons>
+            {socialIcons.map(({ title, href, icon }) => (
+              <li key={href}>
                 <a href={href} target="_blank" rel="noopener noreferrer">
-                  {title}
+                  <img src={icon} alt={title} />
                 </a>
-              )}
-            </li>
-          ))}
-        </Links>
-        <SocialIcons>
-          {socialIcons.map(({ title, href, icon }) => (
-            <li key={href}>
-              <a href={href} target="_blank" rel="noopener noreferrer">
-                <img src={icon} alt={title} />
-              </a>
-            </li>
-          ))}
-        </SocialIcons>
-      </div>
-      <div>
-        <Version>
-          Current version{' '}
-          <a
-            href={`https://github.com/mstable/mStable-app/releases/tag/v${DAPP_VERSION}`}
-            target="_blank"
-            rel="noopener noreferrer"
+              </li>
+            ))}
+          </SocialIcons>
+        </div>
+        <Gubbins>
+          <Version>
+            Current version{' '}
+            <a
+              href={`https://github.com/mstable/mStable-app/releases/tag/v${DAPP_VERSION}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>{DAPP_VERSION}</span>
+            </a>
+          </Version>
+          <GitHubButton
+            href="https://github.com/mstable/mStable-contracts"
+            data-icon="octicon-star"
+            data-show-count
+            aria-label="Star mstable/mStable-contracts on GitHub"
           >
-            <span>{DAPP_VERSION}</span>
-          </a>
-        </Version>
-        <GitHubButton
-          href="https://github.com/mstable/mStable-contracts"
-          data-icon="octicon-star"
-          data-show-count
-          aria-label="Star mstable/mStable-contracts on GitHub"
-        >
-          mStable-contracts
-        </GitHubButton>
+            mStable-contracts
+          </GitHubButton>
+        </Gubbins>
       </div>
     </Container>
   );

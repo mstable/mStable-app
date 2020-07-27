@@ -1,8 +1,4 @@
-import {
-  LazyQueryHookOptions,
-  QueryTuple,
-} from '@apollo/react-hooks/lib/types';
-import * as ApolloReactHooks from '@apollo/react-hooks';
+import { LazyQueryHookOptions, QueryTuple } from '@apollo/react-hooks';
 import { QueryResult } from '@apollo/react-common';
 import { useWallet } from 'use-wallet';
 import { useEffect } from 'react';
@@ -14,7 +10,7 @@ import {
   useCreditBalancesLazyQuery,
   useMassetLazyQuery,
   useSavingsContractLazyQuery,
-} from '../../graphql/generated';
+} from '../../graphql/mstable';
 import { ContractNames } from '../../types';
 import { useKnownAddress } from './KnownAddressProvider';
 import { useBlockNumber } from './BlockProvider';
@@ -25,7 +21,7 @@ export const useBlockPollingSubscription = <TData, TVariables>(
     query: any,
     options?: LazyQueryHookOptions<TData, TVariables>,
   ) => QueryTuple<TData, TVariables>,
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TData, TVariables>,
+  baseOptions?: LazyQueryHookOptions<TData, TVariables>,
   skip?: boolean,
 ): QueryResult<TData, TVariables> => {
   const blockNumber = useBlockNumber();

@@ -1,9 +1,11 @@
-import { ButtonHTMLAttributes } from 'react';
-import styled from 'styled-components';
-import { Size, mapSizeToFontSize, ViewportWidth } from '../../theme';
+import { ButtonHTMLAttributes, ComponentProps } from 'react';
+import styled, { css } from 'styled-components';
+import { A } from 'hookrouter';
+
+import { mapSizeToFontSize, Size, ViewportWidth } from '../../theme';
 
 interface Props extends ButtonHTMLAttributes<unknown> {
-  size: Size;
+  size?: Size;
   inverted?: boolean;
 }
 
@@ -14,7 +16,7 @@ export const UnstyledButton = styled.button`
   background: transparent;
 `;
 
-export const Button = styled(UnstyledButton)<Props>`
+const ButtonCss = css<Props>`
   background: ${({ inverted, theme }) =>
     inverted ? theme.color.offBlack : theme.color.white};
   border-radius: 3px;
@@ -28,11 +30,22 @@ export const Button = styled(UnstyledButton)<Props>`
       : theme.color.offBlack};
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   font-weight: bold;
-  font-size: ${props => mapSizeToFontSize(props.size)};
+  font-size: ${({ size = Size.m }) => mapSizeToFontSize(size)};
+  text-transform: uppercase;
 
   @media (min-width: ${ViewportWidth.m}) {
     padding: ${({ theme }) => theme.spacing.xs};
   }
 
   ${({ theme }) => theme.mixins.roundedBorder}
+`;
+
+export const Button = styled(UnstyledButton).attrs<ButtonHTMLAttributes<never>>(
+  ({ type = 'button', ...attrs }) => ({ ...attrs, type }),
+)<Props>`
+  ${ButtonCss}
+`;
+
+export const ButtonLink = styled(A)<Props & ComponentProps<typeof A>>`
+  ${ButtonCss}
 `;

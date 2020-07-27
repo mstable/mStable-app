@@ -37,7 +37,15 @@ const amountValidator = (
     return [false, Reasons.AmountExceedsBalance];
   }
 
-  if (bAssetData.mAssetAllowance.exact.lt(bAsset.amount.exact)) {
+  if (!bAssetData.allowances[dataState.mAsset.address]?.exact) {
+    return [false, Reasons.FetchingData];
+  }
+
+  if (
+    bAssetData.allowances[dataState.mAsset.address].exact.lt(
+      bAsset.amount.exact,
+    )
+  ) {
     return [false, Reasons.AmountExceedsApprovedAmount];
   }
 

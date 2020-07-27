@@ -15,12 +15,18 @@ export const H2 = styled.h2<{ center?: boolean; borderTop?: boolean }>`
   line-height: 3rem;
 
   ${({ theme }) => theme.mixins.textAlign}
-  ${({ theme, borderTop }) => borderTop ? theme.mixins.borderTop : ''}
+  ${({ theme, borderTop }) => (borderTop ? theme.mixins.borderTop : '')}
 `;
 
 export const H3 = styled.h3<{ borderTop?: boolean }>`
   font-size: ${FontSize.l};
   line-height: 2.5rem;
 
-  ${({ theme, borderTop }) => borderTop ? theme.mixins.borderTop: ''}
+  ${({ theme, borderTop }) => (borderTop ? theme.mixins.borderTop : '')}
+`;
+
+export const H4 = styled.h4`
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: bold;
 `;

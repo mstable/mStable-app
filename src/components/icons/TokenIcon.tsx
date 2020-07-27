@@ -1,12 +1,16 @@
 import React, { FC, SVGProps } from 'react';
 import styled from 'styled-components';
-import mUSDTransparent from './mUSD.svg';
-import mUSD, { ReactComponent as MusdSvg } from './mUSD-circle.svg';
-import TUSD, { ReactComponent as TusdSvg } from './TUSD.svg';
-import USDT, { ReactComponent as UsdtSvg } from './USDT.svg';
-import USDC, { ReactComponent as UsdcSvg } from './USDC.svg';
-import DAI, { ReactComponent as DaiSvg } from './DAI.svg';
-import BUSD, { ReactComponent as BusdSvg } from './BUSD.svg';
+import mUSDTransparent from './tokens/mUSD-transparent.svg';
+import mUSD, { ReactComponent as MusdSvg } from './tokens/mUSD.svg';
+import TUSD, { ReactComponent as TusdSvg } from './tokens/TUSD.svg';
+import USDT, { ReactComponent as UsdtSvg } from './tokens/USDT.svg';
+import USDC, { ReactComponent as UsdcSvg } from './tokens/USDC.svg';
+import DAI, { ReactComponent as DaiSvg } from './tokens/DAI.svg';
+import BUSD, { ReactComponent as BusdSvg } from './tokens/BUSD.svg';
+import MTA, { ReactComponent as MtaSvg } from './tokens/MTA.svg';
+import Uniswap, { ReactComponent as UniswapSvg } from './tokens/Uniswap.svg';
+import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
+import ETH, { ReactComponent as EtherSvg } from './tokens/Ether.svg';
 
 interface Props {
   className?: string;
@@ -17,22 +21,32 @@ type SvgProps = Props & SVGProps<never>;
 
 type SvgComponent = FC<SVGProps<never>>;
 
-const ICONS: Record<string, string> = {
+export const TOKEN_ICONS: Record<string, string> = {
+  ETH,
   mUSD,
   TUSD,
   USDT,
   USDC,
   DAI,
   BUSD,
+  MTA,
+  'UNI-V2': Uniswap,
+  BAL: Balancer,
+  BPT: Balancer,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
+  ETH: EtherSvg as SvgComponent,
   mUSD: MusdSvg as SvgComponent,
   TUSD: TusdSvg as SvgComponent,
   USDT: UsdtSvg as SvgComponent,
   USDC: UsdcSvg as SvgComponent,
   DAI: DaiSvg as SvgComponent,
   BUSD: BusdSvg as SvgComponent,
+  MTA: MtaSvg as SvgComponent,
+  'UNI-V2': UniswapSvg as SvgComponent,
+  BAL: BalancerSvg as SvgComponent,
+  BPT: BalancerSvg as SvgComponent,
 };
 
 const Image = styled.img`
@@ -45,11 +59,12 @@ export const MUSDIconTransparent = (): JSX.Element => (
 );
 
 export const TokenIcon: FC<Props> = ({ className, symbol }) =>
-  ICONS[symbol] ? <Image alt={symbol} src={ICONS[symbol]} className={className} /> : null;
+  TOKEN_ICONS[symbol] ? (
+    <Image alt={symbol} src={TOKEN_ICONS[symbol]} className={className} />
+  ) : null;
 
-export const TokenIconSvg: FC<SvgProps> = ({ symbol, ...props }) => {
+export const TokenIconSvg: FC<SvgProps> = ({ symbol, width, height, x, y }) => {
   if (!SVG_ICONS[symbol]) return null;
   const Icon = SVG_ICONS[symbol];
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <Icon {...props} />;
+  return <Icon width={width} height={height} x={x} y={y} />;
 };

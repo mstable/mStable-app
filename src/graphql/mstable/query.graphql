@@ -1,0 +1,297 @@
+# import './fragments.graphql'
+
+query CoreTokens @api(name: mstable) {
+  mUSD: tokens(where: { symbol: "mUSD" }) {
+    ...TokenDetails
+  }
+  #    mta: tokens(where: { symbol: "MTA" }) {
+  #        ...TokenDetails
+  #    }
+  #    mGLD: tokens(where: { symbol: "mGLD" }) {
+  #        ...TokenDetails
+  #    }
+  mUSDSavings: savingsContracts(first: 1) {
+    id
+  }
+}
+
+query Masset($id: ID!) @api(name: mstable) {
+  masset(id: $id) {
+    ...MassetAll
+  }
+}
+
+query Erc20Tokens($addresses: [Bytes!]!) @api(name: mstable) {
+  tokens(where: { address_in: $addresses }) {
+    ...TokenDetails
+  }
+}
+
+query AllErc20Tokens @api(name: mstable) {
+  tokens {
+    ...TokenDetails
+  }
+}
+
+query TokenByAddress($id: ID!) @api(name: mstable) {
+  token(id: $id) {
+    id
+    address
+    decimals
+    name
+    symbol
+    totalBurned
+    totalBurned
+    totalSupply
+    totalTransferred
+  }
+}
+
+fragment ER on ExchangeRate {
+  exchangeRate
+  timestamp
+}
+
+query LastExchangeRateBeforeTimestamp($timestamp: Int!) @api(name: mstable) {
+  exchangeRates(
+    where: { timestamp_lt: $timestamp }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+}
+
+query WeeklyExchangeRates(
+  $day0: Int!
+  $day1: Int!
+  $day2: Int!
+  $day3: Int!
+  $day4: Int!
+  $day5: Int!
+  $day6: Int!
+) @api(name: mstable) {
+  day0: exchangeRates(
+    where: { timestamp_lt: $day0 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day1: exchangeRates(
+    where: { timestamp_lt: $day1 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day2: exchangeRates(
+    where: { timestamp_lt: $day2 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day3: exchangeRates(
+    where: { timestamp_lt: $day3 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day4: exchangeRates(
+    where: { timestamp_lt: $day4 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day5: exchangeRates(
+    where: { timestamp_lt: $day5 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+  day6: exchangeRates(
+    where: { timestamp_lt: $day6 }
+    orderDirection: desc
+    orderBy: timestamp
+    first: 1
+  ) {
+    ...ER
+  }
+}
+
+query SavingsContract($id: ID!) @api(name: mstable) {
+  savingsContracts(where: { id: $id }) {
+    id
+    totalSavings
+    totalCredits
+    exchangeRates {
+      id
+    }
+    savingsRate
+    automationEnabled
+  }
+}
+
+query Token($id: ID!) @api(name: mstable) {
+  token(id: $id) {
+    ...TokenDetails
+  }
+}
+
+query CreditBalances($account: ID!) @api(name: mstable) {
+  account(id: $account) {
+    creditBalances {
+      amount
+    }
+  }
+}
+
+query LatestExchangeRate @api(name: mstable) {
+  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
+    exchangeRate
+    timestamp
+  }
+}
+
+query VolumeMetricsOfType(
+  $period: TimeMetricPeriod!
+  $type: TransactionType!
+  $from: Int!
+  $to: Int!
+) @api(name: mstable) {
+  volumeMetrics(
+    orderBy: timestamp
+    orderDirection: asc
+    where: {
+      period: $period
+      type: $type
+      timestamp_gte: $from
+      timestamp_lte: $to
+    }
+  ) {
+    timestamp
+    value
+  }
+}
+
+query VolumeMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!)
+  @api(name: mstable) {
+  volumeMetrics(
+    orderBy: timestamp
+    orderDirection: asc
+    where: { period: $period, timestamp_gte: $from, timestamp_lte: $to }
+  ) {
+    type
+    timestamp
+    value
+  }
+}
+
+query AggregateMetricsOfType(
+  $period: TimeMetricPeriod!
+  $type: AggregateMetricType!
+  $from: Int!
+  $to: Int!
+) @api(name: mstable) {
+  aggregateMetrics(
+    orderBy: timestamp
+    orderDirection: asc
+    where: {
+      period: $period
+      type: $type
+      timestamp_gte: $from
+      timestamp_lte: $to
+    }
+  ) {
+    timestamp
+    value
+  }
+}
+
+query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!)
+  @api(name: mstable) {
+  aggregateMetrics(
+    orderBy: timestamp
+    orderDirection: asc
+    where: { period: $period, timestamp_gte: $from, timestamp_lte: $to }
+  ) {
+    type
+    timestamp
+    value
+  }
+}
+
+query StakingRewardsContracts($account: Bytes) @api(name: mstable) {
+  stakingRewardsContracts {
+    id
+    type
+    duration
+    lastUpdateTime
+    periodFinish
+    rewardRate
+    rewardPerTokenStored
+    platformRewardPerTokenStored
+    platformRewardRate
+    totalSupply
+    totalStakingRewards
+    totalPlatformRewards
+    stakingToken {
+      totalSupply
+      ...TokenDetails
+    }
+    rewardsToken {
+      ...TokenDetails
+    }
+    platformToken {
+      ...TokenDetails
+    }
+    rewardsVault {
+      id
+      vaultStartTime
+      period
+      lockupPeriods
+      allRewardsUnlocked
+      vestingToken {
+        ...TokenDetails
+      }
+      vaultBalances(where: { account: $account }) {
+        amount
+        period
+        vested
+      }
+    }
+    stakingBalances(where: { account: $account }) {
+      amount
+    }
+    stakingRewards: stakingRewards(where: { account: $account, type: REWARD }) {
+      amount
+      amountPerTokenPaid
+    }
+    platformRewards: stakingRewards(
+      where: { account: $account, type: PLATFORM_REWARD }
+    ) {
+      amount
+      amountPerTokenPaid
+    }
+  }
+}
+
+query RewardsPerTokenStoredAtBlock($blockNumber: Int!)
+  @api(name: mstable) {
+  stakingRewardsContracts(block: { number: $blockNumber }) {
+    id
+    rewardPerTokenStored
+    platformRewardPerTokenStored
+  }
+}

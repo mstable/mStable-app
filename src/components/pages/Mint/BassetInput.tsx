@@ -17,6 +17,10 @@ import {
 import { AmountInput } from '../../forms/AmountInput';
 import { FontSize, ViewportWidth } from '../../../theme';
 import { useBassetState } from '../../../context/DataProvider/DataProvider';
+import {
+  useToken,
+  useTokenAllowance,
+} from '../../../context/DataProvider/TokensProvider';
 
 interface Props {
   address: string;
@@ -138,6 +142,9 @@ export const BassetInput: FC<Props> = ({ address }) => {
   const toggleBassetEnabled = useMintToggleBassetEnabled();
   const setBassetAmount = useMintSetBassetAmount();
   const setBassetMaxAmount = useMintSetBassetMaxAmount();
+
+  useTokenAllowance(address, mAssetAddress);
+  useToken(address);
 
   const needsUnlock = reason === Reasons.AmountExceedsApprovedAmount;
 

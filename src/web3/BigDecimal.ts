@@ -7,6 +7,7 @@ import {
   parseUnits,
 } from 'ethers/utils';
 
+import { abbreviateNumber } from '../components/stats/utils';
 import { RATIO_SCALE, SCALE } from './constants';
 
 export class BigDecimal {
@@ -35,7 +36,7 @@ export class BigDecimal {
    * @param decimals
    */
   static maybeParse(
-    amountStr: string | null,
+    amountStr: string | null | undefined,
     decimals: number,
   ): BigDecimal | undefined {
     if (!amountStr || amountStr.includes('e')) {
@@ -103,6 +104,10 @@ export class BigDecimal {
     const rounded = `${left}.${truncatedRight}`;
     const formatted = commas ? commify(rounded) : rounded;
     return `${formatted}${suffix ? ` ${suffix}` : ''}`;
+  }
+
+  get abbreviated(): string {
+    return abbreviateNumber(this.simple);
   }
 
   toPercent(decimalPlaces = 2): number {

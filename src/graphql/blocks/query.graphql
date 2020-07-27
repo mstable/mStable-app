@@ -1,0 +1,11 @@
+query BlockTimestamp($start: BigInt!, $end: BigInt!) @api(name: blocks) {
+  blocks(
+    first: 1
+    orderBy: timestamp
+    orderDirection: asc
+    where: { timestamp_gt: $start, timestamp_lt: $end }
+  ) {
+    number
+    timestamp
+  }
+}

@@ -2,7 +2,6 @@ import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { BigNumber, formatUnits } from 'ethers/utils';
 
 import styled from 'styled-components';
-import { useTokenWithBalance } from '../../../context/DataProvider/TokensProvider';
 import { RATIO_SCALE, SCALE } from '../../../web3/constants';
 import { formatExactAmount } from '../../../web3/amounts';
 import { FormRow } from '../../core/Form';
@@ -38,9 +37,6 @@ export const SwapInput: FC<{}> = () => {
   } = useSwapState();
   const { setToken, setQuantity } = useSwapDispatch();
 
-  const inputToken = useTokenWithBalance(input.token.address);
-  const outputToken = useTokenWithBalance(output.token.address);
-
   const { mAsset, bAssets = {} } = dataState || {};
   const mAssetAddress = mAsset?.address;
   const feeRate = mAsset?.feeRate;
@@ -54,33 +50,9 @@ export const SwapInput: FC<{}> = () => {
     return [bAssetAddresses, [mAssetAddress, ...bAssetAddresses]];
   }, [bAssets, mAssetAddress]);
 
-  const inputItems = useMemo(
-    () => [
-      {
-        label: 'Balance',
-        value: formatExactAmount(
-          inputToken.balance,
-          inputToken.decimals,
-          inputToken.symbol,
-          true,
-        ),
-      },
-    ],
-    [inputToken],
-  );
-
   const outputItems = useMemo(
-    () => [
-      {
-        label: 'Balance',
-        value: formatExactAmount(
-          outputToken.balance,
-          outputToken.decimals,
-          outputToken.symbol,
-          true,
-        ),
-      },
-      ...(feeRate && feeAmountSimple
+    () =>
+      feeRate && feeAmountSimple
         ? [
             {
               label: 'Low fee 🎉',
@@ -95,9 +67,8 @@ export const SwapInput: FC<{}> = () => {
               highlight: true,
             },
           ]
-        : []),
-    ],
-    [outputToken, feeRate, feeAmountSimple],
+        : [],
+    [feeRate, feeAmountSimple],
   );
 
   /**
@@ -212,7 +183,6 @@ export const SwapInput: FC<{}> = () => {
               : undefined
           }
           needsUnlock={needsUnlock}
-          items={inputItems}
           error={inputError}
           spender={mAssetAddress}
         />

@@ -5,6 +5,10 @@ import { Connectors } from 'use-wallet';
 import { Ierc20 } from './typechain/Ierc20.d';
 import { ISavingsContract } from './typechain/ISavingsContract.d';
 import { IMasset } from './typechain/IMasset.d';
+import { StakingRewards as IStakingRewards } from './typechain/StakingRewards.d';
+import { StakingRewardsWithPlatformToken as IStakingRewardsWithPlatformToken } from './typechain/StakingRewardsWithPlatformToken.d';
+import { BigDecimal } from './web3/BigDecimal';
+import { IRewardsVault } from './typechain/IRewardsVault.d';
 
 export interface Transaction {
   formId?: string;
@@ -59,6 +63,9 @@ export enum Interfaces {
   // Systok,
   ERC20,
   SavingsContract,
+  StakingRewards,
+  StakingRewardsWithPlatformToken,
+  RewardsVault,
 }
 
 export interface Instances {
@@ -67,6 +74,9 @@ export interface Instances {
   // [Interfaces.Systok]: ISystok;
   [Interfaces.ERC20]: Ierc20;
   [Interfaces.SavingsContract]: ISavingsContract;
+  [Interfaces.StakingRewards]: IStakingRewards;
+  [Interfaces.StakingRewardsWithPlatformToken]: IStakingRewardsWithPlatformToken;
+  [Interfaces.RewardsVault]: IRewardsVault;
 }
 
 /**
@@ -92,10 +102,20 @@ export interface SendTxManifest<
   formId?: string;
 }
 
-export interface TokenDetails {
-  address: string | null;
-  decimals: number | null;
-  symbol: string | null;
+export interface Token {
+  address: string;
+  decimals: number;
+  symbol: string;
+  price?: BigDecimal;
+}
+
+export interface Allowances {
+  [spender: string]: BigDecimal;
+}
+
+export interface SubscribedToken extends Token {
+  balance: BigDecimal;
+  allowances: Allowances;
 }
 
 export interface Amount {
@@ -106,14 +126,18 @@ export interface Amount {
 export interface TokenQuantity {
   formValue: string | null;
   amount: Amount;
-  token: TokenDetails;
+  token: {
+    address: string | null;
+    decimals: number | null;
+    symbol: string | null;
+  };
 }
 
 export interface InjectedEthereum {
   enable(): Promise<string[]>;
-  on(event: 'networkChanged', listener: (chainId: number) => void): void;
+  on(event: 'chainChanged', listener: (chainId: number) => void): void;
   autoRefreshOnNetworkChange: boolean;
-  removeListener(event: 'networkChanged', listener: Function): void;
+  removeListener(event: 'chainChanged', listener: Function): void;
   isMetaMask?: boolean;
   isBrave?: boolean;
   isTrust?: boolean;
@@ -125,4 +149,14 @@ export interface Connector {
   subType?: string;
   label: string;
   icon?: FC;
+}
+
+export enum Platforms {
+  Balancer = 'Balancer',
+  Uniswap = 'Uniswap',
+}
+
+export interface BlockTimestamp {
+  blockNumber: number;
+  timestamp: number;
 }

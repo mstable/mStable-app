@@ -18,3 +18,5 @@ export const UserActivityProvider: FC<{}> = ({ children }) => {
 };
 
 export const useUserActivityContext = (): State => useContext(ctx);
+
+export const useIsIdle = (): boolean => useUserActivityContext().idle;

@@ -18,6 +18,7 @@ export enum Color {
   blackTransparenter = 'rgba(0,0,0,0.06)',
   offWhite = 'rgb(249,245,242)',
   offBlack = 'rgb(37,39,45)',
+  greyTransparent = 'rgba(127, 127, 127, 0.5)',
 }
 
 export enum Size {
@@ -73,6 +74,23 @@ export const mapSizeToFontSize = (size: Size): string => {
       return FontSize.l;
     case Size.xl:
       return FontSize.xl;
+  }
+};
+
+// eslint-disable-next-line consistent-return
+export const mapSizeToIconSize = ({ size }: { size: Size }): string => {
+  // eslint-disable-next-line default-case
+  switch (size) {
+    case Size.xs:
+      return '12px';
+    case Size.s:
+      return '16px';
+    case Size.m:
+      return '24px';
+    case Size.l:
+      return '32px';
+    case Size.xl:
+      return '64px';
   }
 };
 

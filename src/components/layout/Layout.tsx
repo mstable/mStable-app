@@ -5,37 +5,37 @@ import { getWorkingPath } from 'hookrouter';
 import { ReactTooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { Wallet } from '../wallet/Wallet';
-import { useWalletExpanded } from '../../context/AppProvider';
-import { useUserActivityContext } from '../../context/UserActivityProvider';
+import { Overlay } from './Overlay';
+import { useOverlayOpen } from '../../context/AppProvider';
+import { useIsIdle } from '../../context/UserActivityProvider';
 import { Background } from './Background';
-import { StatusBar } from './StatusBar';
+import { AppBar } from './AppBar';
 import { BetaWarning } from './BetaWarning';
 import { NotificationToasts } from './NotificationToasts';
 import { centredLayout } from './css';
 
-interface WalletExpanded {
-  walletExpanded: boolean;
+interface OverlayOpen {
+  overlayOpen: boolean;
 }
 
-export const Container = styled.div<{}>`
+export const Container = styled.div<{ stretch?: boolean }>`
+  display: flex;
   flex-direction: column;
+  justify-content: space-between;
 
   // The sticky header won't always be 80px, so this is less than ideal
   min-height: calc(100vh - 80px);
 
   align-items: flex-start;
-
-  ${centredLayout}
 `;
 
-const Main = styled.main`
+const Main = styled.main<{ stretch?: boolean }>`
   width: 100%;
   flex: 1;
-  padding: 40px 20px;
+  padding: ${({ stretch }) => (stretch ? 0 : '40px 20px')};
 `;
 
-const GlobalStyle = createGlobalStyle<WalletExpanded & { idle: boolean }>`
+const GlobalStyle = createGlobalStyle<OverlayOpen & { idle: boolean }>`
   ${reset}
   a {
     color: ${({ theme }) => theme.color.offBlack};
@@ -48,62 +48,70 @@ const GlobalStyle = createGlobalStyle<WalletExpanded & { idle: boolean }>`
   }
   body {
     min-width: 320px;
-    filter: ${({ idle }) => (idle ? 'grayscale(100%)' : 'none')};
+    ${({ idle }) =>
+      idle
+        ? 'transition: filter 5s ease; filter: grayscale(50%) brightness(50%)'
+        : ''};
   }
   * {
       box-sizing: border-box;
   }
   body, button, input {
     font-family: 'Poppins', sans-serif;
-    color: ${({ theme, walletExpanded }) =>
-      walletExpanded ? theme.color.offWhite : theme.color.offBlack};
+    color: ${({ theme, overlayOpen }) =>
+      overlayOpen ? theme.color.offWhite : theme.color.offBlack};
     line-height: 1.3rem;
   }
 `;
 
-const StickyHeader = styled.div<{ inverted: boolean }>`
+const StickyHeader = styled.div`
   position: sticky;
   top: 0;
   width: 100%;
   z-index: 1;
 `;
 
-const HeaderGroup: FC<{ walletExpanded: boolean; home: boolean }> = ({
-  walletExpanded,
-  home,
-}) => (
-  <StickyHeader inverted={walletExpanded}>
-    <StatusBar />
-    <Header walletExpanded={walletExpanded} home={home} />
+const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
+  <StickyHeader>
+    <AppBar />
+    <Header home={home} />
   </StickyHeader>
 );
+
+const Centred = styled.div`
+  flex: 1;
+  ${centredLayout}
+`;
 
 /**
  * App layout component.
  */
 export const Layout: FC<{}> = ({ children }) => {
-  const walletExpanded = useWalletExpanded();
-  const { idle } = useUserActivityContext();
+  const overlayOpen = useOverlayOpen();
+  const idle = useIsIdle();
   const activePath = getWorkingPath('');
   const home = activePath === '/';
+  const earn = activePath === '/earn';
+
   return (
     <>
-      <Background walletExpanded={walletExpanded} home={home} />
-      <HeaderGroup walletExpanded={walletExpanded} home={home} />
+      <Background home={home} />
+      <HeaderGroup home={home} />
       <Container>
         {home ? null : <BetaWarning />}
-        {home ? (
+        {earn ? (
           <>{children}</>
-        ) : walletExpanded ? (
-          <Wallet />
         ) : (
-          <Main>{children}</Main>
+          <Centred>
+            <Main>{children}</Main>
+          </Centred>
         )}
-        <Footer inverted={walletExpanded} home={home} />
+        <Footer inverted={overlayOpen} />
       </Container>
+      <Overlay />
       <NotificationToasts />
       <ReactTooltip id="global" />
-      <GlobalStyle walletExpanded={walletExpanded} idle={idle} />
+      <GlobalStyle overlayOpen={overlayOpen} idle={idle} />
     </>
   );
 };

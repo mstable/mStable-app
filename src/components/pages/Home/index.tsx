@@ -7,11 +7,12 @@ import React, {
   useState,
 } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { A } from 'hookrouter';
+import { A, navigate } from 'hookrouter';
+import { useWallet } from 'use-wallet';
 import { H2, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { Size, ViewportWidth } from '../../../theme';
-import { useExpandWalletRedirect } from '../../../context/AppProvider';
+import {  useOpenWalletRedirect } from '../../../context/AppProvider';
 
 const BETA_WARNING_KEY = 'acknowledged-beta-warning';
 
@@ -72,7 +73,7 @@ const SymbolBlock = styled(Block)`
   display: flex;
 `;
 
-const CarouselItem = styled.section<{ active: boolean }>`
+const CarouselItem = styled.section`
   min-height: 400px;
 
   > :first-child {
@@ -151,6 +152,7 @@ const Container = styled.div`
   align-items: center;
   flex: 1;
   width: 100%;
+  height: 100%;
 `;
 
 const Carousel = styled.div`
@@ -170,7 +172,8 @@ const Carousel = styled.div`
 `;
 
 const Start: FC<{}> = () => {
-  const expandWallet = useExpandWalletRedirect();
+  const { connected } = useWallet();
+  const openWallet = useOpenWalletRedirect();
   const { alreadyAcked } = useContext(ctx);
   return (
     <>
@@ -190,9 +193,15 @@ const Start: FC<{}> = () => {
             <Button
               type="button"
               size={Size.l}
-              onClick={() => expandWallet('/mint')}
+              onClick={() => {
+                if (connected) {
+                  navigate('/mint')
+                } else {
+                  openWallet('/mint');
+                }
+              }}
             >
-              Connect
+              {connected ? 'Go to app' : 'Connected'}
             </Button>
           </P>
         ) : null}
@@ -239,7 +248,7 @@ const Disclaimer: FC<{}> = () => {
 };
 
 const GetStarted: FC<{}> = () => {
-  const expandWallet = useExpandWalletRedirect();
+  const openWallet = useOpenWalletRedirect();
   return (
     <>
       <SymbolBlock>
@@ -253,7 +262,7 @@ const GetStarted: FC<{}> = () => {
           <Button
             type="button"
             size={Size.m}
-            onClick={() => expandWallet('/mint')}
+            onClick={() => openWallet('/mint')}
           >
             Connect
           </Button>
@@ -343,7 +352,7 @@ const HOME_STEPS: {
 ];
 
 export const Home: FC<{}> = () => {
-  const expandWallet = useExpandWalletRedirect();
+  const openWallet = useOpenWalletRedirect();
   const [activeIdx, setActiveIdx] = useState<number>(0);
 
   const alreadyAcked = !!localStorage.getItem(BETA_WARNING_KEY);
@@ -354,9 +363,9 @@ export const Home: FC<{}> = () => {
     if (activeIdx < HOME_STEPS.length - 1) {
       setActiveIdx(activeIdx + 1);
     } else {
-      expandWallet('/mint');
+      openWallet('/mint');
     }
-  }, [setActiveIdx, activeIdx, expandWallet]);
+  }, [setActiveIdx, activeIdx, openWallet]);
 
   const previous = useCallback(() => {
     if (activeIdx > 0) {
@@ -381,10 +390,8 @@ export const Home: FC<{}> = () => {
         <Carousel>
           <SliderContainer>
             <Slider activeIdx={activeIdx}>
-              {HOME_STEPS.map(({ children, key }, index) => (
-                <CarouselItem key={key} active={activeIdx === index}>
-                  {children}
-                </CarouselItem>
+              {HOME_STEPS.map(({ children, key }) => (
+                <CarouselItem key={key}>{children}</CarouselItem>
               ))}
             </Slider>
           </SliderContainer>

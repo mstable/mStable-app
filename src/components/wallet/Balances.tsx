@@ -93,7 +93,7 @@ export const Balances: FC<{}> = () => {
         )}
       </ListItem>
 
-      <ListItem size={Size.xl} key="savingsBalance">
+      <ListItem key="savingsBalance">
         <>
           <Symbol>
             <TokenIcon symbol="mUSD" outline />

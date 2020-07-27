@@ -6,7 +6,7 @@ import {
 import {
   CoreTokensQueryResult,
   useCoreTokensLazyQuery,
-} from '../graphql/generated';
+} from '../graphql/mstable';
 import { ContractNames } from '../types';
 import { MassetFactory } from '../typechain/MassetFactory';
 import { useSignerContext } from '../context/SignerProvider';

@@ -16,7 +16,7 @@ import {
   useDateFilterTickValues,
   useDateFilterTickFormat,
 } from './utils';
-import { TimeMetricPeriod } from '../../graphql/generated';
+import { TimeMetricPeriod } from '../../graphql/mstable';
 import { DateRange } from './Metrics';
 
 const dateFilter = {

@@ -1,4 +1,4 @@
-import { TokenDetails, TokenQuantity } from '../../../types';
+import { Token, TokenQuantity } from '../../../types';
 import { DataState } from '../../../context/DataProvider/types';
 
 export enum Fields {
@@ -17,7 +17,11 @@ export type Action =
       type: Actions.SetToken;
       payload: {
         field: Fields;
-      } & TokenDetails;
+      } & {
+        address: string | null;
+        decimals: number | null;
+        symbol: string | null;
+      };
     }
   | {
       type: Actions.SetQuantity;
@@ -44,7 +48,7 @@ export interface State {
 }
 
 export interface Dispatch {
-  setToken(field: Fields, token: NonNullable<TokenDetails> | null): void;
+  setToken(field: Fields, token: NonNullable<Token> | null): void;
   setQuantity(field: Fields, formValue: string): void;
 }
 
@@ -63,7 +67,11 @@ export enum Reasons {
 
 export type ValidationResult = [
   boolean,
-  { [Fields.Input]?: Reasons; [Fields.Output]?: Reasons; applySwapFee?: boolean },
+  {
+    [Fields.Input]?: Reasons;
+    [Fields.Output]?: Reasons;
+    applySwapFee?: boolean;
+  },
 ];
 
 export type StateValidator = (state: State) => ValidationResult;

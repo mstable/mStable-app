@@ -213,7 +213,7 @@ const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
   return (
     <TxStatusContainer title={label}>
       {status === TransactionStatus.Pending ? (
-        <ActivitySpinner />
+        <ActivitySpinner pending />
       ) : status === TransactionStatus.Error ? (
         <span>{EMOJIS.error}</span>
       ) : (

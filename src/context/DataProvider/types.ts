@@ -1,12 +1,14 @@
 import { BigNumber } from 'ethers/utils';
+
 import { BigDecimal } from '../../web3/BigDecimal';
 import {
   CreditBalancesQueryResult,
   LatestExchangeRateQueryResult,
   MassetQueryResult,
   SavingsContractQueryResult,
-} from '../../graphql/generated';
-import { State as TokensState } from './TokensProvider';
+} from '../../graphql/mstable';
+import { Tokens } from './TokensProvider';
+import { Allowances } from '../../types';
 
 export interface RawData {
   creditBalances?: NonNullable<
@@ -19,7 +21,7 @@ export interface RawData {
   savingsContract: NonNullable<
     SavingsContractQueryResult['data']
   >['savingsContracts'][0];
-  tokens: TokensState;
+  tokens: Tokens;
 }
 
 export type PartialRawData = {
@@ -43,7 +45,7 @@ export enum BassetStatus {
 
 export interface BassetState {
   address: string;
-  mAssetAllowance: BigDecimal;
+  allowances: Allowances;
   balance: BigDecimal;
   balanceInMasset: BigDecimal;
   decimals: number;
@@ -63,6 +65,7 @@ export interface BassetState {
 
 export interface MassetState {
   address: string;
+  allowances: Allowances;
   allBassetsNormal: boolean;
   balance: BigDecimal;
   collateralisationRatio: BigNumber;
