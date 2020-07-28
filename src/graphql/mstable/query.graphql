@@ -279,3 +279,10 @@ query RewardsPerTokenStoredAtBlock($blockNumber: Int!) @api(name: mstable) {
     platformRewardPerTokenStored
   }
 }
+
+query RewardsDistributor @api(name: mstable) {
+  rewardsDistributors(first: 1) {
+    id
+    fundManagers
+  }
+}

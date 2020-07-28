@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { BigNumber } from 'ethers/utils';
 
 import {
   TokenDetailsFragment,
   useErc20TokensQuery,
 } from '../../graphql/mstable';
+import { BigDecimal } from '../../web3/BigDecimal';
 import { Size, ViewportWidth } from '../../theme';
 import { Button } from '../core/Button';
 import { FlexRow } from '../core/Containers';
@@ -35,7 +35,7 @@ interface Props {
   onChangeToken?(name: string, token: TokenDetailsFragment): void;
   onSetMax?(): void;
   spender?: string;
-  approveQuantity?: BigNumber;
+  approveAmount?: BigDecimal;
 }
 
 const InputsRow = styled(FlexRow)`
@@ -151,7 +151,7 @@ export const TokenAmountInput: FC<Props> = ({
   onChangeAmount,
   onChangeToken,
   onSetMax,
-  approveQuantity,
+  approveAmount,
   items = [],
 }) => {
   const { data: tokensData } = useErc20TokensQuery({
@@ -182,7 +182,8 @@ export const TokenAmountInput: FC<Props> = ({
             <ApproveButton
               address={tokenValue}
               spender={spender}
-              approveQuantity={approveQuantity}
+              amount={approveAmount}
+              decimals={token?.decimals}
             />
           ) : null}
         </AmountInputContainer>

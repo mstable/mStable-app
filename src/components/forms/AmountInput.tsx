@@ -7,6 +7,7 @@ import React, {
 import styled from 'styled-components';
 
 interface Props {
+  className?: string;
   error?: string;
   value: string | null;
   balance?: string | null;
@@ -49,6 +50,7 @@ const Input = styled.input<{ error: string | void }>`
  * @param onChange Optional callback with the amount value
  */
 export const AmountInput: FC<Props> = ({
+  className,
   name,
   error,
   disabled = false,
@@ -75,6 +77,7 @@ export const AmountInput: FC<Props> = ({
 
   return (
     <Input
+      className={className}
       error={error}
       type="number"
       min="0"

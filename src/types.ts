@@ -9,6 +9,7 @@ import { StakingRewards as IStakingRewards } from './typechain/StakingRewards.d'
 import { StakingRewardsWithPlatformToken as IStakingRewardsWithPlatformToken } from './typechain/StakingRewardsWithPlatformToken.d';
 import { BigDecimal } from './web3/BigDecimal';
 import { IRewardsVault } from './typechain/IRewardsVault.d';
+import { RewardsDistributor as IRewardsDistributor } from './typechain/RewardsDistributor.d';
 
 export interface Transaction {
   formId?: string;
@@ -66,6 +67,7 @@ export enum Interfaces {
   StakingRewards,
   StakingRewardsWithPlatformToken,
   RewardsVault,
+  RewardsDistibutor,
 }
 
 export interface Instances {
@@ -77,6 +79,7 @@ export interface Instances {
   [Interfaces.StakingRewards]: IStakingRewards;
   [Interfaces.StakingRewardsWithPlatformToken]: IStakingRewardsWithPlatformToken;
   [Interfaces.RewardsVault]: IRewardsVault;
+  [Interfaces.RewardsDistibutor]: IRewardsDistributor;
 }
 
 /**
