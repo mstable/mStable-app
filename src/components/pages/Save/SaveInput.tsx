@@ -1,7 +1,7 @@
 import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { parseUnits } from 'ethers/utils';
 
+import { BigDecimal } from '../../../web3/BigDecimal';
 import { Color } from '../../../theme';
 import { FormRow } from '../../core/Form';
 import { H3 } from '../../core/Typography';
@@ -21,6 +21,8 @@ const TransactionTypeRow = styled(FormRow)`
   }
 `;
 
+const approveAmount = new BigDecimal('1844674400000', 18);
+
 export const SaveInput: FC<{}> = () => {
   const {
     error,
@@ -35,11 +37,6 @@ export const SaveInput: FC<{}> = () => {
   const mAsset = dataState?.mAsset;
   const mAssetAddress = mAsset?.address || null;
   const savingsContractAddress = dataState?.savingsContract.address;
-
-  const approveQuantity = useMemo(
-    () => parseUnits('1844674400000', mAsset?.decimals),
-    [mAsset],
-  );
 
   const tokenAddresses = useMemo<string[]>(
     () => (mAssetAddress ? [mAssetAddress] : []),
@@ -84,7 +81,7 @@ export const SaveInput: FC<{}> = () => {
           error={error}
           needsUnlock={needsUnlock}
           spender={savingsContractAddress as string}
-          approveQuantity={approveQuantity}
+          approveAmount={approveAmount}
         />
       </FormRow>
     </>

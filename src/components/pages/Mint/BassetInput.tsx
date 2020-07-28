@@ -93,7 +93,7 @@ const Grid = styled.div<{ enabled?: boolean }>`
     overflow: hidden;
     transition: all 0.4s ease;
     opacity: ${({ enabled }) => (enabled ? 1 : 0)};
-    max-height: ${({ enabled }) => (enabled ? '50px' : 0)};
+    max-height: ${({ enabled }) => (enabled ? '100px' : 0)};
     padding-top: ${({ enabled }) => (enabled ? '8px' : 0)};
   }
 
@@ -116,6 +116,12 @@ const Grid = styled.div<{ enabled?: boolean }>`
     ${BalanceContainer} {
       grid-area: 1 / 7 / 3 / 9;
     }
+  }
+`;
+
+const AmountInputContainer = styled.div`
+  > :first-child {
+    margin-bottom: 8px;
   }
 `;
 
@@ -177,16 +183,22 @@ export const BassetInput: FC<Props> = ({ address }) => {
         <InputContainer onClick={handleClickInput}>
           <Label>Amount</Label>
           {decimals ? (
-            <AmountInput
-              disabled={!enabled}
-              value={formValue}
-              error={error}
-              name={address}
-              onChange={handleChangeAmount}
-            />
-          ) : null}
-          {needsUnlock && mAssetAddress ? (
-            <ApproveButton address={address} spender={mAssetAddress} />
+            <AmountInputContainer>
+              <AmountInput
+                disabled={!enabled}
+                value={formValue}
+                error={error}
+                name={address}
+                onChange={handleChangeAmount}
+              />
+              {needsUnlock && mAssetAddress ? (
+                <ApproveButton
+                  address={address}
+                  spender={mAssetAddress}
+                  decimals={decimals}
+                />
+              ) : null}
+            </AmountInputContainer>
           ) : null}
           {enabled && mode === Mode.MintSingle ? (
             <Button onClick={setBassetMaxAmount} size={1} type="button">

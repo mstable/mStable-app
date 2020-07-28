@@ -13,6 +13,7 @@ import { AppBar } from './AppBar';
 import { BetaWarning } from './BetaWarning';
 import { NotificationToasts } from './NotificationToasts';
 import { centredLayout } from './css';
+import { Color } from '../../theme';
 
 interface OverlayOpen {
   overlayOpen: boolean;
@@ -52,6 +53,14 @@ const GlobalStyle = createGlobalStyle<OverlayOpen & { idle: boolean }>`
       idle
         ? 'transition: filter 5s ease; filter: grayscale(50%) brightness(50%)'
         : ''};
+  }
+  code {
+    display: block;
+    padding: 16px;
+    border-radius: 2px;
+    border: 1px ${Color.blackTransparent} solid;
+    background: ${Color.white};
+    ${({ theme }) => theme.mixins.numeric}
   }
   * {
       box-sizing: border-box;

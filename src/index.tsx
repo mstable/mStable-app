@@ -19,6 +19,7 @@ import { NotFound } from './components/pages/NotFound';
 import { FAQ } from './components/pages/FAQ';
 import { Analytics } from './components/pages/Analytics';
 import { PoolPage } from './components/pages/Earn/Pool';
+import { AdminPage } from './components/pages/Earn/Admin';
 
 checkRequiredEnvVars();
 
@@ -32,6 +33,7 @@ const routes = {
   '/mint': () => <Mint />,
   '/earn': () => <Earn />,
   // '/earn/vault': () => <VaultPage />,
+  '/earn/admin': () => <AdminPage />,
   '/earn/:slugOrAddress': ({ slugOrAddress }: { slugOrAddress?: string }) => (
     <PoolPage slugOrAddress={slugOrAddress} />
   ),
