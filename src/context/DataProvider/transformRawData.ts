@@ -31,7 +31,7 @@ const getMassetState: TransformFn<'mAsset'> = ({
     decimals,
     failed,
     feeRate: bigNumberify(feeRate),
-    redemptionFeeRate: bigNumberify(redemptionFeeRate),
+    redemptionFeeRate: bigNumberify(redemptionFeeRate || '0'),
     symbol,
     totalSupply: BigDecimal.parse(totalSupply, decimals),
     undergoingRecol,

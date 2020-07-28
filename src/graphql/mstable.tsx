@@ -693,14 +693,6 @@ export type Masset_Filter = {
   feeRate_lte?: Maybe<Scalars['BigInt']>;
   feeRate_in?: Maybe<Array<Scalars['BigInt']>>;
   feeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  redemptionFeeRate?: Maybe<Scalars['BigInt']>;
-  redemptionFeeRate_not?: Maybe<Scalars['BigInt']>;
-  redemptionFeeRate_gt?: Maybe<Scalars['BigInt']>;
-  redemptionFeeRate_lt?: Maybe<Scalars['BigInt']>;
-  redemptionFeeRate_gte?: Maybe<Scalars['BigInt']>;
-  redemptionFeeRate_lte?: Maybe<Scalars['BigInt']>;
-  redemptionFeeRate_in?: Maybe<Array<Scalars['BigInt']>>;
-  redemptionFeeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
   token?: Maybe<Scalars['String']>;
   token_not?: Maybe<Scalars['String']>;
   token_gt?: Maybe<Scalars['String']>;
@@ -735,7 +727,6 @@ export enum Masset_OrderBy {
   Id = 'id',
   Basket = 'basket',
   FeeRate = 'feeRate',
-  RedemptionFeeRate = 'redemptionFeeRate',
   Token = 'token',
   TokenSymbol = 'tokenSymbol',
   SavingsContracts = 'savingsContracts'
@@ -2920,6 +2911,11 @@ export type RewardsPerTokenStoredAtBlockQueryVariables = {
 
 export type RewardsPerTokenStoredAtBlockQuery = { stakingRewardsContracts: Array<Pick<StakingRewardsContract, 'id' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored'>> };
 
+export type RewardsDistributorQueryVariables = {};
+
+
+export type RewardsDistributorQuery = { rewardsDistributors: Array<Pick<RewardsDistributor, 'id' | 'fundManagers'>> };
+
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
   id
@@ -2936,7 +2932,6 @@ export const MassetAllFragmentDoc = gql`
     ...TokenDetails
   }
   feeRate
-  redemptionFeeRate
   basket {
     failed
     collateralisationRatio
@@ -3622,3 +3617,36 @@ export function useRewardsPerTokenStoredAtBlockLazyQuery(baseOptions?: ApolloRea
 export type RewardsPerTokenStoredAtBlockQueryHookResult = ReturnType<typeof useRewardsPerTokenStoredAtBlockQuery>;
 export type RewardsPerTokenStoredAtBlockLazyQueryHookResult = ReturnType<typeof useRewardsPerTokenStoredAtBlockLazyQuery>;
 export type RewardsPerTokenStoredAtBlockQueryResult = ApolloReactCommon.QueryResult<RewardsPerTokenStoredAtBlockQuery, RewardsPerTokenStoredAtBlockQueryVariables>;
+export const RewardsDistributorDocument = gql`
+    query RewardsDistributor @api(name: mstable) {
+  rewardsDistributors(first: 1) {
+    id
+    fundManagers
+  }
+}
+    `;
+
+/**
+ * __useRewardsDistributorQuery__
+ *
+ * To run a query within a React component, call `useRewardsDistributorQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRewardsDistributorQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRewardsDistributorQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useRewardsDistributorQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<RewardsDistributorQuery, RewardsDistributorQueryVariables>) {
+        return ApolloReactHooks.useQuery<RewardsDistributorQuery, RewardsDistributorQueryVariables>(RewardsDistributorDocument, baseOptions);
+      }
+export function useRewardsDistributorLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RewardsDistributorQuery, RewardsDistributorQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<RewardsDistributorQuery, RewardsDistributorQueryVariables>(RewardsDistributorDocument, baseOptions);
+        }
+export type RewardsDistributorQueryHookResult = ReturnType<typeof useRewardsDistributorQuery>;
+export type RewardsDistributorLazyQueryHookResult = ReturnType<typeof useRewardsDistributorLazyQuery>;
+export type RewardsDistributorQueryResult = ApolloReactCommon.QueryResult<RewardsDistributorQuery, RewardsDistributorQueryVariables>;
