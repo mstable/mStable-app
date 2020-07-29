@@ -18,8 +18,11 @@ const getStakingRewardsContractsMap = (
     tokenPricesMap,
   }: SyncedEarnData,
   { rawStakingRewardsContracts24hAgo, rawStakingRewardsContracts }: RawEarnData,
-): EarnData['stakingRewardsContractsMap'] =>
-  rawStakingRewardsContracts.reduce<EarnData['stakingRewardsContractsMap']>(
+): EarnData['stakingRewardsContractsMap'] => {
+  const currentTime = new BigNumber(Math.floor(Date.now() / 1e3));
+  return rawStakingRewardsContracts.reduce<
+    EarnData['stakingRewardsContractsMap']
+  >(
     (
       _state: EarnData['stakingRewardsContractsMap'],
       {
@@ -92,6 +95,12 @@ const getStakingRewardsContractsMap = (
           totalStakingRewards,
           rewardsToken.decimals,
         ),
+        totalRemainingRewards: new BigDecimal(
+          currentTime.gt(periodFinish)
+            ? 0
+            : new BigNumber(periodFinish).sub(currentTime).mul(rewardRate),
+          rewardsToken.decimals,
+        ),
         stakingBalance: new BigDecimal(
           stakingBalance?.amount || 0,
           stakingToken.decimals,
@@ -138,6 +147,14 @@ const getStakingRewardsContractsMap = (
                 },
                 totalPlatformRewards: new BigDecimal(
                   totalPlatformRewards,
+                  platformToken.decimals,
+                ),
+                totalRemainingPlatformRewards: new BigDecimal(
+                  currentTime.gt(periodFinish)
+                    ? 0
+                    : new BigNumber(periodFinish)
+                        .sub(currentTime)
+                        .mul(platformRewardRate),
                   platformToken.decimals,
                 ),
               },
@@ -214,6 +231,7 @@ const getStakingRewardsContractsMap = (
     },
     {},
   );
+};
 
 export const transformEarnData = (
   syncedEarnData: SyncedEarnData,
