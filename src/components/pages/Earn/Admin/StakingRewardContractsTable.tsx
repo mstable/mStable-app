@@ -4,7 +4,7 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
 import { useStakingRewardsContracts } from '../../../../context/earn/EarnDataProvider';
 import { PLATFORM_METADATA } from '../constants';
-import { Amount, NumberFormat } from '../../../core/Amount';
+import { NumberFormat } from '../../../core/Amount';
 import { TokenAmount } from '../../../core/TokenAmount';
 import { Table } from '../../../core/Table';
 import { AmountInput } from '../../../forms/AmountInput';
@@ -135,7 +135,7 @@ export const StakingRewardContractsTable: FC<{}> = () => {
         const {
           address: id,
           platformRewards,
-          totalStakingRewards,
+          totalRemainingRewards,
           rewardsToken,
           pool,
           periodFinish,
@@ -215,17 +215,16 @@ export const StakingRewardContractsTable: FC<{}> = () => {
                     />
                   );
                 case Columns.RemainingRewards:
-                  // TODO remaining rewards as per `notifyRewardAmount`
                   return (
                     <>
                       <TokenAmount
-                        amount={totalStakingRewards}
+                        amount={totalRemainingRewards}
                         format={NumberFormat.Abbreviated}
                         symbol={rewardsToken.symbol}
                       />
                       {platformRewards ? (
                         <TokenAmount
-                          amount={platformRewards.totalPlatformRewards}
+                          amount={platformRewards.totalRemainingPlatformRewards}
                           format={NumberFormat.Abbreviated}
                           symbol={platformRewards.platformToken.symbol}
                         />
