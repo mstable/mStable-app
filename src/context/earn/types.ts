@@ -88,6 +88,7 @@ export interface StakingRewardsContract {
   stakingToken: Token & { totalSupply: BigDecimal; price?: BigDecimal };
   totalSupply: BigDecimal;
   totalStakingRewards: BigDecimal;
+  totalRemainingRewards: BigDecimal;
   type: StakingRewardsContractType;
   stakingTokenApy?: BigDecimal;
   combinedRewardsTokensApy?: BigDecimal;
@@ -98,6 +99,7 @@ export interface StakingRewardsContract {
     platformReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal };
     platformToken: Token & { price?: BigDecimal };
     totalPlatformRewards: BigDecimal;
+    totalRemainingPlatformRewards: BigDecimal;
   };
 }
 
