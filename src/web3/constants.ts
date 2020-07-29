@@ -32,6 +32,9 @@ export const EMOJIS = {
   redeemMasset: '💱',
   withdraw: '🏧',
   link: '🔗',
+  exit: '🚪',
+  claimReward: '🏆',
+  'stake(uint256)': '🔒',
 };
 
 export const DAPP_VERSION = process.env.REACT_APP_VERSION;

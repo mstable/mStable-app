@@ -73,18 +73,21 @@ const dataState = {
       totalSupply: new BigDecimal(1000, 10),
       totalVault: new BigDecimal(100, 10),
       balance: new BigDecimal(10, 10),
+      allowances: { [mUSD.address]: new BigDecimal(1000, 10) }
     },
     [USDC.address]: {
       ...USDC,
       totalSupply: new BigDecimal(1000, 6),
       totalVault: new BigDecimal(100, 6),
       balance: new BigDecimal(10, 6),
+      allowances: { [mUSD.address]: new BigDecimal(1000, 6) }
     },
     [TUSD.address]: {
       ...TUSD,
       totalSupply: new BigDecimal(1000, 18),
       totalVault: new BigDecimal(100, 18),
       balance: new BigDecimal(10, 18),
+      allowances: { [mUSD.address]: new BigDecimal(1000, 18) }
     },
   } as any,
   mAsset: {

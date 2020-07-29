@@ -30,3 +30,10 @@ fragment MassetAll on Masset {
     }
   }
 }
+
+fragment TransactionDetails on Transaction {
+  id
+  tx
+  type
+  timestamp
+}

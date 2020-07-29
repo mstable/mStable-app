@@ -28,6 +28,8 @@ import { DataState } from './DataProvider/types';
 import { useDataState } from './DataProvider/DataProvider';
 import { getEtherscanLink } from '../web3/strings';
 import { BigDecimal } from '../web3/BigDecimal';
+import { useStakingRewardsContracts } from './earn/EarnDataProvider';
+import { StakingRewardsContractsMap } from './earn/types';
 
 enum Actions {
   AddPending,
@@ -200,6 +202,7 @@ const initialState: State = {
 const getTxPurpose = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { args, fn, iface }: SendTxManifest<any, any>,
+  stakingRewardsContracts: StakingRewardsContractsMap,
   dataState?: DataState,
 ): Purpose => {
   if (!dataState)
@@ -207,6 +210,53 @@ const getTxPurpose = (
       present: null,
       past: null,
     };
+
+  const stakingRewardsContract = stakingRewardsContracts[iface.address];
+  if (stakingRewardsContract) {
+    const {
+      title,
+      stakingToken,
+      rewardsToken,
+      platformRewards,
+    } = stakingRewardsContract;
+    switch (fn) {
+      case 'exit': {
+        return {
+          past: `Exited ${title}`,
+          present: `Exiting ${title}`,
+        };
+      }
+      case 'withdraw': {
+        return {
+          past: `Withdrew ${stakingToken.symbol} from ${title}`,
+          present: `Withdrawing ${stakingToken.symbol} from ${title}`,
+        };
+      }
+      case 'claimReward': {
+        const rewardsTokens = `${rewardsToken.symbol}
+            ${
+              platformRewards
+                ? ` and ${platformRewards.platformToken.symbol}`
+                : ''
+            }`;
+        return {
+          past: `Claimed ${rewardsTokens} from ${title}`,
+          present: `Claiming ${rewardsTokens} from ${title}`,
+        };
+      }
+      case 'stake(uint256)': {
+        return {
+          past: `Staked ${stakingToken.symbol} in ${title}`,
+          present: `Staking ${stakingToken.symbol} in ${title}`,
+        };
+      }
+      default:
+        return {
+          present: null,
+          past: null,
+        };
+    }
+  }
 
   const { bAssets, mAsset } = dataState;
 
@@ -351,10 +401,15 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
   const dataState = useDataState();
+  const stakingRewardsContracts = useStakingRewardsContracts();
 
   const addPending = useCallback<Dispatch['addPending']>(
     (manifest, pendingTx) => {
-      const purpose = getTxPurpose(manifest, dataState);
+      const purpose = getTxPurpose(
+        manifest,
+        stakingRewardsContracts,
+        dataState,
+      );
       dispatch({
         type: Actions.AddPending,
         payload: {
@@ -374,7 +429,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
         getEtherscanLinkForHash(pendingTx.hash),
       );
     },
-    [dispatch, dataState, addInfoNotification],
+    [dispatch, dataState, stakingRewardsContracts, addInfoNotification],
   );
 
   const addHistoric = useCallback<Dispatch['addHistoric']>(
@@ -416,13 +471,31 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
 
   const resetLatestStatus = useCallback(() => {
     dispatch({ type: Actions.ResetLatestStatus });
-  }, [dispatch])
+  }, [dispatch]);
 
   return (
     <context.Provider
       value={useMemo(
-        () => [state, { addPending, addHistoric, check, finalize, reset, resetLatestStatus }],
-        [state, addPending, addHistoric, check, finalize, reset, resetLatestStatus],
+        () => [
+          state,
+          {
+            addPending,
+            addHistoric,
+            check,
+            finalize,
+            reset,
+            resetLatestStatus,
+          },
+        ],
+        [
+          state,
+          addPending,
+          addHistoric,
+          check,
+          finalize,
+          reset,
+          resetLatestStatus,
+        ],
       )}
     >
       {children}

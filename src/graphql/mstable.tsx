@@ -38,6 +38,18 @@ export type Maybe<T> = T | null;
           },
           {
             "name": "FeePaidTransaction"
+          },
+          {
+            "name": "StakingRewardsContractTransaction"
+          },
+          {
+            "name": "StakingRewardsContractClaimRewardTransaction"
+          },
+          {
+            "name": "StakingRewardsContractStakeTransaction"
+          },
+          {
+            "name": "StakingRewardsContractWithdrawTransaction"
           }
         ]
       }
@@ -536,11 +548,11 @@ export type FeePaidTransaction = Transaction & {
   id: Scalars['ID'];
   tx: Scalars['Bytes'];
   type: TransactionType;
+  timestamp: Scalars['Int'];
+  sender: Scalars['Bytes'];
   /** Which mAsset is this tx in? */
   mAsset: Masset;
   mAssetUnits: Scalars['BigDecimal'];
-  timestamp: Scalars['Int'];
-  sender: Scalars['Bytes'];
   asset: Basset;
 };
 
@@ -561,6 +573,20 @@ export type FeePaidTransaction_Filter = {
   tx_not_contains?: Maybe<Scalars['Bytes']>;
   type?: Maybe<TransactionType>;
   type_not?: Maybe<TransactionType>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
   mAsset?: Maybe<Scalars['String']>;
   mAsset_not?: Maybe<Scalars['String']>;
   mAsset_gt?: Maybe<Scalars['String']>;
@@ -583,20 +609,6 @@ export type FeePaidTransaction_Filter = {
   mAssetUnits_lte?: Maybe<Scalars['BigDecimal']>;
   mAssetUnits_in?: Maybe<Array<Scalars['BigDecimal']>>;
   mAssetUnits_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  timestamp?: Maybe<Scalars['Int']>;
-  timestamp_not?: Maybe<Scalars['Int']>;
-  timestamp_gt?: Maybe<Scalars['Int']>;
-  timestamp_lt?: Maybe<Scalars['Int']>;
-  timestamp_gte?: Maybe<Scalars['Int']>;
-  timestamp_lte?: Maybe<Scalars['Int']>;
-  timestamp_in?: Maybe<Array<Scalars['Int']>>;
-  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
-  sender?: Maybe<Scalars['Bytes']>;
-  sender_not?: Maybe<Scalars['Bytes']>;
-  sender_in?: Maybe<Array<Scalars['Bytes']>>;
-  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
-  sender_contains?: Maybe<Scalars['Bytes']>;
-  sender_not_contains?: Maybe<Scalars['Bytes']>;
   asset?: Maybe<Scalars['String']>;
   asset_not?: Maybe<Scalars['String']>;
   asset_gt?: Maybe<Scalars['String']>;
@@ -617,10 +629,10 @@ export enum FeePaidTransaction_OrderBy {
   Id = 'id',
   Tx = 'tx',
   Type = 'type',
-  MAsset = 'mAsset',
-  MAssetUnits = 'mAssetUnits',
   Timestamp = 'timestamp',
   Sender = 'sender',
+  MAsset = 'mAsset',
+  MAssetUnits = 'mAssetUnits',
   Asset = 'asset'
 }
 
@@ -631,7 +643,7 @@ export type Masset = {
   basket: Basket;
   /** The swap fee rate */
   feeRate: Scalars['BigInt'];
-  /** The swap fee rate */
+  /** The redemption fee rate */
   redemptionFeeRate: Scalars['BigInt'];
   /** The underlying Token for this Masset */
   token: Token;
@@ -761,6 +773,14 @@ export type Query = {
   swapTransactions: Array<SwapTransaction>;
   feePaidTransaction?: Maybe<FeePaidTransaction>;
   feePaidTransactions: Array<FeePaidTransaction>;
+  stakingRewardsContractTransaction?: Maybe<StakingRewardsContractTransaction>;
+  stakingRewardsContractTransactions: Array<StakingRewardsContractTransaction>;
+  stakingRewardsContractClaimRewardTransaction?: Maybe<StakingRewardsContractClaimRewardTransaction>;
+  stakingRewardsContractClaimRewardTransactions: Array<StakingRewardsContractClaimRewardTransaction>;
+  stakingRewardsContractStakeTransaction?: Maybe<StakingRewardsContractStakeTransaction>;
+  stakingRewardsContractStakeTransactions: Array<StakingRewardsContractStakeTransaction>;
+  stakingRewardsContractWithdrawTransaction?: Maybe<StakingRewardsContractWithdrawTransaction>;
+  stakingRewardsContractWithdrawTransactions: Array<StakingRewardsContractWithdrawTransaction>;
   rewardsDistributor?: Maybe<RewardsDistributor>;
   rewardsDistributors: Array<RewardsDistributor>;
   rewardsVault?: Maybe<RewardsVault>;
@@ -984,6 +1004,70 @@ export type QueryFeePaidTransactionsArgs = {
   orderBy?: Maybe<FeePaidTransaction_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<FeePaidTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryStakingRewardsContractTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryStakingRewardsContractTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryStakingRewardsContractClaimRewardTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryStakingRewardsContractClaimRewardTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractClaimRewardTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractClaimRewardTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryStakingRewardsContractStakeTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryStakingRewardsContractStakeTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractStakeTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractStakeTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryStakingRewardsContractWithdrawTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryStakingRewardsContractWithdrawTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractWithdrawTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractWithdrawTransaction_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -1713,9 +1797,299 @@ export enum StakingRewardsContract_OrderBy {
   TotalPlatformRewards = 'totalPlatformRewards'
 }
 
+export type StakingRewardsContractClaimRewardTransaction = Transaction & {
+  id: Scalars['ID'];
+  tx: Scalars['Bytes'];
+  type: TransactionType;
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['Int'];
+  stakingRewardsContract: StakingRewardsContract;
+  amount: Scalars['BigInt'];
+};
+
+export type StakingRewardsContractClaimRewardTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  tx?: Maybe<Scalars['Bytes']>;
+  tx_not?: Maybe<Scalars['Bytes']>;
+  tx_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_contains?: Maybe<Scalars['Bytes']>;
+  tx_not_contains?: Maybe<Scalars['Bytes']>;
+  type?: Maybe<TransactionType>;
+  type_not?: Maybe<TransactionType>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  stakingRewardsContract?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_not_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_ends_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_ends_with?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['BigInt']>;
+  amount_not?: Maybe<Scalars['BigInt']>;
+  amount_gt?: Maybe<Scalars['BigInt']>;
+  amount_lt?: Maybe<Scalars['BigInt']>;
+  amount_gte?: Maybe<Scalars['BigInt']>;
+  amount_lte?: Maybe<Scalars['BigInt']>;
+  amount_in?: Maybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum StakingRewardsContractClaimRewardTransaction_OrderBy {
+  Id = 'id',
+  Tx = 'tx',
+  Type = 'type',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
+  StakingRewardsContract = 'stakingRewardsContract',
+  Amount = 'amount'
+}
+
+export type StakingRewardsContractStakeTransaction = Transaction & {
+  id: Scalars['ID'];
+  tx: Scalars['Bytes'];
+  type: TransactionType;
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['Int'];
+  stakingRewardsContract: StakingRewardsContract;
+  amount: Scalars['BigInt'];
+};
+
+export type StakingRewardsContractStakeTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  tx?: Maybe<Scalars['Bytes']>;
+  tx_not?: Maybe<Scalars['Bytes']>;
+  tx_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_contains?: Maybe<Scalars['Bytes']>;
+  tx_not_contains?: Maybe<Scalars['Bytes']>;
+  type?: Maybe<TransactionType>;
+  type_not?: Maybe<TransactionType>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  stakingRewardsContract?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_not_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_ends_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_ends_with?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['BigInt']>;
+  amount_not?: Maybe<Scalars['BigInt']>;
+  amount_gt?: Maybe<Scalars['BigInt']>;
+  amount_lt?: Maybe<Scalars['BigInt']>;
+  amount_gte?: Maybe<Scalars['BigInt']>;
+  amount_lte?: Maybe<Scalars['BigInt']>;
+  amount_in?: Maybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum StakingRewardsContractStakeTransaction_OrderBy {
+  Id = 'id',
+  Tx = 'tx',
+  Type = 'type',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
+  StakingRewardsContract = 'stakingRewardsContract',
+  Amount = 'amount'
+}
+
+export type StakingRewardsContractTransaction = Transaction & {
+  id: Scalars['ID'];
+  tx: Scalars['Bytes'];
+  type: TransactionType;
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['Int'];
+  stakingRewardsContract: StakingRewardsContract;
+};
+
+export type StakingRewardsContractTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  tx?: Maybe<Scalars['Bytes']>;
+  tx_not?: Maybe<Scalars['Bytes']>;
+  tx_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_contains?: Maybe<Scalars['Bytes']>;
+  tx_not_contains?: Maybe<Scalars['Bytes']>;
+  type?: Maybe<TransactionType>;
+  type_not?: Maybe<TransactionType>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  stakingRewardsContract?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_not_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_ends_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_ends_with?: Maybe<Scalars['String']>;
+};
+
+export enum StakingRewardsContractTransaction_OrderBy {
+  Id = 'id',
+  Tx = 'tx',
+  Type = 'type',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
+  StakingRewardsContract = 'stakingRewardsContract'
+}
+
 export enum StakingRewardsContractType {
   StakingRewards = 'STAKING_REWARDS',
   StakingRewardsWithPlatformToken = 'STAKING_REWARDS_WITH_PLATFORM_TOKEN'
+}
+
+export type StakingRewardsContractWithdrawTransaction = Transaction & {
+  id: Scalars['ID'];
+  tx: Scalars['Bytes'];
+  type: TransactionType;
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['Int'];
+  stakingRewardsContract: StakingRewardsContract;
+  amount: Scalars['BigInt'];
+};
+
+export type StakingRewardsContractWithdrawTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  tx?: Maybe<Scalars['Bytes']>;
+  tx_not?: Maybe<Scalars['Bytes']>;
+  tx_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  tx_contains?: Maybe<Scalars['Bytes']>;
+  tx_not_contains?: Maybe<Scalars['Bytes']>;
+  type?: Maybe<TransactionType>;
+  type_not?: Maybe<TransactionType>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
+  stakingRewardsContract?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_not_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_ends_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_ends_with?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['BigInt']>;
+  amount_not?: Maybe<Scalars['BigInt']>;
+  amount_gt?: Maybe<Scalars['BigInt']>;
+  amount_lt?: Maybe<Scalars['BigInt']>;
+  amount_gte?: Maybe<Scalars['BigInt']>;
+  amount_lte?: Maybe<Scalars['BigInt']>;
+  amount_in?: Maybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum StakingRewardsContractWithdrawTransaction_OrderBy {
+  Id = 'id',
+  Tx = 'tx',
+  Type = 'type',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
+  StakingRewardsContract = 'stakingRewardsContract',
+  Amount = 'amount'
 }
 
 export enum StakingRewardType {
@@ -1750,6 +2124,14 @@ export type Subscription = {
   swapTransactions: Array<SwapTransaction>;
   feePaidTransaction?: Maybe<FeePaidTransaction>;
   feePaidTransactions: Array<FeePaidTransaction>;
+  stakingRewardsContractTransaction?: Maybe<StakingRewardsContractTransaction>;
+  stakingRewardsContractTransactions: Array<StakingRewardsContractTransaction>;
+  stakingRewardsContractClaimRewardTransaction?: Maybe<StakingRewardsContractClaimRewardTransaction>;
+  stakingRewardsContractClaimRewardTransactions: Array<StakingRewardsContractClaimRewardTransaction>;
+  stakingRewardsContractStakeTransaction?: Maybe<StakingRewardsContractStakeTransaction>;
+  stakingRewardsContractStakeTransactions: Array<StakingRewardsContractStakeTransaction>;
+  stakingRewardsContractWithdrawTransaction?: Maybe<StakingRewardsContractWithdrawTransaction>;
+  stakingRewardsContractWithdrawTransactions: Array<StakingRewardsContractWithdrawTransaction>;
   rewardsDistributor?: Maybe<RewardsDistributor>;
   rewardsDistributors: Array<RewardsDistributor>;
   rewardsVault?: Maybe<RewardsVault>;
@@ -1977,6 +2359,70 @@ export type SubscriptionFeePaidTransactionsArgs = {
 };
 
 
+export type SubscriptionStakingRewardsContractTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionStakingRewardsContractTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionStakingRewardsContractClaimRewardTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionStakingRewardsContractClaimRewardTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractClaimRewardTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractClaimRewardTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionStakingRewardsContractStakeTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionStakingRewardsContractStakeTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractStakeTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractStakeTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionStakingRewardsContractWithdrawTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionStakingRewardsContractWithdrawTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractWithdrawTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractWithdrawTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
 export type SubscriptionRewardsDistributorArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -2109,11 +2555,11 @@ export type SwapTransaction = Transaction & {
   id: Scalars['ID'];
   tx: Scalars['Bytes'];
   type: TransactionType;
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['Int'];
   /** Which mAsset is this tx in? */
   mAsset: Masset;
   mAssetUnits: Scalars['BigDecimal'];
-  timestamp: Scalars['Int'];
-  sender: Scalars['Bytes'];
   inputBasset: Basset;
   outputBasset: Basset;
   recipient: Scalars['Bytes'];
@@ -2136,6 +2582,20 @@ export type SwapTransaction_Filter = {
   tx_not_contains?: Maybe<Scalars['Bytes']>;
   type?: Maybe<TransactionType>;
   type_not?: Maybe<TransactionType>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['Int']>;
+  timestamp_not?: Maybe<Scalars['Int']>;
+  timestamp_gt?: Maybe<Scalars['Int']>;
+  timestamp_lt?: Maybe<Scalars['Int']>;
+  timestamp_gte?: Maybe<Scalars['Int']>;
+  timestamp_lte?: Maybe<Scalars['Int']>;
+  timestamp_in?: Maybe<Array<Scalars['Int']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
   mAsset?: Maybe<Scalars['String']>;
   mAsset_not?: Maybe<Scalars['String']>;
   mAsset_gt?: Maybe<Scalars['String']>;
@@ -2158,20 +2618,6 @@ export type SwapTransaction_Filter = {
   mAssetUnits_lte?: Maybe<Scalars['BigDecimal']>;
   mAssetUnits_in?: Maybe<Array<Scalars['BigDecimal']>>;
   mAssetUnits_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  timestamp?: Maybe<Scalars['Int']>;
-  timestamp_not?: Maybe<Scalars['Int']>;
-  timestamp_gt?: Maybe<Scalars['Int']>;
-  timestamp_lt?: Maybe<Scalars['Int']>;
-  timestamp_gte?: Maybe<Scalars['Int']>;
-  timestamp_lte?: Maybe<Scalars['Int']>;
-  timestamp_in?: Maybe<Array<Scalars['Int']>>;
-  timestamp_not_in?: Maybe<Array<Scalars['Int']>>;
-  sender?: Maybe<Scalars['Bytes']>;
-  sender_not?: Maybe<Scalars['Bytes']>;
-  sender_in?: Maybe<Array<Scalars['Bytes']>>;
-  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
-  sender_contains?: Maybe<Scalars['Bytes']>;
-  sender_not_contains?: Maybe<Scalars['Bytes']>;
   inputBasset?: Maybe<Scalars['String']>;
   inputBasset_not?: Maybe<Scalars['String']>;
   inputBasset_gt?: Maybe<Scalars['String']>;
@@ -2212,10 +2658,10 @@ export enum SwapTransaction_OrderBy {
   Id = 'id',
   Tx = 'tx',
   Type = 'type',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
   MAsset = 'mAsset',
   MAssetUnits = 'mAssetUnits',
-  Timestamp = 'timestamp',
-  Sender = 'sender',
   InputBasset = 'inputBasset',
   OutputBasset = 'outputBasset',
   Recipient = 'recipient'
@@ -2396,9 +2842,6 @@ export type Transaction = {
   id: Scalars['ID'];
   tx: Scalars['Bytes'];
   type: TransactionType;
-  /** Which mAsset is this tx in? */
-  mAsset: Masset;
-  mAssetUnits: Scalars['BigDecimal'];
   timestamp: Scalars['Int'];
   sender: Scalars['Bytes'];
 };
@@ -2420,28 +2863,6 @@ export type Transaction_Filter = {
   tx_not_contains?: Maybe<Scalars['Bytes']>;
   type?: Maybe<TransactionType>;
   type_not?: Maybe<TransactionType>;
-  mAsset?: Maybe<Scalars['String']>;
-  mAsset_not?: Maybe<Scalars['String']>;
-  mAsset_gt?: Maybe<Scalars['String']>;
-  mAsset_lt?: Maybe<Scalars['String']>;
-  mAsset_gte?: Maybe<Scalars['String']>;
-  mAsset_lte?: Maybe<Scalars['String']>;
-  mAsset_in?: Maybe<Array<Scalars['String']>>;
-  mAsset_not_in?: Maybe<Array<Scalars['String']>>;
-  mAsset_contains?: Maybe<Scalars['String']>;
-  mAsset_not_contains?: Maybe<Scalars['String']>;
-  mAsset_starts_with?: Maybe<Scalars['String']>;
-  mAsset_not_starts_with?: Maybe<Scalars['String']>;
-  mAsset_ends_with?: Maybe<Scalars['String']>;
-  mAsset_not_ends_with?: Maybe<Scalars['String']>;
-  mAssetUnits?: Maybe<Scalars['BigDecimal']>;
-  mAssetUnits_not?: Maybe<Scalars['BigDecimal']>;
-  mAssetUnits_gt?: Maybe<Scalars['BigDecimal']>;
-  mAssetUnits_lt?: Maybe<Scalars['BigDecimal']>;
-  mAssetUnits_gte?: Maybe<Scalars['BigDecimal']>;
-  mAssetUnits_lte?: Maybe<Scalars['BigDecimal']>;
-  mAssetUnits_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  mAssetUnits_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   timestamp?: Maybe<Scalars['Int']>;
   timestamp_not?: Maybe<Scalars['Int']>;
   timestamp_gt?: Maybe<Scalars['Int']>;
@@ -2462,20 +2883,22 @@ export enum Transaction_OrderBy {
   Id = 'id',
   Tx = 'tx',
   Type = 'type',
-  MAsset = 'mAsset',
-  MAssetUnits = 'mAssetUnits',
   Timestamp = 'timestamp',
   Sender = 'sender'
 }
 
 export enum TransactionType {
-  Mint = 'MINT',
-  Swap = 'SWAP',
-  Redeem = 'REDEEM',
-  Exit = 'EXIT',
-  Paidfee = 'PAIDFEE',
-  Save = 'SAVE',
-  Withdraw = 'WITHDRAW'
+  MassetMint = 'MASSET_MINT',
+  MassetSwap = 'MASSET_SWAP',
+  MassetRedeem = 'MASSET_REDEEM',
+  MassetRedeemMasset = 'MASSET_REDEEM_MASSET',
+  MassetPaidFee = 'MASSET_PAID_FEE',
+  SavingsContractDeposit = 'SAVINGS_CONTRACT_DEPOSIT',
+  SavingsContractWithdraw = 'SAVINGS_CONTRACT_WITHDRAW',
+  StakingRewardsContractClaimReward = 'STAKING_REWARDS_CONTRACT_CLAIM_REWARD',
+  StakingRewardsContractExit = 'STAKING_REWARDS_CONTRACT_EXIT',
+  StakingRewardsContractStake = 'STAKING_REWARDS_CONTRACT_STAKE',
+  StakingRewardsContractWithdraw = 'STAKING_REWARDS_CONTRACT_WITHDRAW'
 }
 
 export type VaultBalance = {
@@ -2611,6 +3034,20 @@ export type MassetAllFragment = (
     )> }
   ) }
 );
+
+type TransactionDetails_SwapTransaction_Fragment = Pick<SwapTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+
+type TransactionDetails_FeePaidTransaction_Fragment = Pick<FeePaidTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+
+type TransactionDetails_StakingRewardsContractTransaction_Fragment = Pick<StakingRewardsContractTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+
+type TransactionDetails_StakingRewardsContractClaimRewardTransaction_Fragment = Pick<StakingRewardsContractClaimRewardTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+
+type TransactionDetails_StakingRewardsContractStakeTransaction_Fragment = Pick<StakingRewardsContractStakeTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+
+type TransactionDetails_StakingRewardsContractWithdrawTransaction_Fragment = Pick<StakingRewardsContractWithdrawTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+
+export type TransactionDetailsFragment = TransactionDetails_SwapTransaction_Fragment | TransactionDetails_FeePaidTransaction_Fragment | TransactionDetails_StakingRewardsContractTransaction_Fragment | TransactionDetails_StakingRewardsContractClaimRewardTransaction_Fragment | TransactionDetails_StakingRewardsContractStakeTransaction_Fragment | TransactionDetails_StakingRewardsContractWithdrawTransaction_Fragment;
 
 export type CoreTokensQueryVariables = {};
 
@@ -2790,6 +3227,14 @@ export const MassetAllFragmentDoc = gql`
   }
 }
     ${TokenDetailsFragmentDoc}`;
+export const TransactionDetailsFragmentDoc = gql`
+    fragment TransactionDetails on Transaction {
+  id
+  tx
+  type
+  timestamp
+}
+    `;
 export const ErFragmentDoc = gql`
     fragment ER on ExchangeRate {
   exchangeRate
