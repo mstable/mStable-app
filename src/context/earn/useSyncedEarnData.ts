@@ -187,12 +187,22 @@ const useRawPlatformPoolsData = (
     // TODO restore real data
     // [Platforms.Balancer]: pools,
     // [Platforms.Uniswap]: pairs,
-    [Platforms.Balancer]: [
-      { ...pools[0], id: rawStakingRewardsContracts[1].stakingToken.address },
-    ],
-    [Platforms.Uniswap]: [
-      { ...pairs[0], id: rawStakingRewardsContracts[0].stakingToken.address },
-    ],
+    [Platforms.Balancer]: rawStakingRewardsContracts[1]
+      ? [
+          {
+            ...pools[0],
+            id: rawStakingRewardsContracts[1].stakingToken.address,
+          },
+        ]
+      : [],
+    [Platforms.Uniswap]: rawStakingRewardsContracts[0]
+      ? [
+          {
+            ...pairs[0],
+            id: rawStakingRewardsContracts[0].stakingToken.address,
+          },
+        ]
+      : [],
   };
 };
 

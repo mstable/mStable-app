@@ -4,6 +4,8 @@ import { BigNumber } from 'ethers/utils';
 
 import { useOrderedCurrentTransactions } from '../../context/TransactionsProvider';
 import { useDataState } from '../../context/DataProvider/DataProvider';
+import { useStakingRewardsContracts } from '../../context/earn/EarnDataProvider';
+import { StakingRewardsContractsMap } from '../../context/earn/types';
 import { DataState } from '../../context/DataProvider/types';
 import { Transaction, TransactionStatus } from '../../types';
 import { getTransactionStatus } from '../../web3/transactions';
@@ -51,11 +53,64 @@ const getStatusLabel = (status: TransactionStatus): string =>
 
 const getPendingTxDescription = (
   tx: Transaction,
-  data?: DataState,
+  stakingRewardsContracts: StakingRewardsContractsMap,
+  dataState?: DataState,
 ): JSX.Element => {
-  if (!data) return Loading;
+  if (!dataState) return Loading;
 
-  const { bAssets, savingsContract, mAsset } = data;
+  const { bAssets, savingsContract, mAsset } = dataState;
+
+  const stakingRewardsAddress = Object.keys(stakingRewardsContracts).find(
+    address => address === (tx.response.to as string),
+  );
+
+  if (stakingRewardsAddress) {
+    const {
+      title,
+      stakingToken,
+      rewardsToken,
+      platformRewards,
+    } = stakingRewardsContracts[stakingRewardsAddress];
+
+    switch (tx.fn) {
+      case 'exit': {
+        return (
+          <>
+            You {tx.status ? 'exited' : 'are exiting'} {title}
+          </>
+        );
+      }
+      case 'withdraw': {
+        return (
+          <>
+            You {tx.status ? 'withdrew' : 'are withdrawing'}{' '}
+            {stakingToken.symbol} from {title}
+          </>
+        );
+      }
+      case 'claimReward': {
+        return (
+          <>
+            You {tx.status ? 'claimed' : 'are claiming'} {rewardsToken.symbol}
+            {platformRewards
+              ? ` and ${platformRewards.platformToken.symbol}`
+              : ''}{' '}
+            from {title}
+          </>
+        );
+      }
+      case 'stake(uint256)': {
+        return (
+          <>
+            You {tx.status ? 'staked' : 'are staking'} {stakingToken.symbol} in{' '}
+            {title}
+          </>
+        );
+      }
+      default:
+        return <>Unknown</>;
+    }
+  }
 
   if (tx.response.to === savingsContract.address) {
     switch (tx.fn) {
@@ -127,10 +182,10 @@ const getPendingTxDescription = (
 
       const bAssetsWithAmounts = bAssetAddresses.map(
         (bAssetAddress, index) => ({
-          ...data.bAssets[bAssetAddress],
+          ...bAssets[bAssetAddress],
           amount: new BigDecimal(
             bAssetQs[index],
-            data.bAssets[bAssetAddress].decimals,
+            bAssets[bAssetAddress].decimals,
           ),
         }),
       );
@@ -225,13 +280,15 @@ const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
 
 const PendingTx: FC<{
   tx: Transaction;
-  dataState?: DataState;
-  inverted?: boolean;
-}> = ({ tx, dataState, inverted }) => {
-  const description = useMemo(() => getPendingTxDescription(tx, dataState), [
-    tx,
-    dataState,
-  ]);
+  inverted: boolean;
+}> = ({ tx, inverted }) => {
+  const dataState = useDataState();
+  const stakingRewardsContracts = useStakingRewardsContracts();
+
+  const description = useMemo(
+    () => getPendingTxDescription(tx, stakingRewardsContracts, dataState),
+    [tx, dataState, stakingRewardsContracts],
+  );
 
   return (
     <PendingTxContainer inverted={inverted}>
@@ -249,7 +306,6 @@ const PendingTx: FC<{
  */
 export const Transactions: FC<{ formId?: string }> = ({ formId }) => {
   const pending = useOrderedCurrentTransactions(formId);
-  const dataState = useDataState();
 
   return (
     <div>
@@ -259,7 +315,7 @@ export const Transactions: FC<{ formId?: string }> = ({ formId }) => {
         <List>
           {pending.map(tx => (
             <ListItem key={tx.hash}>
-              <PendingTx tx={tx} dataState={dataState} inverted={!formId} />
+              <PendingTx tx={tx} inverted={!formId} />
             </ListItem>
           ))}
         </List>

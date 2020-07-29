@@ -46,50 +46,55 @@ interface Group {
 }
 
 const labels = {
-  [TransactionType.Mint]: 'Mint',
-  [TransactionType.Redeem]: 'Redemption',
-  [TransactionType.Save]: 'Deposit',
-  [TransactionType.Withdraw]: 'Withdraw',
-  [TransactionType.Swap]: 'Swap',
+  [TransactionType.MassetMint]: 'Mint',
+  [TransactionType.MassetRedeem]: 'Redemption',
+  [TransactionType.SavingsContractDeposit]: 'Deposit',
+  [TransactionType.SavingsContractWithdraw]: 'Withdraw',
+  [TransactionType.MassetSwap]: 'Swap',
 };
 
 const colors = {
-  [TransactionType.Mint]: Color.green,
-  [TransactionType.Redeem]: Color.red,
-  [TransactionType.Exit]: Color.red,
-  [TransactionType.Save]: Color.blue,
-  [TransactionType.Withdraw]: Color.orange,
-  [TransactionType.Swap]: Color.gold,
-  [TransactionType.Paidfee]: Color.offBlack,
+  [TransactionType.MassetMint]: Color.green,
+  [TransactionType.MassetRedeem]: Color.red,
+  [TransactionType.MassetRedeemMasset]: Color.red,
+  [TransactionType.SavingsContractDeposit]: Color.blue,
+  [TransactionType.SavingsContractWithdraw]: Color.orange,
+  [TransactionType.MassetSwap]: Color.gold,
+  [TransactionType.MassetPaidFee]: Color.offBlack,
+  // TODO: set colours when these are used
+  [TransactionType.StakingRewardsContractClaimReward]: 'gray',
+  [TransactionType.StakingRewardsContractExit]: 'gray',
+  [TransactionType.StakingRewardsContractStake]: 'gray',
+  [TransactionType.StakingRewardsContractWithdraw]: 'gray',
 };
 
 const volumeMetrics = [
   {
-    type: TransactionType.Mint,
+    type: TransactionType.MassetMint,
     enabled: true,
-    label: labels[TransactionType.Mint],
-    color: colors[TransactionType.Mint],
+    label: labels[TransactionType.MassetMint],
+    color: colors[TransactionType.MassetMint],
   },
   {
-    type: TransactionType.Save,
-    label: labels[TransactionType.Save],
-    color: colors[TransactionType.Save],
+    type: TransactionType.SavingsContractDeposit,
+    label: labels[TransactionType.SavingsContractDeposit],
+    color: colors[TransactionType.SavingsContractDeposit],
   },
   {
-    type: TransactionType.Withdraw,
-    label: labels[TransactionType.Withdraw],
-    color: colors[TransactionType.Withdraw],
+    type: TransactionType.SavingsContractWithdraw,
+    label: labels[TransactionType.SavingsContractWithdraw],
+    color: colors[TransactionType.SavingsContractWithdraw],
   },
   {
-    type: TransactionType.Swap,
+    type: TransactionType.MassetSwap,
     enabled: true,
-    label: labels[TransactionType.Swap],
-    color: colors[TransactionType.Swap],
+    label: labels[TransactionType.MassetSwap],
+    color: colors[TransactionType.MassetSwap],
   },
   {
-    type: TransactionType.Redeem,
-    label: labels[TransactionType.Redeem],
-    color: colors[TransactionType.Redeem],
+    type: TransactionType.MassetRedeem,
+    label: labels[TransactionType.MassetRedeem],
+    color: colors[TransactionType.MassetRedeem],
   },
 ];
 
@@ -137,12 +142,18 @@ const useGroups = (): Group[] => {
     [dateFilter],
   );
 
-  const mint = useGroup(metrics[TransactionType.Mint], vars);
-  const redeem = useGroup(metrics[TransactionType.Redeem], vars);
-  const exit = useGroup(metrics[TransactionType.Exit], vars);
-  const swap = useGroup(metrics[TransactionType.Swap], vars);
-  const deposit = useGroup(metrics[TransactionType.Save], vars);
-  const withdraw = useGroup(metrics[TransactionType.Withdraw], vars);
+  const mint = useGroup(metrics[TransactionType.MassetMint], vars);
+  const redeem = useGroup(metrics[TransactionType.MassetRedeem], vars);
+  const exit = useGroup(metrics[TransactionType.MassetRedeemMasset], vars);
+  const swap = useGroup(metrics[TransactionType.MassetSwap], vars);
+  const deposit = useGroup(
+    metrics[TransactionType.SavingsContractDeposit],
+    vars,
+  );
+  const withdraw = useGroup(
+    metrics[TransactionType.SavingsContractWithdraw],
+    vars,
+  );
 
   return useMemo<Group[]>(
     () =>
