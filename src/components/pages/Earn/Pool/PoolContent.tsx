@@ -9,8 +9,15 @@ import { useCurrentStakingRewardsContract } from '../StakingRewardsContractProvi
 import { PoolForms } from './PoolForms';
 import { PoolBalances } from './PoolBalances';
 
+const StyledH2 = styled(H2)`
+  line-height: normal;
+  text-align: center;
+  padding: 0 8px;
+`;
+
 const BackLink = styled(ButtonLink)`
   background: transparent;
+  padding: 4px 8px;
 `;
 
 const Header = styled.div`
@@ -18,11 +25,9 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   text-align: center;
-  > * {
-    margin: 0 8px;
-  }
+
   > :last-child {
-    width: 58px;
+    width: 60px;
   }
 `;
 
@@ -32,7 +37,7 @@ const CardContainer = styled.div`
 `;
 
 const Content = styled.div`
-  padding: 32px 16px;
+  padding: 32px 0px;
 
   > * {
     padding-bottom: 32px;
@@ -43,16 +48,14 @@ const Container = styled.div`
   width: 100%;
 `;
 
-export const PoolContent: FC<{ address: string }> = ({
-  address,
-}) => {
+export const PoolContent: FC<{ address: string }> = ({ address }) => {
   const stakingRewardsContract = useCurrentStakingRewardsContract();
   return (
     <Container>
       <Header>
         <BackLink href="/earn">Back</BackLink>
         {stakingRewardsContract ? (
-          <H2>{stakingRewardsContract.title}</H2>
+          <StyledH2>{stakingRewardsContract.title}</StyledH2>
         ) : (
           <Skeleton />
         )}

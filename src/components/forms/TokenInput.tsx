@@ -36,7 +36,6 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   font-size: ${({ theme }) => theme.fontSize.l};
   font-weight: bold;
   height: 3rem;
-  min-width: 150px;
   user-select: none;
 `;
 
@@ -64,6 +63,7 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   display: flex;
   align-items: center;
   height: 46px;
+  white-space: nowrap;
 
   padding: ${({ theme }) => theme.spacing.xs};
 

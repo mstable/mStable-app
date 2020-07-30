@@ -11,6 +11,7 @@ import {
   useRewardsEarned,
 } from '../StakingRewardsContractProvider';
 import { BigDecimal } from '../../../../web3/BigDecimal';
+import { ViewportWidth } from '../../../../theme';
 
 interface Props {
   className?: string;
@@ -29,12 +30,15 @@ const AmountContainer = styled.div`
 `;
 
 const Container = styled.div`
-  display: flex;
-  justify-content: space-around;
   width: 100%;
 
   > div > * {
     margin-bottom: 16px;
+  }
+  
+  @media (min-width: ${ViewportWidth.s}) {
+    display: flex;
+    justify-content: space-around;
   }
 `;
 

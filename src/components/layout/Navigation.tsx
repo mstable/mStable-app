@@ -32,7 +32,7 @@ const List = styled.ul`
 const Item = styled.li<{
   active: boolean;
 }>`
-  margin-right: 16px;
+  margin: 0 8px;
   position: relative;
   border-bottom: 4px solid transparent;
   font-weight: bold;
@@ -50,10 +50,6 @@ const Item = styled.li<{
 
   span {
     cursor: not-allowed;
-  }
-
-  &:last-child {
-    margin-right: 0;
   }
 
   &:hover > div {

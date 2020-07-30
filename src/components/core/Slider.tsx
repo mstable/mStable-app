@@ -99,8 +99,16 @@ const SideControls = styled.div`
 
 const SkipButtonContainer = styled.div`
   position: absolute;
-  bottom: 16px;
-  right: 16px;
+  bottom: 40px;
+  right: 0;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+
+  @media (min-width: ${ViewportWidth.s}) {
+    justify-content: flex-end;
+    right: 40px;
+  }
 `;
 
 const Container = styled.div`
