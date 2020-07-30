@@ -86,8 +86,8 @@ const Container = styled.div<{
   padding: 16px;
   min-width: 300px;
   width: 100%;
-  max-width: 400px;
-  min-height: 240px;
+  max-width: 344px;
+  min-height: 225px;
   background-image: ${({ colors: { base, accent }, stakingToken }) =>
     stakingToken
       ? `url(${TOKEN_ICONS[stakingToken]}), linear-gradient(to top right, ${base}, ${accent})`
