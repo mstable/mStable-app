@@ -73,14 +73,6 @@ const getPendingTxDescription = (
     } = stakingRewardsContracts[stakingRewardsAddress];
 
     switch (tx.fn) {
-      case 'distributeRewards': {
-        return (
-          <>
-            You {tx.status ? 'distributed' : 'are distributing'} rewards for{' '}
-            {title}
-          </>
-        );
-      }
       case 'exit': {
         return (
           <>
@@ -264,6 +256,9 @@ const getPendingTxDescription = (
           {amount.format()} {mAsset.symbol}
         </>
       );
+    }
+    case 'distributeRewards': {
+      return <>You {tx.status ? 'distributed' : 'are distributing'} rewards</>;
     }
     default:
       return <>Unknown</>;
