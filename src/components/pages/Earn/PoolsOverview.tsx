@@ -4,7 +4,7 @@ import Skeleton from 'react-loading-skeleton';
 
 import { useStakingRewardsContracts } from '../../../context/earn/EarnDataProvider';
 import { Color } from '../../../theme';
-import { Table, TableRow } from '../../core/Table';
+import { Table } from '../../core/Table';
 import { TokenAmount } from '../../core/TokenAmount';
 import { Amount, NumberFormat } from '../../core/Amount';
 import { H3 } from '../../core/Typography';
@@ -62,24 +62,6 @@ const COLUMNS = [
 
 // FIXME
 const totalCollateralPlaceholder = BigDecimal.parse('11000000', 18);
-
-// FIXME
-const mtaStakingPlaceholder: TableRow<Columns> = {
-  id: 'mta',
-  colors: {
-    base: '#000',
-    accent: '#fff',
-  },
-  url: '/earn/mta',
-  data: {
-    // [Columns.StakingApy]: '99.55%',
-    [Columns.Collateral]: (
-      <TokenAmount symbol="MTA" format={NumberFormat.Abbreviated} />
-    ),
-    [Columns.StakingToken]: 'mStable',
-    [Columns.WeeklyRewards]: '25k',
-  },
-};
 
 export const PoolsOverview: FC<{}> = () => {
   const stakingRewardsContracts = useStakingRewardsContracts();
@@ -182,10 +164,6 @@ export const PoolsOverview: FC<{}> = () => {
 
   return (
     <Container>
-      <TableGroup>
-        <H3>MTA Staking</H3>
-        <Table columns={COLUMNS} items={[mtaStakingPlaceholder]} />
-      </TableGroup>
       {Object.keys(stakingRewardsContracts).length === 0 ? (
         <Skeleton height={112} />
       ) : (
