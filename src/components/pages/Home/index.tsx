@@ -12,7 +12,7 @@ import { useWallet } from 'use-wallet';
 import { H2, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { Size, ViewportWidth } from '../../../theme';
-import {  useOpenWalletRedirect } from '../../../context/AppProvider';
+import { useOpenWalletRedirect } from '../../../context/AppProvider';
 
 const BETA_WARNING_KEY = 'acknowledged-beta-warning';
 
@@ -39,6 +39,7 @@ const Symbol = styled.div`
   display: inline-flex;
   font-weight: bold;
   height: 80px;
+  margin-top: 32px;
 
   div {
     font-size: 24px;
@@ -195,7 +196,7 @@ const Start: FC<{}> = () => {
               size={Size.l}
               onClick={() => {
                 if (connected) {
-                  navigate('/mint')
+                  navigate('/mint');
                 } else {
                   openWallet('/mint');
                 }
@@ -336,6 +337,28 @@ const HOME_STEPS: {
           </P>
           <P>
             <A href="/swap">Go to swap</A>
+          </P>
+        </Block>
+      </>
+    ),
+  },
+  {
+    key: 'earn',
+    children: (
+      <>
+        <SymbolBlock>
+          <Symbol>
+            <div>Earn</div>
+            <i>$</i>
+          </Symbol>
+        </SymbolBlock>
+        <Block>
+          <P>
+            mStable rewards users who contribute mUSD liquidity across the DeFi
+            ecosystem.
+          </P>
+          <P>
+            <A href="/earn">Go to earn</A>
           </P>
         </Block>
       </>
