@@ -256,21 +256,6 @@ query StakingRewardsContracts($account: Bytes) @api(name: mstable) {
     platformToken {
       ...TokenDetails
     }
-    rewardsVault {
-      id
-      vaultStartTime
-      period
-      lockupPeriods
-      allRewardsUnlocked
-      vestingToken {
-        ...TokenDetails
-      }
-      vaultBalances(where: { account: $account }) {
-        amount
-        period
-        vested
-      }
-    }
     stakingBalances(where: { account: $account }) {
       amount
     }
