@@ -1,19 +1,29 @@
+fragment PairDetails on Pair {
+  id
+  reserveUSD
+  totalSupply
+  token0 {
+    id
+    decimals
+    symbol
+    totalLiquidity
+  }
+  token1 {
+    id
+    decimals
+    symbol
+    totalLiquidity
+  }
+}
+
 query Pairs($ids: [ID!]!) @api(name: uniswap) {
   pairs(where: { id_in: $ids }) {
-    id
-    reserveUSD
-    totalSupply
-    token0 {
-      id
-      decimals
-      symbol
-      totalLiquidity
-    }
-    token1 {
-      id
-      decimals
-      symbol
-      totalLiquidity
-    }
+    ...PairDetails
+  }
+}
+
+query PairsAtBlock($ids: [ID!]!, $blockNumber: Int!) @api(name: uniswap) {
+  pairs(where: { id_in: $ids }, block: { number: $blockNumber }) {
+    ...PairDetails
   }
 }
