@@ -1179,47 +1179,70 @@ export enum User_OrderBy {
   Txs = 'txs'
 }
 
+export type PoolDetailsFragment = (
+  Pick<Pool, 'id' | 'totalShares' | 'totalSwapVolume' | 'swapFee'>
+  & { tokens?: Maybe<Array<Pick<PoolToken, 'address' | 'balance' | 'decimals' | 'symbol'>>> }
+);
+
+export type TokenPriceDetailsFragment = Pick<TokenPrice, 'id' | 'price' | 'decimals'>;
+
 export type PoolsQueryVariables = {
   ids: Array<Scalars['ID']>;
 };
 
 
-export type PoolsQuery = { pools: Array<(
-    Pick<Pool, 'id' | 'totalShares' | 'totalSwapVolume' | 'swapFee'>
-    & { tokens?: Maybe<Array<Pick<PoolToken, 'address' | 'balance' | 'decimals' | 'symbol'>>> }
-  )> };
+export type PoolsQuery = { pools: Array<PoolDetailsFragment> };
+
+export type PoolsAtBlockQueryVariables = {
+  ids: Array<Scalars['ID']>;
+  blockNumber: Scalars['Int'];
+};
+
+
+export type PoolsAtBlockQuery = { pools: Array<PoolDetailsFragment> };
 
 export type TokenPricesQueryVariables = {
   tokens: Array<Scalars['ID']>;
 };
 
 
-export type TokenPricesQuery = { tokenPrices: Array<Pick<TokenPrice, 'id' | 'price' | 'decimals'>> };
+export type TokenPricesQuery = { tokenPrices: Array<TokenPriceDetailsFragment> };
 
 export type TokenPriceQueryVariables = {
   token: Scalars['ID'];
 };
 
 
-export type TokenPriceQuery = { tokenPrice?: Maybe<Pick<TokenPrice, 'id' | 'price' | 'decimals'>> };
+export type TokenPriceQuery = { tokenPrice?: Maybe<TokenPriceDetailsFragment> };
 
-
-export const PoolsDocument = gql`
-    query Pools($ids: [ID!]!) @api(name: balancer) {
-  pools(where: {id_in: $ids}) {
-    id
-    totalShares
-    totalSwapVolume
-    swapFee
-    tokens {
-      address
-      balance
-      decimals
-      symbol
-    }
+export const PoolDetailsFragmentDoc = gql`
+    fragment PoolDetails on Pool {
+  id
+  totalShares
+  totalSwapVolume
+  swapFee
+  tokens {
+    address
+    balance
+    decimals
+    symbol
   }
 }
     `;
+export const TokenPriceDetailsFragmentDoc = gql`
+    fragment TokenPriceDetails on TokenPrice {
+  id
+  price
+  decimals
+}
+    `;
+export const PoolsDocument = gql`
+    query Pools($ids: [ID!]!) @api(name: balancer) {
+  pools(where: {id_in: $ids}) {
+    ...PoolDetails
+  }
+}
+    ${PoolDetailsFragmentDoc}`;
 
 /**
  * __usePoolsQuery__
@@ -1246,15 +1269,47 @@ export function usePoolsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOp
 export type PoolsQueryHookResult = ReturnType<typeof usePoolsQuery>;
 export type PoolsLazyQueryHookResult = ReturnType<typeof usePoolsLazyQuery>;
 export type PoolsQueryResult = ApolloReactCommon.QueryResult<PoolsQuery, PoolsQueryVariables>;
+export const PoolsAtBlockDocument = gql`
+    query PoolsAtBlock($ids: [ID!]!, $blockNumber: Int!) @api(name: balancer) {
+  pools(where: {id_in: $ids}, block: {number: $blockNumber}) {
+    ...PoolDetails
+  }
+}
+    ${PoolDetailsFragmentDoc}`;
+
+/**
+ * __usePoolsAtBlockQuery__
+ *
+ * To run a query within a React component, call `usePoolsAtBlockQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePoolsAtBlockQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePoolsAtBlockQuery({
+ *   variables: {
+ *      ids: // value for 'ids'
+ *      blockNumber: // value for 'blockNumber'
+ *   },
+ * });
+ */
+export function usePoolsAtBlockQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>) {
+        return ApolloReactHooks.useQuery<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>(PoolsAtBlockDocument, baseOptions);
+      }
+export function usePoolsAtBlockLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>(PoolsAtBlockDocument, baseOptions);
+        }
+export type PoolsAtBlockQueryHookResult = ReturnType<typeof usePoolsAtBlockQuery>;
+export type PoolsAtBlockLazyQueryHookResult = ReturnType<typeof usePoolsAtBlockLazyQuery>;
+export type PoolsAtBlockQueryResult = ApolloReactCommon.QueryResult<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>;
 export const TokenPricesDocument = gql`
     query TokenPrices($tokens: [ID!]!) @api(name: balancer) {
   tokenPrices(where: {id_in: $tokens}) {
-    id
-    price
-    decimals
+    ...TokenPriceDetails
   }
 }
-    `;
+    ${TokenPriceDetailsFragmentDoc}`;
 
 /**
  * __useTokenPricesQuery__
@@ -1284,12 +1339,10 @@ export type TokenPricesQueryResult = ApolloReactCommon.QueryResult<TokenPricesQu
 export const TokenPriceDocument = gql`
     query TokenPrice($token: ID!) @api(name: balancer) {
   tokenPrice(id: $token) {
-    id
-    price
-    decimals
+    ...TokenPriceDetails
   }
 }
-    `;
+    ${TokenPriceDetailsFragmentDoc}`;
 
 /**
  * __useTokenPriceQuery__

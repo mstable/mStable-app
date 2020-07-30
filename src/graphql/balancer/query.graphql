@@ -1,30 +1,42 @@
+fragment PoolDetails on Pool {
+  id
+  totalShares
+  totalSwapVolume
+  swapFee
+  tokens {
+    address
+    balance
+    decimals
+    symbol
+  }
+}
+
+fragment TokenPriceDetails on TokenPrice {
+  id
+  price
+  decimals
+}
+
 query Pools($ids: [ID!]!) @api(name: balancer) {
   pools(where: { id_in: $ids }) {
-    id
-    totalShares
-    totalSwapVolume
-    swapFee
-    tokens {
-      address
-      balance
-      decimals
-      symbol
-    }
+    ...PoolDetails
+  }
+}
+
+query PoolsAtBlock($ids: [ID!]!, $blockNumber: Int!) @api(name: balancer) {
+  pools(where: { id_in: $ids }, block: { number: $blockNumber }) {
+    ...PoolDetails
   }
 }
 
 query TokenPrices($tokens: [ID!]!) @api(name: balancer) {
   tokenPrices(where: { id_in: $tokens }) {
-    id
-    price
-    decimals
+    ...TokenPriceDetails
   }
 }
 
 query TokenPrice($token: ID!) @api(name: balancer) {
   tokenPrice(id: $token) {
-    id
-    price
-    decimals
+    ...TokenPriceDetails
   }
 }

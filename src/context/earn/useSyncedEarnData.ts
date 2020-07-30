@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
 
-import { DocumentNode, gql } from '@apollo/client/core';
-import { useQuery } from '@apollo/react-hooks';
 import { useWallet } from 'use-wallet';
 import { BigDecimal } from '../../web3/BigDecimal';
-import { usePoolsQuery, useTokenPricesQuery } from '../../graphql/balancer';
+import {
+  usePoolsAtBlockQuery,
+  usePoolsQuery,
+  useTokenPricesQuery,
+} from '../../graphql/balancer';
 import { useStakingRewardsContractsQuery } from '../../graphql/mstable';
-import { usePairsQuery } from '../../graphql/uniswap';
+import { usePairsAtBlockQuery, usePairsQuery } from '../../graphql/uniswap';
 import { useBlockTimestampQuery } from '../../graphql/blocks';
 import { BlockTimestamp, Platforms } from '../../types';
 import {
@@ -210,68 +212,24 @@ const useRawPlatformPoolsData24hAgo = (
   rawPlatformPoolsData: RawPlatformPoolsData,
   block24hAgo?: BlockTimestamp,
 ): RawPlatformPoolsData => {
-  const queries = useMemo<Record<Platforms, DocumentNode>>(() => {
-    const balancerIds = rawPlatformPoolsData[Platforms.Balancer].map(
-      item => item.id,
-    );
-    const balancerQueryString = `
-      query Pools @api(name: balancer) {
-        pools(where: { id_in: [${balancerIds}] }, block: { number: ${block24hAgo?.blockNumber ||
-      0} }) {
-          id
-          totalShares
-          totalSwapVolume
-          swapFee
-          tokens {
-            address
-            balance
-            decimals
-            symbol
-          }
-        }
-      }
-  `;
-
-    const uniswapIds = rawPlatformPoolsData[Platforms.Uniswap].map(
-      item => item.id,
-    );
-    const uniswapQueryString = `
-      query Pairs @api(name: uniswap) {
-        pairs(where: { id_in: [${uniswapIds}] }, block: { number: ${block24hAgo?.blockNumber ||
-      0} }) {
-          id
-          reserveUSD
-          totalSupply
-          token0 {
-            id
-            decimals
-            symbol
-            totalLiquidity
-          }
-          token1 {
-            id
-            decimals
-            symbol
-            totalLiquidity
-          }
-        }
-      }
-  `;
-
-    return {
-      [Platforms.Uniswap]: gql(uniswapQueryString),
-      [Platforms.Balancer]: gql(balancerQueryString),
-    };
-  }, [rawPlatformPoolsData, block24hAgo]);
-
-  const poolsQuery = useQuery(queries[Platforms.Balancer], {
-    skip: !block24hAgo,
-    fetchPolicy: 'cache-and-network',
+  const poolIds = rawPlatformPoolsData[Platforms.Balancer].map(item => item.id);
+  const poolsQuery = usePoolsAtBlockQuery({
+    variables: {
+      ids: poolIds,
+      blockNumber: block24hAgo?.blockNumber as number,
+    },
+    skip: poolIds.length === 0 || !block24hAgo,
+    fetchPolicy: 'cache-first',
   });
 
-  const pairsQuery = useQuery(queries[Platforms.Uniswap], {
-    skip: !block24hAgo,
-    fetchPolicy: 'cache-and-network',
+  const pairIds = rawPlatformPoolsData[Platforms.Uniswap].map(item => item.id);
+  const pairsQuery = usePairsAtBlockQuery({
+    variables: {
+      ids: pairIds,
+      blockNumber: block24hAgo?.blockNumber as number,
+    },
+    skip: pairIds.length === 0 || !block24hAgo,
+    fetchPolicy: 'cache-first',
   });
 
   const pools = poolsQuery.data?.pools || [];
