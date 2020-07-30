@@ -783,16 +783,12 @@ export type Query = {
   stakingRewardsContractWithdrawTransactions: Array<StakingRewardsContractWithdrawTransaction>;
   rewardsDistributor?: Maybe<RewardsDistributor>;
   rewardsDistributors: Array<RewardsDistributor>;
-  rewardsVault?: Maybe<RewardsVault>;
-  rewardsVaults: Array<RewardsVault>;
   stakingReward?: Maybe<StakingReward>;
   stakingRewards: Array<StakingReward>;
   stakingRewardsContract?: Maybe<StakingRewardsContract>;
   stakingRewardsContracts: Array<StakingRewardsContract>;
   stakingBalance?: Maybe<StakingBalance>;
   stakingBalances: Array<StakingBalance>;
-  vaultBalance?: Maybe<VaultBalance>;
-  vaultBalances: Array<VaultBalance>;
   timeMetric?: Maybe<TimeMetric>;
   timeMetrics: Array<TimeMetric>;
   transaction?: Maybe<Transaction>;
@@ -1088,22 +1084,6 @@ export type QueryRewardsDistributorsArgs = {
 };
 
 
-export type QueryRewardsVaultArgs = {
-  id: Scalars['ID'];
-  block?: Maybe<Block_Height>;
-};
-
-
-export type QueryRewardsVaultsArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<RewardsVault_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<RewardsVault_Filter>;
-  block?: Maybe<Block_Height>;
-};
-
-
 export type QueryStakingRewardArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -1148,22 +1128,6 @@ export type QueryStakingBalancesArgs = {
   orderBy?: Maybe<StakingBalance_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<StakingBalance_Filter>;
-  block?: Maybe<Block_Height>;
-};
-
-
-export type QueryVaultBalanceArgs = {
-  id: Scalars['ID'];
-  block?: Maybe<Block_Height>;
-};
-
-
-export type QueryVaultBalancesArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<VaultBalance_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<VaultBalance_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -1224,112 +1188,6 @@ export type RewardsDistributor_Filter = {
 export enum RewardsDistributor_OrderBy {
   Id = 'id',
   FundManagers = 'fundManagers'
-}
-
-export type RewardsVault = {
-  /** Address of the rewards vault contract */
-  id: Scalars['ID'];
-  /** Timestamp for the start of the vault's first period */
-  vaultStartTime: Scalars['Int'];
-  /** Period interval in seconds */
-  period: Scalars['Int'];
-  /** The number of periods rewards are locked up in */
-  lockupPeriods: Scalars['Int'];
-  /** Flag for whether all rewards have been unlocked */
-  allRewardsUnlocked: Scalars['Boolean'];
-  /** The token for vested funds */
-  vestingToken: Token;
-  /** The staking rewards contract using this vault */
-  stakingRewardsContract: StakingRewardsContract;
-  /** Accessor for vault balances kept in this vault */
-  vaultBalances: Array<VaultBalance>;
-};
-
-
-export type RewardsVaultVaultBalancesArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<VaultBalance_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<VaultBalance_Filter>;
-};
-
-export type RewardsVault_Filter = {
-  id?: Maybe<Scalars['ID']>;
-  id_not?: Maybe<Scalars['ID']>;
-  id_gt?: Maybe<Scalars['ID']>;
-  id_lt?: Maybe<Scalars['ID']>;
-  id_gte?: Maybe<Scalars['ID']>;
-  id_lte?: Maybe<Scalars['ID']>;
-  id_in?: Maybe<Array<Scalars['ID']>>;
-  id_not_in?: Maybe<Array<Scalars['ID']>>;
-  vaultStartTime?: Maybe<Scalars['Int']>;
-  vaultStartTime_not?: Maybe<Scalars['Int']>;
-  vaultStartTime_gt?: Maybe<Scalars['Int']>;
-  vaultStartTime_lt?: Maybe<Scalars['Int']>;
-  vaultStartTime_gte?: Maybe<Scalars['Int']>;
-  vaultStartTime_lte?: Maybe<Scalars['Int']>;
-  vaultStartTime_in?: Maybe<Array<Scalars['Int']>>;
-  vaultStartTime_not_in?: Maybe<Array<Scalars['Int']>>;
-  period?: Maybe<Scalars['Int']>;
-  period_not?: Maybe<Scalars['Int']>;
-  period_gt?: Maybe<Scalars['Int']>;
-  period_lt?: Maybe<Scalars['Int']>;
-  period_gte?: Maybe<Scalars['Int']>;
-  period_lte?: Maybe<Scalars['Int']>;
-  period_in?: Maybe<Array<Scalars['Int']>>;
-  period_not_in?: Maybe<Array<Scalars['Int']>>;
-  lockupPeriods?: Maybe<Scalars['Int']>;
-  lockupPeriods_not?: Maybe<Scalars['Int']>;
-  lockupPeriods_gt?: Maybe<Scalars['Int']>;
-  lockupPeriods_lt?: Maybe<Scalars['Int']>;
-  lockupPeriods_gte?: Maybe<Scalars['Int']>;
-  lockupPeriods_lte?: Maybe<Scalars['Int']>;
-  lockupPeriods_in?: Maybe<Array<Scalars['Int']>>;
-  lockupPeriods_not_in?: Maybe<Array<Scalars['Int']>>;
-  allRewardsUnlocked?: Maybe<Scalars['Boolean']>;
-  allRewardsUnlocked_not?: Maybe<Scalars['Boolean']>;
-  allRewardsUnlocked_in?: Maybe<Array<Scalars['Boolean']>>;
-  allRewardsUnlocked_not_in?: Maybe<Array<Scalars['Boolean']>>;
-  vestingToken?: Maybe<Scalars['String']>;
-  vestingToken_not?: Maybe<Scalars['String']>;
-  vestingToken_gt?: Maybe<Scalars['String']>;
-  vestingToken_lt?: Maybe<Scalars['String']>;
-  vestingToken_gte?: Maybe<Scalars['String']>;
-  vestingToken_lte?: Maybe<Scalars['String']>;
-  vestingToken_in?: Maybe<Array<Scalars['String']>>;
-  vestingToken_not_in?: Maybe<Array<Scalars['String']>>;
-  vestingToken_contains?: Maybe<Scalars['String']>;
-  vestingToken_not_contains?: Maybe<Scalars['String']>;
-  vestingToken_starts_with?: Maybe<Scalars['String']>;
-  vestingToken_not_starts_with?: Maybe<Scalars['String']>;
-  vestingToken_ends_with?: Maybe<Scalars['String']>;
-  vestingToken_not_ends_with?: Maybe<Scalars['String']>;
-  stakingRewardsContract?: Maybe<Scalars['String']>;
-  stakingRewardsContract_not?: Maybe<Scalars['String']>;
-  stakingRewardsContract_gt?: Maybe<Scalars['String']>;
-  stakingRewardsContract_lt?: Maybe<Scalars['String']>;
-  stakingRewardsContract_gte?: Maybe<Scalars['String']>;
-  stakingRewardsContract_lte?: Maybe<Scalars['String']>;
-  stakingRewardsContract_in?: Maybe<Array<Scalars['String']>>;
-  stakingRewardsContract_not_in?: Maybe<Array<Scalars['String']>>;
-  stakingRewardsContract_contains?: Maybe<Scalars['String']>;
-  stakingRewardsContract_not_contains?: Maybe<Scalars['String']>;
-  stakingRewardsContract_starts_with?: Maybe<Scalars['String']>;
-  stakingRewardsContract_not_starts_with?: Maybe<Scalars['String']>;
-  stakingRewardsContract_ends_with?: Maybe<Scalars['String']>;
-  stakingRewardsContract_not_ends_with?: Maybe<Scalars['String']>;
-};
-
-export enum RewardsVault_OrderBy {
-  Id = 'id',
-  VaultStartTime = 'vaultStartTime',
-  Period = 'period',
-  LockupPeriods = 'lockupPeriods',
-  AllRewardsUnlocked = 'allRewardsUnlocked',
-  VestingToken = 'vestingToken',
-  StakingRewardsContract = 'stakingRewardsContract',
-  VaultBalances = 'vaultBalances'
 }
 
 export type SavingsContract = {
@@ -1572,8 +1430,6 @@ export type StakingRewardsContract = {
   rewardRate: Scalars['BigInt'];
   /** Rewards token */
   rewardsToken: Token;
-  /** Rewards vault */
-  rewardsVault: RewardsVault;
   /** Rewards distributor */
   rewardsDistributor: RewardsDistributor;
   /** Total supply */
@@ -1691,20 +1547,6 @@ export type StakingRewardsContract_Filter = {
   rewardsToken_not_starts_with?: Maybe<Scalars['String']>;
   rewardsToken_ends_with?: Maybe<Scalars['String']>;
   rewardsToken_not_ends_with?: Maybe<Scalars['String']>;
-  rewardsVault?: Maybe<Scalars['String']>;
-  rewardsVault_not?: Maybe<Scalars['String']>;
-  rewardsVault_gt?: Maybe<Scalars['String']>;
-  rewardsVault_lt?: Maybe<Scalars['String']>;
-  rewardsVault_gte?: Maybe<Scalars['String']>;
-  rewardsVault_lte?: Maybe<Scalars['String']>;
-  rewardsVault_in?: Maybe<Array<Scalars['String']>>;
-  rewardsVault_not_in?: Maybe<Array<Scalars['String']>>;
-  rewardsVault_contains?: Maybe<Scalars['String']>;
-  rewardsVault_not_contains?: Maybe<Scalars['String']>;
-  rewardsVault_starts_with?: Maybe<Scalars['String']>;
-  rewardsVault_not_starts_with?: Maybe<Scalars['String']>;
-  rewardsVault_ends_with?: Maybe<Scalars['String']>;
-  rewardsVault_not_ends_with?: Maybe<Scalars['String']>;
   rewardsDistributor?: Maybe<Scalars['String']>;
   rewardsDistributor_not?: Maybe<Scalars['String']>;
   rewardsDistributor_gt?: Maybe<Scalars['String']>;
@@ -1785,7 +1627,6 @@ export enum StakingRewardsContract_OrderBy {
   RewardPerTokenStored = 'rewardPerTokenStored',
   RewardRate = 'rewardRate',
   RewardsToken = 'rewardsToken',
-  RewardsVault = 'rewardsVault',
   RewardsDistributor = 'rewardsDistributor',
   TotalSupply = 'totalSupply',
   TotalStakingRewards = 'totalStakingRewards',
@@ -2134,16 +1975,12 @@ export type Subscription = {
   stakingRewardsContractWithdrawTransactions: Array<StakingRewardsContractWithdrawTransaction>;
   rewardsDistributor?: Maybe<RewardsDistributor>;
   rewardsDistributors: Array<RewardsDistributor>;
-  rewardsVault?: Maybe<RewardsVault>;
-  rewardsVaults: Array<RewardsVault>;
   stakingReward?: Maybe<StakingReward>;
   stakingRewards: Array<StakingReward>;
   stakingRewardsContract?: Maybe<StakingRewardsContract>;
   stakingRewardsContracts: Array<StakingRewardsContract>;
   stakingBalance?: Maybe<StakingBalance>;
   stakingBalances: Array<StakingBalance>;
-  vaultBalance?: Maybe<VaultBalance>;
-  vaultBalances: Array<VaultBalance>;
   timeMetric?: Maybe<TimeMetric>;
   timeMetrics: Array<TimeMetric>;
   transaction?: Maybe<Transaction>;
@@ -2439,22 +2276,6 @@ export type SubscriptionRewardsDistributorsArgs = {
 };
 
 
-export type SubscriptionRewardsVaultArgs = {
-  id: Scalars['ID'];
-  block?: Maybe<Block_Height>;
-};
-
-
-export type SubscriptionRewardsVaultsArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<RewardsVault_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<RewardsVault_Filter>;
-  block?: Maybe<Block_Height>;
-};
-
-
 export type SubscriptionStakingRewardArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -2499,22 +2320,6 @@ export type SubscriptionStakingBalancesArgs = {
   orderBy?: Maybe<StakingBalance_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<StakingBalance_Filter>;
-  block?: Maybe<Block_Height>;
-};
-
-
-export type SubscriptionVaultBalanceArgs = {
-  id: Scalars['ID'];
-  block?: Maybe<Block_Height>;
-};
-
-
-export type SubscriptionVaultBalancesArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<VaultBalance_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<VaultBalance_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -2901,80 +2706,6 @@ export enum TransactionType {
   StakingRewardsContractWithdraw = 'STAKING_REWARDS_CONTRACT_WITHDRAW'
 }
 
-export type VaultBalance = {
-  id: Scalars['ID'];
-  /** Account this vault balance belongs to */
-  account: Scalars['Bytes'];
-  /** Rewards vault contract this vault balance is kept on */
-  rewardsVault: RewardsVault;
-  /** Vault balance amount */
-  amount: Scalars['BigInt'];
-  /** Vesting period for this vault balance */
-  period: Scalars['Int'];
-  /** Flag for whether this vault balance was vested */
-  vested: Scalars['Boolean'];
-};
-
-export type VaultBalance_Filter = {
-  id?: Maybe<Scalars['ID']>;
-  id_not?: Maybe<Scalars['ID']>;
-  id_gt?: Maybe<Scalars['ID']>;
-  id_lt?: Maybe<Scalars['ID']>;
-  id_gte?: Maybe<Scalars['ID']>;
-  id_lte?: Maybe<Scalars['ID']>;
-  id_in?: Maybe<Array<Scalars['ID']>>;
-  id_not_in?: Maybe<Array<Scalars['ID']>>;
-  account?: Maybe<Scalars['Bytes']>;
-  account_not?: Maybe<Scalars['Bytes']>;
-  account_in?: Maybe<Array<Scalars['Bytes']>>;
-  account_not_in?: Maybe<Array<Scalars['Bytes']>>;
-  account_contains?: Maybe<Scalars['Bytes']>;
-  account_not_contains?: Maybe<Scalars['Bytes']>;
-  rewardsVault?: Maybe<Scalars['String']>;
-  rewardsVault_not?: Maybe<Scalars['String']>;
-  rewardsVault_gt?: Maybe<Scalars['String']>;
-  rewardsVault_lt?: Maybe<Scalars['String']>;
-  rewardsVault_gte?: Maybe<Scalars['String']>;
-  rewardsVault_lte?: Maybe<Scalars['String']>;
-  rewardsVault_in?: Maybe<Array<Scalars['String']>>;
-  rewardsVault_not_in?: Maybe<Array<Scalars['String']>>;
-  rewardsVault_contains?: Maybe<Scalars['String']>;
-  rewardsVault_not_contains?: Maybe<Scalars['String']>;
-  rewardsVault_starts_with?: Maybe<Scalars['String']>;
-  rewardsVault_not_starts_with?: Maybe<Scalars['String']>;
-  rewardsVault_ends_with?: Maybe<Scalars['String']>;
-  rewardsVault_not_ends_with?: Maybe<Scalars['String']>;
-  amount?: Maybe<Scalars['BigInt']>;
-  amount_not?: Maybe<Scalars['BigInt']>;
-  amount_gt?: Maybe<Scalars['BigInt']>;
-  amount_lt?: Maybe<Scalars['BigInt']>;
-  amount_gte?: Maybe<Scalars['BigInt']>;
-  amount_lte?: Maybe<Scalars['BigInt']>;
-  amount_in?: Maybe<Array<Scalars['BigInt']>>;
-  amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  period?: Maybe<Scalars['Int']>;
-  period_not?: Maybe<Scalars['Int']>;
-  period_gt?: Maybe<Scalars['Int']>;
-  period_lt?: Maybe<Scalars['Int']>;
-  period_gte?: Maybe<Scalars['Int']>;
-  period_lte?: Maybe<Scalars['Int']>;
-  period_in?: Maybe<Array<Scalars['Int']>>;
-  period_not_in?: Maybe<Array<Scalars['Int']>>;
-  vested?: Maybe<Scalars['Boolean']>;
-  vested_not?: Maybe<Scalars['Boolean']>;
-  vested_in?: Maybe<Array<Scalars['Boolean']>>;
-  vested_not_in?: Maybe<Array<Scalars['Boolean']>>;
-};
-
-export enum VaultBalance_OrderBy {
-  Id = 'id',
-  Account = 'account',
-  RewardsVault = 'rewardsVault',
-  Amount = 'amount',
-  Period = 'period',
-  Vested = 'vested'
-}
-
 export type VolumeMetric = TimeMetric & {
   id: Scalars['ID'];
   value: Scalars['BigDecimal'];
@@ -3179,10 +2910,7 @@ export type StakingRewardsContractsQuery = { stakingRewardsContracts: Array<(
     & { stakingToken: (
       Pick<Token, 'totalSupply'>
       & TokenDetailsFragment
-    ), rewardsToken: TokenDetailsFragment, platformToken?: Maybe<TokenDetailsFragment>, rewardsVault: (
-      Pick<RewardsVault, 'id' | 'vaultStartTime' | 'period' | 'lockupPeriods' | 'allRewardsUnlocked'>
-      & { vestingToken: TokenDetailsFragment, vaultBalances: Array<Pick<VaultBalance, 'amount' | 'period' | 'vested'>> }
-    ), stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>>, platformRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
+    ), rewardsToken: TokenDetailsFragment, platformToken?: Maybe<TokenDetailsFragment>, stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>>, platformRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
   )> };
 
 export type RewardsPerTokenStoredAtBlockQueryVariables = {
@@ -3818,21 +3546,6 @@ export const StakingRewardsContractsDocument = gql`
     }
     platformToken {
       ...TokenDetails
-    }
-    rewardsVault {
-      id
-      vaultStartTime
-      period
-      lockupPeriods
-      allRewardsUnlocked
-      vestingToken {
-        ...TokenDetails
-      }
-      vaultBalances(where: {account: $account}) {
-        amount
-        period
-        vested
-      }
     }
     stakingBalances(where: {account: $account}) {
       amount

@@ -266,10 +266,12 @@ const useRawPlatformPoolsData24hAgo = (
 
   const poolsQuery = useQuery(queries[Platforms.Balancer], {
     skip: !block24hAgo,
+    fetchPolicy: 'cache-and-network',
   });
 
   const pairsQuery = useQuery(queries[Platforms.Uniswap], {
     skip: !block24hAgo,
+    fetchPolicy: 'cache-and-network',
   });
 
   const pools = poolsQuery.data?.pools || [];
@@ -341,7 +343,6 @@ export const useSyncedEarnData = (): SyncedEarnData => {
   const stakingRewardsContractsQuery = useStakingRewardsContractsQuery({
     variables: { account },
     fetchPolicy: 'cache-and-network',
-    returnPartialData: true,
   });
 
   const rawStakingRewardsContracts =

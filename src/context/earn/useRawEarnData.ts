@@ -32,6 +32,7 @@ const useRewardsPerTokenStoredAtBlockQuery = (
 
   return useQuery(query, {
     skip: !blockTimestamp,
+    fetchPolicy: 'cache-and-network',
   }) as RewardsPerTokenStoredAtBlockQueryResult;
 };
 

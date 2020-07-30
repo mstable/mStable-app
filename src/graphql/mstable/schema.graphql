@@ -399,28 +399,6 @@ type Query {
     """
     block: Block_height
   ): [RewardsDistributor!]!
-  rewardsVault(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): RewardsVault
-  rewardsVaults(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: RewardsVault_orderBy
-    orderDirection: OrderDirection
-    where: RewardsVault_filter
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): [RewardsVault!]!
   stakingReward(
     id: ID!
     """
@@ -487,28 +465,6 @@ type Query {
     """
     block: Block_height
   ): [StakingBalance!]!
-  vaultBalance(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): VaultBalance
-  vaultBalances(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VaultBalance_orderBy
-    orderDirection: OrderDirection
-    where: VaultBalance_filter
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): [VaultBalance!]!
   timeMetric(
     id: ID!
     """
@@ -1567,8 +1523,6 @@ type StakingRewardsContract {
   rewardRate: BigInt!
   """Rewards token"""
   rewardsToken: Token!
-  """Rewards vault"""
-  rewardsVault: RewardsVault!
   """Rewards distributor"""
   rewardsDistributor: RewardsDistributor!
   """Total supply"""
@@ -1591,95 +1545,6 @@ type StakingRewardsContract {
 enum StakingRewardsContractType {
   STAKING_REWARDS
   STAKING_REWARDS_WITH_PLATFORM_TOKEN
-}
-type RewardsVault {
-  """Address of the rewards vault contract"""
-  id: ID!
-  """Timestamp for the start of the vault's first period"""
-  vaultStartTime: Int!
-  """Period interval in seconds"""
-  period: Int!
-  """The number of periods rewards are locked up in"""
-  lockupPeriods: Int!
-  """Flag for whether all rewards have been unlocked"""
-  allRewardsUnlocked: Boolean!
-  """The token for vested funds"""
-  vestingToken: Token!
-  """The staking rewards contract using this vault"""
-  stakingRewardsContract: StakingRewardsContract!
-  """Accessor for vault balances kept in this vault"""
-  vaultBalances(skip: Int = 0, first: Int = 100, orderBy: VaultBalance_orderBy, orderDirection: OrderDirection, where: VaultBalance_filter): [VaultBalance!]!
-}
-enum VaultBalance_orderBy {
-  id
-  account
-  rewardsVault
-  amount
-  period
-  vested
-}
-input VaultBalance_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  account: Bytes
-  account_not: Bytes
-  account_in: [Bytes!]
-  account_not_in: [Bytes!]
-  account_contains: Bytes
-  account_not_contains: Bytes
-  rewardsVault: String
-  rewardsVault_not: String
-  rewardsVault_gt: String
-  rewardsVault_lt: String
-  rewardsVault_gte: String
-  rewardsVault_lte: String
-  rewardsVault_in: [String!]
-  rewardsVault_not_in: [String!]
-  rewardsVault_contains: String
-  rewardsVault_not_contains: String
-  rewardsVault_starts_with: String
-  rewardsVault_not_starts_with: String
-  rewardsVault_ends_with: String
-  rewardsVault_not_ends_with: String
-  amount: BigInt
-  amount_not: BigInt
-  amount_gt: BigInt
-  amount_lt: BigInt
-  amount_gte: BigInt
-  amount_lte: BigInt
-  amount_in: [BigInt!]
-  amount_not_in: [BigInt!]
-  period: Int
-  period_not: Int
-  period_gt: Int
-  period_lt: Int
-  period_gte: Int
-  period_lte: Int
-  period_in: [Int!]
-  period_not_in: [Int!]
-  vested: Boolean
-  vested_not: Boolean
-  vested_in: [Boolean!]
-  vested_not_in: [Boolean!]
-}
-type VaultBalance {
-  id: ID!
-  """Account this vault balance belongs to"""
-  account: Bytes!
-  """Rewards vault contract this vault balance is kept on"""
-  rewardsVault: RewardsVault!
-  """Vault balance amount"""
-  amount: BigInt!
-  """Vesting period for this vault balance"""
-  period: Int!
-  """Flag for whether this vault balance was vested"""
-  vested: Boolean!
 }
 type RewardsDistributor {
   """ID of the rewards distributor contract"""
@@ -2103,82 +1968,6 @@ input RewardsDistributor_filter {
   fundManagers_contains: [Bytes!]
   fundManagers_not_contains: [Bytes!]
 }
-enum RewardsVault_orderBy {
-  id
-  vaultStartTime
-  period
-  lockupPeriods
-  allRewardsUnlocked
-  vestingToken
-  stakingRewardsContract
-  vaultBalances
-}
-input RewardsVault_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  vaultStartTime: Int
-  vaultStartTime_not: Int
-  vaultStartTime_gt: Int
-  vaultStartTime_lt: Int
-  vaultStartTime_gte: Int
-  vaultStartTime_lte: Int
-  vaultStartTime_in: [Int!]
-  vaultStartTime_not_in: [Int!]
-  period: Int
-  period_not: Int
-  period_gt: Int
-  period_lt: Int
-  period_gte: Int
-  period_lte: Int
-  period_in: [Int!]
-  period_not_in: [Int!]
-  lockupPeriods: Int
-  lockupPeriods_not: Int
-  lockupPeriods_gt: Int
-  lockupPeriods_lt: Int
-  lockupPeriods_gte: Int
-  lockupPeriods_lte: Int
-  lockupPeriods_in: [Int!]
-  lockupPeriods_not_in: [Int!]
-  allRewardsUnlocked: Boolean
-  allRewardsUnlocked_not: Boolean
-  allRewardsUnlocked_in: [Boolean!]
-  allRewardsUnlocked_not_in: [Boolean!]
-  vestingToken: String
-  vestingToken_not: String
-  vestingToken_gt: String
-  vestingToken_lt: String
-  vestingToken_gte: String
-  vestingToken_lte: String
-  vestingToken_in: [String!]
-  vestingToken_not_in: [String!]
-  vestingToken_contains: String
-  vestingToken_not_contains: String
-  vestingToken_starts_with: String
-  vestingToken_not_starts_with: String
-  vestingToken_ends_with: String
-  vestingToken_not_ends_with: String
-  stakingRewardsContract: String
-  stakingRewardsContract_not: String
-  stakingRewardsContract_gt: String
-  stakingRewardsContract_lt: String
-  stakingRewardsContract_gte: String
-  stakingRewardsContract_lte: String
-  stakingRewardsContract_in: [String!]
-  stakingRewardsContract_not_in: [String!]
-  stakingRewardsContract_contains: String
-  stakingRewardsContract_not_contains: String
-  stakingRewardsContract_starts_with: String
-  stakingRewardsContract_not_starts_with: String
-  stakingRewardsContract_ends_with: String
-  stakingRewardsContract_not_ends_with: String
-}
 enum StakingRewardsContract_orderBy {
   id
   type
@@ -2189,7 +1978,6 @@ enum StakingRewardsContract_orderBy {
   rewardPerTokenStored
   rewardRate
   rewardsToken
-  rewardsVault
   rewardsDistributor
   totalSupply
   totalStakingRewards
@@ -2279,20 +2067,6 @@ input StakingRewardsContract_filter {
   rewardsToken_not_starts_with: String
   rewardsToken_ends_with: String
   rewardsToken_not_ends_with: String
-  rewardsVault: String
-  rewardsVault_not: String
-  rewardsVault_gt: String
-  rewardsVault_lt: String
-  rewardsVault_gte: String
-  rewardsVault_lte: String
-  rewardsVault_in: [String!]
-  rewardsVault_not_in: [String!]
-  rewardsVault_contains: String
-  rewardsVault_not_contains: String
-  rewardsVault_starts_with: String
-  rewardsVault_not_starts_with: String
-  rewardsVault_ends_with: String
-  rewardsVault_not_ends_with: String
   rewardsDistributor: String
   rewardsDistributor_not: String
   rewardsDistributor_gt: String
@@ -2832,28 +2606,6 @@ type Subscription {
     """
     block: Block_height
   ): [RewardsDistributor!]!
-  rewardsVault(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): RewardsVault
-  rewardsVaults(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: RewardsVault_orderBy
-    orderDirection: OrderDirection
-    where: RewardsVault_filter
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): [RewardsVault!]!
   stakingReward(
     id: ID!
     """
@@ -2920,28 +2672,6 @@ type Subscription {
     """
     block: Block_height
   ): [StakingBalance!]!
-  vaultBalance(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): VaultBalance
-  vaultBalances(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: VaultBalance_orderBy
-    orderDirection: OrderDirection
-    where: VaultBalance_filter
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): [VaultBalance!]!
   timeMetric(
     id: ID!
     """
