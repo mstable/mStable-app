@@ -4,10 +4,10 @@ import useToggle from 'react-use/lib/useToggle';
 
 import { Slider } from '../../core/Slider';
 import { Token } from '../../core/Token';
-import { H2, H3 } from '../../core/Typography';
+import { H2, H3, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ExternalLink } from '../../core/ExternalLink';
-import { Color, Size } from '../../../theme';
+import { Color, FontSize, Size } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
 import { centredLayout } from '../../layout/css';
 import { PoolCards } from './PoolCards';
@@ -26,6 +26,7 @@ const Header = styled.h3`
   padding: 16px;
   color: ${Color.white};
   font-weight: bold;
+  font-size: ${FontSize.l};
   text-transform: uppercase;
   span {
     text-transform: none;
@@ -35,17 +36,18 @@ const Header = styled.h3`
 const Screenshot = styled.div`
   border-radius: 4px;
   overflow: hidden;
+  box-shadow: ${Color.blackTransparent} 0 8px 12px;
 
   img {
     width: 100%;
-    max-width: 400px;
+    max-width: 500px;
     height: auto;
     display: block;
   }
 `;
 
 const ItemContent = styled.div`
-  padding: 16px 0;
+  padding: 8px 8px 32px 8px;
   flex-grow: 1;
   transition: background-color 0.3s ease;
   display: flex;
@@ -53,12 +55,17 @@ const ItemContent = styled.div`
   justify-content: space-around;
 
   ol {
-    padding: 16px 0;
+    padding: 16px;
     text-align: left;
     list-style: decimal;
     li {
       margin-bottom: 8px;
     }
+  }
+  
+  p {
+    padding-left: 8px;
+    padding-right: 8px;
   }
 `;
 
@@ -74,7 +81,7 @@ const ItemContainer = styled.div<{ slider?: boolean }>`
     align-items: ${({ slider }) => (slider ? 'auto' : 'center')};
 
     > * {
-      max-width: ${({ slider }) => (slider ? 'auto' : '70%')};
+      max-width: ${({ slider }) => (slider ? 'auto' : '500px')};
     }
   }
 `;
@@ -110,14 +117,12 @@ const IntroducingMeta: FC<{}> = () => (
       </>
     }
   >
+    <MtaToken symbol="MTA" color={Color.white} />
     <div>
-      <MtaToken symbol="MTA" color={Color.white} />
-      <p>Introducing Meta.</p>
-    </div>
-    <div>
-      <p>
+      <P>Introducing Meta.</P>
+      <P>
         Meta (MTA) is mStable's protocol token. Meta has three core functions:
-      </p>
+      </P>
       <ol>
         <li>
           To act as the ultimate source of re-collateralisation (insurance).
@@ -130,18 +135,18 @@ const IntroducingMeta: FC<{}> = () => (
           example in Balancer or Uniswap.
         </li>
       </ol>
+      <P>
+        <StyledExternalLink href="https://medium.com/mstable/introducing-meta-mta-mstables-protocol-token-6e1032291ccf">
+          Read more about MTA
+        </StyledExternalLink>
+      </P>
     </div>
-    <p>
-      <StyledExternalLink href="https://medium.com/mstable/introducing-meta-mta-mstables-protocol-token-6e1032291ccf">
-        Read more about MTA
-      </StyledExternalLink>
-    </p>
   </Item>
 );
 
 const TakingPart1: FC<{}> = () => (
   <Item title="Pool party">
-    <p>Choose which platforms or pools you would like to contribute to.</p>
+    <P>Choose which platforms or pools you would like to contribute to.</P>
     <Screenshot>
       <img alt="" src="/overview.png" />
     </Screenshot>
@@ -149,12 +154,14 @@ const TakingPart1: FC<{}> = () => (
 );
 
 const TakingPart2: FC<{}> = () => (
-  <Item title="Dive in">
-    <p>Contribute liquidity to the chosen pool.</p>
-    <p>
-      Platforms like Balancer or Uniswap will issue an ERC-20 LP (Liquidity
-      Provider) token for your contribution.
-    </p>
+  <Item title="Test the waters">
+    <div>
+      <P>Contribute liquidity to the chosen pool.</P>
+      <P>
+        Platforms like Balancer or Uniswap will issue an ERC-20 LP (Liquidity
+        Provider) token for your contribution.
+      </P>
+    </div>
     <Screenshot>
       <img alt="" src="/balancer.png" />
     </Screenshot>
@@ -162,8 +169,8 @@ const TakingPart2: FC<{}> = () => (
 );
 
 const TakingPart3: FC<{}> = () => (
-  <Item title="The water's great">
-    <p>"Stake" this LP token on the mStable App, through our intuitive UI.</p>
+  <Item title="Dive in">
+    <P>"Stake" this LP token on the mStable App, through our intuitive UI.</P>
     <Screenshot>
       <img alt="" src="/stake.png" />
     </Screenshot>
@@ -172,10 +179,10 @@ const TakingPart3: FC<{}> = () => (
 
 const TakingPart4: FC<{}> = () => (
   <Item title="Do some laps">
-    <p>
+    <P>
       Earn MTA rewards on a second by second basis, in addition to any third
       party tokens like BAL that may be up for grabs.
-    </p>
+    </P>
     <Screenshot>
       <img alt="" src="/pool.png" />
     </Screenshot>
@@ -184,7 +191,7 @@ const TakingPart4: FC<{}> = () => (
 
 const TakingPart5: FC<{}> = () => (
   <Item title="Think of something witty">
-    <p>Claim your rewards or withdraw your stake at any time!</p>
+    <P>Claim your rewards or withdraw your stake at any time!</P>
     <Screenshot>
       <img alt="" src="/claim.png" />
     </Screenshot>
@@ -240,7 +247,7 @@ const SliderContainer = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to top right, #000, #333);
+  background: linear-gradient(to top right, #11151c, #34302d);
   flex: 1;
   > * {
     flex: 1;
@@ -252,7 +259,7 @@ const Intro = styled.div`
 `;
 
 const Content = styled.div`
-  padding: 16px;
+  padding: 8px;
   flex: 1;
   justify-content: space-between;
   align-items: center;
