@@ -19,7 +19,7 @@ interface OverlayOpen {
   overlayOpen: boolean;
 }
 
-export const Container = styled.div<{ stretch?: boolean }>`
+export const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -30,10 +30,10 @@ export const Container = styled.div<{ stretch?: boolean }>`
   align-items: flex-start;
 `;
 
-const Main = styled.main<{ stretch?: boolean }>`
+const Main = styled.main`
   width: 100%;
   flex: 1;
-  padding: ${({ stretch }) => (stretch ? 0 : '40px 20px')};
+  padding: 40px 20px;
 `;
 
 const GlobalStyle = createGlobalStyle<OverlayOpen & { idle: boolean }>`
@@ -44,7 +44,7 @@ const GlobalStyle = createGlobalStyle<OverlayOpen & { idle: boolean }>`
     border-bottom: 1px ${({ theme }) => theme.color.offBlack} solid;
   }
   html {
-    overflow-y: scroll;
+    overflow-y: ${({ overlayOpen }) => (overlayOpen ? 'hidden' : 'scroll')};
     scroll-behavior: smooth;
   }
   body {

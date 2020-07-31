@@ -92,14 +92,19 @@ export const TokenSubscriptionsUpdater = (): null => {
           ),
         }));
 
-      Promise.all(balancePromises).then(balances => {
-        updateBalances(
-          balances.reduce(
-            (_balances, balance) => ({ ..._balances, ...balance }),
-            {},
-          ),
-        );
-      });
+      Promise.all(balancePromises)
+        .then(balances => {
+          updateBalances(
+            balances.reduce(
+              (_balances, balance) => ({ ..._balances, ...balance }),
+              {},
+            ),
+          );
+        })
+        .catch(error => {
+          // eslint-disable-next-line no-console
+          console.warn(error);
+        });
     }
   }, [
     account,

@@ -220,7 +220,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
             [address]: {
               ...(_tokens[address] as SubscribedToken),
               allowances: {},
-              balance: new BigDecimal(0, (_tokens[address] as SubscribedToken).decimals),
+              balance: new BigDecimal(
+                0,
+                (_tokens[address] as SubscribedToken).decimals,
+              ),
             },
           }),
           state.tokens,
@@ -472,6 +475,9 @@ export const useToken = (
 
   return address ? state.tokens[address] : undefined;
 };
+
+export const useMetaToken = (): SubscribedToken | undefined =>
+  useToken((process.env.REACT_APP_MTA_ADDRESS as string).toLowerCase());
 
 export const useTokenAllowance = (
   address: string | undefined | null,

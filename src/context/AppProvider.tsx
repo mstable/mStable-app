@@ -415,12 +415,14 @@ export const AppProvider: FC<{}> = ({ children }) => {
         dispatch({ type: Actions.SetWalletSubType, payload: subType });
 
         injected.on?.('chainChanged', chainChangedListener);
+        injected.on?.('networkChanged', chainChangedListener);
         injected.autoRefreshOnNetworkChange = false;
       }
     }
 
     return () => {
       if (injected && chainChangedListener) {
+        injected.removeListener?.('networkChanged', chainChangedListener);
         injected.removeListener?.('chainChanged', chainChangedListener);
       }
     };

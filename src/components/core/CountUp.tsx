@@ -1,7 +1,9 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { useCountUp, CountUpProps } from 'react-countup';
 import styled from 'styled-components';
+import { useFirstMountState } from 'react-use/lib/useFirstMountState'
 
+import { useIsIdle } from '../../context/UserActivityProvider';
 import { Color } from '../../theme';
 
 interface Props extends CountUpProps {
@@ -40,8 +42,10 @@ export const CountUp: FC<Props> = ({
   duration = DEFAULT_DURATION,
 }) => {
   const prevEnd = useRef<typeof end>(end);
+  const isIdle = useIsIdle();
+  const firstMount = useFirstMountState();
 
-  const { countUp, update } = useCountUp({
+  const { countUp, update, pauseResume, start } = useCountUp({
     decimals,
     duration,
     end,
@@ -58,6 +62,12 @@ export const CountUp: FC<Props> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [end]);
+
+  useEffect(() => {
+    if (isIdle && !firstMount) {
+      pauseResume();
+    }
+  }, [firstMount, isIdle, pauseResume, start]);
 
   return (
     <Container

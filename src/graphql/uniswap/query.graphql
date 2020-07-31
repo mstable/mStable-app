@@ -1,29 +1,26 @@
 fragment PairDetails on Pair {
-  id
+  address: id
   reserveUSD
   totalSupply
   token0 {
-    id
+    address: id
     decimals
     symbol
     totalLiquidity
   }
   token1 {
-    id
+    address: id
     decimals
     symbol
     totalLiquidity
   }
 }
 
-query Pairs($ids: [ID!]!) @api(name: uniswap) {
-  pairs(where: { id_in: $ids }) {
+query Pairs($ids: [ID!]!, $includeHistoric: Boolean!, $block: Block_height) @api(name: uniswap) {
+  current: pairs(where: { id_in: $ids }) {
     ...PairDetails
   }
-}
-
-query PairsAtBlock($ids: [ID!]!, $blockNumber: Int!) @api(name: uniswap) {
-  pairs(where: { id_in: $ids }, block: { number: $blockNumber }) {
+  historic: pairs(where: { id_in: $ids }, block: $block) @include(if: $includeHistoric) {
     ...PairDetails
   }
 }

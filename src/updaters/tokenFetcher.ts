@@ -8,7 +8,9 @@ import { useTokensDispatch } from '../context/DataProvider/TokensProvider';
 export const TokenFetcher = (): null => {
   const { setFetched } = useTokensDispatch();
 
-  const query = useAllErc20TokensQuery();
+  const query = useAllErc20TokensQuery({
+    fetchPolicy: 'network-only',
+  });
   const fetched = query.data?.tokens || [];
 
   // Sub/unsub when the list of tokens changes from what's subscribed.

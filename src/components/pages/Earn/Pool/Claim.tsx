@@ -10,27 +10,40 @@ import {
   useRewardsEarned,
   useCurrentRewardsToken,
   useCurrentStakingRewardsContractCtx,
+  useCurrentPlatformToken,
 } from '../StakingRewardsContractProvider';
 import { CountUp } from '../../../core/CountUp';
 import { FormRow } from '../../../core/Form';
-import { H3 } from '../../../core/Typography';
+import { H3, P } from '../../../core/Typography';
 
 const Input: FC<{}> = () => {
-  const { rewardsEarned } = useRewardsEarned();
+  const { rewards, platformRewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
+  const platformToken = useCurrentPlatformToken();
 
   return (
     <FormRow>
       <H3>Claim rewards</H3>
       <div>
-        {rewardsToken && rewardsEarned?.exact.gt(0) ? (
+        {rewardsToken && rewards?.exact.gt(0) ? (
           <>
             Claim{' '}
             <CountUp
-              end={rewardsEarned?.simpleRounded}
+              end={rewards?.simpleRounded}
               decimals={6}
               suffix={` ${rewardsToken.symbol}`}
             />
+            {platformToken && platformRewards ? (
+              <>
+                {' '}
+                and{' '}
+                <CountUp
+                  end={platformRewards.simpleRounded}
+                  decimals={6}
+                  suffix={` ${platformToken.symbol}`}
+                />
+              </>
+            ) : null}
             .
           </>
         ) : (
@@ -42,29 +55,46 @@ const Input: FC<{}> = () => {
 };
 
 const Confirm: FC<{}> = () => {
-  const { rewardsEarned } = useRewardsEarned();
+  const { rewards, platformRewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
+  const platformToken = useCurrentPlatformToken();
 
-  return rewardsToken && rewardsEarned?.exact.gt(0) ? (
+  return rewardsToken && rewards?.exact.gt(0) ? (
     <>
-      <CountUp
-        end={rewardsEarned.simpleRounded}
-        decimals={6}
-        suffix={` ${rewardsToken.symbol}`}
-      />{' '}
-      will be claimed.
+      <P>
+        <CountUp
+          end={rewards.simpleRounded}
+          decimals={6}
+          suffix={` ${rewardsToken.symbol}`}
+        />{' '}
+        {platformToken && platformRewards ? (
+          <>
+            and{' '}
+            <CountUp
+              end={platformRewards.simpleRounded}
+              decimals={6}
+              suffix={` ${platformToken.symbol}`}
+            />{' '}
+          </>
+        ) : null}
+        will be claimed.
+      </P>
+      <P>
+        You will continue to earn any available rewards with your staked
+        balance.
+      </P>
     </>
   ) : null;
 };
 
 const Form: FC<{}> = () => {
-  const { rewardsEarned } = useRewardsEarned();
+  const { rewards } = useRewardsEarned();
 
   const contract = useCurrentStakingRewardsContractCtx();
 
   const setFormManifest = useSetFormManifest();
 
-  const valid = !!rewardsEarned?.exact.gt(0);
+  const valid = !!rewards?.exact.gt(0);
 
   useEffect(() => {
     if (valid && contract) {

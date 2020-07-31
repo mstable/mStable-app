@@ -7,8 +7,8 @@ import { NotificationItem } from '../core/NotificationItem';
 
 const slideIn = keyframes`
   0% {
-    transform: translateY(1000px) scaleY(2.5) scaleX(0.2);
-    transform-origin: 50% 0%;
+    transform: translateY(-1000px) scaleY(2.5) scaleX(0.2);
+    transform-origin: 50% 0;
     filter: blur(40px);
     opacity: 0;
   }
@@ -22,7 +22,7 @@ const slideIn = keyframes`
 
 const Container = styled.div`
   position: fixed;
-  bottom: 24px;
+  top: 24px;
   right: 40px;
   width: 20%;
   min-width: 240px;

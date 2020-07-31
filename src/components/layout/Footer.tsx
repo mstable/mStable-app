@@ -62,6 +62,10 @@ const Container = styled.footer<Props>`
       ${inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
       solid`};
 
+  > div {
+    width: 100%;
+  }
+
   a {
     color: ${({ theme, inverted }) =>
       inverted ? theme.color.offWhite : theme.color.offBlack};

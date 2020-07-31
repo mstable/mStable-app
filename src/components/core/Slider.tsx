@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useSwipeable } from 'react-swipeable';
 import { Color, ViewportWidth } from '../../theme';
@@ -9,6 +9,8 @@ interface Props {
   className?: string;
   initialItem?: string;
   skipButton?: JSX.Element;
+  swipeDisabled?: boolean;
+  setSwipeDisabled?(disabled: boolean): void;
   items: {
     key: string;
     children: JSX.Element;
@@ -119,27 +121,30 @@ const Container = styled.div`
 
 export const Slider: FC<Props> = ({
   className,
+  children,
   items,
   bottomControls,
   initialItem,
   sideControls,
   skipButton,
+  swipeDisabled,
+  setSwipeDisabled,
 }) => {
   const [activeIdx, setActiveIdx] = useState<number>(
     initialItem ? items.findIndex(item => item.key === initialItem) : 0,
   );
 
   const next = useCallback(() => {
-    if (activeIdx < items.length - 1) {
+    if (!swipeDisabled && activeIdx < items.length - 1) {
       setActiveIdx(activeIdx + 1);
     }
-  }, [setActiveIdx, activeIdx, items.length]);
+  }, [swipeDisabled, activeIdx, items.length]);
 
   const previous = useCallback(() => {
-    if (activeIdx > 0) {
+    if (!swipeDisabled && activeIdx > 0) {
       setActiveIdx(activeIdx - 1);
     }
-  }, [setActiveIdx, activeIdx]);
+  }, [swipeDisabled, activeIdx]);
 
   const swipeableHandlers = useSwipeable({
     trackTouch: true,
@@ -155,6 +160,10 @@ export const Slider: FC<Props> = ({
     },
   });
 
+  useEffect(() => {
+    setSwipeDisabled?.(activeIdx > 0);
+  }, [activeIdx, setSwipeDisabled]);
+
   return (
     <Container
       className={className}
@@ -163,9 +172,10 @@ export const Slider: FC<Props> = ({
     >
       <SliderContainer>
         <SliderItems activeIdx={activeIdx}>
-          {items.map(({ children, key }) => (
-            <SliderItem key={key}>{children}</SliderItem>
+          {items.map(({ children: item, key }) => (
+            <SliderItem key={key}>{item}</SliderItem>
           ))}
+          {children}
         </SliderItems>
       </SliderContainer>
       {bottomControls ? (
@@ -176,7 +186,7 @@ export const Slider: FC<Props> = ({
                 key={key}
                 active={activeIdx === index}
                 onClick={() => {
-                  setActiveIdx(index);
+                  if (!swipeDisabled) setActiveIdx(index);
                 }}
               />
             ))}
@@ -185,10 +195,13 @@ export const Slider: FC<Props> = ({
       ) : null}
       {sideControls ? (
         <SideControls>
-          <LeftArrow onClick={previous} disabled={activeIdx === 0} />
+          <LeftArrow
+            onClick={previous}
+            disabled={swipeDisabled || activeIdx === 0}
+          />
           <RightArrow
             onClick={next}
-            disabled={activeIdx === items.length - 1}
+            disabled={swipeDisabled || activeIdx === items.length - 1}
           />
         </SideControls>
       ) : null}

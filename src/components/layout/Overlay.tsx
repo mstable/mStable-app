@@ -22,7 +22,7 @@ const Container = styled.div<{ open: boolean }>`
   bottom: ${({ open }) => (open ? 0 : '100%')};
   overflow: hidden;
   top: 32px;
-  overflow-y: scroll;
+  overflow-y: auto;
 `;
 
 export const Overlay: FC<{}> = () => {

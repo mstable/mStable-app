@@ -11,13 +11,13 @@ type TransformFn<T extends keyof DataState> = (
 type TransformPipelineItem<T extends keyof DataState> = [T, TransformFn<T>];
 
 const getMassetState: TransformFn<'mAsset'> = ({
- mAsset: {
-   basket: { collateralisationRatio, failed, undergoingRecol },
-   feeRate,
-   redemptionFeeRate,
-   token: { totalSupply, address, decimals, symbol },
- },
- tokens,
+  mAsset: {
+    basket: { collateralisationRatio, failed, undergoingRecol },
+    feeRate,
+    redemptionFeeRate,
+    token: { totalSupply, address, decimals, symbol },
+  },
+  tokens,
 }) => {
   const { allowances, balance } = tokens[address] ?? {
     balance: new BigDecimal(0, decimals),
@@ -48,7 +48,7 @@ const getSavingsContract: TransformFn<'savingsContract'> = (
     creditBalances,
     latestExchangeRate,
     savingsContract: savingsContractData,
-    tokens: { [savingsContractData.id]: savingsContract },
+    tokens,
   },
   { mAsset: { address: mAssetAddress, decimals } },
 ) => ({
@@ -59,15 +59,16 @@ const getSavingsContract: TransformFn<'savingsContract'> = (
   ),
   latestExchangeRate: latestExchangeRate
     ? {
-      exchangeRate: BigDecimal.parse(
-        latestExchangeRate.exchangeRate,
-        decimals,
-      ),
-      timestamp: latestExchangeRate.timestamp,
-    }
+        exchangeRate: BigDecimal.parse(
+          latestExchangeRate.exchangeRate,
+          decimals,
+        ),
+        timestamp: latestExchangeRate.timestamp,
+      }
     : undefined,
   mAssetAllowance:
-    savingsContract?.allowances[mAssetAddress] || new BigDecimal(0, decimals),
+    tokens[mAssetAddress]?.allowances?.[savingsContractData.id] ??
+    new BigDecimal(0, decimals),
   savingsRate: BigDecimal.parse(savingsContractData.savingsRate, decimals),
   totalCredits: BigDecimal.parse(savingsContractData.totalCredits, decimals),
   totalSavings: BigDecimal.parse(savingsContractData.totalSavings, decimals),

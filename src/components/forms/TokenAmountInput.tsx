@@ -107,7 +107,6 @@ const AmountInputContainer = styled.div`
   }
 
   ${Button} {
-    white-space: nowrap;
     padding-left: 8px;
     padding-right: 8px;
   }

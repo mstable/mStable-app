@@ -5,7 +5,7 @@ import { ViewportWidth } from '../../theme';
 import { useSetWalletPosition } from '../../context/AppProvider';
 import { centredLayout } from './css';
 
-const Content = styled.div<{ stretch: boolean }>`
+const Content = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
@@ -66,9 +66,7 @@ export const Header: FC<{ home: boolean }> = ({ home }) => {
 
   return (
     <Container home={home}>
-      <Content stretch={false}>
-        {home ? null : (<Navigation />)}
-      </Content>
+      <Content>{home ? null : <Navigation />}</Content>
     </Container>
   );
 };

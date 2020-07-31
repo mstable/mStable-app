@@ -63,7 +63,7 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   display: flex;
   align-items: center;
   height: 46px;
-  white-space: nowrap;
+  min-width: 130px;
 
   padding: ${({ theme }) => theme.spacing.xs};
 

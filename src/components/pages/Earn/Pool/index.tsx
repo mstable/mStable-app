@@ -33,6 +33,6 @@ export const PoolPage: FC<Props> = ({ slugOrAddress }) => {
       </Container>
     </StakingRewardsContractProvider>
   ) : (
-    <Skeleton height={400} />
+    <Skeleton height={225} />
   );
 };

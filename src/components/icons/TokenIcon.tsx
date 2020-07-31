@@ -23,6 +23,7 @@ type SvgComponent = FC<SVGProps<never>>;
 
 export const TOKEN_ICONS: Record<string, string> = {
   ETH,
+  WETH: ETH,
   mUSD,
   TUSD,
   USDT,
@@ -33,10 +34,13 @@ export const TOKEN_ICONS: Record<string, string> = {
   'UNI-V2': Uniswap,
   BAL: Balancer,
   BPT: Balancer,
+  'MK-MTA': MTA,
+  'MK-BAL': Balancer,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
   ETH: EtherSvg as SvgComponent,
+  WETH: EtherSvg as SvgComponent,
   mUSD: MusdSvg as SvgComponent,
   TUSD: TusdSvg as SvgComponent,
   USDT: UsdtSvg as SvgComponent,
@@ -47,6 +51,8 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   'UNI-V2': UniswapSvg as SvgComponent,
   BAL: BalancerSvg as SvgComponent,
   BPT: BalancerSvg as SvgComponent,
+  'MK-MTA': MtaSvg as SvgComponent,
+  'MK-BAL': BalancerSvg as SvgComponent,
 };
 
 const Image = styled.img`

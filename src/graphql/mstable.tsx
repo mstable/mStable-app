@@ -693,6 +693,14 @@ export type Masset_Filter = {
   feeRate_lte?: Maybe<Scalars['BigInt']>;
   feeRate_in?: Maybe<Array<Scalars['BigInt']>>;
   feeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  redemptionFeeRate?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_not?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_gt?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_lt?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_gte?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_lte?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_in?: Maybe<Array<Scalars['BigInt']>>;
+  redemptionFeeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
   token?: Maybe<Scalars['String']>;
   token_not?: Maybe<Scalars['String']>;
   token_gt?: Maybe<Scalars['String']>;
@@ -727,6 +735,7 @@ export enum Masset_OrderBy {
   Id = 'id',
   Basket = 'basket',
   FeeRate = 'feeRate',
+  RedemptionFeeRate = 'redemptionFeeRate',
   Token = 'token',
   TokenSymbol = 'tokenSymbol',
   SavingsContracts = 'savingsContracts'
@@ -2793,7 +2802,7 @@ export type Erc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
 export type AllErc20TokensQueryVariables = {};
 
 
-export type AllErc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
+export type AllErc20TokensQuery = { savingsContracts: Array<{ address: SavingsContract['id'] }>, tokens: Array<TokenDetailsFragment> };
 
 export type TokenByAddressQueryVariables = {
   id: Scalars['ID'];
@@ -2893,23 +2902,22 @@ export type AggregateMetricsQuery = { aggregateMetrics: Array<Pick<AggregateMetr
 
 export type StakingRewardsContractsQueryVariables = {
   account?: Maybe<Scalars['Bytes']>;
+  includeHistoric: Scalars['Boolean'];
+  block?: Maybe<Block_Height>;
 };
 
 
-export type StakingRewardsContractsQuery = { stakingRewardsContracts: Array<(
+export type StakingRewardsContractsQuery = { current: Array<(
     Pick<StakingRewardsContract, 'id' | 'type' | 'duration' | 'lastUpdateTime' | 'periodFinish' | 'rewardRate' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored' | 'platformRewardRate' | 'totalSupply' | 'totalStakingRewards' | 'totalPlatformRewards'>
+    & { address: StakingRewardsContract['id'] }
     & { stakingToken: (
       Pick<Token, 'totalSupply'>
       & TokenDetailsFragment
     ), rewardsToken: TokenDetailsFragment, platformToken?: Maybe<TokenDetailsFragment>, stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>>, platformRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
+  )>, historic: Array<(
+    Pick<StakingRewardsContract, 'id' | 'lastUpdateTime' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored'>
+    & { address: StakingRewardsContract['id'] }
   )> };
-
-export type RewardsPerTokenStoredAtBlockQueryVariables = {
-  blockNumber: Scalars['Int'];
-};
-
-
-export type RewardsPerTokenStoredAtBlockQuery = { stakingRewardsContracts: Array<Pick<StakingRewardsContract, 'id' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored'>> };
 
 export type RewardsDistributorQueryVariables = {};
 
@@ -2932,6 +2940,7 @@ export const MassetAllFragmentDoc = gql`
     ...TokenDetails
   }
   feeRate
+  redemptionFeeRate
   basket {
     failed
     collateralisationRatio
@@ -3067,6 +3076,9 @@ export type Erc20TokensLazyQueryHookResult = ReturnType<typeof useErc20TokensLaz
 export type Erc20TokensQueryResult = ApolloReactCommon.QueryResult<Erc20TokensQuery, Erc20TokensQueryVariables>;
 export const AllErc20TokensDocument = gql`
     query AllErc20Tokens @api(name: mstable) {
+  savingsContracts {
+    address: id
+  }
   tokens {
     ...TokenDetails
   }
@@ -3518,8 +3530,9 @@ export type AggregateMetricsQueryHookResult = ReturnType<typeof useAggregateMetr
 export type AggregateMetricsLazyQueryHookResult = ReturnType<typeof useAggregateMetricsLazyQuery>;
 export type AggregateMetricsQueryResult = ApolloReactCommon.QueryResult<AggregateMetricsQuery, AggregateMetricsQueryVariables>;
 export const StakingRewardsContractsDocument = gql`
-    query StakingRewardsContracts($account: Bytes) @api(name: mstable) {
-  stakingRewardsContracts {
+    query StakingRewardsContracts($account: Bytes, $includeHistoric: Boolean!, $block: Block_height) @api(name: mstable) {
+  current: stakingRewardsContracts {
+    address: id
     id
     type
     duration
@@ -3554,6 +3567,13 @@ export const StakingRewardsContractsDocument = gql`
       amountPerTokenPaid
     }
   }
+  historic: stakingRewardsContracts(block: $block) @include(if: $includeHistoric) {
+    address: id
+    id
+    lastUpdateTime
+    rewardPerTokenStored
+    platformRewardPerTokenStored
+  }
 }
     ${TokenDetailsFragmentDoc}`;
 
@@ -3570,6 +3590,8 @@ export const StakingRewardsContractsDocument = gql`
  * const { data, loading, error } = useStakingRewardsContractsQuery({
  *   variables: {
  *      account: // value for 'account'
+ *      includeHistoric: // value for 'includeHistoric'
+ *      block: // value for 'block'
  *   },
  * });
  */
@@ -3582,41 +3604,6 @@ export function useStakingRewardsContractsLazyQuery(baseOptions?: ApolloReactHoo
 export type StakingRewardsContractsQueryHookResult = ReturnType<typeof useStakingRewardsContractsQuery>;
 export type StakingRewardsContractsLazyQueryHookResult = ReturnType<typeof useStakingRewardsContractsLazyQuery>;
 export type StakingRewardsContractsQueryResult = ApolloReactCommon.QueryResult<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>;
-export const RewardsPerTokenStoredAtBlockDocument = gql`
-    query RewardsPerTokenStoredAtBlock($blockNumber: Int!) @api(name: mstable) {
-  stakingRewardsContracts(block: {number: $blockNumber}) {
-    id
-    rewardPerTokenStored
-    platformRewardPerTokenStored
-  }
-}
-    `;
-
-/**
- * __useRewardsPerTokenStoredAtBlockQuery__
- *
- * To run a query within a React component, call `useRewardsPerTokenStoredAtBlockQuery` and pass it any options that fit your needs.
- * When your component renders, `useRewardsPerTokenStoredAtBlockQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useRewardsPerTokenStoredAtBlockQuery({
- *   variables: {
- *      blockNumber: // value for 'blockNumber'
- *   },
- * });
- */
-export function useRewardsPerTokenStoredAtBlockQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<RewardsPerTokenStoredAtBlockQuery, RewardsPerTokenStoredAtBlockQueryVariables>) {
-        return ApolloReactHooks.useQuery<RewardsPerTokenStoredAtBlockQuery, RewardsPerTokenStoredAtBlockQueryVariables>(RewardsPerTokenStoredAtBlockDocument, baseOptions);
-      }
-export function useRewardsPerTokenStoredAtBlockLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RewardsPerTokenStoredAtBlockQuery, RewardsPerTokenStoredAtBlockQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<RewardsPerTokenStoredAtBlockQuery, RewardsPerTokenStoredAtBlockQueryVariables>(RewardsPerTokenStoredAtBlockDocument, baseOptions);
-        }
-export type RewardsPerTokenStoredAtBlockQueryHookResult = ReturnType<typeof useRewardsPerTokenStoredAtBlockQuery>;
-export type RewardsPerTokenStoredAtBlockLazyQueryHookResult = ReturnType<typeof useRewardsPerTokenStoredAtBlockLazyQuery>;
-export type RewardsPerTokenStoredAtBlockQueryResult = ApolloReactCommon.QueryResult<RewardsPerTokenStoredAtBlockQuery, RewardsPerTokenStoredAtBlockQueryVariables>;
 export const RewardsDistributorDocument = gql`
     query RewardsDistributor @api(name: mstable) {
   rewardsDistributors(first: 1) {

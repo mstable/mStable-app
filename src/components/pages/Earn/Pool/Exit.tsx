@@ -14,18 +14,20 @@ import {
   useCurrentStakingToken,
   useCurrentStakingRewardsContractCtx,
   useRewardsEarned,
+  useCurrentPlatformToken,
 } from '../StakingRewardsContractProvider';
 import { P } from '../../../core/Typography';
 
 const ExitFormConfirm: FC<{}> = () => {
+  const { rewards, platformRewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
-  const { rewardsEarned } = useRewardsEarned();
+  const platformToken = useCurrentPlatformToken();
   const stakingToken = useCurrentStakingToken();
   const stakingBalance = useCurrentStakingRewardsContract()?.stakingBalance;
 
   return (
     <div>
-      {stakingBalance && rewardsToken && stakingToken && rewardsEarned ? (
+      {stakingBalance && rewardsToken && stakingToken && rewards ? (
         stakingBalance.exact.gt(0) ? (
           <>
             <P>
@@ -35,15 +37,26 @@ const ExitFormConfirm: FC<{}> = () => {
                 decimals={2}
                 suffix={` ${stakingToken.symbol}`}
               />
-              {rewardsEarned.exact.gt(0) ? (
+              {rewards.exact.gt(0) ? (
                 <>
                   {' '}
                   and claim rewards of{' '}
                   <CountUp
-                    end={rewardsEarned.simpleRounded}
+                    end={rewards.simpleRounded}
                     decimals={6}
                     suffix={` ${rewardsToken.symbol}`}
                   />
+                  {platformToken && platformRewards ? (
+                    <>
+                      {' '}
+                      and{' '}
+                      <CountUp
+                        end={platformRewards.simpleRounded}
+                        decimals={6}
+                        suffix={` ${platformToken.symbol}`}
+                      />
+                    </>
+                  ) : null}
                 </>
               ) : null}
               .

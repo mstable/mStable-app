@@ -127,6 +127,7 @@ export type Pool = {
   controller: Scalars['Bytes'];
   publicSwap: Scalars['Boolean'];
   finalized: Scalars['Boolean'];
+  active: Scalars['Boolean'];
   swapFee: Scalars['BigDecimal'];
   totalWeight: Scalars['BigDecimal'];
   totalShares: Scalars['BigDecimal'];
@@ -136,6 +137,8 @@ export type Pool = {
   tokens?: Maybe<Array<PoolToken>>;
   shares?: Maybe<Array<PoolShare>>;
   createTime: Scalars['Int'];
+  tokensCount: Scalars['BigInt'];
+  holdersCount: Scalars['BigInt'];
   joinsCount: Scalars['BigInt'];
   exitsCount: Scalars['BigInt'];
   swapsCount: Scalars['BigInt'];
@@ -193,6 +196,10 @@ export type Pool_Filter = {
   finalized_not?: Maybe<Scalars['Boolean']>;
   finalized_in?: Maybe<Array<Scalars['Boolean']>>;
   finalized_not_in?: Maybe<Array<Scalars['Boolean']>>;
+  active?: Maybe<Scalars['Boolean']>;
+  active_not?: Maybe<Scalars['Boolean']>;
+  active_in?: Maybe<Array<Scalars['Boolean']>>;
+  active_not_in?: Maybe<Array<Scalars['Boolean']>>;
   swapFee?: Maybe<Scalars['BigDecimal']>;
   swapFee_not?: Maybe<Scalars['BigDecimal']>;
   swapFee_gt?: Maybe<Scalars['BigDecimal']>;
@@ -245,6 +252,22 @@ export type Pool_Filter = {
   createTime_lte?: Maybe<Scalars['Int']>;
   createTime_in?: Maybe<Array<Scalars['Int']>>;
   createTime_not_in?: Maybe<Array<Scalars['Int']>>;
+  tokensCount?: Maybe<Scalars['BigInt']>;
+  tokensCount_not?: Maybe<Scalars['BigInt']>;
+  tokensCount_gt?: Maybe<Scalars['BigInt']>;
+  tokensCount_lt?: Maybe<Scalars['BigInt']>;
+  tokensCount_gte?: Maybe<Scalars['BigInt']>;
+  tokensCount_lte?: Maybe<Scalars['BigInt']>;
+  tokensCount_in?: Maybe<Array<Scalars['BigInt']>>;
+  tokensCount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  holdersCount?: Maybe<Scalars['BigInt']>;
+  holdersCount_not?: Maybe<Scalars['BigInt']>;
+  holdersCount_gt?: Maybe<Scalars['BigInt']>;
+  holdersCount_lt?: Maybe<Scalars['BigInt']>;
+  holdersCount_gte?: Maybe<Scalars['BigInt']>;
+  holdersCount_lte?: Maybe<Scalars['BigInt']>;
+  holdersCount_in?: Maybe<Array<Scalars['BigInt']>>;
+  holdersCount_not_in?: Maybe<Array<Scalars['BigInt']>>;
   joinsCount?: Maybe<Scalars['BigInt']>;
   joinsCount_not?: Maybe<Scalars['BigInt']>;
   joinsCount_gt?: Maybe<Scalars['BigInt']>;
@@ -290,6 +313,7 @@ export enum Pool_OrderBy {
   Controller = 'controller',
   PublicSwap = 'publicSwap',
   Finalized = 'finalized',
+  Active = 'active',
   SwapFee = 'swapFee',
   TotalWeight = 'totalWeight',
   TotalShares = 'totalShares',
@@ -299,6 +323,8 @@ export enum Pool_OrderBy {
   Tokens = 'tokens',
   Shares = 'shares',
   CreateTime = 'createTime',
+  TokensCount = 'tokensCount',
+  HoldersCount = 'holdersCount',
   JoinsCount = 'joinsCount',
   ExitsCount = 'exitsCount',
   SwapsCount = 'swapsCount',
@@ -1180,26 +1206,27 @@ export enum User_OrderBy {
 }
 
 export type PoolDetailsFragment = (
-  Pick<Pool, 'id' | 'totalShares' | 'totalSwapVolume' | 'swapFee'>
-  & { tokens?: Maybe<Array<Pick<PoolToken, 'address' | 'balance' | 'decimals' | 'symbol'>>> }
+  Pick<Pool, 'totalShares' | 'totalSwapVolume' | 'totalWeight' | 'swapFee'>
+  & { address: Pool['id'] }
+  & { tokens?: Maybe<Array<(
+    Pick<PoolToken, 'balance' | 'decimals' | 'symbol' | 'denormWeight'>
+    & { address: PoolToken['id'] }
+  )>> }
 );
 
-export type TokenPriceDetailsFragment = Pick<TokenPrice, 'id' | 'price' | 'decimals'>;
+export type TokenPriceDetailsFragment = (
+  Pick<TokenPrice, 'price' | 'decimals'>
+  & { address: TokenPrice['id'] }
+);
 
 export type PoolsQueryVariables = {
   ids: Array<Scalars['ID']>;
+  includeHistoric: Scalars['Boolean'];
+  block?: Maybe<Block_Height>;
 };
 
 
-export type PoolsQuery = { pools: Array<PoolDetailsFragment> };
-
-export type PoolsAtBlockQueryVariables = {
-  ids: Array<Scalars['ID']>;
-  blockNumber: Scalars['Int'];
-};
-
-
-export type PoolsAtBlockQuery = { pools: Array<PoolDetailsFragment> };
+export type PoolsQuery = { current: Array<PoolDetailsFragment>, historic: Array<PoolDetailsFragment> };
 
 export type TokenPricesQueryVariables = {
   tokens: Array<Scalars['ID']>;
@@ -1217,28 +1244,33 @@ export type TokenPriceQuery = { tokenPrice?: Maybe<TokenPriceDetailsFragment> };
 
 export const PoolDetailsFragmentDoc = gql`
     fragment PoolDetails on Pool {
-  id
+  address: id
   totalShares
   totalSwapVolume
+  totalWeight
   swapFee
   tokens {
-    address
+    address: id
     balance
     decimals
     symbol
+    denormWeight
   }
 }
     `;
 export const TokenPriceDetailsFragmentDoc = gql`
     fragment TokenPriceDetails on TokenPrice {
-  id
+  address: id
   price
   decimals
 }
     `;
 export const PoolsDocument = gql`
-    query Pools($ids: [ID!]!) @api(name: balancer) {
-  pools(where: {id_in: $ids}) {
+    query Pools($ids: [ID!]!, $includeHistoric: Boolean!, $block: Block_height) @api(name: balancer) {
+  current: pools(where: {id_in: $ids}) {
+    ...PoolDetails
+  }
+  historic: pools(where: {id_in: $ids}, block: $block) @include(if: $includeHistoric) {
     ...PoolDetails
   }
 }
@@ -1257,6 +1289,8 @@ export const PoolsDocument = gql`
  * const { data, loading, error } = usePoolsQuery({
  *   variables: {
  *      ids: // value for 'ids'
+ *      includeHistoric: // value for 'includeHistoric'
+ *      block: // value for 'block'
  *   },
  * });
  */
@@ -1269,40 +1303,6 @@ export function usePoolsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOp
 export type PoolsQueryHookResult = ReturnType<typeof usePoolsQuery>;
 export type PoolsLazyQueryHookResult = ReturnType<typeof usePoolsLazyQuery>;
 export type PoolsQueryResult = ApolloReactCommon.QueryResult<PoolsQuery, PoolsQueryVariables>;
-export const PoolsAtBlockDocument = gql`
-    query PoolsAtBlock($ids: [ID!]!, $blockNumber: Int!) @api(name: balancer) {
-  pools(where: {id_in: $ids}, block: {number: $blockNumber}) {
-    ...PoolDetails
-  }
-}
-    ${PoolDetailsFragmentDoc}`;
-
-/**
- * __usePoolsAtBlockQuery__
- *
- * To run a query within a React component, call `usePoolsAtBlockQuery` and pass it any options that fit your needs.
- * When your component renders, `usePoolsAtBlockQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = usePoolsAtBlockQuery({
- *   variables: {
- *      ids: // value for 'ids'
- *      blockNumber: // value for 'blockNumber'
- *   },
- * });
- */
-export function usePoolsAtBlockQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>) {
-        return ApolloReactHooks.useQuery<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>(PoolsAtBlockDocument, baseOptions);
-      }
-export function usePoolsAtBlockLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>(PoolsAtBlockDocument, baseOptions);
-        }
-export type PoolsAtBlockQueryHookResult = ReturnType<typeof usePoolsAtBlockQuery>;
-export type PoolsAtBlockLazyQueryHookResult = ReturnType<typeof usePoolsAtBlockLazyQuery>;
-export type PoolsAtBlockQueryResult = ApolloReactCommon.QueryResult<PoolsAtBlockQuery, PoolsAtBlockQueryVariables>;
 export const TokenPricesDocument = gql`
     query TokenPrices($tokens: [ID!]!) @api(name: balancer) {
   tokenPrices(where: {id_in: $tokens}) {

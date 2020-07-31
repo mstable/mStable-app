@@ -4,7 +4,10 @@ import styled from 'styled-components';
 import { Button } from '../../../core/Button';
 import { Color, Size } from '../../../../theme';
 import { Tabs } from '../types';
-import { useStakingRewardContractDispatch, useStakingRewardsContractState } from '../StakingRewardsContractProvider';
+import {
+  useStakingRewardContractDispatch,
+  useStakingRewardsContractState,
+} from '../StakingRewardsContractProvider';
 import { Stake } from './Stake';
 import { Claim } from './Claim';
 import { Exit } from './Exit';
@@ -16,10 +19,11 @@ const TAB_LABELS = {
 };
 
 const TabsContainer = styled.div`
-  display: flex;
-  justify-content: space-around;
   padding: 16px 0;
   border-top: 1px ${Color.blackTransparent} solid;
+  display: flex;
+  justify-content: space-evenly;
+}
 `;
 
 const TabBtn = styled(Button)<{ active: boolean }>`

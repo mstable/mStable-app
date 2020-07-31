@@ -187,7 +187,7 @@ const Chart: FC<{}> = () => {
           theme={victoryTheme}
           height={250}
           padding={{ left: 45, top: 10, right: 20, bottom: 40 }}
-          scale="sqrt"
+          scale="linear"
           domainPadding={{ x: 20 }}
           containerComponent={
             <VictoryVoronoiContainer

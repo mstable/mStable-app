@@ -14,6 +14,7 @@ export const UnstyledButton = styled.button`
   outline: none;
   border: none;
   background: transparent;
+  user-select: none;
 `;
 
 const ButtonCss = css<Props>`

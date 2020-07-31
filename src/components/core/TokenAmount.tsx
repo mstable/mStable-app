@@ -39,6 +39,7 @@ export const TokenAmount: FC<Props> = ({
   address,
   amount,
   className,
+  children,
   commas,
   countup,
   decimalPlaces,
@@ -53,7 +54,8 @@ export const TokenAmount: FC<Props> = ({
     <TokenIcon symbol={symbol} />
     <div>
       <Symbol>
-        {href ? <ExternalLink href={href}>{symbol}</ExternalLink> : symbol}
+        {href ? <ExternalLink href={href}>{symbol}</ExternalLink> : symbol}{' '}
+        {children}
       </Symbol>
       {!amount && address ? (
         <ExternalLink href={getEtherscanLink(address, 'token')}>

@@ -1,12 +1,14 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
+import { A } from 'hookrouter';
 
-import { navigate } from 'hookrouter';
 import { Amount, NumberFormat } from '../../core/Amount';
 import { TokenAmount } from '../../core/TokenAmount';
-import { TOKEN_ICONS } from '../../icons/TokenIcon';
-import { Color } from '../../../theme';
+import { ExternalLink } from '../../core/ExternalLink';
+import { EtherscanLink } from '../../core/EtherscanLink';
+import { Tooltip } from '../../core/ReactTooltip';
+import { TokenIcon, TOKEN_ICONS } from '../../icons/TokenIcon';
 import { StakingRewardsContract } from '../../../context/earn/types';
 import {
   usePlatformToken,
@@ -14,11 +16,9 @@ import {
   useStakingRewardsContract,
   useStakingToken,
 } from '../../../context/earn/EarnDataProvider';
-
+import { Color } from '../../../theme';
 import { PlatformMetadata } from './types';
 import { PLATFORM_METADATA } from './constants';
-import { BigDecimal } from '../../../web3/BigDecimal';
-import { Tooltip } from '../../core/ReactTooltip';
 
 interface Props {
   address: string;
@@ -31,29 +31,26 @@ const Heading = styled.h4`
   font-size: 12px;
 `;
 
-const StyledTokenAmount = styled(TokenAmount)``;
+const StyledTokenAmount = styled(TokenAmount)`
+  span {
+    font-weight: bold;
+  }
+`;
 
-const StyledAmount = styled(Amount)``;
+const StyledAmount = styled(Amount)`
+  span {
+    font-weight: bold;
+  }
+`;
 
 const TokenAmounts = styled.div``;
 
-const Column = styled.div`
+const Row = styled.div`
   flex: 1;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
-  height: 100%;
-`;
-
-const Content = styled.div`
+  align-items: flex-start;
   width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-
-  > :first-child {
-    text-align: left;
-  }
 
   > :last-child {
     text-align: right;
@@ -74,20 +71,41 @@ const Content = styled.div`
   }
 `;
 
+const Content = styled.div`
+  width: 100%;
+`;
+
+const PlatformIcon = styled(TokenIcon)`
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+`;
+
+const PlatformContainer = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+`;
+
+const Title = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  padding-bottom: 8px;
+  text-align: left;
+
+  a {
+    border-bottom: 0;
+  }
+`;
+
 const Container = styled.div<{
   colors: PlatformMetadata['colors'];
   stakingToken?: keyof typeof TOKEN_ICONS;
   linkToPool?: boolean;
 }>`
-  display: flex;
-  align-items: flex-start;
-  margin-top: 16px;
-  justify-content: space-between;
-  padding: 16px;
-  min-width: 300px;
-  width: 100%;
-  max-width: 344px;
-  min-height: 225px;
+  padding: 8px 16px;
+  width: 344px;
+  height: 225px;
   background-image: ${({ colors: { base, accent }, stakingToken }) =>
     stakingToken
       ? `url(${TOKEN_ICONS[stakingToken]}), linear-gradient(to top right, ${base}, ${accent})`
@@ -98,10 +116,11 @@ const Container = styled.div<{
   background-repeat: no-repeat;
   border-radius: 4px;
   box-shadow: ${Color.blackTransparent} 0 4px 16px;
+  text-shadow: ${({ colors: { base } }) => base} 0 1px 2px;
   color: ${({ colors: { text } }) => text};
   cursor: ${({ linkToPool }) => (linkToPool ? 'pointer' : 'auto')};
 
-  ${StyledTokenAmount} {
+  ${StyledTokenAmount}, ${PlatformContainer}, ${Title} {
     color: ${({ colors: { text } }) => text};
     a {
       color: ${({ colors: { text } }) => text};
@@ -112,17 +131,15 @@ const Container = styled.div<{
       }
     }
   }
+  
 `;
-
-// FIXME
-const totalCollateralPlaceholder = BigDecimal.parse('1000000', 18);
 
 export const Card: FC<Props> = ({ address, linkToPool }) => {
   const stakingRewardsContract = useStakingRewardsContract(
     address,
   ) as StakingRewardsContract;
 
-  const { colors, getPlatformLink } = PLATFORM_METADATA[
+  const { colors, getPlatformLink, name } = PLATFORM_METADATA[
     stakingRewardsContract.pool.platform
   ];
 
@@ -130,120 +147,111 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
   const stakingToken = useStakingToken(address);
   const platformToken = usePlatformToken(address);
 
-  const handleClick = useCallback(
-    event => {
-      if (linkToPool) {
-        event.stopPropagation();
-        navigate(stakingRewardsContract.earnUrl);
-      }
-    },
-    [linkToPool, stakingRewardsContract.earnUrl],
-  );
+  const platformLink = useMemo(() => getPlatformLink(stakingRewardsContract), [
+    getPlatformLink,
+    stakingRewardsContract,
+  ]);
 
   return (
-    <Container
-      colors={colors}
-      stakingToken={stakingToken?.symbol}
-      onClick={handleClick}
-      linkToPool={linkToPool}
-    >
-      {stakingToken && rewardsToken ? (
-        <Content>
-          <Column>
-            <div>
-              <Tooltip tip="The token staked to earn rewards">
-                <Heading>Staking token</Heading>
-              </Tooltip>
+    <Container colors={colors} stakingToken={stakingToken?.symbol}>
+      <>
+        {linkToPool ? (
+          <Title>
+            <A href={stakingRewardsContract.earnUrl}>
+              {stakingRewardsContract.title}
+            </A>
+          </Title>
+        ) : (
+          <Title>{stakingRewardsContract.title}</Title>
+        )}
+        {stakingToken && rewardsToken ? (
+          <Content>
+            <Row>
               <div>
-                <StyledTokenAmount
-                  href={getPlatformLink(stakingRewardsContract)}
-                  symbol={stakingToken.symbol}
-                  format={NumberFormat.Abbreviated}
-                  price={stakingToken.price}
-                  address={stakingRewardsContract.address}
-                />
-              </div>
-            </div>
-            <div>
-              <div>
-                <Tooltip tip="The collateral contributed to the pool in order to get the staking token">
-                  <Heading>Collateral</Heading>
+                <Tooltip tip="The platform used to earn rewards">
+                  <Heading>Platform</Heading>
                 </Tooltip>
-              </div>
-              <span>
-                $
-                <Amount
-                  format={NumberFormat.Abbreviated}
-                  amount={totalCollateralPlaceholder}
-                />
-                total
-              </span>
-              <TokenAmounts>
-                {stakingRewardsContract.pool.tokens.map(
-                  ({ price, liquidity, symbol }) => (
-                    <StyledTokenAmount
-                      key={symbol}
-                      symbol={symbol}
-                      format={NumberFormat.Abbreviated}
-                      amount={liquidity}
-                      price={price}
+                <PlatformContainer>
+                  <PlatformIcon symbol={stakingToken.symbol} />
+                  <div>
+                    <div>
+                      <ExternalLink href={platformLink}>{name}</ExternalLink>
+                    </div>
+                    <EtherscanLink
+                      data={stakingRewardsContract.address}
+                      type="address"
+                      showData
+                      truncate
                     />
-                  ),
-                )}
-              </TokenAmounts>
-            </div>
-          </Column>
-          <Column>
-            {/* <div> */}
-            {/*   <Heading>Staking APY</Heading> */}
-            {/*   <div> */}
-            {/*     <StyledAmount */}
-            {/*       format={NumberFormat.CountupPercentage} */}
-            {/*       amount={stakingRewardsContract.stakingTokenApy} */}
-            {/*     /> */}
-            {/*   </div> */}
-            {/* </div> */}
-            <div>
-              <Tooltip tip="The Annual Percentage Yield the pool is currently generating from the combined rewards token(s)">
-                <Heading>
-                  {rewardsToken.symbol}
-                  {platformToken ? `/${platformToken.symbol}` : ''} APY
-                </Heading>
-              </Tooltip>
-              <div>
-                <StyledAmount
-                  format={NumberFormat.CountupPercentage}
-                  amount={stakingRewardsContract.combinedRewardsTokensApy}
-                />
+                  </div>
+                </PlatformContainer>
               </div>
-            </div>
-            <div>
-              <Tooltip tip="The weekly rewards made available to the pool">
-                <Heading>Weekly rewards</Heading>
-              </Tooltip>
-              <TokenAmounts>
-                <StyledTokenAmount
-                  amount={stakingRewardsContract.totalStakingRewards}
-                  format={NumberFormat.Abbreviated}
-                  symbol={rewardsToken.symbol}
-                />
-                {stakingRewardsContract.platformRewards && platformToken ? (
-                  <StyledTokenAmount
-                    amount={
-                      stakingRewardsContract.platformRewards
-                        ?.totalPlatformRewards
-                    }
-                    format={NumberFormat.Abbreviated}
-                    symbol={platformToken.symbol}
+              <div>
+                <Tooltip tip="The Annual Percentage Yield the pool is currently generating from the combined rewards token(s)">
+                  <Heading>
+                    {rewardsToken.symbol}
+                    {platformToken ? `/${platformToken.symbol}` : ''} APY
+                  </Heading>
+                </Tooltip>
+                <div>
+                  <StyledAmount
+                    format={NumberFormat.CountupPercentage}
+                    amount={stakingRewardsContract.combinedRewardsTokensApy}
                   />
-                ) : null}
-              </TokenAmounts>
-            </div>
-          </Column>
-        </Content>
-      ) : (
-        <Skeleton height={240} />
-      )}
+                </div>
+              </div>
+            </Row>
+            <Row>
+              <div>
+                <div>
+                  <Tooltip tip="The collateral contributed to the pool in order to get the staking token">
+                    <Heading>Collateral</Heading>
+                  </Tooltip>
+                </div>
+                <TokenAmounts>
+                  {stakingRewardsContract.pool.tokens.map(
+                    ({ price, liquidity, symbol }) => (
+                      <StyledTokenAmount
+                        key={symbol}
+                        symbol={symbol}
+                        format={NumberFormat.Abbreviated}
+                        amount={liquidity}
+                        price={price}
+                      />
+                    ),
+                  )}
+                </TokenAmounts>
+              </div>
+              <div>
+                <Tooltip tip="The weekly rewards made available to the pool">
+                  <Heading>Weekly rewards</Heading>
+                </Tooltip>
+                <TokenAmounts>
+                  <StyledTokenAmount
+                    amount={stakingRewardsContract.totalStakingRewards}
+                    format={NumberFormat.Abbreviated}
+                    symbol={rewardsToken.symbol}
+                    price={rewardsToken.price}
+                  />
+                  {stakingRewardsContract.platformRewards && platformToken ? (
+                    <StyledTokenAmount
+                      amount={
+                        stakingRewardsContract.platformRewards
+                          ?.totalPlatformRewards
+                      }
+                      format={NumberFormat.Abbreviated}
+                      symbol={platformToken.symbol}
+                      price={platformToken.price}
+                    />
+                  ) : null}
+                </TokenAmounts>
+              </div>
+            </Row>
+          </Content>
+        ) : (
+          <Skeleton height={225} />
+        )}
+      </>
     </Container>
   );
 };
