@@ -45,26 +45,43 @@ export const useStakingRewardsContract = (
 export const useTokenPrices = (): TokenPricesMap =>
   useEarnData().tokenPricesMap;
 
-export const useTokenWithPrice = (address?: string): SubscribedToken | undefined => {
+export const useTokenWithPrice = (
+  address?: string,
+): SubscribedToken | undefined => {
   const tokenPricesMap = useTokenPrices();
   const token = useToken(address);
-  const price = address ? tokenPricesMap[address] : undefined;
+  let price = address ? tokenPricesMap[address] : undefined;
+
+  // TODO remove this
+  if (token?.symbol === 'MK-MTA') {
+    price = tokenPricesMap['0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2'];
+  }
+  if (token?.symbol === 'MK-BAL') {
+    price = tokenPricesMap['0xba100000625a3754423978a60c9317c58a424e3d'];
+  }
+
   return token ? { ...token, price } : undefined;
 };
 
-export const useRewardsToken = (address: string): SubscribedToken | undefined => {
+export const useRewardsToken = (
+  address: string,
+): SubscribedToken | undefined => {
   const stakingRewards = useStakingRewardsContract(address);
   return useTokenWithPrice(stakingRewards?.rewardsToken.address);
 };
 
-export const usePlatformToken = (address: string): SubscribedToken | undefined => {
+export const usePlatformToken = (
+  address: string,
+): SubscribedToken | undefined => {
   const stakingRewards = useStakingRewardsContract(address);
   return useTokenWithPrice(
     stakingRewards?.platformRewards?.platformToken.address,
   );
 };
 
-export const useStakingToken = (address: string): SubscribedToken | undefined => {
+export const useStakingToken = (
+  address: string,
+): SubscribedToken | undefined => {
   const stakingRewards = useStakingRewardsContract(address);
   return useTokenWithPrice(stakingRewards?.stakingToken.address);
 };

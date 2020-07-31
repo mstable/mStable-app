@@ -44,8 +44,11 @@ export const Amount: FC<Props> = ({
 }) => {
   const tooltip = useMemo(
     () =>
-      price?.exact.gt(0) && amount?.exact.gt(0)
-        ? `$${price.mulTruncate(amount.exact).format()} @$${price.format(2)}`
+      price && price.exact.gt(0) && amount && amount.exact.gt(0)
+        ? `$${BigDecimal.parse(
+            (price.simple * amount.simple).toString(),
+            amount.decimals,
+          ).format()} @ $${price.format(2)}`
         : undefined,
     [price, amount],
   );

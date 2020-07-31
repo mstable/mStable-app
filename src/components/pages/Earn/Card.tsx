@@ -1,11 +1,12 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-
 import { navigate } from 'hookrouter';
+
 import { Amount, NumberFormat } from '../../core/Amount';
+import { TokenIcon, TOKEN_ICONS } from '../../icons/TokenIcon';
 import { TokenAmount } from '../../core/TokenAmount';
-import { TOKEN_ICONS } from '../../icons/TokenIcon';
+
 import { Color } from '../../../theme';
 import { StakingRewardsContract } from '../../../context/earn/types';
 import {
@@ -14,11 +15,11 @@ import {
   useStakingRewardsContract,
   useStakingToken,
 } from '../../../context/earn/EarnDataProvider';
-
+import { Tooltip } from '../../core/ReactTooltip';
 import { PlatformMetadata } from './types';
 import { PLATFORM_METADATA } from './constants';
-import { BigDecimal } from '../../../web3/BigDecimal';
-import { Tooltip } from '../../core/ReactTooltip';
+import { ExternalLink } from '../../core/ExternalLink';
+import { EtherscanLink } from '../../core/EtherscanLink';
 
 interface Props {
   address: string;
@@ -74,6 +75,18 @@ const Content = styled.div`
   }
 `;
 
+const PlatformIcon = styled(TokenIcon)`
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+`;
+
+const PlatformContainer = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+`;
+
 const Container = styled.div<{
   colors: PlatformMetadata['colors'];
   stakingToken?: keyof typeof TOKEN_ICONS;
@@ -101,7 +114,7 @@ const Container = styled.div<{
   color: ${({ colors: { text } }) => text};
   cursor: ${({ linkToPool }) => (linkToPool ? 'pointer' : 'auto')};
 
-  ${StyledTokenAmount} {
+  ${StyledTokenAmount}, ${PlatformContainer} {
     color: ${({ colors: { text } }) => text};
     a {
       color: ${({ colors: { text } }) => text};
@@ -114,15 +127,12 @@ const Container = styled.div<{
   }
 `;
 
-// FIXME
-const totalCollateralPlaceholder = BigDecimal.parse('1000000', 18);
-
 export const Card: FC<Props> = ({ address, linkToPool }) => {
   const stakingRewardsContract = useStakingRewardsContract(
     address,
   ) as StakingRewardsContract;
 
-  const { colors, getPlatformLink } = PLATFORM_METADATA[
+  const { colors, getPlatformLink, name } = PLATFORM_METADATA[
     stakingRewardsContract.pool.platform
   ];
 
@@ -140,6 +150,10 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
     [linkToPool, stakingRewardsContract.earnUrl],
   );
 
+  const platformLink = useMemo(() => getPlatformLink(stakingRewardsContract), [
+    stakingRewardsContract,
+  ]);
+
   return (
     <Container
       colors={colors}
@@ -151,18 +165,23 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
         <Content>
           <Column>
             <div>
-              <Tooltip tip="The token staked to earn rewards">
-                <Heading>Staking token</Heading>
+              <Tooltip tip="The platform used to earn rewards">
+                <Heading>Platform</Heading>
               </Tooltip>
-              <div>
-                <StyledTokenAmount
-                  href={getPlatformLink(stakingRewardsContract)}
-                  symbol={stakingToken.symbol}
-                  format={NumberFormat.Abbreviated}
-                  price={stakingToken.price}
-                  address={stakingRewardsContract.address}
-                />
-              </div>
+              <PlatformContainer>
+                <PlatformIcon symbol={stakingToken.symbol} />
+                <div>
+                  <div>
+                    <ExternalLink href={platformLink}>{name}</ExternalLink>
+                  </div>
+                  <EtherscanLink
+                    data={stakingRewardsContract.address}
+                    type="address"
+                    showData
+                    truncate
+                  />
+                </div>
+              </PlatformContainer>
             </div>
             <div>
               <div>
@@ -170,14 +189,6 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                   <Heading>Collateral</Heading>
                 </Tooltip>
               </div>
-              <span>
-                $
-                <Amount
-                  format={NumberFormat.Abbreviated}
-                  amount={totalCollateralPlaceholder}
-                />
-                total
-              </span>
               <TokenAmounts>
                 {stakingRewardsContract.pool.tokens.map(
                   ({ price, liquidity, symbol }) => (
@@ -226,6 +237,7 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                   amount={stakingRewardsContract.totalStakingRewards}
                   format={NumberFormat.Abbreviated}
                   symbol={rewardsToken.symbol}
+                  price={rewardsToken.price}
                 />
                 {stakingRewardsContract.platformRewards && platformToken ? (
                   <StyledTokenAmount
@@ -235,6 +247,7 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                     }
                     format={NumberFormat.Abbreviated}
                     symbol={platformToken.symbol}
+                    price={platformToken.price}
                   />
                 ) : null}
               </TokenAmounts>

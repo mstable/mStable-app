@@ -10,7 +10,6 @@ import {
   useCurrentRewardsToken,
   useRewardsEarned,
 } from '../StakingRewardsContractProvider';
-import { BigDecimal } from '../../../../web3/BigDecimal';
 import { ViewportWidth } from '../../../../theme';
 
 interface Props {
@@ -24,9 +23,17 @@ const Heading = styled.div`
   padding-bottom: 8px;
 `;
 
+const StyledAmount = styled(Amount)``;
+
+const LargeAmount = styled(StyledAmount)`
+  font-size: 24px;
+`;
+
 const AmountContainer = styled.div`
   text-align: center;
-  font-size: 24px;
+  ${StyledAmount} {
+    display: block;
+  }
 `;
 
 const Container = styled.div`
@@ -35,63 +42,86 @@ const Container = styled.div`
   > div > * {
     margin-bottom: 16px;
   }
-  
+
   @media (min-width: ${ViewportWidth.s}) {
     display: flex;
     justify-content: space-around;
   }
 `;
 
-// TODO remove
-const pricePlaceholder = BigDecimal.parse('1.23', 18);
-
 export const PoolBalances: FC<Props> = ({ className }) => {
   const stakingRewardsContract = useCurrentStakingRewardsContract();
 
-  const { rewardsEarned, platformRewardsEarned } = useRewardsEarned();
+  const {
+    rewards,
+    rewardsUsd,
+    platformRewards,
+    platformRewardsUsd,
+  } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
   const stakingToken = useCurrentStakingToken();
   const platformToken = useCurrentPlatformToken();
 
   return (
     <Container className={className}>
-      {stakingRewardsContract &&
-      rewardsToken &&
-      stakingToken &&
-      rewardsEarned ? (
+      {stakingRewardsContract && rewardsToken && stakingToken && rewards ? (
         <>
           <div>
             <AmountContainer>
               <Heading>Earned {rewardsToken.symbol}</Heading>
+              <LargeAmount
+                format={NumberFormat.Countup}
+                amount={rewards}
+                countup={{ decimals: 6 }}
+              />
+            </AmountContainer>
+            <AmountContainer>
+              <span>$</span>
               <Amount
                 format={NumberFormat.Countup}
-                amount={rewardsEarned}
+                amount={rewardsUsd}
                 countup={{ decimals: 6 }}
-                price={rewardsToken.price || pricePlaceholder}
               />
             </AmountContainer>
             {stakingRewardsContract.platformRewards &&
-            platformRewardsEarned &&
+            platformRewards &&
             platformToken ? (
-              <AmountContainer>
-                <Heading>Earned {platformToken.symbol}</Heading>
-                <Amount
-                  format={NumberFormat.Countup}
-                  amount={platformRewardsEarned}
-                  countup={{ decimals: 6 }}
-                  price={platformToken.price || pricePlaceholder}
-                />
-              </AmountContainer>
+              <>
+                <AmountContainer>
+                  <Heading>Earned {platformToken.symbol}</Heading>
+                  <LargeAmount
+                    format={NumberFormat.Countup}
+                    amount={platformRewards}
+                    countup={{ decimals: 6 }}
+                  />
+                </AmountContainer>
+                <AmountContainer>
+                  <span>$</span>
+                  <Amount
+                    format={NumberFormat.Countup}
+                    amount={platformRewardsUsd}
+                    countup={{ decimals: 6 }}
+                  />
+                </AmountContainer>
+              </>
             ) : null}
           </div>
           <div>
+            <AmountContainer>
+              <Heading>Share of pool</Heading>
+              <LargeAmount
+                format={NumberFormat.CountupPercentage}
+                amount={stakingRewardsContract.stakingBalancePercentage}
+                countup={{ decimals: 6 }}
+              />
+            </AmountContainer>
             <AmountContainer>
               <Heading>Staked {stakingToken.symbol}</Heading>
               <Amount
                 format={NumberFormat.Countup}
                 amount={stakingRewardsContract.stakingBalance}
                 countup={{ decimals: 6 }}
-                price={stakingToken.price || pricePlaceholder}
+                price={stakingToken.price}
               />
             </AmountContainer>
           </div>

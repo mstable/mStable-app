@@ -3,17 +3,19 @@ import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
 import { useStakingRewardsContracts } from '../../../context/earn/EarnDataProvider';
-import { Color } from '../../../theme';
+import { Color, FontSize } from '../../../theme';
 import { Table } from '../../core/Table';
 import { TokenAmount } from '../../core/TokenAmount';
 import { Amount, NumberFormat } from '../../core/Amount';
 import { H3 } from '../../core/Typography';
 import { PLATFORM_METADATA } from './constants';
-import { BigDecimal } from '../../../web3/BigDecimal';
+import { TokenIconSvg } from '../../icons/TokenIcon';
+import { EtherscanLink } from '../../core/EtherscanLink';
+import { ExternalLink } from '../../core/ExternalLink';
+import { AccentColors } from '../../../types';
 
-const Container = styled.div`
-  width: 100%;
-  overflow-x: auto;
+const ApyAmount = styled(Amount)`
+  font-size: ${FontSize.xl};
 `;
 
 const TableGroup = styled.div`
@@ -21,8 +23,29 @@ const TableGroup = styled.div`
   margin-bottom: 64px;
 `;
 
+const PlatformIcon = styled(TokenIconSvg)`
+  margin-right: 8px;
+`;
+
+const PlatformContainer = styled.div<{ colors: AccentColors }>`
+  display: flex;
+  align-items: center;
+  * {
+    color: ${({ colors }) => colors.base};
+    border-color: ${({ colors }) => colors.light};
+  }
+  svg {
+    fill: ${({ colors }) => colors.base} !important;
+  }
+`;
+
+const Container = styled.div`
+  width: 100%;
+  overflow-x: auto;
+`;
+
 enum Columns {
-  StakingToken,
+  Platform,
   Collateral,
   // StakingApy,
   RewardsApy,
@@ -31,9 +54,9 @@ enum Columns {
 
 const COLUMNS = [
   {
-    key: Columns.StakingToken,
-    title: 'Staking token',
-    tip: 'The token staked to earn rewards',
+    key: Columns.Platform,
+    title: 'Platform',
+    tip: 'The platform used to earn rewards',
   },
   {
     key: Columns.Collateral,
@@ -60,105 +83,111 @@ const COLUMNS = [
   },
 ];
 
-// FIXME
-const totalCollateralPlaceholder = BigDecimal.parse('11000000', 18);
-
 export const PoolsOverview: FC<{}> = () => {
   const stakingRewardsContracts = useStakingRewardsContracts();
 
   const items = useMemo(
     () =>
-      Object.values(stakingRewardsContracts).map(stakingRewardsContract => {
-        const {
-          address: id,
-          platformRewards,
-          totalStakingRewards,
-          rewardsToken,
-          pool,
-          earnUrl,
-        } = stakingRewardsContract;
-        const { colors, getPlatformLink } = PLATFORM_METADATA[pool.platform];
+      Object.values(stakingRewardsContracts)
+        .sort()
+        .map(item => {
+          const {
+            address: id,
+            platformRewards,
+            totalStakingRewards,
+            rewardsToken,
+            pool,
+            earnUrl,
+          } = item;
+          const { colors, getPlatformLink, name } = PLATFORM_METADATA[
+            pool.platform
+          ];
 
-        return COLUMNS.reduce(
-          (_item, { key }) => {
-            const value = (() => {
-              switch (key) {
-                // case Columns.StakingApy:
-                //   return (
-                //     <Amount
-                //       amount={stakingRewardsContract.stakingTokenApy}
-                //       format={NumberFormat.Percentage}
-                //     />
-                //   );
-                case Columns.RewardsApy:
-                  return (
-                    <Amount
-                      amount={stakingRewardsContract.combinedRewardsTokensApy}
-                      format={NumberFormat.Percentage}
-                    />
-                  );
-                case Columns.Collateral:
-                  return (
-                    <>
-                      <div>
-                        <span>
-                          $
-                          <Amount
-                            format={NumberFormat.Abbreviated}
-                            amount={totalCollateralPlaceholder}
-                          />
-                          total
-                        </span>
-                      </div>
-                      {pool.tokens.map(
-                        ({ address, symbol, liquidity, price }) => (
-                          <TokenAmount
-                            key={address}
-                            symbol={symbol}
-                            format={NumberFormat.Abbreviated}
-                            amount={liquidity}
-                            price={price}
-                          />
-                        ),
-                      )}
-                    </>
-                  );
-                case Columns.StakingToken:
-                  return (
-                    <TokenAmount
-                      href={getPlatformLink(stakingRewardsContract)}
-                      symbol={stakingRewardsContract.stakingToken.symbol}
-                      format={NumberFormat.Abbreviated}
-                      price={stakingRewardsContract.stakingToken.price}
-                      address={stakingRewardsContract.address}
-                    />
-                  );
-                case Columns.WeeklyRewards:
-                  return (
-                    <>
-                      <TokenAmount
-                        amount={totalStakingRewards}
-                        format={NumberFormat.Abbreviated}
-                        symbol={rewardsToken.symbol}
-                      />
-                      {platformRewards ? (
-                        <TokenAmount
-                          amount={platformRewards.totalPlatformRewards}
-                          format={NumberFormat.Abbreviated}
-                          symbol={platformRewards.platformToken.symbol}
+          return COLUMNS.reduce(
+            (_item, { key }) => {
+              const value = (() => {
+                switch (key) {
+                  case Columns.Platform:
+                    return (
+                      <PlatformContainer colors={colors}>
+                        <PlatformIcon
+                          width={48}
+                          height={48}
+                          symbol={item.stakingToken.symbol}
                         />
-                      ) : null}
-                    </>
-                  );
-                default:
-                  throw new Error('Unhandled key');
-              }
-            })();
-            return { ..._item, data: { ..._item.data, [key]: value } };
-          },
-          { id, url: earnUrl, colors, data: {} },
-        );
-      }),
+                        <div>
+                          <div>
+                            <ExternalLink href={getPlatformLink(item)}>
+                              {name}
+                            </ExternalLink>
+                          </div>
+                          <EtherscanLink
+                            data={item.address}
+                            type="address"
+                            showData
+                            truncate
+                          />
+                        </div>
+                      </PlatformContainer>
+                    );
+                  case Columns.Collateral:
+                    return (
+                      <>
+                        {pool.tokens.map(
+                          ({ address, symbol, liquidity, price, ratio }) => (
+                            <TokenAmount
+                              key={address}
+                              symbol={symbol}
+                              format={NumberFormat.Abbreviated}
+                              amount={liquidity}
+                              price={price}
+                            />
+                          ),
+                        )}
+                      </>
+                    );
+                  // case Columns.StakingApy:
+                  //   return (
+                  //     <ApyAmount
+                  //       amount={stakingRewardsContract.stakingTokenApy}
+                  //       format={NumberFormat.Percentage}
+                  //     />
+                  //   );
+                  case Columns.RewardsApy:
+                    return (
+                      <ApyAmount
+                        amount={item.combinedRewardsTokensApy}
+                        format={NumberFormat.Percentage}
+                      />
+                    );
+                  case Columns.WeeklyRewards:
+                    return (
+                      <>
+                        <TokenAmount
+                          amount={totalStakingRewards}
+                          format={NumberFormat.Abbreviated}
+                          symbol={rewardsToken.symbol}
+                          price={rewardsToken.price}
+                        />
+                        {platformRewards ? (
+                          <TokenAmount
+                            amount={platformRewards.totalPlatformRewards}
+                            format={NumberFormat.Abbreviated}
+                            symbol={platformRewards.platformToken.symbol}
+                            price={platformRewards.platformToken.price}
+                          />
+                        ) : null}
+                      </>
+                    );
+                  default:
+                    throw new Error('Unhandled key');
+                }
+              })();
+              return { ..._item, data: { ..._item.data, [key]: value } };
+            },
+            { id, url: earnUrl, colors, data: {} },
+          );
+        }),
     [stakingRewardsContracts],
   );
 

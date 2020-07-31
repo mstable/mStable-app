@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { useWallet } from 'use-wallet';
 import { BigDecimal } from '../../web3/BigDecimal';
 import {
+  PoolToken,
   usePoolsAtBlockQuery,
   usePoolsQuery,
   useTokenPricesQuery,
@@ -42,7 +43,8 @@ const useBlockTimestamp24hAgo = (): BlockTimestamp | undefined => {
       data
         ? {
             timestamp: parseInt(data.timestamp, 10),
-            blockNumber: parseInt(data.number, 10),
+            // TODO revert
+            blockNumber: 10563066,
           }
         : undefined,
     [data],
@@ -59,9 +61,11 @@ const useRawTokenPrices = (
       // and pool tokens.
       tokens: rawStakingContractsData
         .reduce(
-          (_allTokens, { rewardsToken, platformToken }) => [
+          (_allTokens, { rewardsToken, platformToken, stakingToken }) => [
             ..._allTokens,
             rewardsToken.address,
+            stakingToken.address,
+
             platformToken?.address,
             ...rawPlatformsData[Platforms.Balancer]
               .map(item => item.tokens?.map(_item => _item.address))
@@ -69,6 +73,9 @@ const useRawTokenPrices = (
             ...rawPlatformsData[Platforms.Uniswap]
               .map(item => [item.token0.id, item.token1.id])
               .flat(),
+            // TODO remove these: MTA/BAL for staging testing
+            '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
+            '0xba100000625a3754423978a60c9317c58a424e3d',
           ],
           [] as (string | undefined)[],
         )
@@ -85,6 +92,33 @@ const useRawTokenPrices = (
   return tokenPricesSub.data?.tokenPrices || [];
 };
 
+const normalizeUniswapToken = ({
+  id,
+  totalLiquidity,
+  symbol,
+  decimals,
+}: RawPairData['token0']): NormalizedPool['tokens'][number] => ({
+  address: id,
+  decimals: parseInt(decimals, 10),
+  symbol,
+  liquidity: BigDecimal.parse(totalLiquidity, parseInt(decimals, 10)),
+  ratio: 50, // All Uniswap pairs are 50/50
+});
+
+const normalizeBalancerTokens = (
+  tokens: RawPoolData['tokens'],
+  totalWeight: RawPoolData['totalWeight'],
+): NormalizedPool['tokens'] =>
+  tokens?.map(({ address, decimals, denormWeight, balance, symbol }) => ({
+    address,
+    decimals,
+    liquidity: BigDecimal.parse(balance, decimals),
+    symbol: symbol as string,
+    ratio: Math.floor(
+      (parseInt(denormWeight, 10) / parseInt(totalWeight, 10)) * 100,
+    ),
+  })) ?? [];
+
 const normalizePool = (
   poolOrPair?: RawPoolData | RawPairData,
 ): NormalizedPool | undefined => {
@@ -100,34 +134,18 @@ const normalizePool = (
       token0,
       token1,
     } = poolOrPair as RawPairData;
+
+    const tokens = [
+      normalizeUniswapToken(token0),
+      normalizeUniswapToken(token1),
+    ];
+
     return {
       address: id,
       platform: Platforms.Uniswap,
-      tokens: [
-        {
-          address: token0.id,
-          decimals: parseInt(token0.decimals, 10),
-          symbol: token0.symbol,
-          liquidity: BigDecimal.parse(
-            token0.totalLiquidity,
-            parseInt(token0.decimals, 10),
-          ),
-        },
-        {
-          address: token1.id,
-          decimals: parseInt(token1.decimals, 10),
-          symbol: token1.symbol,
-          liquidity: BigDecimal.parse(
-            token1.totalLiquidity,
-            parseInt(token1.decimals, 10),
-          ),
-        },
-      ],
-      [Platforms.Uniswap]: {
-        // TODO check decimals
-        totalSupply: BigDecimal.parse(totalSupply, 18),
-        reserveUSD: BigDecimal.parse(reserveUSD, 18),
-      },
+      totalSupply: BigDecimal.parse(totalSupply, 18),
+      reserveUSD: BigDecimal.parse(reserveUSD, 18),
+      tokens,
     };
   }
 
@@ -136,24 +154,17 @@ const normalizePool = (
     tokens,
     totalShares,
     totalSwapVolume,
+    totalWeight,
     swapFee,
   } = poolOrPair as RawPoolData;
+
   return {
     address: id,
     platform: Platforms.Balancer,
-    tokens:
-      tokens?.map(({ address, decimals, balance, symbol }) => ({
-        address,
-        decimals,
-        liquidity: BigDecimal.parse(balance, decimals),
-        symbol: symbol as string,
-      })) || [],
-    [Platforms.Balancer]: {
-      // TODO check decimals
-      totalShares: BigDecimal.parse(totalShares, 18),
-      totalSwapVolume: BigDecimal.parse(totalSwapVolume, 18),
-      swapFee: BigDecimal.parse(swapFee, 18),
-    },
+    totalSupply: BigDecimal.parse(totalShares, 18),
+    totalSwapVolume: BigDecimal.parse(totalSwapVolume, 18),
+    swapFee: BigDecimal.parse(swapFee, 18),
+    tokens: normalizeBalancerTokens(tokens, totalWeight),
   };
 };
 
@@ -161,18 +172,14 @@ const useRawPlatformPoolsData = (
   rawStakingRewardsContracts: RawStakingRewardsContracts,
 ): RawPlatformPoolsData => {
   const options = useMemo(() => {
-    // const ids = rawStakingRewardsContracts.map(item => item.id);
-    // TODO remove fake mainnet data
-    const ids = [
-      '0x003a70265a3662342010823bea15dc84c6f7ed54', // balancer MTA/mUSD
-      '0xa776f8e15704f4797ffbf6cbb8e4848e0d614fa5', // uniswap USDC/MTA
-    ];
+    const ids = rawStakingRewardsContracts.map(
+      item => item.stakingToken.address,
+    );
     return {
       variables: { ids },
       skip: ids.length === 0,
       fetchPolicy: 'cache-and-network',
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawStakingRewardsContracts]);
 
   const poolsQuery = usePoolsQuery(
@@ -186,25 +193,8 @@ const useRawPlatformPoolsData = (
   const pairs = pairsQuery.data?.pairs || [];
 
   return {
-    // TODO restore real data
-    // [Platforms.Balancer]: pools,
-    // [Platforms.Uniswap]: pairs,
-    [Platforms.Balancer]: rawStakingRewardsContracts[1]
-      ? [
-          {
-            ...pools[0],
-            id: rawStakingRewardsContracts[1].stakingToken.address,
-          },
-        ]
-      : [],
-    [Platforms.Uniswap]: rawStakingRewardsContracts[0]
-      ? [
-          {
-            ...pairs[0],
-            id: rawStakingRewardsContracts[0].stakingToken.address,
-          },
-        ]
-      : [],
+    [Platforms.Balancer]: pools,
+    [Platforms.Uniswap]: pairs,
   };
 };
 
@@ -219,7 +209,7 @@ const useRawPlatformPoolsData24hAgo = (
       blockNumber: block24hAgo?.blockNumber as number,
     },
     skip: poolIds.length === 0 || !block24hAgo,
-    fetchPolicy: 'cache-first',
+    // fetchPolicy: 'cache-first',
   });
 
   const pairIds = rawPlatformPoolsData[Platforms.Uniswap].map(item => item.id);
@@ -229,7 +219,7 @@ const useRawPlatformPoolsData24hAgo = (
       blockNumber: block24hAgo?.blockNumber as number,
     },
     skip: pairIds.length === 0 || !block24hAgo,
-    fetchPolicy: 'cache-first',
+    // fetchPolicy: 'cache-first',
   });
 
   const pools = poolsQuery.data?.pools || [];
@@ -247,20 +237,42 @@ const getNormalizedPoolsMap = (
   return ([
     ...rawPlatformPoolsData[Platforms.Balancer].map(normalizePool),
     ...rawPlatformPoolsData[Platforms.Uniswap].map(normalizePool),
-  ].filter(Boolean) as NormalizedPool[]).reduce(
-    (_pools, pool) => ({
+  ].filter(Boolean) as NormalizedPool[]).reduce((_pools, pool) => {
+    // Add price to pool tokens
+    const tokens = pool.tokens.map(token => ({
+      ...token,
+      price: tokenPricesMap[token.address],
+    }));
+
+    return {
       ..._pools,
       [pool.address]: {
         ...pool,
-        tokens: pool.tokens.map(token => ({
-          ...token,
-          price: tokenPricesMap[token.address],
-        })),
+        tokens,
       },
+    };
+  }, {});
+};
+
+const getStakingTokenPricesMap = (
+  normalizedPools: NormalizedPoolsMap,
+): TokenPricesMap =>
+  Object.values(normalizedPools).reduce(
+    (prices, { address, tokens, totalSupply }) => ({
+      ...prices,
+      [address]: BigDecimal.parse(
+        tokens
+          .reduce(
+            (total, token) =>
+              token.price ? token.liquidity.simple * token.price.simple : total,
+            0,
+          )
+          .toString(),
+        18, // Both BPT and UNI-V2 are 18 decimals
+      ).divPrecisely(totalSupply),
     }),
     {},
   );
-};
 
 const transformRawSyncedEarnData = ({
   block24hAgo,
@@ -286,11 +298,16 @@ const transformRawSyncedEarnData = ({
     tokenPricesMap, // Should use token prices from 24h ago
   );
 
+  const stakingTokensPricesMap = getStakingTokenPricesMap(normalizedPoolsMap);
+
   return {
     block24hAgo,
     normalizedPoolsMap,
     normalizedPoolsMap24hAgo,
-    tokenPricesMap,
+    tokenPricesMap: {
+      ...tokenPricesMap,
+      ...stakingTokensPricesMap,
+    },
   };
 };
 

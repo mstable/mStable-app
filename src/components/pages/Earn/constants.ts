@@ -4,7 +4,8 @@ import { PlatformMetadata } from './types';
 export const PLATFORM_METADATA: Record<Platforms, PlatformMetadata> = {
   [Platforms.Balancer]: {
     colors: {
-      accent: '#727380',
+      light: '#cfd4ff',
+      accent: '#5568f9',
       base: '#201d4a',
       text: '#dbdbec',
     },
@@ -15,6 +16,7 @@ export const PLATFORM_METADATA: Record<Platforms, PlatformMetadata> = {
   },
   [Platforms.Uniswap]: {
     colors: {
+      light: '#ffc3db',
       accent: '#fff',
       base: '#ff007a',
       text: '#4f0026',

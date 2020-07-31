@@ -1,11 +1,7 @@
 import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
-import { getEtherscanLink, truncateAddress } from '../../web3/strings';
 
-const Data = styled.span`
-  font-weight: bold;
-  margin-right: ${props => props.theme.spacing.xs};
-`;
+import { getEtherscanLink, truncateAddress } from '../../web3/strings';
+import { ExternalLink } from './ExternalLink';
 
 const useEtherscanLink = (
   data: string,
@@ -26,15 +22,10 @@ export const EtherscanLink: FC<{
   truncate?: boolean;
   showData?: boolean;
 }> = ({ children, type = 'address', data, showData, truncate = true }) => (
-  <a
+  <ExternalLink
     href={useEtherscanLink(data, type)}
-    target="_blank"
-    rel="noopener noreferrer"
     title={`View ${type} on Etherscan`}
   >
-    {children ||
-      (showData ? (
-        <Data>{truncate ? truncateAddress(data) : data}</Data>
-      ) : null)}
-  </a>
+    {children || (showData ? (truncate ? truncateAddress(data) : data) : null)}
+  </ExternalLink>
 );

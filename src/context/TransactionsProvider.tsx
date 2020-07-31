@@ -213,12 +213,7 @@ const getTxPurpose = (
 
   const stakingRewardsContract = stakingRewardsContracts[iface.address];
   if (stakingRewardsContract) {
-    const {
-      title,
-      stakingToken,
-      rewardsToken,
-      platformRewards,
-    } = stakingRewardsContract;
+    const { title, rewardsToken, platformRewards } = stakingRewardsContract;
     switch (fn) {
       case 'exit': {
         return {
@@ -228,8 +223,8 @@ const getTxPurpose = (
       }
       case 'withdraw': {
         return {
-          past: `Withdrew ${stakingToken.symbol} from ${title}`,
-          present: `Withdrawing ${stakingToken.symbol} from ${title}`,
+          past: `Withdrew stake from ${title}`,
+          present: `Withdrawing stake from ${title}`,
         };
       }
       case 'claimReward': {
@@ -246,8 +241,8 @@ const getTxPurpose = (
       }
       case 'stake(uint256)': {
         return {
-          past: `Staked ${stakingToken.symbol} in ${title}`,
-          present: `Staking ${stakingToken.symbol} in ${title}`,
+          past: `Staked in ${title}`,
+          present: `Staking in ${title}`,
         };
       }
       default:

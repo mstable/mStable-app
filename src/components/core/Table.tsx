@@ -2,13 +2,14 @@ import React, { FC, ReactNode, ReactElement, useCallback } from 'react';
 import styled from 'styled-components';
 import { navigate } from 'hookrouter';
 
+import { AccentColors } from '../../types';
 import { Color, ViewportWidth } from '../../theme';
 import { Tooltip } from './ReactTooltip';
 
 export interface TableRow<TColumns extends number> {
   url?: string;
   id: string;
-  colors?: {};
+  colors?: AccentColors;
   data: Partial<Record<TColumns, string | number | ReactNode>>;
 }
 
@@ -56,18 +57,59 @@ const Column = styled.div<{ numeric?: boolean }>`
   }
 `;
 
-const DivRow = styled.div<{ link?: boolean }>`
-  border-bottom: 1px ${Color.blackTransparenter} solid;
+const DivRow = styled.div<{ link?: boolean; colors?: AccentColors }>`
+  background: ${Color.white};
   width: 100%;
   cursor: ${({ link }) => (link ? 'pointer' : 'auto')};
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background: ${({ link }) =>
-      link ? Color.blackTransparenter : 'transparent'};
+    background: ${({ link, colors }) =>
+      link ? colors?.light ?? Color.blackTransparent : 'transparent'};
+  }
+
+  > ${Column} {
+    border-top: 1px solid
+      ${({ colors }) => colors?.light ?? Color.blackTransparent};
+    border-bottom: 1px solid
+      ${({ colors }) => colors?.light ?? Color.blackTransparent};
+    :first-child {
+      border-left: 1px solid
+        ${({ colors }) => colors?.light ?? Color.blackTransparent};
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+      padding-left: 4px;
+    }
+    :last-child {
+      border-right: 1px solid
+        ${({ colors }) => colors?.light ?? Color.blackTransparent};
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      padding-right: 4px;
+    }
   }
 `;
 
-const Row: FC<{ href?: string }> = ({ href, children }) => {
+const HeaderRow = styled.div`
+  background: transparent;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: bold;
+
+  > ${Column} {
+    border: none !important;
+  }
+`;
+
+const NoItems = styled.div`
+  height: 32px;
+`;
+
+const Row: FC<{ href?: string; colors?: AccentColors }> = ({
+  href,
+  children,
+  colors,
+}) => {
   const handleClick = useCallback(
     event => {
       if (href) {
@@ -79,28 +121,21 @@ const Row: FC<{ href?: string }> = ({ href, children }) => {
   );
 
   return (
-    <DivRow link={!!href} onClick={handleClick}>
+    <DivRow colors={colors} link={!!href} onClick={handleClick}>
       {children}
     </DivRow>
   );
 };
 
-const Header = styled(DivRow)`
-  text-transform: uppercase;
-  font-size: 12px;
-  font-weight: bold;
-`;
-
 const Container = styled.div`
   display: table;
-  border-spacing: 0 1px;
+  border-spacing: 0 4px;
   width: 100%;
-  background: ${Color.blackTransparenter};
+  background: transparent;
 
   > * {
     display: table-row;
     width: 100%;
-    background: ${Color.offWhite};
   }
 `;
 
@@ -109,21 +144,27 @@ export const Table = <TColumns extends number>({
   items,
 }: TableProps<TColumns>): ReactElement => (
   <Container>
-    <Header>
-      {columns.map(({ key, title, tip, numeric }) => (
-        <Column key={key} numeric={numeric}>
-          {tip ? <Tooltip tip={tip}>{title}</Tooltip> : title}
-        </Column>
-      ))}
-    </Header>
-    {items.map(({ id, data, url }) => (
-      <Row key={id} href={url}>
-        {columns.map(({ key, numeric }) => (
-          <Column key={key} numeric={numeric}>
-            <Data>{data[key] ?? '-'}</Data>
-          </Column>
+    {items.length === 0 ? (
+      <NoItems>No items.</NoItems>
+    ) : (
+      <>
+        <HeaderRow>
+          {columns.map(({ key, title, tip, numeric }) => (
+            <Column key={key} numeric={numeric}>
+              {tip ? <Tooltip tip={tip}>{title}</Tooltip> : title}
+            </Column>
+          ))}
+        </HeaderRow>
+        {items.map(({ id, data, url, colors }) => (
+          <Row key={id} href={url} colors={colors}>
+            {columns.map(({ key, numeric }) => (
+              <Column key={key} numeric={numeric}>
+                <Data>{data[key] ?? '-'}</Data>
+              </Column>
+            ))}
+          </Row>
         ))}
-      </Row>
-    ))}
+      </>
+    )}
   </Container>
 );

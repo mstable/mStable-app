@@ -58,32 +58,42 @@ export interface RawEarnData {
   >[];
 }
 
-export interface NormalizedPool {
+export type NormalizedPool = {
   address: string;
   platform: Platforms;
-  tokens: (Token & { liquidity: BigDecimal; price?: BigDecimal })[];
-  [Platforms.Uniswap]?: { totalSupply: BigDecimal; reserveUSD: BigDecimal };
-  [Platforms.Balancer]?: {
-    totalShares: BigDecimal;
-    totalSwapVolume: BigDecimal;
-    swapFee: BigDecimal;
-  };
-}
+  tokens: (Token & {
+    liquidity: BigDecimal;
+    price?: BigDecimal;
+    ratio: number;
+  })[];
+  totalSupply: BigDecimal;
+} & (
+  | {
+      // Uniswap
+      reserveUSD: BigDecimal;
+    }
+  | {
+      // Balancer
+      totalSwapVolume: BigDecimal;
+      swapFee: BigDecimal;
+    }
+);
 
 export interface StakingRewardsContract {
   address: string;
   earnUrl: string;
   title: string;
   pool: NormalizedPool;
-  pool24hAgo: NormalizedPool;
+  pool24hAgo?: NormalizedPool;
   duration: number;
   lastUpdateTime: number;
   periodFinish: number;
   rewardRate: BigNumber;
   rewardPerTokenStoredNow: BigNumber;
-  rewardPerTokenStored24hAgo: BigNumber;
+  rewardPerTokenStored24hAgo?: BigNumber;
   rewardsToken: Token & { price?: BigDecimal };
   stakingBalance: BigDecimal;
+  stakingBalancePercentage: BigDecimal;
   stakingReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal };
   stakingToken: Token & { totalSupply: BigDecimal; price?: BigDecimal };
   totalSupply: BigDecimal;
@@ -94,7 +104,7 @@ export interface StakingRewardsContract {
   combinedRewardsTokensApy?: BigDecimal;
   platformRewards?: {
     platformRewardPerTokenStoredNow: BigNumber;
-    platformRewardPerTokenStored24hAgo: BigNumber;
+    platformRewardPerTokenStored24hAgo?: BigNumber;
     platformRewardRate: BigNumber;
     platformReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal };
     platformToken: Token & { price?: BigDecimal };

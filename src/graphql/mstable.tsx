@@ -693,6 +693,14 @@ export type Masset_Filter = {
   feeRate_lte?: Maybe<Scalars['BigInt']>;
   feeRate_in?: Maybe<Array<Scalars['BigInt']>>;
   feeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  redemptionFeeRate?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_not?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_gt?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_lt?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_gte?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_lte?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_in?: Maybe<Array<Scalars['BigInt']>>;
+  redemptionFeeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
   token?: Maybe<Scalars['String']>;
   token_not?: Maybe<Scalars['String']>;
   token_gt?: Maybe<Scalars['String']>;
@@ -727,6 +735,7 @@ export enum Masset_OrderBy {
   Id = 'id',
   Basket = 'basket',
   FeeRate = 'feeRate',
+  RedemptionFeeRate = 'redemptionFeeRate',
   Token = 'token',
   TokenSymbol = 'tokenSymbol',
   SavingsContracts = 'savingsContracts'
@@ -2905,7 +2914,7 @@ export type StakingRewardsContractsQuery = { stakingRewardsContracts: Array<(
   )> };
 
 export type RewardsPerTokenStoredAtBlockQueryVariables = {
-  blockNumber: Scalars['Int'];
+  block: Block_Height;
 };
 
 
@@ -2932,6 +2941,7 @@ export const MassetAllFragmentDoc = gql`
     ...TokenDetails
   }
   feeRate
+  redemptionFeeRate
   basket {
     failed
     collateralisationRatio
@@ -3583,8 +3593,8 @@ export type StakingRewardsContractsQueryHookResult = ReturnType<typeof useStakin
 export type StakingRewardsContractsLazyQueryHookResult = ReturnType<typeof useStakingRewardsContractsLazyQuery>;
 export type StakingRewardsContractsQueryResult = ApolloReactCommon.QueryResult<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>;
 export const RewardsPerTokenStoredAtBlockDocument = gql`
-    query RewardsPerTokenStoredAtBlock($blockNumber: Int!) @api(name: mstable) {
-  stakingRewardsContracts(block: {number: $blockNumber}) {
+    query RewardsPerTokenStoredAtBlock($block: Block_height!) @api(name: mstable) {
+  stakingRewardsContracts(block: $block) {
     id
     rewardPerTokenStored
     platformRewardPerTokenStored
@@ -3604,7 +3614,7 @@ export const RewardsPerTokenStoredAtBlockDocument = gql`
  * @example
  * const { data, loading, error } = useRewardsPerTokenStoredAtBlockQuery({
  *   variables: {
- *      blockNumber: // value for 'blockNumber'
+ *      block: // value for 'block'
  *   },
  * });
  */

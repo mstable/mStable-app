@@ -134,7 +134,7 @@ const Chart: FC<{}> = () => {
       ) : (
         <VictoryChart
           theme={victoryTheme}
-          scale="sqrt"
+          scale="linear"
           height={300}
           domainPadding={{ y: 50 }}
           containerComponent={

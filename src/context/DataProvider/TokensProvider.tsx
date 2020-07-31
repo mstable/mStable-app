@@ -220,7 +220,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
             [address]: {
               ...(_tokens[address] as SubscribedToken),
               allowances: {},
-              balance: new BigDecimal(0, (_tokens[address] as SubscribedToken).decimals),
+              balance: new BigDecimal(
+                0,
+                (_tokens[address] as SubscribedToken).decimals,
+              ),
             },
           }),
           state.tokens,

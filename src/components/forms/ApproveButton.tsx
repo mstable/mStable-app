@@ -37,6 +37,7 @@ const Container = styled.div`
   background: ${Color.offWhite};
   border-radius: 2px;
   border: 1px ${Color.blackTransparent} solid;
+  min-width: 200px;
 `;
 
 export const ApproveButton: FC<Props> = ({

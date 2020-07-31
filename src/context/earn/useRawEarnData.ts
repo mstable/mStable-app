@@ -21,9 +21,8 @@ export const useRawEarnData = ({
 
   const rawStakingRewardsContracts24hAgoQuery = useRewardsPerTokenStoredAtBlockQuery(
     {
-      variables: { blockNumber: block24hAgo?.blockNumber as number },
+      variables: { block: { number: block24hAgo?.blockNumber } },
       skip: !block24hAgo,
-      fetchPolicy: 'cache-first', // Safe to use because the block number will change
     },
   );
   const rawStakingRewardsContracts24hAgo =

@@ -272,8 +272,8 @@ query StakingRewardsContracts($account: Bytes) @api(name: mstable) {
   }
 }
 
-query RewardsPerTokenStoredAtBlock($blockNumber: Int!) @api(name: mstable) {
-  stakingRewardsContracts(block: { number: $blockNumber }) {
+query RewardsPerTokenStoredAtBlock($block: Block_height!) @api(name: mstable) {
+  stakingRewardsContracts(block: $block) {
     id
     rewardPerTokenStored
     platformRewardPerTokenStored

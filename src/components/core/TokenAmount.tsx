@@ -19,6 +19,7 @@ interface Props extends AmountProps {
 
 const Symbol = styled.div`
   font-weight: bold;
+  white-space: nowrap;
 `;
 
 const Container = styled.div<{ size: Size }>`

@@ -2,6 +2,8 @@ import React, { FC, useEffect, useRef } from 'react';
 import { useCountUp, CountUpProps } from 'react-countup';
 import styled from 'styled-components';
 
+import { Simulate } from 'react-dom/test-utils';
+import { useIsIdle } from '../../context/UserActivityProvider';
 import { Color } from '../../theme';
 
 interface Props extends CountUpProps {
@@ -40,8 +42,10 @@ export const CountUp: FC<Props> = ({
   duration = DEFAULT_DURATION,
 }) => {
   const prevEnd = useRef<typeof end>(end);
+  const isIdle = useIsIdle();
+  const paused = useRef(isIdle);
 
-  const { countUp, update } = useCountUp({
+  const { countUp, update, pauseResume, start } = useCountUp({
     decimals,
     duration,
     end,
@@ -58,6 +62,12 @@ export const CountUp: FC<Props> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [end]);
+
+  useEffect(() => {
+    if (isIdle && !paused.current) {
+      pauseResume();
+    }
+  }, [isIdle, pauseResume, start]);
 
   return (
     <Container

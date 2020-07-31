@@ -163,3 +163,10 @@ export interface BlockTimestamp {
   blockNumber: number;
   timestamp: number;
 }
+
+export interface AccentColors {
+  light: string;
+  accent: string;
+  base: string;
+  text: string;
+}

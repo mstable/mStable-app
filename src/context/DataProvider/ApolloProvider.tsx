@@ -76,6 +76,17 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
     return new ApolloClient<NormalizedCacheObject>({
       cache,
       link: apolloLink as never,
+      // FIXME block query cache issues
+      defaultOptions: {
+        watchQuery: {
+          fetchPolicy: 'no-cache',
+          errorPolicy: 'ignore',
+        },
+        query: {
+          fetchPolicy: 'no-cache',
+          errorPolicy: 'all',
+        },
+      },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [persisted]);

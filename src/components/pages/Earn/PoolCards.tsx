@@ -14,7 +14,7 @@ const Container = styled.div`
     width: 360px;
 
     @media (min-width: ${ViewportWidth.m}) {
-      transform: translateX(-50%);
+      //transform: translateX(-50%);
     }
 
     > section {

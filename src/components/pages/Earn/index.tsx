@@ -62,7 +62,7 @@ const ItemContent = styled.div`
       margin-bottom: 8px;
     }
   }
-  
+
   p {
     padding-left: 8px;
     padding-right: 8px;

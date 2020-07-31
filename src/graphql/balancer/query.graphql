@@ -2,12 +2,14 @@ fragment PoolDetails on Pool {
   id
   totalShares
   totalSwapVolume
+  totalWeight
   swapFee
   tokens {
     address
     balance
     decimals
     symbol
+    denormWeight
   }
 }
 

@@ -145,6 +145,10 @@ export const Slider: FC<Props> = ({
     trackTouch: true,
     trackMouse: true,
     preventDefaultTouchmoveEvent: true,
+    // FIXME stop nested swipes
+    onSwiping: ({ event }) => {
+      event.stopPropagation();
+    },
     onSwipedLeft: ({ event }) => {
       event.stopPropagation();
       next();

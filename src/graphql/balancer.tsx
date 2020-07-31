@@ -127,6 +127,7 @@ export type Pool = {
   controller: Scalars['Bytes'];
   publicSwap: Scalars['Boolean'];
   finalized: Scalars['Boolean'];
+  active: Scalars['Boolean'];
   swapFee: Scalars['BigDecimal'];
   totalWeight: Scalars['BigDecimal'];
   totalShares: Scalars['BigDecimal'];
@@ -136,6 +137,8 @@ export type Pool = {
   tokens?: Maybe<Array<PoolToken>>;
   shares?: Maybe<Array<PoolShare>>;
   createTime: Scalars['Int'];
+  tokensCount: Scalars['BigInt'];
+  holdersCount: Scalars['BigInt'];
   joinsCount: Scalars['BigInt'];
   exitsCount: Scalars['BigInt'];
   swapsCount: Scalars['BigInt'];
@@ -193,6 +196,10 @@ export type Pool_Filter = {
   finalized_not?: Maybe<Scalars['Boolean']>;
   finalized_in?: Maybe<Array<Scalars['Boolean']>>;
   finalized_not_in?: Maybe<Array<Scalars['Boolean']>>;
+  active?: Maybe<Scalars['Boolean']>;
+  active_not?: Maybe<Scalars['Boolean']>;
+  active_in?: Maybe<Array<Scalars['Boolean']>>;
+  active_not_in?: Maybe<Array<Scalars['Boolean']>>;
   swapFee?: Maybe<Scalars['BigDecimal']>;
   swapFee_not?: Maybe<Scalars['BigDecimal']>;
   swapFee_gt?: Maybe<Scalars['BigDecimal']>;
@@ -245,6 +252,22 @@ export type Pool_Filter = {
   createTime_lte?: Maybe<Scalars['Int']>;
   createTime_in?: Maybe<Array<Scalars['Int']>>;
   createTime_not_in?: Maybe<Array<Scalars['Int']>>;
+  tokensCount?: Maybe<Scalars['BigInt']>;
+  tokensCount_not?: Maybe<Scalars['BigInt']>;
+  tokensCount_gt?: Maybe<Scalars['BigInt']>;
+  tokensCount_lt?: Maybe<Scalars['BigInt']>;
+  tokensCount_gte?: Maybe<Scalars['BigInt']>;
+  tokensCount_lte?: Maybe<Scalars['BigInt']>;
+  tokensCount_in?: Maybe<Array<Scalars['BigInt']>>;
+  tokensCount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  holdersCount?: Maybe<Scalars['BigInt']>;
+  holdersCount_not?: Maybe<Scalars['BigInt']>;
+  holdersCount_gt?: Maybe<Scalars['BigInt']>;
+  holdersCount_lt?: Maybe<Scalars['BigInt']>;
+  holdersCount_gte?: Maybe<Scalars['BigInt']>;
+  holdersCount_lte?: Maybe<Scalars['BigInt']>;
+  holdersCount_in?: Maybe<Array<Scalars['BigInt']>>;
+  holdersCount_not_in?: Maybe<Array<Scalars['BigInt']>>;
   joinsCount?: Maybe<Scalars['BigInt']>;
   joinsCount_not?: Maybe<Scalars['BigInt']>;
   joinsCount_gt?: Maybe<Scalars['BigInt']>;
@@ -290,6 +313,7 @@ export enum Pool_OrderBy {
   Controller = 'controller',
   PublicSwap = 'publicSwap',
   Finalized = 'finalized',
+  Active = 'active',
   SwapFee = 'swapFee',
   TotalWeight = 'totalWeight',
   TotalShares = 'totalShares',
@@ -299,6 +323,8 @@ export enum Pool_OrderBy {
   Tokens = 'tokens',
   Shares = 'shares',
   CreateTime = 'createTime',
+  TokensCount = 'tokensCount',
+  HoldersCount = 'holdersCount',
   JoinsCount = 'joinsCount',
   ExitsCount = 'exitsCount',
   SwapsCount = 'swapsCount',
@@ -1180,8 +1206,8 @@ export enum User_OrderBy {
 }
 
 export type PoolDetailsFragment = (
-  Pick<Pool, 'id' | 'totalShares' | 'totalSwapVolume' | 'swapFee'>
-  & { tokens?: Maybe<Array<Pick<PoolToken, 'address' | 'balance' | 'decimals' | 'symbol'>>> }
+  Pick<Pool, 'id' | 'totalShares' | 'totalSwapVolume' | 'totalWeight' | 'swapFee'>
+  & { tokens?: Maybe<Array<Pick<PoolToken, 'address' | 'balance' | 'decimals' | 'symbol' | 'denormWeight'>>> }
 );
 
 export type TokenPriceDetailsFragment = Pick<TokenPrice, 'id' | 'price' | 'decimals'>;
@@ -1220,12 +1246,14 @@ export const PoolDetailsFragmentDoc = gql`
   id
   totalShares
   totalSwapVolume
+  totalWeight
   swapFee
   tokens {
     address
     balance
     decimals
     symbol
+    denormWeight
   }
 }
     `;

@@ -8,15 +8,26 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
+import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { useStakingRewardsContracts } from '../../../../context/earn/EarnDataProvider';
-import { useToken } from '../../../../context/DataProvider/TokensProvider';
+import {
+  useToken,
+  useTokenAllowance,
+} from '../../../../context/DataProvider/TokensProvider';
 import { SubscribedToken } from '../../../../types';
 import {
   RewardsDistributor,
   useRewardsDistributorQuery,
 } from '../../../../graphql/mstable';
+
+interface RecipientAmounts {
+  [recipient: string]: {
+    amount?: BigDecimal;
+    formValue: string | null;
+    custom?: boolean;
+  };
+}
 
 interface State {
   data: {
@@ -24,27 +35,30 @@ interface State {
     rewardsDistributor?: RewardsDistributor;
   };
   totalFunds?: BigDecimal;
-  recipientAmounts: {
-    [recipient: string]: {
-      amount?: BigDecimal;
-      formValue: string | null;
-    };
-  };
+  recipientAmounts: RecipientAmounts;
+  useCustomRecipients: boolean;
 }
 
 interface Dispatch {
+  addCustomRecipient(recipient: string): void;
+  removeCustomRecipient(recipient: string): void;
   setRecipientAmount(recipient: string, amount: string | null): void;
+  toggleCustomRecipients(): void;
 }
 
 enum Actions {
+  AddCustomRecipient,
   Data,
+  RemoveCustomRecipient,
   SetRecipientAmount,
+  ToggleCustomRecipients,
 }
 
 type Action =
   | {
       type: Actions.Data;
       payload: {
+        manualToken?: SubscribedToken;
         rewardsToken?: SubscribedToken;
         rewardsDistributor?: RewardsDistributor;
       };
@@ -52,64 +66,101 @@ type Action =
   | {
       type: Actions.SetRecipientAmount;
       payload: { recipient: string; amount: string | null };
-    };
+    }
+  | { type: Actions.AddCustomRecipient; payload: { recipient: string } }
+  | { type: Actions.RemoveCustomRecipient; payload: { recipient: string } }
+  | { type: Actions.ToggleCustomRecipients };
 
-const reducer: Reducer<State, Action> = (state, action) => {
+const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
+    case Actions.Data:
+      return { ...state, data: action.payload };
+
     case Actions.SetRecipientAmount: {
       const { amount, recipient } = action.payload;
 
-      const {
-        data: { rewardsToken },
-      } = state;
-
-      if (!rewardsToken) {
-        return state;
-      }
+      const { rewardsToken = { decimals: 18 } } = state.data;
 
       const recipientAmounts = {
         ...state.recipientAmounts,
         [recipient]: {
+          ...state.recipientAmounts[recipient],
           amount: BigDecimal.maybeParse(amount, rewardsToken.decimals),
           formValue: amount,
         },
       };
 
-      const totalRewards: BigDecimal = Object.values(recipientAmounts)
-        .filter(({ amount: _amount }) => !!_amount)
-        .reduce(
-          (_totalRewards, { amount: _amount }) =>
-            _totalRewards.add(_amount as BigDecimal),
-          new BigDecimal(0, rewardsToken.decimals),
-        );
+      return {
+        ...state,
+        recipientAmounts,
+      };
+    }
+
+    case Actions.ToggleCustomRecipients:
+      return { ...state, useCustomRecipients: !state.useCustomRecipients };
+
+    case Actions.AddCustomRecipient: {
+      const { recipient } = action.payload;
+      return {
+        ...state,
+        recipientAmounts: {
+          ...state.recipientAmounts,
+          [recipient.toLowerCase()]: { custom: true, formValue: null },
+        },
+      };
+    }
+
+    case Actions.RemoveCustomRecipient: {
+      const { recipient } = action.payload;
+      const {
+        [recipient.toLowerCase()]: _,
+        ...recipientAmounts
+      } = state.recipientAmounts;
 
       return {
         ...state,
         recipientAmounts,
-        totalFunds: totalRewards,
       };
     }
-    case Actions.Data: {
-      return { ...state, data: action.payload };
-    }
+
     default:
       throw new Error('Unhandled action');
   }
 };
 
+const updateTotalFunds = (state: State): State => {
+  const {
+    recipientAmounts,
+    useCustomRecipients,
+    data: { rewardsToken = { decimals: 18 } },
+  } = state;
+
+  const totalFunds = Object.values(recipientAmounts)
+    .filter(
+      ({ amount: _amount, custom }) =>
+        !!(_amount && useCustomRecipients ? !!custom : !custom),
+    )
+    .reduce(
+      (_totalRewards, { amount: _amount }) =>
+        _totalRewards.add(_amount as BigDecimal),
+      new BigDecimal(0, rewardsToken.decimals),
+    );
+
+  return { ...state, totalFunds };
+};
+
+const reducer: Reducer<State, Action> = pipeline(reduce, updateTotalFunds);
+
 const initialState: State = {
   data: {},
   recipientAmounts: {},
-};
-
-const useFirstRewardsToken = (): SubscribedToken | undefined => {
-  const stakingRewardsContracts = useStakingRewardsContracts();
-  const first = Object.values(stakingRewardsContracts)[0];
-  return useToken(first?.rewardsToken.address);
+  useCustomRecipients: false,
 };
 
 const dispatchCtx = createContext<Dispatch>({} as never);
 const stateCtx = createContext<State>(initialState);
+
+const MTA_ADDRESS = (process.env.REACT_APP_MTA_ADDRESS as string).toLowerCase();
 
 export const EarnAdminProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -124,10 +175,33 @@ export const EarnAdminProvider: FC<{}> = ({ children }) => {
     [dispatch],
   );
 
-  // Get the first rewards token; if different rewards tokens are used in the
-  // future, then group the staking contracts by rewards token and fund them
-  // separately.
-  const rewardsToken = useFirstRewardsToken();
+  const addCustomRecipient = useCallback<Dispatch['addCustomRecipient']>(
+    recipient => {
+      dispatch({
+        type: Actions.AddCustomRecipient,
+        payload: { recipient },
+      });
+    },
+    [dispatch],
+  );
+
+  const removeCustomRecipient = useCallback<Dispatch['removeCustomRecipient']>(
+    recipient => {
+      dispatch({
+        type: Actions.RemoveCustomRecipient,
+        payload: { recipient },
+      });
+    },
+    [dispatch],
+  );
+
+  const toggleCustomRecipients = useCallback<
+    Dispatch['toggleCustomRecipients']
+  >(() => {
+    dispatch({ type: Actions.ToggleCustomRecipients });
+  }, [dispatch]);
+
+  const rewardsToken = useToken(MTA_ADDRESS);
 
   const rewardsDistributorQuery = useRewardsDistributorQuery();
   const rewardsDistributor =
@@ -142,7 +216,20 @@ export const EarnAdminProvider: FC<{}> = ({ children }) => {
 
   return (
     <dispatchCtx.Provider
-      value={useMemo(() => ({ setRecipientAmount }), [setRecipientAmount])}
+      value={useMemo(
+        () => ({
+          addCustomRecipient,
+          removeCustomRecipient,
+          setRecipientAmount,
+          toggleCustomRecipients,
+        }),
+        [
+          addCustomRecipient,
+          removeCustomRecipient,
+          setRecipientAmount,
+          toggleCustomRecipients,
+        ],
+      )}
     >
       <stateCtx.Provider value={state}>{children}</stateCtx.Provider>
     </dispatchCtx.Provider>

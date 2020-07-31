@@ -11,6 +11,7 @@ import {
 import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
 import { BigDecimal } from '../web3/BigDecimal';
 import { useBlockNumber } from '../context/DataProvider/BlockProvider';
+import { useSavingsBalance } from '../context/DataProvider/DataProvider';
 
 interface State {
   [tokenAddress: string]: Erc20Detailed;
