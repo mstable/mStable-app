@@ -5,7 +5,6 @@ const REQUIRED_ENV_VARS: (keyof typeof process.env)[] = [
   'REACT_APP_GRAPHQL_ENDPOINT_BLOCKS',
   'REACT_APP_CHAIN_ID',
   'REACT_APP_RPC_URL',
-  'REACT_APP_SENTRY_DSN',
 ];
 
 export const checkRequiredEnvVars = (): void => {

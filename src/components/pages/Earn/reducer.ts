@@ -47,7 +47,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
         ...state,
         stake: {
           ...state.stake,
-          touched: true,
+          touched: !!action.payload,
           amount: BigDecimal.maybeParse(action.payload, 18),
           formValue: action.payload,
         },

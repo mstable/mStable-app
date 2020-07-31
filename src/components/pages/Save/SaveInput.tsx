@@ -21,7 +21,7 @@ const TransactionTypeRow = styled(FormRow)`
   }
 `;
 
-const approveAmount = new BigDecimal('1844674400000', 18);
+const approveAmount = BigDecimal.parse('1844674400000', 18);
 
 export const SaveInput: FC<{}> = () => {
   const {

@@ -28,6 +28,10 @@ query Erc20Tokens($addresses: [Bytes!]!) @api(name: mstable) {
 }
 
 query AllErc20Tokens @api(name: mstable) {
+  savingsContracts {
+    address: id
+    id
+  }
   tokens {
     ...TokenDetails
   }
@@ -232,8 +236,13 @@ query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!)
   }
 }
 
-query StakingRewardsContracts($account: Bytes) @api(name: mstable) {
-  stakingRewardsContracts {
+query StakingRewardsContracts(
+  $account: Bytes
+  $includeHistoric: Boolean!
+  $block: Block_height
+) @api(name: mstable) {
+  current: stakingRewardsContracts {
+    address: id
     id
     type
     duration
@@ -270,11 +279,11 @@ query StakingRewardsContracts($account: Bytes) @api(name: mstable) {
       amountPerTokenPaid
     }
   }
-}
-
-query RewardsPerTokenStoredAtBlock($blockNumber: Int!) @api(name: mstable) {
-  stakingRewardsContracts(block: { number: $blockNumber }) {
+  historic: stakingRewardsContracts(block: $block)
+    @include(if: $includeHistoric) {
+    address: id
     id
+    lastUpdateTime
     rewardPerTokenStored
     platformRewardPerTokenStored
   }

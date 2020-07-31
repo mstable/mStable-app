@@ -20,6 +20,17 @@ const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}`;
 
 const cache = new InMemoryCache({
   resultCaching: true,
+  typePolicies: {
+    Pair: {
+      keyFields: false,
+    },
+    Pool: {
+      keyFields: false,
+    },
+    StakingRewardsContract: {
+      keyFields: false,
+    },
+  },
 });
 
 /**
@@ -76,6 +87,15 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
     return new ApolloClient<NormalizedCacheObject>({
       cache,
       link: apolloLink as never,
+      defaultOptions: {
+        watchQuery: {
+          fetchPolicy: 'network-only',
+          nextFetchPolicy: 'cache-and-network'
+        },
+        query: {
+          fetchPolicy: 'cache-first',
+        },
+      },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [persisted]);

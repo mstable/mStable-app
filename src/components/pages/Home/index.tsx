@@ -202,7 +202,7 @@ const Start: FC<{}> = () => {
                 }
               }}
             >
-              {connected ? 'Go to app' : 'Connected'}
+              {connected ? 'Go to app' : 'Connect'}
             </Button>
           </P>
         ) : null}

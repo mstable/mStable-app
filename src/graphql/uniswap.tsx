@@ -2377,38 +2377,39 @@ export enum User_OrderBy {
 }
 
 export type PairDetailsFragment = (
-  Pick<Pair, 'id' | 'reserveUSD' | 'totalSupply'>
-  & { token0: Pick<Token, 'id' | 'decimals' | 'symbol' | 'totalLiquidity'>, token1: Pick<Token, 'id' | 'decimals' | 'symbol' | 'totalLiquidity'> }
+  Pick<Pair, 'reserveUSD' | 'totalSupply'>
+  & { address: Pair['id'] }
+  & { token0: (
+    Pick<Token, 'decimals' | 'symbol' | 'totalLiquidity'>
+    & { address: Token['id'] }
+  ), token1: (
+    Pick<Token, 'decimals' | 'symbol' | 'totalLiquidity'>
+    & { address: Token['id'] }
+  ) }
 );
 
 export type PairsQueryVariables = {
   ids: Array<Scalars['ID']>;
+  includeHistoric: Scalars['Boolean'];
+  block?: Maybe<Block_Height>;
 };
 
 
-export type PairsQuery = { pairs: Array<PairDetailsFragment> };
-
-export type PairsAtBlockQueryVariables = {
-  ids: Array<Scalars['ID']>;
-  blockNumber: Scalars['Int'];
-};
-
-
-export type PairsAtBlockQuery = { pairs: Array<PairDetailsFragment> };
+export type PairsQuery = { current: Array<PairDetailsFragment>, historic: Array<PairDetailsFragment> };
 
 export const PairDetailsFragmentDoc = gql`
     fragment PairDetails on Pair {
-  id
+  address: id
   reserveUSD
   totalSupply
   token0 {
-    id
+    address: id
     decimals
     symbol
     totalLiquidity
   }
   token1 {
-    id
+    address: id
     decimals
     symbol
     totalLiquidity
@@ -2416,8 +2417,11 @@ export const PairDetailsFragmentDoc = gql`
 }
     `;
 export const PairsDocument = gql`
-    query Pairs($ids: [ID!]!) @api(name: uniswap) {
-  pairs(where: {id_in: $ids}) {
+    query Pairs($ids: [ID!]!, $includeHistoric: Boolean!, $block: Block_height) @api(name: uniswap) {
+  current: pairs(where: {id_in: $ids}) {
+    ...PairDetails
+  }
+  historic: pairs(where: {id_in: $ids}, block: $block) @include(if: $includeHistoric) {
     ...PairDetails
   }
 }
@@ -2436,6 +2440,8 @@ export const PairsDocument = gql`
  * const { data, loading, error } = usePairsQuery({
  *   variables: {
  *      ids: // value for 'ids'
+ *      includeHistoric: // value for 'includeHistoric'
+ *      block: // value for 'block'
  *   },
  * });
  */
@@ -2448,37 +2454,3 @@ export function usePairsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOp
 export type PairsQueryHookResult = ReturnType<typeof usePairsQuery>;
 export type PairsLazyQueryHookResult = ReturnType<typeof usePairsLazyQuery>;
 export type PairsQueryResult = ApolloReactCommon.QueryResult<PairsQuery, PairsQueryVariables>;
-export const PairsAtBlockDocument = gql`
-    query PairsAtBlock($ids: [ID!]!, $blockNumber: Int!) @api(name: uniswap) {
-  pairs(where: {id_in: $ids}, block: {number: $blockNumber}) {
-    ...PairDetails
-  }
-}
-    ${PairDetailsFragmentDoc}`;
-
-/**
- * __usePairsAtBlockQuery__
- *
- * To run a query within a React component, call `usePairsAtBlockQuery` and pass it any options that fit your needs.
- * When your component renders, `usePairsAtBlockQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = usePairsAtBlockQuery({
- *   variables: {
- *      ids: // value for 'ids'
- *      blockNumber: // value for 'blockNumber'
- *   },
- * });
- */
-export function usePairsAtBlockQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<PairsAtBlockQuery, PairsAtBlockQueryVariables>) {
-        return ApolloReactHooks.useQuery<PairsAtBlockQuery, PairsAtBlockQueryVariables>(PairsAtBlockDocument, baseOptions);
-      }
-export function usePairsAtBlockLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<PairsAtBlockQuery, PairsAtBlockQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<PairsAtBlockQuery, PairsAtBlockQueryVariables>(PairsAtBlockDocument, baseOptions);
-        }
-export type PairsAtBlockQueryHookResult = ReturnType<typeof usePairsAtBlockQuery>;
-export type PairsAtBlockLazyQueryHookResult = ReturnType<typeof usePairsAtBlockLazyQuery>;
-export type PairsAtBlockQueryResult = ApolloReactCommon.QueryResult<PairsAtBlockQuery, PairsAtBlockQueryVariables>;

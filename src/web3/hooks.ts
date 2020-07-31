@@ -14,7 +14,6 @@ import { useLatestExchangeRate } from '../context/DataProvider/DataProvider';
 import { truncateAddress } from './strings';
 import { SCALE } from './constants';
 import { parseExactAmount, parseAmount } from './amounts';
-import { BigDecimal } from './BigDecimal';
 
 interface Apy {
   value?: BigNumber;
@@ -79,7 +78,8 @@ export const useIncreasingNumber = (
 };
 
 // NB: Without milliseconds
-const YEAR = parseUnits((365 * 24 * 60 * 60).toString());
+const YEAR_SIMPLE = 365 * 24 * 60 * 60;
+const YEAR_BN = parseUnits(YEAR_SIMPLE.toString());
 
 export const calculateApy = (
   start: RateTimestamp,
@@ -96,7 +96,7 @@ export const calculateApy = (
   const timeDiff = parseUnits((end.timestamp - start.timestamp).toString());
 
   // new calc: (1+0.001)^365-1
-  const portionOfYear = timeDiff.mul(SCALE).div(YEAR);
+  const portionOfYear = timeDiff.mul(SCALE).div(YEAR_BN);
   const portionsInYear = SCALE.div(portionOfYear);
   const rateDecimals = parseExactAmount(SCALE.add(rateDiff), 18);
   if (rateDecimals.simple) {
@@ -223,13 +223,16 @@ export const useAverageApyForPastWeek = (): BigNumber | undefined => {
   }, [dailyApys]);
 };
 
-export const annualiseValue = (
-  value: BigDecimal,
+export const annualiseSimple = (
+  value: number,
   startSeconds: number,
   endSeconds = Math.floor(Date.now() / 1e3),
-): BigDecimal => {
-  const timeDiff = parseUnits((endSeconds - startSeconds).toString());
-  const portionOfYear = timeDiff.mul(SCALE).div(YEAR);
-  const portionsInYear = SCALE.div(portionOfYear);
-  return value.mulTruncate(portionsInYear);
+): number => {
+  if (value <= 0) {
+    return 0;
+  }
+
+  const timeDiff = endSeconds - startSeconds;
+  const portionOfYear = timeDiff / YEAR_SIMPLE;
+  return value / portionOfYear;
 };

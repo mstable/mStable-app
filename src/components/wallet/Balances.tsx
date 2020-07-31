@@ -9,6 +9,7 @@ import styled, { ThemeContext, DefaultTheme } from 'styled-components';
 import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 
 import { useDataState } from '../../context/DataProvider/DataProvider';
+import { useMetaToken } from '../../context/DataProvider/TokensProvider';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
@@ -54,6 +55,7 @@ export const Balances: FC<{}> = () => {
   const [loading, setLoading] = useState(true);
 
   const { mAsset, savingsContract, bAssets } = useDataState() || {};
+  const metaToken = useMetaToken();
 
   const otherTokens = useMemo(() => (bAssets ? Object.values(bAssets) : []), [
     bAssets,
@@ -91,6 +93,22 @@ export const Balances: FC<{}> = () => {
             )}
           </>
         )}
+      </ListItem>
+      <ListItem size={Size.xl} key="mta">
+        {metaToken ? (
+          <>
+            <Symbol>
+              <TokenIcon symbol={metaToken.symbol} outline />
+              <span>{metaToken.symbol}</span>
+              <EtherscanLink data={metaToken.address} />
+            </Symbol>
+            {!metaToken.balance ? (
+              <BalanceSkeleton themeContext={themeContext} />
+            ) : (
+              <Balance size={Size.xl} end={metaToken.balance.simple} />
+            )}
+          </>
+        ) : null}
       </ListItem>
 
       <ListItem key="savingsBalance">

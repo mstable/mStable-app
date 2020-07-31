@@ -11,7 +11,6 @@ import React, {
 import useInterval from 'react-use/lib/useInterval';
 
 import { StakingRewards } from '../../../typechain/StakingRewards.d';
-import { BigDecimal } from '../../../web3/BigDecimal';
 import { SCALE } from '../../../web3/constants';
 import { useTokens } from '../../../context/DataProvider/TokensProvider';
 import { useSignerContext } from '../../../context/SignerProvider';
@@ -21,8 +20,7 @@ import {
   useStakingRewardsContract,
   useTokenWithPrice,
 } from '../../../context/earn/EarnDataProvider';
-import { StakingRewardsContract } from '../../../context/earn/types';
-import { Dispatch, Tabs, State, Actions } from './types';
+import { Dispatch, Tabs, State, Actions, RewardsEarned } from './types';
 import { reducer } from './reducer';
 
 interface Props {
@@ -31,7 +29,6 @@ interface Props {
 
 const initialState: State = {
   activeTab: Tabs.Stake,
-  initialized: false,
   tokens: {},
   stake: {
     valid: false,
@@ -41,12 +38,53 @@ const initialState: State = {
   },
 };
 
-const useRewardsEarnedInterval = (
-  stakingRewardsContract?: StakingRewardsContract,
-): { rewardsEarned?: BigDecimal; platformRewardsEarned?: BigDecimal } => {
+const dispatchCtx = createContext<Dispatch>({} as never);
+
+const stateCtx = createContext<State>({} as never);
+
+const rewardsEarnedCtx = createContext<RewardsEarned>({});
+
+const contractCtx = createContext<StakingRewards | undefined>(undefined);
+
+export const useStakingRewardsContractState = (): State => useContext(stateCtx);
+
+export const useStakingRewardContractDispatch = (): Dispatch =>
+  useContext(dispatchCtx);
+
+export const useCurrentStakingRewardsContractCtx = ():
+  | StakingRewards
+  | undefined => useContext(contractCtx);
+
+export const useRewardsEarned = (): RewardsEarned =>
+  useContext(rewardsEarnedCtx);
+
+export const useCurrentStakingRewardsContract = (): State['stakingRewardsContract'] =>
+  useStakingRewardsContractState().stakingRewardsContract;
+
+export const useCurrentRewardsToken = (): SubscribedToken | undefined => {
+  const stakingRewards = useCurrentStakingRewardsContract();
+  return useTokenWithPrice(stakingRewards?.rewardsToken.address);
+};
+
+export const useCurrentPlatformToken = (): SubscribedToken | undefined => {
+  const stakingRewards = useCurrentStakingRewardsContract();
+  return useTokenWithPrice(
+    stakingRewards?.platformRewards?.platformToken.address,
+  );
+};
+
+export const useCurrentStakingToken = (): SubscribedToken | undefined => {
+  const stakingRewards = useCurrentStakingRewardsContract();
+  return useTokenWithPrice(stakingRewards?.stakingToken.address);
+};
+
+const useRewardsEarnedInterval = (): RewardsEarned => {
   const [value, setValue] = useState<
     ReturnType<typeof useRewardsEarnedInterval>
   >({});
+  const stakingRewardsContract = useCurrentStakingRewardsContract();
+  const rewardsToken = useCurrentRewardsToken();
+  const platformToken = useCurrentPlatformToken();
 
   useInterval(() => {
     if (!stakingRewardsContract) {
@@ -127,24 +165,29 @@ const useRewardsEarnedInterval = (
         : undefined;
 
     return setValue({
-      rewardsEarned: summedRewards,
-      platformRewardsEarned: summedPlatformRewards,
+      rewards: summedRewards,
+      rewardsUsd: rewardsToken?.price
+        ? summedRewards.mulTruncate(rewardsToken.price.exact)
+        : undefined,
+      platformRewards: summedPlatformRewards,
+      platformRewardsUsd:
+        summedPlatformRewards && platformToken?.price
+          ? summedPlatformRewards.mulTruncate(platformToken.price.exact)
+          : undefined,
     });
   }, 1e3);
 
   return value;
 };
 
-const dispatchCtx = createContext<Dispatch>({} as never);
-
-const stateCtx = createContext<State>({} as never);
-
-const rewardsEarnedCtx = createContext<{
-  rewardsEarned?: BigDecimal;
-  platformRewardsEarned?: BigDecimal;
-}>({});
-
-const contractCtx = createContext<StakingRewards | undefined>(undefined);
+const RewardsEarnedProvider: FC<{}> = ({ children }) => {
+  const rewardsEarned = useRewardsEarnedInterval();
+  return (
+    <rewardsEarnedCtx.Provider value={rewardsEarned}>
+      {children}
+    </rewardsEarnedCtx.Provider>
+  );
+};
 
 export const StakingRewardsContractProvider: FC<Props> = ({
   children,
@@ -181,8 +224,6 @@ export const StakingRewardsContractProvider: FC<Props> = ({
     dispatch({ type: Actions.SetMaxStakeAmount });
   }, [dispatch]);
 
-  const rewardsEarned = useRewardsEarnedInterval(state.stakingRewardsContract);
-
   const signer = useSignerContext();
 
   const contract = useMemo(
@@ -199,45 +240,9 @@ export const StakingRewardsContractProvider: FC<Props> = ({
     >
       <stateCtx.Provider value={state}>
         <contractCtx.Provider value={contract}>
-          <rewardsEarnedCtx.Provider value={rewardsEarned}>
-            {children}
-          </rewardsEarnedCtx.Provider>
+          <RewardsEarnedProvider>{children}</RewardsEarnedProvider>
         </contractCtx.Provider>
       </stateCtx.Provider>
     </dispatchCtx.Provider>
   );
-};
-
-export const useStakingRewardsContractState = (): State => useContext(stateCtx);
-
-export const useStakingRewardContractDispatch = (): Dispatch =>
-  useContext(dispatchCtx);
-
-export const useCurrentStakingRewardsContractCtx = ():
-  | StakingRewards
-  | undefined => useContext(contractCtx);
-
-export const useRewardsEarned = (): {
-  rewardsEarned?: BigDecimal;
-  platformRewardsEarned?: BigDecimal;
-} => useContext(rewardsEarnedCtx);
-
-export const useCurrentStakingRewardsContract = (): State['stakingRewardsContract'] =>
-  useStakingRewardsContractState().stakingRewardsContract;
-
-export const useCurrentRewardsToken = (): SubscribedToken | undefined => {
-  const stakingRewards = useCurrentStakingRewardsContract();
-  return useTokenWithPrice(stakingRewards?.rewardsToken.address);
-};
-
-export const useCurrentPlatformToken = (): SubscribedToken | undefined => {
-  const stakingRewards = useCurrentStakingRewardsContract();
-  return useTokenWithPrice(
-    stakingRewards?.platformRewards?.platformToken.address,
-  );
-};
-
-export const useCurrentStakingToken = (): SubscribedToken | undefined => {
-  const stakingRewards = useCurrentStakingRewardsContract();
-  return useTokenWithPrice(stakingRewards?.stakingToken.address);
 };

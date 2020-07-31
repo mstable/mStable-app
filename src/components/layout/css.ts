@@ -1,16 +1,13 @@
 import { css } from 'styled-components';
 import { forMinWidth, ViewportWidth } from '../../theme';
 
-export const centredLayout = css<{ stretch?: boolean }>`
+export const centredLayout = css`
   display: flex;
   width: 100%;
   min-width: ${ViewportWidth.xs};
   margin: 0 auto;
 
-  ${({ stretch }) =>
-    stretch
-      ? ''
-      : `${forMinWidth(ViewportWidth.s, `max-width: ${ViewportWidth.s}`)}
-  ${forMinWidth(ViewportWidth.m, `max-width: ${ViewportWidth.m}`)}
-  ${forMinWidth(ViewportWidth.xl, `max-width: ${ViewportWidth.l}`)}`}
+  ${forMinWidth(ViewportWidth.s, `max-width: 520px;`)}
+  ${forMinWidth(ViewportWidth.m, `max-width: 800px`)}
+  ${forMinWidth(ViewportWidth.xl, `max-width: 1100px`)}
 `;

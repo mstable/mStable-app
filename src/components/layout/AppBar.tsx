@@ -207,12 +207,18 @@ const StatusWarning = styled.div<{ error?: boolean }>`
   font-weight: bold;
   font-size: 12px;
   color: ${({ error }) => (error ? Color.red : Color.offBlack)};
+  background: ${Color.white};
+  border-right: 1px ${Color.red} solid;
+  border-bottom: 1px ${Color.red} solid;
+  padding: 8px 16px;
 `;
 
 const StatusWarningsRowContainer = styled.div`
   display: flex;
   justify-content: center;
-  padding: 4px 16px;
+  position: absolute;
+  top: 0;
+  left: 0;
   > * {
     margin-right: 16px;
   }
@@ -361,13 +367,13 @@ export const AppBar: FC<{}> = () => {
               <LogoSvg />
             </A>
           </Logo>
-          <StatusWarningsRow />
           <Buttons>
             {home ? null : <NotificationsButton />}
             <WalletButton />
           </Buttons>
         </Top>
       </Inner>
+      <StatusWarningsRow />
     </Container>
   );
 };

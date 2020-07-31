@@ -24,7 +24,6 @@ const List = styled.ul`
   width: 100%;
 
   @media (min-width: ${ViewportWidth.m}) {
-    justify-content: space-evenly;
     width: auto;
   }
 `;

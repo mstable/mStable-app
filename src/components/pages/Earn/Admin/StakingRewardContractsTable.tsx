@@ -95,7 +95,10 @@ export const StakingRewardContractsTable: FC<{}> = () => {
         .map(item => ({
           address: item.address,
           contract: signer
-            ? Erc20DetailedFactory.connect(item.address, signer)
+            ? Erc20DetailedFactory.connect(
+                item.platformRewards?.platformToken.address as string,
+                signer,
+              )
             : undefined,
           platformToken: (item.platformRewards as NonNullable<
             StakingRewardsContract['platformRewards']

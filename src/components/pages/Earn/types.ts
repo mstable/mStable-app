@@ -1,13 +1,10 @@
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { Tokens } from '../../../context/DataProvider/TokensProvider';
 import { StakingRewardsContract } from '../../../context/earn/types';
+import { AccentColors } from '../../../types';
 
 export interface PlatformMetadata {
-  colors: {
-    accent: string;
-    base: string;
-    text: string;
-  };
+  colors: AccentColors;
   name: string;
   getPlatformLink(stakingRewardsContract: StakingRewardsContract): string;
   slug: string;
@@ -23,7 +20,6 @@ export interface State {
   stakingRewardsContract?: StakingRewardsContract;
   activeTab: Tabs;
   tokens: Tokens;
-  initialized: boolean;
   stake: {
     amount?: BigDecimal;
     formValue: string | null;
@@ -65,4 +61,11 @@ export enum Reasons {
   AmountMustBeGreaterThanZero,
   AmountMustBeSet,
   FetchingData,
+}
+
+export interface RewardsEarned {
+  rewards?: BigDecimal;
+  rewardsUsd?: BigDecimal;
+  platformRewards?: BigDecimal;
+  platformRewardsUsd?: BigDecimal;
 }

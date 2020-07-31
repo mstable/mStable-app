@@ -58,7 +58,7 @@ export const useBlockPollingSubscription = <TData, TVariables>(
     }
   }, [skip, blockNumber, run]);
 
-  return query;
+  return query as never;
 };
 
 export const useMusdSubscription = (): MassetQueryResult => {

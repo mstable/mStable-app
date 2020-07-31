@@ -1,30 +1,31 @@
 fragment PoolDetails on Pool {
-  id
+  address: id
   totalShares
   totalSwapVolume
+  totalWeight
   swapFee
   tokens {
-    address
+    address: id
     balance
     decimals
     symbol
+    denormWeight
   }
 }
 
 fragment TokenPriceDetails on TokenPrice {
-  id
+  address: id
   price
   decimals
 }
 
-query Pools($ids: [ID!]!) @api(name: balancer) {
-  pools(where: { id_in: $ids }) {
+query Pools($ids: [ID!]!, $includeHistoric: Boolean!, $block: Block_height)
+  @api(name: balancer) {
+  current: pools(where: { id_in: $ids }) {
     ...PoolDetails
   }
-}
-
-query PoolsAtBlock($ids: [ID!]!, $blockNumber: Int!) @api(name: balancer) {
-  pools(where: { id_in: $ids }, block: { number: $blockNumber }) {
+  historic: pools(where: { id_in: $ids }, block: $block)
+    @include(if: $includeHistoric) {
     ...PoolDetails
   }
 }

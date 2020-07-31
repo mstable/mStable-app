@@ -21,13 +21,17 @@ interface Props {
   spender: string;
 }
 
-const StyledButton = styled(Button)``;
+const StyledButton = styled(Button)`
+  padding-left: 4px;
+  padding-right: 4px;
+  font-size: 12px;
+`;
 
 const StyledAmountInput = styled(AmountInput)`
-  font-size: 14px;
+  font-size: 12px;
   height: 100%;
   margin: 0 4px;
-  padding: 2px;
+  padding: 4px;
 ` as typeof AmountInput;
 
 const Container = styled.div`
@@ -37,6 +41,7 @@ const Container = styled.div`
   background: ${Color.offWhite};
   border-radius: 2px;
   border: 1px ${Color.blackTransparent} solid;
+  min-width: 200px;
 `;
 
 export const ApproveButton: FC<Props> = ({
@@ -53,7 +58,9 @@ export const ApproveButton: FC<Props> = ({
   const [approveAmount, setApproveAmount] = useState<BigDecimal | undefined>(
     amount,
   );
-  const [approveFormValue, setApproveFormValue] = useState<string | null>();
+  const [approveFormValue, setApproveFormValue] = useState<string | null>(
+    amount?.string || null,
+  );
   const [totalSupply, setTotalSupply] = useState<BigDecimal>();
 
   useEffect(() => {

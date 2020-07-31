@@ -102,8 +102,15 @@ const getPendingTxDescription = (
       case 'stake(uint256)': {
         return (
           <>
-            You {tx.status ? 'staked' : 'are staking'} {stakingToken.symbol} in{' '}
-            {title}
+            You {tx.status ? 'staked' : 'are staking'} in {title}
+          </>
+        );
+      }
+      case 'approve': {
+        return (
+          <>
+            You {tx.status ? 'approved' : 'are approving'} {title} to transfer
+            your {stakingToken.symbol}
           </>
         );
       }

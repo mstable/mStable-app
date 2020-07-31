@@ -17,6 +17,9 @@ import {
   useCurrentStakingRewardsContractCtx,
 } from '../StakingRewardsContractProvider';
 import { CountUp } from '../../../core/CountUp';
+import { ExternalLink } from '../../../core/ExternalLink';
+import { PLATFORM_METADATA } from '../constants';
+import { Protip } from '../../../core/Protip';
 
 const Input: FC<{}> = () => {
   const {
@@ -29,6 +32,10 @@ const Input: FC<{}> = () => {
   } = useStakingRewardContractDispatch();
 
   const stakingToken = useCurrentStakingToken();
+
+  const metadata = stakingRewardsContract
+    ? PLATFORM_METADATA[stakingRewardsContract.pool.platform]
+    : undefined;
 
   if (!stakingRewardsContract) {
     return <Skeleton height={300} />;
@@ -52,6 +59,15 @@ const Input: FC<{}> = () => {
           tokenDisabled
           tokenValue={stakingToken?.address || null}
         />
+        {metadata && stakingToken?.balance.exact.lte(0) ? (
+          <Protip title="Need tokens to stake?">
+            <ExternalLink
+              href={metadata.getPlatformLink(stakingRewardsContract)}
+            >
+              Get tokens to stake by contributing liquidity on {metadata.name}
+            </ExternalLink>
+          </Protip>
+        ) : null}
       </div>
     </FormRow>
   );

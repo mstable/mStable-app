@@ -5,20 +5,20 @@ import {
   StakingRewardsContractsQueryResult,
   StakingRewardsContractType,
 } from '../../graphql/mstable';
-import { PoolsQueryResult, TokenPrice } from '../../graphql/balancer';
+import { PoolsQueryResult } from '../../graphql/balancer';
 import { PairsQueryResult } from '../../graphql/uniswap';
 
 export type RawPoolData = NonNullable<
   PoolsQueryResult['data']
->['pools'][number];
+>['current'][number];
 
 export type RawPairData = NonNullable<
   PairsQueryResult['data']
->['pairs'][number];
+>['current'][number];
 
-export interface RawPlatformPoolsData {
-  [Platforms.Balancer]: RawPoolData[];
-  [Platforms.Uniswap]: RawPairData[];
+export interface RawPlatformPools {
+  [Platforms.Balancer]: { current: RawPoolData[]; historic: RawPoolData[] };
+  [Platforms.Uniswap]: { current: RawPairData[]; historic: RawPairData[] };
 }
 
 export interface TokenPricesMap {
@@ -29,61 +29,64 @@ export interface NormalizedPoolsMap {
   [address: string]: NormalizedPool;
 }
 
-export type RawStakingRewardsContracts = NonNullable<
-  StakingRewardsContractsQueryResult['data']
->['stakingRewardsContracts'];
-
-export type RawTokenPrices = Pick<TokenPrice, 'decimals' | 'price' | 'id'>[];
+export type RawStakingRewardsContracts = StakingRewardsContractsQueryResult['data'];
 
 export interface RawSyncedEarnData {
   block24hAgo?: BlockTimestamp;
-  rawTokenPrices: RawTokenPrices;
-  rawPlatformPoolsData: RawPlatformPoolsData;
-  rawPlatformPoolsData24hAgo: RawPlatformPoolsData;
+  tokenPrices: TokenPricesMap;
+  rawPlatformPools: RawPlatformPools;
 }
 
 export interface SyncedEarnData {
   block24hAgo?: BlockTimestamp;
-  normalizedPoolsMap: NormalizedPoolsMap;
-  normalizedPoolsMap24hAgo: NormalizedPoolsMap;
-  tokenPricesMap: TokenPricesMap;
+  pools: {
+    current: NormalizedPoolsMap;
+    historic: NormalizedPoolsMap;
+  };
+  tokenPrices: TokenPricesMap;
 }
 
 export interface RawEarnData {
   block24hAgo?: BlockTimestamp;
   rawStakingRewardsContracts: RawStakingRewardsContracts;
-  rawStakingRewardsContracts24hAgo: Pick<
-    RawStakingRewardsContracts[number],
-    'id' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored'
-  >[];
 }
 
-export interface NormalizedPool {
+export type NormalizedPool = {
   address: string;
   platform: Platforms;
-  tokens: (Token & { liquidity: BigDecimal; price?: BigDecimal })[];
-  [Platforms.Uniswap]?: { totalSupply: BigDecimal; reserveUSD: BigDecimal };
-  [Platforms.Balancer]?: {
-    totalShares: BigDecimal;
-    totalSwapVolume: BigDecimal;
-    swapFee: BigDecimal;
-  };
-}
+  tokens: (Token & {
+    liquidity: BigDecimal;
+    price?: BigDecimal;
+    ratio: number;
+  })[];
+  totalSupply: BigDecimal;
+} & (
+  | {
+      // Uniswap
+      reserveUSD: BigDecimal;
+    }
+  | {
+      // Balancer
+      totalSwapVolume: BigDecimal;
+      swapFee: BigDecimal;
+    }
+);
 
 export interface StakingRewardsContract {
   address: string;
   earnUrl: string;
   title: string;
   pool: NormalizedPool;
-  pool24hAgo: NormalizedPool;
+  pool24hAgo?: NormalizedPool;
   duration: number;
   lastUpdateTime: number;
   periodFinish: number;
   rewardRate: BigNumber;
   rewardPerTokenStoredNow: BigNumber;
-  rewardPerTokenStored24hAgo: BigNumber;
+  rewardPerTokenStored24hAgo?: BigNumber;
   rewardsToken: Token & { price?: BigDecimal };
   stakingBalance: BigDecimal;
+  stakingBalancePercentage: BigDecimal;
   stakingReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal };
   stakingToken: Token & { totalSupply: BigDecimal; price?: BigDecimal };
   totalSupply: BigDecimal;
@@ -94,7 +97,7 @@ export interface StakingRewardsContract {
   combinedRewardsTokensApy?: BigDecimal;
   platformRewards?: {
     platformRewardPerTokenStoredNow: BigNumber;
-    platformRewardPerTokenStored24hAgo: BigNumber;
+    platformRewardPerTokenStored24hAgo?: BigNumber;
     platformRewardRate: BigNumber;
     platformReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal };
     platformToken: Token & { price?: BigDecimal };

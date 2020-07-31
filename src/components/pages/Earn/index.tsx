@@ -1,7 +1,9 @@
 import React, { FC, useEffect } from 'react';
 import styled from 'styled-components';
 import useToggle from 'react-use/lib/useToggle';
+import createStateContext from 'react-use/lib/createStateContext';
 
+import { useStakingRewardsContracts } from '../../../context/earn/EarnDataProvider';
 import { Slider } from '../../core/Slider';
 import { Token } from '../../core/Token';
 import { H2, H3, P } from '../../core/Typography';
@@ -10,8 +12,10 @@ import { ExternalLink } from '../../core/ExternalLink';
 import { Color, FontSize, Size } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
 import { centredLayout } from '../../layout/css';
-import { PoolCards } from './PoolCards';
 import { PoolsOverview } from './PoolsOverview';
+import { Card } from './Card';
+
+const [useSwipeDisabled, SwipeDisabledProvider] = createStateContext(false);
 
 const StyledExternalLink = styled(ExternalLink)`
   color: ${Color.white};
@@ -47,12 +51,12 @@ const Screenshot = styled.div`
 `;
 
 const ItemContent = styled.div`
-  padding: 8px 8px 32px 8px;
+  padding: 8px 16px 32px 16px;
   flex-grow: 1;
   transition: background-color 0.3s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
 
   ol {
     padding: 16px;
@@ -62,7 +66,7 @@ const ItemContent = styled.div`
       margin-bottom: 8px;
     }
   }
-  
+
   p {
     padding-left: 8px;
     padding-right: 8px;
@@ -130,9 +134,7 @@ const IntroducingMeta: FC<{}> = () => (
         <li>To coordinate decentralised governance.</li>
         <li>
           To incentivise the bootstrapping of mStable asset liquidity, utility
-          and a community of Governors. mStable Ecosystem Rewards, (AKA "EARN"),
-          rewards users who contribute mUSD liquidity across the ecosystem, for
-          example in Balancer or Uniswap.
+          and a community of Governors.
         </li>
       </ol>
       <P>
@@ -190,7 +192,7 @@ const TakingPart4: FC<{}> = () => (
 );
 
 const TakingPart5: FC<{}> = () => (
-  <Item title="Think of something witty">
+  <Item title="Dry off">
     <P>Claim your rewards or withdraw your stake at any time!</P>
     <Screenshot>
       <img alt="" src="/claim.png" />
@@ -198,15 +200,42 @@ const TakingPart5: FC<{}> = () => (
   </Item>
 );
 
-const EarnMetaRewards: FC<{}> = () => {
+const PoolCardsContainer = styled.div`
+  height: 300px;
+  text-align: left;
+
+  > div > div > div {
+    margin: 0 auto;
+    width: 360px;
+
+    > section {
+      padding: 0 8px;
+    }
+  }
+`;
+
+const PoolCards: FC<{}> = () => {
+  const stakingRewardContracts = useStakingRewardsContracts();
+
   // As this is the last item, set LocalStorage
   useEffect(() => {
     LocalStorage.set('viewedEarnOnboarding', true);
   }, []);
+
+  const [, setSwipeDisabled] = useSwipeDisabled();
+
   return (
     <Item title="Earn Meta rewards" slider>
       <H3>Select a pool to start earning.</H3>
-      <PoolCards />
+      <PoolCardsContainer>
+        <Slider
+          setSwipeDisabled={setSwipeDisabled}
+          items={Object.keys(stakingRewardContracts).map(address => ({
+            children: <Card address={address} linkToPool />,
+            key: address,
+          }))}
+        />
+      </PoolCardsContainer>
     </Item>
   );
 };
@@ -238,7 +267,8 @@ const EARN_ITEMS = [
   },
   {
     key: 'pools',
-    children: <EarnMetaRewards />,
+    slider: true,
+    children: <PoolCards />,
   },
 ];
 
@@ -247,7 +277,7 @@ const SliderContainer = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to top right, #11151c, #34302d);
+  background: linear-gradient(to top right, #040a10, #131212);
   flex: 1;
   > * {
     flex: 1;
@@ -256,6 +286,25 @@ const SliderContainer = styled.div`
 
 const Intro = styled.div`
   margin-bottom: 32px;
+  display: flex;
+  align-items: flex-start;
+
+  h2 {
+    font-size: ${FontSize.xl};
+  }
+
+  ${MtaToken} {
+    padding: 0;
+
+    > img {
+      width: 96px;
+      height: 96px;
+    }
+
+    > img + div {
+      display: none;
+    }
+  }
 `;
 
 const Content = styled.div`
@@ -279,7 +328,26 @@ const Container = styled.div`
   height: 100%;
 `;
 
-export const Earn: FC<{ initialItem?: string }> = ({ initialItem }) => {
+const EarnSlider: FC<{
+  toggleOnboardingVisible(): void;
+}> = ({ toggleOnboardingVisible }) => {
+  const [swipeDisabled] = useSwipeDisabled();
+  return (
+    <Slider
+      items={EARN_ITEMS}
+      bottomControls
+      sideControls
+      swipeDisabled={swipeDisabled}
+      skipButton={
+        <Button onClick={toggleOnboardingVisible} size={Size.s}>
+          Skip introduction
+        </Button>
+      }
+    />
+  );
+};
+
+export const Earn: FC<{}> = () => {
   const viewedEarnOnboarding = !!LocalStorage.get('viewedEarnOnboarding');
   const [onboardingVisible, toggleOnboardingVisible] = useToggle(
     !viewedEarnOnboarding,
@@ -288,27 +356,23 @@ export const Earn: FC<{ initialItem?: string }> = ({ initialItem }) => {
   return (
     <Container>
       {onboardingVisible ? (
-        <SliderContainer>
-          <Slider
-            items={EARN_ITEMS}
-            initialItem={initialItem}
-            bottomControls
-            sideControls
-            skipButton={
-              <Button onClick={toggleOnboardingVisible} size={Size.s}>
-                Skip introduction
-              </Button>
-            }
-          />
-        </SliderContainer>
+        <SwipeDisabledProvider>
+          <SliderContainer>
+            <EarnSlider toggleOnboardingVisible={toggleOnboardingVisible} />
+          </SliderContainer>
+        </SwipeDisabledProvider>
       ) : (
         <Content>
           <div>
             <Intro>
-              <H2>Earn staking rewards with mStable</H2>
-              <Button onClick={toggleOnboardingVisible} size={Size.xs}>
-                View introduction
-              </Button>
+              <MtaToken symbol="MTA" />
+              <div>
+                <H2>EARN</H2>
+                <H3>Ecosystem rewards with mStable</H3>
+                <Button onClick={toggleOnboardingVisible} size={Size.xs}>
+                  View introduction
+                </Button>
+              </div>
             </Intro>
             <PoolsOverview />
           </div>
