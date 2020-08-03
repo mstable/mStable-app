@@ -16,6 +16,7 @@ Features:
   - Add notifications section
   - Improve layout for navigation items
 
+
 Miscellaneous:
 
 - Add multiple Subgraph endpoints, to use data from connected
