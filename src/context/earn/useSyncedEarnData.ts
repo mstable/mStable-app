@@ -164,16 +164,14 @@ const useTokenPrices = (
   );
 };
 
-const normalizeUniswapToken = ({
-  address,
-  totalLiquidity,
-  symbol,
-  decimals,
-}: RawPairData['token0']): NormalizedPool['tokens'][number] => ({
+const normalizeUniswapToken = (
+  { address, symbol, decimals }: RawPairData['token0'],
+  reserve: RawPairData['reserve0'],
+): NormalizedPool['tokens'][number] => ({
   address,
   decimals: parseInt(decimals, 10),
   symbol,
-  liquidity: BigDecimal.parse(totalLiquidity, parseInt(decimals, 10)),
+  liquidity: BigDecimal.parse(reserve, parseInt(decimals, 10)),
   ratio: 50, // All Uniswap pairs are 50/50
 });
 
@@ -181,6 +179,8 @@ const normalizeUniswapPool = ({
   address,
   totalSupply,
   reserveUSD,
+  reserve0,
+  reserve1,
   token0,
   token1,
 }: RawPairData): NormalizedPool => ({
@@ -188,7 +188,10 @@ const normalizeUniswapPool = ({
   platform: Platforms.Uniswap,
   totalSupply: BigDecimal.parse(totalSupply, 18),
   reserveUSD: BigDecimal.parse(reserveUSD, 18),
-  tokens: [normalizeUniswapToken(token0), normalizeUniswapToken(token1)],
+  tokens: [
+    normalizeUniswapToken(token0, reserve0),
+    normalizeUniswapToken(token1, reserve1),
+  ],
 });
 
 const normalizeBalancerPool = ({

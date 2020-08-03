@@ -2377,7 +2377,7 @@ export enum User_OrderBy {
 }
 
 export type PairDetailsFragment = (
-  Pick<Pair, 'reserveUSD' | 'totalSupply'>
+  Pick<Pair, 'reserveUSD' | 'totalSupply' | 'reserve0' | 'reserve1'>
   & { address: Pair['id'] }
   & { token0: (
     Pick<Token, 'decimals' | 'symbol' | 'totalLiquidity'>
@@ -2402,6 +2402,8 @@ export const PairDetailsFragmentDoc = gql`
   address: id
   reserveUSD
   totalSupply
+  reserve0
+  reserve1
   token0 {
     address: id
     decimals
