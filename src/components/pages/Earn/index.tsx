@@ -121,16 +121,17 @@ const IntroducingMeta: FC<{}> = () => (
       </>
     }
   >
-    <MtaToken symbol="MTA" color={Color.white} />
     <div>
+      <MtaToken symbol="MTA" color={Color.white} />
       <P>Introducing Meta.</P>
       <P>
-        Meta (MTA) is mStable's protocol token. Meta has three core functions:
+        Meta (MTA) is mStable's protocol token. Meta will have at least three
+        core functions:
       </P>
       <ol>
         <li>
           To act as the ultimate source of re-collateralisation (insurance) for
-          mAssets.
+          mASSETS.
         </li>
         <li>To coordinate decentralised governance.</li>
         <li>
