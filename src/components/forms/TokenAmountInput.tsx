@@ -25,6 +25,7 @@ interface Props {
   amountValue: string | null;
   tokenAddresses: string[];
   tokenDisabled?: boolean;
+  exactDecimals?: boolean;
   needsUnlock?: boolean;
   items?: {
     label: string;
@@ -144,6 +145,7 @@ export const TokenAmountInput: FC<Props> = ({
   tokenValue,
   amountValue,
   name,
+  exactDecimals,
   tokenDisabled,
   needsUnlock,
   spender,
@@ -200,7 +202,13 @@ export const TokenAmountInput: FC<Props> = ({
           <Item key="balance">
             <ItemLabel>Balance</ItemLabel>
             <div>
-              {token ? token.balance.format(2, true, token.symbol) : '—'}
+              {token
+                ? token.balance.format(
+                    exactDecimals ? token.decimals : 2,
+                    true,
+                    token.symbol,
+                  )
+                : '—'}
             </div>
           </Item>
           {items.map(({ label, value, highlight }) => (

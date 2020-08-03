@@ -37,7 +37,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
           ...state.stake,
           touched: true,
           amount,
-          formValue: amount.format(2, false),
+          formValue: amount.format(stakingToken.decimals, false),
         },
       };
     }

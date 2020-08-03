@@ -111,10 +111,9 @@ export class BigDecimal {
   }
 
   toPercent(decimalPlaces = 2): number {
-    const percentage = this.exact.div(
-      new BigNumber(10).pow(16 - decimalPlaces),
+    return parseFloat(
+      (this.simple * 100).toFixed(decimalPlaces).replace(/0+$/, ''),
     );
-    return parseFloat((percentage.toNumber() / 100).toFixed(decimalPlaces));
   }
 
   /**

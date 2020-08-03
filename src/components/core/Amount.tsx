@@ -69,7 +69,7 @@ export const Amount: FC<Props> = ({
       case NumberFormat.Percentage:
         return `${amount.toPercent(decimalPlaces)}%`;
       case NumberFormat.CountupPercentage:
-        return amount.toPercent();
+        return amount.toPercent(decimalPlaces);
       default:
         return amount.exact.toString();
     }

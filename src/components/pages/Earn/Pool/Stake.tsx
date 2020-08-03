@@ -51,6 +51,7 @@ const Input: FC<{}> = () => {
           needsUnlock={needsUnlock}
           amountValue={formValue}
           error={error}
+          exactDecimals
           name="stake"
           spender={address}
           onChangeAmount={setStakeAmount}
