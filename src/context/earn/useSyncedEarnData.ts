@@ -212,7 +212,7 @@ const normalizeBalancerPool = ({
         liquidity: BigDecimal.parse(balance, decimals),
         symbol: symbol as string,
         ratio: Math.floor(
-          (parseInt(denormWeight, 10) / parseInt(totalWeight, 10)) * 100,
+          (parseFloat(denormWeight) / parseFloat(totalWeight)) * 100,
         ),
       }),
     ) ?? [],
