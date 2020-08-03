@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.8.0
+
+_Released 03.08.20 15.30 CEST_
+
 Features:
 
 - Add EARN feature
@@ -15,6 +19,8 @@ Features:
   - Show transaction status success/pending/error icon by wallet
   - Add notifications section
   - Improve layout for navigation items
+- Token approvals
+  - Improve the token spending allowance UX with an amount field and infinite approve button
 
 
 Miscellaneous:
