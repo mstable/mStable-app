@@ -3,7 +3,7 @@ import { useWallet } from 'use-wallet';
 import useThrottle from 'react-use/lib/useThrottle';
 
 import { BigDecimal } from '../../web3/BigDecimal';
-import { usePoolsQuery, useTokenPricesQuery } from '../../graphql/balancer';
+import { usePoolsQuery } from '../../graphql/balancer';
 import { useStakingRewardsContractsQuery } from '../../graphql/mstable';
 import { usePairsQuery } from '../../graphql/uniswap';
 import { useBlockTimestampQuery } from '../../graphql/blocks';
@@ -58,11 +58,11 @@ const getUniqueTokens = (
   const tokens = (rawStakingContractsData?.current || []).reduce(
     (_tokens, { rewardsToken, platformToken, stakingToken }) => ({
       ..._tokens,
-      [rewardsToken.address]: rewardsToken.decimals,
-      [stakingToken.address]: stakingToken.decimals,
+      [rewardsToken.address.toLowerCase()]: rewardsToken.decimals,
+      [stakingToken.address.toLowerCase()]: stakingToken.decimals,
       ...(platformToken
         ? {
-            [platformToken.address]: platformToken.decimals,
+            [platformToken.address.toLowerCase()]: platformToken.decimals,
           }
         : null),
     }),
@@ -71,18 +71,21 @@ const getUniqueTokens = (
 
   const balancerTokens = rawPlatformsData.Balancer.current.reduce(
     (_tokens, platform) =>
-      (platform.tokens || []).reduce((acc, token) => ({
-        ...acc,
-        [token.address]: token.decimals,
-      })),
+      (platform.tokens || []).reduce(
+        (acc, token) => ({
+          ...acc,
+          [token.address.toLowerCase()]: token.decimals,
+        }),
+        {},
+      ),
     {},
   );
 
   const uniswapTokens = rawPlatformsData.Uniswap.current.reduce(
     (_tokens, { token0, token1 }) => ({
       ..._tokens,
-      [token0.address]: token0.decimals,
-      [token1.address]: token1.decimals,
+      [token0.address.toLowerCase()]: parseInt(token0.decimals, 10),
+      [token1.address.toLowerCase()]: parseInt(token1.decimals, 10),
     }),
     {},
   );
@@ -123,13 +126,6 @@ const useTokenPrices = (
 
   const addresses = Object.keys(uniqueTokens);
 
-  const balancerPricesQuery = useTokenPricesQuery({
-    variables: { tokens: addresses },
-    skip: addresses.length === 0,
-    fetchPolicy: 'cache-and-network',
-  });
-  const balancerPrices = balancerPricesQuery?.data?.tokenPrices || [];
-
   useThrottle(() => {
     if (addresses.length > 0) {
       fetchCoingeckoPrices(addresses).then((result: CoingeckoPrices) => {
@@ -139,28 +135,18 @@ const useTokenPrices = (
   }, TEN_MINUTES);
 
   return useMemo(
-    () => ({
-      // Balancer prices are a fallback
-      ...balancerPrices.reduce(
-        (_prices, { address, price, decimals }) => ({
-          ..._prices,
-          [address]: BigDecimal.parse(price, decimals),
-        }),
-        {},
-      ),
-      // Coingecko prices take precedence
-      ...Object.keys(coingeckoPrices).reduce(
+    () =>
+      Object.keys(coingeckoPrices).reduce(
         (_prices, address) => ({
           ..._prices,
-          [address]: BigDecimal.maybeParse(
-            coingeckoPrices[address].usd.toString(),
-            uniqueTokens[address],
+          [address.toLowerCase()]: BigDecimal.maybeParse(
+            coingeckoPrices[address.toLowerCase()].usd.toString(),
+            uniqueTokens[address.toLowerCase()],
           ),
         }),
         {},
       ),
-    }),
-    [balancerPrices, coingeckoPrices, uniqueTokens],
+    [coingeckoPrices, uniqueTokens],
   );
 };
 

@@ -1208,10 +1208,7 @@ export enum User_OrderBy {
 export type PoolDetailsFragment = (
   Pick<Pool, 'totalShares' | 'totalSwapVolume' | 'totalWeight' | 'swapFee'>
   & { address: Pool['id'] }
-  & { tokens?: Maybe<Array<(
-    Pick<PoolToken, 'balance' | 'decimals' | 'symbol' | 'denormWeight'>
-    & { address: PoolToken['id'] }
-  )>> }
+  & { tokens?: Maybe<Array<Pick<PoolToken, 'address' | 'balance' | 'decimals' | 'symbol' | 'denormWeight'>>> }
 );
 
 export type TokenPriceDetailsFragment = (
@@ -1250,7 +1247,7 @@ export const PoolDetailsFragmentDoc = gql`
   totalWeight
   swapFee
   tokens {
-    address: id
+    address
     balance
     decimals
     symbol
