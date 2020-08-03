@@ -129,7 +129,8 @@ const IntroducingMeta: FC<{}> = () => (
       </P>
       <ol>
         <li>
-          To act as the ultimate source of re-collateralisation (insurance).
+          To act as the ultimate source of re-collateralisation (insurance) for
+          mAssets.
         </li>
         <li>To coordinate decentralised governance.</li>
         <li>
@@ -148,7 +149,11 @@ const IntroducingMeta: FC<{}> = () => (
 
 const TakingPart1: FC<{}> = () => (
   <Item title="Pool party">
-    <P>Choose which platforms or pools you would like to contribute to.</P>
+    <P>
+      mStable are rewarding users in MTA for contributing to mStable's liquidity
+      across the DeFi ecosystem. View the list of incentivised pools and
+      platforms and choose those you would like to contribute to!
+    </P>
     <Screenshot>
       <img alt="" src="/overview.png" />
     </Screenshot>
@@ -158,7 +163,10 @@ const TakingPart1: FC<{}> = () => (
 const TakingPart2: FC<{}> = () => (
   <Item title="Test the waters">
     <div>
-      <P>Contribute liquidity to the chosen pool.</P>
+      <P>
+        Contribute liquidity to the chosen pool by visiting the dApp and
+        depositing the required assets.
+      </P>
       <P>
         Platforms like Balancer or Uniswap will issue an ERC-20 LP (Liquidity
         Provider) token for your contribution.
@@ -172,7 +180,10 @@ const TakingPart2: FC<{}> = () => (
 
 const TakingPart3: FC<{}> = () => (
   <Item title="Dive in">
-    <P>"Stake" this LP token on the mStable App, through our intuitive UI.</P>
+    <P>
+      "Stake" this LP token on the mStable EARN page by simply entering an
+      amount, approving the spending of the LP token and then pressing "STAKE".
+    </P>
     <Screenshot>
       <img alt="" src="/stake.png" />
     </Screenshot>
