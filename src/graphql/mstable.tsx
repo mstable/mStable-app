@@ -785,6 +785,8 @@ export type Query = {
   rewardsDistributors: Array<RewardsDistributor>;
   stakingReward?: Maybe<StakingReward>;
   stakingRewards: Array<StakingReward>;
+  rewardPerTokenStored?: Maybe<RewardPerTokenStored>;
+  rewardPerTokenStoreds: Array<RewardPerTokenStored>;
   stakingRewardsContract?: Maybe<StakingRewardsContract>;
   stakingRewardsContracts: Array<StakingRewardsContract>;
   stakingBalance?: Maybe<StakingBalance>;
@@ -1100,6 +1102,22 @@ export type QueryStakingRewardsArgs = {
 };
 
 
+export type QueryRewardPerTokenStoredArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryRewardPerTokenStoredsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<RewardPerTokenStored_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<RewardPerTokenStored_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
 export type QueryStakingRewardsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -1162,6 +1180,71 @@ export type QueryTransactionsArgs = {
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
 };
+
+export type RewardPerTokenStored = {
+  id: Scalars['ID'];
+  stakingRewardsContract: StakingRewardsContract;
+  lastUpdateTime: Scalars['Int'];
+  rewardPerTokenStored: Scalars['BigInt'];
+  platformRewardPerTokenStored?: Maybe<Scalars['BigInt']>;
+};
+
+export type RewardPerTokenStored_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  stakingRewardsContract?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lt?: Maybe<Scalars['String']>;
+  stakingRewardsContract_gte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_lte?: Maybe<Scalars['String']>;
+  stakingRewardsContract_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_not_in?: Maybe<Array<Scalars['String']>>;
+  stakingRewardsContract_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_contains?: Maybe<Scalars['String']>;
+  stakingRewardsContract_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_starts_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_ends_with?: Maybe<Scalars['String']>;
+  stakingRewardsContract_not_ends_with?: Maybe<Scalars['String']>;
+  lastUpdateTime?: Maybe<Scalars['Int']>;
+  lastUpdateTime_not?: Maybe<Scalars['Int']>;
+  lastUpdateTime_gt?: Maybe<Scalars['Int']>;
+  lastUpdateTime_lt?: Maybe<Scalars['Int']>;
+  lastUpdateTime_gte?: Maybe<Scalars['Int']>;
+  lastUpdateTime_lte?: Maybe<Scalars['Int']>;
+  lastUpdateTime_in?: Maybe<Array<Scalars['Int']>>;
+  lastUpdateTime_not_in?: Maybe<Array<Scalars['Int']>>;
+  rewardPerTokenStored?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_not?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_gt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_lt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_gte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_lte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardPerTokenStored_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewardPerTokenStored?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_not?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_gt?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_lt?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_gte?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_lte?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewardPerTokenStored_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum RewardPerTokenStored_OrderBy {
+  Id = 'id',
+  StakingRewardsContract = 'stakingRewardsContract',
+  LastUpdateTime = 'lastUpdateTime',
+  RewardPerTokenStored = 'rewardPerTokenStored',
+  PlatformRewardPerTokenStored = 'platformRewardPerTokenStored'
+}
 
 export type RewardsDistributor = {
   /** ID of the rewards distributor contract */
@@ -1977,6 +2060,8 @@ export type Subscription = {
   rewardsDistributors: Array<RewardsDistributor>;
   stakingReward?: Maybe<StakingReward>;
   stakingRewards: Array<StakingReward>;
+  rewardPerTokenStored?: Maybe<RewardPerTokenStored>;
+  rewardPerTokenStoreds: Array<RewardPerTokenStored>;
   stakingRewardsContract?: Maybe<StakingRewardsContract>;
   stakingRewardsContracts: Array<StakingRewardsContract>;
   stakingBalance?: Maybe<StakingBalance>;
@@ -2288,6 +2373,22 @@ export type SubscriptionStakingRewardsArgs = {
   orderBy?: Maybe<StakingReward_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<StakingReward_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionRewardPerTokenStoredArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionRewardPerTokenStoredsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<RewardPerTokenStored_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<RewardPerTokenStored_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -2802,7 +2903,10 @@ export type Erc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
 export type AllErc20TokensQueryVariables = {};
 
 
-export type AllErc20TokensQuery = { savingsContracts: Array<{ address: SavingsContract['id'] }>, tokens: Array<TokenDetailsFragment> };
+export type AllErc20TokensQuery = { savingsContracts: Array<(
+    Pick<SavingsContract, 'id'>
+    & { address: SavingsContract['id'] }
+  )>, tokens: Array<TokenDetailsFragment> };
 
 export type TokenByAddressQueryVariables = {
   id: Scalars['ID'];
@@ -2924,6 +3028,16 @@ export type RewardsDistributorQueryVariables = {};
 
 export type RewardsDistributorQuery = { rewardsDistributors: Array<Pick<RewardsDistributor, 'id' | 'fundManagers'>> };
 
+export type RewardPerTokenStoredDetailsFragment = Pick<RewardPerTokenStored, 'id' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored' | 'lastUpdateTime'>;
+
+export type MostRecentRewardPerTokenStoredQueryVariables = {
+  stakingRewardsContract: Scalars['String'];
+  timestamp: Scalars['Int'];
+};
+
+
+export type MostRecentRewardPerTokenStoredQuery = { closestBeforeTimestamp: Array<RewardPerTokenStoredDetailsFragment>, closestAfterTimestamp: Array<RewardPerTokenStoredDetailsFragment> };
+
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
   id
@@ -2971,6 +3085,14 @@ export const ErFragmentDoc = gql`
     fragment ER on ExchangeRate {
   exchangeRate
   timestamp
+}
+    `;
+export const RewardPerTokenStoredDetailsFragmentDoc = gql`
+    fragment RewardPerTokenStoredDetails on RewardPerTokenStored {
+  id
+  rewardPerTokenStored
+  platformRewardPerTokenStored
+  lastUpdateTime
 }
     `;
 export const CoreTokensDocument = gql`
@@ -3078,6 +3200,7 @@ export const AllErc20TokensDocument = gql`
     query AllErc20Tokens @api(name: mstable) {
   savingsContracts {
     address: id
+    id
   }
   tokens {
     ...TokenDetails
@@ -3637,3 +3760,40 @@ export function useRewardsDistributorLazyQuery(baseOptions?: ApolloReactHooks.La
 export type RewardsDistributorQueryHookResult = ReturnType<typeof useRewardsDistributorQuery>;
 export type RewardsDistributorLazyQueryHookResult = ReturnType<typeof useRewardsDistributorLazyQuery>;
 export type RewardsDistributorQueryResult = ApolloReactCommon.QueryResult<RewardsDistributorQuery, RewardsDistributorQueryVariables>;
+export const MostRecentRewardPerTokenStoredDocument = gql`
+    query MostRecentRewardPerTokenStored($stakingRewardsContract: String!, $timestamp: Int!) @api(name: mstable) {
+  closestBeforeTimestamp: rewardPerTokenStoreds(where: {stakingRewardsContract: $stakingRewardsContract, lastUpdateTime_lt: $timestamp}, orderDirection: asc, orderBy: lastUpdateTime, first: 1) {
+    ...RewardPerTokenStoredDetails
+  }
+  closestAfterTimestamp: rewardPerTokenStoreds(where: {stakingRewardsContract: $stakingRewardsContract, lastUpdateTime_gt: $timestamp}, orderDirection: desc, orderBy: lastUpdateTime, first: 1) {
+    ...RewardPerTokenStoredDetails
+  }
+}
+    ${RewardPerTokenStoredDetailsFragmentDoc}`;
+
+/**
+ * __useMostRecentRewardPerTokenStoredQuery__
+ *
+ * To run a query within a React component, call `useMostRecentRewardPerTokenStoredQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMostRecentRewardPerTokenStoredQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMostRecentRewardPerTokenStoredQuery({
+ *   variables: {
+ *      stakingRewardsContract: // value for 'stakingRewardsContract'
+ *      timestamp: // value for 'timestamp'
+ *   },
+ * });
+ */
+export function useMostRecentRewardPerTokenStoredQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>) {
+        return ApolloReactHooks.useQuery<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>(MostRecentRewardPerTokenStoredDocument, baseOptions);
+      }
+export function useMostRecentRewardPerTokenStoredLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>(MostRecentRewardPerTokenStoredDocument, baseOptions);
+        }
+export type MostRecentRewardPerTokenStoredQueryHookResult = ReturnType<typeof useMostRecentRewardPerTokenStoredQuery>;
+export type MostRecentRewardPerTokenStoredLazyQueryHookResult = ReturnType<typeof useMostRecentRewardPerTokenStoredLazyQuery>;
+export type MostRecentRewardPerTokenStoredQueryResult = ApolloReactCommon.QueryResult<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>;

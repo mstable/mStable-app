@@ -295,3 +295,38 @@ query RewardsDistributor @api(name: mstable) {
     fundManagers
   }
 }
+
+fragment RewardPerTokenStoredDetails on RewardPerTokenStored {
+  id
+  rewardPerTokenStored
+  platformRewardPerTokenStored
+  lastUpdateTime
+}
+
+query MostRecentRewardPerTokenStored(
+  $stakingRewardsContract: String!
+  $timestamp: Int!
+) @api(name: mstable) {
+  closestBeforeTimestamp: rewardPerTokenStoreds(
+    where: {
+      stakingRewardsContract: $stakingRewardsContract
+      lastUpdateTime_lt: $timestamp
+    }
+    orderDirection: asc
+    orderBy: lastUpdateTime
+    first: 1
+  ) {
+    ...RewardPerTokenStoredDetails
+  }
+  closestAfterTimestamp: rewardPerTokenStoreds(
+    where: {
+      stakingRewardsContract: $stakingRewardsContract
+      lastUpdateTime_gt: $timestamp
+    }
+    orderDirection: desc
+    orderBy: lastUpdateTime
+    first: 1
+  ) {
+    ...RewardPerTokenStoredDetails
+  }
+}

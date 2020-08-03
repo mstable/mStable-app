@@ -421,6 +421,28 @@ type Query {
     """
     block: Block_height
   ): [StakingReward!]!
+  rewardPerTokenStored(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): RewardPerTokenStored
+  rewardPerTokenStoreds(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: RewardPerTokenStored_orderBy
+    orderDirection: OrderDirection
+    where: RewardPerTokenStored_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [RewardPerTokenStored!]!
   stakingRewardsContract(
     id: ID!
     """
@@ -1968,6 +1990,68 @@ input RewardsDistributor_filter {
   fundManagers_contains: [Bytes!]
   fundManagers_not_contains: [Bytes!]
 }
+type RewardPerTokenStored {
+  id: ID!
+  stakingRewardsContract: StakingRewardsContract!
+  lastUpdateTime: Int!
+  rewardPerTokenStored: BigInt!
+  platformRewardPerTokenStored: BigInt
+}
+enum RewardPerTokenStored_orderBy {
+  id
+  stakingRewardsContract
+  lastUpdateTime
+  rewardPerTokenStored
+  platformRewardPerTokenStored
+}
+input RewardPerTokenStored_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  stakingRewardsContract: String
+  stakingRewardsContract_not: String
+  stakingRewardsContract_gt: String
+  stakingRewardsContract_lt: String
+  stakingRewardsContract_gte: String
+  stakingRewardsContract_lte: String
+  stakingRewardsContract_in: [String!]
+  stakingRewardsContract_not_in: [String!]
+  stakingRewardsContract_contains: String
+  stakingRewardsContract_not_contains: String
+  stakingRewardsContract_starts_with: String
+  stakingRewardsContract_not_starts_with: String
+  stakingRewardsContract_ends_with: String
+  stakingRewardsContract_not_ends_with: String
+  lastUpdateTime: Int
+  lastUpdateTime_not: Int
+  lastUpdateTime_gt: Int
+  lastUpdateTime_lt: Int
+  lastUpdateTime_gte: Int
+  lastUpdateTime_lte: Int
+  lastUpdateTime_in: [Int!]
+  lastUpdateTime_not_in: [Int!]
+  rewardPerTokenStored: BigInt
+  rewardPerTokenStored_not: BigInt
+  rewardPerTokenStored_gt: BigInt
+  rewardPerTokenStored_lt: BigInt
+  rewardPerTokenStored_gte: BigInt
+  rewardPerTokenStored_lte: BigInt
+  rewardPerTokenStored_in: [BigInt!]
+  rewardPerTokenStored_not_in: [BigInt!]
+  platformRewardPerTokenStored: BigInt
+  platformRewardPerTokenStored_not: BigInt
+  platformRewardPerTokenStored_gt: BigInt
+  platformRewardPerTokenStored_lt: BigInt
+  platformRewardPerTokenStored_gte: BigInt
+  platformRewardPerTokenStored_lte: BigInt
+  platformRewardPerTokenStored_in: [BigInt!]
+  platformRewardPerTokenStored_not_in: [BigInt!]
+}
 enum StakingRewardsContract_orderBy {
   id
   type
@@ -2628,6 +2712,28 @@ type Subscription {
     """
     block: Block_height
   ): [StakingReward!]!
+  rewardPerTokenStored(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): RewardPerTokenStored
+  rewardPerTokenStoreds(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: RewardPerTokenStored_orderBy
+    orderDirection: OrderDirection
+    where: RewardPerTokenStored_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [RewardPerTokenStored!]!
   stakingRewardsContract(
     id: ID!
     """

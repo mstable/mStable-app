@@ -10,7 +10,6 @@ export const useRawEarnData = ({
   const { account } = useWallet();
   const block = block24hAgo ? { number: block24hAgo.blockNumber } : undefined;
 
-  // FIXME cached results when the account changes
   const stakingRewardsContractsSub = useBlockPollingSubscription(
     useStakingRewardsContractsLazyQuery,
     {

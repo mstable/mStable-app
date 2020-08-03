@@ -156,11 +156,13 @@ export const PoolsOverview: FC<{}> = () => {
                 //     />
                 //   );
                 case Columns.RewardsApy:
-                  return (
+                  return item.combinedRewardsTokensApy?.exact.gt(0) ? (
                     <ApyAmount
                       amount={item.combinedRewardsTokensApy}
                       format={NumberFormat.CountupPercentage}
                     />
+                  ) : (
+                    'Awaiting 24h data'
                   );
                 case Columns.WeeklyRewards:
                   return (
