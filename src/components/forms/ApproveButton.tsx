@@ -1,5 +1,6 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import { BigNumber } from 'ethers/utils';
+import { MaxUint256 } from 'ethers/constants';
 
 import styled from 'styled-components';
 import { useFormId } from './TransactionForm/FormProvider';
@@ -25,6 +26,11 @@ const StyledButton = styled(Button)`
   padding-left: 4px;
   padding-right: 4px;
   font-size: 12px;
+`;
+
+const MaxButton = styled(StyledButton)<{ active?: boolean }>`
+  background-color: ${({ active, theme }) =>
+    active ? theme.color.green : theme.color.white};
 `;
 
 const StyledAmountInput = styled(AmountInput)`
@@ -56,20 +62,11 @@ export const ApproveButton: FC<Props> = ({
   const pending = useHasPendingApproval(address, spender);
 
   const [approveAmount, setApproveAmount] = useState<BigDecimal | undefined>(
-    amount,
+    amount || new BigDecimal(MaxUint256, 18),
   );
   const [approveFormValue, setApproveFormValue] = useState<string | null>(
     amount?.string || null,
   );
-  const [totalSupply, setTotalSupply] = useState<BigDecimal>();
-
-  useEffect(() => {
-    if (decimals) {
-      tokenContract?.totalSupply().then(_totalSupply => {
-        setTotalSupply(new BigDecimal(_totalSupply, decimals));
-      });
-    }
-  }, [decimals, tokenContract]);
 
   const handleApprove = useCallback((): void => {
     if (!(tokenContract && spender && approveAmount?.exact.gt(0))) return;
@@ -85,11 +82,9 @@ export const ApproveButton: FC<Props> = ({
   }, [sendTransaction, tokenContract, spender, formId, approveAmount]);
 
   const handleSetMax = useCallback(() => {
-    if (totalSupply) {
-      setApproveFormValue(totalSupply.format(2, false));
-      setApproveAmount(totalSupply);
-    }
-  }, [totalSupply, setApproveAmount, setApproveFormValue]);
+    setApproveAmount(new BigDecimal(MaxUint256, 18));
+    setApproveFormValue(null);
+  }, [setApproveAmount, setApproveFormValue]);
 
   return (
     <Container>
@@ -106,12 +101,20 @@ export const ApproveButton: FC<Props> = ({
         name="amount"
         onChange={(_, _amount) => {
           setApproveFormValue(_amount);
+          if (decimals) {
+            setApproveAmount(BigDecimal.maybeParse(_amount, decimals));
+          }
         }}
         disabled={pending}
       />
-      <StyledButton size={Size.s} type="button" onClick={handleSetMax}>
+      <MaxButton
+        size={Size.s}
+        type="button"
+        onClick={handleSetMax}
+        active={approveAmount?.exact.eq(MaxUint256)}
+      >
         ∞
-      </StyledButton>
+      </MaxButton>
     </Container>
   );
 };

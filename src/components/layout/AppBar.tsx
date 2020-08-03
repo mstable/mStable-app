@@ -45,7 +45,7 @@ const statusWarnings: Record<
 
 const CountBadgeIcon = styled.div<{ error: boolean; count: number }>`
   background: ${({ error, count }) =>
-    error ? Color.red : count === 0 ? Color.greyTransparent : Color.blue};
+    error ? Color.blue : count === 0 ? Color.greyTransparent : Color.blue};
   font-weight: bold;
   font-size: 11px;
   width: 17px;

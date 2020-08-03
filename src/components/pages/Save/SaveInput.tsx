@@ -1,7 +1,6 @@
 import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
-import { BigDecimal } from '../../../web3/BigDecimal';
 import { Color } from '../../../theme';
 import { FormRow } from '../../core/Form';
 import { H3 } from '../../core/Typography';
@@ -20,8 +19,6 @@ const TransactionTypeRow = styled(FormRow)`
     padding: 0 8px;
   }
 `;
-
-const approveAmount = BigDecimal.parse('1844674400000', 18);
 
 export const SaveInput: FC<{}> = () => {
   const {
@@ -81,7 +78,6 @@ export const SaveInput: FC<{}> = () => {
           error={error}
           needsUnlock={needsUnlock}
           spender={savingsContractAddress as string}
-          approveAmount={approveAmount}
         />
       </FormRow>
     </>
