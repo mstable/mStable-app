@@ -9,7 +9,7 @@ import { Token } from '../../core/Token';
 import { H2, H3, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ExternalLink } from '../../core/ExternalLink';
-import { Color, FontSize, Size } from '../../../theme';
+import { Color, FontSize } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
 import { centredLayout } from '../../layout/css';
 import { PoolsOverview } from './PoolsOverview';

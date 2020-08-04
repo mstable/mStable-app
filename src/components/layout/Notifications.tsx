@@ -8,7 +8,6 @@ import {
 import { H2 } from '../core/Typography';
 import { NotificationItem } from '../core/NotificationItem';
 import { Button } from '../core/Button';
-import { Size } from '../../theme';
 
 const List = styled.div`
   > * {
