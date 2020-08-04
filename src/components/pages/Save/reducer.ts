@@ -92,23 +92,17 @@ const reduce: Reducer<State, Action> = (state, action) => {
       }
 
       const {
-        savingsBalance: { balance },
-        latestExchangeRate: { exchangeRate } = {},
+        savingsBalance: { balance, credits },
       } = dataState.savingsContract;
 
       if (balance) {
         const formValue = balance.format(2, false);
         const amount = balance;
 
-        const amountInCredits =
-          amount && exchangeRate
-            ? amount.divPrecisely(exchangeRate)
-            : undefined;
-
         return {
           ...state,
           amount,
-          amountInCredits,
+          amountInCredits: credits,
           formValue,
           touched: !!formValue,
         };
