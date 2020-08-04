@@ -2,6 +2,11 @@
 
 ## Next
 
+Bug fixes:
+
+- Fix EARN APY calculations and start with a narrow window for the preceding readings (16 hours previous)
+- Fix staking token price calculation
+
 ## Version 1.8.0
 
 _Released 03.08.20 15.30 CEST_
@@ -9,8 +14,8 @@ _Released 03.08.20 15.30 CEST_
 Features:
 
 - Add EARN feature
-  - This is a major change and includes new data sources and data 
-    processing, new contracts, a new top-level navigation item, 
+  - This is a major change and includes new data sources and data
+    processing, new contracts, a new top-level navigation item,
     and various components and forms.
   - Update `mStable-subgraph` submodule
   - Add another localStorage version
@@ -21,7 +26,6 @@ Features:
   - Improve layout for navigation items
 - Token approvals
   - Improve the token spending allowance UX with an amount field and infinite approve button
-
 
 Miscellaneous:
 

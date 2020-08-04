@@ -6,7 +6,6 @@ import {
   SyncedEarnData,
 } from './types';
 import { BigDecimal } from '../../web3/BigDecimal';
-import { annualiseSimple } from '../../web3/hooks';
 import { StakingRewardsContractType } from '../../graphql/mstable';
 
 const getStakingRewardsContractsMap = (
@@ -175,86 +174,79 @@ const getStakingRewardsContractsMap = (
             : undefined),
         };
 
-        const rewardsPaidOut = result.rewardPerTokenStored24hAgo
-          ? new BigDecimal(
-              result.rewardPerTokenStoredNow
-                .sub(result.rewardPerTokenStored24hAgo)
-                .mul(stakingToken.decimals),
-              result.rewardsToken.decimals,
+        const combinedRewardsTokensApy = (() => {
+          const stakingTokenPrice = stakingToken?.price?.simple;
+          const rewardsTokenPrice = rewardsToken?.price?.simple;
+          const platformTokenPrice =
+            result.platformRewards?.platformToken.price?.simple;
+
+          // Prerequisites
+          if (
+            !(
+              block24hAgo &&
+              result.rewardPerTokenStored24hAgo &&
+              stakingTokenPrice &&
+              rewardsTokenPrice &&
+              (type ===
+              StakingRewardsContractType.StakingRewardsWithPlatformToken
+                ? platformTokenPrice &&
+                  result.platformRewards?.platformRewardPerTokenStored24hAgo
+                : true)
             )
-          : undefined;
+          ) {
+            return undefined;
+          }
 
-        const platformRewardsPaidOut =
-          result.platformRewards &&
-          result.platformRewards.platformRewardPerTokenStored24hAgo
-            ? new BigDecimal(
-                result.platformRewards.platformRewardPerTokenStored24hAgo
-                  .sub(
-                    result.platformRewards.platformRewardPerTokenStored24hAgo,
-                  )
-                  .mul(stakingToken.decimals),
-                result.platformRewards.platformToken.decimals,
-              )
-            : undefined;
+          let gains = 0;
+          let platformGains = 0;
 
-        const combinedRewardsPaidOut = rewardsPaidOut
-          ? platformRewardsPaidOut
-            ? rewardsPaidOut.add(platformRewardsPaidOut)
-            : rewardsPaidOut
-          : undefined;
+          // deltaR = rewardPerTokenStored - rewardPerTokenStored24hAgo
+          const deltaR = parseFloat(
+            result.rewardPerTokenStoredNow
+              .sub(result.rewardPerTokenStored24hAgo)
+              .toString(),
+          );
 
-        // let profitsGainedFromStakingToken: BigDecimal | undefined;
-        //
-        // Percentage gained in swap fees over the past 24h
-        // if (pool.platform === Platforms.Balancer) {
-        //   const { totalSwapVolume, swapFee } = pool[
-        //     Platforms.Balancer
-        //   ] as NonNullable<typeof pool[Platforms.Balancer]>;
-        //   const totalSwapVolume24hAgo =
-        //     pool24hAgo?.[Platforms.Balancer]?.totalSwapVolume;
-        //
-        //   profitsGainedFromStakingToken = totalSwapVolume24hAgo
-        //     ? totalSwapVolume
-        //         .sub(totalSwapVolume24hAgo)
-        //         .mulTruncate(swapFee.exact)
-        //         .setDecimals(16)
-        //     : undefined;
-        // }
-        //
-        // const stakingTokenIncrease =
-        //   profitsGainedFromStakingToken && tokenPricesMap[stakingToken.address]
-        //     ? profitsGainedFromStakingToken.divPrecisely(
-        //         tokenPricesMap[stakingToken.address],
-        //       )
-        //     : undefined;
-        //
-        // const stakingTokenApy =
-        //   block24hAgo && stakingTokenIncrease
-        //     ? BigDecimal.parse(
-        //         annualiseSimple(
-        //           stakingTokenIncrease.simple,
-        //           block24hAgo.timestamp,
-        //         ).toString(),
-        //         16,
-        //       )
-        //     : undefined;
+          // deltaT = currentTime - block24hAgo.timestamp
+          const deltaT = currentTime.sub(block24hAgo.timestamp).toNumber();
 
-        const combinedRewardsTokensApy =
-          block24hAgo && combinedRewardsPaidOut
-            ? BigDecimal.parse(
-                annualiseSimple(
-                  combinedRewardsPaidOut.simple,
-                  block24hAgo.timestamp,
-                ).toString(),
-                16,
-              )
-            : undefined;
+          // gains = mtaPrice * deltaR
+          gains = rewardsTokenPrice * deltaR;
+
+          if (
+            type === StakingRewardsContractType.StakingRewardsWithPlatformToken
+          ) {
+            const platformRewards = result.platformRewards as NonNullable<
+              typeof result['platformRewards']
+            >;
+
+            // deltaPlatformR = platformRewardPerTokenStored - platformRewardPerTokenStored24hAgo
+            const deltaPlatformR = parseFloat(
+              platformRewards.platformRewardPerTokenStoredNow
+                .sub(
+                  platformRewards.platformRewardPerTokenStored24hAgo as BigNumber,
+                )
+                .toString(),
+            );
+
+            // gains = platformTokenPrice * deltaPlatformR
+            platformGains = (platformTokenPrice as number) * deltaPlatformR;
+          }
+
+          // percentage = gains / stakingTokenPrice
+          const percentage = (gains + platformGains) / stakingTokenPrice;
+
+          // apy = percentage * (seconds in year / deltaT)
+          return percentage * ((365 * 24 * 60 * 60) / deltaT);
+        })();
 
         return {
           ..._state,
           [address]: {
             ...result,
-            combinedRewardsTokensApy,
+            combinedRewardsTokensApy: combinedRewardsTokensApy
+              ? new BigDecimal(combinedRewardsTokensApy.toString(), 18)
+              : undefined,
           },
         };
       },
