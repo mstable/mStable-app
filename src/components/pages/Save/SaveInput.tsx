@@ -23,6 +23,7 @@ const TransactionTypeRow = styled(FormRow)`
 export const SaveInput: FC<{}> = () => {
   const {
     error,
+    amount,
     transactionType,
     formValue,
     needsUnlock,
@@ -78,6 +79,7 @@ export const SaveInput: FC<{}> = () => {
           error={error}
           needsUnlock={needsUnlock}
           spender={savingsContractAddress as string}
+          approveAmount={amount}
         />
       </FormRow>
     </>

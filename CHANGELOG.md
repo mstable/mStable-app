@@ -7,6 +7,14 @@ Bug fixes:
 - Fix EARN APY calculations and start with a narrow window for the preceding readings (16 hours previous)
 - Fix staking token price calculation
 
+Miscellaneous:
+
+- Adjust behaviour of approve button such that it is possible to either approve the
+  exact amount or an infinite amount
+- Normalise button sizes throughout the app
+- Improve the approval error message
+- Various small UI fixes
+
 ## Version 1.8.0
 
 _Released 03.08.20 15.30 CEST_

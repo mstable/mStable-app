@@ -6,9 +6,7 @@ import {
   useErc20TokensQuery,
 } from '../../graphql/mstable';
 import { BigDecimal } from '../../web3/BigDecimal';
-import { Size, ViewportWidth } from '../../theme';
 import { Button } from '../core/Button';
-import { FlexRow } from '../core/Containers';
 import { AmountInput } from './AmountInput';
 import { TokenInput } from './TokenInput';
 import { ApproveButton } from './ApproveButton';
@@ -39,13 +37,7 @@ interface Props {
   approveAmount?: BigDecimal;
 }
 
-const InputsRow = styled(FlexRow)`
-  align-items: flex-start;
-  margin-bottom: 8px;
-`;
-
 const Error = styled.div`
-  text-align: center;
   color: ${({ theme }) => theme.color.red};
   font-size: ${({ theme }) => theme.fontSize.s};
 `;
@@ -62,22 +54,7 @@ const Items = styled.div`
 `;
 
 const ErrorAndItems = styled.div`
-  display: flex;
-  justify-content: space-between;
-
-  > :first-child {
-    margin-right: 16px;
-  }
-
-  @media (min-width: ${ViewportWidth.m}) {
-    display: block;
-    > :first-child {
-      margin-right: 0;
-    }
-    > * {
-      margin: 8px 0;
-    }
-  }
+  max-width: 500px;
 `;
 
 const ItemLabel = styled.div`
@@ -99,26 +76,23 @@ const Item = styled.div<{ highlight?: boolean }>`
       : ''}
 `;
 
-const AmountInputContainer = styled.div`
+const InputContainer = styled.div`
   width: 100%;
   display: flex;
-
-  input {
-    margin-bottom: 0;
-  }
-
-  ${Button} {
-    padding-left: 8px;
-    padding-right: 8px;
-  }
+  justify-content: space-between;
 
   > * {
     margin-right: 8px;
+    margin-bottom: 8px;
   }
 
   > :last-child {
     margin-right: 0;
   }
+`;
+
+const InputsRow = styled.div`
+  width: 100%;
 `;
 
 /**
@@ -166,7 +140,7 @@ export const TokenAmountInput: FC<Props> = ({
   return (
     <>
       <InputsRow>
-        <AmountInputContainer>
+        <InputContainer>
           <AmountInput
             name={name}
             value={amountValue}
@@ -175,27 +149,26 @@ export const TokenAmountInput: FC<Props> = ({
             error={error}
           />
           {onSetMax ? (
-            <Button type="button" onClick={onSetMax} size={Size.xs}>
+            <Button type="button" onClick={onSetMax}>
               Max
             </Button>
           ) : null}
-          {needsUnlock && tokenValue && spender ? (
-            <ApproveButton
-              address={tokenValue}
-              spender={spender}
-              amount={approveAmount}
-              decimals={token?.decimals}
-            />
-          ) : null}
-        </AmountInputContainer>
-        <TokenInput
-          name={name}
-          disabled={tokenDisabled}
-          value={tokenValue}
-          tokens={tokensData?.tokens || []}
-          onChange={onChangeToken}
-          error={error}
-        />
+          <TokenInput
+            name={name}
+            disabled={tokenDisabled}
+            value={tokenValue}
+            tokens={tokensData?.tokens || []}
+            onChange={onChangeToken}
+            error={error}
+          />
+        </InputContainer>
+        {needsUnlock && tokenValue && spender && approveAmount ? (
+          <ApproveButton
+            address={tokenValue}
+            spender={spender}
+            amount={approveAmount}
+          />
+        ) : null}
       </InputsRow>
       <ErrorAndItems>
         <Items>

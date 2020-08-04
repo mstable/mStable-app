@@ -4,6 +4,7 @@ import useOnClickOutside from 'use-onclickoutside';
 import { TokenDetailsFragment } from '../../graphql/mstable';
 import { TokenIcon } from '../icons/TokenIcon';
 import { useToken } from '../../context/DataProvider/TokensProvider';
+import { ViewportWidth } from '../../theme';
 
 interface Props {
   name: string;
@@ -63,7 +64,6 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   display: flex;
   align-items: center;
   height: 46px;
-  min-width: 130px;
 
   padding: ${({ theme }) => theme.spacing.xs};
 
@@ -80,6 +80,10 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
 
   img {
     width: 36px;
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    min-width: 130px;
   }
 `;
 

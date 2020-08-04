@@ -119,10 +119,8 @@ const Grid = styled.div<{ enabled?: boolean }>`
   }
 `;
 
-const AmountInputContainer = styled.div`
-  > :first-child {
-    margin-bottom: 8px;
-  }
+const StyledApproveButton = styled(ApproveButton)`
+  margin-top: 4px;
 `;
 
 const Container = styled.div<{
@@ -143,7 +141,8 @@ const Container = styled.div<{
 export const BassetInput: FC<Props> = ({ address }) => {
   const { decimals, balance, symbol, overweight, mAssetAddress } =
     useBassetState(address) || {};
-  const { error, enabled, formValue, reason } = useMintBasset(address) || {};
+  const { error, enabled, formValue, reason, amount } =
+    useMintBasset(address) || {};
   const mode = useMintMode();
   const toggleBassetEnabled = useMintToggleBassetEnabled();
   const setBassetAmount = useMintSetBassetAmount();
@@ -183,7 +182,7 @@ export const BassetInput: FC<Props> = ({ address }) => {
         <InputContainer onClick={handleClickInput}>
           <Label>Amount</Label>
           {decimals ? (
-            <AmountInputContainer>
+            <div>
               <AmountInput
                 disabled={!enabled}
                 value={formValue}
@@ -191,17 +190,17 @@ export const BassetInput: FC<Props> = ({ address }) => {
                 name={address}
                 onChange={handleChangeAmount}
               />
-              {needsUnlock && mAssetAddress ? (
-                <ApproveButton
+              {needsUnlock && mAssetAddress && amount ? (
+                <StyledApproveButton
                   address={address}
                   spender={mAssetAddress}
-                  decimals={decimals}
+                  amount={amount}
                 />
               ) : null}
-            </AmountInputContainer>
+            </div>
           ) : null}
           {enabled && mode === Mode.MintSingle ? (
-            <Button onClick={setBassetMaxAmount} size={1} type="button">
+            <Button onClick={setBassetMaxAmount} type="button">
               Max
             </Button>
           ) : null}

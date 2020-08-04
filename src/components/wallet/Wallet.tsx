@@ -15,7 +15,7 @@ import { H2, H3 } from '../core/Typography';
 import { Address } from '../core/Address';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { FlexRow } from '../core/Containers';
-import { FontSize, Size } from '../../theme';
+import { FontSize } from '../../theme';
 import { Balances } from './Balances';
 import { HistoricTransactions } from './HistoricTransactions';
 import { Transactions } from './Transactions';
@@ -121,7 +121,6 @@ const Disconnected: FC<{}> = () => {
           key={subType ?? id}
           type="button"
           onClick={() => connectWallet(id, subType)}
-          size={Size.m}
           inverted
         >
           <ConnectorIcon>{Icon ? <Icon /> : null}</ConnectorIcon>
@@ -143,7 +142,7 @@ const Connected: FC<{ walletLabel: string; account: string }> = ({
         <H3>Connected with {walletLabel}</H3>
         <AddressGroup>
           <Address address={account} type="account" copyable />
-          <DisconnectButton size={Size.s} type="button" onClick={resetWallet}>
+          <DisconnectButton type="button" onClick={resetWallet}>
             Disconnect
           </DisconnectButton>
         </AddressGroup>

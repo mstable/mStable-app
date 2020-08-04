@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useState } from 'react';
 import { BigNumber } from 'ethers/utils';
 import { MaxUint256 } from 'ethers/constants';
-
 import styled from 'styled-components';
+
 import { useFormId } from './TransactionForm/FormProvider';
 import { useErc20Contract } from '../../context/DataProvider/ContractsProvider';
 import {
@@ -11,49 +11,45 @@ import {
 } from '../../context/TransactionsProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
-import { Color, Size } from '../../theme';
 import { Interfaces, SendTxManifest } from '../../types';
-import { AmountInput } from './AmountInput';
+import { Tooltip } from '../core/ReactTooltip';
 
 interface Props {
   address: string;
-  amount?: BigDecimal;
-  decimals?: number;
+  amount: BigDecimal;
+  className?: string;
   spender: string;
 }
 
 const StyledButton = styled(Button)`
-  padding-left: 4px;
-  padding-right: 4px;
-  font-size: 12px;
-`;
+  line-height: 15px;
 
-const MaxButton = styled(StyledButton)<{ active?: boolean }>`
-  background-color: ${({ active, theme }) =>
-    active ? theme.color.green : theme.color.white};
+  > span {
+    font-size: 16px;
+    line-height: 0;
+  }
 `;
-
-const StyledAmountInput = styled(AmountInput)`
-  font-size: 12px;
-  height: 100%;
-  margin: 0 4px;
-  padding: 4px;
-` as typeof AmountInput;
 
 const Container = styled.div`
   display: flex;
   align-items: center;
-  padding: 4px;
-  background: ${Color.offWhite};
-  border-radius: 2px;
-  border: 1px ${Color.blackTransparent} solid;
-  min-width: 200px;
+
+  > :first-child {
+    margin-right: 8px;
+  }
 `;
+
+const INFINITE = new BigDecimal(MaxUint256, 18);
+
+enum ApproveMode {
+  Exact,
+  Infinite,
+}
 
 export const ApproveButton: FC<Props> = ({
   address,
   amount,
-  decimals,
+  className,
   spender,
 }) => {
   const sendTransaction = useSendTransaction();
@@ -61,60 +57,63 @@ export const ApproveButton: FC<Props> = ({
   const formId = useFormId();
   const pending = useHasPendingApproval(address, spender);
 
-  const [approveAmount, setApproveAmount] = useState<BigDecimal | undefined>(
-    amount || new BigDecimal(MaxUint256, 18),
+  const [approveMode, setApproveMode] = useState<ApproveMode>();
+
+  const handleApprove = useCallback(
+    (_approveMode: ApproveMode): void => {
+      setApproveMode(_approveMode);
+      const approveAmount =
+        _approveMode === ApproveMode.Infinite ? INFINITE : amount;
+
+      if (!(tokenContract && spender && approveAmount.exact.gt(0))) return;
+
+      const manifest: SendTxManifest<Interfaces.ERC20, 'approve'> = {
+        args: [spender, approveAmount?.exact as BigNumber],
+        fn: 'approve',
+        formId,
+        iface: tokenContract,
+      };
+
+      sendTransaction(manifest);
+    },
+    [amount, tokenContract, spender, formId, sendTransaction],
   );
-  const [approveFormValue, setApproveFormValue] = useState<string | null>(
-    amount?.string || null,
-  );
-
-  const handleApprove = useCallback((): void => {
-    if (!(tokenContract && spender && approveAmount?.exact.gt(0))) return;
-
-    const manifest: SendTxManifest<Interfaces.ERC20, 'approve'> = {
-      args: [spender, approveAmount?.exact as BigNumber],
-      fn: 'approve',
-      formId,
-      iface: tokenContract,
-    };
-
-    sendTransaction(manifest);
-  }, [sendTransaction, tokenContract, spender, formId, approveAmount]);
-
-  const handleSetMax = useCallback(() => {
-    setApproveAmount(new BigDecimal(MaxUint256, 18));
-    setApproveFormValue(null);
-  }, [setApproveAmount, setApproveFormValue]);
 
   return (
-    <Container>
-      <StyledButton
-        onClick={handleApprove}
-        size={Size.s}
-        type="button"
-        disabled={pending}
+    <Container className={className}>
+      <Tooltip tip="Approve this contract to spend an infinite amount" hideIcon>
+        <StyledButton
+          onClick={() => {
+            handleApprove(ApproveMode.Infinite);
+          }}
+          type="button"
+          disabled={pending}
+        >
+          {pending && approveMode === ApproveMode.Infinite ? (
+            'Approving'
+          ) : (
+            <>
+              Approve <span>∞</span>
+            </>
+          )}
+        </StyledButton>
+      </Tooltip>
+      <Tooltip
+        tip="Approve this contract to spend enough for this transaction"
+        hideIcon
       >
-        {pending ? 'Approving' : 'Approve'}
-      </StyledButton>
-      <StyledAmountInput
-        value={approveFormValue || null}
-        name="amount"
-        onChange={(_, _amount) => {
-          setApproveFormValue(_amount);
-          if (decimals) {
-            setApproveAmount(BigDecimal.maybeParse(_amount, decimals));
-          }
-        }}
-        disabled={pending}
-      />
-      <MaxButton
-        size={Size.s}
-        type="button"
-        onClick={handleSetMax}
-        active={approveAmount?.exact.eq(MaxUint256)}
-      >
-        ∞
-      </MaxButton>
+        <StyledButton
+          onClick={() => {
+            handleApprove(ApproveMode.Exact);
+          }}
+          type="button"
+          disabled={pending}
+        >
+          {pending && approveMode === ApproveMode.Exact
+            ? 'Approving'
+            : 'Approve exact'}
+        </StyledButton>
+      </Tooltip>
     </Container>
   );
 };

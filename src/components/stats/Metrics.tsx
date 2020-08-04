@@ -23,7 +23,7 @@ import {
 import { TimeMetricPeriod } from '../../graphql/mstable';
 import { ToggleInput } from '../forms/ToggleInput';
 import { H3 } from '../core/Typography';
-import { Color, FontSize, Size, ViewportWidth } from '../../theme';
+import { Color, FontSize, ViewportWidth } from '../../theme';
 import { Button } from '../core/Button';
 
 export enum DateRange {
@@ -283,7 +283,6 @@ export const Metrics = <T extends string>({
                 {state.dates.map(({ label, enabled, dateRange }) => (
                   <DateRangeButton
                     key={dateRange}
-                    size={Size.m}
                     type="button"
                     onClick={() => setDateRange(dateRange)}
                     disabled={!!enabled}
