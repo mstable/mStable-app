@@ -5,6 +5,7 @@
 Bug fixes:
 
 - Link to the staking token on Etherscan on the pool card
+- Fix beta warning style
 
 ## Version 1.8.1
 
