@@ -24,7 +24,7 @@ interface CoingeckoPrices {
   [address: string]: { usd: number };
 }
 
-const START = Math.floor(Date.now() / 1e3) - 24 * 60 * 60;
+const START = Math.floor(Date.now() / 1e3) - 16 * 60 * 60;
 
 const useBlockTimestamp24hAgo = (): BlockTimestamp | undefined => {
   const query = useBlockTimestampQuery({
@@ -297,8 +297,11 @@ const getStakingTokenPrices = (normalizedPools: {
       [address]: BigDecimal.parse(
         tokens
           .reduce(
-            (total, token) =>
-              token.price ? token.liquidity.simple * token.price.simple : total,
+            (prev, current) =>
+              prev +
+              (current.price
+                ? current.liquidity.simple * current.price.simple
+                : 0),
             0,
           )
           .toString(),
