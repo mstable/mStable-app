@@ -81,7 +81,7 @@ const getStakingRewardsContractsMap = (
           (stakingBalance.exact.gt(0) && totalSupply.exact.gt(0)
             ? stakingBalance.simple / totalSupply.simple
             : 0
-          ).toFixed(6),
+          ).toFixed(18),
           stakingToken.decimals,
         );
 
