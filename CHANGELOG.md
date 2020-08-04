@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.8.1
+
+_Released 04.08.20 16.07 CEST_
+
 Bug fixes:
 
 - Fix EARN APY calculations and start with a narrow window for the preceding readings (16 hours previous)
