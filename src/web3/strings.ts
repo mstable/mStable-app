@@ -8,7 +8,10 @@ const ETHERSCAN_PREFIXES = {
   42: 'kovan.',
 };
 
-export const getEtherscanLink = (data: string, type?: string): string => {
+export const getEtherscanLink = (
+  data: string,
+  type?: 'account' | 'transaction' | 'address' | 'token',
+): string => {
   const prefix = `https://${ETHERSCAN_PREFIXES[
     CHAIN_ID as keyof typeof ETHERSCAN_PREFIXES
   ] || ETHERSCAN_PREFIXES[1]}etherscan.io`;
@@ -16,6 +19,8 @@ export const getEtherscanLink = (data: string, type?: string): string => {
   switch (type) {
     case 'transaction':
       return `${prefix}/tx/${data}`;
+    case 'token':
+      return `${prefix}/token/${data}`;
     case 'address':
     default:
       return `${prefix}/address/${data}`;
