@@ -7,6 +7,7 @@ Bug fixes:
 - Ensure EARN APYs are available on first load
 - Link to the staking token on Etherscan on the pool card
 - Fix beta warning style
+- Ensure selecting 'max' when withdrawing mUSD savings uses the full amount in credits
 
 ## Version 1.8.1
 
