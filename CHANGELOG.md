@@ -6,6 +6,7 @@ Bug fixes:
 
 - Fix EARN APY calculations and start with a narrow window for the preceding readings (16 hours previous)
 - Fix staking token price calculation
+- Add more decimal places to staking balance percentage
 
 ## Version 1.8.0
 
