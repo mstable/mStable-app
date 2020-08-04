@@ -5,7 +5,7 @@ import { ExternalLink } from './ExternalLink';
 
 const useEtherscanLink = (
   data: string,
-  type?: 'account' | 'transaction' | 'address',
+  type?: 'account' | 'transaction' | 'address' | 'token',
 ): string => useMemo(() => getEtherscanLink(data, type), [data, type]);
 
 /**
@@ -18,7 +18,7 @@ const useEtherscanLink = (
  */
 export const EtherscanLink: FC<{
   data: string;
-  type?: 'transaction' | 'account' | 'address';
+  type?: 'transaction' | 'account' | 'address' | 'token';
   truncate?: boolean;
   showData?: boolean;
 }> = ({ children, type = 'address', data, showData, truncate = true }) => (

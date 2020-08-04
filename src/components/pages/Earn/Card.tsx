@@ -178,8 +178,8 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                       <ExternalLink href={platformLink}>{name}</ExternalLink>
                     </div>
                     <EtherscanLink
-                      data={stakingRewardsContract.address}
-                      type="address"
+                      data={stakingToken.address}
+                      type="token"
                       showData
                       truncate
                     />

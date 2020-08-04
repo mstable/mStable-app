@@ -2,6 +2,10 @@
 
 ## Next
 
+Bug fixes:
+
+- Link to the staking token on Etherscan on the pool card
+
 ## Version 1.8.1
 
 _Released 04.08.20 16.07 CEST_
