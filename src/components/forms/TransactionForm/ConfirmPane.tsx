@@ -1,7 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { SubmitButton } from '../../core/Form';
-import { Size } from '../../../theme';
 import { H3 } from '../../core/Typography';
 import {
   useFormId,
@@ -16,11 +15,7 @@ interface Props {
   valid: boolean;
 }
 
-export const ConfirmPane: FC<Props> = ({
-  children,
-  confirmLabel,
-  valid,
-}) => {
+export const ConfirmPane: FC<Props> = ({ children, confirmLabel, valid }) => {
   const sendTransaction = useSendTransaction();
   const manifest = useManifest();
   const submitting = useFormSubmitting();
@@ -42,7 +37,6 @@ export const ConfirmPane: FC<Props> = ({
         <SubmitButton
           type="button"
           onClick={handleSend}
-          size={Size.l}
           disabled={submitting || !valid}
         >
           {confirmLabel}
