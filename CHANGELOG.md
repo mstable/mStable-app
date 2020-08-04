@@ -4,6 +4,7 @@
 
 Bug fixes:
 
+- Ensure EARN APYs are available on first load
 - Link to the staking token on Etherscan on the pool card
 - Fix beta warning style
 

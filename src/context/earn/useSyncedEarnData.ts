@@ -1,6 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useWallet } from 'use-wallet';
-import useThrottle from 'react-use/lib/useThrottle';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { usePoolsQuery } from '../../graphql/balancer';
@@ -33,6 +32,7 @@ const useBlockTimestamp24hAgo = (): BlockTimestamp | undefined => {
       // Adding a small window speeds up the query a lot
       end: (START + 60e3).toString(),
     },
+    fetchPolicy: 'cache-and-network',
   });
 
   const data = query.data?.blocks[0];
@@ -70,14 +70,16 @@ const getUniqueTokens = (
   );
 
   const balancerTokens = rawPlatformsData.Balancer.current.reduce(
-    (_tokens, platform) =>
-      (platform.tokens || []).reduce(
-        (acc, token) => ({
-          ...acc,
-          [token.address.toLowerCase()]: token.decimals,
+    (_balancerTokens, currentPlatform) => ({
+      ..._balancerTokens,
+      ...(currentPlatform.tokens || []).reduce(
+        (_tokens, currentToken) => ({
+          ..._tokens,
+          [currentToken.address.toLowerCase()]: currentToken.decimals,
         }),
         {},
       ),
+    }),
     {},
   );
 
@@ -94,13 +96,8 @@ const getUniqueTokens = (
     ...tokens,
     ...balancerTokens,
     ...uniswapTokens,
-    // MTA/BAL for staging testing
-    '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2': 18,
-    '0xba100000625a3754423978a60c9317c58a424e3d': 18,
   };
 };
-
-const TEN_MINUTES = 10 * 60 * 1000;
 
 const fetchCoingeckoPrices = async (
   addresses: string[],
@@ -113,11 +110,16 @@ const fetchCoingeckoPrices = async (
   return result.json();
 };
 
+const FIVE_MINUTES = 5 * 60 * 1e3;
+
 const useTokenPrices = (
   rawStakingContractsData: RawStakingRewardsContracts,
   rawPlatformsData: RawPlatformPools,
 ): TokenPricesMap => {
-  const [coingeckoPrices, setData] = useState<CoingeckoPrices>({});
+  const fetchedAddresses = useRef<string[]>([]);
+  const lastUpdateTime = useRef<number>(0);
+  const updating = useRef<boolean>(false);
+  const [coingeckoData, setCoingeckoData] = useState<CoingeckoPrices>({});
 
   const uniqueTokens = useMemo(
     () => getUniqueTokens(rawStakingContractsData, rawPlatformsData),
@@ -126,27 +128,50 @@ const useTokenPrices = (
 
   const addresses = Object.keys(uniqueTokens);
 
-  useThrottle(() => {
-    if (addresses.length > 0) {
-      fetchCoingeckoPrices(addresses).then((result: CoingeckoPrices) => {
-        setData(result);
-      });
+  useEffect(() => {
+    const addressesExist = addresses.length > 0;
+
+    const missingAddresses = addresses.filter(
+      address => !fetchedAddresses.current.includes(address),
+    );
+
+    const stale = Date.now() - lastUpdateTime.current > FIVE_MINUTES;
+
+    if (
+      addressesExist &&
+      !updating.current &&
+      (stale || missingAddresses.length > 0)
+    ) {
+      lastUpdateTime.current = Date.now();
+      updating.current = true;
+      fetchCoingeckoPrices(addresses)
+        .then((result: CoingeckoPrices) => {
+          fetchedAddresses.current = addresses;
+          setCoingeckoData(result);
+        })
+        .catch(error => {
+          // eslint-disable-next-line no-console
+          console.warn(error);
+        })
+        .finally(() => {
+          updating.current = false;
+        });
     }
-  }, TEN_MINUTES);
+  }, [addresses]);
 
   return useMemo(
     () =>
-      Object.keys(coingeckoPrices).reduce(
+      Object.keys(coingeckoData).reduce(
         (_prices, address) => ({
           ..._prices,
           [address.toLowerCase()]: BigDecimal.maybeParse(
-            coingeckoPrices[address.toLowerCase()].usd.toString(),
+            coingeckoData[address.toLowerCase()].usd.toString(),
             uniqueTokens[address.toLowerCase()],
           ),
         }),
         {},
       ),
-    [coingeckoPrices, uniqueTokens],
+    [coingeckoData, uniqueTokens],
   );
 };
 
@@ -291,25 +316,29 @@ const getStakingTokenPrices = (normalizedPools: {
   current: NormalizedPoolsMap;
   historic: NormalizedPoolsMap;
 }): TokenPricesMap =>
-  Object.values(normalizedPools.current).reduce(
-    (prices, { address, tokens, totalSupply }) => ({
-      ...prices,
-      [address]: BigDecimal.parse(
-        tokens
-          .reduce(
-            (prev, current) =>
-              prev +
-              (current.price
-                ? current.liquidity.simple * current.price.simple
-                : 0),
-            0,
-          )
-          .toString(),
-        18, // Both BPT and UNI-V2 are 18 decimals
-      ).divPrecisely(totalSupply),
-    }),
-    {},
-  );
+  Object.values(normalizedPools.current)
+    .filter(pool =>
+      pool.tokens.every(
+        token => token.liquidity?.exact.gt(0) && token.price?.exact.gt(0),
+      ),
+    )
+    .reduce(
+      (prices, { address, tokens, totalSupply }) => ({
+        ...prices,
+        [address]: BigDecimal.parse(
+          tokens
+            .reduce(
+              (prev, current) =>
+                prev +
+                current.liquidity.simple * (current.price as BigDecimal).simple,
+              0,
+            )
+            .toString(),
+          18, // Both BPT and UNI-V2 are 18 decimals
+        ).divPrecisely(totalSupply),
+      }),
+      {},
+    );
 
 const transformRawSyncedEarnData = ({
   block24hAgo,
@@ -337,7 +366,6 @@ export const useSyncedEarnData = (): SyncedEarnData => {
   const stakingRewardsContractsQuery = useStakingRewardsContractsQuery({
     variables: { account, includeHistoric: false },
     fetchPolicy: 'cache-and-network',
-    returnPartialData: true,
   });
 
   const rawPlatformPools = useRawPlatformPools(

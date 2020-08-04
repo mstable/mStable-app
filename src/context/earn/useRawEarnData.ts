@@ -15,7 +15,6 @@ export const useRawEarnData = ({
     {
       variables: { account, includeHistoric: !!block, block },
       fetchPolicy: 'cache-and-network',
-      partialRefetch: true,
     },
   );
 

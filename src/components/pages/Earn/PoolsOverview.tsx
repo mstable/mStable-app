@@ -162,7 +162,7 @@ export const PoolsOverview: FC<{}> = () => {
                       format={NumberFormat.CountupPercentage}
                     />
                   ) : (
-                    'Awaiting 24h data'
+                    <Skeleton />
                   );
                 case Columns.WeeklyRewards:
                   return (
