@@ -11,6 +11,7 @@ interface Props {
   error?: string;
   value: string | null;
   balance?: string | null;
+  placeholder?: string;
   name: string;
   onChange?(name: string, simpleAmount: string | null): void;
   onSetMax?(): void;
@@ -54,6 +55,7 @@ export const AmountInput: FC<Props> = ({
   name,
   error,
   disabled = false,
+  placeholder = '0.00',
   onChange,
   value,
 }) => {
@@ -81,7 +83,7 @@ export const AmountInput: FC<Props> = ({
       error={error}
       type="number"
       min="0"
-      placeholder="0.00"
+      placeholder={placeholder}
       step="0.01"
       value={value || ''}
       onKeyPress={handleKeyPress}

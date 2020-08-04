@@ -8,6 +8,14 @@ Bug fixes:
 - Fix staking token price calculation
 - Add more decimal places to staking balance percentage
 
+Miscellaneous:
+
+- Adjust behaviour of approve button such that it is possible to either approve the
+  exact amount or an infinite amount
+- Normalise button sizes throughout the app
+- Improve the approval error message
+- Various small UI fixes
+
 ## Version 1.8.0
 
 _Released 03.08.20 15.30 CEST_

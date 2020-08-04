@@ -14,16 +14,15 @@ export const ReactTooltip = styled(ReactTooltipBase)`
   max-width: 200px;
 `;
 
+const TooltipImg = styled.img`
+  margin-left: 4px;
+  width: 14px;
+  height: auto;
+`;
+
 const TooltipSpan = styled.span`
   display: inline-flex;
   align-items: center;
-  > span {
-    margin-right: 4px;
-  }
-  > img {
-    width: 14px;
-    height: auto;
-  }
 `;
 
 export const Tooltip: FC<{
@@ -37,7 +36,7 @@ export const Tooltip: FC<{
   return (
     <TooltipSpan data-tip={tip} data-for="global" className={className}>
       <span>{children}</span>
-      {hideIcon || !tip ? null : <img src={TooltipIcon} alt="" />}
+      {hideIcon || !tip ? null : <TooltipImg src={TooltipIcon} alt="" />}
     </TooltipSpan>
   );
 };

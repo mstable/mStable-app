@@ -351,9 +351,7 @@ const EarnSlider: FC<{
       sideControls
       swipeDisabled={swipeDisabled}
       skipButton={
-        <Button onClick={toggleOnboardingVisible} size={Size.s}>
-          Skip introduction
-        </Button>
+        <Button onClick={toggleOnboardingVisible}>Skip introduction</Button>
       }
     />
   );
@@ -381,7 +379,7 @@ export const Earn: FC<{}> = () => {
               <div>
                 <H2>EARN</H2>
                 <H3>Ecosystem rewards with mStable</H3>
-                <Button onClick={toggleOnboardingVisible} size={Size.xs}>
+                <Button onClick={toggleOnboardingVisible}>
                   View introduction
                 </Button>
               </div>

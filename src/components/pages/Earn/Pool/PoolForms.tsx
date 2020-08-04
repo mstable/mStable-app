@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { Button } from '../../../core/Button';
-import { Color, Size } from '../../../../theme';
+import { Color } from '../../../../theme';
 import { Tabs } from '../types';
 import {
   useStakingRewardContractDispatch,
@@ -37,7 +37,6 @@ const TabButton: FC<{ tab: Tabs }> = ({ tab }) => {
   return (
     <TabBtn
       type="button"
-      size={Size.s}
       onClick={() => {
         setActiveTab(tab);
       }}

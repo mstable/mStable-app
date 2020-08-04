@@ -11,7 +11,7 @@ import { A, navigate } from 'hookrouter';
 import { useWallet } from 'use-wallet';
 import { H2, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
-import { Size, ViewportWidth } from '../../../theme';
+import { ViewportWidth } from '../../../theme';
 import { useOpenWalletRedirect } from '../../../context/AppProvider';
 
 const BETA_WARNING_KEY = 'acknowledged-beta-warning';
@@ -42,7 +42,7 @@ const Symbol = styled.div`
   margin-top: 32px;
 
   div {
-    font-size: 24px;
+    font-sizesize: 24px;
     line-height: 32px;
     text-transform: lowercase;
     padding-right: 16px;
@@ -193,7 +193,6 @@ const Start: FC<{}> = () => {
           <P>
             <Button
               type="button"
-              size={Size.l}
               onClick={() => {
                 if (connected) {
                   navigate('/mint');
@@ -235,11 +234,7 @@ const Disclaimer: FC<{}> = () => {
           remains in beta. Use at your own risk.
         </P>
         <P>
-          <AckButton
-            type="button"
-            size={Size.l}
-            onClick={acknowledgeDisclaimer}
-          >
+          <AckButton type="button" onClick={acknowledgeDisclaimer}>
             I understand
           </AckButton>
         </P>
@@ -260,11 +255,7 @@ const GetStarted: FC<{}> = () => {
       <Block>
         <P>Start by connecting your Ethereum wallet</P>
         <P>
-          <Button
-            type="button"
-            size={Size.m}
-            onClick={() => openWallet('/mint')}
-          >
+          <Button type="button" onClick={() => openWallet('/mint')}>
             Connect
           </Button>
         </P>
@@ -419,12 +410,7 @@ export const Home: FC<{}> = () => {
             </Slider>
           </SliderContainer>
           <Controls>
-            <Button
-              onClick={previous}
-              type="button"
-              size={Size.m}
-              disabled={activeIdx === 0}
-            >
+            <Button onClick={previous} type="button" disabled={activeIdx === 0}>
               Previous
             </Button>
             <StepIcons>
@@ -442,7 +428,6 @@ export const Home: FC<{}> = () => {
             <Button
               onClick={next}
               type="button"
-              size={Size.m}
               disabled={activeIdx === HOME_STEPS.length - 2 && needsAck}
             >
               Next

@@ -23,7 +23,7 @@ import { Protip } from '../../../core/Protip';
 
 const Input: FC<{}> = () => {
   const {
-    stake: { formValue, error, needsUnlock },
+    stake: { amount, formValue, error, needsUnlock },
     stakingRewardsContract,
   } = useStakingRewardsContractState();
   const {
@@ -59,6 +59,7 @@ const Input: FC<{}> = () => {
           tokenAddresses={[stakingToken?.address as string]}
           tokenDisabled
           tokenValue={stakingToken?.address || null}
+          approveAmount={amount}
         />
         {metadata && stakingToken?.balance.exact.lte(0) ? (
           <Protip title="Need tokens to stake?">

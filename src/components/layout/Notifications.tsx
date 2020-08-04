@@ -39,9 +39,7 @@ export const Notifications: FC<{}> = () => {
     <Container>
       <Header>
         <H2>Notifications</H2>
-        <Button size={Size.xs} onClick={markAllNotificationsAsRead}>
-          Mark all as read
-        </Button>
+        <Button onClick={markAllNotificationsAsRead}>Mark all as read</Button>
       </Header>
       {notifications.length === 0 ? (
         <div>No notifications</div>

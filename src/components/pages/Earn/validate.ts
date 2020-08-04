@@ -4,7 +4,7 @@ import { Reasons, State, Tabs } from './types';
 const getReasonMessage = (reason: Reasons | undefined): string | undefined => {
   switch (reason) {
     case Reasons.AmountExceedsApprovedAmount:
-      return 'Amount exceeds approved amount';
+      return 'Amount exceeds approved amount; in order for this contract to spend your tokens, you first need to give it approval';
 
     case Reasons.FetchingData:
       return 'Fetching data';
@@ -48,12 +48,7 @@ const validateActiveTab = (
         return [false, Reasons.AmountMustBeGreaterThanZero];
       }
 
-      if (
-        !(
-          stakingToken?.balance &&
-          stakingToken.allowances[address]?.exact
-        )
-      ) {
+      if (!(stakingToken?.balance && stakingToken.allowances[address]?.exact)) {
         return [false, Reasons.FetchingData];
       }
 
@@ -61,11 +56,7 @@ const validateActiveTab = (
         return [false, Reasons.AmountExceedsBalance];
       }
 
-      if (
-        stake.amount.exact.gt(
-          stakingToken.allowances[address].exact,
-        )
-      ) {
+      if (stake.amount.exact.gt(stakingToken.allowances[address].exact)) {
         return [false, Reasons.AmountExceedsApprovedAmount];
       }
 
@@ -82,7 +73,9 @@ const getValidationResult = (state: State): ValidationResult => {
 
   if (!ready) return [false];
 
-  return validateActiveTab(state as State & { stakingRewardsContract: StakingRewardsContract });
+  return validateActiveTab(
+    state as State & { stakingRewardsContract: StakingRewardsContract },
+  );
 };
 
 export const validate = (state: State): State => {

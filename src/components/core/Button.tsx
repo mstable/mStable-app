@@ -2,10 +2,7 @@ import { ButtonHTMLAttributes, ComponentProps } from 'react';
 import styled, { css } from 'styled-components';
 import { A } from 'hookrouter';
 
-import { mapSizeToFontSize, Size, ViewportWidth } from '../../theme';
-
 interface Props extends ButtonHTMLAttributes<unknown> {
-  size?: Size;
   inverted?: boolean;
 }
 
@@ -31,12 +28,10 @@ const ButtonCss = css<Props>`
       : theme.color.offBlack};
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   font-weight: bold;
-  font-size: ${({ size = Size.m }) => mapSizeToFontSize(size)};
+  font-size: 12px;
   text-transform: uppercase;
 
-  @media (min-width: ${ViewportWidth.m}) {
-    padding: ${({ theme }) => theme.spacing.xs};
-  }
+  padding: 8px 16px;
 
   ${({ theme }) => theme.mixins.roundedBorder}
 `;

@@ -137,7 +137,6 @@ const Input: FC<{}> = () => {
             address={rewardsToken.address}
             spender={spender}
             amount={totalFunds}
-            decimals={rewardsToken.decimals}
           />
         </>
       ) : null}

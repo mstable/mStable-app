@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useClipboard } from 'use-clipboard-copy';
 import { EtherscanLink } from './EtherscanLink';
 import { Button } from './Button';
-import { Size } from '../../theme';
 
 interface Props {
   address: string;
@@ -39,11 +38,7 @@ export const Address: FC<Props> = ({
     <Container>
       <EtherscanLink data={address} type={type} showData truncate={truncate} />
       {copyable ? (
-        <Copy
-          size={Size.xs}
-          onClick={handleCopy}
-          title="Copy address to clipboard"
-        >
+        <Copy onClick={handleCopy} title="Copy address to clipboard">
           {copied ? 'Copied!' : 'Copy'}
         </Copy>
       ) : null}

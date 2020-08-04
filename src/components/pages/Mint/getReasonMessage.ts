@@ -44,7 +44,7 @@ export const getReasonMessage = (
       return 'No assets selected';
 
     case Reasons.AmountExceedsApprovedAmount:
-      return 'Amount exceeds approved amount';
+      return 'Amount exceeds approved amount; in order for this contract to spend your tokens, you first need to give it approval';
 
     case Reasons.AssetNotAllowedInMint:
       return 'Asset not allowed in mint';

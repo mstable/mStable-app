@@ -7,7 +7,6 @@ import { PoolForms } from './PoolForms';
 import { PoolBalances } from './PoolBalances';
 
 const BackLink = styled(ButtonLink)`
-  padding: 4px 8px;
   display: inline-block;
   margin-bottom: 16px;
 `;
