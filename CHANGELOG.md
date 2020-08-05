@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.8.2
+
+_Released 05.08.20 09.09 CEST_
+
 Bug fixes:
 
 - Ensure EARN APYs are available on first load
