@@ -93,6 +93,9 @@ const getUniqueTokens = (
   );
 
   return {
+    // MTA/BAL
+    '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2': 18,
+    '0xba100000625a3754423978a60c9317c58a424e3d': 18,
     ...tokens,
     ...balancerTokens,
     ...uniswapTokens,
