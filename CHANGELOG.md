@@ -5,7 +5,8 @@
 Bug fixes:
 
 - When navigating to a pool from the pools overview, scroll to the top
-
+- Add handling for a transfer approval edge case with USDT in which the approved
+  amount must first be reset to zero before setting a new approved amount.
 
 ## Version 1.8.2
 
