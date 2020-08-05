@@ -98,7 +98,7 @@ export class BigDecimal {
    * @return formatted string value
    */
   format(decimalPlaces = 2, commas = true, suffix?: string): string {
-    const [left, right = '00'] = this.simple.toString().split('.');
+    const [left, right = '00'] = this.simple.toFixed(100).split('.');
     const truncatedRight =
       right.length > decimalPlaces ? right.slice(0, decimalPlaces) : right;
     const rounded = `${left}.${truncatedRight}`;
