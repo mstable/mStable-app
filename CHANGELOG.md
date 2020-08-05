@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.8.3
+
+_Released 05.08.20 12.38 CEST_
+
 Bug fixes:
 
 - When navigating to a pool from the pools overview, scroll to the top
