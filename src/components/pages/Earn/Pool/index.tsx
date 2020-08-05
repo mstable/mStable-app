@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
@@ -21,6 +21,10 @@ const Container = styled.div`
 
 export const PoolPage: FC<Props> = ({ slugOrAddress }) => {
   const address = useMatchStakingRewardsAddressFromUrl(slugOrAddress);
+
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, []);
 
   if (address === false) {
     return <>404</>;
