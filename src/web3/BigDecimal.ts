@@ -17,12 +17,12 @@ export class BigDecimal {
    * @param decimals
    */
   static parse(amountStr: string, decimals: number): BigDecimal {
-    if (amountStr.includes('e')) {
-      throw new Error('Unable to parse amount');
-    }
+    // Use the maximum fixed fraction digits to avoid scientific notation for
+    // tiny amounts.
+    const amount = Number(amountStr).toFixed(100);
 
     // Trim the fraction to the number of decimals (otherwise: underflow)
-    const [int, fraction = '0'] = amountStr.split('.');
+    const [int, fraction = '0'] = amount.split('.');
     const sanitizedAmount = `${int}.${fraction.slice(0, decimals)}`;
 
     return new BigDecimal(parseUnits(sanitizedAmount, decimals), decimals);
@@ -39,7 +39,7 @@ export class BigDecimal {
     amountStr: string | null | undefined,
     decimals: number,
   ): BigDecimal | undefined {
-    if (!amountStr || amountStr.includes('e')) {
+    if (!amountStr || !decimals) {
       return undefined;
     }
     return BigDecimal.parse(amountStr, decimals);
