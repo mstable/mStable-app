@@ -1,8 +1,9 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-
 import Skeleton from 'react-loading-skeleton/lib';
+
 import { Amount, NumberFormat } from '../../../core/Amount';
+import { ViewportWidth } from '../../../../theme';
 import {
   useCurrentStakingRewardsContract,
   useCurrentStakingToken,
@@ -10,7 +11,7 @@ import {
   useCurrentRewardsToken,
   useRewardsEarned,
 } from '../StakingRewardsContractProvider';
-import { ViewportWidth } from '../../../../theme';
+import { ViewAs } from './ViewAs';
 
 interface Props {
   className?: string;
@@ -36,7 +37,7 @@ const AmountContainer = styled.div`
   }
 `;
 
-const Container = styled.div`
+const Balances = styled.div`
   width: 100%;
   padding-bottom: 32px;
 
@@ -50,7 +51,7 @@ const Container = styled.div`
   }
 `;
 
-export const PoolBalances: FC<Props> = ({ className }) => {
+export const PoolBalances: FC<Props> = () => {
   const stakingRewardsContract = useCurrentStakingRewardsContract();
 
   const {
@@ -64,9 +65,10 @@ export const PoolBalances: FC<Props> = ({ className }) => {
   const platformToken = useCurrentPlatformToken();
 
   return (
-    <Container className={className}>
+    <div>
+      <ViewAs />
       {stakingRewardsContract && rewardsToken && stakingToken && rewards ? (
-        <>
+        <Balances>
           <div>
             <AmountContainer>
               <Heading>Earned {rewardsToken.symbol}</Heading>
@@ -127,10 +129,10 @@ export const PoolBalances: FC<Props> = ({ className }) => {
               />
             </AmountContainer>
           </div>
-        </>
+        </Balances>
       ) : (
         <Skeleton height={200} />
       )}
-    </Container>
+    </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
-import { useWallet } from 'use-wallet';
 
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
+import { useAccount } from '../../../context/UserProvider';
 import { Interfaces } from '../../../types';
 import {
   FormProvider,
@@ -15,7 +15,7 @@ import { RedeemProvider, useRedeemState } from './RedeemProvider';
 import { Mode } from './types';
 
 const RedeemForm: FC<{}> = () => {
-  const { account } = useWallet();
+  const account = useAccount();
   const mUsdContract = useMusdContract();
   const setFormManifest = useSetFormManifest();
   const { amountInMasset, valid, mode, bAssets } = useRedeemState();

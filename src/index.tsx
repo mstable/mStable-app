@@ -37,6 +37,13 @@ const routes = {
   '/earn/:slugOrAddress': ({ slugOrAddress }: { slugOrAddress?: string }) => (
     <PoolPage slugOrAddress={slugOrAddress} />
   ),
+  '/earn/:slugOrAddress/:userAddress': ({
+    slugOrAddress,
+    userAddress,
+  }: {
+    slugOrAddress?: string;
+    userAddress?: string;
+  }) => <PoolPage slugOrAddress={slugOrAddress} userAddress={userAddress} />,
   '/save': () => <Save />,
   '/swap': () => <Swap />,
   '/redeem': () => <Redeem />,

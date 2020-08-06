@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { useIsIdle } from '../../context/UserActivityProvider';
+
+import { useIsIdle } from '../../context/UserProvider';
 
 const Container = styled.div<{ idle: boolean }>`
   position: relative;

@@ -2,12 +2,13 @@ import React, { FC } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import { getWorkingPath } from 'hookrouter';
+
 import { ReactTooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Overlay } from './Overlay';
 import { useOverlayOpen } from '../../context/AppProvider';
-import { useIsIdle } from '../../context/UserActivityProvider';
+import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
 import { BetaWarning } from './BetaWarning';

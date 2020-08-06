@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useWallet } from 'use-wallet';
 import { hexZeroPad } from 'ethers/utils';
 import { useTransactionsDispatch } from '../context/TransactionsProvider';
+import { useAccount } from '../context/UserProvider';
 import { getHistoricTransactions } from '../web3/getHistoricTransactions';
 import {
   useMusdContract,
@@ -17,7 +18,8 @@ const fromBlock =
     : 0;
 
 export const ContractsUpdater = (): null => {
-  const { account, activated, connected } = useWallet();
+  const { activated, connected } = useWallet();
+  const account = useAccount();
   const { addHistoric, reset } = useTransactionsDispatch();
 
   const mUsdContract = useMusdContract();

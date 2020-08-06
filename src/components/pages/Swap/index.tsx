@@ -1,8 +1,8 @@
 import React, { FC, useEffect } from 'react';
-import { useWallet } from 'use-wallet';
 import { BigNumber } from 'ethers/utils';
 import { MusdStats } from '../../stats/MusdStats';
 
+import { useAccount } from '../../../context/UserProvider';
 import {
   FormProvider,
   useSetFormManifest,
@@ -15,7 +15,7 @@ import { Interfaces } from '../../../types';
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
 
 const SwapForm: FC<{}> = () => {
-  const { account } = useWallet();
+  const account = useAccount();
   const {
     valid,
     values: { output, input },

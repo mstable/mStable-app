@@ -1,16 +1,16 @@
 import { useEffect, useRef } from 'react';
-import { useWallet } from 'use-wallet';
 import { TransactionReceipt } from 'ethers/providers';
 import { useTransactionsContext } from '../context/TransactionsProvider';
 import { useWeb3Provider } from '../context/SignerProvider';
 import { useBlockNumber } from '../context/DataProvider/BlockProvider';
+import { useAccount } from '../context/UserProvider';
 
 /**
  * Update the state of affected transactions when the provider or
  * block number changes.
  */
 export const TransactionsUpdater = (): null => {
-  const { account } = useWallet();
+  const account = useAccount();
   const provider = useWeb3Provider();
   const blockNumber = useBlockNumber();
   const accountRef = useRef<string | null>(account);

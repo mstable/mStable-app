@@ -25,7 +25,7 @@ type DailyApysForWeek = [Apy, Apy, Apy, Apy, Apy, Apy, Apy];
 
 type RateTimestamp = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
 
-export const useTruncatedAddress = (address: string | null): string | null =>
+export const useTruncatedAddress = (address?: string | null): string | null =>
   useMemo(() => (address ? truncateAddress(address) : null), [address]);
 
 /**

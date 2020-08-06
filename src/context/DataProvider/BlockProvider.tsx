@@ -1,6 +1,7 @@
 import React, { createContext, FC, useContext, useRef } from 'react';
 import { useWallet } from 'use-wallet';
-import { useUserActivityContext } from '../UserActivityProvider';
+
+import { useIsIdle } from '../UserProvider';
 
 export type MaybeBlockNumber = number | undefined;
 
@@ -9,7 +10,7 @@ const ctx = createContext<MaybeBlockNumber>(undefined);
 export const BlockProvider: FC<{}> = ({ children }) => {
   const blockNumber = useRef<MaybeBlockNumber>();
   const { getBlockNumber } = useWallet();
-  const { idle } = useUserActivityContext();
+  const idle = useIsIdle();
 
   if (!idle) {
     // Only set the new block number when the user is active
