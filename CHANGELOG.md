@@ -4,8 +4,13 @@
 
 Bug fixes:
 
-- Add extra decimals for pool shares and staked token balances (8 decimals total)
 - Adjust parsing and presentation of decimals for some browsers
+- Add extra pool balance decimals
+- Add extra decimals for pool shares and staked token balances (8 decimals total)
+
+Miscellaneous:
+
+- Increase font size of submit buttons
 
 ## Version 1.8.3
 
