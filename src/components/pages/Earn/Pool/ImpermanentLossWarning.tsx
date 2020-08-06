@@ -7,7 +7,7 @@ import { Protip } from '../../../core/Protip';
 export const ImpermanentLossWarning: FC<{}> = () => {
   const stakingRewards = useCurrentStakingRewardsContract();
 
-  return stakingRewards?.pool.onlyStablecoins ? (
+  return stakingRewards?.pool.onlyStablecoins ? null : (
     <Protip emoji="⚠️" title="Volatile tokens">
       This pool contains volatile tokens which means it may suffer from
       impermanent losses - you can learn more about this{' '}
@@ -20,5 +20,5 @@ export const ImpermanentLossWarning: FC<{}> = () => {
       </ExternalLink>
       .
     </Protip>
-  ) : null;
+  );
 };
