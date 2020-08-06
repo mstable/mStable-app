@@ -72,24 +72,20 @@ export const RedeemInput: FC<{}> = () => {
     [error, enabledBassets, mode],
   );
 
-  const items = useMemo(() => {
-    const balance = {
-      label: 'Balance',
-      value: mAsset?.balance.format(2, true, 'mUSD'),
-    };
-
-    return feeAmount?.exact.gt(0) && valid
-      ? [
-          balance,
-          {
-            label: 'NOTE',
-            value: `${
-              mode === Mode.RedeemMasset ? 'Redemption' : 'Swap'
-            } fee applies (see details below)`,
-          },
-        ]
-      : [balance];
-  }, [mAsset, mode, feeAmount, valid]);
+  const items = useMemo(
+    () =>
+      feeAmount?.exact.gt(0) && valid
+        ? [
+            {
+              label: 'NOTE',
+              value: `${
+                mode === Mode.RedeemMasset ? 'Redemption' : 'Swap'
+              } fee applies (see details below)`,
+            },
+          ]
+        : [],
+    [mode, feeAmount, valid],
+  );
 
   const handleSetAmount = useCallback(
     (_, _formValue) => {
