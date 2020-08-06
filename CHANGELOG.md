@@ -2,6 +2,11 @@
 
 ## Next
 
+Features:
+
+- Provide a button for users to share a link to view their balances in a given pool
+- Provide a simple form on the pool view to input an address and view that user's balances
+
 ## Version 1.8.4
 
 _Released 06.08.20 14.29 CEST_

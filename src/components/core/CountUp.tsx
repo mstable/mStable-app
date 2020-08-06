@@ -1,9 +1,9 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { useCountUp, CountUpProps } from 'react-countup';
 import styled from 'styled-components';
-import { useFirstMountState } from 'react-use/lib/useFirstMountState'
+import { useFirstMountState } from 'react-use/lib/useFirstMountState';
 
-import { useIsIdle } from '../../context/UserActivityProvider';
+import { useIsIdle } from '../../context/UserProvider';
 import { Color } from '../../theme';
 
 interface Props extends CountUpProps {

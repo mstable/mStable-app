@@ -1,16 +1,16 @@
 import { Reducer, useEffect, useReducer, useRef } from 'react';
-import { useWallet } from 'use-wallet';
 import { useSignerContext } from '../context/SignerProvider';
-import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
+import { useBlockNumber } from '../context/DataProvider/BlockProvider';
+import { useAccount } from '../context/UserProvider';
 import {
   useAllowanceSubscriptionsSerialized,
   useBalanceSubscriptionsSerialized,
   useTokenSubscriptionsSerialized,
   useTokensDispatch,
 } from '../context/DataProvider/TokensProvider';
+import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
 import { BigDecimal } from '../web3/BigDecimal';
-import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 
 interface State {
   [tokenAddress: string]: Erc20Detailed;
@@ -51,7 +51,7 @@ export const TokenSubscriptionsUpdater = (): null => {
 
   const [contracts, dispatch] = useReducer(reducer, initialState);
 
-  const { account } = useWallet();
+  const account = useAccount();
   const accountRef = useRef<string | null>(account);
   const blockNumber = useBlockNumber();
 

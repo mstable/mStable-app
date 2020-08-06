@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useWallet } from 'use-wallet';
 
+import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { usePoolsQuery } from '../../graphql/balancer';
 import { useStakingRewardsContractsQuery } from '../../graphql/mstable';
@@ -376,7 +376,7 @@ const transformRawSyncedEarnData = ({
 };
 
 export const useSyncedEarnData = (): SyncedEarnData => {
-  const { account } = useWallet();
+  const account = useAccount();
   const block24hAgo = useBlockTimestamp24hAgo();
 
   const stakingRewardsContractsQuery = useStakingRewardsContractsQuery({

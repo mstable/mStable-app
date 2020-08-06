@@ -1,9 +1,11 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
-import { useWallet } from 'use-wallet';
 import { BigNumber } from 'ethers/utils';
 import styled from 'styled-components';
 
+import { useTokenAllowance } from '../../../../context/DataProvider/TokensProvider';
+import { useAccount } from '../../../../context/UserProvider';
+import { useSignerContext } from '../../../../context/SignerProvider';
 import {
   FormProvider,
   useSetFormManifest,
@@ -15,11 +17,9 @@ import { NumberFormat } from '../../../core/Amount';
 import { H3, H4 } from '../../../core/Typography';
 import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider';
 import { Interfaces, SendTxManifest } from '../../../../types';
-import { useSignerContext } from '../../../../context/SignerProvider';
 import { RewardsDistributorFactory } from '../../../../typechain/RewardsDistributorFactory';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Button } from '../../../core/Button';
-import { useTokenAllowance } from '../../../../context/DataProvider/TokensProvider';
 
 const Row = styled.div`
   margin-bottom: 16px;
@@ -238,7 +238,7 @@ const Inputs: FC<{ reason?: string }> = ({ reason }) => {
 };
 
 export const DistributeRewardsForm: FC<{}> = () => {
-  const { account } = useWallet();
+  const account = useAccount();
   const {
     data: { rewardsDistributor, rewardsToken },
     totalFunds,

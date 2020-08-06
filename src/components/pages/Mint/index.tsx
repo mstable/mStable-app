@@ -1,8 +1,8 @@
 import React, { FC, useEffect } from 'react';
-import { useWallet } from 'use-wallet';
 import { BigNumber } from 'ethers/utils';
 
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
+import { useAccount } from '../../../context/UserProvider';
 import {
   FormProvider,
   useSetFormManifest,
@@ -14,7 +14,7 @@ import { MintInput } from './MintInput';
 import { MusdStats } from '../../stats/MusdStats';
 
 const MintForm: FC<{}> = () => {
-  const { account } = useWallet();
+  const account = useAccount();
   const { error, amountTouched, bAssets, mintAmount } = useMintState();
   const setFormManifest = useSetFormManifest();
   const mUsdContract = useMusdContract();

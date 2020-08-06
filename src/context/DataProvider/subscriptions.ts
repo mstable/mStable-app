@@ -1,6 +1,5 @@
 import { LazyQueryHookOptions, QueryTuple } from '@apollo/react-hooks';
 import { QueryResult } from '@apollo/react-common';
-import { useWallet } from 'use-wallet';
 import { useEffect } from 'react';
 
 import {
@@ -12,6 +11,7 @@ import {
   useSavingsContractLazyQuery,
 } from '../../graphql/mstable';
 import { ContractNames } from '../../types';
+import { useAccount } from '../UserProvider';
 import { useKnownAddress } from './KnownAddressProvider';
 import { useBlockNumber } from './BlockProvider';
 
@@ -88,7 +88,7 @@ export const useMusdSavingsSubscription = (): SavingsContractQueryResult => {
 };
 
 export const useCreditBalancesSubscription = (): CreditBalancesQueryResult => {
-  const { account } = useWallet();
+  const account = useAccount();
 
   return useBlockPollingSubscription(
     useCreditBalancesLazyQuery,

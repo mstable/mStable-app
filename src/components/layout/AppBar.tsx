@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import React, { FC } from 'react';
 import { A, getWorkingPath } from 'hookrouter';
-
 import { useWallet } from 'use-wallet';
+
 import {
   OverlayItems,
   StatusWarnings,
@@ -16,6 +16,7 @@ import {
   useToggleWallet,
   useWalletConnector,
 } from '../../context/AppProvider';
+import { useOwnAccount } from '../../context/UserProvider';
 import { Color, ViewportWidth } from '../../theme';
 import { ReactComponent as LogoSvg } from '../icons/mstable.svg';
 import { UnstyledButton } from '../core/Button';
@@ -287,22 +288,12 @@ const PendingTxContainer = styled.div<{
   }
 `;
 
-// const PendingTx: FC<{}> = () => {
-//   const { pendingCount, latestStatus } = usePendingTxState();
-//   const pending = latestStatus === TransactionStatus.Pending;
-//   const error = latestStatus === TransactionStatus.Error;
-//   const success = latestStatus === TransactionStatus.Success;
-//
-//   return (
-//
-//   );
-// };
-
 const WalletButton: FC<{}> = () => {
   const overlayItem = useOverlayItem();
   const toggleWallet = useToggleWallet();
   const resetWallet = useResetWallet();
-  const { connected, account } = useWallet<InjectedEthereum>();
+  const { connected } = useWallet<InjectedEthereum>();
+  const account = useOwnAccount();
   const connecting = useIsWalletConnecting();
   const truncatedAddress = useTruncatedAddress(account);
   const WalletIcon = useWalletIcon();
