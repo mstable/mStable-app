@@ -54,6 +54,7 @@ export interface RawEarnData {
 export type NormalizedPool = {
   address: string;
   platform: Platforms;
+  onlyStablecoins: boolean;
   tokens: (Token & {
     liquidity: BigDecimal;
     price?: BigDecimal;

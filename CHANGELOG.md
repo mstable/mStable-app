@@ -11,6 +11,7 @@ Bug fixes:
 Miscellaneous:
 
 - Increase font size of submit buttons
+- Add impermanent loss warning to pools that contain non-stablecoin collateral
 
 ## Version 1.8.3
 
