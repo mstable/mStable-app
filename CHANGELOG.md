@@ -2,6 +2,11 @@
 
 ## Next
 
+Bug fixes:
+
+- Add extra decimals for pool shares and staked token balances (8 decimals total)
+- Adjust parsing and presentation of decimals for some browsers
+
 ## Version 1.8.3
 
 _Released 05.08.20 12.38 CEST_

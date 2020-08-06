@@ -6,6 +6,7 @@ import {
   formatUnits,
   parseUnits,
 } from 'ethers/utils';
+import { BigNumber as FractionalBigNumber } from 'bignumber.js';
 
 import { abbreviateNumber } from '../components/stats/utils';
 import { RATIO_SCALE, SCALE } from './constants';
@@ -17,15 +18,21 @@ export class BigDecimal {
    * @param decimals
    */
   static parse(amountStr: string, decimals: number): BigDecimal {
-    // Use the maximum fixed fraction digits to avoid scientific notation for
-    // tiny amounts.
-    const amount = Number(amountStr).toFixed(100);
-
-    // Trim the fraction to the number of decimals (otherwise: underflow)
-    const [int, fraction = '0'] = amount.split('.');
+    // Sanitize the input and limit it to the given decimals
+    const [int, fraction = '0'] = amountStr.split('.');
     const sanitizedAmount = `${int}.${fraction.slice(0, decimals)}`;
 
-    return new BigDecimal(parseUnits(sanitizedAmount, decimals), decimals);
+    // Create a fractional BigNumber with the sanitized amount
+    const fractionalBn = new FractionalBigNumber(sanitizedAmount);
+
+    // Parse a BigNumber with the given decimals
+    const parsedBn = parseUnits(
+      fractionalBn.decimalPlaces(decimals).toString(),
+      decimals,
+    );
+
+    // Create a BigDecimal
+    return new BigDecimal(parsedBn, decimals);
   }
 
   /**

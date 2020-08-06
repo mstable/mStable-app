@@ -112,8 +112,8 @@ export const PoolBalances: FC<Props> = ({ className }) => {
               <LargeAmount
                 format={NumberFormat.CountupPercentage}
                 amount={stakingRewardsContract.stakingBalancePercentage}
-                countup={{ decimals: 6 }}
-                decimalPlaces={6}
+                countup={{ decimals: 8 }}
+                decimalPlaces={8}
               />
             </AmountContainer>
             <AmountContainer>
@@ -121,7 +121,7 @@ export const PoolBalances: FC<Props> = ({ className }) => {
               <Amount
                 format={NumberFormat.Countup}
                 amount={stakingRewardsContract.stakingBalance}
-                countup={{ decimals: 6 }}
+                countup={{ decimals: 8 }}
                 price={stakingToken.price}
               />
             </AmountContainer>
