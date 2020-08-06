@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.8.4
+
+_Released 06.08.20 14.29 CEST_
+
 Bug fixes:
 
 - Adjust parsing and presentation of decimals for some browsers
