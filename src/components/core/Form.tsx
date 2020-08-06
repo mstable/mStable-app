@@ -5,6 +5,7 @@ import {
   useIsSupportedChain,
   useIsWalletConnected,
 } from '../../context/AppProvider';
+import { FontSize } from '../../theme';
 import { Button } from './Button';
 
 interface Props {
@@ -80,6 +81,7 @@ export const SubmitButton = styled(Button)`
       disabled ? theme.color.blackTransparenter : theme.color.greenTransparent}
     0 10px 20px;
   transition: background-color 0.4s ease;
+  font-size: ${FontSize.l};
 
   &:hover {
     ${({ theme, disabled }) =>
