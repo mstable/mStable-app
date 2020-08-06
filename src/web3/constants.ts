@@ -38,3 +38,13 @@ export const EMOJIS = {
 };
 
 export const DAPP_VERSION = process.env.REACT_APP_VERSION;
+
+export const STABLECOIN_SYMBOLS = [
+  'BUSD',
+  'DAI',
+  'SUSD',
+  'TUSD',
+  'USDC',
+  'USDT',
+  'mUSD',
+];

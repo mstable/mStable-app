@@ -50,7 +50,7 @@ const TabButton: FC<{ tab: Tabs }> = ({ tab }) => {
 const Container = styled.div`
   background: ${Color.offWhite};
   border-radius: 0 0 2px 2px;
-  padding: 16px 0;
+  padding: 16px 0 32px 0;
   text-align: left;
 `;
 

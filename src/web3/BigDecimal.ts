@@ -24,12 +24,10 @@ export class BigDecimal {
 
     // Create a fractional BigNumber with the sanitized amount
     const fractionalBn = new FractionalBigNumber(sanitizedAmount);
+    const formatted = fractionalBn.decimalPlaces(decimals).toFixed(decimals);
 
     // Parse a BigNumber with the given decimals
-    const parsedBn = parseUnits(
-      fractionalBn.decimalPlaces(decimals).toString(),
-      decimals,
-    );
+    const parsedBn = parseUnits(formatted, decimals);
 
     // Create a BigDecimal
     return new BigDecimal(parsedBn, decimals);

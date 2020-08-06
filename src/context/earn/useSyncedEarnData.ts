@@ -18,6 +18,7 @@ import {
   SyncedEarnData,
   TokenPricesMap,
 } from './types';
+import { STABLECOIN_SYMBOLS } from '../../web3/constants';
 
 interface CoingeckoPrices {
   [address: string]: { usd: number };
@@ -197,32 +198,33 @@ const normalizeUniswapPool = ({
   reserve1,
   token0,
   token1,
-}: RawPairData): NormalizedPool => ({
-  address,
-  platform: Platforms.Uniswap,
-  totalSupply: BigDecimal.parse(totalSupply, 18),
-  reserveUSD: BigDecimal.parse(reserveUSD, 18),
-  tokens: [
+}: RawPairData): NormalizedPool => {
+  const tokens = [
     normalizeUniswapToken(token0, reserve0),
     normalizeUniswapToken(token1, reserve1),
-  ],
-});
+  ];
+  return {
+    address,
+    platform: Platforms.Uniswap,
+    totalSupply: BigDecimal.parse(totalSupply, 18),
+    reserveUSD: BigDecimal.parse(reserveUSD, 18),
+    tokens,
+    onlyStablecoins: tokens.every(token =>
+      STABLECOIN_SYMBOLS.includes(token.symbol),
+    ),
+  };
+};
 
 const normalizeBalancerPool = ({
   address,
-  tokens,
+  tokens: _tokens,
   totalShares,
   totalSwapVolume,
   totalWeight,
   swapFee,
-}: RawPoolData): NormalizedPool => ({
-  address,
-  platform: Platforms.Balancer,
-  totalSupply: BigDecimal.parse(totalShares, 18),
-  totalSwapVolume: BigDecimal.parse(totalSwapVolume, 18),
-  swapFee: BigDecimal.parse(swapFee, 18),
-  tokens:
-    tokens?.map(
+}: RawPoolData): NormalizedPool => {
+  const tokens =
+    _tokens?.map(
       ({ address: _address, decimals, denormWeight, balance, symbol }) => ({
         address: _address,
         decimals,
@@ -232,8 +234,19 @@ const normalizeBalancerPool = ({
           (parseFloat(denormWeight) / parseFloat(totalWeight)) * 100,
         ),
       }),
-    ) ?? [],
-});
+    ) ?? [];
+  return {
+    address,
+    platform: Platforms.Balancer,
+    totalSupply: BigDecimal.parse(totalShares, 18),
+    totalSwapVolume: BigDecimal.parse(totalSwapVolume, 18),
+    swapFee: BigDecimal.parse(swapFee, 18),
+    tokens,
+    onlyStablecoins: tokens.every(token =>
+      STABLECOIN_SYMBOLS.includes(token.symbol),
+    ),
+  };
+};
 
 const useRawPlatformPools = (
   rawStakingRewardsContracts: RawStakingRewardsContracts,

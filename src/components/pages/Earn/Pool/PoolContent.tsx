@@ -5,6 +5,7 @@ import { Card } from '../Card';
 import { ButtonLink } from '../../../core/Button';
 import { PoolForms } from './PoolForms';
 import { PoolBalances } from './PoolBalances';
+import { ImpermanentLossWarning } from './ImpermanentLossWarning';
 
 const BackLink = styled(ButtonLink)`
   display: inline-block;
@@ -18,10 +19,6 @@ const CardContainer = styled.div`
 
 const Content = styled.div`
   padding: 32px 0;
-
-  > * {
-    padding-bottom: 32px;
-  }
 `;
 
 const Container = styled.div`
@@ -36,6 +33,7 @@ export const PoolContent: FC<{ address: string }> = ({ address }) => (
     </CardContainer>
     <Content>
       <PoolBalances />
+      <ImpermanentLossWarning />
       <PoolForms address={address} />
     </Content>
   </Container>

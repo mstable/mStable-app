@@ -38,6 +38,7 @@ const AmountContainer = styled.div`
 
 const Container = styled.div`
   width: 100%;
+  padding-bottom: 32px;
 
   > div > * {
     margin-bottom: 16px;
