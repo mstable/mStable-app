@@ -58,7 +58,8 @@ export const getHistoricTransactions = async (
     .filter(
       // Filter for successful transactions from the given account
       (_, index) =>
-        receipts[index]?.from === account && receipts[index]?.status === 1,
+        receipts[index]?.from?.toLowerCase() === account &&
+        receipts[index]?.status === 1,
     )
     .reduce((_map, hash, index) => {
       // Reduce into a map of hashes to transactions with logs (just the data needed)
@@ -81,7 +82,7 @@ export const getHistoricTransactions = async (
                 // eslint-disable-next-line no-console
                 console.log(log, error);
               }
-              return { values, name }
+              return { values, name };
             })
             .filter(({ name }) => !!name),
         },
