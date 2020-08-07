@@ -37,18 +37,28 @@ const Header = styled.h3`
   }
 `;
 
-const Screenshot = styled.div`
+const VideoContainer = styled.div`
   border-radius: 4px;
   overflow: hidden;
   box-shadow: ${Color.blackTransparent} 0 8px 12px;
 
-  img {
+  video {
     width: 100%;
     max-width: 500px;
     height: auto;
     display: block;
   }
 `;
+
+const Video: FC<{ webm: string; mp4: string }> = ({ webm, mp4 }) => (
+  <VideoContainer>
+    {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+    <video autoPlay loop>
+      <source src={webm} type="video/webm" />
+      <source src={mp4} type="video/mp4" />
+    </video>
+  </VideoContainer>
+);
 
 const ItemContent = styled.div`
   padding: 8px 16px 32px 16px;
@@ -155,9 +165,7 @@ const TakingPart1: FC<{}> = () => (
       across the DeFi ecosystem. View the list of incentivised pools and
       platforms and choose those you would like to contribute to!
     </P>
-    <Screenshot>
-      <img alt="" src="/overview.png" />
-    </Screenshot>
+    <Video webm="/media/01-overview.webm" mp4="/media/01-overview.mp4" />
   </Item>
 );
 
@@ -173,9 +181,7 @@ const TakingPart2: FC<{}> = () => (
         Provider) token for your contribution.
       </P>
     </div>
-    <Screenshot>
-      <img alt="" src="/balancer.png" />
-    </Screenshot>
+    <Video webm="/media/02-balancer.webm" mp4="/media/02-balancer.mp4" />
   </Item>
 );
 
@@ -185,9 +191,7 @@ const TakingPart3: FC<{}> = () => (
       "Stake" this LP token on the mStable EARN page by simply entering an
       amount, approving the spending of the LP token and then pressing "STAKE".
     </P>
-    <Screenshot>
-      <img alt="" src="/stake.png" />
-    </Screenshot>
+    <Video webm="/media/03-staking.webm" mp4="/media/03-staking.mp4" />
   </Item>
 );
 
@@ -197,18 +201,14 @@ const TakingPart4: FC<{}> = () => (
       Earn MTA rewards on a second by second basis, in addition to any third
       party tokens like BAL that may be up for grabs.
     </P>
-    <Screenshot>
-      <img alt="" src="/pool.png" />
-    </Screenshot>
+    <Video webm="/media/04-rewards.webm" mp4="/media/04-rewards.mp4" />
   </Item>
 );
 
 const TakingPart5: FC<{}> = () => (
   <Item title="Dry off">
     <P>Claim your rewards or withdraw your stake at any time!</P>
-    <Screenshot>
-      <img alt="" src="/claim.png" />
-    </Screenshot>
+    <Video webm="/media/05-claiming.webm" mp4="/media/05-claiming.mp4" />
   </Item>
 );
 

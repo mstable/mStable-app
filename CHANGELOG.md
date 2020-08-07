@@ -9,6 +9,10 @@ Features:
 - When a new version of the app is available (according to Github releases), add a
   notification (that can be dismissed) with a button to refresh the page
 
+Miscellaneous:
+
+- Replace outdated EARN screenshots with small videos
+
 ## Version 1.8.4
 
 _Released 06.08.20 14.29 CEST_
