@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 
 import {
@@ -6,6 +6,7 @@ import {
   NotificationType,
   useMarkNotificationAsRead,
 } from '../../context/NotificationsProvider';
+import { Button } from './Button';
 
 const Title = styled.div`
   font-weight: bold;
@@ -33,7 +34,7 @@ const Container = styled.div<
   background: ${({ theme, type }) =>
     type === NotificationType.Success
       ? theme.color.green
-      : type === NotificationType.Info
+      : type === NotificationType.Info || type === NotificationType.Update
       ? theme.color.blue
       : theme.color.red};
   color: ${({ theme, type }) =>
@@ -62,8 +63,13 @@ export const NotificationItem: FC<{
   className?: string;
 }> = ({ notification: { type, id, title, body, link }, className }) => {
   const markAsRead = useMarkNotificationAsRead();
+
+  const handleClick = useCallback(() => {
+    markAsRead(id);
+  }, [id, markAsRead]);
+
   return (
-    <Container type={type} onClick={() => markAsRead(id)} className={className}>
+    <Container type={type} onClick={handleClick} className={className}>
       <Title>{title}</Title>
       {body ? <div>{body}</div> : null}
       {link ? (
@@ -75,6 +81,15 @@ export const NotificationItem: FC<{
         >
           {link.title}
         </Link>
+      ) : null}
+      {type === NotificationType.Update ? (
+        <Button
+          onClick={() => {
+            window.location.reload();
+          }}
+        >
+          Refresh page
+        </Button>
       ) : null}
     </Container>
   );

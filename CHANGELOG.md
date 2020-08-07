@@ -6,6 +6,8 @@ Features:
 
 - Provide a button for users to share a link to view their balances in a given pool
 - Provide a simple form on the pool view to input an address and view that user's balances
+- When a new version of the app is available (according to Github releases), add a
+  notification (that can be dismissed) with a button to refresh the page
 
 ## Version 1.8.4
 
