@@ -21,10 +21,11 @@ import { navigate } from 'hookrouter';
 import { configureScope } from '@sentry/react';
 
 import { MassetNames, InjectedEthereum, Connector } from '../types';
-import { CHAIN_ID, NETWORK_NAMES } from '../web3/constants';
+import { CHAIN_ID, DAPP_VERSION, NETWORK_NAMES } from '../web3/constants';
 import { CONNECTORS } from '../web3/connectors';
 import {
   useAddInfoNotification,
+  useAddUpdateNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
 import { LocalStorage, Storage } from '../localStorage';
@@ -252,6 +253,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
   } = useWallet<InjectedEthereum>();
   const [state, dispatch] = useReducer(reducer, initialState);
   const addInfoNotification = useAddInfoNotification();
+  const addUpdateNotification = useAddUpdateNotification();
   const addErrorNotification = useAddErrorNotification();
 
   const closeOverlay = useCallback<Dispatch['closeOverlay']>(() => {
@@ -366,6 +368,24 @@ export const AppProvider: FC<{}> = ({ children }) => {
       payload: window.navigator.onLine,
     });
   }, [dispatch]);
+
+  /**
+   * Get latest release and add an update notification if necessary
+   */
+  useEffect(() => {
+    fetch(
+      'https://api.github.com/repos/mStable/mStable-app/releases/latest',
+    ).then(result => {
+      result.json().then(({ tag_name: tag }: { tag_name: string }) => {
+        if (tag.slice(1) !== (DAPP_VERSION as string)) {
+          addUpdateNotification(
+            'New version available',
+            `A new version of the app is available`,
+          );
+        }
+      });
+    });
+  }, [addUpdateNotification]);
 
   /**
    * Detect internet connection (or lack thereof)

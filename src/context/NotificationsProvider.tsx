@@ -19,6 +19,7 @@ export enum NotificationType {
   Success,
   Error,
   Info,
+  Update,
 }
 
 export interface Notification {
@@ -54,6 +55,7 @@ type AddNotificationCallback = (
 interface Dispatch {
   addErrorNotification: AddNotificationCallback;
   addInfoNotification: AddNotificationCallback;
+  addUpdateNotification: AddNotificationCallback;
   addSuccessNotification: AddNotificationCallback;
   markNotificationAsRead(id: string): void;
   markAllNotificationsAsRead(): void;
@@ -105,9 +107,12 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
       });
 
       // Hide the notification toast after a delay
-      setTimeout(() => {
-        dispatch({ type: Actions.HideToast, payload: id });
-      }, 8000);
+      // (exception: update notifications)
+      if (notification.type !== NotificationType.Update) {
+        setTimeout(() => {
+          dispatch({ type: Actions.HideToast, payload: id });
+        }, 8000);
+      }
     },
     [dispatch],
   );
@@ -122,6 +127,13 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
   const addInfoNotification = useCallback<Dispatch['addInfoNotification']>(
     (title, body, link) => {
       addNotification({ title, body, link, type: NotificationType.Info });
+    },
+    [addNotification],
+  );
+
+  const addUpdateNotification = useCallback<Dispatch['addUpdateNotification']>(
+    (title, body) => {
+      addNotification({ title, body, type: NotificationType.Update });
     },
     [addNotification],
   );
@@ -158,6 +170,7 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
           {
             addErrorNotification,
             addInfoNotification,
+            addUpdateNotification,
             addSuccessNotification,
             markNotificationAsRead,
             markAllNotificationsAsRead,
@@ -167,6 +180,7 @@ export const NotificationsProvider: FC<{}> = ({ children }) => {
           state,
           addErrorNotification,
           addInfoNotification,
+          addUpdateNotification,
           addSuccessNotification,
           markNotificationAsRead,
           markAllNotificationsAsRead,
@@ -197,6 +211,9 @@ export const useAddInfoNotification = (): Dispatch['addInfoNotification'] =>
 
 export const useAddSuccessNotification = (): Dispatch['addSuccessNotification'] =>
   useNotificationsDispatch().addSuccessNotification;
+
+export const useAddUpdateNotification = (): Dispatch['addUpdateNotification'] =>
+  useNotificationsDispatch().addUpdateNotification;
 
 export const useMarkNotificationAsRead = (): Dispatch['markNotificationAsRead'] =>
   useNotificationsDispatch().markNotificationAsRead;
