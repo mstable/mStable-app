@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 import { A } from 'hookrouter';
 import { H2, H3, P } from '../core/Typography';
+import { ExternalLink } from '../core/ExternalLink';
 
 const List = styled.ul`
   padding-bottom: 32px;
@@ -62,6 +63,10 @@ export const FAQ: FC<{}> = () => (
             <li>
               <A href="/save">Save</A> your mUSD to earn our native interest
               rate
+            </li>
+            <li>
+              <A href="/earn">Earn</A> ecosystem rewards by contributing
+              liquidity
             </li>
             <li>
               <A href="/swap">Swap</A> stablecoins with zero slippage
@@ -129,6 +134,133 @@ export const FAQ: FC<{}> = () => (
           <P>
             In future, we will allow users to mint mUSD using other crypto
             assets such as ETH.
+          </P>
+        </ListItem>
+      </List>
+    </div>
+    <div>
+      <H3 borderTop>Earn</H3>
+      <List>
+        <ListItem>
+          <P>What is EARN?</P>
+          <P>
+            EARN consolidates all of mStable's incentivised liquidity pools into
+            one place, and lets anyone track their Meta rewards in real time.
+          </P>
+          <P>
+            Rewards are distributed to users contributing to these pools at a
+            rate proportionate to their share of the pool, and the rewards made
+            available to the pool.
+          </P>
+          <P>
+            The goal of this liquidity provision is to increase the utility of
+            mStable assets and to grow the ecosystem.
+          </P>
+        </ListItem>
+        <ListItem>
+          <P>How can I earn ecosystem rewards with mStable?</P>
+          <P>
+            To earn ecosystem rewards, contribute liquidity to one of the
+            Balancer or Uniswap pools available on <A href="/earn">EARN</A>.
+          </P>
+          <P>
+            Each pool comprises a set of collateral tokens based on a ratio;
+            e.g. a pool with mUSD/USDC in a 50:50 ratio has a total collateral
+            made up half mUSD and half USDC.
+          </P>
+          <P>
+            To contribute liquidity to a pool, simply add collateral to it on
+            the platform it is run on (e.g. Balancer or Uniswap). The platform
+            will send in return a staking token (e.g. BPT or UNI-V2) that is
+            specific to the pool, and records your contribution of collateral.
+          </P>
+          <P>
+            These tokens can be staked on the pool page on EARN, and will
+            immediately start earning rewards while they are staked.
+          </P>
+        </ListItem>
+        <ListItem>
+          <P>How do I join a Balancer pool?</P>
+          <P>
+            Firstly go to the Balancer pool you want to contribute to on EARN,
+            and then open up the link to Balancer on the pool card at the top.
+          </P>
+          <P>
+            <ExternalLink href="https://defitutorials.substack.com/p/adding-liquidity-to-balancer-pools">
+              This guide
+            </ExternalLink>{' '}
+            provides detailed instructions for how to contribute liquidity to a
+            Balancer pool.
+          </P>
+        </ListItem>
+        <ListItem>
+          <P>How do I join a Uniswap pool?</P>
+          <P>
+            Firstly go to the Uniswap pool you want to contribute to on EARN,
+            and then open up the link to Uniswap on the pool card at the top.
+          </P>
+          <P>
+            <ExternalLink href="https://blog.mainframe.com/tutorial-adding-liquidity-to-uniswap-v2-2bb641f2bbc0">
+              This guide
+            </ExternalLink>{' '}
+            provides detailed instructions for how to contribute liquidity to a
+            Uniswap pool.
+          </P>
+        </ListItem>
+        <ListItem>
+          <P>When do I get my rewards?</P>
+          <P>
+            As long as there are rewards available in the pool, and you have
+            staked tokens in the pool, rewards will be earned in real time.
+            These rewards can be claimed at any time and sent to your wallet.
+          </P>
+        </ListItem>
+        <ListItem>
+          <P>When are new rewards made available?</P>
+          <P>
+            New rewards are being made available on a weekly basis for currently
+            running pools.
+          </P>
+        </ListItem>
+        <ListItem>
+          <P>What's the best pool to join?</P>
+          <P>This depends on a number of factors:</P>
+          <ul>
+            <li>
+              Total collateral value (smaller pools may present a better
+              opportunity, but this depends on the rewards available)
+            </li>
+            <li>APY/ROI of the pool</li>
+            <li>Your available collateral</li>
+            <li>
+              Impermanent loss (stablecoin-only pools inherently present less
+              risk than those with volatile tokens)
+            </li>
+          </ul>
+        </ListItem>
+        <ListItem>
+          <P>How do I earn and claim BAL rewards?</P>
+          <P>
+            When made available to the pool, BAL rewards are earned in the same
+            way as MTA rewards, and can be claimed in the same way; the earned
+            BAL balance is shown beneath the earned MTA.
+          </P>
+        </ListItem>
+        <ListItem>
+          <P>How do I exit a pool and get my tokens back?</P>
+          <P>
+            Simply click on the 'EXIT' tab on the pool and send the transaction;
+            this will return your staked tokens from the pool, and claim any
+            earned rewards to your wallet.
+          </P>
+        </ListItem>
+        <ListItem>
+          <P>When can I stake MTA?</P>
+          <P>
+            Contributing MTA in one of the MTA incentivised liquidity pools is
+            the closest thing we have to MTA staking at this stage. The team
+            will announce details about MTA staking and governance in due
+            course.
           </P>
         </ListItem>
       </List>
