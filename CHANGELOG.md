@@ -17,6 +17,7 @@ Miscellaneous:
 Bug fixes:
 
 - Handle edge cases with non-numbers for counters
+- Improve localStorage error handling
 
 ## Version 1.8.4
 
