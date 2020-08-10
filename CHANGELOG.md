@@ -20,6 +20,7 @@ Bug fixes:
 - Before attempting to eagerly connect a previously-connected MetaMask account,
   ensure that MetaMask is unlocked
 - Improve localStorage error handling
+- Handle empty transaction error messages
 
 ## Version 1.8.4
 
