@@ -263,6 +263,37 @@ export const FAQ: FC<{}> = () => (
             course.
           </P>
         </ListItem>
+        <ListItem>
+          <P>What is impermanent loss?</P>
+          <P>
+            Pools with volatile tokens may suffer from impermanent loss, which
+            is explained in detail{' '}
+            <ExternalLink href="https://medium.com/dragonfly-research/what-explains-the-rise-of-amms-7d008af1c399">
+              here
+            </ExternalLink>{' '}
+            and{' '}
+            <ExternalLink href="https://cryptobriefing.com/how-to-yield-farm-uniswap-not-get-rekt/">
+              here
+            </ExternalLink>
+            .
+          </P>
+        </ListItem>
+        <ListItem>
+          <P>Do I need to pay any fees?</P>
+          <P>There are no fees (excluding gas) for interacting with EARN.</P>
+        </ListItem>
+        <ListItem>
+          <P>
+            Why am I not seeing my share of the pool in Balancer after joining
+            EARN?
+          </P>
+          <P>
+            When staking, your Balancer Pool Token (BPT) is deposited into a
+            staking rewards contract so that it can be locked while rewards are
+            earned and distributed. Exiting the pool will return this token, and
+            your share will then be shown in Balancer.
+          </P>
+        </ListItem>
       </List>
     </div>
     <div>
