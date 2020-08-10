@@ -17,6 +17,8 @@ Miscellaneous:
 Bug fixes:
 
 - Handle edge cases with non-numbers for counters
+- Before attempting to eagerly connect a previously-connected MetaMask account,
+  ensure that MetaMask is unlocked
 - Improve localStorage error handling
 
 ## Version 1.8.4

@@ -11,11 +11,12 @@ import React, {
 } from 'react';
 import {
   Connectors,
-  RejectedActivationError,
-  UnsupportedChainError,
-  UnsupportedConnectorError,
+  ChainUnsupportedError,
+  ConnectionRejectedError,
+  ConnectorUnsupportedError,
   useWallet,
 } from 'use-wallet';
+
 import MetamaskOnboarding from '@metamask/onboarding';
 import { navigate } from 'hookrouter';
 import { configureScope } from '@sentry/react';
@@ -243,14 +244,9 @@ const identifyInjectedSubType = (
  */
 export const AppProvider: FC<{}> = ({ children }) => {
   const attemptedReconnect = useRef(false);
-  const {
-    activate,
-    deactivate,
-    activating,
-    connected,
-    activated,
-    account,
-  } = useWallet<InjectedEthereum>();
+  const { connect, reset, status, account, connector, connectors } = useWallet<
+    InjectedEthereum
+  >();
   const [state, dispatch] = useReducer(reducer, initialState);
   const addInfoNotification = useAddInfoNotification();
   const addUpdateNotification = useAddUpdateNotification();
@@ -289,11 +285,11 @@ export const AppProvider: FC<{}> = ({ children }) => {
   );
 
   const resetWallet = useCallback<Dispatch['resetWallet']>(() => {
-    deactivate();
+    reset();
     dispatch({ type: Actions.ResetWallet });
     LocalStorage.removeItem<'connectorId'>('connectorId');
     LocalStorage.removeItem<'connector'>('connector');
-  }, [dispatch, deactivate]);
+  }, [dispatch, reset]);
 
   const connectWallet = useCallback<Dispatch['connectWallet']>(
     (id, subType) => {
@@ -307,20 +303,20 @@ export const AppProvider: FC<{}> = ({ children }) => {
         }
       }
 
-      activate(id)
+      connect(id)
         .then(() => {
-          const connector = CONNECTORS.find(
+          const _connector = CONNECTORS.find(
             c => c.id === id && c.subType === subType,
           );
 
           addInfoNotification(
             'Connected',
-            connector ? `Connected with ${connector.label}` : null,
+            _connector ? `Connected with ${_connector.label}` : null,
           );
 
           dispatch({ type: Actions.ConnectWalletSuccess });
 
-          if (connector) {
+          if (_connector) {
             LocalStorage.set<Storage, 'connector'>('connector', {
               id,
               subType,
@@ -330,13 +326,13 @@ export const AppProvider: FC<{}> = ({ children }) => {
         .catch(error => {
           let reason: string;
 
-          if (error instanceof RejectedActivationError) {
+          if (error instanceof ConnectionRejectedError) {
             reason = Reasons.RejectedActivation;
-          } else if (error instanceof UnsupportedChainError) {
+          } else if (error instanceof ChainUnsupportedError) {
             reason = `${Reasons.UnsupportedChain}; please connect to ${
               NETWORK_NAMES[CHAIN_ID as keyof typeof NETWORK_NAMES]
             }`;
-          } else if (error instanceof UnsupportedConnectorError) {
+          } else if (error instanceof ConnectorUnsupportedError) {
             reason = Reasons.UnsupportedConnector;
           } else {
             reason = Reasons.Unknown;
@@ -349,7 +345,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
           });
         });
     },
-    [activate, addInfoNotification, addErrorNotification],
+    [connect, addInfoNotification, addErrorNotification],
   );
 
   const setWalletPosition = useCallback<Dispatch['setWalletPosition']>(
@@ -411,7 +407,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
 
     // The network change listener is only valid when the injected connector is
     // used, or it's present but no connector is activated.
-    if (injected && (!activated || activated === 'injected')) {
+    if (injected && (!connector || connector === 'injected')) {
       chainChangedListener = chainId => {
         // `chainId` from MetaMask can't be trusted in this event
         if (!Number.isNaN(chainId as number)) {
@@ -446,36 +442,50 @@ export const AppProvider: FC<{}> = ({ children }) => {
         injected.removeListener?.('chainChanged', chainChangedListener);
       }
     };
-  }, [dispatch, activated, addErrorNotification]);
+  }, [dispatch, connector, addErrorNotification]);
 
   /**
    * Automatically reconnect once on startup (if possible)
    */
   useEffect(() => {
-    if (!attemptedReconnect.current && !(activating || connected)) {
+    if (
+      !attemptedReconnect.current &&
+      !['connected', 'connecting'].includes(status)
+    ) {
       const { id, subType } = LocalStorage.get('connector') || {};
       if (id) {
-        connectWallet(id, subType);
+        if (id === 'injected') {
+          // eslint-disable-next-line
+          (connectors.injected as any)
+            ?.web3ReactConnector?.({})
+            ?.isAuthorized?.()
+            .then((authorized: boolean) => {
+              if (authorized) {
+                connectWallet(id, subType);
+              }
+            });
+        } else {
+          connectWallet(id, subType);
+        }
       }
       attemptedReconnect.current = true;
     }
-  }, [activating, connected, connectWallet]);
+  }, [status, connectWallet, connectors.injected]);
 
   /**
    * Set then Sentry user scope when the account changes
    */
   useEffect(() => {
     configureScope(scope => {
-      const connector = LocalStorage.get<'connector'>('connector');
       scope.setUser({
         id: account || 'NOT_CONNECTED',
       });
       scope.setTags({
-        activated,
+        activated: (status === 'connected').toString(),
         connector: JSON.stringify(connector),
       });
     });
-  }, [account, activated]);
+  }, [account, status, connector]);
 
   return (
     <context.Provider

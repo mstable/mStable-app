@@ -166,7 +166,8 @@ const Connected: FC<{ walletLabel: string; account: string }> = ({
 export const Wallet: FC<{}> = () => {
   const { error } = useWalletState();
   const connecting = useIsWalletConnecting();
-  const { connected, account } = useWallet();
+  const { status, account } = useWallet();
+  const connected = status === 'connected';
   const wallet = useWalletConnector();
 
   return (

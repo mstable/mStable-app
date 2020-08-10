@@ -292,7 +292,8 @@ const WalletButton: FC<{}> = () => {
   const overlayItem = useOverlayItem();
   const toggleWallet = useToggleWallet();
   const resetWallet = useResetWallet();
-  const { connected } = useWallet<InjectedEthereum>();
+  const { status } = useWallet<InjectedEthereum>();
+  const connected = status === 'connected';
   const account = useOwnAccount();
   const connecting = useIsWalletConnecting();
   const truncatedAddress = useTruncatedAddress(account);

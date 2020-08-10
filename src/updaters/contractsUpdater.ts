@@ -18,7 +18,8 @@ const fromBlock =
     : 0;
 
 export const ContractsUpdater = (): null => {
-  const { activated, connected } = useWallet();
+  const { status, connector } = useWallet();
+  const connected = status === 'connected';
   const account = useAccount();
   const { addHistoric, reset } = useTransactionsDispatch();
 
@@ -28,7 +29,7 @@ export const ContractsUpdater = (): null => {
   /**
    * When the account changes, reset the transactions state.
    */
-  useEffect(reset, [account, activated, connected, reset]);
+  useEffect(reset, [account, connector, connected, reset]);
 
   /**
    * When the account changes (and mUSD exists), get historic transactions.
