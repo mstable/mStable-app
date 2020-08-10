@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.8.5
+
+_Released 10.08.20 18.14 CEST_
+
 Features:
 
 - Provide a button for users to share a link to view their balances in a given pool
