@@ -173,7 +173,8 @@ const Carousel = styled.div`
 `;
 
 const Start: FC<{}> = () => {
-  const { connected } = useWallet();
+  const { status } = useWallet();
+  const connected = status === 'connected';
   const openWallet = useOpenWalletRedirect();
   const { alreadyAcked } = useContext(ctx);
   return (

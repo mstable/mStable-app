@@ -34,6 +34,15 @@
   dependencies:
     "@apollo/react-common" "^3.2.0-beta.1"
 
+"@aragon/provided-connector@^6.0.7":
+  version "6.0.8"
+  resolved "https://registry.yarnpkg.com/@aragon/provided-connector/-/provided-connector-6.0.8.tgz#5d22ccb2a0ff599fbe6c23fdf96cb06d59ff2716"
+  integrity sha512-O7dPXPPwOulkF5Nc04nTEBQPtDmySRPtZW0SYQlX0CwjSAntfdyLjFr6T3bNFFqLCBKfDoW6Hc02fN+rClQGIg==
+  dependencies:
+    "@web3-react/abstract-connector" "^6.0.7"
+    "@web3-react/types" "^6.0.7"
+    tiny-warning "^1.0.3"
+
 "@ardatan/aggregate-error@0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@ardatan/aggregate-error/-/aggregate-error-0.0.1.tgz#1403ac5de10d8ca689fc1f65844c27179ae1d44f"
@@ -14736,11 +14745,12 @@ use-onclickoutside@^0.3.1:
     are-passive-events-supported "^1.1.0"
     use-latest "^1.0.0"
 
-use-wallet@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/use-wallet/-/use-wallet-0.6.0.tgz#f4794cb6edccd19300f44975d1faa3749de5186e"
-  integrity sha512-Gva3QaUGnezWsHIaXxtLqSBjri4Ov4a79OqT0xhtWVOg1fP4KZVFRh1WL9TGxNiOuwlUh867kcO10/NSMECHnw==
+use-wallet@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/use-wallet/-/use-wallet-0.8.0.tgz#fc6277d2257af930a3235c40f551e737b187416a"
+  integrity sha512-+IWWSiOG4rj3zKOtb/7A9W2ys8ZdA+X8gUHNVc4/+qxEXwTo72M+qGplFCZLB6/+lH+oyQ6wL9fGNfyTLDt6AQ==
   dependencies:
+    "@aragon/provided-connector" "^6.0.7"
     "@web3-react/authereum-connector" "^6.1.1"
     "@web3-react/core" "^6.1.1"
     "@web3-react/fortmatic-connector" "^6.0.9"
@@ -14752,7 +14762,6 @@ use-wallet@^0.6.0:
     "@web3-react/walletconnect-connector" "^6.1.4"
     "@web3-react/walletlink-connector" "^6.1.1"
     jsbi "^3.1.1"
-    prop-types "^15.7.2"
 
 use@^3.1.0:
   version "3.1.1"

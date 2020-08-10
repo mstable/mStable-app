@@ -60,10 +60,8 @@ const AccountProvider: FC<{}> = ({ children }) => {
   );
 };
 
-export const UserProvider: FC<{}> = ({ children }) => {
-  return (
+export const UserProvider: FC<{}> = ({ children }) => (
     <UseWalletProvider chainId={CHAIN_ID} connectors={AVAILABLE_CONNECTORS}>
       <AccountProvider>{children}</AccountProvider>
     </UseWalletProvider>
   );
-};
