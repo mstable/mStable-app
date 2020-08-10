@@ -5,6 +5,7 @@ import { ConfirmPane } from './ConfirmPane';
 import { TransactionsPane } from './TransactionsPane';
 
 interface Props {
+  className?: string;
   confirm?: ReactNode;
   confirmLabel: string;
   input?: ReactNode;
@@ -21,13 +22,14 @@ const Container = styled.div`
 `;
 
 export const TransactionForm: FC<Props> = ({
+  className,
   confirm,
   confirmLabel,
   input,
   transactionsLabel,
   valid,
 }) => (
-  <Container>
+  <Container className={className}>
     {input ? <InputPane>{input}</InputPane> : null}
     <ConfirmPane confirmLabel={confirmLabel} valid={valid}>
       {valid ? confirm : null}

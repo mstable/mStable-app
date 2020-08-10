@@ -1,4 +1,5 @@
 import React, { FC, useEffect } from 'react';
+import styled from 'styled-components';
 
 import { Interfaces, SendTxManifest } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
@@ -13,8 +14,12 @@ import {
   useCurrentPlatformToken,
 } from '../StakingRewardsContractProvider';
 import { CountUp } from '../../../core/CountUp';
-import { FormRow } from '../../../core/Form';
 import { H3, P } from '../../../core/Typography';
+
+const Row = styled.div`
+  width: 100%;
+  padding-bottom: 16px;
+`;
 
 const Input: FC<{}> = () => {
   const { rewards, platformRewards } = useRewardsEarned();
@@ -22,7 +27,7 @@ const Input: FC<{}> = () => {
   const platformToken = useCurrentPlatformToken();
 
   return (
-    <FormRow>
+    <Row>
       <H3>Claim rewards</H3>
       <div>
         {rewardsToken && rewards?.exact.gt(0) ? (
@@ -50,7 +55,7 @@ const Input: FC<{}> = () => {
           'No rewards to claim.'
         )}
       </div>
-    </FormRow>
+    </Row>
   );
 };
 
