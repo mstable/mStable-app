@@ -3,7 +3,7 @@ runtime: nodejs10
 service: app
 
 handlers:
-  - url: /(.*\.(gif|png|svg|ttf|jpeg|jpg|css|css.map|js|pdf|scss|ico|json|json|mp4|webm.map))$
+  - url: /(.*\.(gif|png|svg|ttf|jpeg|jpg|css|css.map|js|pdf|scss|ico|json|json.map|mp4|webm))$
     static_files: build/\1
     secure: always
     upload: build/(.*)
