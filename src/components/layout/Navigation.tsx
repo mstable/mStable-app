@@ -38,12 +38,13 @@ const Item = styled.li<{
   text-transform: uppercase;
   padding: 2px 0;
   border-bottom-color: ${({ theme, active }) =>
-    active ? theme.color.offBlack : 'transparent'};
+    active ? theme.color.blue : 'transparent'};
 
   a,
   span {
     white-space: nowrap;
-    color: ${({ theme }) => theme.color.offBlack};
+    color: ${({ theme, active }) =>
+      active ? theme.color.blue : theme.color.offBlack};
     border-bottom: none;
   }
 

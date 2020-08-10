@@ -16,14 +16,14 @@ const ProtipLabel = styled.div`
 
 const Container = styled.div`
   padding: 8px 16px;
-  border: 1px ${Color.blueTransparent} solid;
+  border: 1px ${Color.blackTransparent} solid;
   border-radius: 2px;
-  color: ${Color.blue};
+  color: ${Color.offBlack};
   a {
-    color: ${Color.blue};
+    color: ${Color.offBlack};
   }
   svg {
-    fill: ${Color.blue};
+    fill: ${Color.offBlack};
   }
 `;
 

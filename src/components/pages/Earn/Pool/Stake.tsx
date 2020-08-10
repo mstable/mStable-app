@@ -8,7 +8,6 @@ import {
   useSetFormManifest,
 } from '../../../forms/TransactionForm/FormProvider';
 import { TokenAmountInput } from '../../../forms/TokenAmountInput';
-import { FormRow } from '../../../core/Form';
 import { H3 } from '../../../core/Typography';
 import {
   useStakingRewardContractDispatch,
@@ -20,6 +19,12 @@ import { CountUp } from '../../../core/CountUp';
 import { ExternalLink } from '../../../core/ExternalLink';
 import { PLATFORM_METADATA } from '../constants';
 import { Protip } from '../../../core/Protip';
+import styled from 'styled-components';
+
+const Row = styled.div`
+  width: 100%;
+  padding-bottom: 16px;
+`;
 
 const Input: FC<{}> = () => {
   const {
@@ -44,7 +49,7 @@ const Input: FC<{}> = () => {
   const { address } = stakingRewardsContract;
 
   return (
-    <FormRow>
+    <Row>
       <H3>Stake {stakingToken?.symbol}</H3>
       <div>
         <TokenAmountInput
@@ -71,7 +76,7 @@ const Input: FC<{}> = () => {
           </Protip>
         ) : null}
       </div>
-    </FormRow>
+    </Row>
   );
 };
 

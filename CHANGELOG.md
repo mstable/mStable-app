@@ -13,6 +13,7 @@ Features:
 Miscellaneous:
 
 - Replace outdated EARN screenshots with small videos
+- Make EARN tabs and active nav items more obvious
 
 Bug fixes:
 

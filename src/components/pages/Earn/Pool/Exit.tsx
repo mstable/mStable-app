@@ -17,6 +17,7 @@ import {
   useCurrentPlatformToken,
 } from '../StakingRewardsContractProvider';
 import { P } from '../../../core/Typography';
+import styled from 'styled-components';
 
 const ExitFormConfirm: FC<{}> = () => {
   const { rewards, platformRewards } = useRewardsEarned();
@@ -76,6 +77,12 @@ const ExitFormConfirm: FC<{}> = () => {
   );
 };
 
+const StyledTransactionForm = styled(TransactionForm)`
+  h3 {
+    border-top: 0;
+  }
+`;
+
 const ExitForm: FC<{}> = () => {
   const contract = useCurrentStakingRewardsContractCtx();
 
@@ -99,7 +106,7 @@ const ExitForm: FC<{}> = () => {
   }, [setFormManifest, valid, contract]);
 
   return (
-    <TransactionForm
+    <StyledTransactionForm
       confirmLabel="Exit pool"
       confirm={<ExitFormConfirm />}
       transactionsLabel="Exit transactions"

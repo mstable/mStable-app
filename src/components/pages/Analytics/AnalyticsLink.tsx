@@ -6,13 +6,14 @@ import { Color, FontSize } from '../../../theme';
 const Container = styled.div`
   padding: 4px 8px;
   margin: 8px 0;
-  background: ${Color.blue};
+  background: ${Color.white};
+  border: 1px ${Color.blackTransparent} solid;
   display: inline-block;
   border-radius: 2px;
   font-size: ${FontSize.s};
 
   a {
-    color: ${Color.white};
+    color: ${Color.offBlack};
     border-bottom: none;
     font-weight: bold;
   }
