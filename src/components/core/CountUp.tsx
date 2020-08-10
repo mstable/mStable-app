@@ -41,14 +41,16 @@ export const CountUp: FC<Props> = ({
   separator = ',',
   duration = DEFAULT_DURATION,
 }) => {
-  const prevEnd = useRef<typeof end>(end);
+    // eslint-disable-next-line no-restricted-globals
+  const isValid = typeof end === 'number' && !isNaN(end);
+  const prevEnd = useRef(isValid ? end : 0);
   const isIdle = useIsIdle();
   const firstMount = useFirstMountState();
 
   const { countUp, update, pauseResume, start } = useCountUp({
     decimals,
     duration,
-    end,
+    end: isValid ? end : 0,
     separator,
     start: prevEnd.current,
     // ...(prefix ? { prefix } : null),
@@ -56,12 +58,12 @@ export const CountUp: FC<Props> = ({
   });
 
   useEffect(() => {
-    if (typeof end === 'number') {
+    if (isValid) {
       prevEnd.current = end;
       update(end);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [end]);
+  }, [end, isValid]);
 
   useEffect(() => {
     if (isIdle && !firstMount) {
@@ -76,7 +78,7 @@ export const CountUp: FC<Props> = ({
       highlightColor={highlightColor}
     >
       {prefix ? <PrefixOrSuffix>{prefix}</PrefixOrSuffix> : null}
-      <Number>{countUp}</Number>
+      <Number>{isValid ? countUp : '–'}</Number>
       {suffix ? <PrefixOrSuffix>{suffix}</PrefixOrSuffix> : null}
     </Container>
   );
