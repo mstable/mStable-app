@@ -620,7 +620,7 @@ const parseTxError = (
   // MetaMask error messages are in a `data` property
   const txMessage = error.data?.message || error.message;
 
-  return txMessage.includes('always failing transaction')
+  return !txMessage || txMessage.includes('always failing transaction')
     ? 'Transaction failed - if this problem persists, contact mStable team.'
     : txMessage;
 };
