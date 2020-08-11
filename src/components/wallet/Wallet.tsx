@@ -172,28 +172,30 @@ export const Wallet: FC<{}> = () => {
 
   return (
     <Container>
-      {connected ? null : (
-        <Header>
-          <H2>
-            {connecting && wallet
-              ? `Connecting to ${wallet.label} wallet`
-              : 'Connect wallet'}
-          </H2>
-        </Header>
-      )}
-      {error ? <Error>{error}</Error> : null}
-      <FlexRow>
-        {/* FIXME problem when first connecting; updates on unmounted components */}
-        {connected && account && wallet ? (
-          <Connected walletLabel={wallet.label} account={account} />
-        ) : connecting ? (
-          <Connecting>
-            <ActivitySpinner pending />
-          </Connecting>
-        ) : (
-          <Disconnected />
+      <div>
+        {connected ? null : (
+          <Header>
+            <H2>
+              {connecting && wallet
+                ? `Connecting to ${wallet.label} wallet`
+                : 'Connect wallet'}
+            </H2>
+          </Header>
         )}
-      </FlexRow>
+        {error ? <Error>{error}</Error> : null}
+        <FlexRow>
+          {/* FIXME problem when first connecting; updates on unmounted components */}
+          {connected && account && wallet ? (
+            <Connected walletLabel={wallet.label} account={account} />
+          ) : connecting ? (
+            <Connecting>
+              <ActivitySpinner pending />
+            </Connecting>
+          ) : (
+            <Disconnected />
+          )}
+        </FlexRow>
+      </div>
     </Container>
   );
 };

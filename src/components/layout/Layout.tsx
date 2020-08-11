@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useLayoutEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import { getWorkingPath } from 'hookrouter';
@@ -6,8 +6,8 @@ import { getWorkingPath } from 'hookrouter';
 import { ReactTooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { Overlay } from './Overlay';
-import { useOverlayOpen } from '../../context/AppProvider';
+import { Account } from './Account';
+import { useAccountOpen } from '../../context/AppProvider';
 import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
@@ -16,28 +16,13 @@ import { NotificationToasts } from './NotificationToasts';
 import { centredLayout } from './css';
 import { Color } from '../../theme';
 
-interface OverlayOpen {
-  overlayOpen: boolean;
-}
-
-export const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  // The sticky header won't always be 80px, so this is less than ideal
-  min-height: calc(100vh - 80px);
-
-  align-items: flex-start;
-`;
-
 const Main = styled.main`
   width: 100%;
   flex: 1;
   padding: 40px 20px;
 `;
 
-const GlobalStyle = createGlobalStyle<OverlayOpen & { idle: boolean }>`
+const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
   ${reset}
   a {
     color: ${({ theme }) => theme.color.offBlack};
@@ -45,7 +30,7 @@ const GlobalStyle = createGlobalStyle<OverlayOpen & { idle: boolean }>`
     border-bottom: 1px ${({ theme }) => theme.color.offBlack} solid;
   }
   html {
-    overflow-y: ${({ overlayOpen }) => (overlayOpen ? 'hidden' : 'scroll')};
+    overflow-y: scroll;
     scroll-behavior: smooth;
   }
   body {
@@ -68,8 +53,7 @@ const GlobalStyle = createGlobalStyle<OverlayOpen & { idle: boolean }>`
   }
   body, button, input {
     font-family: 'Poppins', sans-serif;
-    color: ${({ theme, overlayOpen }) =>
-      overlayOpen ? theme.color.offWhite : theme.color.offBlack};
+    color: ${Color.offBlack};
     line-height: 1.3rem;
   }
 `;
@@ -93,35 +77,66 @@ const Centred = styled.div`
   ${centredLayout}
 `;
 
+const Container = styled.div<{ accountOpen?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  // The sticky header won't always be 80px, so this is less than ideal
+  min-height: calc(100vh - 80px);
+
+  background: ${({ accountOpen }) =>
+    accountOpen ? Color.black : 'transparent'};
+`;
+
+const PageContainer = styled.div<{ accountOpen: boolean }>`
+  > :first-child {
+    display: ${({ accountOpen }) => (accountOpen ? 'none' : 'flex')};
+  }
+  > :last-child {
+    display: ${({ accountOpen }) => (accountOpen ? 'flex' : 'none')};
+  }
+`;
+
 /**
  * App layout component.
  */
 export const Layout: FC<{}> = ({ children }) => {
-  const overlayOpen = useOverlayOpen();
+  const accountOpen = useAccountOpen();
   const idle = useIsIdle();
   const activePath = getWorkingPath('');
   const home = activePath === '/';
   const earn = activePath === '/earn';
 
+  useLayoutEffect(() => {
+    // Scroll to the top when the account view is toggled
+    window.scrollTo({ top: 0 });
+  }, [accountOpen]);
+
   return (
     <>
-      <Background home={home} />
+      <Background home={home} accountOpen={accountOpen} />
       <HeaderGroup home={home} />
-      <Container>
-        {home ? null : <BetaWarning />}
-        {earn ? (
-          <>{children}</>
-        ) : (
-          <Centred>
-            <Main>{children}</Main>
-          </Centred>
-        )}
-        <Footer inverted={overlayOpen} />
-      </Container>
-      <Overlay />
+      <PageContainer accountOpen={accountOpen}>
+        <Container>
+          {home ? null : <BetaWarning />}
+          {earn ? (
+            <>{children}</>
+          ) : (
+            <Centred>
+              <Main>{children}</Main>
+            </Centred>
+          )}
+        </Container>
+        <Container accountOpen>
+          <Account />
+        </Container>
+      </PageContainer>
+      <Footer accountOpen={accountOpen} />
       <NotificationToasts />
       <ReactTooltip id="global" />
-      <GlobalStyle overlayOpen={overlayOpen} idle={idle} />
+      <GlobalStyle idle={idle} />
     </>
   );
 };

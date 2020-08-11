@@ -31,7 +31,7 @@ import {
 } from './NotificationsProvider';
 import { LocalStorage, Storage } from '../localStorage';
 
-export enum OverlayItems {
+export enum AccountItems {
   Notifications,
   Wallet,
 }
@@ -41,13 +41,12 @@ enum Actions {
   ConnectWallet,
   ConnectWalletError,
   ConnectWalletSuccess,
-  SetWalletPosition,
   SetWalletSubType,
   SelectMasset,
   SupportedChainSelected,
   SetOnline,
-  SetOverlay,
-  ToggleOverlay,
+  SetAccountItem,
+  ToggleAccount,
 }
 
 enum WalletConnectionStatus {
@@ -77,20 +76,16 @@ interface State {
     status: WalletConnectionStatus;
     error: string | null;
     supportedChain: boolean;
-    position: {
-      cx: number;
-      cy: number;
-    };
   };
-  overlay: OverlayItems | null;
+  accountItem: AccountItems | null;
   online: boolean;
   selectedMasset: MassetNames;
 }
 
 type Action =
   | { type: Actions.SelectMasset; payload: MassetNames }
-  | { type: Actions.SetOverlay; payload: OverlayItems | null }
-  | { type: Actions.ToggleOverlay; payload: OverlayItems }
+  | { type: Actions.SetAccountItem; payload: AccountItems | null }
+  | { type: Actions.ToggleAccount; payload: AccountItems }
   | { type: Actions.ResetWallet }
   | { type: Actions.SupportedChainSelected; payload: boolean }
   | {
@@ -103,42 +98,30 @@ type Action =
     }
   | { type: Actions.ConnectWalletError; payload: string }
   | { type: Actions.ConnectWalletSuccess }
-  | { type: Actions.SetOnline; payload: boolean }
-  | {
-      type: Actions.SetWalletPosition;
-      payload: {
-        cx: number;
-        cy: number;
-      };
-    };
+  | { type: Actions.SetOnline; payload: boolean };
 
 interface Dispatch {
-  closeOverlay(): void;
+  closeAccount(): void;
   connectWallet(connector: keyof Connectors, subType?: string): void;
   openWalletRedirect(redirect: string): void;
   resetWallet(): void;
   selectMasset(massetName: MassetNames): void;
-  setWalletPosition(cx: number, cy: number): void;
   toggleNotifications(): void;
   toggleWallet(): void;
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case Actions.SetOverlay:
+    case Actions.SetAccountItem:
       return {
         ...state,
-        overlay: action.payload,
+        accountItem: action.payload,
       };
-    case Actions.ToggleOverlay:
+    case Actions.ToggleAccount:
       return {
         ...state,
-        overlay: state.overlay === action.payload ? null : action.payload,
-      };
-    case Actions.SetWalletPosition:
-      return {
-        ...state,
-        wallet: { ...state.wallet, position: action.payload },
+        accountItem:
+          state.accountItem === action.payload ? null : action.payload,
       };
     case Actions.SupportedChainSelected:
       return {
@@ -215,12 +198,8 @@ const initialState: State = {
     status: WalletConnectionStatus.Disconnected,
     error: null,
     supportedChain: true,
-    position: {
-      cx: 0,
-      cy: 0,
-    },
   },
-  overlay: null,
+  accountItem: null,
   selectedMasset: MassetNames.mUSD,
   online: true,
 };
@@ -252,27 +231,27 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const addUpdateNotification = useAddUpdateNotification();
   const addErrorNotification = useAddErrorNotification();
 
-  const closeOverlay = useCallback<Dispatch['closeOverlay']>(() => {
-    dispatch({ type: Actions.SetOverlay, payload: null });
+  const closeAccount = useCallback<Dispatch['closeAccount']>(() => {
+    dispatch({ type: Actions.SetAccountItem, payload: null });
   }, [dispatch]);
 
   const toggleNotifications = useCallback<
     Dispatch['toggleNotifications']
   >(() => {
     dispatch({
-      type: Actions.ToggleOverlay,
-      payload: OverlayItems.Notifications,
+      type: Actions.ToggleAccount,
+      payload: AccountItems.Notifications,
     });
   }, [dispatch]);
 
   const toggleWallet = useCallback<Dispatch['toggleWallet']>(() => {
-    dispatch({ type: Actions.ToggleOverlay, payload: OverlayItems.Wallet });
+    dispatch({ type: Actions.ToggleAccount, payload: AccountItems.Wallet });
   }, [dispatch]);
 
   const openWalletRedirect = useCallback<Dispatch['openWalletRedirect']>(
     path => {
       navigate(path);
-      dispatch({ type: Actions.SetOverlay, payload: OverlayItems.Wallet });
+      dispatch({ type: Actions.SetAccountItem, payload: AccountItems.Wallet });
     },
     [dispatch],
   );
@@ -348,16 +327,6 @@ export const AppProvider: FC<{}> = ({ children }) => {
         });
     },
     [connect, addInfoNotification, addErrorNotification],
-  );
-
-  const setWalletPosition = useCallback<Dispatch['setWalletPosition']>(
-    (cx, cy) => {
-      dispatch({
-        type: Actions.SetWalletPosition,
-        payload: { cx, cy },
-      });
-    },
-    [dispatch],
   );
 
   const connectionListener = useCallback(() => {
@@ -495,24 +464,22 @@ export const AppProvider: FC<{}> = ({ children }) => {
         () => [
           state,
           {
-            closeOverlay,
+            closeAccount,
             connectWallet,
             openWalletRedirect,
             resetWallet,
             selectMasset,
-            setWalletPosition,
             toggleNotifications,
             toggleWallet,
           },
         ],
         [
           state,
-          closeOverlay,
+          closeAccount,
           connectWallet,
           openWalletRedirect,
           resetWallet,
           selectMasset,
-          setWalletPosition,
           toggleNotifications,
           toggleWallet,
         ],
@@ -538,12 +505,10 @@ export const useIsWalletConnected = (): boolean =>
 export const useIsWalletConnecting = (): boolean =>
   useWalletState().status === WalletConnectionStatus.Connecting;
 
-export const useOverlayOpen = (): boolean => useAppState().overlay !== null;
+export const useAccountOpen = (): boolean => useAppState().accountItem !== null;
 
-export const useOverlayItem = (): State['overlay'] => useAppState().overlay;
-
-export const useWalletPosition = (): State['wallet']['position'] =>
-  useWalletState().position;
+export const useAccountItem = (): State['accountItem'] =>
+  useAppState().accountItem;
 
 export const useWalletConnector = (): Connector | undefined => {
   const {
@@ -561,8 +526,8 @@ export const useAppDispatch = (): Dispatch => useAppContext()[1];
 export const useConnectWallet = (): Dispatch['connectWallet'] =>
   useAppDispatch().connectWallet;
 
-export const useCloseOverlay = (): Dispatch['closeOverlay'] =>
-  useAppDispatch().closeOverlay;
+export const useCloseAccount = (): Dispatch['closeAccount'] =>
+  useAppDispatch().closeAccount;
 
 export const useAppStatusWarnings = (): StatusWarnings[] => {
   const {
@@ -591,6 +556,3 @@ export const useToggleNotifications = (): Dispatch['toggleNotifications'] =>
 
 export const useResetWallet = (): Dispatch['resetWallet'] =>
   useAppDispatch().resetWallet;
-
-export const useSetWalletPosition = (): Dispatch['setWalletPosition'] =>
-  useAppDispatch().setWalletPosition;

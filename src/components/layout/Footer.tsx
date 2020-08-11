@@ -4,7 +4,7 @@ import { A } from 'hookrouter';
 import GitHubButton from 'react-github-btn';
 import { isAddress } from 'web3-utils';
 
-import { useCloseOverlay } from '../../context/AppProvider';
+import { useCloseAccount } from '../../context/AppProvider';
 import { useIsMasquerading, useMasquerade } from '../../context/UserProvider';
 import { DAPP_VERSION } from '../../web3/constants';
 import { ViewportWidth } from '../../theme';
@@ -16,7 +16,7 @@ import Email from '../icons/social/email.svg';
 import { centredLayout } from './css';
 
 interface Props {
-  inverted: boolean;
+  accountOpen: boolean;
 }
 
 const Links = styled.ul`
@@ -91,42 +91,45 @@ const Masquerade: FC<{}> = () => {
   );
 };
 
-const Container = styled.footer<Props>`
-  width: 100%;
+const Inner = styled.div`
   padding: ${({ theme }) => `${theme.spacing.s} ${theme.spacing.l}`};
-
-  border-top: ${({ theme, inverted }) =>
-    `1px 
-      ${inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
-      solid`};
 
   > div {
     width: 100%;
   }
 
-  a {
-    color: ${({ theme, inverted }) =>
-      inverted ? theme.color.offWhite : theme.color.offBlack};
-  }
-
   > div > div {
     @media (min-width: ${ViewportWidth.m}) {
       display: flex;
-      align-items: center;
-
-      > * {
-        margin-right: 16px;
-      }
-      > :last-child {
-        margin-right: 0;
-      }
-    }
-    &:first-child {
       justify-content: space-between;
+      align-items: center;
     }
   }
 
-  ${centredLayout}
+  ${centredLayout};
+`;
+
+const Container = styled.footer<Props>`
+  display: flex;
+  justify-content: center;
+  color: ${({ theme, accountOpen }) =>
+    accountOpen ? theme.color.offWhite : theme.color.offBlack};
+
+  ${Inner} {
+    border-top: ${({ theme, accountOpen }) =>
+      `1px 
+      ${
+        accountOpen
+          ? theme.color.whiteTransparent
+          : theme.color.blackTransparent
+      }
+      solid`};
+  }
+
+  a {
+    color: ${({ theme, accountOpen }) =>
+      accountOpen ? theme.color.offWhite : theme.color.offBlack};
+  }
 `;
 
 const links = [
@@ -145,61 +148,63 @@ const socialIcons = [
   { title: 'Email', icon: Email, href: 'mailto:info@mstable.org' },
 ];
 
-export const Footer: FC<Props> = ({ inverted }) => {
-  const collapseWallet = useCloseOverlay();
+export const Footer: FC<Props> = ({ accountOpen }) => {
+  const collapseWallet = useCloseAccount();
   return (
-    <Container inverted={inverted}>
-      <div>
+    <Container accountOpen={accountOpen}>
+      <Inner>
         <div>
-          <Links>
-            {links.map(({ title, href }) => (
-              <li key={href}>
-                {href.startsWith('/') ? (
-                  <A href={href} onClick={collapseWallet}>
-                    {title}
-                  </A>
-                ) : (
-                  <a href={href} target="_blank" rel="noopener noreferrer">
-                    {title}
-                  </a>
-                )}
-              </li>
-            ))}
-          </Links>
-          <SocialIcons>
-            {socialIcons.map(({ title, href, icon }) => (
-              <li key={href}>
-                <a href={href} target="_blank" rel="noopener noreferrer">
-                  <img src={icon} alt={title} />
-                </a>
-              </li>
-            ))}
-          </SocialIcons>
-        </div>
-        <Gubbins>
           <div>
-            <Version>
-              Current version{' '}
-              <a
-                href={`https://github.com/mstable/mStable-app/releases/tag/v${DAPP_VERSION}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span>{DAPP_VERSION}</span>
-              </a>
-            </Version>
-            <Masquerade />
+            <Links>
+              {links.map(({ title, href }) => (
+                <li key={href}>
+                  {href.startsWith('/') ? (
+                    <A href={href} onClick={collapseWallet}>
+                      {title}
+                    </A>
+                  ) : (
+                    <a href={href} target="_blank" rel="noopener noreferrer">
+                      {title}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </Links>
+            <SocialIcons>
+              {socialIcons.map(({ title, href, icon }) => (
+                <li key={href}>
+                  <a href={href} target="_blank" rel="noopener noreferrer">
+                    <img src={icon} alt={title} />
+                  </a>
+                </li>
+              ))}
+            </SocialIcons>
           </div>
-          <GitHubButton
-            href="https://github.com/mstable/mStable-contracts"
-            data-icon="octicon-star"
-            data-show-count
-            aria-label="Star mstable/mStable-contracts on GitHub"
-          >
-            mStable-contracts
-          </GitHubButton>
-        </Gubbins>
-      </div>
+          <Gubbins>
+            <div>
+              <Version>
+                Current version{' '}
+                <a
+                  href={`https://github.com/mstable/mStable-app/releases/tag/v${DAPP_VERSION}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span>{DAPP_VERSION}</span>
+                </a>
+              </Version>
+              <Masquerade />
+            </div>
+            <GitHubButton
+              href="https://github.com/mstable/mStable-contracts"
+              data-icon="octicon-star"
+              data-show-count
+              aria-label="Star mstable/mStable-contracts on GitHub"
+            >
+              mStable-contracts
+            </GitHubButton>
+          </Gubbins>
+        </div>
+      </Inner>
     </Container>
   );
 };

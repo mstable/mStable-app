@@ -322,8 +322,6 @@ const Intro = styled.div`
 const Content = styled.div`
   padding: 8px;
   flex: 1;
-  justify-content: space-between;
-  align-items: center;
 
   > * {
     flex: 1;
@@ -335,6 +333,7 @@ const Content = styled.div`
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   flex: 1;
   width: 100%;
   height: 100%;
