@@ -2,6 +2,7 @@ import { DefaultTheme, CSSProp, css } from 'styled-components';
 
 export enum Color {
   gold = 'rgb(255,179,52)',
+  goldTransparent = 'rgb(255,179,52, 0.2)',
   green = 'rgb(82,204,147)',
   greenTransparent = 'rgba(82,204,147, 0.2)',
   coolMint = 'rgb(133,242,190)',

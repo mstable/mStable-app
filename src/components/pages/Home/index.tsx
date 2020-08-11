@@ -412,7 +412,7 @@ export const Home: FC<{}> = () => {
           </SliderContainer>
           <Controls>
             <Button onClick={previous} type="button" disabled={activeIdx === 0}>
-              Previous
+              &lt;
             </Button>
             <StepIcons>
               {HOME_STEPS.map(({ key }, index) => (
@@ -431,7 +431,7 @@ export const Home: FC<{}> = () => {
               type="button"
               disabled={activeIdx === HOME_STEPS.length - 2 && needsAck}
             >
-              Next
+              &gt;
             </Button>
           </Controls>
         </Carousel>

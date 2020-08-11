@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
-import { useAccount } from '../../../context/UserProvider';
+import { useOwnAccount } from '../../../context/UserProvider';
 import { Interfaces } from '../../../types';
 import {
   FormProvider,
@@ -9,19 +9,19 @@ import {
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
 import { ReactComponent as RedeemIcon } from '../../icons/circle/redeem.svg';
-import { MusdStats } from '../../stats/MusdStats';
 import { PageHeader } from '../PageHeader';
 import { RedeemInput } from './RedeemInput';
 import { RedeemConfirm } from './RedeemConfirm';
 import { RedeemProvider, useRedeemState } from './RedeemProvider';
 import { Mode } from './types';
+import { BigDecimal } from '../../../web3/BigDecimal';
 
 const RedeemForm: FC<{}> = () => {
-  const account = useAccount();
+  const account = useOwnAccount();
   const mUsdContract = useMusdContract();
   const setFormManifest = useSetFormManifest();
   const { amountInMasset, valid, mode, bAssets } = useRedeemState();
-  const enabled = Object.values(bAssets).filter(b => b.enabled)[0];
+  const enabled = Object.values(bAssets).filter(b => b.enabled);
 
   useEffect(() => {
     if (valid && account && mUsdContract && amountInMasset) {
@@ -34,10 +34,22 @@ const RedeemForm: FC<{}> = () => {
         return;
       }
 
-      if (mode === Mode.RedeemSingle && enabled?.amount) {
+      if (mode === Mode.RedeemMulti) {
+        const addresses = enabled.map(b => b.address);
+        const amounts = enabled.map(b => (b.amount as BigDecimal).exact);
+        setFormManifest<Interfaces.Masset, 'redeemMulti'>({
+          iface: mUsdContract,
+          args: [addresses, amounts, account],
+          fn: 'redeemMulti',
+        });
+        return;
+      }
+
+      if (mode === Mode.RedeemSingle && enabled[0]?.amount) {
+        const { address, amount } = enabled[0];
         setFormManifest<Interfaces.Masset, 'redeem'>({
           iface: mUsdContract,
-          args: [enabled.address, enabled.amount.exact],
+          args: [address, amount.exact],
           fn: 'redeem',
         });
         return;
@@ -75,7 +87,6 @@ export const Redeem: FC<{}> = () => (
         subtitle="Exchange mUSD for its underlying collateral"
       />
       <RedeemForm />
-      <MusdStats />
     </FormProvider>
   </RedeemProvider>
 );

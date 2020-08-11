@@ -23,6 +23,7 @@ interface Props {
   amountValue: string | null;
   tokenAddresses: string[];
   tokenDisabled?: boolean;
+  amountDisabled?: boolean;
   exactDecimals?: boolean;
   needsUnlock?: boolean;
   items?: {
@@ -30,7 +31,7 @@ interface Props {
     value?: string | null | undefined;
     highlight?: boolean;
   }[];
-  onChangeAmount?(name: string, simpleAmount: string | null): void;
+  onChangeAmount?(formValue: string | null): void;
   onChangeToken?(name: string, token: TokenDetailsFragment): void;
   onSetMax?(): void;
   spender?: string;
@@ -98,19 +99,6 @@ const InputsRow = styled.div`
 /**
  * TokenAmountInput
  * Select a token and an amount denominated in that token.
- *
- * @param name @TODO
- * @param needsUnlock @TODO
- * @param onUnlock @TODO
- * @param items @TODO
- * @param tokenDisabled @TODO
- * @param error Error message, e.g. 'Amount too low'
- * @param tokenAddresses List of available token addresses
- * @param tokenValue Selected token address
- * @param amountValue Chosen amount, e.g. '0.12'
- * @param onChangeAmount Optional callback with the amount value
- * @param onChangeToken Optional callback with the selected token
- * @param onSetMax Optional callback called on setting the max value
  */
 export const TokenAmountInput: FC<Props> = ({
   error,
@@ -121,6 +109,7 @@ export const TokenAmountInput: FC<Props> = ({
   name,
   exactDecimals,
   tokenDisabled,
+  amountDisabled,
   needsUnlock,
   spender,
   onChangeAmount,
@@ -142,10 +131,9 @@ export const TokenAmountInput: FC<Props> = ({
       <InputsRow>
         <InputContainer>
           <AmountInput
-            name={name}
             value={amountValue}
+            disabled={amountDisabled}
             onChange={onChangeAmount}
-            onSetMax={onSetMax}
             error={error}
           />
           {onSetMax ? (

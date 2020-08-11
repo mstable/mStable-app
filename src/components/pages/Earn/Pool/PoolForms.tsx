@@ -28,8 +28,11 @@ const TabBtn = styled(Button)<{ active: boolean }>`
   background: transparent;
   border-radius: 0;
   border: 0;
-  border-bottom: 4px solid;
-  border-color: ${({ active }) => (active ? Color.blue : 'transparent')};
+  border-top: 1px
+    ${({ active }) => (active ? Color.blueTransparent : Color.blackTransparent)}
+    solid;
+  border-bottom: 4px ${({ active }) => (active ? Color.blue : 'transparent')}
+    solid;
   color: ${({ active }) => (active ? Color.blue : Color.black)};
   font-size: ${FontSize.m};
   text-transform: uppercase;
@@ -52,7 +55,6 @@ const TabButton: FC<{ tab: Tabs }> = ({ tab }) => {
     </TabBtn>
   );
 };
-
 
 const Container = styled.div`
   background: ${Color.offWhite};

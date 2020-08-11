@@ -7,6 +7,7 @@ import USDT, { ReactComponent as UsdtSvg } from './tokens/USDT.svg';
 import USDC, { ReactComponent as UsdcSvg } from './tokens/USDC.svg';
 import DAI, { ReactComponent as DaiSvg } from './tokens/DAI.svg';
 import BUSD, { ReactComponent as BusdSvg } from './tokens/BUSD.svg';
+import SUSD, { ReactComponent as SusdSvg } from './tokens/sUSD.svg';
 import MTA, { ReactComponent as MtaSvg } from './tokens/MTA.svg';
 import Uniswap, { ReactComponent as UniswapSvg } from './tokens/Uniswap.svg';
 import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
@@ -31,6 +32,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   DAI,
   BUSD,
   MTA,
+  SUSD,
   'UNI-V2': Uniswap,
   BAL: Balancer,
   BPT: Balancer,
@@ -47,6 +49,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   USDC: UsdcSvg as SvgComponent,
   DAI: DaiSvg as SvgComponent,
   BUSD: BusdSvg as SvgComponent,
+  SUSD: SusdSvg as SvgComponent,
   MTA: MtaSvg as SvgComponent,
   'UNI-V2': UniswapSvg as SvgComponent,
   BAL: BalancerSvg as SvgComponent,

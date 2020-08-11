@@ -25,7 +25,7 @@ export const SwapInput: FC<{}> = () => {
     touched,
     dataState,
   } = useSwapState();
-  const { setToken, setQuantity } = useSwapDispatch();
+  const { setToken, setInputQuantity, setOutputQuantity } = useSwapDispatch();
 
   const { mAsset, bAssets = {} } = dataState || {};
   const mAssetAddress = mAsset?.address;
@@ -93,7 +93,7 @@ export const SwapInput: FC<{}> = () => {
         const clampedMax = maxMint.gt(ratioedInputBalance)
           ? ratioedInputBalance
           : maxMint;
-        setQuantity(Fields.Input, formatUnits(clampedMax, 18));
+        setInputQuantity(formatUnits(clampedMax, 18));
       }
       return;
     }
@@ -122,8 +122,7 @@ export const SwapInput: FC<{}> = () => {
         : maxIncrease;
       const maxDecrease = outputVaultBalance;
 
-      setQuantity(
-        Fields.Input,
+      setInputQuantity(
         formatUnits(
           maxIncrease.lt(maxDecrease) ? maxIncrease : maxDecrease,
           18,
@@ -136,7 +135,7 @@ export const SwapInput: FC<{}> = () => {
     bAssets,
     mAssetAddress,
     mAsset,
-    setQuantity,
+    setInputQuantity,
   ]);
 
   useEffect(() => {
@@ -170,7 +169,7 @@ export const SwapInput: FC<{}> = () => {
           tokenAddresses={inputAddresses}
           tokenValue={inputAddress}
           name={Fields.Input}
-          onChangeAmount={setQuantity}
+          onChangeAmount={setInputQuantity}
           onChangeToken={setToken}
           onSetMax={
             input.token.address && output.token.address
@@ -189,7 +188,7 @@ export const SwapInput: FC<{}> = () => {
           tokenAddresses={outputAddresses}
           tokenValue={outputAddress}
           name={Fields.Output}
-          onChangeAmount={setQuantity}
+          onChangeAmount={setOutputQuantity}
           onChangeToken={setToken}
           items={outputItems}
           error={outputError}

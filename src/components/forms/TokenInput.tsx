@@ -22,24 +22,6 @@ interface TokenOptionProps {
   onClick?(address: string): void;
 }
 
-const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
-  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
-  cursor: pointer;
-  background: ${({ error, theme }) =>
-    error ? theme.color.redTransparenter : theme.color.white};
-  outline: 0;
-  border: 1px
-    ${({ theme, error }) =>
-      error ? theme.color.redTransparent : theme.color.blackTransparent}
-    solid;
-  border-radius: 3px;
-  color: ${({ theme }) => theme.color.black};
-  font-size: ${({ theme }) => theme.fontSize.l};
-  font-weight: bold;
-  height: 3rem;
-  user-select: none;
-`;
-
 const RelativeContainer = styled.div`
   position: relative;
   overflow: visible;
@@ -109,6 +91,29 @@ const Option: FC<TokenOptionProps> = ({
 };
 
 const placeholderText = 'Select a token';
+
+
+const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  background: ${({ error, theme }) =>
+  error ? theme.color.redTransparenter : theme.color.white};
+  outline: 0;
+  border: 1px
+    ${({ theme, error }) =>
+  error ? theme.color.redTransparent : theme.color.blackTransparent}
+    solid;
+  border-radius: 3px;
+  color: ${({ theme }) => theme.color.black};
+  font-size: ${({ theme }) => theme.fontSize.m};
+  font-weight: bold;
+  height: 3rem;
+  user-select: none;
+  min-width: 100px;
+  
+  ${OptionContainer}:hover {
+    background: transparent;
+  }
+`;
 
 /**
  * TokenInput form component
