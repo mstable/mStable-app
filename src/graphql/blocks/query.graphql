@@ -9,3 +9,10 @@ query BlockTimestamp($start: BigInt!, $end: BigInt!) @api(name: blocks) {
     timestamp
   }
 }
+
+query Block($number: BigInt!) @api(name: blocks) {
+  blocks(where: { number: $number }) {
+    number
+    timestamp
+  }
+}

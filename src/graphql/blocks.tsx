@@ -281,6 +281,13 @@ export type BlockTimestampQueryVariables = {
 
 export type BlockTimestampQuery = { blocks: Array<Pick<Block, 'number' | 'timestamp'>> };
 
+export type BlockQueryVariables = {
+  number: Scalars['BigInt'];
+};
+
+
+export type BlockQuery = { blocks: Array<Pick<Block, 'number' | 'timestamp'>> };
+
 
 export const BlockTimestampDocument = gql`
     query BlockTimestamp($start: BigInt!, $end: BigInt!) @api(name: blocks) {
@@ -317,3 +324,37 @@ export function useBlockTimestampLazyQuery(baseOptions?: ApolloReactHooks.LazyQu
 export type BlockTimestampQueryHookResult = ReturnType<typeof useBlockTimestampQuery>;
 export type BlockTimestampLazyQueryHookResult = ReturnType<typeof useBlockTimestampLazyQuery>;
 export type BlockTimestampQueryResult = ApolloReactCommon.QueryResult<BlockTimestampQuery, BlockTimestampQueryVariables>;
+export const BlockDocument = gql`
+    query Block($number: BigInt!) @api(name: blocks) {
+  blocks(where: {number: $number}) {
+    number
+    timestamp
+  }
+}
+    `;
+
+/**
+ * __useBlockQuery__
+ *
+ * To run a query within a React component, call `useBlockQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBlockQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBlockQuery({
+ *   variables: {
+ *      number: // value for 'number'
+ *   },
+ * });
+ */
+export function useBlockQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<BlockQuery, BlockQueryVariables>) {
+        return ApolloReactHooks.useQuery<BlockQuery, BlockQueryVariables>(BlockDocument, baseOptions);
+      }
+export function useBlockLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<BlockQuery, BlockQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<BlockQuery, BlockQueryVariables>(BlockDocument, baseOptions);
+        }
+export type BlockQueryHookResult = ReturnType<typeof useBlockQuery>;
+export type BlockLazyQueryHookResult = ReturnType<typeof useBlockLazyQuery>;
+export type BlockQueryResult = ApolloReactCommon.QueryResult<BlockQuery, BlockQueryVariables>;

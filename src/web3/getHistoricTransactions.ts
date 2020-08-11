@@ -15,7 +15,7 @@ export const getHistoricTransactions = async (
   contract: Contract,
   account: string,
   topics: (string | null)[][],
-  filter: Omit<Filter, 'topic'>,
+  filter?: Omit<Filter, 'topic'>,
 ): Promise<Record<string, HistoricTransaction>> => {
   // TODO later: This is probably not a scalable solution
   const allLogs = await Promise.all(
@@ -58,7 +58,7 @@ export const getHistoricTransactions = async (
     .filter(
       // Filter for successful transactions from the given account
       (_, index) =>
-        receipts[index]?.from?.toLowerCase() === account &&
+        receipts[index]?.from?.toLowerCase() === account.toLowerCase() &&
         receipts[index]?.status === 1,
     )
     .reduce((_map, hash, index) => {

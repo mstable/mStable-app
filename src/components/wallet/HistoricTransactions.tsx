@@ -1,6 +1,9 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
+import lightFormat from 'date-fns/lightFormat';
 
+import { useBlockLazyQuery } from '../../graphql/blocks';
+import { useBlockNumber } from '../../context/DataProvider/BlockProvider';
 import { useOrderedHistoricTransactions } from '../../context/TransactionsProvider';
 import { BassetState, DataState } from '../../context/DataProvider/types';
 import { useDataState } from '../../context/DataProvider/DataProvider';
@@ -10,7 +13,7 @@ import { EMOJIS } from '../../web3/constants';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { List, ListItem } from '../core/List';
-import { P } from '../core/Typography';
+import { H4, P } from '../core/Typography';
 
 type FnName =
   | 'mint'
@@ -245,20 +248,39 @@ const HistoricTx: FC<{
 export const HistoricTransactions: FC<{}> = () => {
   const historic = useOrderedHistoricTransactions();
   const dataState = useDataState();
+  const blockNumber = useBlockNumber();
+
+  const [runQuery, blockQuery] = useBlockLazyQuery();
+  if (blockNumber && !blockQuery.called)
+    runQuery({
+      variables: { number: (blockNumber as number).toString() },
+    });
+
+  const timestamp = blockQuery.data?.blocks?.[0]?.timestamp;
+  const fromDate = useMemo(
+    () =>
+      timestamp
+        ? lightFormat(parseInt(timestamp, 10) * 1e3, 'HH:mm dd-MM-y')
+        : undefined,
+    [timestamp],
+  );
 
   return (
     <Container>
-      {historic.length === 0 ? (
-        <P size={2}>No historic transactions.</P>
-      ) : (
-        <List inverted>
-          {historic.map(tx => (
-            <ListItem key={tx.hash}>
-              <HistoricTx tx={tx} dataState={dataState} />
-            </ListItem>
-          ))}
-        </List>
-      )}
+      {fromDate ? <H4>Since {fromDate}</H4> : null}
+      <div>
+        {historic.length === 0 ? (
+          <P size={2}>No historic transactions.</P>
+        ) : (
+          <List inverted>
+            {historic.map(tx => (
+              <ListItem key={tx.hash}>
+                <HistoricTx tx={tx} dataState={dataState} />
+              </ListItem>
+            ))}
+          </List>
+        )}
+      </div>
     </Container>
   );
 };
