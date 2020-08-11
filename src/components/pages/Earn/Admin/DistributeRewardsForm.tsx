@@ -4,7 +4,7 @@ import { BigNumber } from 'ethers/utils';
 import styled from 'styled-components';
 
 import { useTokenAllowance } from '../../../../context/DataProvider/TokensProvider';
-import { useAccount } from '../../../../context/UserProvider';
+import { useOwnAccount } from '../../../../context/UserProvider';
 import { useSignerContext } from '../../../../context/SignerProvider';
 import {
   FormProvider,
@@ -238,7 +238,7 @@ const Inputs: FC<{ reason?: string }> = ({ reason }) => {
 };
 
 export const DistributeRewardsForm: FC<{}> = () => {
-  const account = useAccount();
+  const account = useOwnAccount();
   const {
     data: { rewardsDistributor, rewardsToken },
     totalFunds,

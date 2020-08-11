@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { BigNumber } from 'ethers/utils';
 import { MusdStats } from '../../stats/MusdStats';
 
-import { useAccount } from '../../../context/UserProvider';
+import { useOwnAccount } from '../../../context/UserProvider';
 import {
   FormProvider,
   useSetFormManifest,
@@ -18,7 +18,7 @@ import { useMusdContract } from '../../../context/DataProvider/ContractsProvider
 import { PageHeader } from '../PageHeader';
 
 const SwapForm: FC<{}> = () => {
-  const account = useAccount();
+  const account = useOwnAccount();
   const {
     valid,
     values: { output, input },

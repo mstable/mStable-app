@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { BigNumber } from 'ethers/utils';
 
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
-import { useAccount } from '../../../context/UserProvider';
+import { useOwnAccount } from '../../../context/UserProvider';
 import {
   FormProvider,
   useSetFormManifest,
@@ -17,7 +17,7 @@ import { PageHeader } from '../PageHeader';
 import { P } from '../../core/Typography';
 
 const MintForm: FC<{}> = () => {
-  const account = useAccount();
+  const account = useOwnAccount();
   const { error, amountTouched, bAssets, mintAmount } = useMintState();
   const setFormManifest = useSetFormManifest();
   const mUsdContract = useMusdContract();
