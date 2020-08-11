@@ -6,12 +6,15 @@ import {
   useSetFormManifest,
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
+import { ReactComponent as SaveIcon } from '../../icons/circle/save.svg';
+import { P } from '../../core/Typography';
 import { Interfaces } from '../../../types';
 import { SaveProvider, useSaveState } from './SaveProvider';
 import { SaveInput } from './SaveInput';
 import { SaveInfo } from './SaveInfo';
 import { SaveConfirm } from './SaveConfirm';
 import { TransactionType } from './types';
+import { PageHeader } from '../PageHeader';
 
 const SaveForm: FC<{}> = () => {
   const { amount, amountInCredits, transactionType, valid } = useSaveState();
@@ -67,6 +70,16 @@ const SaveForm: FC<{}> = () => {
 export const Save: FC<{}> = () => (
   <SaveProvider>
     <FormProvider formId="save">
+      <PageHeader
+        icon={<SaveIcon />}
+        title="SAVE"
+        subtitle="Earn mUSD’s native interest rate"
+      >
+        <P>
+          Deposit your mUSD into the mUSD SAVE contract and start earning
+          interest.
+        </P>
+      </PageHeader>
       <SaveInfo />
       <SaveForm />
     </FormProvider>
