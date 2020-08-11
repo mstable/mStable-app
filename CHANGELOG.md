@@ -2,6 +2,12 @@
 
 ## Next
 
+Miscellaneous:
+
+- Adjust the behaviour of the redemption form such that when the
+  'redeem with all assets' toggle is selected, it is still possible
+  to toggle a bAsset to select it for single redemption.
+
 ## Version 1.8.5
 
 _Released 10.08.20 18.14 CEST_
