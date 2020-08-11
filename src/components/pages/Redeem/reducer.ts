@@ -28,15 +28,18 @@ const reduce: Reducer<State, Action> = (state, action) => {
     }
 
     case Actions.ToggleBassetEnabled: {
-      if (state.mode !== Mode.RedeemSingle) return state;
-
       const address = action.payload;
 
-      return {
-        ...state,
-        touched: true,
-        bAssets: Object.values(state.bAssets).reduce((_bAssets, bAsset) => {
-          const enabled = bAsset.address === address ? !bAsset.enabled : false;
+      const bAssets = Object.values(state.bAssets).reduce(
+        (_bAssets, bAsset) => {
+          let enabled = false;
+
+          if (bAsset.address === address) {
+            // It should be enabled if switching from RedeemMasset;
+            // otherwise it should be toggled.
+            enabled = state.mode === Mode.RedeemMasset || !bAsset.enabled;
+          }
+
           return {
             ..._bAssets,
             [bAsset.address]: {
@@ -45,7 +48,16 @@ const reduce: Reducer<State, Action> = (state, action) => {
               amount: enabled ? bAsset.amount : undefined,
             },
           };
-        }, state.bAssets),
+        },
+        state.bAssets,
+      );
+
+      return {
+        ...state,
+        bAssets,
+        touched: true,
+        // In any case, toggling bAssets means redeeming single.
+        mode: Mode.RedeemSingle,
       };
     }
 
