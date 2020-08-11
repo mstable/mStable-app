@@ -8,11 +8,14 @@ import {
   useSetFormManifest,
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
+import { ReactComponent as SwapIcon } from '../../icons/circle/swap.svg';
+import { P } from '../../core/Typography';
 import { SwapProvider, useSwapState } from './SwapProvider';
 import { SwapInput } from './SwapInput';
 import { SwapConfirm } from './SwapConfirm';
 import { Interfaces } from '../../../types';
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
+import { PageHeader } from '../PageHeader';
 
 const SwapForm: FC<{}> = () => {
   const account = useAccount();
@@ -82,6 +85,13 @@ const SwapForm: FC<{}> = () => {
 export const Swap: FC<{}> = () => (
   <SwapProvider>
     <FormProvider formId="swap">
+      <PageHeader
+        icon={<SwapIcon />}
+        title="SWAP"
+        subtitle="Exchange stablecoins with mStable"
+      >
+        <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
+      </PageHeader>
       <SwapForm />
       <MusdStats />
     </FormProvider>

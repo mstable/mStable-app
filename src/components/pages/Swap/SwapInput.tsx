@@ -1,24 +1,13 @@
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { BigNumber, formatUnits } from 'ethers/utils';
 
-import styled from 'styled-components';
 import { RATIO_SCALE, SCALE } from '../../../web3/constants';
 import { formatExactAmount } from '../../../web3/amounts';
 import { FormRow } from '../../core/Form';
-import { H3, P } from '../../core/Typography';
+import { H3 } from '../../core/Typography';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Fields } from './types';
 import { useSwapDispatch, useSwapState } from './SwapProvider';
-
-const PromoRow = styled(FormRow)`
-  font-weight: bold;
-  h3 {
-    text-transform: uppercase;
-  }
-  p {
-    font-size: 16px;
-  }
-`;
 
 export const SwapInput: FC<{}> = () => {
   const {
@@ -164,10 +153,6 @@ export const SwapInput: FC<{}> = () => {
 
   return (
     <>
-      <PromoRow>
-        <H3>Swap</H3>
-        <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
-      </PromoRow>
       <FormRow>
         <H3>Send</H3>
         <TokenAmountInput

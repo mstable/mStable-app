@@ -42,7 +42,7 @@ const Symbol = styled.div`
   margin-top: 32px;
 
   div {
-    font-sizesize: 24px;
+    font-size: 24px;
     line-height: 32px;
     text-transform: lowercase;
     padding-right: 16px;

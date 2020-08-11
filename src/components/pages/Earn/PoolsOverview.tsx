@@ -205,7 +205,7 @@ export const PoolsOverview: FC<{}> = () => {
   return (
     <Container>
       {Object.keys(stakingRewardsContracts).length === 0 ? (
-        <Skeleton height={112} />
+        <Skeleton height={600} />
       ) : (
         <>
           <TableGroup>
