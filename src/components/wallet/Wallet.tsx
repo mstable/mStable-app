@@ -11,11 +11,13 @@ import {
 } from '../../context/AppProvider';
 import { AVAILABLE_CONNECTORS, CONNECTORS } from '../../web3/connectors';
 import { Button } from '../core/Button';
-import { H2, H3 } from '../core/Typography';
+import { H3 } from '../core/Typography';
 import { Address } from '../core/Address';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { FlexRow } from '../core/Containers';
 import { FontSize } from '../../theme';
+import { PageHeader } from '../pages/PageHeader';
+import { ReactComponent as AccountIcon } from '../icons/circle/account.svg';
 import { Balances } from './Balances';
 import { HistoricTransactions } from './HistoricTransactions';
 import { Transactions } from './Transactions';
@@ -41,12 +43,10 @@ const Row = styled.div`
   border-top: 1px ${({ theme }) => theme.color.whiteTransparent} solid;
 `;
 
-const Header = styled.header`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: ${({ theme }) => theme.spacing.xl};
-  border-top: 1px ${({ theme }) => theme.color.whiteTransparent} solid;
+const StyledAccountIcon = styled(AccountIcon)`
+  > g:first-child > circle:first-child {
+    fill: white;
+  }
 `;
 
 const DisconnectButton = styled(Button)`
@@ -173,15 +173,17 @@ export const Wallet: FC<{}> = () => {
   return (
     <Container>
       <div>
-        {connected ? null : (
-          <Header>
-            <H2>
-              {connecting && wallet
-                ? `Connecting to ${wallet.label} wallet`
-                : 'Connect wallet'}
-            </H2>
-          </Header>
-        )}
+        <PageHeader
+          icon={<StyledAccountIcon />}
+          title="Account"
+          subtitle={
+            connected
+              ? `Connected`
+              : connecting && wallet
+              ? `Connecting to ${wallet.label} wallet`
+              : 'Connect wallet'
+          }
+        />
         {error ? <Error>{error}</Error> : null}
         <FlexRow>
           {/* FIXME problem when first connecting; updates on unmounted components */}
