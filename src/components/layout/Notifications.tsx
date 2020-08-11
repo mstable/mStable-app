@@ -28,6 +28,7 @@ const Header = styled.div`
 
 const Container = styled.div`
   width: 100%;
+  color: white;
 `;
 
 export const Notifications: FC<{}> = () => {

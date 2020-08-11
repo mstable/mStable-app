@@ -7,6 +7,8 @@ Miscellaneous:
 - Adjust the behaviour of the redemption form such that when the
   'redeem with all assets' toggle is selected, it is still possible
   to toggle a bAsset to select it for single redemption.
+- Make the transition when opening/closing the account view easier to
+  see, and add a prominent 'back to app' button on the account view.
 
 ## Version 1.8.5
 

@@ -4,13 +4,13 @@ import { A, getWorkingPath } from 'hookrouter';
 import { useWallet } from 'use-wallet';
 
 import {
-  OverlayItems,
+  AccountItems,
   StatusWarnings,
   useAppStatusWarnings,
-  useCloseOverlay,
+  useCloseAccount,
   useIsWalletConnecting,
-  useOverlayItem,
-  useOverlayOpen,
+  useAccountItem,
+  useAccountOpen,
   useResetWallet,
   useToggleNotifications,
   useToggleWallet,
@@ -93,7 +93,7 @@ const Logo = styled.div<{ full: boolean; inverted?: boolean }>`
   }
 `;
 
-const OverlayButton = styled(UnstyledButton)<{ active: boolean }>`
+const AccountButton = styled(UnstyledButton)<{ active: boolean }>`
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
@@ -131,7 +131,7 @@ const TruncatedAddress = styled.span`
   text-transform: none;
 `;
 
-const WalletButtonBtn = styled(OverlayButton)`
+const WalletButtonBtn = styled(AccountButton)`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -187,8 +187,10 @@ const Container = styled.div<{ inverted: boolean; home: boolean }>`
   background: ${({ inverted, home }) =>
     inverted ? Color.black : home ? Color.gold : Color.offWhite};
   height: 32px;
+  display: flex;
+  justify-content: center;
 
-  ${OverlayButton} {
+  ${AccountButton} {
     color: ${({ inverted }) => (inverted ? Color.white : Color.offBlack)};
   }
 `;
@@ -240,19 +242,19 @@ const StatusWarningsRow: FC<{}> = () => {
 };
 
 const NotificationsButton: FC<{}> = () => {
-  const overlayItem = useOverlayItem();
+  const accountItem = useAccountItem();
   const toggleNotifications = useToggleNotifications();
   const unread = useUnreadNotifications();
   const hasUnreadErrors = unread.some(n => n.type === NotificationType.Error);
 
   return (
-    <OverlayButton
+    <AccountButton
       onClick={toggleNotifications}
-      active={overlayItem === OverlayItems.Notifications}
+      active={accountItem === AccountItems.Notifications}
     >
       <span>Notifications</span>
       <CountBadge count={unread.length} error={hasUnreadErrors} />
-    </OverlayButton>
+    </AccountButton>
   );
 };
 
@@ -289,7 +291,7 @@ const PendingTxContainer = styled.div<{
 `;
 
 const WalletButton: FC<{}> = () => {
-  const overlayItem = useOverlayItem();
+  const accountItem = useAccountItem();
   const toggleWallet = useToggleWallet();
   const resetWallet = useResetWallet();
   const { status } = useWallet<InjectedEthereum>();
@@ -310,7 +312,7 @@ const WalletButton: FC<{}> = () => {
     <WalletButtonBtn
       title="Account"
       onClick={connecting ? resetWallet : toggleWallet}
-      active={overlayItem === OverlayItems.Wallet}
+      active={accountItem === AccountItems.Wallet}
     >
       {connected ? (
         <>
@@ -323,7 +325,7 @@ const WalletButton: FC<{}> = () => {
         </>
       ) : (
         <span>
-          {overlayItem === OverlayItems.Wallet && connecting
+          {accountItem === AccountItems.Wallet && connecting
             ? 'Back'
             : 'Connect'}
         </span>
@@ -345,17 +347,17 @@ const WalletButton: FC<{}> = () => {
 };
 
 export const AppBar: FC<{}> = () => {
-  const overlayOpen = useOverlayOpen();
-  const closeOverlay = useCloseOverlay();
+  const accountOpen = useAccountOpen();
+  const closeAccount = useCloseAccount();
   const activePath = getWorkingPath('');
   const home = activePath === '/';
 
   return (
-    <Container inverted={overlayOpen} home={home}>
+    <Container inverted={accountOpen} home={home}>
       <Inner>
         <Top>
-          <Logo inverted={overlayOpen} full={home}>
-            <A href="/" title="Home" onClick={closeOverlay}>
+          <Logo inverted={accountOpen} full={home}>
+            <A href="/" title="Home" onClick={closeAccount}>
               <LogoSvg />
             </A>
           </Logo>
