@@ -2,6 +2,11 @@
 
 ## Next
 
+Bug fixes:
+
+- Limit historic transactions fetching (via `eth_getLogs`) to 1000 blocks back,
+  so that all providers should be able to fetch the logs without being limited.
+
 ## Version 1.8.8
 
 Miscellaneous:

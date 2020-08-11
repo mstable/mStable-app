@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useWallet } from 'use-wallet';
 import { hexZeroPad } from 'ethers/utils';
+
 import { useTransactionsDispatch } from '../context/TransactionsProvider';
 import { useAccount } from '../context/UserProvider';
 import { getHistoricTransactions } from '../web3/getHistoricTransactions';
@@ -8,14 +9,7 @@ import {
   useMusdContract,
   useSavingsContract,
 } from '../context/DataProvider/ContractsProvider';
-
-// When mUSD was deployed
-const fromBlock =
-  process.env.REACT_APP_CHAIN_ID === '1'
-    ? 10152900
-    : process.env.REACT_APP_CHAIN_ID === '3'
-    ? 7883370
-    : 0;
+import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 
 export const ContractsUpdater = (): null => {
   const { status, connector } = useWallet();
@@ -25,6 +19,13 @@ export const ContractsUpdater = (): null => {
 
   const mUsdContract = useMusdContract();
   const savingsContract = useSavingsContract();
+
+  const blockNumber = useBlockNumber();
+
+  // Filter: 1000 blocks back (some providers can't handle more, and
+  // this will be replace with The Graph soon anyway).
+  const filter = useRef<{ fromBlock?: number }>();
+  filter.current = blockNumber ? { fromBlock: blockNumber - 1000 } : {};
 
   /**
    * When the account changes, reset the transactions state.
@@ -54,9 +55,12 @@ export const ContractsUpdater = (): null => {
         [Swapped.topic, indexedAccount],
       ];
 
-      getHistoricTransactions(mUsdContract, account, mUSDTopics, {
-        fromBlock,
-      }).then(logs => {
+      getHistoricTransactions(
+        mUsdContract,
+        account,
+        mUSDTopics,
+        filter.current,
+      ).then(logs => {
         addHistoric(logs);
       });
     }
@@ -79,9 +83,12 @@ export const ContractsUpdater = (): null => {
         [CreditsRedeemed.topic, indexedAccount],
       ];
 
-      getHistoricTransactions(savingsContract, account, mUSDSavingsTopics, {
-        fromBlock,
-      }).then(logs => {
+      getHistoricTransactions(
+        savingsContract,
+        account,
+        mUSDSavingsTopics,
+        filter.current,
+      ).then(logs => {
         addHistoric(logs);
       });
     }
