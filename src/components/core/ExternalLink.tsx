@@ -5,10 +5,8 @@ import { ReactComponent as ExternalLinkArrow } from './external-link-arrow.svg';
 
 const Anchor = styled.a`
   border-bottom: 0;
-  span {
-    margin-right: 4px;
-  }
   svg {
+    margin-left: 4px;
     width: 14px;
     height: auto;
   }
