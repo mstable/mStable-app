@@ -49,7 +49,8 @@ export interface State {
 
 export interface Dispatch {
   setToken(field: Fields, token: NonNullable<Token> | null): void;
-  setQuantity(field: Fields, formValue: string): void;
+  setInputQuantity(formValue: string): void;
+  setOutputQuantity(formValue: string): void;
 }
 
 export enum Reasons {

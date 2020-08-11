@@ -13,13 +13,13 @@ import { getReasonMessage } from './getReasonMessage';
  * Validate redemption outputs state (not applicable for `redeemMasset`)
  */
 const redeemOutputValidator: StateValidator = state => {
-  const { simulated, dataState } = state as State & {
-    simulated: DataState;
+  const { simulation, dataState } = state as State & {
+    simulation: DataState;
     dataState: DataState;
     amount: BigDecimal;
   };
 
-  const newOverweightBassets = Object.values(simulated.bAssets).filter(
+  const newOverweightBassets = Object.values(simulation.bAssets).filter(
     ({ address, overweight }) =>
       overweight && !dataState.bAssets[address].overweight,
   );
@@ -36,16 +36,15 @@ const redeemOutputValidator: StateValidator = state => {
 };
 
 /**
- * Validate `redeemSingle` state
+ * Validate `redeemSingle` and `redeemMulti` state
  */
-const redeemSingleValidator: StateValidator = state => {
+const redeemSingleOrMultiValidator: StateValidator = state => {
   const { bAssets, dataState } = state as State & {
     dataState: DataState;
   };
   const enabledBassets = Object.values(bAssets).filter(b => b.enabled);
-  const enabledBasset = enabledBassets[0];
 
-  if (!enabledBasset) {
+  if (enabledBassets.length === 0) {
     return [false, Reasons.NoAssetSelected];
   }
 
@@ -56,7 +55,7 @@ const redeemSingleValidator: StateValidator = state => {
   if (
     currentOverweightBassets.length > 1 ||
     (currentOverweightBassets.length === 1 &&
-      currentOverweightBassets[0] !== enabledBasset.address)
+      !enabledBassets.find(b => b.address === currentOverweightBassets[0]))
   ) {
     return [
       false,
@@ -102,23 +101,21 @@ const redeemSingleValidator: StateValidator = state => {
   return redeemOutputValidator(state);
 };
 
-/**
- * Validate `redeemMulti` state
- * TODO: support redeemMulti validation
- */
-const redeemMultiValidator: StateValidator = () => {
-  throw new Error('redeemMulti not supported');
-};
-
 const amountValidator: StateValidator = state => {
-  const { dataState, amountInMasset } = state;
+  const { dataState, amountInMasset, bAssets, mode } = state;
+  const isRedeemMasset = mode === Mode.RedeemMasset;
+  const enabled = Object.values(bAssets).filter(b => b.enabled);
 
   if (!dataState?.mAsset.balance) {
     return [false, Reasons.FetchingData];
   }
 
   if (!amountInMasset) {
-    return [false, Reasons.AmountMustBeSet];
+    const affectedBassets = isRedeemMasset
+      ? []
+      : enabled.filter(b => !b.amount).map(b => b.address);
+
+    return [false, Reasons.AmountMustBeSet, affectedBassets];
   }
 
   if (amountInMasset.exact.gt(dataState.mAsset.balance.exact)) {
@@ -127,6 +124,22 @@ const amountValidator: StateValidator = state => {
 
   if (amountInMasset.exact.eq(0)) {
     return [false, Reasons.AmountMustBeGreaterThanZero];
+  }
+
+  if (!isRedeemMasset) {
+    const noAmount = enabled.filter(b => !b.amount).map(b => b.address);
+
+    if (noAmount.length) {
+      return [false, Reasons.AmountMustBeSet, noAmount];
+    }
+
+    const amountZero = enabled
+      .filter(b => b.amount?.exact.eq(0))
+      .map(b => b.address);
+
+    if (amountZero.length) {
+      return [false, Reasons.AmountMustBeGreaterThanZero, amountZero];
+    }
   }
 
   return [true];
@@ -161,8 +174,8 @@ const redeemMassetValidator: StateValidator = state => {
 /**
  * Validate the basket state for all redemption modes
  */
-const basketValidator: StateValidator = ({ simulated, mode }) => {
-  if (!simulated) {
+const basketValidator: StateValidator = ({ simulation, mode }) => {
+  if (!simulation) {
     return [false, Reasons.FetchingData];
   }
 
@@ -174,7 +187,7 @@ const basketValidator: StateValidator = ({ simulated, mode }) => {
       overweightBassets,
       undergoingRecol,
     },
-  } = simulated;
+  } = simulation;
 
   if (blacklistedBassets.length > 0) {
     return [false, Reasons.BasketContainsBlacklistedAsset, blacklistedBassets];
@@ -197,56 +210,64 @@ const basketValidator: StateValidator = ({ simulated, mode }) => {
 };
 
 const redemptionValidator: StateValidator = state => {
-  const amountValidation = amountValidator(state);
-  if (!amountValidation[0]) return amountValidation;
-
   if (state.mode === Mode.RedeemMasset) {
     return redeemMassetValidator(state);
   }
 
-  if (state.mode === Mode.RedeemSingle) {
-    return redeemSingleValidator(state);
-  }
-
-  return redeemMultiValidator(state);
+  return redeemSingleOrMultiValidator(state);
 };
 
 const getValidationResult = (state: State): ValidationResult => {
   const ready = state.touched && state.initialized;
 
-  if (!ready) return [false];
+  if (!ready) {
+    return [false];
+  }
+
+  const amountValidation = amountValidator(state);
+
+  if (!amountValidation[0]) {
+    return amountValidation;
+  }
 
   const basketValidation = basketValidator(state);
 
-  if (!basketValidation[0]) return basketValidation;
+  if (!basketValidation[0]) {
+    return basketValidation;
+  }
 
   return redemptionValidator(state);
 };
 
 export const applyValidation = (state: State): State => {
-  const { bAssets, dataState } = state;
+  const { dataState } = state as State & { dataState: DataState };
 
   const [valid, reason, affectedBassets = []] = getValidationResult(state);
 
   const error = valid
     ? undefined
-    : getReasonMessage(
-        reason,
-        dataState ? affectedBassets.map(b => dataState.bAssets[b]) : undefined,
-      );
+    : {
+        affectedBassets,
+        message: getReasonMessage(
+          reason,
+          affectedBassets.map(b => dataState.bAssets[b]),
+        ),
+      };
+
+  const bAssets = Object.values(state.bAssets).reduce<State['bAssets']>(
+    (_bAssets, bAsset) => ({
+      ..._bAssets,
+      [bAsset.address]: {
+        ...bAsset,
+        hasError: affectedBassets.includes(bAsset.address),
+      },
+    }),
+    state.bAssets,
+  );
 
   return {
     ...state,
-    bAssets: Object.values(bAssets).reduce(
-      (_bAssets, bAsset) => ({
-        ..._bAssets,
-        [bAsset.address]: {
-          ...bAsset,
-          hasError: affectedBassets.includes(bAsset.address),
-        },
-      }),
-      bAssets,
-    ),
+    bAssets,
     error,
     valid,
   };

@@ -1,25 +1,28 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled, { keyframes } from 'styled-components';
 
-import { humanizeList } from '../../../web3/strings';
+import { BigDecimal } from '../../../web3/BigDecimal';
 import { FormRow } from '../../core/Form';
-import { H3, P } from '../../core/Typography';
-import { Skeletons } from '../../core/Skeletons';
-import { BassetsGrid } from '../../core/Bassets';
-import { TokenAmountInput } from '../../forms/TokenAmountInput';
+import { H3, H4, P } from '../../core/Typography';
+import { Protip } from '../../core/Protip';
+import { ExternalLink } from '../../core/ExternalLink';
+import { BassetInputs } from '../../core/BassetInputs';
+import { Amount, NumberFormat } from '../../core/Amount';
+import { InlineTokenAmountInput } from '../../forms/InlineTokenAmountInput';
 import { ToggleInput } from '../../forms/ToggleInput';
+import { Color } from '../../../theme';
+import { BasketStats } from '../../stats/BasketStats';
 import { useRedeemDispatch, useRedeemState } from './RedeemProvider';
 import { BassetOutput } from './BassetOutput';
 import { Mode } from './types';
-import { Protip } from '../../core/Protip';
-import { ExternalLink } from '../../core/ExternalLink';
-import { Color } from '../../../theme';
-import { BigDecimal } from '../../../web3/BigDecimal';
 
 const RedeemMode = styled.div`
   display: flex;
   align-items: center;
+  padding-left: 6px;
+  padding-bottom: 16px;
+  font-size: 12px;
 
   > * {
     margin-right: 8px;
@@ -31,7 +34,7 @@ const background = keyframes`
     background-color: transparent;
   }
   to {
-    background-color: ${Color.blueTransparent};
+    background-color: ${Color.goldTransparent};
   }
 `;
 
@@ -44,128 +47,66 @@ const ProtipContainer = styled.div<{ highlight: boolean }>`
   }
 `;
 
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
+const Item = styled.div<{ highlight?: boolean }>`
+  font-size: ${({ theme }) => theme.fontSize.s};
+  > :first-child {
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  ${({ highlight, theme }) =>
+    highlight
+      ? `
+    background: #ffeed2;
+    border: 2px ${theme.color.gold} dashed;
+    padding: 8px;
+    margin-left: -8px;
+    margin-right: -8px;
+  `
+      : ''}
 `;
 
+const BasketImpact = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  > div {
+    flex: 1;
+    max-width: 360px;
+
+    > div {
+      min-height: 60px;
+      margin-bottom: 16px;
+    }
+  }
+`;
 export const RedeemInput: FC<{}> = () => {
   const {
-    feeAmount,
     amountInMasset,
-    formValue,
     bAssets,
+    cappedSimulation,
     dataState,
-    initialized,
     error,
+    feeAmount,
+    formValue,
+    initialized,
     mode,
+    touched,
     valid,
   } = useRedeemState();
   const {
-    setMaxRedemptionAmount,
-    setRedemptionAmount,
-    toggleMode,
+    setMassetMaxAmount,
+    setMassetAmount,
+    toggleRedeemMasset,
   } = useRedeemDispatch();
 
   const mAsset = dataState?.mAsset;
-  const bAssetsData = dataState?.bAssets;
 
-  const enabledBassets = useMemo(
-    () =>
-      Object.values(bAssets)
-        .filter(b => b.enabled && bAssetsData?.[b.address])
-        .map(b => (bAssetsData as NonNullable<typeof bAssetsData>)[b.address]),
-    [bAssets, bAssetsData],
-  );
-
-  const errorLabel = useMemo<string | undefined>(
-    () =>
-      error
-        ? `Unable to redeem${
-            enabledBassets.length > 0
-              ? ` with ${
-                  mode === Mode.RedeemMasset
-                    ? 'all assets'
-                    : humanizeList(enabledBassets.map(b => b.symbol))
-                }`
-              : ''
-          }`
-        : undefined,
-    [error, enabledBassets, mode],
-  );
-
-  const items = useMemo(
-    () =>
-      feeAmount?.exact.gt(0) && valid
-        ? [
-            {
-              label: 'NOTE',
-              value: `${
-                mode === Mode.RedeemMasset ? 'Redemption' : 'Swap'
-              } fee applies (see details below)`,
-            },
-          ]
-        : [],
-    [mode, feeAmount, valid],
-  );
-
-  const handleSetAmount = useCallback(
-    (_, _formValue) => {
-      setRedemptionAmount(_formValue);
-    },
-    [setRedemptionAmount],
-  );
-
-  const considerUsingBalancer = (
+  const considerUsingBalancer =
     (amountInMasset?.simple || 0) > 0 &&
-    (amountInMasset as BigDecimal).simple < 50
-  );
+    (amountInMasset as BigDecimal).simple < 50;
 
   return (
     <>
-      <FormRow>
-        <Header>
-          <H3>Send mUSD</H3>
-          <RedeemMode>
-            <ToggleInput
-              onClick={toggleMode}
-              checked={mode === Mode.RedeemMasset}
-            />
-            <span>Redeem with all assets</span>
-          </RedeemMode>
-        </Header>
-        {initialized && mAsset ? (
-          <TokenAmountInput
-            name="redemption"
-            tokenValue={mAsset.address}
-            amountValue={formValue || null}
-            tokenAddresses={[mAsset.address]}
-            onChangeAmount={handleSetAmount}
-            onSetMax={
-              mode === Mode.RedeemMasset ? setMaxRedemptionAmount : undefined
-            }
-            items={items}
-            tokenDisabled
-            errorLabel={errorLabel}
-            error={error}
-          />
-        ) : (
-          <Skeleton />
-        )}
-      </FormRow>
-      <FormRow>
-        <H3>Receive assets</H3>
-        <BassetsGrid>
-          {initialized && mAsset ? (
-            Object.keys(bAssets)
-              .sort()
-              .map(address => <BassetOutput key={address} address={address} />)
-          ) : (
-            <Skeletons skeletonCount={4} height={180} />
-          )}
-        </BassetsGrid>
-      </FormRow>
       <ProtipContainer highlight={considerUsingBalancer}>
         <Protip>
           <P>
@@ -177,6 +118,96 @@ export const RedeemInput: FC<{}> = () => {
           </P>
         </Protip>
       </ProtipContainer>
+      <FormRow>
+        <H3>Send mUSD</H3>
+        {initialized && mAsset ? (
+          <>
+            <InlineTokenAmountInput
+              amount={{
+                value: amountInMasset,
+                formValue: formValue || null,
+                disabled: mode !== Mode.RedeemMasset,
+                handleChange: setMassetAmount,
+                handleSetMax:
+                  mode === Mode.RedeemMasset ? setMassetMaxAmount : undefined,
+              }}
+              token={{
+                address: mAsset.address,
+                disabled: true,
+              }}
+              error={
+                error?.affectedBassets.length === 0 ? error?.message : undefined
+              }
+              valid={touched ? valid : true}
+            />
+            {feeAmount?.exact.gt(0) && valid ? (
+              <Item>
+                <div>Note</div>
+                <div>
+                  {mode === Mode.RedeemMasset ? 'Redemption' : 'Swap'} fee
+                  applies (see details below)
+                </div>
+              </Item>
+            ) : null}
+          </>
+        ) : (
+          <Skeleton />
+        )}
+      </FormRow>
+      <FormRow>
+        <H3>Receive assets</H3>
+        <RedeemMode>
+          <ToggleInput
+            onClick={toggleRedeemMasset}
+            checked={mode === Mode.RedeemMasset}
+          />
+          <span>Redeem with all assets proportionally</span>
+        </RedeemMode>
+        <BassetInputs
+          initialized={initialized}
+          bAssets={bAssets}
+          assetTooltip="Your mUSD will be exchanged for these assets"
+          Input={BassetOutput}
+        />
+      </FormRow>
+      <FormRow>
+        <H3>Effects</H3>
+        <P>See how this redemption affects mUSD and its basket of assets.</P>
+        <div>
+          <BasketImpact>
+            <div>
+              <div>
+                <H4>Current basket</H4>
+                <BasketStats />
+              </div>
+              <div>
+                <H4>Current total supply</H4>
+                <Amount
+                  format={NumberFormat.Countup}
+                  amount={dataState?.mAsset.totalSupply}
+                />
+              </div>
+            </div>
+            <div>
+              {cappedSimulation ? (
+                <>
+                  <div>
+                    <H4>New basket</H4>
+                    <BasketStats simulation={cappedSimulation} />
+                  </div>
+                  <div>
+                    <H4>New total supply</H4>
+                    <Amount
+                      format={NumberFormat.Countup}
+                      amount={cappedSimulation.mAsset.totalSupply}
+                    />
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </BasketImpact>
+        </div>
+      </FormRow>
     </>
   );
 };

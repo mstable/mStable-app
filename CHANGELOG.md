@@ -2,12 +2,21 @@
 
 ## Next
 
+Features:
+
+- Add support for redeeming with a custom selection of bAssets, so that users
+  can redeem with a single bAsset, a selection of bAssets, or all bAssets
+  (proportional redemption).
+- Show how redemptions affect mUSD and its basket of assets.
+
 Bug fixes:
 
 - Limit historic transactions fetching (via `eth_getLogs`) to 1000 blocks back,
   so that all providers should be able to fetch the logs without being limited.
 
 ## Version 1.8.8
+
+_Released 17.08.20 12.30 CEST_
 
 Miscellaneous:
 

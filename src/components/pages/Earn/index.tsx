@@ -12,6 +12,7 @@ import { ExternalLink } from '../../core/ExternalLink';
 import { Color, FontSize } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
 import { centredLayout } from '../../layout/css';
+import { ReactComponent as MtaIcon } from '../../icons/circle/mta.svg';
 import { PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
@@ -116,7 +117,15 @@ const MtaToken = styled(Token)`
   > :first-child {
     width: 64px;
     height: 64px;
-    padding-right: 0;
+    padding-right: 8px;
+  }
+`;
+
+const IntroducingMetaHeader = styled.div`
+  padding-bottom: 32px;
+
+  ${MtaToken} {
+    justify-content: center;
   }
 `;
 
@@ -129,8 +138,10 @@ const IntroducingMeta: FC<{}> = () => (
     }
   >
     <div>
-      <MtaToken symbol="MTA" color={Color.white} />
-      <P>Introducing Meta.</P>
+      <IntroducingMetaHeader>
+        <MtaToken symbol="MTA" color={Color.white} />
+        <H3>Introducing Meta.</H3>
+      </IntroducingMetaHeader>
       <P>
         Meta (MTA) is mStable's protocol token. Meta will have at least three
         core functions:
@@ -219,6 +230,9 @@ const PoolCardsContainer = styled.div`
 
     > section {
       padding: 0 8px;
+      > div {
+        cursor: grab;
+      }
     }
   }
 `;
@@ -348,7 +362,7 @@ export const Earn: FC<{}> = () => {
         <Content>
           <div>
             <PageHeader
-              icon={<MtaToken symbol="MTA" />}
+              icon={<MtaIcon />}
               title="EARN"
               subtitle="Ecosystem rewards with mStable"
             >

@@ -44,8 +44,8 @@ export const SaveInput: FC<{}> = () => {
   const handleChangeAmount = useCallback<
     NonNullable<ComponentProps<typeof TokenAmountInput>['onChangeAmount']>
   >(
-    (_, simpleAmount) => {
-      setAmount(simpleAmount);
+    _formValue => {
+      setAmount(_formValue);
     },
     [setAmount],
   );

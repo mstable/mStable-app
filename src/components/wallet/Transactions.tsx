@@ -252,6 +252,28 @@ const getPendingTxDescription = (
         </>
       );
     }
+    case 'redeemMulti': {
+      const [addresses, amounts] = tx.args as [string[], BigNumber[]];
+
+      // Scale the amounts to mAsset units and add them up
+      const totalMassetAmount = addresses.reduce((prev, current, index) => {
+        const { decimals, ratio } = bAssets[current];
+
+        const mAssetAmount = new BigDecimal(
+          amounts[index],
+          decimals,
+        ).mulRatioTruncate(ratio);
+
+        return prev.add(mAssetAmount);
+      }, new BigDecimal(0, mAsset.decimals));
+
+      return (
+        <>
+          You <span>{tx.status ? 'redeemed' : 'are redeeming'}</span>{' '}
+          {totalMassetAmount.format()} {mAsset.symbol}
+        </>
+      );
+    }
     case 'redeemMasset': {
       const [mAssetQ] = tx.args as [BigNumber];
 

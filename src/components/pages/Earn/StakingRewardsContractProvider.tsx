@@ -214,7 +214,7 @@ export const StakingRewardsContractProvider: FC<Props> = ({
   );
 
   const setStakeAmount = useCallback<Dispatch['setStakeAmount']>(
-    (name, amount) => {
+    amount => {
       dispatch({ type: Actions.SetStakeAmount, payload: amount });
     },
     [dispatch],

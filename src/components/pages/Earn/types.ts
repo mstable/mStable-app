@@ -32,7 +32,7 @@ export interface State {
 
 export interface Dispatch {
   setActiveTab(tab: Tabs): void;
-  setStakeAmount(name: string, input: string | null): void;
+  setStakeAmount(formValue: string | null): void;
   setMaxStakeAmount(): void;
 }
 

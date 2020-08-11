@@ -7,6 +7,7 @@ import { Notifications } from './Notifications';
 import { centredLayout } from './css';
 
 const Container = styled.div`
+  padding: 40px 20px;
   ${centredLayout}
 `;
 

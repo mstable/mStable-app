@@ -28,7 +28,7 @@ const Symbol = styled.div`
 
 const Balance = styled(CountUp)<{ size?: Size }>`
   font-weight: bold;
-  font-size: ${({ size = Size.l }) => mapSizeToFontSize(size)};
+  font-size: ${({ size = Size.m }) => mapSizeToFontSize(size)};
 `;
 
 const TokenIcon = styled(TokenIconBase)<{ outline?: boolean }>`
@@ -76,7 +76,7 @@ export const Balances: FC<{}> = () => {
 
   return (
     <List inverted>
-      <ListItem size={Size.xl} key="mUsdBalance">
+      <ListItem size={Size.l} key="mUsdBalance">
         {!mAsset ? (
           <Skeleton height={49} />
         ) : (
@@ -89,12 +89,12 @@ export const Balances: FC<{}> = () => {
             {!mAsset.balance ? (
               <BalanceSkeleton themeContext={themeContext} />
             ) : (
-              <Balance size={Size.xl} end={mAsset.balance.simple} />
+              <Balance size={Size.l} end={mAsset.balance.simple} />
             )}
           </>
         )}
       </ListItem>
-      <ListItem size={Size.xl} key="mta">
+      <ListItem size={Size.l} key="mta">
         {metaToken ? (
           <>
             <Symbol>
@@ -105,7 +105,7 @@ export const Balances: FC<{}> = () => {
             {!metaToken.balance ? (
               <BalanceSkeleton themeContext={themeContext} />
             ) : (
-              <Balance size={Size.xl} end={metaToken.balance.simple} />
+              <Balance size={Size.l} end={metaToken.balance.simple} />
             )}
           </>
         ) : null}
@@ -121,7 +121,7 @@ export const Balances: FC<{}> = () => {
             <BalanceSkeleton themeContext={themeContext} />
           ) : (
             <Balance
-              size={Size.xl}
+              size={Size.l}
               end={savingsContract.savingsBalance.balance.simple}
             />
           )}

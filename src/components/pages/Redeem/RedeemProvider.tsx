@@ -9,9 +9,8 @@ import React, {
 } from 'react';
 
 import { useDataState } from '../../../context/DataProvider/DataProvider';
-import { Actions, BassetOutput, Dispatch, Mode, State } from './types';
+import { Actions, Dispatch, Mode, State } from './types';
 import { reducer } from './reducer';
-import { BassetState, DataState } from '../../../context/DataProvider/types';
 
 const initialState: State = {
   bAssets: {},
@@ -35,26 +34,34 @@ export const RedeemProvider: FC<{}> = ({ children }) => {
     });
   }, [dispatch, dataState]);
 
-  const setRedemptionAmount = useCallback<Dispatch['setRedemptionAmount']>(
+  const setBassetAmount = useCallback<Dispatch['setBassetAmount']>(
+    (address, formValue) => {
+      dispatch({
+        type: Actions.SetBassetAmount,
+        payload: { address, formValue },
+      });
+    },
+    [dispatch],
+  );
+
+  const setMassetAmount = useCallback<Dispatch['setMassetAmount']>(
     formValue => {
       dispatch({
-        type: Actions.SetRedemptionAmount,
+        type: Actions.SetMassetAmount,
         payload: formValue,
       });
     },
     [dispatch],
   );
 
-  const setMaxRedemptionAmount = useCallback<
-    Dispatch['setMaxRedemptionAmount']
-  >(() => {
+  const setMassetMaxAmount = useCallback<Dispatch['setMassetMaxAmount']>(() => {
     dispatch({
-      type: Actions.SetMaxRedemptionAmount,
+      type: Actions.SetMassetMaxAmount,
     });
   }, [dispatch]);
 
-  const toggleMode = useCallback<Dispatch['toggleMode']>(() => {
-    dispatch({ type: Actions.ToggleMode });
+  const toggleRedeemMasset = useCallback<Dispatch['toggleRedeemMasset']>(() => {
+    dispatch({ type: Actions.ToggleRedeemMasset });
   }, [dispatch]);
 
   const toggleBassetEnabled = useCallback<Dispatch['toggleBassetEnabled']>(
@@ -69,16 +76,18 @@ export const RedeemProvider: FC<{}> = ({ children }) => {
       <dispatchCtx.Provider
         value={useMemo(
           () => ({
-            setMaxRedemptionAmount,
-            setRedemptionAmount,
+            setBassetAmount,
+            setMassetAmount,
+            setMassetMaxAmount,
             toggleBassetEnabled,
-            toggleMode,
+            toggleRedeemMasset,
           }),
           [
-            setMaxRedemptionAmount,
-            setRedemptionAmount,
+            setBassetAmount,
+            setMassetAmount,
+            setMassetMaxAmount,
             toggleBassetEnabled,
-            toggleMode,
+            toggleRedeemMasset,
           ],
         )}
       >
@@ -92,22 +101,4 @@ export const useRedeemState = (): State => useContext(stateCtx);
 
 export const useRedeemDispatch = (): Dispatch => useContext(dispatchCtx);
 
-export const useToggleBassetEnabled = (): Dispatch['toggleBassetEnabled'] =>
-  useRedeemDispatch().toggleBassetEnabled;
-
-export const useRedeemBassetOutput = (
-  address: string,
-): BassetOutput | undefined => useRedeemState().bAssets[address];
-
-export const useRedeemBassetData = (address: string): BassetState | undefined =>
-  useRedeemState().dataState?.bAssets[address];
-
-export const useRedeemMode = (): Mode =>
-  useRedeemState().mode;
-
-export const useRedeemSimulation = (
-  simulationMustBeValid?: boolean,
-): DataState | undefined => {
-  const { valid, simulated } = useRedeemState();
-  return simulationMustBeValid ? (valid ? simulated : undefined) : simulated;
-};
+export const useRedeemMode = (): Mode => useRedeemState().mode;
