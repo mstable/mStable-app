@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Color } from '../../theme';
 
 interface Props {
+  className?: string;
   title?: string;
   emoji?: string;
 }
@@ -28,11 +29,12 @@ const Container = styled.div`
 `;
 
 export const Protip: FC<Props> = ({
+  className,
   children,
   title = 'Protip',
   emoji = '💡',
 }) => (
-  <Container>
+  <Container className={className}>
     <ProtipLabel>
       {title} <span>{emoji}</span>
     </ProtipLabel>

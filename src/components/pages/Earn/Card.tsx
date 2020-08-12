@@ -234,15 +234,20 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                     price={rewardsToken.price}
                   />
                   {stakingRewardsContract.platformRewards && platformToken ? (
-                    <StyledTokenAmount
-                      amount={
-                        stakingRewardsContract.platformRewards
-                          ?.totalPlatformRewards
-                      }
-                      format={NumberFormat.Abbreviated}
-                      symbol={platformToken.symbol}
-                      price={platformToken.price}
-                    />
+                    <Tooltip
+                      tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations."
+                      hideIcon
+                    >
+                      <StyledTokenAmount
+                        // amount={
+                        //   stakingRewardsContract.platformRewards
+                        //     ?.totalPlatformRewards
+                        // }
+                        format={NumberFormat.Abbreviated}
+                        symbol={platformToken.symbol}
+                        price={platformToken.price}
+                      />
+                    </Tooltip>
                   ) : null}
                 </TokenAmounts>
               </div>

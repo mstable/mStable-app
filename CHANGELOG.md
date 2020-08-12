@@ -10,6 +10,7 @@ Miscellaneous:
 - Add headers to each main page to better explain what each page is for
 - Make the transition when opening/closing the account view easier to
   see, and add a prominent 'back to app' button on the account view.
+- Add temporary message about BAL rewards airdropping to Balancer pools.
 
 ## Version 1.8.5
 

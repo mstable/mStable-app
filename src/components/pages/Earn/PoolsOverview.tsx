@@ -13,6 +13,7 @@ import { TokenIconSvg } from '../../icons/TokenIcon';
 import { EtherscanLink } from '../../core/EtherscanLink';
 import { ExternalLink } from '../../core/ExternalLink';
 import { AccentColors } from '../../../types';
+import { Tooltip } from '../../core/ReactTooltip';
 
 const ApyAmount = styled(Amount)`
   font-size: ${FontSize.xl};
@@ -174,12 +175,14 @@ export const PoolsOverview: FC<{}> = () => {
                         price={rewardsToken.price}
                       />
                       {platformRewards ? (
-                        <TokenAmount
-                          amount={platformRewards.totalPlatformRewards}
-                          format={NumberFormat.Abbreviated}
-                          symbol={platformRewards.platformToken.symbol}
-                          price={platformRewards.platformToken.price}
-                        />
+                        <Tooltip tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations.">
+                          <TokenAmount
+                            // amount={platformRewards.totalPlatformRewards}
+                            format={NumberFormat.Abbreviated}
+                            symbol={platformRewards.platformToken.symbol}
+                            price={platformRewards.platformToken.price}
+                          />
+                        </Tooltip>
                       ) : null}
                     </>
                   );

@@ -12,6 +12,10 @@ import {
   useRewardsEarned,
 } from '../StakingRewardsContractProvider';
 import { ViewAs } from './ViewAs';
+import { P } from '../../../core/Typography';
+import { Protip } from '../../../core/Protip';
+import { ExternalLink } from '../../../core/ExternalLink';
+import { useAccount } from '../../../../context/UserProvider';
 
 interface Props {
   className?: string;
@@ -28,6 +32,21 @@ const StyledAmount = styled(Amount)``;
 
 const LargeAmount = styled(StyledAmount)`
   font-size: 24px;
+`;
+
+const StyledProtip = styled(Protip)`
+  max-width: 280px;
+  text-align: left;
+  p {
+    font-size: 12px;
+    line-height: 1.5em;
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+  a {
+    font-weight: bold;
+  }
 `;
 
 const AmountContainer = styled.div`
@@ -52,13 +71,14 @@ const Balances = styled.div`
 `;
 
 export const PoolBalances: FC<Props> = () => {
+  const account = useAccount();
   const stakingRewardsContract = useCurrentStakingRewardsContract();
 
   const {
     rewards,
     rewardsUsd,
     platformRewards,
-    platformRewardsUsd,
+    // platformRewardsUsd,
   } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
   const stakingToken = useCurrentStakingToken();
@@ -91,21 +111,38 @@ export const PoolBalances: FC<Props> = () => {
             platformToken ? (
               <>
                 <AmountContainer>
-                  <Heading>Earned {platformToken.symbol}</Heading>
-                  <LargeAmount
-                    format={NumberFormat.Countup}
-                    amount={platformRewards}
-                    countup={{ decimals: 18 }}
-                  />
+                  {/* <Heading>Earned {platformToken.symbol}</Heading> */}
+                  {/* <LargeAmount  */}
+                  {/*   format={NumberFormat.Countup}  */}
+                  {/*   amount={platformRewards}  */}
+                  {/*   countup={{ decimals: 18 }}  */}
+                  {/* />  */}
+                  <StyledProtip emoji="🚁" title="Airdropped BAL">
+                    <P>
+                      From the 3rd to 17th August, your BAL rewards will be
+                      airdropped - stay tuned for more announcements.
+                    </P>
+                    <P>
+                      Any airdrops will be visible{' '}
+                      <ExternalLink
+                        href={`https://etherscan.io/token/0xba100000625a3754423978a60c9317c58a424e3d${
+                          account ? `?a=${account}` : ''
+                        }`}
+                      >
+                        here
+                      </ExternalLink>
+                      .
+                    </P>
+                  </StyledProtip>
                 </AmountContainer>
-                <AmountContainer>
-                  <span>$</span>
-                  <Amount
-                    format={NumberFormat.Countup}
-                    amount={platformRewardsUsd}
-                    countup={{ decimals: 18 }}
-                  />
-                </AmountContainer>
+                {/* <AmountContainer> */}
+                {/*   <span>$</span> */}
+                {/*   <Amount */}
+                {/*     format={NumberFormat.Countup} */}
+                {/*     amount={platformRewardsUsd} */}
+                {/*     countup={{ decimals: 18 }} */}
+                {/*   /> */}
+                {/* </AmountContainer> */}
               </>
             ) : null}
           </div>
