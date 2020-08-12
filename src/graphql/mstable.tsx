@@ -3038,6 +3038,17 @@ export type MostRecentRewardPerTokenStoredQueryVariables = {
 
 export type MostRecentRewardPerTokenStoredQuery = { closestBeforeTimestamp: Array<RewardPerTokenStoredDetailsFragment>, closestAfterTimestamp: Array<RewardPerTokenStoredDetailsFragment> };
 
+export type ClaimRewardTransactionsQueryVariables = {
+  start: Scalars['Int'];
+  end: Scalars['Int'];
+};
+
+
+export type ClaimRewardTransactionsQuery = { stakingRewardsContractClaimRewardTransactions: Array<(
+    Pick<StakingRewardsContractClaimRewardTransaction, 'sender' | 'timestamp' | 'amount'>
+    & { stakingRewardsContract: Pick<StakingRewardsContract, 'id'> }
+  )> };
+
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
   id
@@ -3797,3 +3808,42 @@ export function useMostRecentRewardPerTokenStoredLazyQuery(baseOptions?: ApolloR
 export type MostRecentRewardPerTokenStoredQueryHookResult = ReturnType<typeof useMostRecentRewardPerTokenStoredQuery>;
 export type MostRecentRewardPerTokenStoredLazyQueryHookResult = ReturnType<typeof useMostRecentRewardPerTokenStoredLazyQuery>;
 export type MostRecentRewardPerTokenStoredQueryResult = ApolloReactCommon.QueryResult<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>;
+export const ClaimRewardTransactionsDocument = gql`
+    query ClaimRewardTransactions($start: Int!, $end: Int!) {
+  stakingRewardsContractClaimRewardTransactions(orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: $start, timestamp_lt: $end}) {
+    sender
+    timestamp
+    amount
+    stakingRewardsContract {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useClaimRewardTransactionsQuery__
+ *
+ * To run a query within a React component, call `useClaimRewardTransactionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClaimRewardTransactionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClaimRewardTransactionsQuery({
+ *   variables: {
+ *      start: // value for 'start'
+ *      end: // value for 'end'
+ *   },
+ * });
+ */
+export function useClaimRewardTransactionsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>) {
+        return ApolloReactHooks.useQuery<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>(ClaimRewardTransactionsDocument, baseOptions);
+      }
+export function useClaimRewardTransactionsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>(ClaimRewardTransactionsDocument, baseOptions);
+        }
+export type ClaimRewardTransactionsQueryHookResult = ReturnType<typeof useClaimRewardTransactionsQuery>;
+export type ClaimRewardTransactionsLazyQueryHookResult = ReturnType<typeof useClaimRewardTransactionsLazyQuery>;
+export type ClaimRewardTransactionsQueryResult = ApolloReactCommon.QueryResult<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>;
