@@ -1,10 +1,10 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import Skeleton from 'react-loading-skeleton';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 import { humanizeList } from '../../../web3/strings';
 import { FormRow } from '../../core/Form';
-import { H3 } from '../../core/Typography';
+import { H3, P } from '../../core/Typography';
 import { Skeletons } from '../../core/Skeletons';
 import { BassetsGrid } from '../../core/Bassets';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
@@ -12,6 +12,10 @@ import { ToggleInput } from '../../forms/ToggleInput';
 import { useRedeemDispatch, useRedeemState } from './RedeemProvider';
 import { BassetOutput } from './BassetOutput';
 import { Mode } from './types';
+import { Protip } from '../../core/Protip';
+import { ExternalLink } from '../../core/ExternalLink';
+import { Color } from '../../../theme';
+import { BigDecimal } from '../../../web3/BigDecimal';
 
 const RedeemMode = styled.div`
   display: flex;
@@ -19,6 +23,24 @@ const RedeemMode = styled.div`
 
   > * {
     margin-right: 8px;
+  }
+`;
+
+const background = keyframes`
+  from {
+    background-color: transparent;
+  }
+  to {
+    background-color: ${Color.blueTransparent};
+  }
+`;
+
+const ProtipContainer = styled.div<{ highlight: boolean }>`
+  margin-bottom: 16px;
+  > * {
+    animation: ${background} 1.5s ease infinite alternate-reverse;
+    background-color: ${({ highlight }) =>
+      highlight ? 'inherit' : 'transparent !important'};
   }
 `;
 
@@ -31,6 +53,7 @@ const Header = styled.div`
 export const RedeemInput: FC<{}> = () => {
   const {
     feeAmount,
+    amountInMasset,
     formValue,
     bAssets,
     dataState,
@@ -94,6 +117,11 @@ export const RedeemInput: FC<{}> = () => {
     [setRedemptionAmount],
   );
 
+  const considerUsingBalancer = (
+    (amountInMasset?.simple || 0) > 0 &&
+    (amountInMasset as BigDecimal).simple < 50
+  );
+
   return (
     <>
       <FormRow>
@@ -138,6 +166,17 @@ export const RedeemInput: FC<{}> = () => {
           )}
         </BassetsGrid>
       </FormRow>
+      <ProtipContainer highlight={considerUsingBalancer}>
+        <Protip>
+          <P>
+            Swap mUSD for many other assets on Balancer exchange{' '}
+            <ExternalLink href="https://beta.balancer.exchange">
+              here
+            </ExternalLink>
+            , which might be more cost efficient for small orders.
+          </P>
+        </Protip>
+      </ProtipContainer>
     </>
   );
 };

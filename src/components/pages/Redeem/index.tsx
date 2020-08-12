@@ -10,8 +10,6 @@ import {
 import { TransactionForm } from '../../forms/TransactionForm';
 import { ReactComponent as RedeemIcon } from '../../icons/circle/redeem.svg';
 import { MusdStats } from '../../stats/MusdStats';
-import { ExternalLink } from '../../core/ExternalLink';
-import { P } from '../../core/Typography';
 import { PageHeader } from '../PageHeader';
 import { RedeemInput } from './RedeemInput';
 import { RedeemConfirm } from './RedeemConfirm';
@@ -75,15 +73,7 @@ export const Redeem: FC<{}> = () => (
         icon={<RedeemIcon />}
         title="REDEEM"
         subtitle="Exchange mUSD for its underlying collateral"
-      >
-        <P>
-          Swap mUSD for many other assets on Balancer exchange{' '}
-          <ExternalLink href="https://beta.balancer.exchange">
-            here
-          </ExternalLink>
-          , which might be more cost efficient for small orders.
-        </P>
-      </PageHeader>
+      />
       <RedeemForm />
       <MusdStats />
     </FormProvider>
