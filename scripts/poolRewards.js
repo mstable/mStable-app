@@ -3,17 +3,27 @@
 /* eslint-disable import/no-extraneous-dependencies,@typescript-eslint/no-var-requires,no-console */
 
 require('./utils/init');
-const { BigNumber, formatUnits } = require('ethers/utils');
+const { BigNumber, formatUnits, parseUnits } = require('ethers/utils');
 const gql = require('graphql-tag');
 const { getApolloClient } = require('./utils/getApolloClient');
 const { argv } = require('yargs');
 
-let { contractAddress, start, end, totalPlatformRewards } = argv;
+let {
+  contractAddress,
+  start,
+  end,
+  endBlockNumber,
+  totalPlatformRewards,
+} = argv;
 
 if (!(start && end)) {
   throw new Error(
     'Missing "start" and "end" arguments (timestamps in seconds)',
   );
+}
+
+if (!endBlockNumber) {
+  throw new Error('Missing "endBlockNumber" argument');
 }
 
 if (!contractAddress) {
@@ -24,27 +34,13 @@ if (!contractAddress) {
 
 if (!totalPlatformRewards) {
   throw new Error(
-    'Missing "totalPlatformRewards" argument (exact number of platform rewards allocated)',
+    'Missing "totalPlatformRewards" argument (platform rewards allocated, decimal number)',
   );
 }
 
 const SCALE = new BigNumber((1e18).toString());
-const PERCENT_SCALE = new BigNumber((1e16).toString());
 
-totalPlatformRewards = new BigNumber(totalPlatformRewards);
-
-const blockQuery = gql`
-  query BlockTimestamp($start: BigInt!, $end: BigInt!) @api(name: blocks) {
-    blocks(
-      first: 1
-      orderBy: timestamp
-      orderDirection: asc
-      where: { timestamp_gt: $start, timestamp_lt: $end }
-    ) {
-      number
-    }
-  }
-`;
+totalPlatformRewards = parseUnits(totalPlatformRewards.toString(), 18);
 
 const query = gql`
   query RewardsTransactions(
@@ -56,20 +52,17 @@ const query = gql`
     stakingRewardsContracts(where: { id: $stakingRewards }, block: $block) {
       lastUpdateTime
       periodFinish
-      platformRewardPerTokenStored
-      platformRewardRate
       rewardPerTokenStored
       rewardRate
-      totalStakingRewards
       totalSupply
 
-      stakingRewards(first: 1000) {
+      stakingRewards(where: { type: REWARD }, first: 1000, block: $block) {
         amount
         account
         amountPerTokenPaid
       }
 
-      stakingBalances(first: 1000) {
+      stakingBalances(first: 1000, block: $block) {
         amount
         account
       }
@@ -79,6 +72,7 @@ const query = gql`
         orderBy: timestamp
         orderDirection: asc
         where: { timestamp_gt: $start, timestamp_lt: $end }
+        block: $block
       ) {
         amount
         sender
@@ -90,15 +84,7 @@ const query = gql`
 (async () => {
   const client = getApolloClient();
 
-  // const {
-  //   data: {
-  //     blocks: [block],
-  //   },
-  // } = await client.query({
-  //   query: blockQuery,
-  //   variables: { start: end, end: end + 30 },
-  // });
-  const block = { number: 10632136 }
+  const block = { number: parseInt(endBlockNumber) };
 
   let {
     data: {
@@ -107,11 +93,8 @@ const query = gql`
           claimRewardTransactions,
           lastUpdateTime,
           periodFinish,
-          platformRewardPerTokenStored,
-          platformRewardRate,
           rewardPerTokenStored,
           rewardRate,
-          totalStakingRewards,
           stakingRewards,
           stakingBalances,
           totalSupply: totalTokens,
@@ -128,11 +111,8 @@ const query = gql`
     },
   });
 
-  platformRewardPerTokenStored = new BigNumber(platformRewardPerTokenStored);
-  platformRewardRate = new BigNumber(platformRewardRate);
   rewardPerTokenStored = new BigNumber(rewardPerTokenStored);
   rewardRate = new BigNumber(rewardRate);
-  totalStakingRewards = new BigNumber(totalStakingRewards);
   totalTokens = new BigNumber(totalTokens);
 
   const rewardPerToken = (() => {
@@ -141,13 +121,7 @@ const query = gql`
       return rewardPerTokenStored;
     }
 
-    // const lastTimeRewardApplicable = Math.min(
-    //   periodFinish,
-    //   Math.floor(Date.now() / 1e3),
-    // );
-    const lastTimeRewardApplicable = end;
-
-    const timeSinceLastUpdate = lastTimeRewardApplicable - lastUpdateTime;
+    const timeSinceLastUpdate = end - lastUpdateTime;
 
     // New reward units to distribute = rewardRate * timeSinceLastUpdate
     const rewardUnitsToDistribute = rewardRate.mul(timeSinceLastUpdate);
@@ -195,8 +169,6 @@ const query = gql`
     const current = stakers[staker];
     const { claimed = [], stakingReward, stakingBalance } = current;
 
-    if (!stakingBalance) return;
-
     const totalClaimed = claimed.reduce(
       (prev, current) => prev.add(current),
       new BigNumber(0),
@@ -223,9 +195,6 @@ const query = gql`
 
     totalEarnedForAllStakers = totalEarnedForAllStakers.add(totalEarned);
   });
-  // 15080704365079364860800
-  console.log(totalEarnedForAllStakers.toString());
-  return;
 
   Object.keys(stakers).forEach(staker => {
     const current = stakers[staker];
@@ -234,28 +203,42 @@ const query = gql`
       .mul(SCALE)
       .div(totalEarnedForAllStakers);
 
+    const totalPlatformRewardsEarned = totalPlatformRewards
+      .mul(percentageOfPool)
+      .div(SCALE);
+
     stakers[staker] = {
       ...current,
       percentageOfPool,
+      totalPlatformRewardsEarned,
     };
   });
 
-  console.log(
-    JSON.stringify(
-      {
-        totalEarnedForAllStakers: formatUnits(totalEarnedForAllStakers, 18),
-        totalPlatformRewards: formatUnits(totalPlatformRewards, 18),
-        totalStakingRewards: formatUnits(totalStakingRewards, 18),
-        stakers: Object.entries(stakers).map(
-          ([staker, { totalEarned, percentageOfPool }]) => ({
-            staker,
-            totalEarned: formatUnits(totalEarned, 18),
-            percentageOfPool: formatUnits(percentageOfPool, 16),
-          }),
-        ),
-      },
-      null,
-      2,
-    ),
-  );
+  const report = {
+    stakers: Object.entries(stakers)
+      .sort((a, b) =>
+        b[1].percentageOfPool.gt(a[1].percentageOfPool) ? 1 : -1,
+      )
+      .map(
+        ([
+          staker,
+          { totalEarned, totalPlatformRewardsEarned, percentageOfPool },
+        ]) => ({
+          staker,
+          totalEarned: formatUnits(totalEarned, 18),
+          totalPlatformRewardsEarned: formatUnits(
+            totalPlatformRewardsEarned,
+            18,
+          ),
+          percentageOfPool: formatUnits(percentageOfPool, 16),
+        }),
+      ),
+    totalEarnedForAllStakers: formatUnits(totalEarnedForAllStakers, 18),
+    totalPlatformRewards: formatUnits(totalPlatformRewards, 18),
+    count: stakers.length,
+  };
+
+  const json = JSON.stringify(report, null, 2);
+
+  console.log(json);
 })();
