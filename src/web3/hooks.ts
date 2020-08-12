@@ -208,7 +208,7 @@ export const useAverageApyForPastWeek = (): BigNumber | undefined => {
     const filtered = dailyApys
       .map(a =>
         // Cap numbers at 100
-        a.value ? (a.value.gt(ONE_HUNDRED) ? ONE_HUNDRED : a.value) : undefined,
+        a.value ? a.value : undefined,
       )
       .filter(Boolean) as BigNumber[];
 

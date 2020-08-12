@@ -81,7 +81,11 @@ export const DailyApys: FC<{}> = () => {
               datum: { percentage },
             }: {
               datum: { y: number; percentage: number };
-            }) => (percentage > 100 ? '>100%' : percentageFormat(percentage))}
+            }) =>
+              percentage > 100
+                ? `${percentageFormat(percentage)} 🔥`
+                : percentageFormat(percentage)
+            }
             style={{
               data: {
                 stroke: Color.gold,
