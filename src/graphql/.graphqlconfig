@@ -21,6 +21,18 @@
         }
       }
     },
+    "scripts": {
+      "includes": ["./shared/*", "./scripts/*", "./mstable/*"],
+      "schemaPath": "remote-schema.graphql",
+      "extensions": {
+        "endpoints": {
+          "mainnet-production": {
+            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
+            "introspect": false
+          }
+        }
+      }
+    },
     "balancer": {
       "includes": ["./shared/*", "./balancer/*"],
       "extensions": {
@@ -48,7 +60,7 @@
       "extensions": {
         "endpoints": {
           "mainnet": {
-            "url": "https://api.thegraph.com/subgraphs/name/blocklytics/ropsten-blocks",
+            "url": "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
             "introspect": false
           }
         }

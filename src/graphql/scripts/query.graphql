@@ -1,0 +1,39 @@
+query RewardsTransactions(
+  $stakingRewards: ID!
+  $start: Int!
+  $end: Int!
+  $block: Block_height
+) @api(name: mstable) {
+  stakingRewardsContracts(where: { id: $stakingRewards }, block: $block) {
+    lastUpdateTime
+    periodFinish
+    rewardPerTokenStored
+    rewardRate
+    totalSupply
+
+    platformToken {
+      symbol
+    }
+
+    stakingRewards(where: { type: REWARD }, first: 1000) {
+      amount
+      account
+      amountPerTokenPaid
+    }
+
+    stakingBalances(first: 1000) {
+      amount
+      account
+    }
+
+    claimRewardTransactions(
+      first: 1000
+      orderBy: timestamp
+      orderDirection: asc
+      where: { timestamp_gt: $start, timestamp_lt: $end }
+    ) {
+      amount
+      sender
+    }
+  }
+}

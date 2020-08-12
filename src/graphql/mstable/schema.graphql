@@ -421,28 +421,6 @@ type Query {
     """
     block: Block_height
   ): [StakingReward!]!
-  rewardPerTokenStored(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): RewardPerTokenStored
-  rewardPerTokenStoreds(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: RewardPerTokenStored_orderBy
-    orderDirection: OrderDirection
-    where: RewardPerTokenStored_filter
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): [RewardPerTokenStored!]!
   stakingRewardsContract(
     id: ID!
     """
@@ -1555,6 +1533,12 @@ type StakingRewardsContract {
   stakingBalances(skip: Int = 0, first: Int = 100, orderBy: StakingBalance_orderBy, orderDirection: OrderDirection, where: StakingBalance_filter): [StakingBalance!]!
   """Accessor for staking rewards kept on this contract"""
   stakingRewards(skip: Int = 0, first: Int = 100, orderBy: StakingReward_orderBy, orderDirection: OrderDirection, where: StakingReward_filter): [StakingReward!]!
+  """Accessor for claim reward transactions sent to this contract"""
+  claimRewardTransactions(skip: Int = 0, first: Int = 100, orderBy: StakingRewardsContractClaimRewardTransaction_orderBy, orderDirection: OrderDirection, where: StakingRewardsContractClaimRewardTransaction_filter): [StakingRewardsContractClaimRewardTransaction!]!
+  """Accessor for stake transactions sent to this contract"""
+  stakeTransactions(skip: Int = 0, first: Int = 100, orderBy: StakingRewardsContractStakeTransaction_orderBy, orderDirection: OrderDirection, where: StakingRewardsContractStakeTransaction_filter): [StakingRewardsContractStakeTransaction!]!
+  """Accessor for withdraw transactions sent to this contract"""
+  withdrawTransactions(skip: Int = 0, first: Int = 100, orderBy: StakingRewardsContractWithdrawTransaction_orderBy, orderDirection: OrderDirection, where: StakingRewardsContractWithdrawTransaction_filter): [StakingRewardsContractWithdrawTransaction!]!
   """Platform token"""
   platformToken: Token
   """Platform reward rate"""
@@ -1702,69 +1686,6 @@ type StakingReward {
   """
   type: StakingRewardType!
 }
-enum StakingRewardsContractTransaction_orderBy {
-  id
-  tx
-  type
-  sender
-  timestamp
-  stakingRewardsContract
-}
-input StakingRewardsContractTransaction_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  tx: Bytes
-  tx_not: Bytes
-  tx_in: [Bytes!]
-  tx_not_in: [Bytes!]
-  tx_contains: Bytes
-  tx_not_contains: Bytes
-  type: TransactionType
-  type_not: TransactionType
-  sender: Bytes
-  sender_not: Bytes
-  sender_in: [Bytes!]
-  sender_not_in: [Bytes!]
-  sender_contains: Bytes
-  sender_not_contains: Bytes
-  timestamp: Int
-  timestamp_not: Int
-  timestamp_gt: Int
-  timestamp_lt: Int
-  timestamp_gte: Int
-  timestamp_lte: Int
-  timestamp_in: [Int!]
-  timestamp_not_in: [Int!]
-  stakingRewardsContract: String
-  stakingRewardsContract_not: String
-  stakingRewardsContract_gt: String
-  stakingRewardsContract_lt: String
-  stakingRewardsContract_gte: String
-  stakingRewardsContract_lte: String
-  stakingRewardsContract_in: [String!]
-  stakingRewardsContract_not_in: [String!]
-  stakingRewardsContract_contains: String
-  stakingRewardsContract_not_contains: String
-  stakingRewardsContract_starts_with: String
-  stakingRewardsContract_not_starts_with: String
-  stakingRewardsContract_ends_with: String
-  stakingRewardsContract_not_ends_with: String
-}
-type StakingRewardsContractClaimRewardTransaction implements Transaction {
-  id: ID!
-  tx: Bytes!
-  type: TransactionType!
-  sender: Bytes!
-  timestamp: Int!
-  stakingRewardsContract: StakingRewardsContract!
-  amount: BigInt!
-}
 enum StakingRewardsContractClaimRewardTransaction_orderBy {
   id
   tx
@@ -1828,7 +1749,7 @@ input StakingRewardsContractClaimRewardTransaction_filter {
   amount_in: [BigInt!]
   amount_not_in: [BigInt!]
 }
-type StakingRewardsContractStakeTransaction implements Transaction {
+type StakingRewardsContractClaimRewardTransaction implements Transaction {
   id: ID!
   tx: Bytes!
   type: TransactionType!
@@ -1900,7 +1821,7 @@ input StakingRewardsContractStakeTransaction_filter {
   amount_in: [BigInt!]
   amount_not_in: [BigInt!]
 }
-type StakingRewardsContractWithdrawTransaction implements Transaction {
+type StakingRewardsContractStakeTransaction implements Transaction {
   id: ID!
   tx: Bytes!
   type: TransactionType!
@@ -1972,6 +1893,69 @@ input StakingRewardsContractWithdrawTransaction_filter {
   amount_in: [BigInt!]
   amount_not_in: [BigInt!]
 }
+type StakingRewardsContractWithdrawTransaction implements Transaction {
+  id: ID!
+  tx: Bytes!
+  type: TransactionType!
+  sender: Bytes!
+  timestamp: Int!
+  stakingRewardsContract: StakingRewardsContract!
+  amount: BigInt!
+}
+enum StakingRewardsContractTransaction_orderBy {
+  id
+  tx
+  type
+  sender
+  timestamp
+  stakingRewardsContract
+}
+input StakingRewardsContractTransaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  tx: Bytes
+  tx_not: Bytes
+  tx_in: [Bytes!]
+  tx_not_in: [Bytes!]
+  tx_contains: Bytes
+  tx_not_contains: Bytes
+  type: TransactionType
+  type_not: TransactionType
+  sender: Bytes
+  sender_not: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  timestamp: Int
+  timestamp_not: Int
+  timestamp_gt: Int
+  timestamp_lt: Int
+  timestamp_gte: Int
+  timestamp_lte: Int
+  timestamp_in: [Int!]
+  timestamp_not_in: [Int!]
+  stakingRewardsContract: String
+  stakingRewardsContract_not: String
+  stakingRewardsContract_gt: String
+  stakingRewardsContract_lt: String
+  stakingRewardsContract_gte: String
+  stakingRewardsContract_lte: String
+  stakingRewardsContract_in: [String!]
+  stakingRewardsContract_not_in: [String!]
+  stakingRewardsContract_contains: String
+  stakingRewardsContract_not_contains: String
+  stakingRewardsContract_starts_with: String
+  stakingRewardsContract_not_starts_with: String
+  stakingRewardsContract_ends_with: String
+  stakingRewardsContract_not_ends_with: String
+}
 enum RewardsDistributor_orderBy {
   id
   fundManagers
@@ -1990,68 +1974,6 @@ input RewardsDistributor_filter {
   fundManagers_contains: [Bytes!]
   fundManagers_not_contains: [Bytes!]
 }
-type RewardPerTokenStored {
-  id: ID!
-  stakingRewardsContract: StakingRewardsContract!
-  lastUpdateTime: Int!
-  rewardPerTokenStored: BigInt!
-  platformRewardPerTokenStored: BigInt
-}
-enum RewardPerTokenStored_orderBy {
-  id
-  stakingRewardsContract
-  lastUpdateTime
-  rewardPerTokenStored
-  platformRewardPerTokenStored
-}
-input RewardPerTokenStored_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  stakingRewardsContract: String
-  stakingRewardsContract_not: String
-  stakingRewardsContract_gt: String
-  stakingRewardsContract_lt: String
-  stakingRewardsContract_gte: String
-  stakingRewardsContract_lte: String
-  stakingRewardsContract_in: [String!]
-  stakingRewardsContract_not_in: [String!]
-  stakingRewardsContract_contains: String
-  stakingRewardsContract_not_contains: String
-  stakingRewardsContract_starts_with: String
-  stakingRewardsContract_not_starts_with: String
-  stakingRewardsContract_ends_with: String
-  stakingRewardsContract_not_ends_with: String
-  lastUpdateTime: Int
-  lastUpdateTime_not: Int
-  lastUpdateTime_gt: Int
-  lastUpdateTime_lt: Int
-  lastUpdateTime_gte: Int
-  lastUpdateTime_lte: Int
-  lastUpdateTime_in: [Int!]
-  lastUpdateTime_not_in: [Int!]
-  rewardPerTokenStored: BigInt
-  rewardPerTokenStored_not: BigInt
-  rewardPerTokenStored_gt: BigInt
-  rewardPerTokenStored_lt: BigInt
-  rewardPerTokenStored_gte: BigInt
-  rewardPerTokenStored_lte: BigInt
-  rewardPerTokenStored_in: [BigInt!]
-  rewardPerTokenStored_not_in: [BigInt!]
-  platformRewardPerTokenStored: BigInt
-  platformRewardPerTokenStored_not: BigInt
-  platformRewardPerTokenStored_gt: BigInt
-  platformRewardPerTokenStored_lt: BigInt
-  platformRewardPerTokenStored_gte: BigInt
-  platformRewardPerTokenStored_lte: BigInt
-  platformRewardPerTokenStored_in: [BigInt!]
-  platformRewardPerTokenStored_not_in: [BigInt!]
-}
 enum StakingRewardsContract_orderBy {
   id
   type
@@ -2067,6 +1989,9 @@ enum StakingRewardsContract_orderBy {
   totalStakingRewards
   stakingBalances
   stakingRewards
+  claimRewardTransactions
+  stakeTransactions
+  withdrawTransactions
   platformToken
   platformRewardRate
   platformRewardPerTokenStored
@@ -2712,28 +2637,6 @@ type Subscription {
     """
     block: Block_height
   ): [StakingReward!]!
-  rewardPerTokenStored(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): RewardPerTokenStored
-  rewardPerTokenStoreds(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: RewardPerTokenStored_orderBy
-    orderDirection: OrderDirection
-    where: RewardPerTokenStored_filter
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): [RewardPerTokenStored!]!
   stakingRewardsContract(
     id: ID!
     """

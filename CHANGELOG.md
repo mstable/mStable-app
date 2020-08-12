@@ -2,6 +2,10 @@
 
 ## Next
 
+Miscellaneous:
+
+- Add script to calculate and output reports for platform rewards earned via staking
+
 ## Version 1.9.1
 
 _Released 17.08.20 16.04 CEST_
