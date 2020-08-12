@@ -199,8 +199,6 @@ export const useDailyApysForPastWeek = (): DailyApysForWeek => {
   );
 };
 
-const ONE_HUNDRED = new BigNumber((1e18).toString());
-
 export const useAverageApyForPastWeek = (): BigNumber | undefined => {
   const dailyApys = useDailyApysForPastWeek();
 

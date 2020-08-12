@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
+import styled from 'styled-components';
 import { Interfaces, SendTxManifest } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
 import {
@@ -19,7 +20,6 @@ import { CountUp } from '../../../core/CountUp';
 import { ExternalLink } from '../../../core/ExternalLink';
 import { PLATFORM_METADATA } from '../constants';
 import { Protip } from '../../../core/Protip';
-import styled from 'styled-components';
 
 const Row = styled.div`
   width: 100%;
