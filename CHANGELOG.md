@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.8.6
+
+_Released 12.08.20 19.28 CEST_
+
 Miscellaneous:
 
 - Adjust the behaviour of the redemption form such that when the
