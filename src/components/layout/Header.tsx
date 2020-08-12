@@ -57,10 +57,10 @@ const Container = styled.header<{ accountOpen: boolean; home: boolean }>`
   min-height: 48px;
   min-width: ${ViewportWidth.xs};
   background: ${({ home, accountOpen, theme }) =>
-    home
-      ? theme.color.gold
-      : accountOpen
+    accountOpen
       ? theme.color.black
+      : home
+      ? theme.color.gold
       : theme.color.offWhite};
 `;
 

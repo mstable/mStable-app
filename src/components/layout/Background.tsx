@@ -16,10 +16,10 @@ const Container = styled.div<Props>`
   z-index: -1;
   transition: background-color 0.3s ease;
   background-color: ${({ theme, home, accountOpen }) =>
-    home
-      ? theme.color.gold
-      : accountOpen
+    accountOpen
       ? theme.color.black
+      : home
+      ? theme.color.gold
       : theme.color.offWhite};
 `;
 
