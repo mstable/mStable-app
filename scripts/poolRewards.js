@@ -214,28 +214,24 @@ const query = gql`
     };
   });
 
+  const orderedStakers = Object.entries(stakers).sort((a, b) =>
+    b[1].percentageOfPool.gt(a[1].percentageOfPool) ? 1 : -1,
+  );
+
   const report = {
-    stakers: Object.entries(stakers)
-      .sort((a, b) =>
-        b[1].percentageOfPool.gt(a[1].percentageOfPool) ? 1 : -1,
-      )
-      .map(
-        ([
-          staker,
-          { totalEarned, totalPlatformRewardsEarned, percentageOfPool },
-        ]) => ({
-          staker,
-          totalEarned: formatUnits(totalEarned, 18),
-          totalPlatformRewardsEarned: formatUnits(
-            totalPlatformRewardsEarned,
-            18,
-          ),
-          percentageOfPool: formatUnits(percentageOfPool, 16),
-        }),
-      ),
     totalEarnedForAllStakers: formatUnits(totalEarnedForAllStakers, 18),
     totalPlatformRewards: formatUnits(totalPlatformRewards, 18),
-    count: stakers.length,
+    orderedStakers: orderedStakers.map(([staker]) => staker),
+    stakingRewardsEarned: orderedStakers.map(([, { totalEarned }]) =>
+      formatUnits(totalEarned, 18),
+    ),
+    platformRewardsEarned: orderedStakers.map(
+      ([, { totalPlatformRewardsEarned }]) =>
+        formatUnits(totalPlatformRewardsEarned, 18),
+    ),
+    percentageOfPool: orderedStakers.map(([, { percentageOfPool }]) =>
+      formatUnits(percentageOfPool, 16),
+    ),
   };
 
   const json = JSON.stringify(report, null, 2);
