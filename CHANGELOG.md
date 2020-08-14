@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.8.7
+
+_Released 14.08.20 12.13 CEST_
+
 Bug fixes:
 
 - Fix a bug where the token approval button did not appear in the swap form.
