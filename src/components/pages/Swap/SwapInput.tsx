@@ -8,6 +8,7 @@ import { H3 } from '../../core/Typography';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Fields } from './types';
 import { useSwapDispatch, useSwapState } from './SwapProvider';
+import { BigDecimal } from '../../../web3/BigDecimal';
 
 export const SwapInput: FC<{}> = () => {
   const {
@@ -151,12 +152,21 @@ export const SwapInput: FC<{}> = () => {
     }
   }, [inputAddress, setToken, bAssets, touched]);
 
+  const approveAmount = useMemo(
+    () =>
+      input.amount.exact && input.token.decimals
+        ? new BigDecimal(input.amount.exact, input.token.decimals)
+        : undefined,
+    [input.amount, input.token.decimals],
+  );
+
   return (
     <>
       <FormRow>
         <H3>Send</H3>
         <TokenAmountInput
           amountValue={input.formValue}
+          approveAmount={approveAmount}
           tokenAddresses={inputAddresses}
           tokenValue={inputAddress}
           name={Fields.Input}
