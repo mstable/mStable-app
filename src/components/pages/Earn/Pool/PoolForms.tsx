@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { Button } from '../../../core/Button';
-import { Color, FontSize } from '../../../../theme';
+import { TabsContainer, TabBtn } from '../../../core/Tabs';
+import { Color } from '../../../../theme';
 import { Tabs } from '../types';
 import {
   useStakingRewardContractDispatch,
@@ -17,28 +17,6 @@ const TAB_LABELS = {
   [Tabs.Claim]: 'Claim rewards',
   [Tabs.Exit]: 'Exit pool',
 };
-
-const TabsContainer = styled.div`
-  padding: 16px 0;
-  display: flex;
-  justify-content: space-evenly;
-`;
-
-const TabBtn = styled(Button)<{ active: boolean }>`
-  background: transparent;
-  border-radius: 0;
-  border: 0;
-  border-top: 1px
-    ${({ active }) => (active ? Color.blueTransparent : Color.blackTransparent)}
-    solid;
-  border-bottom: 4px ${({ active }) => (active ? Color.blue : 'transparent')}
-    solid;
-  color: ${({ active }) => (active ? Color.blue : Color.black)};
-  font-size: ${FontSize.m};
-  text-transform: uppercase;
-  transition: all 0.3s ease;
-  width: 100%;
-`;
 
 const TabButton: FC<{ tab: Tabs }> = ({ tab }) => {
   const { activeTab } = useStakingRewardsContractState();
