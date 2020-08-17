@@ -2,6 +2,10 @@
 
 ## Next
 
+Miscellaneous:
+
+- Update the BAL rewards message
+
 ## Version 1.8.7
 
 _Released 14.08.20 12.13 CEST_
