@@ -128,6 +128,9 @@ const getStakingRewardsContractsMap = (
           stakingBalance,
           stakingBalancePercentage,
           stakingReward,
+          apy: {
+            waitingForData: true,
+          },
           ...(type ===
             StakingRewardsContractType.StakingRewardsWithPlatformToken &&
           platformToken &&
@@ -174,7 +177,7 @@ const getStakingRewardsContractsMap = (
             : undefined),
         };
 
-        const combinedRewardsTokensApy = (() => {
+        const apyValue = (() => {
           const stakingTokenPrice = stakingToken?.price?.simple;
           const rewardsTokenPrice = rewardsToken?.price?.simple;
           const platformTokenPrice =
@@ -244,9 +247,12 @@ const getStakingRewardsContractsMap = (
           ..._state,
           [address]: {
             ...result,
-            combinedRewardsTokensApy: combinedRewardsTokensApy
-              ? new BigDecimal(combinedRewardsTokensApy.toString(), 18)
-              : undefined,
+            apy: {
+              value: apyValue
+                ? new BigDecimal(apyValue.toString(), 18)
+                : undefined,
+              waitingForData: !rewardPerTokenStored24hAgo,
+            },
           },
         };
       },

@@ -11,6 +11,7 @@ import { EtherscanLink } from '../../../core/EtherscanLink';
 import { Button } from '../../../core/Button';
 import { AddressInput } from './AddressInput';
 import { useCurrentStakingRewardsContract } from '../StakingRewardsContractProvider';
+import { getWorkingPath, navigate } from 'hookrouter';
 
 const Input = styled.div`
   display: flex;
@@ -57,8 +58,18 @@ export const ViewAs: FC<{}> = () => {
   }, [masquerade, address]);
 
   const handleResetMasquerade = useCallback(() => {
+    // Redirect to the normal path if needed
+    const path = getWorkingPath('');
+    if (account) {
+      const index = path.indexOf(`/${account}`);
+      if (index > 0) {
+        navigate(path.slice(0, index));
+      }
+    }
+
+    // Stop masquerading
     masquerade();
-  }, [masquerade]);
+  }, [masquerade, account]);
 
   const handleShare = useCallback(() => {
     if (earnUrl && account) {

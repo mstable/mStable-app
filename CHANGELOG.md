@@ -2,6 +2,16 @@
 
 ## Next
 
+Bug fixes:
+
+- Show 'No data yet' for the APY of new EARN pools (<24h)
+- Hide the stake/claim/exit forms when viewing a pool as another address
+- Redirect back from a user's shared pool page when clicking 'reset'
+
+## Version 1.9.0
+
+_Released 17.08.20 13.44 CEST_
+
 Features:
 
 - Add support for redeeming with a custom selection of bAssets, so that users

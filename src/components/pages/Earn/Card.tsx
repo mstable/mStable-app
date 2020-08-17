@@ -196,10 +196,16 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                   </Heading>
                 </Tooltip>
                 <div>
-                  <StyledAmount
-                    format={NumberFormat.CountupPercentage}
-                    amount={stakingRewardsContract.combinedRewardsTokensApy}
-                  />
+                  {stakingRewardsContract.apy.waitingForData ? (
+                    <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
+                      No data yet
+                    </Tooltip>
+                  ) : (
+                    <StyledAmount
+                      format={NumberFormat.CountupPercentage}
+                      amount={stakingRewardsContract.apy.value}
+                    />
+                  )}
                 </div>
               </div>
             </Row>
