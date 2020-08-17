@@ -108,7 +108,9 @@ const Container = styled.div<{
   height: 225px;
   background-image: ${({ colors: { base, accent }, stakingToken }) =>
     stakingToken
-      ? `url(${TOKEN_ICONS[stakingToken]}), linear-gradient(to top right, ${base}, ${accent})`
+      ? `url(${
+          TOKEN_ICONS[stakingToken.toUpperCase()]
+        }), linear-gradient(to top right, ${base}, ${accent})`
       : 'none'};
   background-size: contain;
   background-position: center center;
