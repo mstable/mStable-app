@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.9.1
+
+_Released 17.08.20 16.04 CEST_
+
 Bug fixes:
 
 - Show 'No data yet' for the APY of new EARN pools (<24h)
