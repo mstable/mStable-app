@@ -22,9 +22,9 @@ import {
 
 import { TimeMetricPeriod } from '../../graphql/mstable';
 import { ToggleInput } from '../forms/ToggleInput';
+import { TabsContainer, TabBtn } from '../core/Tabs';
 import { H3 } from '../core/Typography';
 import { Color, FontSize, ViewportWidth } from '../../theme';
-import { Button } from '../core/Button';
 
 export enum DateRange {
   Day,
@@ -73,24 +73,10 @@ interface Dispatch<T extends string> {
   toggleType(type: T): void;
 }
 
-const DateRangeButton = styled(Button)`
-  background: ${({ disabled }) => (disabled ? Color.white : 'transparent')};
-  color: ${({ disabled }) => (disabled ? Color.black : Color.blackTransparent)};
-`;
-
-const DateRanges = styled.div`
-  display: flex;
-  justify-content: space-between;
-  border: 1px ${Color.blackTransparenter} solid;
-  padding: 8px;
-
-  ${DateRangeButton} {
-    margin-right: 4px;
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
+const DateRangeBtn = styled(TabBtn)`
+  white-space: nowrap;
+  font-weight: normal;
+  font-size: 12px;
 `;
 
 const Control = styled.div`
@@ -111,7 +97,7 @@ const ControlsContainer = styled.div`
     justify-content: space-between;
 
     > :first-child {
-      flex-grow: 1;
+      flex: 1;
       margin-right: 16px;
     }
   }
@@ -143,7 +129,11 @@ const MetricToggles = styled.div`
   border: 1px ${Color.blackTransparenter} solid;
 `;
 
-const ChartContainer = styled.div``;
+const ChartContainer = styled.div`
+  svg {
+    overflow: visible;
+  }
+`;
 
 const Container = styled.div``;
 
@@ -279,18 +269,18 @@ export const Metrics = <T extends string>({
             </Control>
             <Control>
               <H3 borderTop>Range</H3>
-              <DateRanges>
+              <TabsContainer>
                 {state.dates.map(({ label, enabled, dateRange }) => (
-                  <DateRangeButton
+                  <DateRangeBtn
                     key={dateRange}
                     type="button"
                     onClick={() => setDateRange(dateRange)}
-                    disabled={!!enabled}
+                    active={!!enabled}
                   >
                     {label}
-                  </DateRangeButton>
+                  </DateRangeBtn>
                 ))}
-              </DateRanges>
+              </TabsContainer>
             </Control>
           </ControlsContainer>
           <ChartContainer>{children}</ChartContainer>

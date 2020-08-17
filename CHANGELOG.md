@@ -7,6 +7,8 @@ Bug fixes:
 - Show 'No data yet' for the APY of new EARN pools (<24h)
 - Hide the stake/claim/exit forms when viewing a pool as another address
 - Redirect back from a user's shared pool page when clicking 'reset'
+- Analytics: Ensure y-axis numbers are not cut off on smaller viewports,
+  and use tabs for the date ranges
 
 ## Version 1.9.0
 
