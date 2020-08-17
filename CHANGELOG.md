@@ -2,6 +2,8 @@
 
 ## Next
 
+## Version 1.8.8
+
 Miscellaneous:
 
 - Update the BAL rewards message
