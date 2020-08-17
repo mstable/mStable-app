@@ -103,7 +103,7 @@ export const RedeemInput: FC<{}> = () => {
 
   const considerUsingBalancer =
     (amountInMasset?.simple || 0) > 0 &&
-    (amountInMasset as BigDecimal).simple < 50;
+    (amountInMasset as BigDecimal).simple < 3000;
 
   return (
     <>
