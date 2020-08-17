@@ -15,6 +15,7 @@ import { Swap } from './components/pages/Swap';
 import { Mint } from './components/pages/Mint';
 import { Earn } from './components/pages/Earn';
 import { Save } from './components/pages/Save';
+import { Calculator } from './components/pages/Calculator';
 import { Redeem } from './components/pages/Redeem';
 import { NotFound } from './components/pages/NotFound';
 import { FAQ } from './components/pages/FAQ';
@@ -46,6 +47,7 @@ const routes = {
     userAddress?: string;
   }) => <PoolPage slugOrAddress={slugOrAddress} userAddress={userAddress} />,
   '/save': () => <Save />,
+  '/save/calculator': () => <Calculator />,
   '/swap': () => <Swap />,
   '/redeem': () => <Redeem />,
   '/faq': () => <FAQ />,
