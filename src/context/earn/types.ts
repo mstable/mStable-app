@@ -94,8 +94,10 @@ export interface StakingRewardsContract {
   totalStakingRewards: BigDecimal;
   totalRemainingRewards: BigDecimal;
   type: StakingRewardsContractType;
-  stakingTokenApy?: BigDecimal;
-  combinedRewardsTokensApy?: BigDecimal;
+  apy: {
+    value?: BigDecimal;
+    waitingForData: boolean;
+  };
   platformRewards?: {
     platformRewardPerTokenStoredNow: BigNumber;
     platformRewardPerTokenStored24hAgo?: BigNumber;

@@ -157,11 +157,15 @@ export const PoolsOverview: FC<{}> = () => {
                 //     />
                 //   );
                 case Columns.RewardsApy:
-                  return item.combinedRewardsTokensApy?.exact.gt(0) ? (
+                  return item.apy.value?.exact.gt(0) ? (
                     <ApyAmount
-                      amount={item.combinedRewardsTokensApy}
+                      amount={item.apy.value}
                       format={NumberFormat.CountupPercentage}
                     />
+                  ) : item.apy.waitingForData ? (
+                    <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
+                      No data yet
+                    </Tooltip>
                   ) : (
                     <Skeleton />
                   );
