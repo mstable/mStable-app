@@ -34,8 +34,13 @@ const LargeAmount = styled(StyledAmount)`
   font-size: 24px;
 `;
 
+const ProtipContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 const StyledProtip = styled(Protip)`
-  max-width: 280px;
+  max-width: 300px;
   text-align: left;
   p {
     font-size: 12px;
@@ -110,7 +115,7 @@ export const PoolBalances: FC<Props> = () => {
             platformRewards &&
             platformToken ? (
               <>
-                <AmountContainer>
+                <ProtipContainer>
                   {/* <Heading>Earned {platformToken.symbol}</Heading> */}
                   {/* <LargeAmount  */}
                   {/*   format={NumberFormat.Countup}  */}
@@ -119,8 +124,13 @@ export const PoolBalances: FC<Props> = () => {
                   {/* />  */}
                   <StyledProtip emoji="🚁" title="Airdropped BAL">
                     <P>
-                      From the 3rd to 17th August, your BAL rewards will be
-                      airdropped - stay tuned for more announcements.
+                      For the next few weeks, BAL rewards will continue to be
+                      airdropped proportionately to EARN participants. In the
+                      coming month, the airdrops will be replaced with a CLAIM
+                      button.{' '}
+                      <ExternalLink href="https://medium.com/mstable/plans-for-the-bal-rewards-in-mstable-earn-48434a03bbab">
+                        Read more
+                      </ExternalLink>
                     </P>
                     <P>
                       Any airdrops will be visible{' '}
@@ -134,7 +144,7 @@ export const PoolBalances: FC<Props> = () => {
                       .
                     </P>
                   </StyledProtip>
-                </AmountContainer>
+                </ProtipContainer>
                 {/* <AmountContainer> */}
                 {/*   <span>$</span> */}
                 {/*   <Amount */}
