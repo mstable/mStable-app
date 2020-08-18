@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 import { formatUnits } from 'ethers/utils';
 import { H3 } from '../../core/Typography';
+import { ButtonGroup } from '../../core/Button';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { FontSize } from '../../../theme';
@@ -13,6 +14,7 @@ import {
 } from '../../../web3/hooks';
 import { useSavingsBalance } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
+import { CalculatorLink } from '../Calculator/CalculatorLink';
 
 const CreditBalance = styled.div`
   img {
@@ -72,6 +74,10 @@ const BalanceInfoRow = styled(InfoRow)`
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     display: block;
   }
+`;
+
+const ButtonRow = styled(ButtonGroup)`
+  margin: 8px 0;
 `;
 
 export const SaveInfo: FC<{}> = () => {
@@ -150,9 +156,10 @@ export const SaveInfo: FC<{}> = () => {
           ) : (
             <Skeleton />
           )}
-          <div>
-            <AnalyticsLink section="save" />
-          </div>
+          <ButtonRow>
+            <AnalyticsLink />
+            <CalculatorLink />
+          </ButtonRow>
         </div>
       </InfoRow>
     </>

@@ -7,11 +7,11 @@ const Link = styled(ButtonLink)`
   text-transform: none;
 `;
 
-export const AnalyticsLink: FC<{}> = () => (
-  <Link href="/analytics">
-    <span role="img" aria-label="chart">
-      📊
+export const CalculatorLink: FC<{}> = () => (
+  <Link href="/save/calculator">
+    <span role="img" aria-label="money bag">
+      💰
     </span>{' '}
-    View analytics
+    Calculate earnings
   </Link>
 );

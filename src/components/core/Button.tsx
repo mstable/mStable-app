@@ -1,6 +1,7 @@
 import { ButtonHTMLAttributes, ComponentProps } from 'react';
 import styled, { css } from 'styled-components';
 import { A } from 'hookrouter';
+import { Spacing } from '../../theme';
 
 interface Props extends ButtonHTMLAttributes<unknown> {
   inverted?: boolean;
@@ -44,4 +45,16 @@ export const Button = styled(UnstyledButton).attrs<ButtonHTMLAttributes<never>>(
 
 export const ButtonLink = styled(A)<Props & ComponentProps<typeof A>>`
   ${ButtonCss}
+`;
+
+export const ButtonGroup = styled.div<{ spacing?: Spacing }>`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  > * {
+    margin-right: ${({ spacing }) => spacing || Spacing.s};
+  }
+  > :last-child {
+    margin-right: 0;
+  }
 `;
