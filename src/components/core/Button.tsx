@@ -1,10 +1,16 @@
 import { ButtonHTMLAttributes, ComponentProps } from 'react';
 import styled, { css } from 'styled-components';
 import { A } from 'hookrouter';
-import { Spacing } from '../../theme';
+import {
+  Spacing,
+  Size,
+  mapSizeToFontSize,
+  mapSizeToSpacing,
+} from '../../theme';
 
 interface Props extends ButtonHTMLAttributes<unknown> {
   inverted?: boolean;
+  size?: Size;
 }
 
 export const UnstyledButton = styled.button`
@@ -29,10 +35,13 @@ const ButtonCss = css<Props>`
       : theme.color.offBlack};
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   font-weight: bold;
-  font-size: 12px;
+  font-size: ${({ size }) => (size ? mapSizeToFontSize(size) : '12px')};
   text-transform: uppercase;
 
-  padding: 8px 16px;
+  padding: ${({ size }) => {
+    const spacing = mapSizeToSpacing(size || Size.s);
+    return `calc(${spacing}/2) ${spacing}`;
+  }};
 
   ${({ theme }) => theme.mixins.roundedBorder}
 `;
@@ -45,6 +54,7 @@ export const Button = styled(UnstyledButton).attrs<ButtonHTMLAttributes<never>>(
 
 export const ButtonLink = styled(A)<Props & ComponentProps<typeof A>>`
   ${ButtonCss}
+  display: inline-flex;
 `;
 
 export const ButtonGroup = styled.div<{ spacing?: Spacing }>`

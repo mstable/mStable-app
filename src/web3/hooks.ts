@@ -3,6 +3,7 @@ import { useMutex } from 'react-context-mutex';
 import useInterval from '@use-it/interval';
 import { BigNumber, parseUnits } from 'ethers/utils';
 import { BigNumber as FractionalBigNumber } from 'bignumber.js';
+import { subDays } from 'date-fns';
 
 import {
   ExchangeRate,
@@ -121,6 +122,22 @@ const useLastExchangeRateBeforeTimestamp = (
   return previousQuery.data?.exchangeRates[0];
 };
 
+export const useApyForTimePeriod = (
+  fromDate: Date,
+  toDate: Date,
+): BigNumber | undefined => {
+  const from = fromDate.getTime() / 1000;
+  const to = toDate.getTime() / 1000;
+  const fromExchangeRate = useLastExchangeRateBeforeTimestamp(from);
+  const toExchangeRate = useLastExchangeRateBeforeTimestamp(to);
+
+  return fromExchangeRate &&
+    toExchangeRate &&
+    toExchangeRate.timestamp > fromExchangeRate.timestamp
+    ? calculateApy(fromExchangeRate, toExchangeRate)
+    : undefined;
+};
+
 export const useApyForPast24h = (): BigNumber | undefined => {
   const latest = useLatestExchangeRate();
   const timestamp = latest?.timestamp;
@@ -136,6 +153,16 @@ export const useApyForPast24h = (): BigNumber | undefined => {
         exchangeRate: latest.exchangeRate.string,
       })
     : undefined;
+};
+
+export const useApyForPast30Days = (): BigNumber | undefined => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+
+  const past30days = subDays(today, 30);
+
+  return useApyForTimePeriod(past30days, today);
 };
 
 const DAYS_OF_WEEK = [0, 1, 2, 3, 4, 5, 6];

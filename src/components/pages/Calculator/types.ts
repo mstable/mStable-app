@@ -1,25 +1,36 @@
-import { DataState } from '../../../context/DataProvider/types';
+import { BigDecimal } from '../../../web3/BigDecimal';
 
 export interface State {
-  initialized: boolean;
-  dataState?: DataState;
+  formAmount: number;
+  amount: BigDecimal;
+  minAmount: number;
+  maxAmount: number;
+  months: number;
+  minMonths: number;
+  maxMonths: number;
+  days: number;
 }
 
 export enum Actions {
-  Data,
-  Calculate,
+  AmountChanged,
+  MonthsChanged,
 }
 
 export type Action =
   | {
-      type: Actions.Data;
-      payload?: DataState;
+      type: Actions.AmountChanged;
+      payload: {
+        value: number;
+      };
     }
   | {
-      type: Actions.Calculate;
-      payload?: {};
+      type: Actions.MonthsChanged;
+      payload: {
+        value: number;
+      };
     };
 
 export interface Dispatch {
-  calculate(): void;
+  amountChanged(value: number): void;
+  monthsChanged(value: number): void;
 }
