@@ -1,13 +1,29 @@
+import { BigNumber } from 'ethers/utils';
+import { BigDecimal } from '../../../web3/BigDecimal';
 import { DataState } from '../../../context/DataProvider/types';
 
 export interface State {
-  initialized: boolean;
   dataState?: DataState;
+  initialized: boolean;
+  processing: boolean;
+  depositedAmount: BigDecimal;
+  amount: string | null;
+  startDate: string;
+  endDate: string;
+  totalDays: number;
+  isInThePast: boolean;
+  isInTheFuture: boolean;
+  totalEarnings: BigDecimal;
+  avgApy: BigNumber;
+  avgApyPast: BigNumber;
+  avgApyFuture: BigNumber;
 }
 
 export enum Actions {
   Data,
-  Calculate,
+  AmountChanged,
+  StartDateChanged,
+  EndDateChanged,
 }
 
 export type Action =
@@ -16,10 +32,26 @@ export type Action =
       payload?: DataState;
     }
   | {
-      type: Actions.Calculate;
-      payload?: {};
+      type: Actions.AmountChanged;
+      payload: {
+        value: string | null;
+      };
+    }
+  | {
+      type: Actions.StartDateChanged;
+      payload: {
+        value: string;
+      };
+    }
+  | {
+      type: Actions.EndDateChanged;
+      payload: {
+        value: string;
+      };
     };
 
 export interface Dispatch {
-  calculate(): void;
+  amountChanged(value: string | null): void;
+  startDateChanged(value: string): void;
+  endDateChanged(value: string): void;
 }
