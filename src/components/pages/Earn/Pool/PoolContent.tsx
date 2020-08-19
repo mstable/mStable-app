@@ -6,6 +6,7 @@ import { ButtonLink } from '../../../core/Button';
 import { PoolForms } from './PoolForms';
 import { PoolBalances } from './PoolBalances';
 import { ImpermanentLossWarning } from './ImpermanentLossWarning';
+import { useIsMasquerading } from '../../../../context/UserProvider';
 
 const BackLink = styled(ButtonLink)`
   display: inline-block;
@@ -25,16 +26,23 @@ const Container = styled.div`
   width: 100%;
 `;
 
-export const PoolContent: FC<{ address: string }> = ({ address }) => (
-  <Container>
-    <BackLink href="/earn">Back</BackLink>
-    <CardContainer>
-      <Card address={address} />
-    </CardContainer>
-    <Content>
-      <PoolBalances />
-      <ImpermanentLossWarning />
-      <PoolForms address={address} />
-    </Content>
-  </Container>
-);
+export const PoolContent: FC<{ address: string }> = ({ address }) => {
+  const isMasquerading = useIsMasquerading();
+  return (
+    <Container>
+      <BackLink href="/earn">Back</BackLink>
+      <CardContainer>
+        <Card address={address} />
+      </CardContainer>
+      <Content>
+        <PoolBalances />
+        {isMasquerading ? null : (
+          <>
+            <ImpermanentLossWarning />
+            <PoolForms address={address} />
+          </>
+        )}
+      </Content>
+    </Container>
+  );
+};

@@ -347,6 +347,27 @@ const getTxPurpose = (
         past: `Redeemed ${body}`,
       };
     }
+    case 'redeemMulti': {
+      const [addresses, amounts] = args as [string[], BigNumber[]];
+
+      // Scale the amounts to mAsset units and add them up
+      const totalMassetAmount = addresses.reduce((prev, current, index) => {
+        const { decimals, ratio } = bAssets[current];
+
+        const mAssetAmount = new BigDecimal(
+          amounts[index],
+          decimals,
+        ).mulRatioTruncate(ratio);
+
+        return prev.add(mAssetAmount);
+      }, new BigDecimal(0, mAsset.decimals));
+
+      const body = `${totalMassetAmount.format()} ${mAsset.symbol}`;
+      return {
+        present: `Redeeming ${body}`,
+        past: `Redeemed ${body}`,
+      };
+    }
     case 'approve': {
       if (args[0] === dataState.savingsContract.address) {
         const body = `the mUSD SAVE Contract to transfer ${mAsset.symbol}`;

@@ -8,7 +8,7 @@ import React, {
   useEffect,
 } from 'react';
 import { useDataState } from '../../../context/DataProvider/DataProvider';
-import { Actions, Dispatch, State } from './types';
+import { Actions, Dispatch, Fields, State } from './types';
 import { reducer, initialState } from './reducer';
 
 const stateCtx = createContext<State>(initialState);
@@ -17,11 +17,21 @@ const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 export const SwapProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const setQuantity = useCallback<Dispatch['setQuantity']>(
-    (field, formValue) => {
+  const setInputQuantity = useCallback<Dispatch['setInputQuantity']>(
+    (formValue) => {
       dispatch({
         type: Actions.SetQuantity,
-        payload: { formValue, field },
+        payload: { formValue, field: Fields.Input },
+      });
+    },
+    [dispatch],
+  );
+
+  const setOutputQuantity = useCallback<Dispatch['setOutputQuantity']>(
+    (formValue) => {
+      dispatch({
+        type: Actions.SetQuantity,
+        payload: { formValue, field: Fields.Output },
       });
     },
     [dispatch],
@@ -51,8 +61,9 @@ export const SwapProvider: FC<{}> = ({ children }) => {
   return (
     <stateCtx.Provider value={state}>
       <dispatchCtx.Provider
-        value={useMemo(() => ({ setQuantity, setToken }), [
-          setQuantity,
+        value={useMemo(() => ({ setInputQuantity, setOutputQuantity, setToken }), [
+          setInputQuantity,
+          setOutputQuantity,
           setToken,
         ])}
       >

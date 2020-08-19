@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { A, getWorkingPath } from 'hookrouter';
-import { useCloseOverlay } from '../../context/AppProvider';
+import { useCloseAccount } from '../../context/AppProvider';
 import { FontSize, ViewportWidth } from '../../theme';
 
 interface NavItem {
@@ -73,7 +73,7 @@ const navItems: NavItem[] = [
  * Placeholder component for app navigation.
  */
 export const Navigation: FC<{}> = () => {
-  const collapseWallet = useCloseOverlay();
+  const collapseWallet = useCloseAccount();
   const activePath = getWorkingPath('');
   const items: (NavItem & { active: boolean })[] = useMemo(
     () =>

@@ -1,12 +1,13 @@
 import React, { FC, SVGProps } from 'react';
 import styled from 'styled-components';
 import mUSDTransparent from './tokens/mUSD-transparent.svg';
-import mUSD, { ReactComponent as MusdSvg } from './tokens/mUSD.svg';
+import MUSD, { ReactComponent as MusdSvg } from './tokens/mUSD.svg';
 import TUSD, { ReactComponent as TusdSvg } from './tokens/TUSD.svg';
 import USDT, { ReactComponent as UsdtSvg } from './tokens/USDT.svg';
 import USDC, { ReactComponent as UsdcSvg } from './tokens/USDC.svg';
 import DAI, { ReactComponent as DaiSvg } from './tokens/DAI.svg';
 import BUSD, { ReactComponent as BusdSvg } from './tokens/BUSD.svg';
+import SUSD, { ReactComponent as SusdSvg } from './tokens/sUSD.svg';
 import MTA, { ReactComponent as MtaSvg } from './tokens/MTA.svg';
 import Uniswap, { ReactComponent as UniswapSvg } from './tokens/Uniswap.svg';
 import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
@@ -24,13 +25,14 @@ type SvgComponent = FC<SVGProps<never>>;
 export const TOKEN_ICONS: Record<string, string> = {
   ETH,
   WETH: ETH,
-  mUSD,
+  MUSD,
   TUSD,
   USDT,
   USDC,
   DAI,
   BUSD,
   MTA,
+  SUSD,
   'UNI-V2': Uniswap,
   BAL: Balancer,
   BPT: Balancer,
@@ -41,12 +43,13 @@ export const TOKEN_ICONS: Record<string, string> = {
 const SVG_ICONS: Record<string, SvgComponent> = {
   ETH: EtherSvg as SvgComponent,
   WETH: EtherSvg as SvgComponent,
-  mUSD: MusdSvg as SvgComponent,
+  MUSD: MusdSvg as SvgComponent,
   TUSD: TusdSvg as SvgComponent,
   USDT: UsdtSvg as SvgComponent,
   USDC: UsdcSvg as SvgComponent,
   DAI: DaiSvg as SvgComponent,
   BUSD: BusdSvg as SvgComponent,
+  SUSD: SusdSvg as SvgComponent,
   MTA: MtaSvg as SvgComponent,
   'UNI-V2': UniswapSvg as SvgComponent,
   BAL: BalancerSvg as SvgComponent,
@@ -65,12 +68,16 @@ export const MUSDIconTransparent = (): JSX.Element => (
 );
 
 export const TokenIcon: FC<Props> = ({ className, symbol }) =>
-  TOKEN_ICONS[symbol] ? (
-    <Image alt={symbol} src={TOKEN_ICONS[symbol]} className={className} />
+  TOKEN_ICONS[symbol.toUpperCase()] ? (
+    <Image
+      alt={symbol}
+      src={TOKEN_ICONS[symbol.toUpperCase()]}
+      className={className}
+    />
   ) : null;
 
 export const TokenIconSvg: FC<SvgProps> = ({ symbol, width, height, x, y }) => {
-  if (!SVG_ICONS[symbol]) return null;
-  const Icon = SVG_ICONS[symbol];
+  if (!SVG_ICONS[symbol.toUpperCase()]) return null;
+  const Icon = SVG_ICONS[symbol.toUpperCase()];
   return <Icon width={width} height={height} x={x} y={y} />;
 };

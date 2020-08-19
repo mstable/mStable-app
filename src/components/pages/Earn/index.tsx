@@ -6,12 +6,14 @@ import createStateContext from 'react-use/lib/createStateContext';
 import { useStakingRewardsContracts } from '../../../context/earn/EarnDataProvider';
 import { Slider } from '../../core/Slider';
 import { Token } from '../../core/Token';
-import { H2, H3, P } from '../../core/Typography';
+import { H3, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ExternalLink } from '../../core/ExternalLink';
 import { Color, FontSize } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
 import { centredLayout } from '../../layout/css';
+import { ReactComponent as MtaIcon } from '../../icons/circle/mta.svg';
+import { PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
 
@@ -112,14 +114,18 @@ const Item: FC<{ title: string | JSX.Element; slider?: boolean }> = ({
 );
 
 const MtaToken = styled(Token)`
-  justify-content: center;
-  padding: 32px 0 64px 0;
-  font-size: 64px;
-
   > :first-child {
     width: 64px;
     height: 64px;
-    padding-right: 12px;
+    padding-right: 8px;
+  }
+`;
+
+const IntroducingMetaHeader = styled.div`
+  padding-bottom: 32px;
+
+  ${MtaToken} {
+    justify-content: center;
   }
 `;
 
@@ -132,8 +138,10 @@ const IntroducingMeta: FC<{}> = () => (
     }
   >
     <div>
-      <MtaToken symbol="MTA" color={Color.white} />
-      <P>Introducing Meta.</P>
+      <IntroducingMetaHeader>
+        <MtaToken symbol="MTA" color={Color.white} />
+        <H3>Introducing Meta.</H3>
+      </IntroducingMetaHeader>
       <P>
         Meta (MTA) is mStable's protocol token. Meta will have at least three
         core functions:
@@ -222,6 +230,9 @@ const PoolCardsContainer = styled.div`
 
     > section {
       padding: 0 8px;
+      > div {
+        cursor: grab;
+      }
     }
   }
 `;
@@ -296,34 +307,9 @@ const SliderContainer = styled.div`
   }
 `;
 
-const Intro = styled.div`
-  margin-bottom: 32px;
-  display: flex;
-  align-items: flex-start;
-
-  h2 {
-    font-size: ${FontSize.xl};
-  }
-
-  ${MtaToken} {
-    padding: 0;
-
-    > img {
-      width: 96px;
-      height: 96px;
-    }
-
-    > img + div {
-      display: none;
-    }
-  }
-`;
-
 const Content = styled.div`
-  padding: 8px;
+  padding: 40px 20px;
   flex: 1;
-  justify-content: space-between;
-  align-items: center;
 
   > * {
     flex: 1;
@@ -335,6 +321,7 @@ const Content = styled.div`
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   flex: 1;
   width: 100%;
   height: 100%;
@@ -374,16 +361,15 @@ export const Earn: FC<{}> = () => {
       ) : (
         <Content>
           <div>
-            <Intro>
-              <MtaToken symbol="MTA" />
-              <div>
-                <H2>EARN</H2>
-                <H3>Ecosystem rewards with mStable</H3>
-                <Button onClick={toggleOnboardingVisible}>
-                  View introduction
-                </Button>
-              </div>
-            </Intro>
+            <PageHeader
+              icon={<MtaIcon />}
+              title="EARN"
+              subtitle="Ecosystem rewards with mStable"
+            >
+              <Button onClick={toggleOnboardingVisible}>
+                View introduction
+              </Button>
+            </PageHeader>
             <PoolsOverview />
           </div>
         </Content>

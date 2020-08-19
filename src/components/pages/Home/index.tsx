@@ -42,7 +42,7 @@ const Symbol = styled.div`
   margin-top: 32px;
 
   div {
-    font-sizesize: 24px;
+    font-size: 24px;
     line-height: 32px;
     text-transform: lowercase;
     padding-right: 16px;
@@ -412,7 +412,7 @@ export const Home: FC<{}> = () => {
           </SliderContainer>
           <Controls>
             <Button onClick={previous} type="button" disabled={activeIdx === 0}>
-              Previous
+              &lt;
             </Button>
             <StepIcons>
               {HOME_STEPS.map(({ key }, index) => (
@@ -431,7 +431,7 @@ export const Home: FC<{}> = () => {
               type="button"
               disabled={activeIdx === HOME_STEPS.length - 2 && needsAck}
             >
-              Next
+              &gt;
             </Button>
           </Controls>
         </Carousel>

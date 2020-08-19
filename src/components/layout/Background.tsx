@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 interface Props {
   home: boolean;
+  accountOpen: boolean;
 }
 
 const Container = styled.div<Props>`
@@ -14,8 +15,14 @@ const Container = styled.div<Props>`
   pointer-events: none;
   z-index: -1;
   transition: background-color 0.3s ease;
-  background-color: ${({ theme, home }) =>
-    home ? theme.color.gold : theme.color.offWhite};
+  background-color: ${({ theme, home, accountOpen }) =>
+    accountOpen
+      ? theme.color.black
+      : home
+      ? theme.color.gold
+      : theme.color.offWhite};
 `;
 
-export const Background: FC<Props> = ({ home }) => <Container home={home} />;
+export const Background: FC<Props> = ({ home, accountOpen }) => (
+  <Container home={home} accountOpen={accountOpen} />
+);

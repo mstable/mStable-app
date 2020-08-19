@@ -25,10 +25,11 @@ export enum Mode {
 
 export enum Actions {
   Data,
-  SetRedemptionAmount,
-  SetMaxRedemptionAmount,
+  SetBassetAmount,
+  SetMassetAmount,
+  SetMassetMaxAmount,
   ToggleBassetEnabled,
-  ToggleMode,
+  ToggleRedeemMasset,
 }
 
 export type Action =
@@ -37,13 +38,17 @@ export type Action =
       payload?: DataState;
     }
   | {
-      type: Actions.SetRedemptionAmount;
+      type: Actions.SetBassetAmount;
+      payload: { formValue: string | null; address: string };
+    }
+  | {
+      type: Actions.SetMassetAmount;
       payload: string | null;
     }
   | {
-      type: Actions.SetMaxRedemptionAmount;
+      type: Actions.SetMassetMaxAmount;
     }
-  | { type: Actions.ToggleMode }
+  | { type: Actions.ToggleRedeemMasset }
   | {
       type: Actions.ToggleBassetEnabled;
       payload: string;
@@ -52,10 +57,10 @@ export type Action =
 export interface BassetOutput {
   address: string;
   amount?: BigDecimal;
+  formValue: string | null;
   amountMinusFee?: BigDecimal;
   enabled: boolean;
   hasError?: boolean;
-  formValue?: string;
 }
 
 export interface State {
@@ -63,20 +68,30 @@ export interface State {
   amountInMassetPlusFee?: BigDecimal;
   bAssets: { [address: string]: BassetOutput };
   dataState?: DataState;
-  error?: string;
+  error?: {
+    message?: string;
+    affectedBassets: string[];
+  };
   feeAmount?: BigDecimal;
   formValue?: string;
   initialized: boolean;
   mode: Mode;
-  simulated?: DataState;
   touched?: boolean;
   valid: boolean;
+  /**
+   * Two simulations are used for redemption: one to validate the basket,
+   * and one with "capped" totalVault and totalSupply in order to
+   * make a usable graphic of the basket composition.
+   */
+  simulation?: DataState;
+  cappedSimulation?: DataState;
 }
 
 export interface Dispatch {
-  setMaxRedemptionAmount(): void;
-  setRedemptionAmount(formValue: string | null): void;
-  toggleMode(): void;
+  setBassetAmount(address: string, formValue: string | null): void;
+  setMassetMaxAmount(): void;
+  setMassetAmount(formValue: string | null): void;
+  toggleRedeemMasset(): void;
   toggleBassetEnabled(bAsset: string): void;
 }
 

@@ -108,7 +108,9 @@ const Container = styled.div<{
   height: 225px;
   background-image: ${({ colors: { base, accent }, stakingToken }) =>
     stakingToken
-      ? `url(${TOKEN_ICONS[stakingToken]}), linear-gradient(to top right, ${base}, ${accent})`
+      ? `url(${
+          TOKEN_ICONS[stakingToken.toUpperCase()]
+        }), linear-gradient(to top right, ${base}, ${accent})`
       : 'none'};
   background-size: contain;
   background-position: center center;
@@ -194,10 +196,16 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                   </Heading>
                 </Tooltip>
                 <div>
-                  <StyledAmount
-                    format={NumberFormat.CountupPercentage}
-                    amount={stakingRewardsContract.combinedRewardsTokensApy}
-                  />
+                  {stakingRewardsContract.apy.waitingForData ? (
+                    <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
+                      No data yet
+                    </Tooltip>
+                  ) : (
+                    <StyledAmount
+                      format={NumberFormat.CountupPercentage}
+                      amount={stakingRewardsContract.apy.value}
+                    />
+                  )}
                 </div>
               </div>
             </Row>
@@ -234,15 +242,20 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                     price={rewardsToken.price}
                   />
                   {stakingRewardsContract.platformRewards && platformToken ? (
-                    <StyledTokenAmount
-                      amount={
-                        stakingRewardsContract.platformRewards
-                          ?.totalPlatformRewards
-                      }
-                      format={NumberFormat.Abbreviated}
-                      symbol={platformToken.symbol}
-                      price={platformToken.price}
-                    />
+                    <Tooltip
+                      tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations."
+                      hideIcon
+                    >
+                      <StyledTokenAmount
+                        // amount={
+                        //   stakingRewardsContract.platformRewards
+                        //     ?.totalPlatformRewards
+                        // }
+                        format={NumberFormat.Abbreviated}
+                        symbol={platformToken.symbol}
+                        price={platformToken.price}
+                      />
+                    </Tooltip>
                   ) : null}
                 </TokenAmounts>
               </div>

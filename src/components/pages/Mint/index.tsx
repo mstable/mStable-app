@@ -2,19 +2,22 @@ import React, { FC, useEffect } from 'react';
 import { BigNumber } from 'ethers/utils';
 
 import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
-import { useAccount } from '../../../context/UserProvider';
+import { useOwnAccount } from '../../../context/UserProvider';
 import {
   FormProvider,
   useSetFormManifest,
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
+import { ReactComponent as MintIcon } from '../../icons/circle/mint.svg';
 import { Interfaces } from '../../../types';
-import { MintProvider, useMintState } from "./MintProvider";
+import { MintProvider, useMintState } from './MintProvider';
 import { MintInput } from './MintInput';
 import { MusdStats } from '../../stats/MusdStats';
+import { PageHeader } from '../PageHeader';
+import { P } from '../../core/Typography';
 
 const MintForm: FC<{}> = () => {
-  const account = useAccount();
+  const account = useOwnAccount();
   const { error, amountTouched, bAssets, mintAmount } = useMintState();
   const setFormManifest = useSetFormManifest();
   const mUsdContract = useMusdContract();
@@ -73,6 +76,13 @@ const MintForm: FC<{}> = () => {
 export const Mint: FC<{}> = () => (
   <MintProvider>
     <FormProvider formId="mint">
+      <PageHeader
+        icon={<MintIcon />}
+        title="MINT"
+        subtitle="Convert stablecoins into mUSD"
+      >
+        <P>Get mUSD by depositing your stablecoin assets at a 1:1 ratio.</P>
+      </PageHeader>
       <MintForm />
       <MusdStats />
     </FormProvider>

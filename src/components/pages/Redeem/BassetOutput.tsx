@@ -1,153 +1,79 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
+import React, { ComponentProps, FC, useCallback } from 'react';
 
-import { Color } from '../../../theme';
-import { CountUp as CountUpBase } from '../../core/CountUp';
-import { Token } from '../../core/Token';
-import { ToggleInput } from '../../forms/ToggleInput';
-import { useDataState } from '../../../context/DataProvider/DataProvider';
+import { AmountInput } from '../../forms/AmountInput';
+import { InlineTokenAmountInput } from '../../forms/InlineTokenAmountInput';
 import {
-  useRedeemBassetData,
-  useRedeemBassetOutput,
+  useRedeemDispatch,
   useRedeemMode,
-  useToggleBassetEnabled,
+  useRedeemState,
 } from './RedeemProvider';
 import { Mode } from './types';
-import { Tooltip } from '../../core/ReactTooltip';
 
 interface Props {
   address: string;
 }
 
-const CountUp = styled(CountUpBase)`
-  display: block;
-  text-align: right;
-`;
-
-const Row = styled.div`
-  padding: 8px 0;
-  border-bottom: 1px ${({ theme }) => theme.color.blackTransparent} solid;
-
-  &:first-of-type {
-    padding-top: 0;
-  }
-
-  &:last-of-type {
-    border-bottom: 0;
-  }
-
-  > * {
-    transition: opacity 0.4s ease;
-  }
-`;
-
-const HeaderRow = styled(Row)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  button {
-    opacity: 1 !important;
-  }
-`;
-
-const Label = styled.div`
-  font-size: ${({ theme }) => theme.fontSize.xs};
-  font-weight: bold;
-  text-transform: uppercase;
-`;
-
-const ToggleRow = styled(Row)``;
-
-const Rows = styled.div<{
-  valid: boolean;
-  cannotRedeem?: boolean;
-  enabled?: boolean;
-}>`
-  border: 1px
-    ${({ theme, valid }) =>
-      valid ? theme.color.blackTransparent : theme.color.redTransparent}
-    solid;
-  border-radius: 3px;
-  background: ${({ theme, valid, cannotRedeem }) =>
-    cannotRedeem
-      ? theme.color.blackTransparenter
-      : valid
-      ? theme.color.white
-      : theme.color.redTransparenter};
-  padding: ${({ theme }) => theme.spacing.xs};
-
-  ${Row} > * {
-    opacity: ${({ enabled }) => (enabled ? '1' : '0.3')};
-  }
-
-  ${ToggleRow} > * {
-    opacity: 1;
-  }
-`;
-
-const ToggleWrapper: FC<{ cannotRedeem: boolean; symbol?: string }> = ({
-  children,
-  cannotRedeem,
-  symbol,
-}) =>
-  cannotRedeem && symbol ? (
-    <Tooltip
-      tip={`It is not possible to redeem with ${symbol}, because other assets are overweight`}
-      hideIcon
-    >
-      {children}
-    </Tooltip>
-  ) : (
-    <>{children}</>
-  );
-
 export const BassetOutput: FC<Props> = ({ address }) => {
-  const { balance, symbol } = useRedeemBassetData(address) || {};
-  const { hasError, enabled, amountMinusFee } =
-    useRedeemBassetOutput(address) || {};
+  const {
+    error,
+    bAssets: {
+      [address]: { hasError, enabled, formValue, amount },
+    },
+    dataState: {
+      bAssets: { [address]: { symbol, overweight } } = {},
+      mAsset: { overweightBassets } = { overweightBassets: [] },
+    } = {},
+  } = useRedeemState();
 
   const mode = useRedeemMode();
-  const toggle = useToggleBassetEnabled();
-
-  const { mAsset: { overweightBassets } = { overweightBassets: [] } } =
-    useDataState() || {};
+  const { toggleBassetEnabled, setBassetAmount } = useRedeemDispatch();
 
   const cannotRedeem = !!(
-    mode === Mode.RedeemSingle &&
+    mode !== Mode.RedeemMasset &&
     overweightBassets.length > 0 &&
     overweightBassets.find(b => b !== address)
   );
 
+  const handleChangeAmount = useCallback<
+    NonNullable<ComponentProps<typeof AmountInput>['onChange']>
+  >(
+    _formValue => {
+      setBassetAmount(address, _formValue);
+    },
+    [setBassetAmount, address],
+  );
+
+  const handleClickAmount = useCallback(() => {
+    if (!enabled && !cannotRedeem) {
+      toggleBassetEnabled(address);
+    }
+  }, [enabled, address, toggleBassetEnabled, cannotRedeem]);
+
   return (
-    <div>
-      <Rows valid={!hasError} enabled={enabled} cannotRedeem={cannotRedeem}>
-        <HeaderRow>
-          {symbol ? <Token symbol={symbol} /> : <Skeleton />}
-          <ToggleWrapper cannotRedeem={cannotRedeem} symbol={symbol}>
-            <ToggleInput
-              onClick={() => toggle(address)}
-              disabled={cannotRedeem}
-              checked={!!enabled}
-            />
-          </ToggleWrapper>
-        </HeaderRow>
-        <Row>
-          <Label>Your Balance</Label>
-          <CountUp end={balance?.simpleRounded || 0} />
-        </Row>
-        <Row>
-          <Label>Amount</Label>
-          <CountUp
-            highlight={(amountMinusFee?.simpleRounded || 0) > 0}
-            highlightColor={Color.green}
-            duration={0.4}
-            end={amountMinusFee?.simpleRounded || 0}
-            prefix="+ "
-          />
-        </Row>
-      </Rows>
-    </div>
+    <InlineTokenAmountInput
+      valid={!hasError}
+      error={hasError ? error?.message : undefined}
+      overweight={overweight}
+      amount={{
+        value: amount,
+        formValue,
+        disabled: mode === Mode.RedeemMasset,
+        handleChange: handleChangeAmount,
+        handleClick: handleClickAmount,
+      }}
+      token={{
+        address,
+        disabled: true,
+      }}
+      toggle={{
+        enabled,
+        canEnable: !cannotRedeem,
+        handleToggle: () => toggleBassetEnabled(address),
+        reasonCannotEnable:
+          cannotRedeem && symbol
+            ? `It is not possible to redeem with ${symbol}, because other assets are overweight`
+            : undefined,
+      }}
+    />
   );
 };

@@ -15,26 +15,44 @@ import {
   VictoryContainerProps,
   VictoryContainer,
 } from 'victory-core';
-
 import Skeleton from 'react-loading-skeleton/lib';
+
 import { useDataState } from '../../context/DataProvider/DataProvider';
 import { TokenIconSvg } from '../icons/TokenIcon';
 import { DataState } from '../../context/DataProvider/types';
 import { BigDecimal } from '../../web3/BigDecimal';
 
-const TOKEN_COLORS = {
+type TokenSymbol = 'mUSD' | 'SUSD' | 'DAI' | 'USDT' | 'TUSD' | 'USDC' | 'BUSD';
+
+type TokenColours = Record<TokenSymbol, string>;
+
+const TOKEN_COLOURS: TokenColours = {
   mUSD: '#000',
+  SUSD: '#1e1a31',
+  BUSD: '#ebb532',
   DAI: '#EEB345',
   USDT: '#26A17B',
   TUSD: '#002868',
   USDC: '#2775CA',
 };
 
-const TOKEN_HATCH_COLORS = {
+const OVERWEIGHT_TOKEN_COLOURS: TokenColours = {
   mUSD: '#000',
+  SUSD: '#0d0b15',
+  BUSD: '#634f14',
+  DAI: '#725621',
+  USDT: '#155844',
+  TUSD: '#001331',
+  USDC: '#12365e',
+};
+
+const TOKEN_HATCH_COLOURS: TokenColours = {
+  mUSD: '#000',
+  SUSD: '#9489bf',
+  BUSD: '#ffd375',
   DAI: '#e0c184',
   USDT: '#7dc6af',
-  TUSD: '#a6bfe5',
+  TUSD: '#96a0d7',
   USDC: '#a7c0de',
 };
 
@@ -75,9 +93,7 @@ const AxisLabel: FC<ComponentProps<typeof VictoryLabel>> = ({
       style={{
         ...style,
         textAnchor: 'start',
-        textShadow: `0 1px 2px ${
-          TOKEN_COLORS[text as keyof typeof TOKEN_COLORS]
-        }`,
+        textShadow: `0 0 3px ${TOKEN_COLOURS[text as TokenSymbol]}`,
       }}
       {...props}
     />
@@ -87,7 +103,7 @@ const AxisLabel: FC<ComponentProps<typeof VictoryLabel>> = ({
 const Hatch = ({
   symbol,
 }: {
-  symbol: keyof typeof TOKEN_HATCH_COLORS;
+  symbol: keyof typeof TOKEN_HATCH_COLOURS;
 }): ReactComponentElement<'pattern'> => (
   <pattern
     id={`hatch-${symbol}`}
@@ -102,20 +118,23 @@ const Hatch = ({
       x2="0"
       y2="4"
       style={{
-        stroke: TOKEN_HATCH_COLORS[symbol],
+        stroke: TOKEN_HATCH_COLOURS[symbol],
         strokeWidth: 4,
       }}
     />
   </pattern>
 );
 
-const Container: FC<VictoryContainerProps> = ({ children, ...props }) => (
+const Container: FC<VictoryContainerProps & {
+  bAssets: DataState['bAssets'];
+}> = ({ children, bAssets, ...props }) => (
   <VictoryContainer {...props}>
-    <Hatch symbol="DAI" />
-    <Hatch symbol="USDT" />
-    <Hatch symbol="USDC" />
-    <Hatch symbol="TUSD" />
-    <>{children}</>
+    <>
+      {Object.values(bAssets).map(b => (
+        <Hatch key={b.symbol} symbol={b.symbol as TokenSymbol} />
+      ))}
+      {children}
+    </>
   </VictoryContainer>
 );
 
@@ -125,33 +144,34 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
 
   const data: Datum[] = useMemo(
     () =>
-      bAssets
-        ? Object.values(bAssets).map(({ basketShare, maxWeight, symbol }) => {
-            const basketShareAsPercentage = basketShare.toPercent();
-            const maxWeightAsPercentage = new BigDecimal(
-              maxWeight,
-              18,
-            ).toPercent();
+      Object.values(bAssets).map(
+        ({ basketShare, maxWeight, symbol, overweight }) => {
+          const basketShareAsPercentage = basketShare.toPercent();
+          const maxWeightAsPercentage = new BigDecimal(
+            maxWeight,
+            18,
+          ).toPercent();
 
-            // Get the remainder so that it can be stacked after the basket share
-            const remainderMaxWeight =
-              basketShareAsPercentage > maxWeightAsPercentage
-                ? 0
-                : maxWeightAsPercentage - basketShareAsPercentage;
+          // Get the remainder so that it can be stacked after the basket share
+          const remainderMaxWeight =
+            basketShareAsPercentage > maxWeightAsPercentage
+              ? 0
+              : maxWeightAsPercentage - basketShareAsPercentage;
 
-            return {
-              symbol: symbol as string,
-              basketShareAsPercentage,
-              maxWeightAsPercentage: remainderMaxWeight,
-            };
-          })
-        : [],
+          return {
+            symbol: symbol as string,
+            basketShareAsPercentage,
+            maxWeightAsPercentage: remainderMaxWeight,
+            overweight,
+          };
+        },
+      ),
     [bAssets],
   );
 
   return data.length > 0 ? (
     <VictoryChart
-      containerComponent={<Container />}
+      containerComponent={<Container bAssets={bAssets} />}
       height={100}
       width={200}
       padding={{ left: 20, top: 16, bottom: 16, right: 40 }}
@@ -161,8 +181,10 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
         <VictoryBar
           style={{
             data: {
-              fill: ({ datum: { symbol } }) =>
-                TOKEN_COLORS[symbol as keyof typeof TOKEN_COLORS],
+              fill: ({ datum: { symbol, overweight } }) =>
+                overweight
+                  ? OVERWEIGHT_TOKEN_COLOURS[symbol as TokenSymbol]
+                  : TOKEN_COLOURS[symbol as TokenSymbol],
             },
             labels: numericLabels,
           }}

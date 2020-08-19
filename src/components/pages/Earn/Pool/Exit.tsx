@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
+import styled from 'styled-components';
 import { Interfaces, SendTxManifest } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
 import {
@@ -17,7 +18,6 @@ import {
   useCurrentPlatformToken,
 } from '../StakingRewardsContractProvider';
 import { P } from '../../../core/Typography';
-import styled from 'styled-components';
 
 const ExitFormConfirm: FC<{}> = () => {
   const { rewards, platformRewards } = useRewardsEarned();

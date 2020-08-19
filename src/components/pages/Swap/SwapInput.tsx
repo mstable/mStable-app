@@ -1,24 +1,14 @@
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { BigNumber, formatUnits } from 'ethers/utils';
 
-import styled from 'styled-components';
 import { RATIO_SCALE, SCALE } from '../../../web3/constants';
 import { formatExactAmount } from '../../../web3/amounts';
 import { FormRow } from '../../core/Form';
-import { H3, P } from '../../core/Typography';
+import { H3 } from '../../core/Typography';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
 import { Fields } from './types';
 import { useSwapDispatch, useSwapState } from './SwapProvider';
-
-const PromoRow = styled(FormRow)`
-  font-weight: bold;
-  h3 {
-    text-transform: uppercase;
-  }
-  p {
-    font-size: 16px;
-  }
-`;
+import { BigDecimal } from '../../../web3/BigDecimal';
 
 export const SwapInput: FC<{}> = () => {
   const {
@@ -35,7 +25,7 @@ export const SwapInput: FC<{}> = () => {
     touched,
     dataState,
   } = useSwapState();
-  const { setToken, setQuantity } = useSwapDispatch();
+  const { setToken, setInputQuantity, setOutputQuantity } = useSwapDispatch();
 
   const { mAsset, bAssets = {} } = dataState || {};
   const mAssetAddress = mAsset?.address;
@@ -103,7 +93,7 @@ export const SwapInput: FC<{}> = () => {
         const clampedMax = maxMint.gt(ratioedInputBalance)
           ? ratioedInputBalance
           : maxMint;
-        setQuantity(Fields.Input, formatUnits(clampedMax, 18));
+        setInputQuantity(formatUnits(clampedMax, 18));
       }
       return;
     }
@@ -132,8 +122,7 @@ export const SwapInput: FC<{}> = () => {
         : maxIncrease;
       const maxDecrease = outputVaultBalance;
 
-      setQuantity(
-        Fields.Input,
+      setInputQuantity(
         formatUnits(
           maxIncrease.lt(maxDecrease) ? maxIncrease : maxDecrease,
           18,
@@ -146,7 +135,7 @@ export const SwapInput: FC<{}> = () => {
     bAssets,
     mAssetAddress,
     mAsset,
-    setQuantity,
+    setInputQuantity,
   ]);
 
   useEffect(() => {
@@ -162,20 +151,25 @@ export const SwapInput: FC<{}> = () => {
     }
   }, [inputAddress, setToken, bAssets, touched]);
 
+  const approveAmount = useMemo(
+    () =>
+      input.amount.exact && input.token.decimals
+        ? new BigDecimal(input.amount.exact, input.token.decimals)
+        : undefined,
+    [input.amount, input.token.decimals],
+  );
+
   return (
     <>
-      <PromoRow>
-        <H3>Swap</H3>
-        <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
-      </PromoRow>
       <FormRow>
         <H3>Send</H3>
         <TokenAmountInput
           amountValue={input.formValue}
+          approveAmount={approveAmount}
           tokenAddresses={inputAddresses}
           tokenValue={inputAddress}
           name={Fields.Input}
-          onChangeAmount={setQuantity}
+          onChangeAmount={setInputQuantity}
           onChangeToken={setToken}
           onSetMax={
             input.token.address && output.token.address
@@ -194,7 +188,7 @@ export const SwapInput: FC<{}> = () => {
           tokenAddresses={outputAddresses}
           tokenValue={outputAddress}
           name={Fields.Output}
-          onChangeAmount={setQuantity}
+          onChangeAmount={setOutputQuantity}
           onChangeToken={setToken}
           items={outputItems}
           error={outputError}

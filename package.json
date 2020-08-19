@@ -1,6 +1,6 @@
 {
   "name": "mStable-app",
-  "version": "1.8.5",
+  "version": "1.9.1",
   "private": true,
   "description": "mStable App",
   "author": "Stability Labs Pty. Ltd. <hello@stabilitylabs.co>",
@@ -73,7 +73,7 @@
     "provision": "sh ./scripts/provision.sh",
     "start": "react-scripts start",
     "test": "env-cmd -f .env.staging react-scripts test",
-    "pool-rewards": "node scripts/poolRewards.js",
+    "pool-rewards": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/poolRewards.ts",
     "truffle:migrate": "cd ./lib/mStable-subgraph && yarn truffle:migrate",
     "truffle:script": "cd ./lib/mStable-subgraph && yarn truffle:script"
   },

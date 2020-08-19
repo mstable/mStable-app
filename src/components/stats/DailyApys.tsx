@@ -39,10 +39,9 @@ export const DailyApys: FC<{}> = () => {
         .filter(a => a.value && a.start)
         .map(({ value, start }) => {
           const percentage = parseFloat(formatUnits(value as BigNumber, 16));
-          const cappedY = Math.min(percentage, 100);
           return {
             x: fromUnixTime(start as number),
-            y: cappedY,
+            y: percentage,
             percentage,
           };
         }),
@@ -81,7 +80,11 @@ export const DailyApys: FC<{}> = () => {
               datum: { percentage },
             }: {
               datum: { y: number; percentage: number };
-            }) => (percentage > 100 ? '>100%' : percentageFormat(percentage))}
+            }) =>
+              percentage > 100
+                ? `${percentageFormat(percentage)} 🔥`
+                : percentageFormat(percentage)
+            }
             style={{
               data: {
                 stroke: Color.gold,

@@ -13,6 +13,7 @@ import { TokenIconSvg } from '../../icons/TokenIcon';
 import { EtherscanLink } from '../../core/EtherscanLink';
 import { ExternalLink } from '../../core/ExternalLink';
 import { AccentColors } from '../../../types';
+import { Tooltip } from '../../core/ReactTooltip';
 
 const ApyAmount = styled(Amount)`
   font-size: ${FontSize.xl};
@@ -156,11 +157,15 @@ export const PoolsOverview: FC<{}> = () => {
                 //     />
                 //   );
                 case Columns.RewardsApy:
-                  return item.combinedRewardsTokensApy?.exact.gt(0) ? (
+                  return item.apy.value?.exact.gt(0) ? (
                     <ApyAmount
-                      amount={item.combinedRewardsTokensApy}
+                      amount={item.apy.value}
                       format={NumberFormat.CountupPercentage}
                     />
+                  ) : item.apy.waitingForData ? (
+                    <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
+                      No data yet
+                    </Tooltip>
                   ) : (
                     <Skeleton />
                   );
@@ -174,12 +179,14 @@ export const PoolsOverview: FC<{}> = () => {
                         price={rewardsToken.price}
                       />
                       {platformRewards ? (
-                        <TokenAmount
-                          amount={platformRewards.totalPlatformRewards}
-                          format={NumberFormat.Abbreviated}
-                          symbol={platformRewards.platformToken.symbol}
-                          price={platformRewards.platformToken.price}
-                        />
+                        <Tooltip tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations.">
+                          <TokenAmount
+                            // amount={platformRewards.totalPlatformRewards}
+                            format={NumberFormat.Abbreviated}
+                            symbol={platformRewards.platformToken.symbol}
+                            price={platformRewards.platformToken.price}
+                          />
+                        </Tooltip>
                       ) : null}
                     </>
                   );
@@ -205,7 +212,7 @@ export const PoolsOverview: FC<{}> = () => {
   return (
     <Container>
       {Object.keys(stakingRewardsContracts).length === 0 ? (
-        <Skeleton height={112} />
+        <Skeleton height={600} />
       ) : (
         <>
           <TableGroup>

@@ -12,22 +12,28 @@ interface Props {
   value: string | null;
   balance?: string | null;
   placeholder?: string;
-  name: string;
-  onChange?(name: string, simpleAmount: string | null): void;
-  onSetMax?(): void;
+  onChange?(formValue: string | null): void;
   disabled?: boolean;
 }
 
-const Input = styled.input<{ error: string | void }>`
+const Input = styled.input<{ error: string | void; disabled?: boolean }>`
   appearance: none;
   background: ${({ theme, error }) =>
     error ? theme.color.redTransparenter : theme.color.white};
-  border: ${({ theme, error }) =>
+
+  border: ${({ theme, error, disabled }) =>
     `1px ${
-      error ? theme.color.redTransparent : theme.color.blackTransparent
+      error
+        ? theme.color.redTransparent
+        : disabled
+        ? theme.color.blackTransparent
+        : 'rgba(0, 0, 0, 0.5)'
     } solid`};
+
+  color: ${({ error, theme, disabled }) =>
+    error ? theme.color.red : disabled ? '#404040' : theme.color.black};
+
   border-radius: 3px;
-  color: ${({ error, theme }) => (error ? theme.color.red : theme.color.black)};
   font-size: 16px;
   font-weight: bold;
   min-width: 0;
@@ -36,8 +42,14 @@ const Input = styled.input<{ error: string | void }>`
   padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.s}`};
   height: 3rem;
   margin-bottom: ${({ theme }) => theme.spacing.s};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};
 
-  ${({ theme }) => theme.mixins.numeric}
+  &:focus {
+    border-color: ${({ theme }) => theme.color.blue};
+    background: ${({ theme }) => theme.color.blueTransparent};
+  }
+
+  ${({ theme }) => theme.mixins.numeric};
 `;
 
 /**
@@ -52,7 +64,6 @@ const Input = styled.input<{ error: string | void }>`
  */
 export const AmountInput: FC<Props> = ({
   className,
-  name,
   error,
   disabled = false,
   placeholder = '0.00',
@@ -72,9 +83,9 @@ export const AmountInput: FC<Props> = ({
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
-      onChange?.(name, event.target.value || null);
+      onChange?.(event.target.value || null);
     },
-    [onChange, name],
+    [onChange],
   );
 
   return (

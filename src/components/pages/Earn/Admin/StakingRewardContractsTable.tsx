@@ -182,11 +182,12 @@ export const StakingRewardContractsTable: FC<{}> = () => {
                 }
                 case Columns.AmountToFund: {
                   return (
-                    <div>
+                    <div>s
                       <AmountInput
-                        name="input"
                         value={recipientAmounts[id]?.formValue}
-                        onChange={(_, amount) => setRecipientAmount(id, amount)}
+                        onChange={formValue =>
+                          setRecipientAmount(id, formValue)
+                        }
                       />
                     </div>
                   );

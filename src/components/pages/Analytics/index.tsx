@@ -6,12 +6,14 @@ import {
   useMusdTotalSupply,
   useTotalSavings,
 } from '../../../context/DataProvider/DataProvider';
+import { ReactComponent as AnalyticsIcon } from '../../icons/circle/analytics.svg';
 import { DailyApys } from '../../stats/DailyApys';
 import { BasketStats } from '../../stats/BasketStats';
 import { H2, H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { VolumeChart } from '../../stats/VolumeChart';
 import { AggregateChart } from '../../stats/AggregateChart';
+import { PageHeader } from '../PageHeader';
 import { Size } from '../../../theme';
 
 const Section = styled.section`
@@ -105,6 +107,11 @@ const ThirdPartySources = styled.ul`
 
 export const Analytics: FC<{}> = () => (
   <div>
+    <PageHeader
+      icon={<AnalyticsIcon />}
+      title="Analytics"
+      subtitle="Explore activity across mStable"
+    />
     <Section id="save">
       <H2 borderTop>APY</H2>
       <HistoricalApy />

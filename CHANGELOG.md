@@ -4,9 +4,65 @@
 
 Miscellaneous:
 
+- Add script to calculate and output reports for platform rewards earned via staking
+
+## Version 1.9.1
+
+_Released 17.08.20 16.04 CEST_
+
+Bug fixes:
+
+- Show 'No data yet' for the APY of new EARN pools (<24h)
+- Hide the stake/claim/exit forms when viewing a pool as another address
+- Redirect back from a user's shared pool page when clicking 'reset'
+- Analytics: Ensure y-axis numbers are not cut off on smaller viewports,
+  and use tabs for the date ranges
+
+## Version 1.9.0
+
+_Released 17.08.20 13.44 CEST_
+
+Features:
+
+- Add support for redeeming with a custom selection of bAssets, so that users
+  can redeem with a single bAsset, a selection of bAssets, or all bAssets
+  (proportional redemption).
+- Show how redemptions affect mUSD and its basket of assets.
+
+Bug fixes:
+
+- Limit historic transactions fetching (via `eth_getLogs`) to 1000 blocks back,
+  so that all providers should be able to fetch the logs without being limited.
+
+## Version 1.8.8
+
+_Released 17.08.20 12.30 CEST_
+
+Miscellaneous:
+
+- Update the BAL rewards message
+
+## Version 1.8.7
+
+_Released 14.08.20 12.13 CEST_
+
+Bug fixes:
+
+- Fix a bug where the token approval button did not appear in the swap form.
+
+## Version 1.8.6
+
+_Released 12.08.20 19.28 CEST_
+
+Miscellaneous:
+
 - Adjust the behaviour of the redemption form such that when the
   'redeem with all assets' toggle is selected, it is still possible
   to toggle a bAsset to select it for single redemption.
+- Add headers to each main page to better explain what each page is for
+- Make the transition when opening/closing the account view easier to
+  see, and add a prominent 'back to app' button on the account view.
+- Add temporary message about BAL rewards airdropping to Balancer pools.
 
 ## Version 1.8.5
 

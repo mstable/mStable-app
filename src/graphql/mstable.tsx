@@ -3,61 +3,61 @@ import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
 
-      export interface IntrospectionResultData {
-        __schema: {
-          types: {
-            kind: string;
-            name: string;
-            possibleTypes: {
-              name: string;
-            }[];
-          }[];
-        };
-      }
-      const result: IntrospectionResultData = {
-  "__schema": {
-    "types": [
+export interface IntrospectionResultData {
+  __schema: {
+    types: {
+      kind: string;
+      name: string;
+      possibleTypes: {
+        name: string;
+      }[];
+    }[];
+  };
+}
+const result: IntrospectionResultData = {
+  __schema: {
+    types: [
       {
-        "kind": "INTERFACE",
-        "name": "TimeMetric",
-        "possibleTypes": [
+        kind: 'INTERFACE',
+        name: 'TimeMetric',
+        possibleTypes: [
           {
-            "name": "VolumeMetric"
+            name: 'VolumeMetric',
           },
           {
-            "name": "AggregateMetric"
-          }
-        ]
+            name: 'AggregateMetric',
+          },
+        ],
       },
       {
-        "kind": "INTERFACE",
-        "name": "Transaction",
-        "possibleTypes": [
+        kind: 'INTERFACE',
+        name: 'Transaction',
+        possibleTypes: [
           {
-            "name": "SwapTransaction"
+            name: 'SwapTransaction',
           },
           {
-            "name": "FeePaidTransaction"
+            name: 'FeePaidTransaction',
           },
           {
-            "name": "StakingRewardsContractTransaction"
+            name: 'StakingRewardsContractTransaction',
           },
           {
-            "name": "StakingRewardsContractClaimRewardTransaction"
+            name: 'StakingRewardsContractClaimRewardTransaction',
           },
           {
-            "name": "StakingRewardsContractStakeTransaction"
+            name: 'StakingRewardsContractStakeTransaction',
           },
           {
-            "name": "StakingRewardsContractWithdrawTransaction"
-          }
-        ]
-      }
-    ]
-  }
+            name: 'StakingRewardsContractWithdrawTransaction',
+          },
+        ],
+      },
+    ],
+  },
 };
-      export default result;
-    
+export default result;
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -81,7 +81,6 @@ export type Account = {
   creditBalances: Array<CreditBalance>;
 };
 
-
 /** An Ethereum account with balances/credit balances */
 export type AccountBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -90,7 +89,6 @@ export type AccountBalancesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<AccountBalance_Filter>;
 };
-
 
 /** An Ethereum account with balances/credit balances */
 export type AccountCreditBalancesArgs = {
@@ -122,7 +120,7 @@ export enum Account_OrderBy {
   Id = 'id',
   Address = 'address',
   Balances = 'balances',
-  CreditBalances = 'creditBalances'
+  CreditBalances = 'creditBalances',
 }
 
 /** An account balance for a given token */
@@ -187,7 +185,7 @@ export enum AccountBalance_OrderBy {
   Id = 'id',
   Account = 'account',
   Amount = 'amount',
-  Token = 'token'
+  Token = 'token',
 }
 
 export type AggregateMetric = TimeMetric & {
@@ -234,12 +232,12 @@ export enum AggregateMetric_OrderBy {
   Value = 'value',
   Timestamp = 'timestamp',
   Period = 'period',
-  Type = 'type'
+  Type = 'type',
 }
 
 export enum AggregateMetricType {
   TotalSupply = 'TOTAL_SUPPLY',
-  TotalSavings = 'TOTAL_SAVINGS'
+  TotalSavings = 'TOTAL_SAVINGS',
 }
 
 /** A Basket of Bassets (e.g. for mUSD) */
@@ -258,7 +256,6 @@ export type Basket = {
   /** Masset the Basket belongs to */
   masset: Masset;
 };
-
 
 /** A Basket of Bassets (e.g. for mUSD) */
 export type BasketBassetsArgs = {
@@ -315,7 +312,7 @@ export enum Basket_OrderBy {
   MaxBassets = 'maxBassets',
   UndergoingRecol = 'undergoingRecol',
   Failed = 'failed',
-  Masset = 'masset'
+  Masset = 'masset',
 }
 
 /** Basket Asset (e.g. DAI for the mUSD basket) */
@@ -412,16 +409,13 @@ export enum Basset_OrderBy {
   Status = 'status',
   IsTransferFeeCharged = 'isTransferFeeCharged',
   Token = 'token',
-  VaultBalance = 'vaultBalance'
+  VaultBalance = 'vaultBalance',
 }
-
-
 
 export type Block_Height = {
   hash?: Maybe<Scalars['Bytes']>;
   number?: Maybe<Scalars['Int']>;
 };
-
 
 /** A credit balance for a given savings contract */
 export type CreditBalance = {
@@ -485,7 +479,7 @@ export enum CreditBalance_OrderBy {
   Id = 'id',
   Account = 'account',
   Amount = 'amount',
-  SavingsContract = 'savingsContract'
+  SavingsContract = 'savingsContract',
 }
 
 export type ExchangeRate = {
@@ -540,7 +534,7 @@ export enum ExchangeRate_OrderBy {
   Id = 'id',
   ExchangeRate = 'exchangeRate',
   Timestamp = 'timestamp',
-  SavingsContract = 'savingsContract'
+  SavingsContract = 'savingsContract',
 }
 
 /** Log of the Fee payment */
@@ -633,7 +627,7 @@ export enum FeePaidTransaction_OrderBy {
   Sender = 'sender',
   MAsset = 'mAsset',
   MAssetUnits = 'mAssetUnits',
-  Asset = 'asset'
+  Asset = 'asset',
 }
 
 /** An mStable asset (e.g. mUSD) */
@@ -651,7 +645,6 @@ export type Masset = {
   tokenSymbol: Scalars['String'];
   savingsContracts: Array<SavingsContract>;
 };
-
 
 /** An mStable asset (e.g. mUSD) */
 export type MassetSavingsContractsArgs = {
@@ -738,12 +731,12 @@ export enum Masset_OrderBy {
   RedemptionFeeRate = 'redemptionFeeRate',
   Token = 'token',
   TokenSymbol = 'tokenSymbol',
-  SavingsContracts = 'savingsContracts'
+  SavingsContracts = 'savingsContracts',
 }
 
 export enum OrderDirection {
   Asc = 'asc',
-  Desc = 'desc'
+  Desc = 'desc',
 }
 
 export type Query = {
@@ -775,18 +768,28 @@ export type Query = {
   feePaidTransactions: Array<FeePaidTransaction>;
   stakingRewardsContractTransaction?: Maybe<StakingRewardsContractTransaction>;
   stakingRewardsContractTransactions: Array<StakingRewardsContractTransaction>;
-  stakingRewardsContractClaimRewardTransaction?: Maybe<StakingRewardsContractClaimRewardTransaction>;
-  stakingRewardsContractClaimRewardTransactions: Array<StakingRewardsContractClaimRewardTransaction>;
-  stakingRewardsContractStakeTransaction?: Maybe<StakingRewardsContractStakeTransaction>;
-  stakingRewardsContractStakeTransactions: Array<StakingRewardsContractStakeTransaction>;
-  stakingRewardsContractWithdrawTransaction?: Maybe<StakingRewardsContractWithdrawTransaction>;
-  stakingRewardsContractWithdrawTransactions: Array<StakingRewardsContractWithdrawTransaction>;
+  stakingRewardsContractClaimRewardTransaction?: Maybe<
+    StakingRewardsContractClaimRewardTransaction
+  >;
+  stakingRewardsContractClaimRewardTransactions: Array<
+    StakingRewardsContractClaimRewardTransaction
+  >;
+  stakingRewardsContractStakeTransaction?: Maybe<
+    StakingRewardsContractStakeTransaction
+  >;
+  stakingRewardsContractStakeTransactions: Array<
+    StakingRewardsContractStakeTransaction
+  >;
+  stakingRewardsContractWithdrawTransaction?: Maybe<
+    StakingRewardsContractWithdrawTransaction
+  >;
+  stakingRewardsContractWithdrawTransactions: Array<
+    StakingRewardsContractWithdrawTransaction
+  >;
   rewardsDistributor?: Maybe<RewardsDistributor>;
   rewardsDistributors: Array<RewardsDistributor>;
   stakingReward?: Maybe<StakingReward>;
   stakingRewards: Array<StakingReward>;
-  rewardPerTokenStored?: Maybe<RewardPerTokenStored>;
-  rewardPerTokenStoreds: Array<RewardPerTokenStored>;
   stakingRewardsContract?: Maybe<StakingRewardsContract>;
   stakingRewardsContracts: Array<StakingRewardsContract>;
   stakingBalance?: Maybe<StakingBalance>;
@@ -797,12 +800,10 @@ export type Query = {
   transactions: Array<Transaction>;
 };
 
-
 export type QueryTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryTokensArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -813,12 +814,10 @@ export type QueryTokensArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -829,12 +828,10 @@ export type QueryBassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryBasketsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -845,12 +842,10 @@ export type QueryBasketsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryMassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -861,12 +856,10 @@ export type QueryMassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -877,12 +870,10 @@ export type QueryAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryAccountBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryAccountBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -893,12 +884,10 @@ export type QueryAccountBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -909,12 +898,10 @@ export type QueryCreditBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QuerySavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QuerySavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -925,12 +912,10 @@ export type QuerySavingsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -941,12 +926,10 @@ export type QueryExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryVolumeMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryVolumeMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -957,12 +940,10 @@ export type QueryVolumeMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryAggregateMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryAggregateMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -973,12 +954,10 @@ export type QueryAggregateMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QuerySwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QuerySwapTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -989,12 +968,10 @@ export type QuerySwapTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryFeePaidTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryFeePaidTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1005,12 +982,10 @@ export type QueryFeePaidTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryStakingRewardsContractTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryStakingRewardsContractTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1021,12 +996,10 @@ export type QueryStakingRewardsContractTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryStakingRewardsContractClaimRewardTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryStakingRewardsContractClaimRewardTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1037,12 +1010,10 @@ export type QueryStakingRewardsContractClaimRewardTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryStakingRewardsContractStakeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryStakingRewardsContractStakeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1053,12 +1024,10 @@ export type QueryStakingRewardsContractStakeTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryStakingRewardsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryStakingRewardsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1069,12 +1038,10 @@ export type QueryStakingRewardsContractWithdrawTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryRewardsDistributorArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryRewardsDistributorsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1085,12 +1052,10 @@ export type QueryRewardsDistributorsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryStakingRewardArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryStakingRewardsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1101,28 +1066,10 @@ export type QueryStakingRewardsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
-export type QueryRewardPerTokenStoredArgs = {
-  id: Scalars['ID'];
-  block?: Maybe<Block_Height>;
-};
-
-
-export type QueryRewardPerTokenStoredsArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<RewardPerTokenStored_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<RewardPerTokenStored_Filter>;
-  block?: Maybe<Block_Height>;
-};
-
-
 export type QueryStakingRewardsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryStakingRewardsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1133,12 +1080,10 @@ export type QueryStakingRewardsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryStakingBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryStakingBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1149,12 +1094,10 @@ export type QueryStakingBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryTimeMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryTimeMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1165,12 +1108,10 @@ export type QueryTimeMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1180,71 +1121,6 @@ export type QueryTransactionsArgs = {
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
 };
-
-export type RewardPerTokenStored = {
-  id: Scalars['ID'];
-  stakingRewardsContract: StakingRewardsContract;
-  lastUpdateTime: Scalars['Int'];
-  rewardPerTokenStored: Scalars['BigInt'];
-  platformRewardPerTokenStored?: Maybe<Scalars['BigInt']>;
-};
-
-export type RewardPerTokenStored_Filter = {
-  id?: Maybe<Scalars['ID']>;
-  id_not?: Maybe<Scalars['ID']>;
-  id_gt?: Maybe<Scalars['ID']>;
-  id_lt?: Maybe<Scalars['ID']>;
-  id_gte?: Maybe<Scalars['ID']>;
-  id_lte?: Maybe<Scalars['ID']>;
-  id_in?: Maybe<Array<Scalars['ID']>>;
-  id_not_in?: Maybe<Array<Scalars['ID']>>;
-  stakingRewardsContract?: Maybe<Scalars['String']>;
-  stakingRewardsContract_not?: Maybe<Scalars['String']>;
-  stakingRewardsContract_gt?: Maybe<Scalars['String']>;
-  stakingRewardsContract_lt?: Maybe<Scalars['String']>;
-  stakingRewardsContract_gte?: Maybe<Scalars['String']>;
-  stakingRewardsContract_lte?: Maybe<Scalars['String']>;
-  stakingRewardsContract_in?: Maybe<Array<Scalars['String']>>;
-  stakingRewardsContract_not_in?: Maybe<Array<Scalars['String']>>;
-  stakingRewardsContract_contains?: Maybe<Scalars['String']>;
-  stakingRewardsContract_not_contains?: Maybe<Scalars['String']>;
-  stakingRewardsContract_starts_with?: Maybe<Scalars['String']>;
-  stakingRewardsContract_not_starts_with?: Maybe<Scalars['String']>;
-  stakingRewardsContract_ends_with?: Maybe<Scalars['String']>;
-  stakingRewardsContract_not_ends_with?: Maybe<Scalars['String']>;
-  lastUpdateTime?: Maybe<Scalars['Int']>;
-  lastUpdateTime_not?: Maybe<Scalars['Int']>;
-  lastUpdateTime_gt?: Maybe<Scalars['Int']>;
-  lastUpdateTime_lt?: Maybe<Scalars['Int']>;
-  lastUpdateTime_gte?: Maybe<Scalars['Int']>;
-  lastUpdateTime_lte?: Maybe<Scalars['Int']>;
-  lastUpdateTime_in?: Maybe<Array<Scalars['Int']>>;
-  lastUpdateTime_not_in?: Maybe<Array<Scalars['Int']>>;
-  rewardPerTokenStored?: Maybe<Scalars['BigInt']>;
-  rewardPerTokenStored_not?: Maybe<Scalars['BigInt']>;
-  rewardPerTokenStored_gt?: Maybe<Scalars['BigInt']>;
-  rewardPerTokenStored_lt?: Maybe<Scalars['BigInt']>;
-  rewardPerTokenStored_gte?: Maybe<Scalars['BigInt']>;
-  rewardPerTokenStored_lte?: Maybe<Scalars['BigInt']>;
-  rewardPerTokenStored_in?: Maybe<Array<Scalars['BigInt']>>;
-  rewardPerTokenStored_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  platformRewardPerTokenStored?: Maybe<Scalars['BigInt']>;
-  platformRewardPerTokenStored_not?: Maybe<Scalars['BigInt']>;
-  platformRewardPerTokenStored_gt?: Maybe<Scalars['BigInt']>;
-  platformRewardPerTokenStored_lt?: Maybe<Scalars['BigInt']>;
-  platformRewardPerTokenStored_gte?: Maybe<Scalars['BigInt']>;
-  platformRewardPerTokenStored_lte?: Maybe<Scalars['BigInt']>;
-  platformRewardPerTokenStored_in?: Maybe<Array<Scalars['BigInt']>>;
-  platformRewardPerTokenStored_not_in?: Maybe<Array<Scalars['BigInt']>>;
-};
-
-export enum RewardPerTokenStored_OrderBy {
-  Id = 'id',
-  StakingRewardsContract = 'stakingRewardsContract',
-  LastUpdateTime = 'lastUpdateTime',
-  RewardPerTokenStored = 'rewardPerTokenStored',
-  PlatformRewardPerTokenStored = 'platformRewardPerTokenStored'
-}
 
 export type RewardsDistributor = {
   /** ID of the rewards distributor contract */
@@ -1270,7 +1146,7 @@ export type RewardsDistributor_Filter = {
 
 export enum RewardsDistributor_OrderBy {
   Id = 'id',
-  FundManagers = 'fundManagers'
+  FundManagers = 'fundManagers',
 }
 
 export type SavingsContract = {
@@ -1284,7 +1160,6 @@ export type SavingsContract = {
   automationEnabled: Scalars['Boolean'];
 };
 
-
 export type SavingsContractExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1292,7 +1167,6 @@ export type SavingsContractExchangeRatesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<ExchangeRate_Filter>;
 };
-
 
 export type SavingsContractCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1363,7 +1237,7 @@ export enum SavingsContract_OrderBy {
   ExchangeRates = 'exchangeRates',
   SavingsRate = 'savingsRate',
   CreditBalances = 'creditBalances',
-  AutomationEnabled = 'automationEnabled'
+  AutomationEnabled = 'automationEnabled',
 }
 
 export type StakingBalance = {
@@ -1419,7 +1293,7 @@ export enum StakingBalance_OrderBy {
   Id = 'id',
   Account = 'account',
   StakingRewardsContract = 'stakingRewardsContract',
-  Amount = 'amount'
+  Amount = 'amount',
 }
 
 export type StakingReward = {
@@ -1491,7 +1365,7 @@ export enum StakingReward_OrderBy {
   AmountPerTokenPaid = 'amountPerTokenPaid',
   StakingRewardsContract = 'stakingRewardsContract',
   Account = 'account',
-  Type = 'type'
+  Type = 'type',
 }
 
 export type StakingRewardsContract = {
@@ -1523,6 +1397,12 @@ export type StakingRewardsContract = {
   stakingBalances: Array<StakingBalance>;
   /** Accessor for staking rewards kept on this contract */
   stakingRewards: Array<StakingReward>;
+  /** Accessor for claim reward transactions sent to this contract */
+  claimRewardTransactions: Array<StakingRewardsContractClaimRewardTransaction>;
+  /** Accessor for stake transactions sent to this contract */
+  stakeTransactions: Array<StakingRewardsContractStakeTransaction>;
+  /** Accessor for withdraw transactions sent to this contract */
+  withdrawTransactions: Array<StakingRewardsContractWithdrawTransaction>;
   /** Platform token */
   platformToken?: Maybe<Token>;
   /** Platform reward rate */
@@ -1533,7 +1413,6 @@ export type StakingRewardsContract = {
   totalPlatformRewards?: Maybe<Scalars['BigInt']>;
 };
 
-
 export type StakingRewardsContractStakingBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1542,13 +1421,36 @@ export type StakingRewardsContractStakingBalancesArgs = {
   where?: Maybe<StakingBalance_Filter>;
 };
 
-
 export type StakingRewardsContractStakingRewardsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
   orderBy?: Maybe<StakingReward_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<StakingReward_Filter>;
+};
+
+export type StakingRewardsContractClaimRewardTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractClaimRewardTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractClaimRewardTransaction_Filter>;
+};
+
+export type StakingRewardsContractStakeTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractStakeTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractStakeTransaction_Filter>;
+};
+
+export type StakingRewardsContractWithdrawTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<StakingRewardsContractWithdrawTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<StakingRewardsContractWithdrawTransaction_Filter>;
 };
 
 export type StakingRewardsContract_Filter = {
@@ -1715,10 +1617,13 @@ export enum StakingRewardsContract_OrderBy {
   TotalStakingRewards = 'totalStakingRewards',
   StakingBalances = 'stakingBalances',
   StakingRewards = 'stakingRewards',
+  ClaimRewardTransactions = 'claimRewardTransactions',
+  StakeTransactions = 'stakeTransactions',
+  WithdrawTransactions = 'withdrawTransactions',
   PlatformToken = 'platformToken',
   PlatformRewardRate = 'platformRewardRate',
   PlatformRewardPerTokenStored = 'platformRewardPerTokenStored',
-  TotalPlatformRewards = 'totalPlatformRewards'
+  TotalPlatformRewards = 'totalPlatformRewards',
 }
 
 export type StakingRewardsContractClaimRewardTransaction = Transaction & {
@@ -1793,7 +1698,7 @@ export enum StakingRewardsContractClaimRewardTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   StakingRewardsContract = 'stakingRewardsContract',
-  Amount = 'amount'
+  Amount = 'amount',
 }
 
 export type StakingRewardsContractStakeTransaction = Transaction & {
@@ -1868,7 +1773,7 @@ export enum StakingRewardsContractStakeTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   StakingRewardsContract = 'stakingRewardsContract',
-  Amount = 'amount'
+  Amount = 'amount',
 }
 
 export type StakingRewardsContractTransaction = Transaction & {
@@ -1933,12 +1838,12 @@ export enum StakingRewardsContractTransaction_OrderBy {
   Type = 'type',
   Sender = 'sender',
   Timestamp = 'timestamp',
-  StakingRewardsContract = 'stakingRewardsContract'
+  StakingRewardsContract = 'stakingRewardsContract',
 }
 
 export enum StakingRewardsContractType {
   StakingRewards = 'STAKING_REWARDS',
-  StakingRewardsWithPlatformToken = 'STAKING_REWARDS_WITH_PLATFORM_TOKEN'
+  StakingRewardsWithPlatformToken = 'STAKING_REWARDS_WITH_PLATFORM_TOKEN',
 }
 
 export type StakingRewardsContractWithdrawTransaction = Transaction & {
@@ -2013,12 +1918,12 @@ export enum StakingRewardsContractWithdrawTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   StakingRewardsContract = 'stakingRewardsContract',
-  Amount = 'amount'
+  Amount = 'amount',
 }
 
 export enum StakingRewardType {
   Reward = 'REWARD',
-  PlatformReward = 'PLATFORM_REWARD'
+  PlatformReward = 'PLATFORM_REWARD',
 }
 
 export type Subscription = {
@@ -2050,18 +1955,28 @@ export type Subscription = {
   feePaidTransactions: Array<FeePaidTransaction>;
   stakingRewardsContractTransaction?: Maybe<StakingRewardsContractTransaction>;
   stakingRewardsContractTransactions: Array<StakingRewardsContractTransaction>;
-  stakingRewardsContractClaimRewardTransaction?: Maybe<StakingRewardsContractClaimRewardTransaction>;
-  stakingRewardsContractClaimRewardTransactions: Array<StakingRewardsContractClaimRewardTransaction>;
-  stakingRewardsContractStakeTransaction?: Maybe<StakingRewardsContractStakeTransaction>;
-  stakingRewardsContractStakeTransactions: Array<StakingRewardsContractStakeTransaction>;
-  stakingRewardsContractWithdrawTransaction?: Maybe<StakingRewardsContractWithdrawTransaction>;
-  stakingRewardsContractWithdrawTransactions: Array<StakingRewardsContractWithdrawTransaction>;
+  stakingRewardsContractClaimRewardTransaction?: Maybe<
+    StakingRewardsContractClaimRewardTransaction
+  >;
+  stakingRewardsContractClaimRewardTransactions: Array<
+    StakingRewardsContractClaimRewardTransaction
+  >;
+  stakingRewardsContractStakeTransaction?: Maybe<
+    StakingRewardsContractStakeTransaction
+  >;
+  stakingRewardsContractStakeTransactions: Array<
+    StakingRewardsContractStakeTransaction
+  >;
+  stakingRewardsContractWithdrawTransaction?: Maybe<
+    StakingRewardsContractWithdrawTransaction
+  >;
+  stakingRewardsContractWithdrawTransactions: Array<
+    StakingRewardsContractWithdrawTransaction
+  >;
   rewardsDistributor?: Maybe<RewardsDistributor>;
   rewardsDistributors: Array<RewardsDistributor>;
   stakingReward?: Maybe<StakingReward>;
   stakingRewards: Array<StakingReward>;
-  rewardPerTokenStored?: Maybe<RewardPerTokenStored>;
-  rewardPerTokenStoreds: Array<RewardPerTokenStored>;
   stakingRewardsContract?: Maybe<StakingRewardsContract>;
   stakingRewardsContracts: Array<StakingRewardsContract>;
   stakingBalance?: Maybe<StakingBalance>;
@@ -2072,12 +1987,10 @@ export type Subscription = {
   transactions: Array<Transaction>;
 };
 
-
 export type SubscriptionTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionTokensArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2088,12 +2001,10 @@ export type SubscriptionTokensArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2104,12 +2015,10 @@ export type SubscriptionBassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionBasketsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2120,12 +2029,10 @@ export type SubscriptionBasketsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionMassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2136,12 +2043,10 @@ export type SubscriptionMassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2152,12 +2057,10 @@ export type SubscriptionAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionAccountBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionAccountBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2168,12 +2071,10 @@ export type SubscriptionAccountBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2184,12 +2085,10 @@ export type SubscriptionCreditBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionSavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionSavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2200,12 +2099,10 @@ export type SubscriptionSavingsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2216,12 +2113,10 @@ export type SubscriptionExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionVolumeMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionVolumeMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2232,12 +2127,10 @@ export type SubscriptionVolumeMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionAggregateMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionAggregateMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2248,12 +2141,10 @@ export type SubscriptionAggregateMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionSwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionSwapTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2264,12 +2155,10 @@ export type SubscriptionSwapTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionFeePaidTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionFeePaidTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2280,12 +2169,10 @@ export type SubscriptionFeePaidTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionStakingRewardsContractTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionStakingRewardsContractTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2296,12 +2183,10 @@ export type SubscriptionStakingRewardsContractTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionStakingRewardsContractClaimRewardTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionStakingRewardsContractClaimRewardTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2312,12 +2197,10 @@ export type SubscriptionStakingRewardsContractClaimRewardTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionStakingRewardsContractStakeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionStakingRewardsContractStakeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2328,12 +2211,10 @@ export type SubscriptionStakingRewardsContractStakeTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionStakingRewardsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionStakingRewardsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2344,12 +2225,10 @@ export type SubscriptionStakingRewardsContractWithdrawTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionRewardsDistributorArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionRewardsDistributorsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2360,12 +2239,10 @@ export type SubscriptionRewardsDistributorsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionStakingRewardArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionStakingRewardsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2376,28 +2253,10 @@ export type SubscriptionStakingRewardsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
-export type SubscriptionRewardPerTokenStoredArgs = {
-  id: Scalars['ID'];
-  block?: Maybe<Block_Height>;
-};
-
-
-export type SubscriptionRewardPerTokenStoredsArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<RewardPerTokenStored_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<RewardPerTokenStored_Filter>;
-  block?: Maybe<Block_Height>;
-};
-
-
 export type SubscriptionStakingRewardsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionStakingRewardsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2408,12 +2267,10 @@ export type SubscriptionStakingRewardsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionStakingBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionStakingBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2424,12 +2281,10 @@ export type SubscriptionStakingBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionTimeMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionTimeMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2440,12 +2295,10 @@ export type SubscriptionTimeMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2570,7 +2423,7 @@ export enum SwapTransaction_OrderBy {
   MAssetUnits = 'mAssetUnits',
   InputBasset = 'inputBasset',
   OutputBasset = 'outputBasset',
-  Recipient = 'recipient'
+  Recipient = 'recipient',
 }
 
 export type TimeMetric = {
@@ -2613,7 +2466,7 @@ export enum TimeMetric_OrderBy {
   Id = 'id',
   Value = 'value',
   Timestamp = 'timestamp',
-  Period = 'period'
+  Period = 'period',
 }
 
 export enum TimeMetricPeriod {
@@ -2622,7 +2475,7 @@ export enum TimeMetricPeriod {
   Week = 'WEEK',
   Month = 'MONTH',
   Quarter = 'QUARTER',
-  Year = 'YEAR'
+  Year = 'YEAR',
 }
 
 /** An ERC20-compatible token */
@@ -2740,7 +2593,7 @@ export enum Token_OrderBy {
   TotalSupply = 'totalSupply',
   TotalMinted = 'totalMinted',
   TotalTransferred = 'totalTransferred',
-  TotalBurned = 'totalBurned'
+  TotalBurned = 'totalBurned',
 }
 
 /** A common transaction type */
@@ -2790,7 +2643,7 @@ export enum Transaction_OrderBy {
   Tx = 'tx',
   Type = 'type',
   Timestamp = 'timestamp',
-  Sender = 'sender'
+  Sender = 'sender',
 }
 
 export enum TransactionType {
@@ -2804,7 +2657,7 @@ export enum TransactionType {
   StakingRewardsContractClaimReward = 'STAKING_REWARDS_CONTRACT_CLAIM_REWARD',
   StakingRewardsContractExit = 'STAKING_REWARDS_CONTRACT_EXIT',
   StakingRewardsContractStake = 'STAKING_REWARDS_CONTRACT_STAKE',
-  StakingRewardsContractWithdraw = 'STAKING_REWARDS_CONTRACT_WITHDRAW'
+  StakingRewardsContractWithdraw = 'STAKING_REWARDS_CONTRACT_WITHDRAW',
 }
 
 export type VolumeMetric = TimeMetric & {
@@ -2851,45 +2704,85 @@ export enum VolumeMetric_OrderBy {
   Value = 'value',
   Timestamp = 'timestamp',
   Period = 'period',
-  Type = 'type'
+  Type = 'type',
 }
 
-export type TokenDetailsFragment = Pick<Token, 'id' | 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
+export type TokenDetailsFragment = Pick<
+  Token,
+  'id' | 'address' | 'decimals' | 'symbol' | 'totalSupply'
+>;
 
-export type MassetAllFragment = (
-  Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
-  & { token: TokenDetailsFragment, basket: (
-    Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
-    & { bassets: Array<(
-      Pick<Basset, 'id' | 'vaultBalance' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
-      & { token: TokenDetailsFragment }
-    )> }
-  ) }
-);
+export type MassetAllFragment = Pick<
+  Masset,
+  'id' | 'feeRate' | 'redemptionFeeRate'
+> & {
+  token: TokenDetailsFragment;
+  basket: Pick<
+    Basket,
+    'failed' | 'collateralisationRatio' | 'undergoingRecol'
+  > & {
+    bassets: Array<
+      Pick<
+        Basset,
+        | 'id'
+        | 'vaultBalance'
+        | 'isTransferFeeCharged'
+        | 'ratio'
+        | 'status'
+        | 'maxWeight'
+      > & { token: TokenDetailsFragment }
+    >;
+  };
+};
 
-type TransactionDetails_SwapTransaction_Fragment = Pick<SwapTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+type TransactionDetails_SwapTransaction_Fragment = Pick<
+  SwapTransaction,
+  'id' | 'tx' | 'type' | 'timestamp'
+>;
 
-type TransactionDetails_FeePaidTransaction_Fragment = Pick<FeePaidTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+type TransactionDetails_FeePaidTransaction_Fragment = Pick<
+  FeePaidTransaction,
+  'id' | 'tx' | 'type' | 'timestamp'
+>;
 
-type TransactionDetails_StakingRewardsContractTransaction_Fragment = Pick<StakingRewardsContractTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+type TransactionDetails_StakingRewardsContractTransaction_Fragment = Pick<
+  StakingRewardsContractTransaction,
+  'id' | 'tx' | 'type' | 'timestamp'
+>;
 
-type TransactionDetails_StakingRewardsContractClaimRewardTransaction_Fragment = Pick<StakingRewardsContractClaimRewardTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+type TransactionDetails_StakingRewardsContractClaimRewardTransaction_Fragment = Pick<
+  StakingRewardsContractClaimRewardTransaction,
+  'id' | 'tx' | 'type' | 'timestamp'
+>;
 
-type TransactionDetails_StakingRewardsContractStakeTransaction_Fragment = Pick<StakingRewardsContractStakeTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+type TransactionDetails_StakingRewardsContractStakeTransaction_Fragment = Pick<
+  StakingRewardsContractStakeTransaction,
+  'id' | 'tx' | 'type' | 'timestamp'
+>;
 
-type TransactionDetails_StakingRewardsContractWithdrawTransaction_Fragment = Pick<StakingRewardsContractWithdrawTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
+type TransactionDetails_StakingRewardsContractWithdrawTransaction_Fragment = Pick<
+  StakingRewardsContractWithdrawTransaction,
+  'id' | 'tx' | 'type' | 'timestamp'
+>;
 
-export type TransactionDetailsFragment = TransactionDetails_SwapTransaction_Fragment | TransactionDetails_FeePaidTransaction_Fragment | TransactionDetails_StakingRewardsContractTransaction_Fragment | TransactionDetails_StakingRewardsContractClaimRewardTransaction_Fragment | TransactionDetails_StakingRewardsContractStakeTransaction_Fragment | TransactionDetails_StakingRewardsContractWithdrawTransaction_Fragment;
+export type TransactionDetailsFragment =
+  | TransactionDetails_SwapTransaction_Fragment
+  | TransactionDetails_FeePaidTransaction_Fragment
+  | TransactionDetails_StakingRewardsContractTransaction_Fragment
+  | TransactionDetails_StakingRewardsContractClaimRewardTransaction_Fragment
+  | TransactionDetails_StakingRewardsContractStakeTransaction_Fragment
+  | TransactionDetails_StakingRewardsContractWithdrawTransaction_Fragment;
 
 export type CoreTokensQueryVariables = {};
 
-
-export type CoreTokensQuery = { mUSD: Array<TokenDetailsFragment>, mUSDSavings: Array<Pick<SavingsContract, 'id'>> };
+export type CoreTokensQuery = {
+  mUSD: Array<TokenDetailsFragment>;
+  mUSDSavings: Array<Pick<SavingsContract, 'id'>>;
+};
 
 export type MassetQueryVariables = {
   id: Scalars['ID'];
 };
-
 
 export type MassetQuery = { masset?: Maybe<MassetAllFragment> };
 
@@ -2897,23 +2790,36 @@ export type Erc20TokensQueryVariables = {
   addresses: Array<Scalars['Bytes']>;
 };
 
-
 export type Erc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
 
 export type AllErc20TokensQueryVariables = {};
 
-
-export type AllErc20TokensQuery = { savingsContracts: Array<(
-    Pick<SavingsContract, 'id'>
-    & { address: SavingsContract['id'] }
-  )>, tokens: Array<TokenDetailsFragment> };
+export type AllErc20TokensQuery = {
+  savingsContracts: Array<
+    Pick<SavingsContract, 'id'> & { address: SavingsContract['id'] }
+  >;
+  tokens: Array<TokenDetailsFragment>;
+};
 
 export type TokenByAddressQueryVariables = {
   id: Scalars['ID'];
 };
 
-
-export type TokenByAddressQuery = { token?: Maybe<Pick<Token, 'id' | 'address' | 'decimals' | 'name' | 'symbol' | 'totalBurned' | 'totalSupply' | 'totalTransferred'>> };
+export type TokenByAddressQuery = {
+  token?: Maybe<
+    Pick<
+      Token,
+      | 'id'
+      | 'address'
+      | 'decimals'
+      | 'name'
+      | 'symbol'
+      | 'totalBurned'
+      | 'totalSupply'
+      | 'totalTransferred'
+    >
+  >;
+};
 
 export type ErFragment = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
 
@@ -2921,8 +2827,9 @@ export type LastExchangeRateBeforeTimestampQueryVariables = {
   timestamp: Scalars['Int'];
 };
 
-
-export type LastExchangeRateBeforeTimestampQuery = { exchangeRates: Array<ErFragment> };
+export type LastExchangeRateBeforeTimestampQuery = {
+  exchangeRates: Array<ErFragment>;
+};
 
 export type WeeklyExchangeRatesQueryVariables = {
   day0: Scalars['Int'];
@@ -2934,23 +2841,36 @@ export type WeeklyExchangeRatesQueryVariables = {
   day6: Scalars['Int'];
 };
 
-
-export type WeeklyExchangeRatesQuery = { day0: Array<ErFragment>, day1: Array<ErFragment>, day2: Array<ErFragment>, day3: Array<ErFragment>, day4: Array<ErFragment>, day5: Array<ErFragment>, day6: Array<ErFragment> };
+export type WeeklyExchangeRatesQuery = {
+  day0: Array<ErFragment>;
+  day1: Array<ErFragment>;
+  day2: Array<ErFragment>;
+  day3: Array<ErFragment>;
+  day4: Array<ErFragment>;
+  day5: Array<ErFragment>;
+  day6: Array<ErFragment>;
+};
 
 export type SavingsContractQueryVariables = {
   id: Scalars['ID'];
 };
 
-
-export type SavingsContractQuery = { savingsContracts: Array<(
-    Pick<SavingsContract, 'id' | 'totalSavings' | 'totalCredits' | 'savingsRate' | 'automationEnabled'>
-    & { exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
-  )> };
+export type SavingsContractQuery = {
+  savingsContracts: Array<
+    Pick<
+      SavingsContract,
+      | 'id'
+      | 'totalSavings'
+      | 'totalCredits'
+      | 'savingsRate'
+      | 'automationEnabled'
+    > & { exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
+  >;
+};
 
 export type TokenQueryVariables = {
   id: Scalars['ID'];
 };
-
 
 export type TokenQuery = { token?: Maybe<TokenDetailsFragment> };
 
@@ -2958,13 +2878,15 @@ export type CreditBalancesQueryVariables = {
   account: Scalars['ID'];
 };
 
-
-export type CreditBalancesQuery = { account?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
+export type CreditBalancesQuery = {
+  account?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }>;
+};
 
 export type LatestExchangeRateQueryVariables = {};
 
-
-export type LatestExchangeRateQuery = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
+export type LatestExchangeRateQuery = {
+  exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>>;
+};
 
 export type VolumeMetricsOfTypeQueryVariables = {
   period: TimeMetricPeriod;
@@ -2973,8 +2895,9 @@ export type VolumeMetricsOfTypeQueryVariables = {
   to: Scalars['Int'];
 };
 
-
-export type VolumeMetricsOfTypeQuery = { volumeMetrics: Array<Pick<VolumeMetric, 'timestamp' | 'value'>> };
+export type VolumeMetricsOfTypeQuery = {
+  volumeMetrics: Array<Pick<VolumeMetric, 'timestamp' | 'value'>>;
+};
 
 export type VolumeMetricsQueryVariables = {
   period: TimeMetricPeriod;
@@ -2982,8 +2905,9 @@ export type VolumeMetricsQueryVariables = {
   to: Scalars['Int'];
 };
 
-
-export type VolumeMetricsQuery = { volumeMetrics: Array<Pick<VolumeMetric, 'type' | 'timestamp' | 'value'>> };
+export type VolumeMetricsQuery = {
+  volumeMetrics: Array<Pick<VolumeMetric, 'type' | 'timestamp' | 'value'>>;
+};
 
 export type AggregateMetricsOfTypeQueryVariables = {
   period: TimeMetricPeriod;
@@ -2992,8 +2916,9 @@ export type AggregateMetricsOfTypeQueryVariables = {
   to: Scalars['Int'];
 };
 
-
-export type AggregateMetricsOfTypeQuery = { aggregateMetrics: Array<Pick<AggregateMetric, 'timestamp' | 'value'>> };
+export type AggregateMetricsOfTypeQuery = {
+  aggregateMetrics: Array<Pick<AggregateMetric, 'timestamp' | 'value'>>;
+};
 
 export type AggregateMetricsQueryVariables = {
   period: TimeMetricPeriod;
@@ -3001,8 +2926,11 @@ export type AggregateMetricsQueryVariables = {
   to: Scalars['Int'];
 };
 
-
-export type AggregateMetricsQuery = { aggregateMetrics: Array<Pick<AggregateMetric, 'type' | 'timestamp' | 'value'>> };
+export type AggregateMetricsQuery = {
+  aggregateMetrics: Array<
+    Pick<AggregateMetric, 'type' | 'timestamp' | 'value'>
+  >;
+};
 
 export type StakingRewardsContractsQueryVariables = {
   account?: Maybe<Scalars['Bytes']>;
@@ -3010,112 +2938,113 @@ export type StakingRewardsContractsQueryVariables = {
   block?: Maybe<Block_Height>;
 };
 
-
-export type StakingRewardsContractsQuery = { current: Array<(
-    Pick<StakingRewardsContract, 'id' | 'type' | 'duration' | 'lastUpdateTime' | 'periodFinish' | 'rewardRate' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored' | 'platformRewardRate' | 'totalSupply' | 'totalStakingRewards' | 'totalPlatformRewards'>
-    & { address: StakingRewardsContract['id'] }
-    & { stakingToken: (
-      Pick<Token, 'totalSupply'>
-      & TokenDetailsFragment
-    ), rewardsToken: TokenDetailsFragment, platformToken?: Maybe<TokenDetailsFragment>, stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>>, platformRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
-  )>, historic: Array<(
-    Pick<StakingRewardsContract, 'id' | 'lastUpdateTime' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored'>
-    & { address: StakingRewardsContract['id'] }
-  )> };
+export type StakingRewardsContractsQuery = {
+  current: Array<
+    Pick<
+      StakingRewardsContract,
+      | 'id'
+      | 'type'
+      | 'duration'
+      | 'lastUpdateTime'
+      | 'periodFinish'
+      | 'rewardRate'
+      | 'rewardPerTokenStored'
+      | 'platformRewardPerTokenStored'
+      | 'platformRewardRate'
+      | 'totalSupply'
+      | 'totalStakingRewards'
+      | 'totalPlatformRewards'
+    > & { address: StakingRewardsContract['id'] } & {
+      stakingToken: Pick<Token, 'totalSupply'> & TokenDetailsFragment;
+      rewardsToken: TokenDetailsFragment;
+      platformToken?: Maybe<TokenDetailsFragment>;
+      stakingBalances: Array<Pick<StakingBalance, 'amount'>>;
+      stakingRewards: Array<
+        Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>
+      >;
+      platformRewards: Array<
+        Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>
+      >;
+    }
+  >;
+  historic: Array<
+    Pick<
+      StakingRewardsContract,
+      | 'id'
+      | 'lastUpdateTime'
+      | 'rewardPerTokenStored'
+      | 'platformRewardPerTokenStored'
+    > & { address: StakingRewardsContract['id'] }
+  >;
+};
 
 export type RewardsDistributorQueryVariables = {};
 
-
-export type RewardsDistributorQuery = { rewardsDistributors: Array<Pick<RewardsDistributor, 'id' | 'fundManagers'>> };
-
-export type RewardPerTokenStoredDetailsFragment = Pick<RewardPerTokenStored, 'id' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored' | 'lastUpdateTime'>;
-
-export type MostRecentRewardPerTokenStoredQueryVariables = {
-  stakingRewardsContract: Scalars['String'];
-  timestamp: Scalars['Int'];
+export type RewardsDistributorQuery = {
+  rewardsDistributors: Array<Pick<RewardsDistributor, 'id' | 'fundManagers'>>;
 };
-
-
-export type MostRecentRewardPerTokenStoredQuery = { closestBeforeTimestamp: Array<RewardPerTokenStoredDetailsFragment>, closestAfterTimestamp: Array<RewardPerTokenStoredDetailsFragment> };
-
-export type ClaimRewardTransactionsQueryVariables = {
-  start: Scalars['Int'];
-  end: Scalars['Int'];
-};
-
-
-export type ClaimRewardTransactionsQuery = { stakingRewardsContractClaimRewardTransactions: Array<(
-    Pick<StakingRewardsContractClaimRewardTransaction, 'sender' | 'timestamp' | 'amount'>
-    & { stakingRewardsContract: Pick<StakingRewardsContract, 'id'> }
-  )> };
 
 export const TokenDetailsFragmentDoc = gql`
-    fragment TokenDetails on Token {
-  id
-  address
-  decimals
-  symbol
-  totalSupply
-}
-    `;
-export const MassetAllFragmentDoc = gql`
-    fragment MassetAll on Masset {
-  id
-  token {
-    ...TokenDetails
+  fragment TokenDetails on Token {
+    id
+    address
+    decimals
+    symbol
+    totalSupply
   }
-  feeRate
-  redemptionFeeRate
-  basket {
-    failed
-    collateralisationRatio
-    undergoingRecol
-    bassets {
-      id
-      vaultBalance
-      isTransferFeeCharged
-      ratio
-      status
-      maxWeight
-      token {
-        ...TokenDetails
+`;
+export const MassetAllFragmentDoc = gql`
+  fragment MassetAll on Masset {
+    id
+    token {
+      ...TokenDetails
+    }
+    feeRate
+    redemptionFeeRate
+    basket {
+      failed
+      collateralisationRatio
+      undergoingRecol
+      bassets {
+        id
+        vaultBalance
+        isTransferFeeCharged
+        ratio
+        status
+        maxWeight
+        token {
+          ...TokenDetails
+        }
       }
     }
   }
-}
-    ${TokenDetailsFragmentDoc}`;
+  ${TokenDetailsFragmentDoc}
+`;
 export const TransactionDetailsFragmentDoc = gql`
-    fragment TransactionDetails on Transaction {
-  id
-  tx
-  type
-  timestamp
-}
-    `;
-export const ErFragmentDoc = gql`
-    fragment ER on ExchangeRate {
-  exchangeRate
-  timestamp
-}
-    `;
-export const RewardPerTokenStoredDetailsFragmentDoc = gql`
-    fragment RewardPerTokenStoredDetails on RewardPerTokenStored {
-  id
-  rewardPerTokenStored
-  platformRewardPerTokenStored
-  lastUpdateTime
-}
-    `;
-export const CoreTokensDocument = gql`
-    query CoreTokens @api(name: mstable) {
-  mUSD: tokens(where: {symbol: "mUSD"}) {
-    ...TokenDetails
-  }
-  mUSDSavings: savingsContracts(first: 1) {
+  fragment TransactionDetails on Transaction {
     id
+    tx
+    type
+    timestamp
   }
-}
-    ${TokenDetailsFragmentDoc}`;
+`;
+export const ErFragmentDoc = gql`
+  fragment ER on ExchangeRate {
+    exchangeRate
+    timestamp
+  }
+`;
+export const CoreTokensDocument = gql`
+  query CoreTokens @api(name: mstable) {
+    mUSD: tokens(where: { symbol: "mUSD" }) {
+      ...TokenDetails
+    }
+    mUSDSavings: savingsContracts(first: 1) {
+      id
+    }
+  }
+  ${TokenDetailsFragmentDoc}
+`;
 
 /**
  * __useCoreTokensQuery__
@@ -3132,22 +3061,44 @@ export const CoreTokensDocument = gql`
  *   },
  * });
  */
-export function useCoreTokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
-      }
-export function useCoreTokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
-        }
-export type CoreTokensQueryHookResult = ReturnType<typeof useCoreTokensQuery>;
-export type CoreTokensLazyQueryHookResult = ReturnType<typeof useCoreTokensLazyQuery>;
-export type CoreTokensQueryResult = ApolloReactCommon.QueryResult<CoreTokensQuery, CoreTokensQueryVariables>;
-export const MassetDocument = gql`
-    query Masset($id: ID!) @api(name: mstable) {
-  masset(id: $id) {
-    ...MassetAll
-  }
+export function useCoreTokensQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    CoreTokensQuery,
+    CoreTokensQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<CoreTokensQuery, CoreTokensQueryVariables>(
+    CoreTokensDocument,
+    baseOptions,
+  );
 }
-    ${MassetAllFragmentDoc}`;
+export function useCoreTokensLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    CoreTokensQuery,
+    CoreTokensQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    CoreTokensQuery,
+    CoreTokensQueryVariables
+  >(CoreTokensDocument, baseOptions);
+}
+export type CoreTokensQueryHookResult = ReturnType<typeof useCoreTokensQuery>;
+export type CoreTokensLazyQueryHookResult = ReturnType<
+  typeof useCoreTokensLazyQuery
+>;
+export type CoreTokensQueryResult = ApolloReactCommon.QueryResult<
+  CoreTokensQuery,
+  CoreTokensQueryVariables
+>;
+export const MassetDocument = gql`
+  query Masset($id: ID!) @api(name: mstable) {
+    masset(id: $id) {
+      ...MassetAll
+    }
+  }
+  ${MassetAllFragmentDoc}
+`;
 
 /**
  * __useMassetQuery__
@@ -3165,22 +3116,42 @@ export const MassetDocument = gql`
  *   },
  * });
  */
-export function useMassetQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MassetQuery, MassetQueryVariables>) {
-        return ApolloReactHooks.useQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
-      }
-export function useMassetLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MassetQuery, MassetQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
-        }
+export function useMassetQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    MassetQuery,
+    MassetQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<MassetQuery, MassetQueryVariables>(
+    MassetDocument,
+    baseOptions,
+  );
+}
+export function useMassetLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    MassetQuery,
+    MassetQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<MassetQuery, MassetQueryVariables>(
+    MassetDocument,
+    baseOptions,
+  );
+}
 export type MassetQueryHookResult = ReturnType<typeof useMassetQuery>;
 export type MassetLazyQueryHookResult = ReturnType<typeof useMassetLazyQuery>;
-export type MassetQueryResult = ApolloReactCommon.QueryResult<MassetQuery, MassetQueryVariables>;
+export type MassetQueryResult = ApolloReactCommon.QueryResult<
+  MassetQuery,
+  MassetQueryVariables
+>;
 export const Erc20TokensDocument = gql`
-    query Erc20Tokens($addresses: [Bytes!]!) @api(name: mstable) {
-  tokens(where: {address_in: $addresses}) {
-    ...TokenDetails
+  query Erc20Tokens($addresses: [Bytes!]!) @api(name: mstable) {
+    tokens(where: { address_in: $addresses }) {
+      ...TokenDetails
+    }
   }
-}
-    ${TokenDetailsFragmentDoc}`;
+  ${TokenDetailsFragmentDoc}
+`;
 
 /**
  * __useErc20TokensQuery__
@@ -3198,26 +3169,48 @@ export const Erc20TokensDocument = gql`
  *   },
  * });
  */
-export function useErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
-      }
-export function useErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
-        }
-export type Erc20TokensQueryHookResult = ReturnType<typeof useErc20TokensQuery>;
-export type Erc20TokensLazyQueryHookResult = ReturnType<typeof useErc20TokensLazyQuery>;
-export type Erc20TokensQueryResult = ApolloReactCommon.QueryResult<Erc20TokensQuery, Erc20TokensQueryVariables>;
-export const AllErc20TokensDocument = gql`
-    query AllErc20Tokens @api(name: mstable) {
-  savingsContracts {
-    address: id
-    id
-  }
-  tokens {
-    ...TokenDetails
-  }
+export function useErc20TokensQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    Erc20TokensQuery,
+    Erc20TokensQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(
+    Erc20TokensDocument,
+    baseOptions,
+  );
 }
-    ${TokenDetailsFragmentDoc}`;
+export function useErc20TokensLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    Erc20TokensQuery,
+    Erc20TokensQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    Erc20TokensQuery,
+    Erc20TokensQueryVariables
+  >(Erc20TokensDocument, baseOptions);
+}
+export type Erc20TokensQueryHookResult = ReturnType<typeof useErc20TokensQuery>;
+export type Erc20TokensLazyQueryHookResult = ReturnType<
+  typeof useErc20TokensLazyQuery
+>;
+export type Erc20TokensQueryResult = ApolloReactCommon.QueryResult<
+  Erc20TokensQuery,
+  Erc20TokensQueryVariables
+>;
+export const AllErc20TokensDocument = gql`
+  query AllErc20Tokens @api(name: mstable) {
+    savingsContracts {
+      address: id
+      id
+    }
+    tokens {
+      ...TokenDetails
+    }
+  }
+  ${TokenDetailsFragmentDoc}
+`;
 
 /**
  * __useAllErc20TokensQuery__
@@ -3234,30 +3227,53 @@ export const AllErc20TokensDocument = gql`
  *   },
  * });
  */
-export function useAllErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
-      }
-export function useAllErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
-        }
-export type AllErc20TokensQueryHookResult = ReturnType<typeof useAllErc20TokensQuery>;
-export type AllErc20TokensLazyQueryHookResult = ReturnType<typeof useAllErc20TokensLazyQuery>;
-export type AllErc20TokensQueryResult = ApolloReactCommon.QueryResult<AllErc20TokensQuery, AllErc20TokensQueryVariables>;
-export const TokenByAddressDocument = gql`
-    query TokenByAddress($id: ID!) @api(name: mstable) {
-  token(id: $id) {
-    id
-    address
-    decimals
-    name
-    symbol
-    totalBurned
-    totalBurned
-    totalSupply
-    totalTransferred
-  }
+export function useAllErc20TokensQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    AllErc20TokensQuery,
+    AllErc20TokensQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    AllErc20TokensQuery,
+    AllErc20TokensQueryVariables
+  >(AllErc20TokensDocument, baseOptions);
 }
-    `;
+export function useAllErc20TokensLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    AllErc20TokensQuery,
+    AllErc20TokensQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    AllErc20TokensQuery,
+    AllErc20TokensQueryVariables
+  >(AllErc20TokensDocument, baseOptions);
+}
+export type AllErc20TokensQueryHookResult = ReturnType<
+  typeof useAllErc20TokensQuery
+>;
+export type AllErc20TokensLazyQueryHookResult = ReturnType<
+  typeof useAllErc20TokensLazyQuery
+>;
+export type AllErc20TokensQueryResult = ApolloReactCommon.QueryResult<
+  AllErc20TokensQuery,
+  AllErc20TokensQueryVariables
+>;
+export const TokenByAddressDocument = gql`
+  query TokenByAddress($id: ID!) @api(name: mstable) {
+    token(id: $id) {
+      id
+      address
+      decimals
+      name
+      symbol
+      totalBurned
+      totalBurned
+      totalSupply
+      totalTransferred
+    }
+  }
+`;
 
 /**
  * __useTokenByAddressQuery__
@@ -3275,22 +3291,51 @@ export const TokenByAddressDocument = gql`
  *   },
  * });
  */
-export function useTokenByAddressQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TokenByAddressQuery, TokenByAddressQueryVariables>) {
-        return ApolloReactHooks.useQuery<TokenByAddressQuery, TokenByAddressQueryVariables>(TokenByAddressDocument, baseOptions);
-      }
-export function useTokenByAddressLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TokenByAddressQuery, TokenByAddressQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<TokenByAddressQuery, TokenByAddressQueryVariables>(TokenByAddressDocument, baseOptions);
-        }
-export type TokenByAddressQueryHookResult = ReturnType<typeof useTokenByAddressQuery>;
-export type TokenByAddressLazyQueryHookResult = ReturnType<typeof useTokenByAddressLazyQuery>;
-export type TokenByAddressQueryResult = ApolloReactCommon.QueryResult<TokenByAddressQuery, TokenByAddressQueryVariables>;
-export const LastExchangeRateBeforeTimestampDocument = gql`
-    query LastExchangeRateBeforeTimestamp($timestamp: Int!) @api(name: mstable) {
-  exchangeRates(where: {timestamp_lt: $timestamp}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
+export function useTokenByAddressQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TokenByAddressQuery,
+    TokenByAddressQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    TokenByAddressQuery,
+    TokenByAddressQueryVariables
+  >(TokenByAddressDocument, baseOptions);
 }
-    ${ErFragmentDoc}`;
+export function useTokenByAddressLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TokenByAddressQuery,
+    TokenByAddressQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    TokenByAddressQuery,
+    TokenByAddressQueryVariables
+  >(TokenByAddressDocument, baseOptions);
+}
+export type TokenByAddressQueryHookResult = ReturnType<
+  typeof useTokenByAddressQuery
+>;
+export type TokenByAddressLazyQueryHookResult = ReturnType<
+  typeof useTokenByAddressLazyQuery
+>;
+export type TokenByAddressQueryResult = ApolloReactCommon.QueryResult<
+  TokenByAddressQuery,
+  TokenByAddressQueryVariables
+>;
+export const LastExchangeRateBeforeTimestampDocument = gql`
+  query LastExchangeRateBeforeTimestamp($timestamp: Int!) @api(name: mstable) {
+    exchangeRates(
+      where: { timestamp_lt: $timestamp }
+      orderDirection: desc
+      orderBy: timestamp
+      first: 1
+    ) {
+      ...ER
+    }
+  }
+  ${ErFragmentDoc}
+`;
 
 /**
  * __useLastExchangeRateBeforeTimestampQuery__
@@ -3308,40 +3353,107 @@ export const LastExchangeRateBeforeTimestampDocument = gql`
  *   },
  * });
  */
-export function useLastExchangeRateBeforeTimestampQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
-        return ApolloReactHooks.useQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
-      }
-export function useLastExchangeRateBeforeTimestampLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
-        }
-export type LastExchangeRateBeforeTimestampQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampQuery>;
-export type LastExchangeRateBeforeTimestampLazyQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampLazyQuery>;
-export type LastExchangeRateBeforeTimestampQueryResult = ApolloReactCommon.QueryResult<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>;
-export const WeeklyExchangeRatesDocument = gql`
-    query WeeklyExchangeRates($day0: Int!, $day1: Int!, $day2: Int!, $day3: Int!, $day4: Int!, $day5: Int!, $day6: Int!) @api(name: mstable) {
-  day0: exchangeRates(where: {timestamp_lt: $day0}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day1: exchangeRates(where: {timestamp_lt: $day1}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day2: exchangeRates(where: {timestamp_lt: $day2}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day3: exchangeRates(where: {timestamp_lt: $day3}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day4: exchangeRates(where: {timestamp_lt: $day4}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day5: exchangeRates(where: {timestamp_lt: $day5}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day6: exchangeRates(where: {timestamp_lt: $day6}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
+export function useLastExchangeRateBeforeTimestampQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    LastExchangeRateBeforeTimestampQuery,
+    LastExchangeRateBeforeTimestampQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    LastExchangeRateBeforeTimestampQuery,
+    LastExchangeRateBeforeTimestampQueryVariables
+  >(LastExchangeRateBeforeTimestampDocument, baseOptions);
 }
-    ${ErFragmentDoc}`;
+export function useLastExchangeRateBeforeTimestampLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    LastExchangeRateBeforeTimestampQuery,
+    LastExchangeRateBeforeTimestampQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    LastExchangeRateBeforeTimestampQuery,
+    LastExchangeRateBeforeTimestampQueryVariables
+  >(LastExchangeRateBeforeTimestampDocument, baseOptions);
+}
+export type LastExchangeRateBeforeTimestampQueryHookResult = ReturnType<
+  typeof useLastExchangeRateBeforeTimestampQuery
+>;
+export type LastExchangeRateBeforeTimestampLazyQueryHookResult = ReturnType<
+  typeof useLastExchangeRateBeforeTimestampLazyQuery
+>;
+export type LastExchangeRateBeforeTimestampQueryResult = ApolloReactCommon.QueryResult<
+  LastExchangeRateBeforeTimestampQuery,
+  LastExchangeRateBeforeTimestampQueryVariables
+>;
+export const WeeklyExchangeRatesDocument = gql`
+  query WeeklyExchangeRates(
+    $day0: Int!
+    $day1: Int!
+    $day2: Int!
+    $day3: Int!
+    $day4: Int!
+    $day5: Int!
+    $day6: Int!
+  ) @api(name: mstable) {
+    day0: exchangeRates(
+      where: { timestamp_lt: $day0 }
+      orderDirection: desc
+      orderBy: timestamp
+      first: 1
+    ) {
+      ...ER
+    }
+    day1: exchangeRates(
+      where: { timestamp_lt: $day1 }
+      orderDirection: desc
+      orderBy: timestamp
+      first: 1
+    ) {
+      ...ER
+    }
+    day2: exchangeRates(
+      where: { timestamp_lt: $day2 }
+      orderDirection: desc
+      orderBy: timestamp
+      first: 1
+    ) {
+      ...ER
+    }
+    day3: exchangeRates(
+      where: { timestamp_lt: $day3 }
+      orderDirection: desc
+      orderBy: timestamp
+      first: 1
+    ) {
+      ...ER
+    }
+    day4: exchangeRates(
+      where: { timestamp_lt: $day4 }
+      orderDirection: desc
+      orderBy: timestamp
+      first: 1
+    ) {
+      ...ER
+    }
+    day5: exchangeRates(
+      where: { timestamp_lt: $day5 }
+      orderDirection: desc
+      orderBy: timestamp
+      first: 1
+    ) {
+      ...ER
+    }
+    day6: exchangeRates(
+      where: { timestamp_lt: $day6 }
+      orderDirection: desc
+      orderBy: timestamp
+      first: 1
+    ) {
+      ...ER
+    }
+  }
+  ${ErFragmentDoc}
+`;
 
 /**
  * __useWeeklyExchangeRatesQuery__
@@ -3365,29 +3477,52 @@ export const WeeklyExchangeRatesDocument = gql`
  *   },
  * });
  */
-export function useWeeklyExchangeRatesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
-        return ApolloReactHooks.useQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
-      }
-export function useWeeklyExchangeRatesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
-        }
-export type WeeklyExchangeRatesQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesQuery>;
-export type WeeklyExchangeRatesLazyQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesLazyQuery>;
-export type WeeklyExchangeRatesQueryResult = ApolloReactCommon.QueryResult<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>;
-export const SavingsContractDocument = gql`
-    query SavingsContract($id: ID!) @api(name: mstable) {
-  savingsContracts(where: {id: $id}) {
-    id
-    totalSavings
-    totalCredits
-    exchangeRates {
-      id
-    }
-    savingsRate
-    automationEnabled
-  }
+export function useWeeklyExchangeRatesQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    WeeklyExchangeRatesQuery,
+    WeeklyExchangeRatesQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    WeeklyExchangeRatesQuery,
+    WeeklyExchangeRatesQueryVariables
+  >(WeeklyExchangeRatesDocument, baseOptions);
 }
-    `;
+export function useWeeklyExchangeRatesLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    WeeklyExchangeRatesQuery,
+    WeeklyExchangeRatesQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    WeeklyExchangeRatesQuery,
+    WeeklyExchangeRatesQueryVariables
+  >(WeeklyExchangeRatesDocument, baseOptions);
+}
+export type WeeklyExchangeRatesQueryHookResult = ReturnType<
+  typeof useWeeklyExchangeRatesQuery
+>;
+export type WeeklyExchangeRatesLazyQueryHookResult = ReturnType<
+  typeof useWeeklyExchangeRatesLazyQuery
+>;
+export type WeeklyExchangeRatesQueryResult = ApolloReactCommon.QueryResult<
+  WeeklyExchangeRatesQuery,
+  WeeklyExchangeRatesQueryVariables
+>;
+export const SavingsContractDocument = gql`
+  query SavingsContract($id: ID!) @api(name: mstable) {
+    savingsContracts(where: { id: $id }) {
+      id
+      totalSavings
+      totalCredits
+      exchangeRates {
+        id
+      }
+      savingsRate
+      automationEnabled
+    }
+  }
+`;
 
 /**
  * __useSavingsContractQuery__
@@ -3405,22 +3540,46 @@ export const SavingsContractDocument = gql`
  *   },
  * });
  */
-export function useSavingsContractQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
-        return ApolloReactHooks.useQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
-      }
-export function useSavingsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
-        }
-export type SavingsContractQueryHookResult = ReturnType<typeof useSavingsContractQuery>;
-export type SavingsContractLazyQueryHookResult = ReturnType<typeof useSavingsContractLazyQuery>;
-export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<SavingsContractQuery, SavingsContractQueryVariables>;
-export const TokenDocument = gql`
-    query Token($id: ID!) @api(name: mstable) {
-  token(id: $id) {
-    ...TokenDetails
-  }
+export function useSavingsContractQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    SavingsContractQuery,
+    SavingsContractQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    SavingsContractQuery,
+    SavingsContractQueryVariables
+  >(SavingsContractDocument, baseOptions);
 }
-    ${TokenDetailsFragmentDoc}`;
+export function useSavingsContractLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    SavingsContractQuery,
+    SavingsContractQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    SavingsContractQuery,
+    SavingsContractQueryVariables
+  >(SavingsContractDocument, baseOptions);
+}
+export type SavingsContractQueryHookResult = ReturnType<
+  typeof useSavingsContractQuery
+>;
+export type SavingsContractLazyQueryHookResult = ReturnType<
+  typeof useSavingsContractLazyQuery
+>;
+export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<
+  SavingsContractQuery,
+  SavingsContractQueryVariables
+>;
+export const TokenDocument = gql`
+  query Token($id: ID!) @api(name: mstable) {
+    token(id: $id) {
+      ...TokenDetails
+    }
+  }
+  ${TokenDetailsFragmentDoc}
+`;
 
 /**
  * __useTokenQuery__
@@ -3438,24 +3597,43 @@ export const TokenDocument = gql`
  *   },
  * });
  */
-export function useTokenQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TokenQuery, TokenQueryVariables>) {
-        return ApolloReactHooks.useQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
-      }
-export function useTokenLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TokenQuery, TokenQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
-        }
+export function useTokenQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TokenQuery,
+    TokenQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<TokenQuery, TokenQueryVariables>(
+    TokenDocument,
+    baseOptions,
+  );
+}
+export function useTokenLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TokenQuery,
+    TokenQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<TokenQuery, TokenQueryVariables>(
+    TokenDocument,
+    baseOptions,
+  );
+}
 export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
 export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
-export type TokenQueryResult = ApolloReactCommon.QueryResult<TokenQuery, TokenQueryVariables>;
+export type TokenQueryResult = ApolloReactCommon.QueryResult<
+  TokenQuery,
+  TokenQueryVariables
+>;
 export const CreditBalancesDocument = gql`
-    query CreditBalances($account: ID!) @api(name: mstable) {
-  account(id: $account) {
-    creditBalances {
-      amount
+  query CreditBalances($account: ID!) @api(name: mstable) {
+    account(id: $account) {
+      creditBalances {
+        amount
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useCreditBalancesQuery__
@@ -3473,23 +3651,46 @@ export const CreditBalancesDocument = gql`
  *   },
  * });
  */
-export function useCreditBalancesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
-        return ApolloReactHooks.useQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
-      }
-export function useCreditBalancesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
-        }
-export type CreditBalancesQueryHookResult = ReturnType<typeof useCreditBalancesQuery>;
-export type CreditBalancesLazyQueryHookResult = ReturnType<typeof useCreditBalancesLazyQuery>;
-export type CreditBalancesQueryResult = ApolloReactCommon.QueryResult<CreditBalancesQuery, CreditBalancesQueryVariables>;
-export const LatestExchangeRateDocument = gql`
-    query LatestExchangeRate @api(name: mstable) {
-  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
-    exchangeRate
-    timestamp
-  }
+export function useCreditBalancesQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    CreditBalancesQuery,
+    CreditBalancesQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    CreditBalancesQuery,
+    CreditBalancesQueryVariables
+  >(CreditBalancesDocument, baseOptions);
 }
-    `;
+export function useCreditBalancesLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    CreditBalancesQuery,
+    CreditBalancesQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    CreditBalancesQuery,
+    CreditBalancesQueryVariables
+  >(CreditBalancesDocument, baseOptions);
+}
+export type CreditBalancesQueryHookResult = ReturnType<
+  typeof useCreditBalancesQuery
+>;
+export type CreditBalancesLazyQueryHookResult = ReturnType<
+  typeof useCreditBalancesLazyQuery
+>;
+export type CreditBalancesQueryResult = ApolloReactCommon.QueryResult<
+  CreditBalancesQuery,
+  CreditBalancesQueryVariables
+>;
+export const LatestExchangeRateDocument = gql`
+  query LatestExchangeRate @api(name: mstable) {
+    exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
+      exchangeRate
+      timestamp
+    }
+  }
+`;
 
 /**
  * __useLatestExchangeRateQuery__
@@ -3506,23 +3707,60 @@ export const LatestExchangeRateDocument = gql`
  *   },
  * });
  */
-export function useLatestExchangeRateQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
-        return ApolloReactHooks.useQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
-      }
-export function useLatestExchangeRateLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
-        }
-export type LatestExchangeRateQueryHookResult = ReturnType<typeof useLatestExchangeRateQuery>;
-export type LatestExchangeRateLazyQueryHookResult = ReturnType<typeof useLatestExchangeRateLazyQuery>;
-export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>;
-export const VolumeMetricsOfTypeDocument = gql`
-    query VolumeMetricsOfType($period: TimeMetricPeriod!, $type: TransactionType!, $from: Int!, $to: Int!) @api(name: mstable) {
-  volumeMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, type: $type, timestamp_gte: $from, timestamp_lte: $to}) {
-    timestamp
-    value
-  }
+export function useLatestExchangeRateQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    LatestExchangeRateQuery,
+    LatestExchangeRateQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    LatestExchangeRateQuery,
+    LatestExchangeRateQueryVariables
+  >(LatestExchangeRateDocument, baseOptions);
 }
-    `;
+export function useLatestExchangeRateLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    LatestExchangeRateQuery,
+    LatestExchangeRateQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    LatestExchangeRateQuery,
+    LatestExchangeRateQueryVariables
+  >(LatestExchangeRateDocument, baseOptions);
+}
+export type LatestExchangeRateQueryHookResult = ReturnType<
+  typeof useLatestExchangeRateQuery
+>;
+export type LatestExchangeRateLazyQueryHookResult = ReturnType<
+  typeof useLatestExchangeRateLazyQuery
+>;
+export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<
+  LatestExchangeRateQuery,
+  LatestExchangeRateQueryVariables
+>;
+export const VolumeMetricsOfTypeDocument = gql`
+  query VolumeMetricsOfType(
+    $period: TimeMetricPeriod!
+    $type: TransactionType!
+    $from: Int!
+    $to: Int!
+  ) @api(name: mstable) {
+    volumeMetrics(
+      orderBy: timestamp
+      orderDirection: asc
+      where: {
+        period: $period
+        type: $type
+        timestamp_gte: $from
+        timestamp_lte: $to
+      }
+    ) {
+      timestamp
+      value
+    }
+  }
+`;
 
 /**
  * __useVolumeMetricsOfTypeQuery__
@@ -3543,24 +3781,52 @@ export const VolumeMetricsOfTypeDocument = gql`
  *   },
  * });
  */
-export function useVolumeMetricsOfTypeQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>) {
-        return ApolloReactHooks.useQuery<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>(VolumeMetricsOfTypeDocument, baseOptions);
-      }
-export function useVolumeMetricsOfTypeLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>(VolumeMetricsOfTypeDocument, baseOptions);
-        }
-export type VolumeMetricsOfTypeQueryHookResult = ReturnType<typeof useVolumeMetricsOfTypeQuery>;
-export type VolumeMetricsOfTypeLazyQueryHookResult = ReturnType<typeof useVolumeMetricsOfTypeLazyQuery>;
-export type VolumeMetricsOfTypeQueryResult = ApolloReactCommon.QueryResult<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>;
-export const VolumeMetricsDocument = gql`
-    query VolumeMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!) @api(name: mstable) {
-  volumeMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, timestamp_gte: $from, timestamp_lte: $to}) {
-    type
-    timestamp
-    value
-  }
+export function useVolumeMetricsOfTypeQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    VolumeMetricsOfTypeQuery,
+    VolumeMetricsOfTypeQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    VolumeMetricsOfTypeQuery,
+    VolumeMetricsOfTypeQueryVariables
+  >(VolumeMetricsOfTypeDocument, baseOptions);
 }
-    `;
+export function useVolumeMetricsOfTypeLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    VolumeMetricsOfTypeQuery,
+    VolumeMetricsOfTypeQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    VolumeMetricsOfTypeQuery,
+    VolumeMetricsOfTypeQueryVariables
+  >(VolumeMetricsOfTypeDocument, baseOptions);
+}
+export type VolumeMetricsOfTypeQueryHookResult = ReturnType<
+  typeof useVolumeMetricsOfTypeQuery
+>;
+export type VolumeMetricsOfTypeLazyQueryHookResult = ReturnType<
+  typeof useVolumeMetricsOfTypeLazyQuery
+>;
+export type VolumeMetricsOfTypeQueryResult = ApolloReactCommon.QueryResult<
+  VolumeMetricsOfTypeQuery,
+  VolumeMetricsOfTypeQueryVariables
+>;
+export const VolumeMetricsDocument = gql`
+  query VolumeMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!)
+    @api(name: mstable) {
+    volumeMetrics(
+      orderBy: timestamp
+      orderDirection: asc
+      where: { period: $period, timestamp_gte: $from, timestamp_lte: $to }
+    ) {
+      type
+      timestamp
+      value
+    }
+  }
+`;
 
 /**
  * __useVolumeMetricsQuery__
@@ -3580,23 +3846,60 @@ export const VolumeMetricsDocument = gql`
  *   },
  * });
  */
-export function useVolumeMetricsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<VolumeMetricsQuery, VolumeMetricsQueryVariables>) {
-        return ApolloReactHooks.useQuery<VolumeMetricsQuery, VolumeMetricsQueryVariables>(VolumeMetricsDocument, baseOptions);
-      }
-export function useVolumeMetricsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<VolumeMetricsQuery, VolumeMetricsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<VolumeMetricsQuery, VolumeMetricsQueryVariables>(VolumeMetricsDocument, baseOptions);
-        }
-export type VolumeMetricsQueryHookResult = ReturnType<typeof useVolumeMetricsQuery>;
-export type VolumeMetricsLazyQueryHookResult = ReturnType<typeof useVolumeMetricsLazyQuery>;
-export type VolumeMetricsQueryResult = ApolloReactCommon.QueryResult<VolumeMetricsQuery, VolumeMetricsQueryVariables>;
-export const AggregateMetricsOfTypeDocument = gql`
-    query AggregateMetricsOfType($period: TimeMetricPeriod!, $type: AggregateMetricType!, $from: Int!, $to: Int!) @api(name: mstable) {
-  aggregateMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, type: $type, timestamp_gte: $from, timestamp_lte: $to}) {
-    timestamp
-    value
-  }
+export function useVolumeMetricsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    VolumeMetricsQuery,
+    VolumeMetricsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    VolumeMetricsQuery,
+    VolumeMetricsQueryVariables
+  >(VolumeMetricsDocument, baseOptions);
 }
-    `;
+export function useVolumeMetricsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    VolumeMetricsQuery,
+    VolumeMetricsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    VolumeMetricsQuery,
+    VolumeMetricsQueryVariables
+  >(VolumeMetricsDocument, baseOptions);
+}
+export type VolumeMetricsQueryHookResult = ReturnType<
+  typeof useVolumeMetricsQuery
+>;
+export type VolumeMetricsLazyQueryHookResult = ReturnType<
+  typeof useVolumeMetricsLazyQuery
+>;
+export type VolumeMetricsQueryResult = ApolloReactCommon.QueryResult<
+  VolumeMetricsQuery,
+  VolumeMetricsQueryVariables
+>;
+export const AggregateMetricsOfTypeDocument = gql`
+  query AggregateMetricsOfType(
+    $period: TimeMetricPeriod!
+    $type: AggregateMetricType!
+    $from: Int!
+    $to: Int!
+  ) @api(name: mstable) {
+    aggregateMetrics(
+      orderBy: timestamp
+      orderDirection: asc
+      where: {
+        period: $period
+        type: $type
+        timestamp_gte: $from
+        timestamp_lte: $to
+      }
+    ) {
+      timestamp
+      value
+    }
+  }
+`;
 
 /**
  * __useAggregateMetricsOfTypeQuery__
@@ -3617,24 +3920,52 @@ export const AggregateMetricsOfTypeDocument = gql`
  *   },
  * });
  */
-export function useAggregateMetricsOfTypeQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>) {
-        return ApolloReactHooks.useQuery<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>(AggregateMetricsOfTypeDocument, baseOptions);
-      }
-export function useAggregateMetricsOfTypeLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>(AggregateMetricsOfTypeDocument, baseOptions);
-        }
-export type AggregateMetricsOfTypeQueryHookResult = ReturnType<typeof useAggregateMetricsOfTypeQuery>;
-export type AggregateMetricsOfTypeLazyQueryHookResult = ReturnType<typeof useAggregateMetricsOfTypeLazyQuery>;
-export type AggregateMetricsOfTypeQueryResult = ApolloReactCommon.QueryResult<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>;
-export const AggregateMetricsDocument = gql`
-    query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!) @api(name: mstable) {
-  aggregateMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, timestamp_gte: $from, timestamp_lte: $to}) {
-    type
-    timestamp
-    value
-  }
+export function useAggregateMetricsOfTypeQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    AggregateMetricsOfTypeQuery,
+    AggregateMetricsOfTypeQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    AggregateMetricsOfTypeQuery,
+    AggregateMetricsOfTypeQueryVariables
+  >(AggregateMetricsOfTypeDocument, baseOptions);
 }
-    `;
+export function useAggregateMetricsOfTypeLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    AggregateMetricsOfTypeQuery,
+    AggregateMetricsOfTypeQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    AggregateMetricsOfTypeQuery,
+    AggregateMetricsOfTypeQueryVariables
+  >(AggregateMetricsOfTypeDocument, baseOptions);
+}
+export type AggregateMetricsOfTypeQueryHookResult = ReturnType<
+  typeof useAggregateMetricsOfTypeQuery
+>;
+export type AggregateMetricsOfTypeLazyQueryHookResult = ReturnType<
+  typeof useAggregateMetricsOfTypeLazyQuery
+>;
+export type AggregateMetricsOfTypeQueryResult = ApolloReactCommon.QueryResult<
+  AggregateMetricsOfTypeQuery,
+  AggregateMetricsOfTypeQueryVariables
+>;
+export const AggregateMetricsDocument = gql`
+  query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!)
+    @api(name: mstable) {
+    aggregateMetrics(
+      orderBy: timestamp
+      orderDirection: asc
+      where: { period: $period, timestamp_gte: $from, timestamp_lte: $to }
+    ) {
+      type
+      timestamp
+      value
+    }
+  }
+`;
 
 /**
  * __useAggregateMetricsQuery__
@@ -3654,62 +3985,95 @@ export const AggregateMetricsDocument = gql`
  *   },
  * });
  */
-export function useAggregateMetricsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AggregateMetricsQuery, AggregateMetricsQueryVariables>) {
-        return ApolloReactHooks.useQuery<AggregateMetricsQuery, AggregateMetricsQueryVariables>(AggregateMetricsDocument, baseOptions);
-      }
-export function useAggregateMetricsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AggregateMetricsQuery, AggregateMetricsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<AggregateMetricsQuery, AggregateMetricsQueryVariables>(AggregateMetricsDocument, baseOptions);
-        }
-export type AggregateMetricsQueryHookResult = ReturnType<typeof useAggregateMetricsQuery>;
-export type AggregateMetricsLazyQueryHookResult = ReturnType<typeof useAggregateMetricsLazyQuery>;
-export type AggregateMetricsQueryResult = ApolloReactCommon.QueryResult<AggregateMetricsQuery, AggregateMetricsQueryVariables>;
-export const StakingRewardsContractsDocument = gql`
-    query StakingRewardsContracts($account: Bytes, $includeHistoric: Boolean!, $block: Block_height) @api(name: mstable) {
-  current: stakingRewardsContracts {
-    address: id
-    id
-    type
-    duration
-    lastUpdateTime
-    periodFinish
-    rewardRate
-    rewardPerTokenStored
-    platformRewardPerTokenStored
-    platformRewardRate
-    totalSupply
-    totalStakingRewards
-    totalPlatformRewards
-    stakingToken {
-      totalSupply
-      ...TokenDetails
-    }
-    rewardsToken {
-      ...TokenDetails
-    }
-    platformToken {
-      ...TokenDetails
-    }
-    stakingBalances(where: {account: $account}) {
-      amount
-    }
-    stakingRewards: stakingRewards(where: {account: $account, type: REWARD}) {
-      amount
-      amountPerTokenPaid
-    }
-    platformRewards: stakingRewards(where: {account: $account, type: PLATFORM_REWARD}) {
-      amount
-      amountPerTokenPaid
-    }
-  }
-  historic: stakingRewardsContracts(block: $block) @include(if: $includeHistoric) {
-    address: id
-    id
-    lastUpdateTime
-    rewardPerTokenStored
-    platformRewardPerTokenStored
-  }
+export function useAggregateMetricsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    AggregateMetricsQuery,
+    AggregateMetricsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    AggregateMetricsQuery,
+    AggregateMetricsQueryVariables
+  >(AggregateMetricsDocument, baseOptions);
 }
-    ${TokenDetailsFragmentDoc}`;
+export function useAggregateMetricsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    AggregateMetricsQuery,
+    AggregateMetricsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    AggregateMetricsQuery,
+    AggregateMetricsQueryVariables
+  >(AggregateMetricsDocument, baseOptions);
+}
+export type AggregateMetricsQueryHookResult = ReturnType<
+  typeof useAggregateMetricsQuery
+>;
+export type AggregateMetricsLazyQueryHookResult = ReturnType<
+  typeof useAggregateMetricsLazyQuery
+>;
+export type AggregateMetricsQueryResult = ApolloReactCommon.QueryResult<
+  AggregateMetricsQuery,
+  AggregateMetricsQueryVariables
+>;
+export const StakingRewardsContractsDocument = gql`
+  query StakingRewardsContracts(
+    $account: Bytes
+    $includeHistoric: Boolean!
+    $block: Block_height
+  ) @api(name: mstable) {
+    current: stakingRewardsContracts {
+      address: id
+      id
+      type
+      duration
+      lastUpdateTime
+      periodFinish
+      rewardRate
+      rewardPerTokenStored
+      platformRewardPerTokenStored
+      platformRewardRate
+      totalSupply
+      totalStakingRewards
+      totalPlatformRewards
+      stakingToken {
+        totalSupply
+        ...TokenDetails
+      }
+      rewardsToken {
+        ...TokenDetails
+      }
+      platformToken {
+        ...TokenDetails
+      }
+      stakingBalances(where: { account: $account }) {
+        amount
+      }
+      stakingRewards: stakingRewards(
+        where: { account: $account, type: REWARD }
+      ) {
+        amount
+        amountPerTokenPaid
+      }
+      platformRewards: stakingRewards(
+        where: { account: $account, type: PLATFORM_REWARD }
+      ) {
+        amount
+        amountPerTokenPaid
+      }
+    }
+    historic: stakingRewardsContracts(block: $block)
+      @include(if: $includeHistoric) {
+      address: id
+      id
+      lastUpdateTime
+      rewardPerTokenStored
+      platformRewardPerTokenStored
+    }
+  }
+  ${TokenDetailsFragmentDoc}
+`;
 
 /**
  * __useStakingRewardsContractsQuery__
@@ -3729,23 +4093,46 @@ export const StakingRewardsContractsDocument = gql`
  *   },
  * });
  */
-export function useStakingRewardsContractsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>) {
-        return ApolloReactHooks.useQuery<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>(StakingRewardsContractsDocument, baseOptions);
-      }
-export function useStakingRewardsContractsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>(StakingRewardsContractsDocument, baseOptions);
-        }
-export type StakingRewardsContractsQueryHookResult = ReturnType<typeof useStakingRewardsContractsQuery>;
-export type StakingRewardsContractsLazyQueryHookResult = ReturnType<typeof useStakingRewardsContractsLazyQuery>;
-export type StakingRewardsContractsQueryResult = ApolloReactCommon.QueryResult<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>;
-export const RewardsDistributorDocument = gql`
-    query RewardsDistributor @api(name: mstable) {
-  rewardsDistributors(first: 1) {
-    id
-    fundManagers
-  }
+export function useStakingRewardsContractsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    StakingRewardsContractsQuery,
+    StakingRewardsContractsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    StakingRewardsContractsQuery,
+    StakingRewardsContractsQueryVariables
+  >(StakingRewardsContractsDocument, baseOptions);
 }
-    `;
+export function useStakingRewardsContractsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    StakingRewardsContractsQuery,
+    StakingRewardsContractsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    StakingRewardsContractsQuery,
+    StakingRewardsContractsQueryVariables
+  >(StakingRewardsContractsDocument, baseOptions);
+}
+export type StakingRewardsContractsQueryHookResult = ReturnType<
+  typeof useStakingRewardsContractsQuery
+>;
+export type StakingRewardsContractsLazyQueryHookResult = ReturnType<
+  typeof useStakingRewardsContractsLazyQuery
+>;
+export type StakingRewardsContractsQueryResult = ApolloReactCommon.QueryResult<
+  StakingRewardsContractsQuery,
+  StakingRewardsContractsQueryVariables
+>;
+export const RewardsDistributorDocument = gql`
+  query RewardsDistributor @api(name: mstable) {
+    rewardsDistributors(first: 1) {
+      id
+      fundManagers
+    }
+  }
+`;
 
 /**
  * __useRewardsDistributorQuery__
@@ -3762,88 +4149,35 @@ export const RewardsDistributorDocument = gql`
  *   },
  * });
  */
-export function useRewardsDistributorQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<RewardsDistributorQuery, RewardsDistributorQueryVariables>) {
-        return ApolloReactHooks.useQuery<RewardsDistributorQuery, RewardsDistributorQueryVariables>(RewardsDistributorDocument, baseOptions);
-      }
-export function useRewardsDistributorLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RewardsDistributorQuery, RewardsDistributorQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<RewardsDistributorQuery, RewardsDistributorQueryVariables>(RewardsDistributorDocument, baseOptions);
-        }
-export type RewardsDistributorQueryHookResult = ReturnType<typeof useRewardsDistributorQuery>;
-export type RewardsDistributorLazyQueryHookResult = ReturnType<typeof useRewardsDistributorLazyQuery>;
-export type RewardsDistributorQueryResult = ApolloReactCommon.QueryResult<RewardsDistributorQuery, RewardsDistributorQueryVariables>;
-export const MostRecentRewardPerTokenStoredDocument = gql`
-    query MostRecentRewardPerTokenStored($stakingRewardsContract: String!, $timestamp: Int!) @api(name: mstable) {
-  closestBeforeTimestamp: rewardPerTokenStoreds(where: {stakingRewardsContract: $stakingRewardsContract, lastUpdateTime_lt: $timestamp}, orderDirection: asc, orderBy: lastUpdateTime, first: 1) {
-    ...RewardPerTokenStoredDetails
-  }
-  closestAfterTimestamp: rewardPerTokenStoreds(where: {stakingRewardsContract: $stakingRewardsContract, lastUpdateTime_gt: $timestamp}, orderDirection: desc, orderBy: lastUpdateTime, first: 1) {
-    ...RewardPerTokenStoredDetails
-  }
+export function useRewardsDistributorQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    RewardsDistributorQuery,
+    RewardsDistributorQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    RewardsDistributorQuery,
+    RewardsDistributorQueryVariables
+  >(RewardsDistributorDocument, baseOptions);
 }
-    ${RewardPerTokenStoredDetailsFragmentDoc}`;
-
-/**
- * __useMostRecentRewardPerTokenStoredQuery__
- *
- * To run a query within a React component, call `useMostRecentRewardPerTokenStoredQuery` and pass it any options that fit your needs.
- * When your component renders, `useMostRecentRewardPerTokenStoredQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useMostRecentRewardPerTokenStoredQuery({
- *   variables: {
- *      stakingRewardsContract: // value for 'stakingRewardsContract'
- *      timestamp: // value for 'timestamp'
- *   },
- * });
- */
-export function useMostRecentRewardPerTokenStoredQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>) {
-        return ApolloReactHooks.useQuery<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>(MostRecentRewardPerTokenStoredDocument, baseOptions);
-      }
-export function useMostRecentRewardPerTokenStoredLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>(MostRecentRewardPerTokenStoredDocument, baseOptions);
-        }
-export type MostRecentRewardPerTokenStoredQueryHookResult = ReturnType<typeof useMostRecentRewardPerTokenStoredQuery>;
-export type MostRecentRewardPerTokenStoredLazyQueryHookResult = ReturnType<typeof useMostRecentRewardPerTokenStoredLazyQuery>;
-export type MostRecentRewardPerTokenStoredQueryResult = ApolloReactCommon.QueryResult<MostRecentRewardPerTokenStoredQuery, MostRecentRewardPerTokenStoredQueryVariables>;
-export const ClaimRewardTransactionsDocument = gql`
-    query ClaimRewardTransactions($start: Int!, $end: Int!) {
-  stakingRewardsContractClaimRewardTransactions(orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: $start, timestamp_lt: $end}) {
-    sender
-    timestamp
-    amount
-    stakingRewardsContract {
-      id
-    }
-  }
+export function useRewardsDistributorLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    RewardsDistributorQuery,
+    RewardsDistributorQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    RewardsDistributorQuery,
+    RewardsDistributorQueryVariables
+  >(RewardsDistributorDocument, baseOptions);
 }
-    `;
-
-/**
- * __useClaimRewardTransactionsQuery__
- *
- * To run a query within a React component, call `useClaimRewardTransactionsQuery` and pass it any options that fit your needs.
- * When your component renders, `useClaimRewardTransactionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useClaimRewardTransactionsQuery({
- *   variables: {
- *      start: // value for 'start'
- *      end: // value for 'end'
- *   },
- * });
- */
-export function useClaimRewardTransactionsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>) {
-        return ApolloReactHooks.useQuery<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>(ClaimRewardTransactionsDocument, baseOptions);
-      }
-export function useClaimRewardTransactionsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>(ClaimRewardTransactionsDocument, baseOptions);
-        }
-export type ClaimRewardTransactionsQueryHookResult = ReturnType<typeof useClaimRewardTransactionsQuery>;
-export type ClaimRewardTransactionsLazyQueryHookResult = ReturnType<typeof useClaimRewardTransactionsLazyQuery>;
-export type ClaimRewardTransactionsQueryResult = ApolloReactCommon.QueryResult<ClaimRewardTransactionsQuery, ClaimRewardTransactionsQueryVariables>;
+export type RewardsDistributorQueryHookResult = ReturnType<
+  typeof useRewardsDistributorQuery
+>;
+export type RewardsDistributorLazyQueryHookResult = ReturnType<
+  typeof useRewardsDistributorLazyQuery
+>;
+export type RewardsDistributorQueryResult = ApolloReactCommon.QueryResult<
+  RewardsDistributorQuery,
+  RewardsDistributorQueryVariables
+>;
