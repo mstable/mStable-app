@@ -74,6 +74,7 @@
     "start": "react-scripts start",
     "test": "env-cmd -f .env.staging react-scripts test",
     "pool-rewards": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/poolRewards.ts",
+    "all-unique-stakers": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/allUniqueStakers.ts",
     "truffle:migrate": "cd ./lib/mStable-subgraph && yarn truffle:migrate",
     "truffle:script": "cd ./lib/mStable-subgraph && yarn truffle:script"
   },
@@ -107,6 +108,7 @@
     "@testing-library/react-hooks": "^3.2.1",
     "@typechain/ethers-v4": "^1.0.0",
     "@types/jest": "^25.2.1",
+    "@types/lodash.merge": "^4.6.6",
     "@types/react-transition-group": "^4.2.4",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "cross-fetch": "^3.0.5",
@@ -120,6 +122,7 @@
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.3",
     "husky": "^4.2.5",
+    "lodash.merge": "^4.6.2",
     "prettier": "^1.19.1",
     "react-test-renderer": "^16.13.1",
     "ts-node": "^8.10.2",

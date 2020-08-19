@@ -40,6 +40,9 @@ export type Balancer = {
   finalizedPoolCount: Scalars['Int'];
   pools?: Maybe<Array<Pool>>;
   txCount: Scalars['BigInt'];
+  totalLiquidity: Scalars['BigDecimal'];
+  totalSwapVolume: Scalars['BigDecimal'];
+  totalSwapFee: Scalars['BigDecimal'];
 };
 
 
@@ -98,6 +101,30 @@ export type Balancer_Filter = {
   txCount_lte?: Maybe<Scalars['BigInt']>;
   txCount_in?: Maybe<Array<Scalars['BigInt']>>;
   txCount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  totalLiquidity?: Maybe<Scalars['BigDecimal']>;
+  totalLiquidity_not?: Maybe<Scalars['BigDecimal']>;
+  totalLiquidity_gt?: Maybe<Scalars['BigDecimal']>;
+  totalLiquidity_lt?: Maybe<Scalars['BigDecimal']>;
+  totalLiquidity_gte?: Maybe<Scalars['BigDecimal']>;
+  totalLiquidity_lte?: Maybe<Scalars['BigDecimal']>;
+  totalLiquidity_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalLiquidity_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalSwapVolume?: Maybe<Scalars['BigDecimal']>;
+  totalSwapVolume_not?: Maybe<Scalars['BigDecimal']>;
+  totalSwapVolume_gt?: Maybe<Scalars['BigDecimal']>;
+  totalSwapVolume_lt?: Maybe<Scalars['BigDecimal']>;
+  totalSwapVolume_gte?: Maybe<Scalars['BigDecimal']>;
+  totalSwapVolume_lte?: Maybe<Scalars['BigDecimal']>;
+  totalSwapVolume_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalSwapVolume_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalSwapFee?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFee_not?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFee_gt?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFee_lt?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFee_gte?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFee_lte?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFee_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalSwapFee_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
 };
 
 export enum Balancer_OrderBy {
@@ -106,7 +133,10 @@ export enum Balancer_OrderBy {
   PoolCount = 'poolCount',
   FinalizedPoolCount = 'finalizedPoolCount',
   Pools = 'pools',
-  TxCount = 'txCount'
+  TxCount = 'txCount',
+  TotalLiquidity = 'totalLiquidity',
+  TotalSwapVolume = 'totalSwapVolume',
+  TotalSwapFee = 'totalSwapFee'
 }
 
 

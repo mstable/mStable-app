@@ -2,7 +2,7 @@
   "metadata": {
     "contractAddress": "0x25970282aac735cd4c76f30bfb0bf2bc8dad4e70",
     "poolName": "mUSD/MTA 95/5 Balancer",
-    "week": {
+    "tranche": {
       "number": 1,
       "startDate": "2020-08-03T13:21:29.000Z",
       "endDate": "2020-08-10T13:21:29.000Z",
