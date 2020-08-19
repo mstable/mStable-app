@@ -2801,6 +2801,18 @@ export type RewardsTransactionsQuery = { stakingRewardsContracts: Array<(
     & { platformToken?: Maybe<Pick<Token, 'symbol'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
   )> };
 
+export type AllRewardsTransactionsQueryVariables = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+};
+
+
+export type AllRewardsTransactionsQuery = { stakingRewardsContracts: Array<(
+    Pick<StakingRewardsContract, 'lastUpdateTime' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'totalSupply'>
+    & { address: StakingRewardsContract['id'] }
+    & { platformToken?: Maybe<Pick<Token, 'symbol'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
+  )> };
+
 
 export const RewardsTransactionsDocument = gql`
     query RewardsTransactions($stakingRewards: ID!, $start: Int!, $end: Int!, $block: Block_height) @api(name: mstable) {
@@ -2830,3 +2842,32 @@ export const RewardsTransactionsDocument = gql`
 }
     `;
 export type RewardsTransactionsQueryResult = ApolloReactCommon.QueryResult<RewardsTransactionsQuery, RewardsTransactionsQueryVariables>;
+export const AllRewardsTransactionsDocument = gql`
+    query AllRewardsTransactions($limit: Int!, $offset: Int!) @api(name: mstable) {
+  stakingRewardsContracts {
+    address: id
+    lastUpdateTime
+    periodFinish
+    rewardPerTokenStored
+    rewardRate
+    totalSupply
+    platformToken {
+      symbol
+    }
+    stakingRewards(where: {type: REWARD}, first: $limit, skip: $offset) {
+      amount
+      account
+      amountPerTokenPaid
+    }
+    stakingBalances(first: $limit, skip: $offset) {
+      amount
+      account
+    }
+    claimRewardTransactions(first: $limit, skip: $offset, orderBy: timestamp, orderDirection: asc) {
+      amount
+      sender
+    }
+  }
+}
+    `;
+export type AllRewardsTransactionsQueryResult = ApolloReactCommon.QueryResult<AllRewardsTransactionsQuery, AllRewardsTransactionsQueryVariables>;

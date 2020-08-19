@@ -192,6 +192,9 @@ type Balancer {
   finalizedPoolCount: Int!
   pools(skip: Int = 0, first: Int = 100, orderBy: Pool_orderBy, orderDirection: OrderDirection, where: Pool_filter): [Pool!]
   txCount: BigInt!
+  totalLiquidity: BigDecimal!
+  totalSwapVolume: BigDecimal!
+  totalSwapFee: BigDecimal!
 }
 enum Pool_orderBy {
   id
@@ -894,6 +897,9 @@ enum Balancer_orderBy {
   finalizedPoolCount
   pools
   txCount
+  totalLiquidity
+  totalSwapVolume
+  totalSwapFee
 }
 input Balancer_filter {
   id: ID
@@ -942,6 +948,30 @@ input Balancer_filter {
   txCount_lte: BigInt
   txCount_in: [BigInt!]
   txCount_not_in: [BigInt!]
+  totalLiquidity: BigDecimal
+  totalLiquidity_not: BigDecimal
+  totalLiquidity_gt: BigDecimal
+  totalLiquidity_lt: BigDecimal
+  totalLiquidity_gte: BigDecimal
+  totalLiquidity_lte: BigDecimal
+  totalLiquidity_in: [BigDecimal!]
+  totalLiquidity_not_in: [BigDecimal!]
+  totalSwapVolume: BigDecimal
+  totalSwapVolume_not: BigDecimal
+  totalSwapVolume_gt: BigDecimal
+  totalSwapVolume_lt: BigDecimal
+  totalSwapVolume_gte: BigDecimal
+  totalSwapVolume_lte: BigDecimal
+  totalSwapVolume_in: [BigDecimal!]
+  totalSwapVolume_not_in: [BigDecimal!]
+  totalSwapFee: BigDecimal
+  totalSwapFee_not: BigDecimal
+  totalSwapFee_gt: BigDecimal
+  totalSwapFee_lt: BigDecimal
+  totalSwapFee_gte: BigDecimal
+  totalSwapFee_lte: BigDecimal
+  totalSwapFee_in: [BigDecimal!]
+  totalSwapFee_not_in: [BigDecimal!]
 }
 enum User_orderBy {
   id

@@ -2,13 +2,14 @@
 
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { argv } from 'yargs';
-import path from 'path';
-import fs from 'fs';
 import format from 'date-fns/format';
 import addWeeks from 'date-fns/addWeeks';
 
 import './utils/init';
 import { getApolloClient } from './utils/getApolloClient';
+import { generateMarkdownReport } from './utils/generateMarkdownReport';
+import { generateJsonReport } from './utils/generateJsonReport';
+
 import {
   BlockTimestampDocument,
   BlockTimestampQueryResult,
@@ -26,7 +27,7 @@ interface InputArgs {
   poolName?: string;
   start?: string;
   totalPlatformRewards?: number;
-  weekNumber?: string;
+  trancheNumber?: string;
 }
 
 interface ValidatedArgs {
@@ -34,7 +35,7 @@ interface ValidatedArgs {
   poolName: string;
   start: number;
   totalPlatformRewards: BigNumber;
-  week: {
+  tranche: {
     number: number;
     startDate: Date;
     endDate: Date;
@@ -45,15 +46,15 @@ interface ValidatedArgs {
 
 const getValidatedArgs = (): ValidatedArgs => {
   const {
-    weekNumber,
+    trancheNumber,
     poolName,
     contractAddress,
     start,
     totalPlatformRewards,
   } = argv as InputArgs;
 
-  if (!weekNumber) {
-    throw new Error('Missing "weekNumber" argument');
+  if (!trancheNumber) {
+    throw new Error('Missing "trancheNumber" argument');
   }
 
   if (!poolName) {
@@ -79,8 +80,12 @@ const getValidatedArgs = (): ValidatedArgs => {
   }
 
   const startTimestamp = parseInt(start);
+
   const startDate = new Date(Math.floor(startTimestamp * 1e3));
+
+  // Using one week as a default period, could be an argument
   const endDate = addWeeks(startDate, 1);
+
   const endTimestamp = Math.floor(endDate.getTime() / 1e3);
 
   return {
@@ -88,8 +93,8 @@ const getValidatedArgs = (): ValidatedArgs => {
     poolName,
     start: parseInt(start),
     totalPlatformRewards: parseUnits(totalPlatformRewards.toString(), 18),
-    week: {
-      number: parseInt(weekNumber),
+    tranche: {
+      number: parseInt(trancheNumber),
       startDate,
       endDate,
       startTimestamp,
@@ -104,8 +109,8 @@ const args = getValidatedArgs();
   const client = getApolloClient();
 
   const blockVariables: BlockTimestampQueryVariables = {
-    start: args.week.endTimestamp.toString(),
-    end: (args.week.endTimestamp + 60).toString(),
+    start: args.tranche.endTimestamp.toString(),
+    end: (args.tranche.endTimestamp + 60).toString(),
   };
 
   const { data: blockData } = (await client.query({
@@ -120,8 +125,8 @@ const args = getValidatedArgs();
 
   const rewardsTxsVariables: RewardsTransactionsQueryVariables = {
     stakingRewards: args.contractAddress,
-    start: args.week.startTimestamp,
-    end: args.week.endTimestamp,
+    start: args.tranche.startTimestamp,
+    end: args.tranche.endTimestamp,
     block: { number: parseInt(block.number) },
   };
 
@@ -249,72 +254,76 @@ const args = getValidatedArgs();
     b[1].percentageOfPool.gt(a[1].percentageOfPool) ? 1 : -1,
   );
 
-  const command = `yarn run pool-rewards --weekNumber=${args.week.number} --contractAddress=${args.contractAddress} --totalPlatformRewards=${args.totalPlatformRewards} --start=${args.start} --poolName="${args.poolName}"`;
-  const commandMsg = `_Run the script on \`mStable-app\` to verify for yourself:_\n\n\`${command}\``;
+  const dirName = args.tranche.number.toString().padStart(3, '0');
+  const fileName = args.contractAddress;
 
-  const weekFmt = format(args.week.startDate, 'LLL do, yyyy');
+  const markdownReport = await generateMarkdownReport({
+    fileName,
+    dirName,
+    items: [
+      {
+        columns: [
+          {
+            title: `${symbol} rewards week starting ${format(
+              args.tranche.startDate,
+              'LLL do, yyyy',
+            )}`,
+            width: 40,
+          },
+          { width: 42 },
+        ],
+        rows: [
+          ['Pool', args.poolName],
+          ['EARN address', args.contractAddress],
+          ['Total number of addresses', orderedStakers.length],
+          [`Total ${symbol} airdropped`, orderedStakers.length],
+        ],
+      },
+      `_Run the script on \`mStable-app\` to verify for yourself:_`,
+      {
+        code: `yarn run pool-rewards --trancheNumber=${args.tranche.number} --contractAddress=${args.contractAddress} --totalPlatformRewards=${args.totalPlatformRewards} --start=${args.start} --poolName="${args.poolName}"`,
+      },
+      {
+        columns: [
+          { title: 'Holder address', width: 42 },
+          { title: '% of MTA earned', width: 20 },
+          { title: `${symbol} allocation`, width: 22 },
+        ],
+        rows: orderedStakers.map(
+          ([staker, { totalPlatformRewardsEarned, percentageOfPool }]: [
+            string,
+            {
+              totalPlatformRewardsEarned: BigNumber;
+              percentageOfPool: BigNumber;
+            },
+          ]) => [
+            staker,
+            formatUnits(percentageOfPool, 16),
+            formatUnits(totalPlatformRewardsEarned, 18),
+          ],
+        ),
+      },
+    ],
+  });
 
-  const markdown = `
-| ${`${symbol} rewards week starting ${weekFmt}`.padEnd(
-    40,
-    ' ',
-  )} |                                            |
-| ---------------------------------------- | ------------------------------------------ |
-| Pool                                     | ${args.poolName.padEnd(42)} |
-| EARN Address                             | ${args.contractAddress.padEnd(
-    42,
-  )} |
-| Total number of addresses                | ${orderedStakers.length
-    .toString()
-    .padEnd(42)} |
-| ${`Total ${symbol} airdropped`.padEnd(
-    40,
-    ' ',
-  )} | ${args.totalPlatformRewards.toString().padEnd(42)} |
-
-${commandMsg}
-
-| Holder address                             | % of MTA earned      | ${`${symbol} allocation`.padEnd(
-    22,
-    ' ',
-  )} |
-| ------------------------------------------ | -------------------- | ---------------------- |
-${orderedStakers
-  .map(
-    ([staker, { totalPlatformRewardsEarned, percentageOfPool }]: any) =>
-      `| ${staker} | ${formatUnits(percentageOfPool, 16).padEnd(
-        20,
-      )} | ${formatUnits(totalPlatformRewardsEarned, 18).padEnd(22)} |`,
-  )
-  .join('\n')}
-`;
-
-  const jsonData = {
-    metadata: {
-      contractAddress: args.contractAddress,
-      poolName: args.poolName,
-      week: args.week,
-      totalRewards: formatUnits(args.totalPlatformRewards, 18),
+  const jsonReport = await generateJsonReport({
+    dirName,
+    fileName,
+    data: {
+      metadata: {
+        contractAddress: args.contractAddress,
+        poolName: args.poolName,
+        tranche: args.tranche,
+        totalRewards: formatUnits(args.totalPlatformRewards, 18),
+      },
+      values: Object.fromEntries(
+        orderedStakers.map(([address, { totalPlatformRewardsEarned }]) => [
+          address,
+          formatUnits(totalPlatformRewardsEarned, 18),
+        ]),
+      ),
     },
-    values: Object.fromEntries(
-      orderedStakers.map(([address, { totalPlatformRewardsEarned }]) => [
-        address,
-        formatUnits(totalPlatformRewardsEarned, 18),
-      ]),
-    ),
-  };
-  const json = JSON.stringify(jsonData, null, 2);
+  });
 
-  const filePath = path.join(
-    'public',
-    'reports',
-    args.week.number.toString().padStart(3, '0'),
-  );
-
-  await fs.promises.mkdir(filePath, { recursive: true });
-  await fs.promises.writeFile(
-    `${filePath}/${args.contractAddress}.md`,
-    markdown,
-  );
-  await fs.promises.writeFile(`${filePath}/${args.contractAddress}.json`, json);
+  console.log(`Created files:\n${[markdownReport, jsonReport].join('\n')}`);
 })();
