@@ -21,9 +21,11 @@ And that the the Docker daemon is running.
 ### Installation
 
 1. `git clone git@github.com:mstable/mStable-app.git && cd mStable-app`
-2. `yarn`
-3. `yarn provision`
-4. `yarn codegen`
+2. `cp .env.example .env`
+3. `yarn`
+4. `yarn provision`
+5. `yarn codegen`
+6. Optional: replace env vars in `.env` with e.g. a real Infura provider key
 
 ### Deploying the contracts locally
 
