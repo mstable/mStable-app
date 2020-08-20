@@ -47,24 +47,6 @@ const ProtipContainer = styled.div<{ highlight: boolean }>`
   }
 `;
 
-const Item = styled.div<{ highlight?: boolean }>`
-  font-size: ${({ theme }) => theme.fontSize.s};
-  > :first-child {
-    text-transform: uppercase;
-    font-weight: bold;
-  }
-  ${({ highlight, theme }) =>
-    highlight
-      ? `
-    background: #ffeed2;
-    border: 2px ${theme.color.gold} dashed;
-    padding: 8px;
-    margin-left: -8px;
-    margin-right: -8px;
-  `
-      : ''}
-`;
-
 const BasketImpact = styled.div`
   display: flex;
   justify-content: space-between;
@@ -79,6 +61,13 @@ const BasketImpact = styled.div`
     }
   }
 `;
+
+const MassetInputGroup = styled.div`
+  > * {
+    margin-bottom: 8px;
+  }
+`;
+
 export const RedeemInput: FC<{}> = () => {
   const {
     amountInMasset,
@@ -120,8 +109,15 @@ export const RedeemInput: FC<{}> = () => {
       </ProtipContainer>
       <FormRow>
         <H3>Send mUSD</H3>
+        <RedeemMode>
+          <ToggleInput
+            onClick={toggleRedeemMasset}
+            checked={mode === Mode.RedeemMasset}
+          />
+          <span>Redeem with all assets proportionally</span>
+        </RedeemMode>
         {initialized && mAsset ? (
-          <>
+          <MassetInputGroup>
             <InlineTokenAmountInput
               amount={{
                 value: amountInMasset,
@@ -140,29 +136,25 @@ export const RedeemInput: FC<{}> = () => {
               }
               valid={touched ? valid : true}
             />
+            {mode === Mode.RedeemMasset ? null : (
+              <Protip title="Select assets below" emoji={null}>
+                To redeem with specific assets, select the assets and amounts to
+                receive below.
+              </Protip>
+            )}
             {feeAmount?.exact.gt(0) && valid ? (
-              <Item>
-                <div>Note</div>
-                <div>
-                  {mode === Mode.RedeemMasset ? 'Redemption' : 'Swap'} fee
-                  applies (see details below)
-                </div>
-              </Item>
+              <Protip title="Note" emoji={null}>
+                {mode === Mode.RedeemMasset ? 'Redemption' : 'Swap'} fee applies
+                (see details below)
+              </Protip>
             ) : null}
-          </>
+          </MassetInputGroup>
         ) : (
           <Skeleton />
         )}
       </FormRow>
       <FormRow>
         <H3>Receive assets</H3>
-        <RedeemMode>
-          <ToggleInput
-            onClick={toggleRedeemMasset}
-            checked={mode === Mode.RedeemMasset}
-          />
-          <span>Redeem with all assets proportionally</span>
-        </RedeemMode>
         <BassetInputs
           initialized={initialized}
           bAssets={bAssets}

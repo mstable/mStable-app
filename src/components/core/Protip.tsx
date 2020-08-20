@@ -6,7 +6,7 @@ import { Color } from '../../theme';
 interface Props {
   className?: string;
   title?: string;
-  emoji?: string;
+  emoji?: string | null;
 }
 
 const ProtipLabel = styled.div`
@@ -36,7 +36,7 @@ export const Protip: FC<Props> = ({
 }) => (
   <Container className={className}>
     <ProtipLabel>
-      {title} <span>{emoji}</span>
+      {title} {emoji ? <span>{emoji}</span> : null}
     </ProtipLabel>
     <div>{children}</div>
   </Container>

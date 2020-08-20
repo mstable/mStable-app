@@ -6,6 +6,11 @@ Bug fixes:
 
 - Show that BAL rewards will be received for the Balancer MTA/mUSD 95/5 pool
 
+Miscellaneous:
+
+- Make the inputs for redeeming with specific assets clearer, and add a
+  note explaining that assets to redeem must be selected and amounts entered.
+
 ## Version 1.9.1
 
 _Released 17.08.20 16.04 CEST_
