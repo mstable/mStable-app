@@ -2,6 +2,10 @@
 
 ## Next
 
+Bug fixes:
+
+- Show that BAL rewards will be received for the Balancer MTA/mUSD 95/5 pool
+
 ## Version 1.9.1
 
 _Released 17.08.20 16.04 CEST_
