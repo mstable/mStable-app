@@ -18,8 +18,12 @@ interface Props {
 
 const Input = styled.input<{ error: string | void; disabled?: boolean }>`
   appearance: none;
-  background: ${({ theme, error }) =>
-    error ? theme.color.redTransparenter : theme.color.white};
+  background: ${({ theme, error, disabled }) =>
+    error
+      ? theme.color.redTransparenter
+      : disabled
+      ? theme.color.blackTransparenter
+      : theme.color.white};
 
   border: ${({ theme, error, disabled }) =>
     `1px ${
