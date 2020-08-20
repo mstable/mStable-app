@@ -189,11 +189,8 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                 </PlatformContainer>
               </div>
               <div>
-                <Tooltip tip="The Annual Percentage Yield the pool is currently generating from the combined rewards token(s)">
-                  <Heading>
-                    {rewardsToken.symbol}
-                    {platformToken ? `/${platformToken.symbol}` : ''} APY
-                  </Heading>
+                <Tooltip tip="The Annual Percentage Yield is the extrapolated return on investment over the course of a year">
+                  <Heading>{rewardsToken.symbol} APY</Heading>
                 </Tooltip>
                 <div>
                   {stakingRewardsContract.apy.waitingForData ? (

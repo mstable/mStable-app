@@ -17,6 +17,13 @@ import { Tooltip } from '../../core/ReactTooltip';
 
 const ApyAmount = styled(Amount)`
   font-size: ${FontSize.xl};
+  margin-bottom: 8px;
+  display: block;
+`;
+
+const ApyNote = styled.div`
+  font-weight: bold;
+  font-size: ${FontSize.m};
 `;
 
 const TableGroup = styled.div`
@@ -76,7 +83,7 @@ const COLUMNS = [
     key: Columns.RewardsApy,
     title: 'Rewards APY',
     tip:
-      'The Annual Percentage Yield the pool is currently generating from the combined rewards token(s)',
+      'The Annual Percentage Yield is the extrapolated return on investment over the course of a year',
   },
   {
     key: Columns.WeeklyRewards,
@@ -158,10 +165,13 @@ export const PoolsOverview: FC<{}> = () => {
                 //   );
                 case Columns.RewardsApy:
                   return item.apy.value?.exact.gt(0) ? (
-                    <ApyAmount
-                      amount={item.apy.value}
-                      format={NumberFormat.CountupPercentage}
-                    />
+                    <div>
+                      <ApyAmount
+                        amount={item.apy.value}
+                        format={NumberFormat.CountupPercentage}
+                      />
+                      <ApyNote>+ BAL</ApyNote>
+                    </div>
                   ) : item.apy.waitingForData ? (
                     <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
                       No data yet
