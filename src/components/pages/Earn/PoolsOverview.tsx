@@ -170,7 +170,7 @@ export const PoolsOverview: FC<{}> = () => {
                         amount={item.apy.value}
                         format={NumberFormat.CountupPercentage}
                       />
-                      <ApyNote>+ BAL</ApyNote>
+                      {item.platformRewards ? <ApyNote>+ BAL</ApyNote> : null}
                     </div>
                   ) : item.apy.waitingForData ? (
                     <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
