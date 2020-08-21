@@ -1,3 +1,71 @@
+/**
+ *******************************************************************************
+ *
+ * Call the script with the following args:
+ *
+ * - Tranche number
+ * - Current tranche start timestamp
+ * - Rewards manifest: platform rewards per staking contract for the
+ *   current tranche
+ *
+ * Usage example:
+ *
+ * `yarn run all-unique-stakers --trancheNumber=2 --startTimestamp=1597062435 --rewardsManifestFile=./rewardsTranche2.json`
+ *
+ * Example rewards manifest file for a given tranche:
+ *
+ * {
+ *   "0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4": {
+ *     "0xba100000625a3754423978a60c9317c58a424e3d": "1000"
+ *   },
+ *   "0x881c72d1e6317f10a1cdcbe05040e7564e790c80": {
+ *     "0xba100000625a3754423978a60c9317c58a424e3d": "1000"
+ *   },
+ *   "0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027": {
+ *     "0xba100000625a3754423978a60c9317c58a424e3d": "1000"
+ *   },
+ *   "0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb":  {
+ *     "0xba100000625a3754423978a60c9317c58a424e3d": "1000"
+ *   }
+ * }
+ *
+ *******************************************************************************
+ *
+ * Tranches are presumed to run for a week, so add a week to the start to
+ * get the end of the current tranche.
+ *
+ * The start of the current tranche is presumed to be the end of the
+ * previous tranche.
+ *
+ *******************************************************************************
+ *
+ * Run the main query with:
+ *
+ * start: 0
+ * end: current tranche start
+ *
+ * and then with:
+ *
+ * start: 0
+ * end: current tranche end
+ *
+ *******************************************************************************
+ *
+ * Firstly get the net total earned for each staker in each pool from 0 up
+ * until the current tranche start (i.e. subtract claimed amounts)
+ *
+ * Then do the same, but up until the current tranche end.
+ *
+ * To get the net total amounts earned for each staker in each pool for the
+ * current tranche, simply subtract the first totals from the second totals.
+ *
+ * These per-staker totals should be added up (for each pool) to get the
+ * total earned for all stakers in that pool, which is used to derive
+ * pool share percentages.
+ *
+ *******************************************************************************
+ */
+
 import fs from 'fs';
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { options } from 'yargs';
@@ -9,8 +77,9 @@ import { generateJsonReport } from './utils/generateJsonReport';
 import { runMain } from './utils/runMain';
 
 import {
-  AllRewardsTransactionsDocument,
-  AllRewardsTransactionsQueryResult,
+  RewardsDocument,
+  RewardsQueryResult,
+  RewardsQueryVariables,
 } from '../src/graphql/scripts';
 import { SCALE } from '../src/web3/constants';
 import { fetchAllData } from './utils/fetchAllData';
@@ -19,6 +88,7 @@ import {
   BlockTimestampQueryResult,
   BlockTimestampQueryVariables,
 } from '../src/graphql/blocks';
+import { generateMarkdownReport } from './utils/generateMarkdownReport';
 
 interface RewardsManifest {
   [pool: string]: {
@@ -41,8 +111,12 @@ interface ValidatedArgs {
   };
 }
 
+interface PoolMetadata {
+  name: string;
+}
+
 type Data = NonNullable<
-  AllRewardsTransactionsQueryResult['data']
+  RewardsQueryResult['data']
 >['stakingRewardsContracts'][number];
 
 interface Pool {
@@ -70,6 +144,7 @@ interface PoolEarnings {
     [account: string]: {
       percentageOfPool: BigNumber;
       earnedPerPlatformToken: { [platformToken: string]: BigNumber };
+      totalEarned: BigNumber;
     };
   };
 }
@@ -87,7 +162,26 @@ interface EarningsPerPlatformToken {
   };
 }
 
-type OrderedStakers = [string, BigNumber][];
+const METADATA: { [address: string]: PoolMetadata } = {
+  '0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4': {
+    name: 'mUSD/MTA 5/95 Balancer',
+  },
+  '0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027': {
+    name: 'mUSD/MTA 95/5 Balancer',
+  },
+  '0x881c72d1e6317f10a1cdcbe05040e7564e790c80': {
+    name: 'mUSD/USDC Balancer',
+  },
+  '0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb': {
+    name: 'mUSD/WETH Balancer',
+  },
+  '0x25970282aac735cd4c76f30bfb0bf2bc8dad4e70': {
+    name: 'mUSD/MTA 20/80 Balancer',
+  },
+  '0x0d0d65e7a7db277d3e0f5e1676325e75f3340455': {
+    name: 'MTA/WETH Uniswap',
+  },
+};
 
 const parseRewardsManifest = async (
   filePath: string,
@@ -215,7 +309,7 @@ const parseArgs = async (): Promise<ValidatedArgs> => {
 };
 
 const shouldFetchMore = (
-  data: AllRewardsTransactionsQueryResult['data'],
+  data: RewardsQueryResult['data'],
   limit: number,
 ): boolean =>
   Boolean(
@@ -228,94 +322,121 @@ const shouldFetchMore = (
   );
 
 const fetchPools = async ({
-  tranche: { start, end },
+  start,
+  end,
   rewardsManifest,
-}: ValidatedArgs): Promise<Pools> => {
+}: {
+  start: { timestamp: number };
+  end: { blockNumber: number; timestamp: number };
+  rewardsManifest: ValidatedArgs['rewardsManifest'];
+}): Promise<Pools> => {
   const client = getApolloClient();
 
   let result: Pools = {};
 
-  // Fetch all data and combine the fields which required more fetches
-  for await (const data of fetchAllData(
-    client,
-    AllRewardsTransactionsDocument,
-    {
-      pools: Object.keys(rewardsManifest),
-      start: start.timestamp,
-      end: end.timestamp,
-      block: { number: end.blockNumber },
-    },
-    shouldFetchMore,
-  )) {
-    result = data.stakingRewardsContracts.reduce<Pools>((prev, current) => {
-      const { address, lastUpdateTime } = current;
-
-      // Combine the previous and current results
-      const stakingRewards = [
-        ...(prev[address]?.stakingRewards ?? []),
-        ...current.stakingRewards,
-      ];
-      const stakingBalances = [
-        ...(prev[address]?.stakingBalances ?? []),
-        ...current.stakingBalances,
-      ];
-      const claimRewardTransactions = [
-        ...(prev[address]?.claimRewardTransactions ?? []),
-        ...current.claimRewardTransactions,
-      ];
-
-      const rewardRate = new BigNumber(current.rewardRate);
-      const rewardPerTokenStored = new BigNumber(current.rewardPerTokenStored);
-      const totalTokens = new BigNumber(current.totalSupply);
-
-      let rewardPerToken = rewardPerTokenStored;
+  // For each pool in the manifest
+  for (const id of Object.keys(rewardsManifest)) {
+    // Fetch all data and combine the fields which required more fetches
+    for await (const data of fetchAllData(
+      client,
+      RewardsDocument,
       {
-        // If there is no StakingToken liquidity, avoid div(0)
-        if (!totalTokens.eq(0)) {
-          const timeSinceLastUpdate = end.timestamp - lastUpdateTime;
+        id,
+        // start: start.timestamp,
+        end: end.timestamp,
+        block: { number: end.blockNumber },
+      } as RewardsQueryVariables,
+      shouldFetchMore,
+    )) {
+      result = data.stakingRewardsContracts.reduce<Pools>((prev, current) => {
+        const { address, lastUpdateTime } = current;
 
-          // New reward units to distribute = rewardRate * timeSinceLastUpdate
-          const rewardUnitsToDistribute = rewardRate.mul(timeSinceLastUpdate);
+        // Combine the previous and current results
+        const stakingRewards = [
+          ...(prev[address]?.stakingRewards ?? []),
+          ...current.stakingRewards,
+        ];
+        const stakingBalances = [
+          ...(prev[address]?.stakingBalances ?? []),
+          ...current.stakingBalances,
+        ];
+        const claimRewardTransactions = [
+          ...(prev[address]?.claimRewardTransactions ?? []),
+          ...current.claimRewardTransactions,
+        ];
 
-          // New reward units per token = (rewardUnitsToDistribute * 1e18) / totalTokens
-          const unitsToDistributePerToken = rewardUnitsToDistribute
-            .mul(SCALE)
-            .div(totalTokens);
+        const rewardRate = new BigNumber(current.rewardRate);
+        const rewardPerTokenStored = new BigNumber(
+          current.rewardPerTokenStored,
+        );
+        const totalTokens = new BigNumber(current.totalSupply);
 
-          rewardPerToken = rewardPerTokenStored.add(unitsToDistributePerToken);
+        let rewardPerToken = rewardPerTokenStored;
+        {
+          // If there is no StakingToken liquidity, avoid div(0)
+          if (!totalTokens.eq(0)) {
+            const timeSinceLastUpdate = end.timestamp - lastUpdateTime;
+
+            // New reward units to distribute = rewardRate * timeSinceLastUpdate
+            const rewardUnitsToDistribute = rewardRate.mul(timeSinceLastUpdate);
+
+            // New reward units per token = (rewardUnitsToDistribute * 1e18) / totalTokens
+            const unitsToDistributePerToken = rewardUnitsToDistribute
+              .mul(SCALE)
+              .div(totalTokens);
+
+            rewardPerToken = rewardPerTokenStored.add(
+              unitsToDistributePerToken,
+            );
+          }
         }
-      }
 
-      const contract: Pool = {
-        address,
-        claimRewardTransactions,
-        lastUpdateTime,
-        platformRewards: rewardsManifest[address],
-        rewardPerToken,
-        rewardPerTokenStored,
-        rewardRate,
-        stakingBalances,
-        stakingRewards,
-        totalTokens,
-      };
+        const contract: Pool = {
+          address,
+          claimRewardTransactions,
+          lastUpdateTime,
+          platformRewards: rewardsManifest[address],
+          rewardPerToken,
+          rewardPerTokenStored,
+          rewardRate,
+          stakingBalances,
+          stakingRewards,
+          totalTokens,
+        };
 
-      return {
-        ...prev,
-        [address]: contract,
-      };
-    }, result);
+        return {
+          ...prev,
+          [address]: contract,
+        };
+      }, result);
+    }
   }
 
   return result;
 };
 
-const getPoolEarnings = ({
-  claimRewardTransactions,
-  rewardPerToken,
-  stakingBalances,
-  stakingRewards,
-  platformRewards,
-}: Pool): PoolEarnings => {
+const fetchPoolsCurrentTranche = async ({
+  tranche: { start, end },
+  rewardsManifest,
+}: ValidatedArgs): Promise<Pools> =>
+  fetchPools({ start, end, rewardsManifest });
+
+const fetchPoolsPreviousTranches = async ({
+  tranche,
+  rewardsManifest,
+}: ValidatedArgs): Promise<Pools> =>
+  fetchPools({ start: { timestamp: 0 }, end: tranche.start, rewardsManifest });
+
+const getPoolEarnings = (
+  {
+    claimRewardTransactions,
+    rewardPerToken,
+    stakingBalances,
+    stakingRewards,
+    platformRewards,
+  }: Pool,
+  previousEarnings?: PoolEarnings,
+): PoolEarnings => {
   const stakingRewardsPerAccount: Record<
     string,
     { amount: BigNumber; amountPerTokenPaid: BigNumber }
@@ -323,7 +444,7 @@ const getPoolEarnings = ({
     stakingRewards.map(({ amount, account, amountPerTokenPaid }) => [
       account,
       {
-        amount: new BigNumber(amountPerTokenPaid),
+        amount: new BigNumber(amount),
         amountPerTokenPaid: new BigNumber(amountPerTokenPaid),
       },
     ]),
@@ -372,8 +493,14 @@ const getPoolEarnings = ({
       // Add to previous rewards
       const earned = stakingReward.amount.add(userNewReward);
 
-      // Subtract claimed amount, if any
-      const totalEarned = totalClaimed ? earned.sub(totalClaimed) : earned;
+      // Add claimed amount, if any
+      let totalEarned = totalClaimed ? earned.add(totalClaimed) : earned;
+
+      // Subtract total earned from previous tranches, if any
+      const prevTotalEarned = previousEarnings?.stakers[account]?.totalEarned;
+      if (prevTotalEarned) {
+        totalEarned = totalEarned.sub(prevTotalEarned);
+      }
 
       return {
         ...prev,
@@ -395,7 +522,9 @@ const getPoolEarnings = ({
     }
   > = Object.fromEntries(
     accounts.map(account => {
-      const percentageOfPool = totalEarnedPerAccount[account]
+      const totalEarned = totalEarnedPerAccount[account];
+
+      const percentageOfPool = totalEarned
         .mul(SCALE)
         .div(totalEarnedForAllStakers);
 
@@ -429,6 +558,7 @@ const getPoolEarnings = ({
   return {
     totalEarnedPerPlatformToken,
     stakers: accounts.reduce<PoolEarnings['stakers']>((prev, account) => {
+      const totalEarned = totalEarnedPerAccount[account];
       const {
         earnedPerPlatformToken,
         percentageOfPool,
@@ -439,17 +569,21 @@ const getPoolEarnings = ({
         [account]: {
           percentageOfPool,
           earnedPerPlatformToken,
+          totalEarned,
         },
       };
     }, {}),
   };
 };
 
-const getEarningsPerPool = (pools: Pools): EarningsPerPool =>
+const getEarningsPerPool = (
+  pools: Pools,
+  previousEarnings?: EarningsPerPool,
+): EarningsPerPool =>
   Object.fromEntries(
     Object.entries(pools).map(([address, pool]) => [
       address,
-      getPoolEarnings(pool),
+      getPoolEarnings(pool, previousEarnings?.[address]),
     ]),
   );
 
@@ -503,99 +637,41 @@ const getEarningsPerPlatform = (
   );
 };
 
-// const getEarnedPerTokenOrdered = (
-//   earnedPerToken: EarnedPerToken,
-// ): EarnedPerTokenOrdered =>
-//   Object.entries(earnedPerToken).reduce<EarnedPerTokenOrdered>(
-//     (prev, [platformToken, { total, stakers }]) => ({
-//       ...prev,
-//       [platformToken]: {
-//         total,
-//         stakers: Object.entries(stakers)
-//           .filter(([, amount]) => amount.gt(0))
-//           .sort(([, a], [, b]) => (b.gt(a) ? 1 : -1)),
-//       },
-//     }),
-//     {},
-//   );
-//
-// const generateJsonFiles = async (
-//   args: ValidatedArgs,
-//   allAmountsEarnedOrdered: EarnedPerTokenOrdered,
-// ): Promise<string[]> => {
-//   const dirName = `stakers/${args.tranche.number}`;
-//
-//   const promises = Object.entries(allAmountsEarnedOrdered).map(
-//     ([platformToken, { stakers, total }]) =>
-//       generateJsonReport({
-//         dirName,
-//         fileName: platformToken,
-//         data: {
-//           total: formatUnits(total, 18),
-//           tranche: args.tranche,
-//           stakers: Object.fromEntries(
-//             stakers.map(([account, amount]) => [
-//               account,
-//               formatUnits(amount, 18),
-//             ]),
-//           ),
-//         },
-//       }),
-//   );
-//
-//   return Promise.all(promises);
-// };
-
-// const generatePoolReports = async (
-//   args: ValidatedArgs,
-//   poolEarnings: EarningsPerPool,
-// ): Promise<string[]> => {
-//   const dirName = `pools/${args.tranche.number}`;
-//
-//   const promises = Object.entries(poolEarnings).map(
-//     ([poolAddress, { stakers, totalEarnedPerPlatformToken }]) =>
-//       generateJsonReport({
-//         dirName,
-//         fileName: poolAddress,
-//         data: {
-//           totalEarnedPerPlatformToken: Object.fromEntries(
-//             Object.entries(
-//               totalEarnedPerPlatformToken,
-//             ).map(([platformToken, amount]) => [
-//               platformToken,
-//               formatUnits(amount, 18),
-//             ]),
-//           ),
-//           tranche: args.tranche,
-//           stakers: Object.fromEntries(
-//             stakers.map(([account, amount]) => [
-//               account,
-//               formatUnits(amount, 18),
-//             ]),
-//           ),
-//         },
-//       }),
-//   );
-//
-//   return Promise.all(promises);
-// };
-
 interface PlatformReport {
   platformToken: string;
   totalEarnedForAllStakers: string;
   orderedStakers: Record<string, string>;
-  tranche: {
-    number: number;
-    start: {
-      blockNumber: number;
-      timestamp: number;
-    };
-    end: {
-      blockNumber: number;
-      timestamp: number;
+  tranche: ValidatedArgs['tranche'];
+}
+
+interface PoolReport {
+  address: string;
+  metadata: PoolMetadata;
+  totalEarnedPerPlatformToken: {
+    [platformToken: string]: string;
+  };
+  orderedStakers: {
+    [account: string]: {
+      [platformToken: string]: string;
     };
   };
+  tranche: ValidatedArgs['tranche'];
 }
+
+const generatePoolReport = async ({
+  tranche,
+  address,
+  metadata,
+  orderedStakers,
+  totalEarnedPerPlatformToken,
+}: PoolReport): Promise<string> =>
+  generateMarkdownReport({
+    dirName: `tranches/${tranche.number}`,
+    fileName: `${tranche.number.toString().padStart(3, '0')} - Tranche ${
+      tranche.number
+    } - ${metadata.name}`,
+    items: [], // TODO
+  });
 
 const generatePlatformReport = async (
   platformReport: PlatformReport,
@@ -615,6 +691,9 @@ const generatePlatformReports = async (
   ).map(
     ([platformToken, { totalEarnedForAllStakers, totalEarnedPerStaker }]) => ({
       platformToken,
+      pools: Object.keys(rewardsManifest).filter(
+        address => rewardsManifest[address][platformToken],
+      ),
       tranche: { start, end, number },
       totalEarnedForAllStakers: formatUnits(totalEarnedForAllStakers, 18),
       orderedStakers: Object.fromEntries(
@@ -631,11 +710,16 @@ const generatePlatformReports = async (
 const main = async () => {
   // Parse args and fetch data
   const args = await parseArgs();
-  const pools = await fetchPools(args);
+  const poolsPreviousTranches = await fetchPoolsPreviousTranches(args);
+  const poolsCurrentTranche = await fetchPoolsCurrentTranche(args);
 
   // Process earnings data
-  const poolEarnings = getEarningsPerPool(pools);
-  const platformEarnings = getEarningsPerPlatform(poolEarnings);
+  // const earningsPreviousTranches = getEarningsPerPool(poolsPreviousTranches);
+  const earningsCurrentTranche = getEarningsPerPool(
+    poolsCurrentTranche,
+    // earningsPreviousTranches,
+  );
+  const platformEarnings = getEarningsPerPlatform(earningsCurrentTranche);
 
   // Output all reports
   // const poolFiles = await generatePoolReports(args, poolEarnings);

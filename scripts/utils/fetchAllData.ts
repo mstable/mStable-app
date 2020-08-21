@@ -9,9 +9,7 @@ const fetchDataWithLimit = async <
   query: TQuery,
   variables: TVariables & { limit: number; offset: number },
 ): Promise<TData | undefined> => {
-  console.log(
-    `Fetching data with limit: ${variables.limit} and offset: ${variables.offset}`,
-  );
+  console.log(`Fetching data:\n${JSON.stringify(variables, null, 2)}`);
 
   const { data } = (await client.query({
     query,
