@@ -2802,6 +2802,10 @@ export type RewardsTransactionsQuery = { stakingRewardsContracts: Array<(
   )> };
 
 export type AllRewardsTransactionsQueryVariables = {
+  pools: Array<Scalars['ID']>;
+  start: Scalars['Int'];
+  end: Scalars['Int'];
+  block?: Maybe<Block_Height>;
   limit: Scalars['Int'];
   offset: Scalars['Int'];
 };
@@ -2810,7 +2814,16 @@ export type AllRewardsTransactionsQueryVariables = {
 export type AllRewardsTransactionsQuery = { stakingRewardsContracts: Array<(
     Pick<StakingRewardsContract, 'lastUpdateTime' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'totalSupply'>
     & { address: StakingRewardsContract['id'] }
-    & { platformToken?: Maybe<Pick<Token, 'symbol'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
+    & { stakingRewards: Array<(
+      Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>
+      & { stakingRewardsContract: Pick<StakingRewardsContract, 'id'> }
+    )>, stakingBalances: Array<(
+      Pick<StakingBalance, 'amount' | 'account'>
+      & { stakingRewardsContract: Pick<StakingRewardsContract, 'id'> }
+    )>, claimRewardTransactions: Array<(
+      Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>
+      & { stakingRewardsContract: Pick<StakingRewardsContract, 'id'> }
+    )> }
   )> };
 
 
@@ -2843,27 +2856,33 @@ export const RewardsTransactionsDocument = gql`
     `;
 export type RewardsTransactionsQueryResult = ApolloReactCommon.QueryResult<RewardsTransactionsQuery, RewardsTransactionsQueryVariables>;
 export const AllRewardsTransactionsDocument = gql`
-    query AllRewardsTransactions($limit: Int!, $offset: Int!) @api(name: mstable) {
-  stakingRewardsContracts {
+    query AllRewardsTransactions($pools: [ID!]!, $start: Int!, $end: Int!, $block: Block_height, $limit: Int!, $offset: Int!) @api(name: mstable) {
+  stakingRewardsContracts(where: {id_in: $pools}, block: $block) {
     address: id
     lastUpdateTime
     periodFinish
     rewardPerTokenStored
     rewardRate
     totalSupply
-    platformToken {
-      symbol
-    }
     stakingRewards(where: {type: REWARD}, first: $limit, skip: $offset) {
+      stakingRewardsContract {
+        id
+      }
       amount
       account
       amountPerTokenPaid
     }
     stakingBalances(first: $limit, skip: $offset) {
+      stakingRewardsContract {
+        id
+      }
       amount
       account
     }
-    claimRewardTransactions(first: $limit, skip: $offset, orderBy: timestamp, orderDirection: asc) {
+    claimRewardTransactions(first: $limit, skip: $offset, orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: $start, timestamp_lt: $end}) {
+      stakingRewardsContract {
+        id
+      }
       amount
       sender
     }

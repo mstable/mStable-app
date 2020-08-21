@@ -38,8 +38,15 @@ query RewardsTransactions(
   }
 }
 
-query AllRewardsTransactions($limit: Int!, $offset: Int!) @api(name: mstable) {
-  stakingRewardsContracts {
+query AllRewardsTransactions(
+  $pools: [ID!]!
+  $start: Int!
+  $end: Int!
+  $block: Block_height
+  $limit: Int!
+  $offset: Int!
+) @api(name: mstable) {
+  stakingRewardsContracts(where: { id_in: $pools }, block: $block) {
     address: id
     lastUpdateTime
     periodFinish
@@ -47,17 +54,15 @@ query AllRewardsTransactions($limit: Int!, $offset: Int!) @api(name: mstable) {
     rewardRate
     totalSupply
 
-    platformToken {
-      symbol
-    }
-
     stakingRewards(where: { type: REWARD }, first: $limit, skip: $offset) {
+      stakingRewardsContract { id }
       amount
       account
       amountPerTokenPaid
     }
 
     stakingBalances(first: $limit, skip: $offset) {
+      stakingRewardsContract { id }
       amount
       account
     }
@@ -67,7 +72,9 @@ query AllRewardsTransactions($limit: Int!, $offset: Int!) @api(name: mstable) {
       skip: $offset
       orderBy: timestamp
       orderDirection: asc
+      where: { timestamp_gt: $start, timestamp_lt: $end }
     ) {
+      stakingRewardsContract { id }
       amount
       sender
     }

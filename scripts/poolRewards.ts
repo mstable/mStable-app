@@ -250,11 +250,11 @@ const args = getValidatedArgs();
     };
   });
 
-  const orderedStakers = Object.entries(stakers).sort((a, b) =>
-    b[1].percentageOfPool.gt(a[1].percentageOfPool) ? 1 : -1,
-  );
+  const orderedStakers = Object.entries(stakers)
+    .filter(([, { totalEarned }]) => totalEarned.gt(0))
+    .sort((a, b) => (b[1].percentageOfPool.gt(a[1].percentageOfPool) ? 1 : -1));
 
-  const dirName = args.tranche.number.toString().padStart(3, '0');
+  const dirName = `airdrops/${args.tranche.number.toString().padStart(3, '0')}`;
   const fileName = args.contractAddress;
 
   const markdownReport = await generateMarkdownReport({
@@ -276,7 +276,10 @@ const args = getValidatedArgs();
           ['Pool', args.poolName],
           ['EARN address', args.contractAddress],
           ['Total number of addresses', orderedStakers.length],
-          [`Total ${symbol} airdropped`, orderedStakers.length],
+          [
+            `Total ${symbol} airdropped`,
+            formatUnits(args.totalPlatformRewards, 18),
+          ],
         ],
       },
       `_Run the script on \`mStable-app\` to verify for yourself:_`,
