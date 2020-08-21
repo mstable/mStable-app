@@ -2788,72 +2788,31 @@ export enum VolumeMetric_OrderBy {
   Type = 'type'
 }
 
-export type RewardsTransactionsQueryVariables = {
-  stakingRewards: Scalars['ID'];
-  start: Scalars['Int'];
+export type RewardsQueryVariables = {
+  id: Scalars['ID'];
   end: Scalars['Int'];
   block?: Maybe<Block_Height>;
-};
-
-
-export type RewardsTransactionsQuery = { stakingRewardsContracts: Array<(
-    Pick<StakingRewardsContract, 'lastUpdateTime' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'totalSupply'>
-    & { platformToken?: Maybe<Pick<Token, 'symbol'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
-  )> };
-
-export type AllRewardsTransactionsQueryVariables = {
   limit: Scalars['Int'];
   offset: Scalars['Int'];
 };
 
 
-export type AllRewardsTransactionsQuery = { stakingRewardsContracts: Array<(
+export type RewardsQuery = { stakingRewardsContracts: Array<(
     Pick<StakingRewardsContract, 'lastUpdateTime' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'totalSupply'>
     & { address: StakingRewardsContract['id'] }
-    & { platformToken?: Maybe<Pick<Token, 'symbol'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
+    & { stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
   )> };
 
 
-export const RewardsTransactionsDocument = gql`
-    query RewardsTransactions($stakingRewards: ID!, $start: Int!, $end: Int!, $block: Block_height) @api(name: mstable) {
-  stakingRewardsContracts(where: {id: $stakingRewards}, block: $block) {
-    lastUpdateTime
-    periodFinish
-    rewardPerTokenStored
-    rewardRate
-    totalSupply
-    platformToken {
-      symbol
-    }
-    stakingRewards(where: {type: REWARD}, first: 1000) {
-      amount
-      account
-      amountPerTokenPaid
-    }
-    stakingBalances(first: 1000) {
-      amount
-      account
-    }
-    claimRewardTransactions(first: 1000, orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: $start, timestamp_lt: $end}) {
-      amount
-      sender
-    }
-  }
-}
-    `;
-export type RewardsTransactionsQueryResult = ApolloReactCommon.QueryResult<RewardsTransactionsQuery, RewardsTransactionsQueryVariables>;
-export const AllRewardsTransactionsDocument = gql`
-    query AllRewardsTransactions($limit: Int!, $offset: Int!) @api(name: mstable) {
-  stakingRewardsContracts {
+export const RewardsDocument = gql`
+    query Rewards($id: ID!, $end: Int!, $block: Block_height, $limit: Int!, $offset: Int!) @api(name: mstable) {
+  stakingRewardsContracts(where: {id: $id}, block: $block) {
     address: id
     lastUpdateTime
     periodFinish
     rewardPerTokenStored
     rewardRate
     totalSupply
-    platformToken {
-      symbol
-    }
     stakingRewards(where: {type: REWARD}, first: $limit, skip: $offset) {
       amount
       account
@@ -2863,11 +2822,11 @@ export const AllRewardsTransactionsDocument = gql`
       amount
       account
     }
-    claimRewardTransactions(first: $limit, skip: $offset, orderBy: timestamp, orderDirection: asc) {
+    claimRewardTransactions(first: $limit, skip: $offset, orderBy: timestamp, orderDirection: asc, where: {timestamp_lt: $end}) {
       amount
       sender
     }
   }
 }
     `;
-export type AllRewardsTransactionsQueryResult = ApolloReactCommon.QueryResult<AllRewardsTransactionsQuery, AllRewardsTransactionsQueryVariables>;
+export type RewardsQueryResult = ApolloReactCommon.QueryResult<RewardsQuery, RewardsQueryVariables>;
