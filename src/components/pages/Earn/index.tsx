@@ -253,10 +253,12 @@ const PoolCards: FC<{}> = () => {
       <PoolCardsContainer>
         <Slider
           setSwipeDisabled={setSwipeDisabled}
-          items={Object.keys(stakingRewardContracts).map(address => ({
-            children: <Card address={address} linkToPool />,
-            key: address,
-          }))}
+          items={Object.keys(stakingRewardContracts)
+            .filter(address => !stakingRewardContracts[address].expired)
+            .map(address => ({
+              children: <Card address={address} linkToPool />,
+              key: address,
+            }))}
         />
       </PoolCardsContainer>
     </Item>

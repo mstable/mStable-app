@@ -82,6 +82,7 @@ export interface StakingRewardsContract {
   duration: number;
   lastUpdateTime: number;
   periodFinish: number;
+  expired: boolean;
   rewardRate: BigNumber;
   rewardPerTokenStoredNow: BigNumber;
   rewardPerTokenStored24hAgo?: BigNumber;

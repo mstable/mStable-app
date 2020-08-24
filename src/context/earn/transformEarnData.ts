@@ -14,6 +14,10 @@ const BAL_REWARDS_EXCEPTIONS: string[] = [
   '0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4', // MTA/mUSD 95/5
 ];
 
+const EXPIRED_POOLS: string[] = [
+  '0x25970282aac735cd4c76f30bfb0bf2bc8dad4e70', // MTA/mUSD 80/20
+];
+
 const getStakingRewardsContractsMap = (
   { pools, block24hAgo, tokenPrices }: SyncedEarnData,
   { rawStakingRewardsContracts }: RawEarnData,
@@ -129,6 +133,8 @@ const getStakingRewardsContractsMap = (
           .map(token => token.symbol)
           .join('/')} ${pool.tokens.map(token => token.ratio).join('/')}`;
 
+        const expired = EXPIRED_POOLS.includes(address);
+
         const result: StakingRewardsContract = {
           address,
           earnUrl,
@@ -139,6 +145,7 @@ const getStakingRewardsContractsMap = (
           duration,
           lastUpdateTime,
           periodFinish,
+          expired,
           stakingToken,
           rewardsToken,
           rewardRate: new BigNumber(rewardRate),
