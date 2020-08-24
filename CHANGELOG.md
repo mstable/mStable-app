@@ -2,6 +2,13 @@
 
 ## Next
 
+Miscellaneous:
+
+- Visually separate expired pools from current pools, and rewards information
+  associated with expired pools.
+- Disable the stake form for expired pools, and instruct users to instead
+  exit the pool.
+
 ## Version 1.9.2
 
 _Released 20.08.20 19.02 CEST_

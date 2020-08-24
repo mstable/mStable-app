@@ -95,13 +95,14 @@ const COLUMNS = [
 export const PoolsOverview: FC<{}> = () => {
   const stakingRewardsContracts = useStakingRewardsContracts();
 
-  const [activePools, otherPools] = useMemo(() => {
+  const [activePools, otherPools, expiredPools] = useMemo(() => {
     const items = Object.values(stakingRewardsContracts)
       .sort()
       .map(item => {
         const {
           address: id,
           platformRewards,
+          expired,
           totalStakingRewards,
           rewardsToken,
           pool,
@@ -163,7 +164,10 @@ export const PoolsOverview: FC<{}> = () => {
                 //       format={NumberFormat.Percentage}
                 //     />
                 //   );
-                case Columns.RewardsApy:
+                case Columns.RewardsApy: {
+                  if (expired) {
+                    return <>N/A</>;
+                  }
                   return item.apy.value?.exact.gt(0) ? (
                     <div>
                       <ApyAmount
@@ -179,7 +183,11 @@ export const PoolsOverview: FC<{}> = () => {
                   ) : (
                     <Skeleton />
                   );
+                }
                 case Columns.WeeklyRewards:
+                  if (expired) {
+                    return <>N/A</>;
+                  }
                   return (
                     <>
                       <TokenAmount
@@ -208,14 +216,23 @@ export const PoolsOverview: FC<{}> = () => {
               ..._item,
               data: { ..._item.data, [key]: value },
               hasStaked: item.stakingBalance.exact.gt(0),
+              expired,
             };
           },
-          { id, url: earnUrl, colors, data: {}, hasStaked: false },
+          {
+            id,
+            url: earnUrl,
+            colors,
+            data: {},
+            hasStaked: false,
+            expired: false,
+          },
         );
       });
     return [
-      items.filter(item => item.hasStaked),
-      items.filter(item => !item.hasStaked),
+      items.filter(item => !item.expired && item.hasStaked),
+      items.filter(item => !item.expired && !item.hasStaked),
+      items.filter(item => item.expired),
     ];
   }, [stakingRewardsContracts]);
 
@@ -236,6 +253,10 @@ export const PoolsOverview: FC<{}> = () => {
           <TableGroup>
             <H3>Ecosystem pools</H3>
             <Table columns={COLUMNS} items={otherPools} />
+          </TableGroup>
+          <TableGroup>
+            <H3>Expired pools</H3>
+            <Table columns={COLUMNS} items={expiredPools} />
           </TableGroup>
         </>
       )}

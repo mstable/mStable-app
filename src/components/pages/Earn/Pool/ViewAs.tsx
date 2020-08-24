@@ -2,6 +2,7 @@ import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useClipboard } from 'use-clipboard-copy';
 
+import { getWorkingPath, navigate } from 'hookrouter';
 import {
   useAccount,
   useIsMasquerading,
@@ -11,7 +12,6 @@ import { EtherscanLink } from '../../../core/EtherscanLink';
 import { Button } from '../../../core/Button';
 import { AddressInput } from './AddressInput';
 import { useCurrentStakingRewardsContract } from '../StakingRewardsContractProvider';
-import { getWorkingPath, navigate } from 'hookrouter';
 
 const Input = styled.div`
   display: flex;
