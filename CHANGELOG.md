@@ -2,6 +2,10 @@
 
 ## Next
 
+- Add script to calculate and output reports for platform rewards earned via staking
+- Add script to output bAsset vault balances over time
+
+
 ## Version 1.9.3
 
 Bug fixes:
