@@ -82,3 +82,18 @@ generates:
       - 'typescript'
       - 'typescript-operations'
       - 'typescript-react-apollo'
+
+  ./src/graphql/scripts.tsx:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_MSTABLE}
+    documents: 'src/graphql/scripts/*.graphql'
+    config:
+      skipTypename: true
+      withComponent: false
+      withHOC: false
+      withHooks: false
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'

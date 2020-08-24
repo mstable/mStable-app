@@ -2,8 +2,11 @@
 
 ## Next
 
+
 Miscellaneous:
 
+- Add script to calculate and output reports for platform rewards earned via staking
+- Add script to output bAsset vault balances over time
 - Visually separate expired pools from current pools, and rewards information
   associated with expired pools.
 - Disable the stake form for expired pools, and instruct users to instead
