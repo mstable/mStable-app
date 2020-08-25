@@ -6,3 +6,4 @@ src/graphql/scripts.tsx
 src/react-app-env.d.ts
 src/typechain
 scripts/*
+lib/
