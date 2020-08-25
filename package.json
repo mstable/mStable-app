@@ -1,6 +1,6 @@
 {
   "name": "mStable-app",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "private": true,
   "description": "mStable App",
   "author": "Stability Labs Pty. Ltd. <hello@stabilitylabs.co>",
@@ -64,7 +64,7 @@
   },
   "scripts": {
     "build": "react-scripts --max_old_space_size=4096 build",
-    "build:staging": "env-cmd -f .env.staging react-scripts --max_old_space_size=4096 build",
+    "build:staging": "env-cmd -f .env.example.ropsten react-scripts --max_old_space_size=4096 build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml -r dotenv/config",
     "codegen:typechain": "yarn typechain --target ethers-v4 --outDir src/typechain './lib/mStable-subgraph/lib/mStable-contracts/build/contracts/*.json'",
@@ -72,9 +72,10 @@
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "provision": "sh ./scripts/provision.sh",
     "start": "react-scripts start",
-    "test": "env-cmd -f .env.staging react-scripts test",
-    "pool-rewards": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/poolRewards.ts",
-    "all-unique-stakers": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/allUniqueStakers.ts",
+    "test": "env-cmd -f .env.example.ropsten react-scripts test",
+    "script": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/run.ts",
+    "vault-breakdown": "yarn run script vault-breakdown",
+    "platform-rewards": "yarn run script platform-rewards",
     "truffle:migrate": "cd ./lib/mStable-subgraph && yarn truffle:migrate",
     "truffle:script": "cd ./lib/mStable-subgraph && yarn truffle:script"
   },

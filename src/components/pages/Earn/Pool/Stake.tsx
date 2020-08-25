@@ -9,21 +9,27 @@ import {
   useSetFormManifest,
 } from '../../../forms/TransactionForm/FormProvider';
 import { TokenAmountInput } from '../../../forms/TokenAmountInput';
-import { H3 } from '../../../core/Typography';
+import { H3, P } from '../../../core/Typography';
 import {
+  useCurrentStakingRewardsContractCtx,
+  useCurrentStakingToken,
   useStakingRewardContractDispatch,
   useStakingRewardsContractState,
-  useCurrentStakingToken,
-  useCurrentStakingRewardsContractCtx,
 } from '../StakingRewardsContractProvider';
 import { CountUp } from '../../../core/CountUp';
 import { ExternalLink } from '../../../core/ExternalLink';
 import { PLATFORM_METADATA } from '../constants';
 import { Protip } from '../../../core/Protip';
+import { Tabs } from '../types';
 
 const Row = styled.div`
   width: 100%;
   padding-bottom: 16px;
+`;
+
+const ExitLink = styled.span`
+  border-bottom: 1px black solid;
+  cursor: pointer;
 `;
 
 const Input: FC<{}> = () => {
@@ -98,7 +104,9 @@ const Confirm: FC<{}> = () => {
 const Form: FC<{}> = () => {
   const {
     stake: { amount, valid },
+    stakingRewardsContract: { expired = false } = {},
   } = useStakingRewardsContractState();
+  const { setActiveTab } = useStakingRewardContractDispatch();
   const contract = useCurrentStakingRewardsContractCtx();
 
   const setFormManifest = useSetFormManifest();
@@ -119,7 +127,23 @@ const Form: FC<{}> = () => {
     }
   }, [setFormManifest, valid, amount, contract]);
 
-  return (
+  return expired ? (
+    <div>
+      <H3>Pool expired</H3>
+      <P>
+        This pool has now expired; new stakes should not be deposited, and the
+        pool should be{' '}
+        <ExitLink
+          onClick={() => {
+            setActiveTab(Tabs.Exit);
+          }}
+        >
+          exited
+        </ExitLink>
+        .
+      </P>
+    </div>
+  ) : (
     <TransactionForm
       confirmLabel="Stake"
       confirm={<Confirm />}

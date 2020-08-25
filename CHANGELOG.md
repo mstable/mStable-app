@@ -2,9 +2,28 @@
 
 ## Next
 
+
 Miscellaneous:
 
 - Add script to calculate and output reports for platform rewards earned via staking
+- Add script to output bAsset vault balances over time
+- Visually separate expired pools from current pools, and rewards information
+  associated with expired pools.
+- Disable the stake form for expired pools, and instruct users to instead
+  exit the pool.
+
+## Version 1.9.2
+
+_Released 20.08.20 19.02 CEST_
+
+Bug fixes:
+
+- Show that BAL rewards will be received for the Balancer MTA/mUSD 95/5 pool
+
+Miscellaneous:
+
+- Make the inputs for redeeming with specific assets clearer, and add a
+  note explaining that assets to redeem must be selected and amounts entered.
 
 ## Version 1.9.1
 

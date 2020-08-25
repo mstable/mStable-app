@@ -36,3 +36,14 @@ query Rewards(
     }
   }
 }
+
+query VaultBalances($block: Block_height) @api(name: mstable) {
+  bassets(block: $block) {
+    id
+    token {
+      symbol
+      decimals
+    }
+    vaultBalance
+  }
+}

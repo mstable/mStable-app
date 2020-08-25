@@ -6,7 +6,7 @@ import {
   useSetFormManifest,
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
-import { ReactComponent as SaveIcon } from '../../icons/circle/save.svg';
+import { ReactComponent as SaveIcon } from '../../icons/circle/usd.svg';
 import { P } from '../../core/Typography';
 import { Interfaces } from '../../../types';
 import { SaveProvider, useSaveState } from './SaveProvider';

@@ -65,7 +65,7 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   }
 
   @media (min-width: ${ViewportWidth.s}) {
-    min-width: 130px;
+    min-width: 145px;
   }
 `;
 

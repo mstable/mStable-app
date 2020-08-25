@@ -17,6 +17,13 @@ import { Tooltip } from '../../core/ReactTooltip';
 
 const ApyAmount = styled(Amount)`
   font-size: ${FontSize.xl};
+  margin-bottom: 8px;
+  display: block;
+`;
+
+const ApyNote = styled.div`
+  font-weight: bold;
+  font-size: ${FontSize.m};
 `;
 
 const TableGroup = styled.div`
@@ -76,7 +83,7 @@ const COLUMNS = [
     key: Columns.RewardsApy,
     title: 'Rewards APY',
     tip:
-      'The Annual Percentage Yield the pool is currently generating from the combined rewards token(s)',
+      'The Annual Percentage Yield is the extrapolated return on investment over the course of a year',
   },
   {
     key: Columns.WeeklyRewards,
@@ -88,13 +95,14 @@ const COLUMNS = [
 export const PoolsOverview: FC<{}> = () => {
   const stakingRewardsContracts = useStakingRewardsContracts();
 
-  const [activePools, otherPools] = useMemo(() => {
+  const [activePools, otherPools, expiredPools] = useMemo(() => {
     const items = Object.values(stakingRewardsContracts)
       .sort()
       .map(item => {
         const {
           address: id,
           platformRewards,
+          expired,
           totalStakingRewards,
           rewardsToken,
           pool,
@@ -156,12 +164,18 @@ export const PoolsOverview: FC<{}> = () => {
                 //       format={NumberFormat.Percentage}
                 //     />
                 //   );
-                case Columns.RewardsApy:
+                case Columns.RewardsApy: {
+                  if (expired) {
+                    return <>N/A</>;
+                  }
                   return item.apy.value?.exact.gt(0) ? (
-                    <ApyAmount
-                      amount={item.apy.value}
-                      format={NumberFormat.CountupPercentage}
-                    />
+                    <div>
+                      <ApyAmount
+                        amount={item.apy.value}
+                        format={NumberFormat.CountupPercentage}
+                      />
+                      {item.platformRewards ? <ApyNote>+ BAL</ApyNote> : null}
+                    </div>
                   ) : item.apy.waitingForData ? (
                     <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
                       No data yet
@@ -169,7 +183,11 @@ export const PoolsOverview: FC<{}> = () => {
                   ) : (
                     <Skeleton />
                   );
+                }
                 case Columns.WeeklyRewards:
+                  if (expired) {
+                    return <>N/A</>;
+                  }
                   return (
                     <>
                       <TokenAmount
@@ -198,14 +216,23 @@ export const PoolsOverview: FC<{}> = () => {
               ..._item,
               data: { ..._item.data, [key]: value },
               hasStaked: item.stakingBalance.exact.gt(0),
+              expired,
             };
           },
-          { id, url: earnUrl, colors, data: {}, hasStaked: false },
+          {
+            id,
+            url: earnUrl,
+            colors,
+            data: {},
+            hasStaked: false,
+            expired: false,
+          },
         );
       });
     return [
-      items.filter(item => item.hasStaked),
-      items.filter(item => !item.hasStaked),
+      items.filter(item => !item.expired && item.hasStaked),
+      items.filter(item => !item.expired && !item.hasStaked),
+      items.filter(item => item.expired),
     ];
   }, [stakingRewardsContracts]);
 
@@ -226,6 +253,10 @@ export const PoolsOverview: FC<{}> = () => {
           <TableGroup>
             <H3>Ecosystem pools</H3>
             <Table columns={COLUMNS} items={otherPools} />
+          </TableGroup>
+          <TableGroup>
+            <H3>Expired pools</H3>
+            <Table columns={COLUMNS} items={expiredPools} />
           </TableGroup>
         </>
       )}

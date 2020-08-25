@@ -189,24 +189,25 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                 </PlatformContainer>
               </div>
               <div>
-                <Tooltip tip="The Annual Percentage Yield the pool is currently generating from the combined rewards token(s)">
-                  <Heading>
-                    {rewardsToken.symbol}
-                    {platformToken ? `/${platformToken.symbol}` : ''} APY
-                  </Heading>
-                </Tooltip>
-                <div>
-                  {stakingRewardsContract.apy.waitingForData ? (
-                    <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
-                      No data yet
+                {stakingRewardsContract.expired ? null : (
+                  <>
+                    <Tooltip tip="The Annual Percentage Yield is the extrapolated return on investment over the course of a year">
+                      <Heading>{rewardsToken.symbol} APY</Heading>
                     </Tooltip>
-                  ) : (
-                    <StyledAmount
-                      format={NumberFormat.CountupPercentage}
-                      amount={stakingRewardsContract.apy.value}
-                    />
-                  )}
-                </div>
+                    <div>
+                      {stakingRewardsContract.apy.waitingForData ? (
+                        <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
+                          No data yet
+                        </Tooltip>
+                      ) : (
+                        <StyledAmount
+                          format={NumberFormat.CountupPercentage}
+                          amount={stakingRewardsContract.apy.value}
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
             </Row>
             <Row>
@@ -231,33 +232,38 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                 </TokenAmounts>
               </div>
               <div>
-                <Tooltip tip="The weekly rewards made available to the pool">
-                  <Heading>Weekly rewards</Heading>
-                </Tooltip>
-                <TokenAmounts>
-                  <StyledTokenAmount
-                    amount={stakingRewardsContract.totalStakingRewards}
-                    format={NumberFormat.Abbreviated}
-                    symbol={rewardsToken.symbol}
-                    price={rewardsToken.price}
-                  />
-                  {stakingRewardsContract.platformRewards && platformToken ? (
-                    <Tooltip
-                      tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations."
-                      hideIcon
-                    >
-                      <StyledTokenAmount
-                        // amount={
-                        //   stakingRewardsContract.platformRewards
-                        //     ?.totalPlatformRewards
-                        // }
-                        format={NumberFormat.Abbreviated}
-                        symbol={platformToken.symbol}
-                        price={platformToken.price}
-                      />
+                {stakingRewardsContract.expired ? null : (
+                  <>
+                    <Tooltip tip="The weekly rewards made available to the pool">
+                      <Heading>Weekly rewards</Heading>
                     </Tooltip>
-                  ) : null}
-                </TokenAmounts>
+                    <TokenAmounts>
+                      <StyledTokenAmount
+                        amount={stakingRewardsContract.totalStakingRewards}
+                        format={NumberFormat.Abbreviated}
+                        symbol={rewardsToken.symbol}
+                        price={rewardsToken.price}
+                      />
+                      {stakingRewardsContract.platformRewards &&
+                      platformToken ? (
+                        <Tooltip
+                          tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations."
+                          hideIcon
+                        >
+                          <StyledTokenAmount
+                            // amount={
+                            //   stakingRewardsContract.platformRewards
+                            //     ?.totalPlatformRewards
+                            // }
+                            format={NumberFormat.Abbreviated}
+                            symbol={platformToken.symbol}
+                            price={platformToken.price}
+                          />
+                        </Tooltip>
+                      ) : null}
+                    </TokenAmounts>
+                  </>
+                )}
               </div>
             </Row>
           </Content>

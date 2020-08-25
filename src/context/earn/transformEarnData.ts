@@ -7,6 +7,16 @@ import {
 } from './types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { StakingRewardsContractType } from '../../graphql/mstable';
+import { BlockTimestamp } from '../../types';
+
+const BAL_ADDRESS = '0xba100000625a3754423978a60c9317c58a424e3d';
+const BAL_REWARDS_EXCEPTIONS: string[] = [
+  '0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4', // MTA/mUSD 95/5
+];
+
+const EXPIRED_POOLS: string[] = [
+  '0x25970282aac735cd4c76f30bfb0bf2bc8dad4e70', // MTA/mUSD 80/20
+];
 
 const getStakingRewardsContractsMap = (
   { pools, block24hAgo, tokenPrices }: SyncedEarnData,
@@ -22,14 +32,32 @@ const getStakingRewardsContractsMap = (
           address,
           lastUpdateTime,
           periodFinish,
+          rewardPerTokenStored,
+          rewardRate,
+        } = data;
+        let {
           platformRewardPerTokenStored,
           platformRewardRate,
           platformToken,
-          rewardPerTokenStored,
-          rewardRate,
-          totalPlatformRewards,
           type,
+          totalPlatformRewards,
         } = data;
+
+        // These pools receive BAL rewards, but are not
+        // StakingRewardsWithPlatformToken contracts; however, they should be
+        // displayed as if they were, so that it's clear that BAL rewards
+        // will be received in these pools.
+        if (BAL_REWARDS_EXCEPTIONS.includes(address)) {
+          platformToken = {
+            symbol: 'BAL',
+            address: BAL_ADDRESS,
+            decimals: 18,
+          } as typeof platformToken;
+          type = StakingRewardsContractType.StakingRewardsWithPlatformToken;
+          platformRewardPerTokenStored = '0';
+          platformRewardRate = '0';
+          totalPlatformRewards = '0';
+        }
 
         const stakingToken = {
           ...data.stakingToken,
@@ -105,6 +133,8 @@ const getStakingRewardsContractsMap = (
           .map(token => token.symbol)
           .join('/')} ${pool.tokens.map(token => token.ratio).join('/')}`;
 
+        const expired = EXPIRED_POOLS.includes(address);
+
         const result: StakingRewardsContract = {
           address,
           earnUrl,
@@ -115,6 +145,7 @@ const getStakingRewardsContractsMap = (
           duration,
           lastUpdateTime,
           periodFinish,
+          expired,
           stakingToken,
           rewardsToken,
           rewardRate: new BigNumber(rewardRate),
@@ -180,61 +211,65 @@ const getStakingRewardsContractsMap = (
         const apyValue = (() => {
           const stakingTokenPrice = stakingToken?.price?.simple;
           const rewardsTokenPrice = rewardsToken?.price?.simple;
-          const platformTokenPrice =
-            result.platformRewards?.platformToken.price?.simple;
 
           // Prerequisites
-          if (
-            !(
-              block24hAgo &&
-              result.rewardPerTokenStored24hAgo &&
-              stakingTokenPrice &&
-              rewardsTokenPrice &&
-              (type ===
-              StakingRewardsContractType.StakingRewardsWithPlatformToken
-                ? platformTokenPrice &&
-                  result.platformRewards?.platformRewardPerTokenStored24hAgo
-                : true)
-            )
-          ) {
+          const hasPrerequisites =
+            block24hAgo &&
+            result.rewardPerTokenStored24hAgo &&
+            stakingTokenPrice &&
+            rewardsTokenPrice;
+
+          // Platform rewards APY prerequisites:
+          // const platformTokenPrice =
+          //   result.platformRewards?.platformToken.price?.simple;
+          // const hasPlatformPrerequisites = (type ===
+          // StakingRewardsContractType.StakingRewardsWithPlatformToken
+          //   ? platformTokenPrice &&
+          //     result.platformRewards?.platformRewardPerTokenStored24hAgo
+          //   : true)
+
+          if (!hasPrerequisites) {
             return undefined;
           }
 
           let gains = 0;
-          let platformGains = 0;
+          const platformGains = 0;
 
           // deltaR = rewardPerTokenStored - rewardPerTokenStored24hAgo
           const deltaR = parseFloat(
             result.rewardPerTokenStoredNow
-              .sub(result.rewardPerTokenStored24hAgo)
+              .sub(result.rewardPerTokenStored24hAgo as BigNumber)
               .toString(),
           );
 
           // deltaT = currentTime - block24hAgo.timestamp
-          const deltaT = currentTime.sub(block24hAgo.timestamp).toNumber();
+          const deltaT = currentTime
+            .sub((block24hAgo as BlockTimestamp).timestamp)
+            .toNumber();
 
           // gains = mtaPrice * deltaR
           gains = rewardsTokenPrice * deltaR;
 
-          if (
-            type === StakingRewardsContractType.StakingRewardsWithPlatformToken
-          ) {
-            const platformRewards = result.platformRewards as NonNullable<
-              typeof result['platformRewards']
-            >;
-
-            // deltaPlatformR = platformRewardPerTokenStored - platformRewardPerTokenStored24hAgo
-            const deltaPlatformR = parseFloat(
-              platformRewards.platformRewardPerTokenStoredNow
-                .sub(
-                  platformRewards.platformRewardPerTokenStored24hAgo as BigNumber,
-                )
-                .toString(),
-            );
-
-            // gains = platformTokenPrice * deltaPlatformR
-            platformGains = (platformTokenPrice as number) * deltaPlatformR;
-          }
+          // Platform rewards gains calculation
+          // if (
+          //   type === StakingRewardsContractType.StakingRewardsWithPlatformToken
+          // ) {
+          //   const platformRewards = result.platformRewards as NonNullable<
+          //     typeof result['platformRewards']
+          //   >;
+          //
+          //   // deltaPlatformR = platformRewardPerTokenStored - platformRewardPerTokenStored24hAgo
+          //   const deltaPlatformR = parseFloat(
+          //     platformRewards.platformRewardPerTokenStoredNow
+          //       .sub(
+          //         platformRewards.platformRewardPerTokenStored24hAgo as BigNumber,
+          //       )
+          //       .toString(),
+          //   );
+          //
+          //   // gains = platformTokenPrice * deltaPlatformR
+          //   platformGains = (platformTokenPrice as number) * deltaPlatformR;
+          // }
 
           // percentage = gains / stakingTokenPrice
           const percentage = (gains + platformGains) / stakingTokenPrice;

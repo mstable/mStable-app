@@ -1066,6 +1066,10 @@ export type QueryStakingRewardsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8ed0759f7daf0b4083c73e9815f6e965386a5c1
 export type QueryStakingRewardsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -1429,6 +1433,10 @@ export type StakingRewardsContractStakingRewardsArgs = {
   where?: Maybe<StakingReward_Filter>;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8ed0759f7daf0b4083c73e9815f6e965386a5c1
 export type StakingRewardsContractClaimRewardTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1437,6 +1445,10 @@ export type StakingRewardsContractClaimRewardTransactionsArgs = {
   where?: Maybe<StakingRewardsContractClaimRewardTransaction_Filter>;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8ed0759f7daf0b4083c73e9815f6e965386a5c1
 export type StakingRewardsContractStakeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1445,6 +1457,10 @@ export type StakingRewardsContractStakeTransactionsArgs = {
   where?: Maybe<StakingRewardsContractStakeTransaction_Filter>;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8ed0759f7daf0b4083c73e9815f6e965386a5c1
 export type StakingRewardsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -2253,6 +2269,10 @@ export type SubscriptionStakingRewardsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f8ed0759f7daf0b4083c73e9815f6e965386a5c1
 export type SubscriptionStakingRewardsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -2980,15 +3000,8 @@ export type StakingRewardsContractsQuery = {
 
 export type RewardsDistributorQueryVariables = {};
 
-export type RewardsDistributorQuery = {
-  rewardsDistributors: Array<Pick<RewardsDistributor, 'id' | 'fundManagers'>>;
-};
-
-export const TokenDetailsFragmentDoc = gql`
-  fragment TokenDetails on Token {
     id
     address
-    decimals
     symbol
     totalSupply
   }
@@ -3029,9 +3042,15 @@ export const TransactionDetailsFragmentDoc = gql`
   }
 `;
 export const ErFragmentDoc = gql`
-  fragment ER on ExchangeRate {
-    exchangeRate
-    timestamp
+    fragment ER on ExchangeRate {
+  exchangeRate
+  timestamp
+}
+    `;
+export const CoreTokensDocument = gql`
+    query CoreTokens @api(name: mstable) {
+  mUSD: tokens(where: {symbol: "mUSD"}) {
+    ...TokenDetails
   }
 `;
 export const CoreTokensDocument = gql`
@@ -4149,35 +4168,12 @@ export const RewardsDistributorDocument = gql`
  *   },
  * });
  */
-export function useRewardsDistributorQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    RewardsDistributorQuery,
-    RewardsDistributorQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<
-    RewardsDistributorQuery,
-    RewardsDistributorQueryVariables
-  >(RewardsDistributorDocument, baseOptions);
-}
-export function useRewardsDistributorLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    RewardsDistributorQuery,
-    RewardsDistributorQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    RewardsDistributorQuery,
-    RewardsDistributorQueryVariables
-  >(RewardsDistributorDocument, baseOptions);
-}
-export type RewardsDistributorQueryHookResult = ReturnType<
-  typeof useRewardsDistributorQuery
->;
-export type RewardsDistributorLazyQueryHookResult = ReturnType<
-  typeof useRewardsDistributorLazyQuery
->;
-export type RewardsDistributorQueryResult = ApolloReactCommon.QueryResult<
-  RewardsDistributorQuery,
-  RewardsDistributorQueryVariables
->;
+export function useRewardsDistributorQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<RewardsDistributorQuery, RewardsDistributorQueryVariables>) {
+        return ApolloReactHooks.useQuery<RewardsDistributorQuery, RewardsDistributorQueryVariables>(RewardsDistributorDocument, baseOptions);
+      }
+export function useRewardsDistributorLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RewardsDistributorQuery, RewardsDistributorQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<RewardsDistributorQuery, RewardsDistributorQueryVariables>(RewardsDistributorDocument, baseOptions);
+        }
+export type RewardsDistributorQueryHookResult = ReturnType<typeof useRewardsDistributorQuery>;
+export type RewardsDistributorLazyQueryHookResult = ReturnType<typeof useRewardsDistributorLazyQuery>;
+export type RewardsDistributorQueryResult = ApolloReactCommon.QueryResult<RewardsDistributorQuery, RewardsDistributorQueryVariables>;
