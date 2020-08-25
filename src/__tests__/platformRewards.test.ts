@@ -222,14 +222,6 @@ describe('platformRewards', () => {
     },
   };
 
-  // start
-  // lastUpdateTime: 1597062435,
-  // periodFinish: 1597667235,
-
-  // end
-  // lastUpdateTime: 1597666355,
-  // periodFinish: 1598271155,
-
   const pool = '0x881c72d1e6317f10a1cdcbe05040e7564e790c80';
 
   it('one staker', async () => {
