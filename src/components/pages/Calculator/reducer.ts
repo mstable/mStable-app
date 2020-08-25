@@ -1,8 +1,6 @@
 import { Reducer } from 'react';
 import { pipeline } from 'ts-pipe-compose';
-import { BigNumber } from 'ethers/utils';
 import { Action, Actions, State } from './types';
-import { BigDecimal } from '../../../web3/BigDecimal';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -20,18 +18,13 @@ const getFormDate = (offset = 0): string => {
 
 export const initialState: State = {
   initialized: false,
-  processing: false,
-  depositedAmount: new BigDecimal(0, 18),
+  depositedAmount: undefined,
   amount: '',
   startDate: getFormDate(-14),
   endDate: getFormDate(), // today
   totalDays: 0,
   isInThePast: false,
   isInTheFuture: false,
-  totalEarnings: new BigDecimal(0, 18),
-  avgApy: new BigNumber('10000000000000000'), // 1%
-  avgApyPast: new BigNumber(0),
-  avgApyFuture: new BigNumber(0),
 };
 
 const initialize = (state: State): State =>
@@ -39,7 +32,7 @@ const initialize = (state: State): State =>
     ? {
         ...state,
         initialized: true,
-        depositedAmount: state.dataState.mAsset.balance,
+        depositedAmount: state.dataState.savingsContract.savingsBalance.balance,
       }
     : state;
 
@@ -63,16 +56,6 @@ const setIsInThePastOrFuture = (state: State): State => {
     ...state,
     isInThePast: today > start,
     isInTheFuture: today < end,
-  };
-};
-
-const setTotalEarnings = (state: State): State => {
-  const amountBN = new BigNumber(state.amount || '0');
-  const totalEarnings = new BigDecimal(amountBN.mul(state.avgApy), 18);
-
-  return {
-    ...state,
-    totalEarnings,
   };
 };
 
@@ -110,5 +93,4 @@ export const reducer: Reducer<State, Action> = pipeline(
   initialize,
   setTotalDays,
   setIsInThePastOrFuture,
-  setTotalEarnings,
 );

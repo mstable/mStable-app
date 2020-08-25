@@ -1,15 +1,20 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
+import Skeleton from 'react-loading-skeleton';
+import { BigNumber } from 'ethers/utils';
 
 import { P, H2, H3 } from '../../core/Typography';
+import { FormRow } from '../../core/Form';
+import { Input } from '../../forms/Input';
+import { AmountInput } from '../../forms/AmountInput';
 import { Size } from '../../../theme';
+import { BigDecimal } from '../../../web3/BigDecimal';
+import { useApyForTimePeriod } from '../../../web3/hooks';
+import { formatExactAmount } from '../../../web3/amounts';
 import {
   useCalculatorState,
   useCalculatorDispatch,
 } from './CalculatorProvider';
-import { FormRow } from '../../core/Form';
-import { Input } from '../../forms/Input';
-import { AmountInput } from '../../forms/AmountInput';
 
 const Bold = styled.span`
   font-weight: bold;
@@ -27,9 +32,13 @@ const DatesColumnNull = styled.div`
   flex-grow: 0;
 `;
 
-const MIN_DATE = '2020-05-29'; // when contract was deployed
+const ResultValue: FC = ({ children }) =>
+  children ? <Bold>{children}</Bold> : <Skeleton width={100} />;
 
-export const CalculatorForm: FC<{}> = () => {
+const MIN_DATE = '2020-05-29'; // when contract was deployed
+const DAYS_IN_YEAR = 365;
+
+export const CalculatorForm: FC = () => {
   const {
     amount,
     startDate,
@@ -38,7 +47,6 @@ export const CalculatorForm: FC<{}> = () => {
     depositedAmount,
     isInThePast,
     isInTheFuture,
-    totalEarnings,
   } = useCalculatorState();
 
   const {
@@ -47,16 +55,35 @@ export const CalculatorForm: FC<{}> = () => {
     endDateChanged,
   } = useCalculatorDispatch();
 
-  const avgApy = '20';
-  const avgApyPast = '20';
-  const avgApyFuture = '20';
+  const avgApy = useApyForTimePeriod(new Date(startDate), new Date(endDate));
+  const last30DaysApy = new BigNumber('0'); // TODO
+
+  const totalEarnings = useMemo<BigNumber>(() => {
+    const amountBigDecimal = BigDecimal.maybeParse(amount, 18);
+
+    if (amountBigDecimal && avgApy) {
+      return amountBigDecimal
+        .mulTruncate(avgApy)
+        .exact.mul(totalDays)
+        .div(DAYS_IN_YEAR);
+    }
+
+    return new BigNumber('0');
+  }, [avgApy, amount, totalDays]);
 
   return (
     <div>
       <FormRow>
         <H3>Deposit amount in mUSD</H3>
         <AmountInput value={amount} onChange={value => amountChanged(value)} />
-        <P>Your savings balance: {depositedAmount.format()} mUSD</P>
+        <P>
+          Your savings balance:{' '}
+          <ResultValue>
+            {depositedAmount
+              ? formatExactAmount(depositedAmount.exact, 18, 'mUSD')
+              : undefined}
+          </ResultValue>
+        </P>
       </FormRow>
 
       <DatesRow>
@@ -67,7 +94,7 @@ export const CalculatorForm: FC<{}> = () => {
             name="startDate"
             type="date"
             min={MIN_DATE}
-            max={endDate}
+            max={endDate} // TODO endDate - 1d
             value={startDate}
             onChange={e => startDateChanged(e.target.value)}
           />
@@ -79,7 +106,7 @@ export const CalculatorForm: FC<{}> = () => {
             error={undefined}
             name="endDate"
             type="date"
-            min={startDate}
+            min={startDate} // TODO startDate + 1d
             value={endDate}
             onChange={e => endDateChanged(e.target.value)}
           />
@@ -91,27 +118,25 @@ export const CalculatorForm: FC<{}> = () => {
 
         {isInThePast && (
           <P size={Size.l}>
-            Past performance from Deposit date till Today:{' '}
-            <Bold>{`${avgApyPast}% APY`}</Bold>
+            Average performance from deposit date till today:{' '}
+            <ResultValue>{formatExactAmount(avgApy, 16, '% APY')}</ResultValue>
           </P>
         )}
 
         {isInTheFuture && (
           <P size={Size.l}>
-            Future performance from Today till Withdraw date (estimated):{' '}
-            <Bold>{`${avgApyFuture}% APY`}</Bold>
-          </P>
-        )}
-
-        {isInThePast && isInTheFuture && (
-          <P size={Size.l}>
-            {`Average performance for selected ${totalDays} days:`}{' '}
-            <Bold>{`${avgApy}% APY`}</Bold>
+            Estimated future performance (average APY for last 30 days):{' '}
+            <ResultValue>
+              {formatExactAmount(last30DaysApy, 16, '% APY')}
+            </ResultValue>
           </P>
         )}
 
         <P size={Size.l}>
-          Total earnings: <Bold>{`${totalEarnings.format()} mUSD`}</Bold>
+          {`Total earnings for selected ${totalDays} days: `}
+          <ResultValue>
+            {formatExactAmount(totalEarnings, 18, 'mUSD')}
+          </ResultValue>
         </P>
       </FormRow>
     </div>

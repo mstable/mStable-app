@@ -1,22 +1,16 @@
-import { BigNumber } from 'ethers/utils';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { DataState } from '../../../context/DataProvider/types';
 
 export interface State {
   dataState?: DataState;
   initialized: boolean;
-  processing: boolean;
-  depositedAmount: BigDecimal;
+  depositedAmount: BigDecimal | undefined;
   amount: string | null;
   startDate: string;
   endDate: string;
   totalDays: number;
   isInThePast: boolean;
   isInTheFuture: boolean;
-  totalEarnings: BigDecimal;
-  avgApy: BigNumber;
-  avgApyPast: BigNumber;
-  avgApyFuture: BigNumber;
 }
 
 export enum Actions {
