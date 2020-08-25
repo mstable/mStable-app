@@ -193,10 +193,11 @@ describe('platformRewards', () => {
   }): ReturnType<typeof jest['spyOn']> => {
     const spy = jest.spyOn(mod, 'fetchAllData');
 
-    spy.mockImplementation(async function* mock() {
-      // It's assumed that the function is first called for the start
-      // data, and then for the end data.
+    spy.mockImplementationOnce(async function* mock() {
       yield start;
+    });
+
+    spy.mockImplementationOnce(async function* mock() {
       yield end;
     });
 
