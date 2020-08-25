@@ -76,6 +76,7 @@
     "script": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/run.ts",
     "vault-breakdown": "yarn run script vault-breakdown",
     "platform-rewards": "yarn run script platform-rewards",
+    "merkle-root-hash": "yarn run script merkle-root-hash",
     "truffle:migrate": "cd ./lib/mStable-subgraph && yarn truffle:migrate",
     "truffle:script": "cd ./lib/mStable-subgraph && yarn truffle:script"
   },
@@ -122,6 +123,7 @@
     "graphql": "^14.6.0",
     "graphql-tag": "^2.10.3",
     "husky": "^4.2.5",
+    "merkle-tree": "./lib/merkle-tree",
     "prettier": "^1.19.1",
     "react-test-renderer": "^16.13.1",
     "ts-node": "^8.10.2",
