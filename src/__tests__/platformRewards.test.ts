@@ -249,12 +249,12 @@ describe('platformRewards', () => {
     const totalMtaEarningsForTranche =
       totalMtaEarningsPerPoolAtEnd - totalMtaEarningsPerPoolAtStart;
 
-    expect(totalMtaEarningsForTranche.toFixed(6)).toEqual('246.869976');
+    expect(totalMtaEarningsForTranche.toFixed(6)).toEqual('126.811093');
 
     const acct1Earned =
       mtaEarnings.mtaEarningsPerStakerPerPool[pool][acct1.account];
 
-    expect(acct1Earned).toEqual('246.869975664414364739');
+    expect(acct1Earned).toEqual('126.811093411792073498');
   });
 
   it('two stakers', async () => {
@@ -267,25 +267,36 @@ describe('platformRewards', () => {
     };
 
     // Two stakers
-    expect(rewards[acct1.account]).toEqual('909.755284255382779');
-    expect(rewards[acct2.account]).toEqual('90.24471574461722');
+    expect(parseFloat(rewards[acct1.account]).toFixed(6)).toEqual('942.655111');
+    expect(parseFloat(rewards[acct2.account]).toFixed(6)).toEqual('57.344889');
 
     const acct1Earned =
       mtaEarnings.mtaEarningsPerStakerPerPool[pool][acct1.account];
     const acct2Earned =
       mtaEarnings.mtaEarningsPerStakerPerPool[pool][acct2.account];
 
-    expect(acct1Earned).toEqual('246.869975664414364739');
-    expect(acct2Earned).toEqual('24.48868521599227855');
+    const totalMtaEarningsPerPoolAtEnd = parseFloat(
+      mtaEarnings.totalMtaEarningsPerPoolAtEnd[pool],
+    );
+    const totalMtaEarningsPerPoolAtStart = parseFloat(
+      mtaEarnings.totalMtaEarningsPerPoolAtStart[pool],
+    );
+    const totalMtaEarningsForTranche =
+      totalMtaEarningsPerPoolAtEnd - totalMtaEarningsPerPoolAtStart;
+
+    expect(totalMtaEarningsForTranche.toFixed(6)).toEqual('134.525440');
+
+    expect(parseFloat(acct1Earned).toFixed(6)).toEqual('126.811093');
+    expect(parseFloat(acct2Earned).toFixed(6)).toEqual('7.714346');
 
     // Ratio should be the same, i.e. the rewards are distributed according to
     // the earned amount
     expect(
       (parseFloat(acct1Earned) / parseFloat(rewards[acct1.account])).toFixed(6),
-    ).toEqual('0.271359');
+    ).toEqual('0.134525');
     expect(
       (parseFloat(acct2Earned) / parseFloat(rewards[acct2.account])).toFixed(6),
-    ).toEqual('0.271359');
+    ).toEqual('0.134525');
   });
 });
 
