@@ -193,10 +193,11 @@ describe('platformRewards', () => {
   }): ReturnType<typeof jest['spyOn']> => {
     const spy = jest.spyOn(mod, 'fetchAllData');
 
-    spy.mockImplementation(async function* mock() {
-      // It's assumed that the function is first called for the start
-      // data, and then for the end data.
+    spy.mockImplementationOnce(async function* mock() {
       yield start;
+    });
+
+    spy.mockImplementationOnce(async function* mock() {
       yield end;
     });
 
@@ -204,6 +205,7 @@ describe('platformRewards', () => {
   };
 
   const args = {
+    fullOutput: true,
     token: {
       address: '0xba100000625a3754423978a60c9317c58a424e3d',
       symbol: 'BAL',
@@ -219,12 +221,21 @@ describe('platformRewards', () => {
       end: { timestamp: 1597666355, blockNumber: 0 },
     },
   };
-  jest.spyOn(mod, 'parseArgs').mockImplementation(async () => args);
+
+  // start
+  // lastUpdateTime: 1597062435,
+  // periodFinish: 1597667235,
+
+  // end
+  // lastUpdateTime: 1597666355,
+  // periodFinish: 1598271155,
 
   const pool = '0x881c72d1e6317f10a1cdcbe05040e7564e790c80';
 
   it('one staker', async () => {
     mockFetchAllData(DATA.oneStaker);
+
+    jest.spyOn(mod, 'parseArgs').mockImplementation(async () => args);
 
     const {
       data: { mtaEarnings, rewards, totalRewards },
