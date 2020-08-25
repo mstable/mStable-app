@@ -204,6 +204,7 @@ describe('platformRewards', () => {
   };
 
   const args = {
+    fullOutput: true,
     token: {
       address: '0xba100000625a3754423978a60c9317c58a424e3d',
       symbol: 'BAL',
@@ -219,12 +220,13 @@ describe('platformRewards', () => {
       end: { timestamp: 1597666355, blockNumber: 0 },
     },
   };
-  jest.spyOn(mod, 'parseArgs').mockImplementation(async () => args);
 
   const pool = '0x881c72d1e6317f10a1cdcbe05040e7564e790c80';
 
   it('one staker', async () => {
     mockFetchAllData(DATA.oneStaker);
+
+    jest.spyOn(mod, 'parseArgs').mockImplementation(async () => args);
 
     const {
       data: { mtaEarnings, rewards, totalRewards },
