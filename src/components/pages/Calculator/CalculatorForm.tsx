@@ -5,7 +5,6 @@ import { BigNumber } from 'ethers/utils';
 
 import { P, H2, H3 } from '../../core/Typography';
 import { FormRow } from '../../core/Form';
-import { ButtonLink } from '../../core/Button';
 import { Input } from '../../forms/Input';
 import { AmountInput } from '../../forms/AmountInput';
 import { Size } from '../../../theme';
@@ -33,10 +32,8 @@ const DatesColumnNull = styled.div`
   flex-grow: 0;
 `;
 
-const CtaRow = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 1rem 0;
+const Section = styled.div`
+  padding-bottom: 1rem;
 `;
 
 const ResultValue: FC = ({ children }) =>
@@ -136,8 +133,8 @@ export const CalculatorForm: FC = () => {
         </FormRow>
       </DatesRow>
 
-      <FormRow>
-        <H2>Estimated result</H2>
+      <Section>
+        <H2 borderTop>Estimated result</H2>
 
         {isInThePast && (
           <P size={Size.l}>
@@ -181,12 +178,7 @@ export const CalculatorForm: FC = () => {
             </ResultValue>
           </P>
         )}
-      </FormRow>
-      <CtaRow>
-        <ButtonLink href="/save" size={Size.l}>
-          Start saving now
-        </ButtonLink>
-      </CtaRow>
+      </Section>
     </div>
   );
 };
