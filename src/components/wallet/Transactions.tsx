@@ -289,6 +289,26 @@ const getPendingTxDescription = (
     case 'distributeRewards': {
       return <>You {tx.status ? 'distributed' : 'are distributing'} rewards</>;
     }
+    case 'claimWeeks': {
+      const [, tranches] = tx.args as [string, string[], string[], string[][]];
+
+      return (
+        <>
+          You <span>{tx.status ? 'claimed' : 'are claiming'}</span> rewards for
+          week{tranches.length > 1 ? 's' : ''} {tranches.join(', ')}
+        </>
+      );
+    }
+    case 'claimWeek': {
+      const [, tranche] = tx.args as [string, string, string, string[]];
+
+      return (
+        <>
+          You <span>{tx.status ? 'claimed' : 'are claiming'}</span> rewards for
+          week {tranche}
+        </>
+      );
+    }
     default:
       return <>Unknown</>;
   }

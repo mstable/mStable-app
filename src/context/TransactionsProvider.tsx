@@ -76,9 +76,9 @@ interface Dispatch {
    * Mark a current transaction as finalized with a transaction receipt.
    * @param hash
    * @param receipt
-   * @param purpose
+   * @param tx
    */
-  finalize(hash: string, receipt: TransactionReceipt, purpose: Purpose): void;
+  finalize(hash: string, receipt: TransactionReceipt, tx: Transaction): void;
 
   /**
    * Reset the state completely.
@@ -262,6 +262,26 @@ const getTxPurpose = (
   const { bAssets, mAsset } = dataState;
 
   switch (fn) {
+    case 'claimWeeks': {
+      const [, tranches] = args as [string, string[], string[], string[][]];
+      const body = `rewards for week${
+        tranches.length > 1 ? 's' : ''
+      } ${tranches.join(', ')}`;
+
+      return {
+        present: `Claiming ${body}`,
+        past: `Claimed ${body}`,
+      };
+    }
+    case 'claimWeek': {
+      const [, tranche] = args as [string, string, string, string[]];
+      const body = `rewards for week ${tranche}`;
+
+      return {
+        present: `Claiming ${body}`,
+        past: `Claimed ${body}`,
+      };
+    }
     case 'mint': {
       const [bAssetAddress, bAssetQ] = args as [string, BigNumber];
 
@@ -442,6 +462,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
           timestamp: Date.now(),
           purpose,
           status: null,
+          onFinalize: manifest.onFinalized,
         },
       });
 
@@ -472,17 +493,19 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   );
 
   const finalize = useCallback<Dispatch['finalize']>(
-    (hash, receipt, purpose) => {
+    (hash, receipt, tx) => {
       const status = getTransactionStatus(receipt);
       const link = getEtherscanLinkForHash(hash);
 
       if (status === TransactionStatus.Success) {
-        addSuccessNotification('Transaction confirmed', purpose.past, link);
+        addSuccessNotification('Transaction confirmed', tx.purpose.past, link);
       } else if (status === TransactionStatus.Error) {
-        addErrorNotification('Transaction failed', purpose.present, link);
+        addErrorNotification('Transaction failed', tx.purpose.present, link);
       }
 
       dispatch({ type: Actions.Finalize, payload: { hash, receipt, status } });
+
+      tx.onFinalize?.();
     },
     [dispatch, addSuccessNotification, addErrorNotification],
   );
@@ -652,12 +675,12 @@ const parseTxError = (
  */
 export const useSendTransaction =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (): ((tx: SendTxManifest<any, any>, doneCallback?: () => void) => void) => {
+  (): ((tx: SendTxManifest<any, any>) => void) => {
     const [, { addPending }] = useTransactionsContext();
     const addErrorNotification = useAddErrorNotification();
 
     return useCallback(
-      (manifest, doneCallback) => {
+      manifest => {
         sendTransaction(manifest)
           .then(response => {
             const { hash } = response;
@@ -675,7 +698,7 @@ export const useSendTransaction =
             addErrorNotification(message);
           })
           .finally(() => {
-            doneCallback?.();
+            manifest.onSent?.();
           });
       },
       [addPending, addErrorNotification],

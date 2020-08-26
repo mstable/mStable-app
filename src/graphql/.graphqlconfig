@@ -29,6 +29,10 @@
           "mainnet-production": {
             "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
             "introspect": false
+          },
+          "mainnet-staging": {
+            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging",
+            "introspect": false
           }
         }
       }

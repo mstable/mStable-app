@@ -9,13 +9,14 @@ import { Token } from '../../core/Token';
 import { H3, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ExternalLink } from '../../core/ExternalLink';
-import { Color, FontSize } from '../../../theme';
+import { Color, FontSize, ViewportWidth } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
 import { centredLayout } from '../../layout/css';
 import { ReactComponent as MtaIcon } from '../../icons/circle/mta.svg';
 import { PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
+import { MerkleDropClaims } from './MerkleDropClaims';
 
 const [useSwipeDisabled, SwipeDisabledProvider] = createStateContext(false);
 
@@ -309,6 +310,20 @@ const SliderContainer = styled.div`
   }
 `;
 
+const PageHeaderContainer = styled.div`
+  margin-bottom: 16px;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    > :last-child {
+      flex: 0;
+    }
+  }
+`;
+
 const Content = styled.div`
   padding: 40px 20px;
   flex: 1;
@@ -363,15 +378,18 @@ export const Earn: FC<{}> = () => {
       ) : (
         <Content>
           <div>
-            <PageHeader
-              icon={<MtaIcon />}
-              title="EARN"
-              subtitle="Ecosystem rewards with mStable"
-            >
-              <Button onClick={toggleOnboardingVisible}>
-                View introduction
-              </Button>
-            </PageHeader>
+            <PageHeaderContainer>
+              <PageHeader
+                icon={<MtaIcon />}
+                title="EARN"
+                subtitle="Ecosystem rewards with mStable"
+              >
+                <Button onClick={toggleOnboardingVisible}>
+                  View introduction
+                </Button>
+              </PageHeader>
+              <MerkleDropClaims />
+            </PageHeaderContainer>
             <PoolsOverview />
           </div>
         </Content>

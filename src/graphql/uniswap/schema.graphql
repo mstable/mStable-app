@@ -344,6 +344,7 @@ type UniswapFactory {
   pairCount: Int!
   totalVolumeUSD: BigDecimal!
   totalVolumeETH: BigDecimal!
+  untrackedVolumeUSD: BigDecimal!
   totalLiquidityUSD: BigDecimal!
   totalLiquidityETH: BigDecimal!
   txCount: BigInt!
@@ -501,6 +502,7 @@ type Token {
   totalSupply: BigInt!
   tradeVolume: BigDecimal!
   tradeVolumeUSD: BigDecimal!
+  untrackedVolumeUSD: BigDecimal!
   txCount: BigInt!
   totalLiquidity: BigDecimal!
   derivedETH: BigDecimal
@@ -657,6 +659,7 @@ enum UniswapFactory_orderBy {
   pairCount
   totalVolumeUSD
   totalVolumeETH
+  untrackedVolumeUSD
   totalLiquidityUSD
   totalLiquidityETH
   txCount
@@ -695,6 +698,14 @@ input UniswapFactory_filter {
   totalVolumeETH_lte: BigDecimal
   totalVolumeETH_in: [BigDecimal!]
   totalVolumeETH_not_in: [BigDecimal!]
+  untrackedVolumeUSD: BigDecimal
+  untrackedVolumeUSD_not: BigDecimal
+  untrackedVolumeUSD_gt: BigDecimal
+  untrackedVolumeUSD_lt: BigDecimal
+  untrackedVolumeUSD_gte: BigDecimal
+  untrackedVolumeUSD_lte: BigDecimal
+  untrackedVolumeUSD_in: [BigDecimal!]
+  untrackedVolumeUSD_not_in: [BigDecimal!]
   totalLiquidityUSD: BigDecimal
   totalLiquidityUSD_not: BigDecimal
   totalLiquidityUSD_gt: BigDecimal
@@ -732,6 +743,7 @@ enum Token_orderBy {
   totalSupply
   tradeVolume
   tradeVolumeUSD
+  untrackedVolumeUSD
   txCount
   totalLiquidity
   derivedETH
@@ -806,6 +818,14 @@ input Token_filter {
   tradeVolumeUSD_lte: BigDecimal
   tradeVolumeUSD_in: [BigDecimal!]
   tradeVolumeUSD_not_in: [BigDecimal!]
+  untrackedVolumeUSD: BigDecimal
+  untrackedVolumeUSD_not: BigDecimal
+  untrackedVolumeUSD_gt: BigDecimal
+  untrackedVolumeUSD_lt: BigDecimal
+  untrackedVolumeUSD_gte: BigDecimal
+  untrackedVolumeUSD_lte: BigDecimal
+  untrackedVolumeUSD_in: [BigDecimal!]
+  untrackedVolumeUSD_not_in: [BigDecimal!]
   txCount: BigInt
   txCount_not: BigInt
   txCount_gt: BigInt
@@ -850,6 +870,7 @@ type Pair {
   volumeToken0: BigDecimal!
   volumeToken1: BigDecimal!
   volumeUSD: BigDecimal!
+  untrackedVolumeUSD: BigDecimal!
   txCount: BigInt!
   createdAtTimestamp: BigInt!
   createdAtBlockNumber: BigInt!
@@ -870,6 +891,7 @@ enum Pair_orderBy {
   volumeToken0
   volumeToken1
   volumeUSD
+  untrackedVolumeUSD
   txCount
   createdAtTimestamp
   createdAtBlockNumber
@@ -1000,6 +1022,14 @@ input Pair_filter {
   volumeUSD_lte: BigDecimal
   volumeUSD_in: [BigDecimal!]
   volumeUSD_not_in: [BigDecimal!]
+  untrackedVolumeUSD: BigDecimal
+  untrackedVolumeUSD_not: BigDecimal
+  untrackedVolumeUSD_gt: BigDecimal
+  untrackedVolumeUSD_lt: BigDecimal
+  untrackedVolumeUSD_gte: BigDecimal
+  untrackedVolumeUSD_lte: BigDecimal
+  untrackedVolumeUSD_in: [BigDecimal!]
+  untrackedVolumeUSD_not_in: [BigDecimal!]
   txCount: BigInt
   txCount_not: BigInt
   txCount_gt: BigInt
@@ -1042,9 +1072,7 @@ enum LiquidityPosition_orderBy {
   id
   user
   pair
-  poolOwnership
   liquidityTokenBalance
-  historicalSnapshots
 }
 input LiquidityPosition_filter {
   id: ID
@@ -1083,14 +1111,6 @@ input LiquidityPosition_filter {
   pair_not_starts_with: String
   pair_ends_with: String
   pair_not_ends_with: String
-  poolOwnership: BigDecimal
-  poolOwnership_not: BigDecimal
-  poolOwnership_gt: BigDecimal
-  poolOwnership_lt: BigDecimal
-  poolOwnership_gte: BigDecimal
-  poolOwnership_lte: BigDecimal
-  poolOwnership_in: [BigDecimal!]
-  poolOwnership_not_in: [BigDecimal!]
   liquidityTokenBalance: BigDecimal
   liquidityTokenBalance_not: BigDecimal
   liquidityTokenBalance_gt: BigDecimal
@@ -1099,18 +1119,50 @@ input LiquidityPosition_filter {
   liquidityTokenBalance_lte: BigDecimal
   liquidityTokenBalance_in: [BigDecimal!]
   liquidityTokenBalance_not_in: [BigDecimal!]
-  historicalSnapshots: [String!]
-  historicalSnapshots_not: [String!]
-  historicalSnapshots_contains: [String!]
-  historicalSnapshots_not_contains: [String!]
 }
 type LiquidityPosition {
   id: ID!
   user: User!
   pair: Pair!
-  poolOwnership: BigDecimal
   liquidityTokenBalance: BigDecimal!
-  historicalSnapshots(skip: Int = 0, first: Int = 100, orderBy: LiquidityPositionSnapshot_orderBy, orderDirection: OrderDirection, where: LiquidityPositionSnapshot_filter): [LiquidityPositionSnapshot]!
+}
+enum User_orderBy {
+  id
+  liquidityPositions
+  usdSwapped
+}
+input User_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  usdSwapped: BigDecimal
+  usdSwapped_not: BigDecimal
+  usdSwapped_gt: BigDecimal
+  usdSwapped_lt: BigDecimal
+  usdSwapped_gte: BigDecimal
+  usdSwapped_lte: BigDecimal
+  usdSwapped_in: [BigDecimal!]
+  usdSwapped_not_in: [BigDecimal!]
+}
+type LiquidityPositionSnapshot {
+  id: ID!
+  liquidityPosition: LiquidityPosition!
+  timestamp: Int!
+  block: Int!
+  user: User!
+  pair: Pair!
+  token0PriceUSD: BigDecimal!
+  token1PriceUSD: BigDecimal!
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+  reserveUSD: BigDecimal!
+  liquidityTokenTotalSupply: BigDecimal!
+  liquidityTokenBalance: BigDecimal!
 }
 enum LiquidityPositionSnapshot_orderBy {
   id
@@ -1136,6 +1188,20 @@ input LiquidityPositionSnapshot_filter {
   id_lte: ID
   id_in: [ID!]
   id_not_in: [ID!]
+  liquidityPosition: String
+  liquidityPosition_not: String
+  liquidityPosition_gt: String
+  liquidityPosition_lt: String
+  liquidityPosition_gte: String
+  liquidityPosition_lte: String
+  liquidityPosition_in: [String!]
+  liquidityPosition_not_in: [String!]
+  liquidityPosition_contains: String
+  liquidityPosition_not_contains: String
+  liquidityPosition_starts_with: String
+  liquidityPosition_not_starts_with: String
+  liquidityPosition_ends_with: String
+  liquidityPosition_not_ends_with: String
   timestamp: Int
   timestamp_not: Int
   timestamp_gt: Int
@@ -1236,44 +1302,6 @@ input LiquidityPositionSnapshot_filter {
   liquidityTokenBalance_lte: BigDecimal
   liquidityTokenBalance_in: [BigDecimal!]
   liquidityTokenBalance_not_in: [BigDecimal!]
-}
-type LiquidityPositionSnapshot {
-  id: ID!
-  liquidityPosition: LiquidityPosition!
-  timestamp: Int!
-  block: Int!
-  user: User!
-  pair: Pair!
-  token0PriceUSD: BigDecimal!
-  token1PriceUSD: BigDecimal!
-  reserve0: BigDecimal!
-  reserve1: BigDecimal!
-  reserveUSD: BigDecimal!
-  liquidityTokenTotalSupply: BigDecimal!
-  liquidityTokenBalance: BigDecimal!
-}
-enum User_orderBy {
-  id
-  liquidityPositions
-  usdSwapped
-}
-input User_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  usdSwapped: BigDecimal
-  usdSwapped_not: BigDecimal
-  usdSwapped_gt: BigDecimal
-  usdSwapped_lt: BigDecimal
-  usdSwapped_gte: BigDecimal
-  usdSwapped_lte: BigDecimal
-  usdSwapped_in: [BigDecimal!]
-  usdSwapped_not_in: [BigDecimal!]
 }
 type Transaction {
   id: ID!
@@ -1784,6 +1812,7 @@ type UniswapDayData {
   date: Int!
   dailyVolumeETH: BigDecimal!
   dailyVolumeUSD: BigDecimal!
+  dailyVolumeUntracked: BigDecimal!
   totalVolumeETH: BigDecimal!
   totalLiquidityETH: BigDecimal!
   totalVolumeUSD: BigDecimal!
@@ -1797,6 +1826,7 @@ enum UniswapDayData_orderBy {
   date
   dailyVolumeETH
   dailyVolumeUSD
+  dailyVolumeUntracked
   totalVolumeETH
   totalLiquidityETH
   totalVolumeUSD
@@ -1838,6 +1868,14 @@ input UniswapDayData_filter {
   dailyVolumeUSD_lte: BigDecimal
   dailyVolumeUSD_in: [BigDecimal!]
   dailyVolumeUSD_not_in: [BigDecimal!]
+  dailyVolumeUntracked: BigDecimal
+  dailyVolumeUntracked_not: BigDecimal
+  dailyVolumeUntracked_gt: BigDecimal
+  dailyVolumeUntracked_lt: BigDecimal
+  dailyVolumeUntracked_gte: BigDecimal
+  dailyVolumeUntracked_lte: BigDecimal
+  dailyVolumeUntracked_in: [BigDecimal!]
+  dailyVolumeUntracked_not_in: [BigDecimal!]
   totalVolumeETH: BigDecimal
   totalVolumeETH_not: BigDecimal
   totalVolumeETH_gt: BigDecimal

@@ -11,11 +11,17 @@ import {
 } from './FormProvider';
 
 interface Props {
-  confirmLabel: string;
+  confirmLabel: JSX.Element | string;
   valid: boolean;
+  compact?: boolean;
 }
 
-export const ConfirmPane: FC<Props> = ({ children, confirmLabel, valid }) => {
+export const ConfirmPane: FC<Props> = ({
+  children,
+  confirmLabel,
+  valid,
+  compact,
+}) => {
   const sendTransaction = useSendTransaction();
   const manifest = useManifest();
   const submitting = useFormSubmitting();
@@ -26,14 +32,14 @@ export const ConfirmPane: FC<Props> = ({ children, confirmLabel, valid }) => {
   const handleSend = useCallback(() => {
     if (valid && manifest) {
       submitStart();
-      sendTransaction({ ...manifest, formId }, submitEnd);
+      sendTransaction({ ...manifest, formId, onSent: submitEnd });
     }
-  }, [manifest, valid, sendTransaction, formId, submitEnd, submitStart]);
+  }, [formId, manifest, sendTransaction, submitEnd, submitStart, valid]);
 
   return (
     <div>
       <>
-        <H3 borderTop>Confirm transaction</H3>
+        {compact ? null : <H3 borderTop>Confirm transaction</H3>}
         <SubmitButton
           type="button"
           onClick={handleSend}

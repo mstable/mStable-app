@@ -34,6 +34,8 @@ export const EMOJIS = {
   link: '🔗',
   exit: '🚪',
   claimReward: '🏆',
+  claimWeeks: '🏆',
+  claimWeek: '🏆',
   'stake(uint256)': '🔒',
 };
 

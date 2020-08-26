@@ -25,6 +25,7 @@
       { "varsIgnorePattern": "_" }
     ],
     "no-underscore-dangle": "off",
+    "no-console": ["error", { "allow": ["warn", "error"] }],
     "react/no-unescaped-entities": "off",
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",

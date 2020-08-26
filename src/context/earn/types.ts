@@ -35,6 +35,7 @@ export interface RawSyncedEarnData {
   block24hAgo?: BlockTimestamp;
   tokenPrices: TokenPricesMap;
   rawPlatformPools: RawPlatformPools;
+  merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
 }
 
 export interface SyncedEarnData {
@@ -44,6 +45,7 @@ export interface SyncedEarnData {
     historic: NormalizedPoolsMap;
   };
   tokenPrices: TokenPricesMap;
+  merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
 }
 
 export interface RawEarnData {
@@ -114,8 +116,24 @@ export interface StakingRewardsContractsMap {
   [address: string]: StakingRewardsContract;
 }
 
+export interface MerkleDrop {
+  address: string;
+  token: Token;
+  totalUnclaimed: BigDecimal;
+  unclaimedTranches: {
+    trancheNumber: number;
+    allocation: string;
+    proof: string[];
+  }[];
+}
+
+export interface MerkleDropsMap {
+  [address: string]: MerkleDrop;
+}
+
 export interface EarnData {
   block24hAgo?: BlockTimestamp;
   stakingRewardsContractsMap: StakingRewardsContractsMap;
   tokenPricesMap: TokenPricesMap;
+  merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
 }
