@@ -9,7 +9,7 @@ import { Input } from '../../forms/Input';
 import { AmountInput } from '../../forms/AmountInput';
 import { Size } from '../../../theme';
 import { BigDecimal } from '../../../web3/BigDecimal';
-import { useApyForTimePeriod } from '../../../web3/hooks';
+import { useApyForTimePeriod, useApyForPast30Days } from '../../../web3/hooks';
 import { formatExactAmount } from '../../../web3/amounts';
 import {
   useCalculatorState,
@@ -37,16 +37,34 @@ const ResultValue: FC = ({ children }) =>
 
 const DAYS_IN_YEAR = 365;
 
+const calculateEarnings = (
+  amount: string | null,
+  apy: BigNumber | undefined,
+  days: number,
+): BigNumber => {
+  const amountBigDecimal = BigDecimal.maybeParse(amount, 18);
+
+  if (amountBigDecimal && apy) {
+    return amountBigDecimal
+      .mulTruncate(apy)
+      .exact.mul(days)
+      .div(DAYS_IN_YEAR);
+  }
+
+  return new BigNumber('0');
+};
+
 export const CalculatorForm: FC = () => {
   const {
+    depositedAmount,
     amount,
     startDate,
     startMinDate,
     startMaxDate,
     endDate,
     endMinDate,
-    totalDays,
-    depositedAmount,
+    pastDays,
+    futureDays,
     isInThePast,
     isInTheFuture,
   } = useCalculatorState();
@@ -57,21 +75,17 @@ export const CalculatorForm: FC = () => {
     endDateChanged,
   } = useCalculatorDispatch();
 
-  const avgApy = useApyForTimePeriod(new Date(startDate), new Date(endDate));
-  const last30DaysApy = new BigNumber('0'); // TODO
+  const pastApy = useApyForTimePeriod(new Date(startDate), new Date(endDate));
+  const futureApy = useApyForPast30Days();
 
-  const totalEarnings = useMemo<BigNumber>(() => {
-    const amountBigDecimal = BigDecimal.maybeParse(amount, 18);
-
-    if (amountBigDecimal && avgApy) {
-      return amountBigDecimal
-        .mulTruncate(avgApy)
-        .exact.mul(totalDays)
-        .div(DAYS_IN_YEAR);
-    }
-
-    return new BigNumber('0');
-  }, [avgApy, amount, totalDays]);
+  const pastEarnings = useMemo<BigNumber>(
+    () => calculateEarnings(amount, pastApy, pastDays),
+    [amount, pastApy, pastDays],
+  );
+  const futureEarnings = useMemo<BigNumber>(
+    () => calculateEarnings(amount, futureApy, futureDays),
+    [amount, futureApy, futureDays],
+  );
 
   return (
     <div>
@@ -121,25 +135,45 @@ export const CalculatorForm: FC = () => {
         {isInThePast && (
           <P size={Size.l}>
             Average performance from deposit date till today:{' '}
-            <ResultValue>{formatExactAmount(avgApy, 16, '% APY')}</ResultValue>
+            <ResultValue>{formatExactAmount(pastApy, 16, '% APY')}</ResultValue>
           </P>
         )}
 
         {isInTheFuture && (
           <P size={Size.l}>
-            Estimated future performance (average APY for last 30 days):{' '}
+            Estimated future performance based on average APY for last 30 days:{' '}
             <ResultValue>
-              {formatExactAmount(last30DaysApy, 16, '% APY')}
+              {formatExactAmount(futureApy, 16, '% APY')}
             </ResultValue>
           </P>
         )}
 
-        <P size={Size.l}>
-          {`Total estimated earnings for selected ${totalDays} days: `}
-          <ResultValue>
-            {formatExactAmount(totalEarnings, 18, 'mUSD')}
-          </ResultValue>
-        </P>
+        {isInThePast && (
+          <P size={Size.l}>
+            {`Past earnings for selected ${pastDays} days: `}
+            <ResultValue>
+              {formatExactAmount(pastEarnings, 18, 'mUSD')}
+            </ResultValue>
+          </P>
+        )}
+
+        {isInTheFuture && (
+          <P size={Size.l}>
+            {`Estimated earnings for selected ${futureDays} days in the future: `}
+            <ResultValue>
+              {formatExactAmount(futureEarnings, 18, 'mUSD')}
+            </ResultValue>
+          </P>
+        )}
+
+        {isInThePast && isInTheFuture && (
+          <P size={Size.l}>
+            {`Total earnings for selected ${pastDays + futureDays} days: `}
+            <ResultValue>
+              {formatExactAmount(pastEarnings.add(futureEarnings), 18, 'mUSD')}
+            </ResultValue>
+          </P>
+        )}
       </FormRow>
     </div>
   );

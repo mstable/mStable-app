@@ -11,7 +11,8 @@ export interface State {
   startMaxDate: string;
   endDate: string;
   endMinDate: string;
-  totalDays: number;
+  pastDays: number;
+  futureDays: number;
   isInThePast: boolean;
   isInTheFuture: boolean;
 }

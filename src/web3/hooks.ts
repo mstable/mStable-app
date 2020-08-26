@@ -154,6 +154,18 @@ export const useApyForPast24h = (): BigNumber | undefined => {
     : undefined;
 };
 
+export const useApyForPast30Days = (): BigNumber | undefined => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+
+  const offset = -30;
+  const past30days = new Date(today);
+  past30days.setDate(past30days.getDate() + offset);
+
+  return useApyForTimePeriod(past30days, today);
+};
+
 const DAYS_OF_WEEK = [0, 1, 2, 3, 4, 5, 6];
 
 export const useDailyApysForPastWeek = (): DailyApysForWeek => {

@@ -7,6 +7,7 @@ const FORM_MIN_DATE = '2020-05-29'; // when contract was deployed
 
 const getTodayDate = (): Date => {
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
   return today;
 };
@@ -32,7 +33,8 @@ export const initialState: State = {
   startMaxDate: '', // always endDate - 1d
   endDate: getFormDate(), // today
   endMinDate: '', // always startDate + 1d
-  totalDays: 0,
+  pastDays: 0,
+  futureDays: 0,
   isInThePast: false,
   isInTheFuture: false,
 };
@@ -47,31 +49,25 @@ const initialize = (state: State): State =>
     : state;
 
 const setFormDates = (state: State): State => ({
-    ...state,
-    endMinDate: offsetDate(state.startDate, +1),
-    startMaxDate: offsetDate(state.endDate, -1),
-  });
+  ...state,
+  endMinDate: offsetDate(state.startDate, +1),
+  startMaxDate: offsetDate(state.endDate, -1),
+});
 
-const setTotalDays = (state: State): State => {
+const setPastAndFuture = (state: State): State => {
+  const today = getTodayDate().getTime();
   const start = new Date(state.startDate).getTime();
   const end = new Date(state.endDate).getTime();
-  const totalDays = Math.round(Math.abs((end - start) / ONE_DAY));
+
+  const pastDays = Math.round(Math.abs((today - start) / ONE_DAY));
+  const futureDays = Math.round(Math.abs((today - end) / ONE_DAY));
 
   return {
     ...state,
-    totalDays,
-  };
-};
-
-const setIsInThePastOrFuture = (state: State): State => {
-  const today = getTodayDate().setHours(0, 0, 0, 0);
-  const start = new Date(state.startDate).setHours(0, 0, 0, 0);
-  const end = new Date(state.endDate).setHours(0, 0, 0, 0);
-
-  return {
-    ...state,
-    isInThePast: today > start,
-    isInTheFuture: today < end,
+    isInThePast: pastDays > 0,
+    isInTheFuture: futureDays > 0,
+    pastDays,
+    futureDays,
   };
 };
 
@@ -108,6 +104,5 @@ export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
   setFormDates,
-  setTotalDays,
-  setIsInThePastOrFuture,
+  setPastAndFuture,
 );
