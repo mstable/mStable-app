@@ -114,7 +114,7 @@ const fetchCoingeckoPrices = async (
   return result.json();
 };
 
-const FIVE_MINUTES = 5 * 60 * 1e3;
+const FIFTEEN_MINUTES = 15 * 60 * 1e3;
 
 const useTokenPrices = (
   rawStakingContractsData: RawStakingRewardsContracts,
@@ -139,7 +139,7 @@ const useTokenPrices = (
       address => !fetchedAddresses.current.includes(address),
     );
 
-    const stale = Date.now() - lastUpdateTime.current > FIVE_MINUTES;
+    const stale = Date.now() - lastUpdateTime.current > FIFTEEN_MINUTES;
 
     if (
       addressesExist &&
