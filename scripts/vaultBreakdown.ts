@@ -6,7 +6,6 @@ import {
 } from '../src/graphql/blocks';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import { getApolloClient } from './utils/getApolloClient';
-import { runMain } from './utils/runMain';
 import {
   VaultBalancesDocument,
   VaultBalancesQueryResult,
