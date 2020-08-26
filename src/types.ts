@@ -45,23 +45,8 @@ export enum TransactionStatus {
   Pending,
 }
 
-export enum MassetNames {
-  mUSD = 'mUSD',
-  // mGLD = 'mGLD',
-}
-
-export enum ContractNames {
-  mUSD = 'mUSD',
-  mUSDForgeValidator = 'mUSDForgeValidator',
-  // mGLD = 'mGLD',
-  // MTA = 'MTA',
-  mUSDSavings = 'mUSDSavings',
-}
-
 export enum Interfaces {
-  // ForgeRewards,
   Masset,
-  // Systok,
   ERC20,
   SavingsContract,
   StakingRewards,
@@ -71,9 +56,7 @@ export enum Interfaces {
 }
 
 export interface Instances {
-  // [Interfaces.ForgeRewards]: IForgeRewards;
   [Interfaces.Masset]: IMasset;
-  // [Interfaces.Systok]: ISystok;
   [Interfaces.ERC20]: Ierc20;
   [Interfaces.SavingsContract]: ISavingsContract;
   [Interfaces.StakingRewards]: IStakingRewards;

@@ -26,7 +26,6 @@
     ],
     "no-underscore-dangle": "off",
     "react/no-unescaped-entities": "off",
-    "arrow-body-style": ["error", "as-needed"],
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",
     "react/prop-types": "off",

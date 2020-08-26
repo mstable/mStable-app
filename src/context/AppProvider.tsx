@@ -21,7 +21,7 @@ import MetamaskOnboarding from '@metamask/onboarding';
 import { navigate } from 'hookrouter';
 import { configureScope } from '@sentry/react';
 
-import { MassetNames, InjectedEthereum, Connector } from '../types';
+import { InjectedEthereum, Connector } from '../types';
 import { CHAIN_ID, NETWORK_NAMES } from '../web3/constants';
 import { CONNECTORS } from '../web3/connectors';
 import {
@@ -78,11 +78,11 @@ interface State {
   };
   accountItem: AccountItems | null;
   online: boolean;
-  selectedMasset: MassetNames;
+  selectedMasset: string;
 }
 
 type Action =
-  | { type: Actions.SelectMasset; payload: MassetNames }
+  | { type: Actions.SelectMasset; payload: string }
   | { type: Actions.SetAccountItem; payload: AccountItems | null }
   | { type: Actions.ToggleAccount; payload: AccountItems }
   | { type: Actions.ResetWallet }
@@ -104,7 +104,7 @@ interface Dispatch {
   connectWallet(connector: keyof Connectors, subType?: string): void;
   openWalletRedirect(redirect: string): void;
   resetWallet(): void;
-  selectMasset(massetName: MassetNames): void;
+  selectMasset(massetName: string): void;
   toggleNotifications(): void;
   toggleWallet(): void;
 }
@@ -199,7 +199,7 @@ const initialState: State = {
     supportedChain: true,
   },
   accountItem: null,
-  selectedMasset: MassetNames.mUSD,
+  selectedMasset: 'mUSD',
   online: true,
 };
 
