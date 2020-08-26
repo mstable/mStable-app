@@ -19,6 +19,7 @@ import {
   TokenPricesMap,
 } from './types';
 import { STABLECOIN_SYMBOLS } from '../../web3/constants';
+import { useMerkleDrops } from './useMerkleDrops';
 
 interface CoingeckoPrices {
   [address: string]: { usd: number };
@@ -360,6 +361,7 @@ const transformRawSyncedEarnData = ({
   block24hAgo,
   tokenPrices,
   rawPlatformPools,
+  merkleDrops,
 }: RawSyncedEarnData): SyncedEarnData => {
   const pools = getPools(rawPlatformPools, tokenPrices);
 
@@ -372,6 +374,7 @@ const transformRawSyncedEarnData = ({
       ...tokenPrices,
       ...stakingTokensPrices,
     },
+    merkleDrops,
   };
 };
 
@@ -383,6 +386,8 @@ export const useSyncedEarnData = (): SyncedEarnData => {
     variables: { account, includeHistoric: false },
     fetchPolicy: 'cache-and-network',
   });
+
+  const merkleDrops = useMerkleDrops(account?.toLowerCase());
 
   const rawPlatformPools = useRawPlatformPools(
     stakingRewardsContractsQuery.data,
@@ -400,7 +405,8 @@ export const useSyncedEarnData = (): SyncedEarnData => {
         block24hAgo,
         rawPlatformPools,
         tokenPrices,
+        merkleDrops,
       }),
-    [block24hAgo, rawPlatformPools, tokenPrices],
+    [block24hAgo, rawPlatformPools, tokenPrices, merkleDrops],
   );
 };

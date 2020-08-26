@@ -10,6 +10,7 @@ import { StakingRewardsWithPlatformToken as IStakingRewardsWithPlatformToken } f
 import { BigDecimal } from './web3/BigDecimal';
 import { IRewardsVault } from './typechain/IRewardsVault.d';
 import { RewardsDistributor as IRewardsDistributor } from './typechain/RewardsDistributor.d';
+import { MerkleDrop as IMerkleDrop } from './typechain/MerkleDrop.d';
 
 export interface Transaction {
   formId?: string;
@@ -21,6 +22,7 @@ export interface Transaction {
   timestamp: number;
   args: unknown[];
   purpose: Purpose;
+  onFinalize?(): void;
 }
 
 export interface Purpose {
@@ -53,6 +55,7 @@ export enum Interfaces {
   StakingRewardsWithPlatformToken,
   RewardsVault,
   RewardsDistibutor,
+  MerkleDrop,
 }
 
 export interface Instances {
@@ -63,6 +66,7 @@ export interface Instances {
   [Interfaces.StakingRewardsWithPlatformToken]: IStakingRewardsWithPlatformToken;
   [Interfaces.RewardsVault]: IRewardsVault;
   [Interfaces.RewardsDistibutor]: IRewardsDistributor;
+  [Interfaces.MerkleDrop]: IMerkleDrop;
 }
 
 /**
@@ -86,6 +90,8 @@ export interface SendTxManifest<
     >
   >;
   formId?: string;
+  onSent?(): void;
+  onFinalized?(): void;
 }
 
 export interface Token {

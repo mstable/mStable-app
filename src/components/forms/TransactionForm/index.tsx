@@ -6,34 +6,38 @@ import { TransactionsPane } from './TransactionsPane';
 
 interface Props {
   className?: string;
+  compact?: boolean;
   confirm?: ReactNode;
-  confirmLabel: string;
+  confirmLabel: JSX.Element | string;
   input?: ReactNode;
-  transactionsLabel: string;
+  transactionsLabel?: string;
   valid: boolean;
 }
 
-const Container = styled.div`
-  padding-bottom: 16px;
+const Container = styled.div<{ compact?: boolean }>`
+  padding-bottom: ${({ compact }) => (compact ? 4 : 16)}px;
 
   > * {
-    padding-bottom: 16px;
+    padding-bottom: ${({ compact }) => (compact ? 4 : 16)}px;
   }
 `;
 
 export const TransactionForm: FC<Props> = ({
   className,
+  compact,
   confirm,
   confirmLabel,
   input,
-  transactionsLabel,
+  transactionsLabel = 'Transactions',
   valid,
 }) => (
-  <Container className={className}>
+  <Container className={className} compact={compact}>
     {input ? <InputPane>{input}</InputPane> : null}
-    <ConfirmPane confirmLabel={confirmLabel} valid={valid}>
+    <ConfirmPane compact={compact} confirmLabel={confirmLabel} valid={valid}>
       {valid ? confirm : null}
     </ConfirmPane>
-    <TransactionsPane transactionsLabel={transactionsLabel} />
+    {compact ? null : (
+      <TransactionsPane transactionsLabel={transactionsLabel} />
+    )}
   </Container>
 );

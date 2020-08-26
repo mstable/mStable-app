@@ -305,4 +305,5 @@ export const transformEarnData = (
   ),
   tokenPricesMap: syncedEarnData.tokenPrices,
   block24hAgo: syncedEarnData.block24hAgo,
+  merkleDrops: syncedEarnData.merkleDrops,
 });

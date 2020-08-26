@@ -225,18 +225,7 @@ export type LiquidityPosition = {
   id: Scalars['ID'];
   user: User;
   pair: Pair;
-  poolOwnership?: Maybe<Scalars['BigDecimal']>;
   liquidityTokenBalance: Scalars['BigDecimal'];
-  historicalSnapshots: Array<Maybe<LiquidityPositionSnapshot>>;
-};
-
-
-export type LiquidityPositionHistoricalSnapshotsArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<LiquidityPositionSnapshot_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<LiquidityPositionSnapshot_Filter>;
 };
 
 export type LiquidityPosition_Filter = {
@@ -276,14 +265,6 @@ export type LiquidityPosition_Filter = {
   pair_not_starts_with?: Maybe<Scalars['String']>;
   pair_ends_with?: Maybe<Scalars['String']>;
   pair_not_ends_with?: Maybe<Scalars['String']>;
-  poolOwnership?: Maybe<Scalars['BigDecimal']>;
-  poolOwnership_not?: Maybe<Scalars['BigDecimal']>;
-  poolOwnership_gt?: Maybe<Scalars['BigDecimal']>;
-  poolOwnership_lt?: Maybe<Scalars['BigDecimal']>;
-  poolOwnership_gte?: Maybe<Scalars['BigDecimal']>;
-  poolOwnership_lte?: Maybe<Scalars['BigDecimal']>;
-  poolOwnership_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  poolOwnership_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   liquidityTokenBalance?: Maybe<Scalars['BigDecimal']>;
   liquidityTokenBalance_not?: Maybe<Scalars['BigDecimal']>;
   liquidityTokenBalance_gt?: Maybe<Scalars['BigDecimal']>;
@@ -292,19 +273,13 @@ export type LiquidityPosition_Filter = {
   liquidityTokenBalance_lte?: Maybe<Scalars['BigDecimal']>;
   liquidityTokenBalance_in?: Maybe<Array<Scalars['BigDecimal']>>;
   liquidityTokenBalance_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  historicalSnapshots?: Maybe<Array<Scalars['String']>>;
-  historicalSnapshots_not?: Maybe<Array<Scalars['String']>>;
-  historicalSnapshots_contains?: Maybe<Array<Scalars['String']>>;
-  historicalSnapshots_not_contains?: Maybe<Array<Scalars['String']>>;
 };
 
 export enum LiquidityPosition_OrderBy {
   Id = 'id',
   User = 'user',
   Pair = 'pair',
-  PoolOwnership = 'poolOwnership',
-  LiquidityTokenBalance = 'liquidityTokenBalance',
-  HistoricalSnapshots = 'historicalSnapshots'
+  LiquidityTokenBalance = 'liquidityTokenBalance'
 }
 
 export type LiquidityPositionSnapshot = {
@@ -332,6 +307,20 @@ export type LiquidityPositionSnapshot_Filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_in?: Maybe<Array<Scalars['ID']>>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
+  liquidityPosition?: Maybe<Scalars['String']>;
+  liquidityPosition_not?: Maybe<Scalars['String']>;
+  liquidityPosition_gt?: Maybe<Scalars['String']>;
+  liquidityPosition_lt?: Maybe<Scalars['String']>;
+  liquidityPosition_gte?: Maybe<Scalars['String']>;
+  liquidityPosition_lte?: Maybe<Scalars['String']>;
+  liquidityPosition_in?: Maybe<Array<Scalars['String']>>;
+  liquidityPosition_not_in?: Maybe<Array<Scalars['String']>>;
+  liquidityPosition_contains?: Maybe<Scalars['String']>;
+  liquidityPosition_not_contains?: Maybe<Scalars['String']>;
+  liquidityPosition_starts_with?: Maybe<Scalars['String']>;
+  liquidityPosition_not_starts_with?: Maybe<Scalars['String']>;
+  liquidityPosition_ends_with?: Maybe<Scalars['String']>;
+  liquidityPosition_not_ends_with?: Maybe<Scalars['String']>;
   timestamp?: Maybe<Scalars['Int']>;
   timestamp_not?: Maybe<Scalars['Int']>;
   timestamp_gt?: Maybe<Scalars['Int']>;
@@ -615,6 +604,7 @@ export type Pair = {
   volumeToken0: Scalars['BigDecimal'];
   volumeToken1: Scalars['BigDecimal'];
   volumeUSD: Scalars['BigDecimal'];
+  untrackedVolumeUSD: Scalars['BigDecimal'];
   txCount: Scalars['BigInt'];
   createdAtTimestamp: Scalars['BigInt'];
   createdAtBlockNumber: Scalars['BigInt'];
@@ -746,6 +736,14 @@ export type Pair_Filter = {
   volumeUSD_lte?: Maybe<Scalars['BigDecimal']>;
   volumeUSD_in?: Maybe<Array<Scalars['BigDecimal']>>;
   volumeUSD_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  untrackedVolumeUSD?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_not?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_gt?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_lt?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_gte?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_lte?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  untrackedVolumeUSD_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   txCount?: Maybe<Scalars['BigInt']>;
   txCount_not?: Maybe<Scalars['BigInt']>;
   txCount_gt?: Maybe<Scalars['BigInt']>;
@@ -795,6 +793,7 @@ export enum Pair_OrderBy {
   VolumeToken0 = 'volumeToken0',
   VolumeToken1 = 'volumeToken1',
   VolumeUsd = 'volumeUSD',
+  UntrackedVolumeUsd = 'untrackedVolumeUSD',
   TxCount = 'txCount',
   CreatedAtTimestamp = 'createdAtTimestamp',
   CreatedAtBlockNumber = 'createdAtBlockNumber',
@@ -1756,6 +1755,7 @@ export type Token = {
   totalSupply: Scalars['BigInt'];
   tradeVolume: Scalars['BigDecimal'];
   tradeVolumeUSD: Scalars['BigDecimal'];
+  untrackedVolumeUSD: Scalars['BigDecimal'];
   txCount: Scalars['BigInt'];
   totalLiquidity: Scalars['BigDecimal'];
   derivedETH?: Maybe<Scalars['BigDecimal']>;
@@ -1840,6 +1840,14 @@ export type Token_Filter = {
   tradeVolumeUSD_lte?: Maybe<Scalars['BigDecimal']>;
   tradeVolumeUSD_in?: Maybe<Array<Scalars['BigDecimal']>>;
   tradeVolumeUSD_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  untrackedVolumeUSD?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_not?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_gt?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_lt?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_gte?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_lte?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  untrackedVolumeUSD_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   txCount?: Maybe<Scalars['BigInt']>;
   txCount_not?: Maybe<Scalars['BigInt']>;
   txCount_gt?: Maybe<Scalars['BigInt']>;
@@ -1878,6 +1886,7 @@ export enum Token_OrderBy {
   TotalSupply = 'totalSupply',
   TradeVolume = 'tradeVolume',
   TradeVolumeUsd = 'tradeVolumeUSD',
+  UntrackedVolumeUsd = 'untrackedVolumeUSD',
   TxCount = 'txCount',
   TotalLiquidity = 'totalLiquidity',
   DerivedEth = 'derivedETH',
@@ -2123,6 +2132,7 @@ export type UniswapDayData = {
   date: Scalars['Int'];
   dailyVolumeETH: Scalars['BigDecimal'];
   dailyVolumeUSD: Scalars['BigDecimal'];
+  dailyVolumeUntracked: Scalars['BigDecimal'];
   totalVolumeETH: Scalars['BigDecimal'];
   totalLiquidityETH: Scalars['BigDecimal'];
   totalVolumeUSD: Scalars['BigDecimal'];
@@ -2174,6 +2184,14 @@ export type UniswapDayData_Filter = {
   dailyVolumeUSD_lte?: Maybe<Scalars['BigDecimal']>;
   dailyVolumeUSD_in?: Maybe<Array<Scalars['BigDecimal']>>;
   dailyVolumeUSD_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  dailyVolumeUntracked?: Maybe<Scalars['BigDecimal']>;
+  dailyVolumeUntracked_not?: Maybe<Scalars['BigDecimal']>;
+  dailyVolumeUntracked_gt?: Maybe<Scalars['BigDecimal']>;
+  dailyVolumeUntracked_lt?: Maybe<Scalars['BigDecimal']>;
+  dailyVolumeUntracked_gte?: Maybe<Scalars['BigDecimal']>;
+  dailyVolumeUntracked_lte?: Maybe<Scalars['BigDecimal']>;
+  dailyVolumeUntracked_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  dailyVolumeUntracked_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   totalVolumeETH?: Maybe<Scalars['BigDecimal']>;
   totalVolumeETH_not?: Maybe<Scalars['BigDecimal']>;
   totalVolumeETH_gt?: Maybe<Scalars['BigDecimal']>;
@@ -2233,6 +2251,7 @@ export enum UniswapDayData_OrderBy {
   Date = 'date',
   DailyVolumeEth = 'dailyVolumeETH',
   DailyVolumeUsd = 'dailyVolumeUSD',
+  DailyVolumeUntracked = 'dailyVolumeUntracked',
   TotalVolumeEth = 'totalVolumeETH',
   TotalLiquidityEth = 'totalLiquidityETH',
   TotalVolumeUsd = 'totalVolumeUSD',
@@ -2247,6 +2266,7 @@ export type UniswapFactory = {
   pairCount: Scalars['Int'];
   totalVolumeUSD: Scalars['BigDecimal'];
   totalVolumeETH: Scalars['BigDecimal'];
+  untrackedVolumeUSD: Scalars['BigDecimal'];
   totalLiquidityUSD: Scalars['BigDecimal'];
   totalLiquidityETH: Scalars['BigDecimal'];
   txCount: Scalars['BigInt'];
@@ -2295,6 +2315,14 @@ export type UniswapFactory_Filter = {
   totalVolumeETH_lte?: Maybe<Scalars['BigDecimal']>;
   totalVolumeETH_in?: Maybe<Array<Scalars['BigDecimal']>>;
   totalVolumeETH_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  untrackedVolumeUSD?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_not?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_gt?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_lt?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_gte?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_lte?: Maybe<Scalars['BigDecimal']>;
+  untrackedVolumeUSD_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  untrackedVolumeUSD_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   totalLiquidityUSD?: Maybe<Scalars['BigDecimal']>;
   totalLiquidityUSD_not?: Maybe<Scalars['BigDecimal']>;
   totalLiquidityUSD_gt?: Maybe<Scalars['BigDecimal']>;
@@ -2330,6 +2358,7 @@ export enum UniswapFactory_OrderBy {
   PairCount = 'pairCount',
   TotalVolumeUsd = 'totalVolumeUSD',
   TotalVolumeEth = 'totalVolumeETH',
+  UntrackedVolumeUsd = 'untrackedVolumeUSD',
   TotalLiquidityUsd = 'totalLiquidityUSD',
   TotalLiquidityEth = 'totalLiquidityETH',
   TxCount = 'txCount',

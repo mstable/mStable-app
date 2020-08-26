@@ -60,7 +60,6 @@
 
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { options } from 'yargs';
-import addWeeks from 'date-fns/addWeeks';
 
 import './utils/init';
 import { getApolloClient } from './utils/getApolloClient';
@@ -181,9 +180,8 @@ const parseArgs = async (): Promise<ValidatedArgs> => {
   }
 
   // Using one week as a default period, could be an argument
-  const endTimestamp = Math.floor(
-    addWeeks(Math.floor(startTimestamp * 1e3), 1).getTime() / 1e3,
-  );
+  const secondsInWeek = 604800;
+  const endTimestamp = startTimestamp + secondsInWeek;
 
   const validatedToken = TOKENS_METADATA[token];
 

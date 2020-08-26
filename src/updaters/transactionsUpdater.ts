@@ -48,7 +48,7 @@ export const TransactionsUpdater = (): null => {
                   if (!receipt) {
                     check(hash, blockNumber);
                   } else {
-                    finalize(hash, receipt, current[hash].purpose);
+                    finalize(hash, receipt, current[hash]);
                   }
                 }
               })

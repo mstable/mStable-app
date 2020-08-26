@@ -47,7 +47,6 @@ query TokenByAddress($id: ID!) @api(name: mstable) {
     totalBurned
     totalBurned
     totalSupply
-    totalTransferred
   }
 }
 
@@ -293,5 +292,26 @@ query RewardsDistributor @api(name: mstable) {
   rewardsDistributors(first: 1) {
     id
     fundManagers
+  }
+}
+
+query MerkleDropClaims($account: Bytes!) @api(name: mstable) {
+  merkleDrops {
+    id
+    token {
+      ...TokenDetails
+    }
+    tranches(
+      orderDirection: asc
+      orderBy: trancheNumber
+      where: { expired: false }
+    ) {
+      merkleRoot
+      trancheNumber
+      totalAmount
+      claims(where: { account: $account }) {
+        balance
+      }
+    }
   }
 }

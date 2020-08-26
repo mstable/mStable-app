@@ -25,8 +25,6 @@ const StyledForm = styled.form<{ disabled?: boolean; submitting?: boolean }>`
     pointer-events: ${({ disabled, submitting }) =>
       disabled || submitting ? 'none' : 'auto'};
   }
-
-  opacity: ${({ submitting }) => (submitting ? 0.3 : 1)};
 `;
 
 const FormError = styled.div`
@@ -75,7 +73,8 @@ export const SubmitButton = styled(Button)`
     disabled ? 'initial' : theme.color.green};
   width: 100%;
   margin-bottom: ${({ theme }) => theme.spacing.m};
-  line-height: 2.5rem;
+  padding-top: 16px;
+  padding-bottom: 16px;
   text-transform: uppercase;
   box-shadow: ${({ theme, disabled }) =>
       disabled ? theme.color.blackTransparenter : theme.color.greenTransparent}

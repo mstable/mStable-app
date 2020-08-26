@@ -10,6 +10,7 @@ import {
   StakingRewardsContractsMap,
   StakingRewardsContract,
   TokenPricesMap,
+  MerkleDropsMap,
 } from './types';
 
 const ctx = createContext<EarnData>({} as never);
@@ -19,6 +20,7 @@ export const EarnDataProvider: FC<{}> = ({ children }) => {
   // - Staking rewards contract addresses
   // - Pool data from each platform
   // - Token prices for pool tokens, rewards tokens, and platform tokens
+  // - Merkle drops
   const syncedEarnData = useSyncedEarnData();
 
   // Data that we subscribe to on each block:
@@ -85,3 +87,8 @@ export const useStakingToken = (
   const stakingRewards = useStakingRewardsContract(address);
   return useTokenWithPrice(stakingRewards?.stakingToken.address);
 };
+
+export const useMerkleDrops = (): {
+  merkleDrops: MerkleDropsMap;
+  refresh(): void;
+} => useEarnData().merkleDrops;

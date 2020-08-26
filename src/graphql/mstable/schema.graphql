@@ -113,28 +113,6 @@ type Query {
     """
     block: Block_height
   ): [Account!]!
-  accountBalance(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): AccountBalance
-  accountBalances(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: AccountBalance_orderBy
-    orderDirection: OrderDirection
-    where: AccountBalance_filter
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): [AccountBalance!]!
   creditBalance(
     id: ID!
     """
@@ -465,6 +443,72 @@ type Query {
     """
     block: Block_height
   ): [StakingBalance!]!
+  merkleDropClaim(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDropClaim
+  merkleDropClaims(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDropClaim_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDropClaim_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDropClaim!]!
+  merkleDropTranche(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDropTranche
+  merkleDropTranches(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDropTranche_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDropTranche_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDropTranche!]!
+  merkleDrop(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDrop
+  merkleDrops(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDrop_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDrop_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDrop!]!
   timeMetric(
     id: ID!
     """
@@ -530,8 +574,6 @@ type Token {
   totalSupply: BigDecimal!
   """Quantity of the token that has been minted"""
   totalMinted: BigDecimal!
-  """Quantity of the token that has been transferred"""
-  totalTransferred: BigDecimal!
   """Quantity of the token that has been burned"""
   totalBurned: BigDecimal!
 }
@@ -544,7 +586,6 @@ enum Token_orderBy {
   symbol
   totalSupply
   totalMinted
-  totalTransferred
   totalBurned
 }
 enum OrderDirection {
@@ -618,14 +659,6 @@ input Token_filter {
   totalMinted_lte: BigDecimal
   totalMinted_in: [BigDecimal!]
   totalMinted_not_in: [BigDecimal!]
-  totalTransferred: BigDecimal
-  totalTransferred_not: BigDecimal
-  totalTransferred_gt: BigDecimal
-  totalTransferred_lt: BigDecimal
-  totalTransferred_gte: BigDecimal
-  totalTransferred_lte: BigDecimal
-  totalTransferred_in: [BigDecimal!]
-  totalTransferred_not_in: [BigDecimal!]
   totalBurned: BigDecimal
   totalBurned_not: BigDecimal
   totalBurned_gt: BigDecimal
@@ -952,72 +985,8 @@ type Account {
   id: ID!
   """Address of the account"""
   address: Bytes!
-  """AccountBalances of the account"""
-  balances(skip: Int = 0, first: Int = 100, orderBy: AccountBalance_orderBy, orderDirection: OrderDirection, where: AccountBalance_filter): [AccountBalance!]!
   """CreditBalances of the account"""
   creditBalances(skip: Int = 0, first: Int = 100, orderBy: CreditBalance_orderBy, orderDirection: OrderDirection, where: CreditBalance_filter): [CreditBalance!]!
-}
-enum AccountBalance_orderBy {
-  id
-  account
-  amount
-  token
-}
-input AccountBalance_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  account: String
-  account_not: String
-  account_gt: String
-  account_lt: String
-  account_gte: String
-  account_lte: String
-  account_in: [String!]
-  account_not_in: [String!]
-  account_contains: String
-  account_not_contains: String
-  account_starts_with: String
-  account_not_starts_with: String
-  account_ends_with: String
-  account_not_ends_with: String
-  amount: BigDecimal
-  amount_not: BigDecimal
-  amount_gt: BigDecimal
-  amount_lt: BigDecimal
-  amount_gte: BigDecimal
-  amount_lte: BigDecimal
-  amount_in: [BigDecimal!]
-  amount_not_in: [BigDecimal!]
-  token: String
-  token_not: String
-  token_gt: String
-  token_lt: String
-  token_gte: String
-  token_lte: String
-  token_in: [String!]
-  token_not_in: [String!]
-  token_contains: String
-  token_not_contains: String
-  token_starts_with: String
-  token_not_starts_with: String
-  token_ends_with: String
-  token_not_ends_with: String
-}
-"""An account balance for a given token"""
-type AccountBalance {
-  id: ID!
-  """Account"""
-  account: Account!
-  """Amount as a decimal value"""
-  amount: BigDecimal!
-  """Token"""
-  token: Token!
 }
 enum Basket_orderBy {
   id
@@ -1146,7 +1115,6 @@ input Masset_filter {
 enum Account_orderBy {
   id
   address
-  balances
   creditBalances
 }
 input Account_filter {
@@ -2145,6 +2113,182 @@ input StakingRewardsContract_filter {
   totalPlatformRewards_in: [BigInt!]
   totalPlatformRewards_not_in: [BigInt!]
 }
+type MerkleDropClaim {
+  id: ID!
+  account: Bytes!
+  merkleDrop: MerkleDrop!
+  tranche: MerkleDropTranche!
+  balance: BigInt!
+}
+type MerkleDrop {
+  id: ID!
+  token: Token!
+  claims(skip: Int = 0, first: Int = 100, orderBy: MerkleDropClaim_orderBy, orderDirection: OrderDirection, where: MerkleDropClaim_filter): [MerkleDropClaim!]!
+  tranches(skip: Int = 0, first: Int = 100, orderBy: MerkleDropTranche_orderBy, orderDirection: OrderDirection, where: MerkleDropTranche_filter): [MerkleDropTranche!]!
+  funders: [Bytes!]!
+}
+enum MerkleDropClaim_orderBy {
+  id
+  account
+  merkleDrop
+  tranche
+  balance
+}
+input MerkleDropClaim_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  account: Bytes
+  account_not: Bytes
+  account_in: [Bytes!]
+  account_not_in: [Bytes!]
+  account_contains: Bytes
+  account_not_contains: Bytes
+  merkleDrop: String
+  merkleDrop_not: String
+  merkleDrop_gt: String
+  merkleDrop_lt: String
+  merkleDrop_gte: String
+  merkleDrop_lte: String
+  merkleDrop_in: [String!]
+  merkleDrop_not_in: [String!]
+  merkleDrop_contains: String
+  merkleDrop_not_contains: String
+  merkleDrop_starts_with: String
+  merkleDrop_not_starts_with: String
+  merkleDrop_ends_with: String
+  merkleDrop_not_ends_with: String
+  tranche: String
+  tranche_not: String
+  tranche_gt: String
+  tranche_lt: String
+  tranche_gte: String
+  tranche_lte: String
+  tranche_in: [String!]
+  tranche_not_in: [String!]
+  tranche_contains: String
+  tranche_not_contains: String
+  tranche_starts_with: String
+  tranche_not_starts_with: String
+  tranche_ends_with: String
+  tranche_not_ends_with: String
+  balance: BigInt
+  balance_not: BigInt
+  balance_gt: BigInt
+  balance_lt: BigInt
+  balance_gte: BigInt
+  balance_lte: BigInt
+  balance_in: [BigInt!]
+  balance_not_in: [BigInt!]
+}
+enum MerkleDropTranche_orderBy {
+  id
+  merkleDrop
+  expired
+  trancheNumber
+  merkleRoot
+  totalAmount
+  claims
+}
+input MerkleDropTranche_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  merkleDrop: String
+  merkleDrop_not: String
+  merkleDrop_gt: String
+  merkleDrop_lt: String
+  merkleDrop_gte: String
+  merkleDrop_lte: String
+  merkleDrop_in: [String!]
+  merkleDrop_not_in: [String!]
+  merkleDrop_contains: String
+  merkleDrop_not_contains: String
+  merkleDrop_starts_with: String
+  merkleDrop_not_starts_with: String
+  merkleDrop_ends_with: String
+  merkleDrop_not_ends_with: String
+  expired: Boolean
+  expired_not: Boolean
+  expired_in: [Boolean!]
+  expired_not_in: [Boolean!]
+  trancheNumber: Int
+  trancheNumber_not: Int
+  trancheNumber_gt: Int
+  trancheNumber_lt: Int
+  trancheNumber_gte: Int
+  trancheNumber_lte: Int
+  trancheNumber_in: [Int!]
+  trancheNumber_not_in: [Int!]
+  merkleRoot: Bytes
+  merkleRoot_not: Bytes
+  merkleRoot_in: [Bytes!]
+  merkleRoot_not_in: [Bytes!]
+  merkleRoot_contains: Bytes
+  merkleRoot_not_contains: Bytes
+  totalAmount: BigInt
+  totalAmount_not: BigInt
+  totalAmount_gt: BigInt
+  totalAmount_lt: BigInt
+  totalAmount_gte: BigInt
+  totalAmount_lte: BigInt
+  totalAmount_in: [BigInt!]
+  totalAmount_not_in: [BigInt!]
+}
+type MerkleDropTranche {
+  id: ID!
+  merkleDrop: MerkleDrop!
+  expired: Boolean!
+  trancheNumber: Int!
+  merkleRoot: Bytes!
+  totalAmount: BigInt!
+  claims(skip: Int = 0, first: Int = 100, orderBy: MerkleDropClaim_orderBy, orderDirection: OrderDirection, where: MerkleDropClaim_filter): [MerkleDropClaim!]!
+}
+enum MerkleDrop_orderBy {
+  id
+  token
+  claims
+  tranches
+  funders
+}
+input MerkleDrop_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_not_contains: String
+  token_starts_with: String
+  token_not_starts_with: String
+  token_ends_with: String
+  token_not_ends_with: String
+  funders: [Bytes!]
+  funders_not: [Bytes!]
+  funders_contains: [Bytes!]
+  funders_not_contains: [Bytes!]
+}
 enum TimeMetric_orderBy {
   id
   value
@@ -2329,28 +2473,6 @@ type Subscription {
     """
     block: Block_height
   ): [Account!]!
-  accountBalance(
-    id: ID!
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): AccountBalance
-  accountBalances(
-    skip: Int = 0
-    first: Int = 100
-    orderBy: AccountBalance_orderBy
-    orderDirection: OrderDirection
-    where: AccountBalance_filter
-    """
-    The block at which the query should be executed. Can either be an `{ number:
-    Int }` containing the block number or a `{ hash: Bytes }` value containing a
-    block hash. Defaults to the latest block when omitted.
-    """
-    block: Block_height
-  ): [AccountBalance!]!
   creditBalance(
     id: ID!
     """
@@ -2681,6 +2803,72 @@ type Subscription {
     """
     block: Block_height
   ): [StakingBalance!]!
+  merkleDropClaim(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDropClaim
+  merkleDropClaims(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDropClaim_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDropClaim_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDropClaim!]!
+  merkleDropTranche(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDropTranche
+  merkleDropTranches(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDropTranche_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDropTranche_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDropTranche!]!
+  merkleDrop(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDrop
+  merkleDrops(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDrop_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDrop_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDrop!]!
   timeMetric(
     id: ID!
     """
