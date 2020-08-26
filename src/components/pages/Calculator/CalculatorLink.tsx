@@ -11,7 +11,7 @@ export const CalculatorLink: FC<{}> = () => (
   <Link href="/save/calculator">
     <span role="img" aria-label="money bag">
       💰
-    </span>{' '}
-    Calculate earnings
+    </span>
+    {` Calculate earnings`}
   </Link>
 );
