@@ -1,20 +1,15 @@
 import React, { createContext, useContext, FC, useMemo } from 'react';
 import { useSignerContext } from '../SignerProvider';
-import { ContractNames } from '../../types';
-import { useKnownAddress } from './KnownAddressProvider';
 import { Erc20Detailed } from '../../typechain/Erc20Detailed.d';
 import { Erc20DetailedFactory } from '../../typechain/Erc20DetailedFactory';
-import { ForgeValidator } from '../../typechain/ForgeValidator.d';
-import { ForgeValidatorFactory } from '../../typechain/ForgeValidatorFactory';
 import { Masset } from '../../typechain/Masset.d';
 import { MassetFactory } from '../../typechain/MassetFactory';
 import { SavingsContract } from '../../typechain/SavingsContract.d';
 import { SavingsContractFactory } from '../../typechain/SavingsContractFactory';
 
 interface State {
-  [ContractNames.mUSD]: Masset | null;
-  [ContractNames.mUSDForgeValidator]: ForgeValidator | null;
-  [ContractNames.mUSDSavings]: SavingsContract | null;
+  mUSD: Masset | null;
+  mUSDSavings: SavingsContract | null;
 }
 
 const context = createContext<State>({} as State);
@@ -22,28 +17,22 @@ const context = createContext<State>({} as State);
 export const ContractsProvider: FC<{}> = ({ children }) => {
   const signer = useSignerContext();
 
-  const mUsdAddress = useKnownAddress(ContractNames.mUSD);
-  const savingsContractAddress = useKnownAddress(ContractNames.mUSDSavings);
-  const forgeValidatorAddress = useKnownAddress(
-    ContractNames.mUSDForgeValidator,
-  );
-
   const state = useMemo<State>(
     () => ({
-      [ContractNames.mUSD]:
-        signer && mUsdAddress
-          ? MassetFactory.connect(mUsdAddress, signer)
-          : null,
-      [ContractNames.mUSDSavings]:
-        signer && savingsContractAddress
-          ? SavingsContractFactory.connect(savingsContractAddress, signer)
-          : null,
-      [ContractNames.mUSDForgeValidator]:
-        signer && forgeValidatorAddress
-          ? ForgeValidatorFactory.connect(forgeValidatorAddress, signer)
-          : null,
+      mUSD: signer
+        ? MassetFactory.connect(
+            process.env.REACT_APP_MUSD_ADDRESS as string,
+            signer,
+          )
+        : null,
+      mUSDSavings: signer
+        ? SavingsContractFactory.connect(
+            process.env.REACT_APP_MUSD_SAVINGS_ADDRESS as string,
+            signer,
+          )
+        : null,
     }),
-    [signer, mUsdAddress, savingsContractAddress, forgeValidatorAddress],
+    [signer],
   );
 
   return <context.Provider value={state}>{children}</context.Provider>;
@@ -51,14 +40,10 @@ export const ContractsProvider: FC<{}> = ({ children }) => {
 
 export const useContractsState = (): State => useContext(context);
 
-export const useMusdContract = (): State[ContractNames.mUSD] =>
-  useContractsState()[ContractNames.mUSD];
+export const useMusdContract = (): State['mUSD'] => useContractsState().mUSD;
 
-export const useSavingsContract = (): State[ContractNames.mUSDSavings] =>
-  useContractsState()[ContractNames.mUSDSavings];
-
-export const useForgeValidatorContract = (): State[ContractNames.mUSDForgeValidator] =>
-  useContractsState()[ContractNames.mUSDForgeValidator];
+export const useSavingsContract = (): State['mUSDSavings'] =>
+  useContractsState().mUSDSavings;
 
 export const useErc20Contract = (
   address: string | null,

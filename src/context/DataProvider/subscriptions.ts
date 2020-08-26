@@ -10,9 +10,7 @@ import {
   useMassetLazyQuery,
   useSavingsContractLazyQuery,
 } from '../../graphql/mstable';
-import { ContractNames } from '../../types';
 import { useAccount } from '../UserProvider';
-import { useKnownAddress } from './KnownAddressProvider';
 import { useBlockNumber } from './BlockProvider';
 
 export const useBlockPollingSubscription = <TData, TVariables>(
@@ -62,29 +60,17 @@ export const useBlockPollingSubscription = <TData, TVariables>(
 };
 
 export const useMusdSubscription = (): MassetQueryResult => {
-  const address = useKnownAddress(ContractNames.mUSD);
-
-  return useBlockPollingSubscription(
-    useMassetLazyQuery,
-    {
-      variables: {
-        id: address as string,
-      },
+  return useBlockPollingSubscription(useMassetLazyQuery, {
+    variables: {
+      id: process.env.REACT_APP_MUSD_ADDRESS as string,
     },
-    !address,
-  );
+  });
 };
 
 export const useMusdSavingsSubscription = (): SavingsContractQueryResult => {
-  const address = useKnownAddress(ContractNames.mUSDSavings);
-
-  return useBlockPollingSubscription(
-    useSavingsContractLazyQuery,
-    {
-      variables: { id: address as string },
-    },
-    !address,
-  );
+  return useBlockPollingSubscription(useSavingsContractLazyQuery, {
+    variables: { id: process.env.REACT_APP_MUSD_SAVINGS_ADDRESS as string },
+  });
 };
 
 export const useCreditBalancesSubscription = (): CreditBalancesQueryResult => {

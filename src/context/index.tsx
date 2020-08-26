@@ -11,17 +11,17 @@ import { EarnDataProvider } from './earn/EarnDataProvider';
 export const Providers: FC<{}> = ({ children }) => (
   <NotificationsProvider>
     <UserProvider>
-        <SignerProvider>
-          <AllDataProviders>
-            <EarnDataProvider>
-              <TransactionsProvider>
-                <AppProvider>
-                  <ThemeProvider>{children}</ThemeProvider>
-                </AppProvider>
-              </TransactionsProvider>
-            </EarnDataProvider>
-          </AllDataProviders>
-        </SignerProvider>
+      <SignerProvider>
+        <AllDataProviders>
+          <EarnDataProvider>
+            <TransactionsProvider>
+              <AppProvider>
+                <ThemeProvider>{children}</ThemeProvider>
+              </AppProvider>
+            </TransactionsProvider>
+          </EarnDataProvider>
+        </AllDataProviders>
+      </SignerProvider>
     </UserProvider>
   </NotificationsProvider>
 );
