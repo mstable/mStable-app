@@ -35,14 +35,16 @@ const DatesColumnNull = styled.div`
 const ResultValue: FC = ({ children }) =>
   children ? <Bold>{children}</Bold> : <Skeleton width={100} />;
 
-const MIN_DATE = '2020-05-29'; // when contract was deployed
 const DAYS_IN_YEAR = 365;
 
 export const CalculatorForm: FC = () => {
   const {
     amount,
     startDate,
+    startMinDate,
+    startMaxDate,
     endDate,
+    endMinDate,
     totalDays,
     depositedAmount,
     isInThePast,
@@ -93,8 +95,8 @@ export const CalculatorForm: FC = () => {
             error={undefined}
             name="startDate"
             type="date"
-            min={MIN_DATE}
-            max={endDate} // TODO endDate - 1d
+            min={startMinDate}
+            max={startMaxDate}
             value={startDate}
             onChange={e => startDateChanged(e.target.value)}
           />
@@ -106,7 +108,7 @@ export const CalculatorForm: FC = () => {
             error={undefined}
             name="endDate"
             type="date"
-            min={startDate} // TODO startDate + 1d
+            min={endMinDate}
             value={endDate}
             onChange={e => endDateChanged(e.target.value)}
           />
@@ -114,7 +116,7 @@ export const CalculatorForm: FC = () => {
       </DatesRow>
 
       <FormRow>
-        <H2>Result</H2>
+        <H2>Estimated result</H2>
 
         {isInThePast && (
           <P size={Size.l}>
@@ -133,7 +135,7 @@ export const CalculatorForm: FC = () => {
         )}
 
         <P size={Size.l}>
-          {`Total earnings for selected ${totalDays} days: `}
+          {`Total estimated earnings for selected ${totalDays} days: `}
           <ResultValue>
             {formatExactAmount(totalEarnings, 18, 'mUSD')}
           </ResultValue>

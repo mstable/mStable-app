@@ -3,11 +3,18 @@ import { pipeline } from 'ts-pipe-compose';
 import { Action, Actions, State } from './types';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
+const FORM_MIN_DATE = '2020-05-29'; // when contract was deployed
 
 const getTodayDate = (): Date => {
   const today = new Date();
   today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
   return today;
+};
+
+const offsetDate = (dateString: string, offset: number): string => {
+  const date = new Date(dateString);
+  date.setDate(date.getDate() + offset);
+  return date.toJSON().slice(0, 10);
 };
 
 const getFormDate = (offset = 0): string => {
@@ -21,7 +28,10 @@ export const initialState: State = {
   depositedAmount: undefined,
   amount: '',
   startDate: getFormDate(-14),
+  startMinDate: FORM_MIN_DATE,
+  startMaxDate: '', // always endDate - 1d
   endDate: getFormDate(), // today
+  endMinDate: '', // always startDate + 1d
   totalDays: 0,
   isInThePast: false,
   isInTheFuture: false,
@@ -35,6 +45,12 @@ const initialize = (state: State): State =>
         depositedAmount: state.dataState.savingsContract.savingsBalance.balance,
       }
     : state;
+
+const setFormDates = (state: State): State => ({
+    ...state,
+    endMinDate: offsetDate(state.startDate, +1),
+    startMaxDate: offsetDate(state.endDate, -1),
+  });
 
 const setTotalDays = (state: State): State => {
   const start = new Date(state.startDate).getTime();
@@ -91,6 +107,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
 export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
+  setFormDates,
   setTotalDays,
   setIsInThePastOrFuture,
 );

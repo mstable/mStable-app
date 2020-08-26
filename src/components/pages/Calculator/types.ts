@@ -7,7 +7,10 @@ export interface State {
   depositedAmount: BigDecimal | undefined;
   amount: string | null;
   startDate: string;
+  startMinDate: string;
+  startMaxDate: string;
   endDate: string;
+  endMinDate: string;
   totalDays: number;
   isInThePast: boolean;
   isInTheFuture: boolean;
