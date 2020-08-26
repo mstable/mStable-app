@@ -2,61 +2,61 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 export type Maybe<T> = T | null;
 
-export interface IntrospectionResultData {
-  __schema: {
-    types: {
-      kind: string;
-      name: string;
-      possibleTypes: {
-        name: string;
-      }[];
-    }[];
-  };
-}
-const result: IntrospectionResultData = {
-  __schema: {
-    types: [
+      export interface IntrospectionResultData {
+        __schema: {
+          types: {
+            kind: string;
+            name: string;
+            possibleTypes: {
+              name: string;
+            }[];
+          }[];
+        };
+      }
+      const result: IntrospectionResultData = {
+  "__schema": {
+    "types": [
       {
-        kind: 'INTERFACE',
-        name: 'TimeMetric',
-        possibleTypes: [
+        "kind": "INTERFACE",
+        "name": "TimeMetric",
+        "possibleTypes": [
           {
-            name: 'VolumeMetric',
+            "name": "VolumeMetric"
           },
           {
-            name: 'AggregateMetric',
-          },
-        ],
+            "name": "AggregateMetric"
+          }
+        ]
       },
       {
-        kind: 'INTERFACE',
-        name: 'Transaction',
-        possibleTypes: [
+        "kind": "INTERFACE",
+        "name": "Transaction",
+        "possibleTypes": [
           {
-            name: 'SwapTransaction',
+            "name": "SwapTransaction"
           },
           {
-            name: 'FeePaidTransaction',
+            "name": "FeePaidTransaction"
           },
           {
-            name: 'StakingRewardsContractTransaction',
+            "name": "StakingRewardsContractTransaction"
           },
           {
-            name: 'StakingRewardsContractClaimRewardTransaction',
+            "name": "StakingRewardsContractClaimRewardTransaction"
           },
           {
-            name: 'StakingRewardsContractStakeTransaction',
+            "name": "StakingRewardsContractStakeTransaction"
           },
           {
-            name: 'StakingRewardsContractWithdrawTransaction',
-          },
-        ],
-      },
-    ],
-  },
+            "name": "StakingRewardsContractWithdrawTransaction"
+          }
+        ]
+      }
+    ]
+  }
 };
-export default result;
-
+      export default result;
+    
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -80,6 +80,7 @@ export type Account = {
   creditBalances: Array<CreditBalance>;
 };
 
+
 /** An Ethereum account with balances/credit balances */
 export type AccountBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -88,6 +89,7 @@ export type AccountBalancesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<AccountBalance_Filter>;
 };
+
 
 /** An Ethereum account with balances/credit balances */
 export type AccountCreditBalancesArgs = {
@@ -119,7 +121,7 @@ export enum Account_OrderBy {
   Id = 'id',
   Address = 'address',
   Balances = 'balances',
-  CreditBalances = 'creditBalances',
+  CreditBalances = 'creditBalances'
 }
 
 /** An account balance for a given token */
@@ -184,7 +186,7 @@ export enum AccountBalance_OrderBy {
   Id = 'id',
   Account = 'account',
   Amount = 'amount',
-  Token = 'token',
+  Token = 'token'
 }
 
 export type AggregateMetric = TimeMetric & {
@@ -231,12 +233,12 @@ export enum AggregateMetric_OrderBy {
   Value = 'value',
   Timestamp = 'timestamp',
   Period = 'period',
-  Type = 'type',
+  Type = 'type'
 }
 
 export enum AggregateMetricType {
   TotalSupply = 'TOTAL_SUPPLY',
-  TotalSavings = 'TOTAL_SAVINGS',
+  TotalSavings = 'TOTAL_SAVINGS'
 }
 
 /** A Basket of Bassets (e.g. for mUSD) */
@@ -255,6 +257,7 @@ export type Basket = {
   /** Masset the Basket belongs to */
   masset: Masset;
 };
+
 
 /** A Basket of Bassets (e.g. for mUSD) */
 export type BasketBassetsArgs = {
@@ -311,7 +314,7 @@ export enum Basket_OrderBy {
   MaxBassets = 'maxBassets',
   UndergoingRecol = 'undergoingRecol',
   Failed = 'failed',
-  Masset = 'masset',
+  Masset = 'masset'
 }
 
 /** Basket Asset (e.g. DAI for the mUSD basket) */
@@ -408,13 +411,16 @@ export enum Basset_OrderBy {
   Status = 'status',
   IsTransferFeeCharged = 'isTransferFeeCharged',
   Token = 'token',
-  VaultBalance = 'vaultBalance',
+  VaultBalance = 'vaultBalance'
 }
+
+
 
 export type Block_Height = {
   hash?: Maybe<Scalars['Bytes']>;
   number?: Maybe<Scalars['Int']>;
 };
+
 
 /** A credit balance for a given savings contract */
 export type CreditBalance = {
@@ -478,7 +484,7 @@ export enum CreditBalance_OrderBy {
   Id = 'id',
   Account = 'account',
   Amount = 'amount',
-  SavingsContract = 'savingsContract',
+  SavingsContract = 'savingsContract'
 }
 
 export type ExchangeRate = {
@@ -533,7 +539,7 @@ export enum ExchangeRate_OrderBy {
   Id = 'id',
   ExchangeRate = 'exchangeRate',
   Timestamp = 'timestamp',
-  SavingsContract = 'savingsContract',
+  SavingsContract = 'savingsContract'
 }
 
 /** Log of the Fee payment */
@@ -626,7 +632,7 @@ export enum FeePaidTransaction_OrderBy {
   Sender = 'sender',
   MAsset = 'mAsset',
   MAssetUnits = 'mAssetUnits',
-  Asset = 'asset',
+  Asset = 'asset'
 }
 
 /** An mStable asset (e.g. mUSD) */
@@ -644,6 +650,7 @@ export type Masset = {
   tokenSymbol: Scalars['String'];
   savingsContracts: Array<SavingsContract>;
 };
+
 
 /** An mStable asset (e.g. mUSD) */
 export type MassetSavingsContractsArgs = {
@@ -730,12 +737,12 @@ export enum Masset_OrderBy {
   RedemptionFeeRate = 'redemptionFeeRate',
   Token = 'token',
   TokenSymbol = 'tokenSymbol',
-  SavingsContracts = 'savingsContracts',
+  SavingsContracts = 'savingsContracts'
 }
 
 export enum OrderDirection {
   Asc = 'asc',
-  Desc = 'desc',
+  Desc = 'desc'
 }
 
 export type Query = {
@@ -767,24 +774,12 @@ export type Query = {
   feePaidTransactions: Array<FeePaidTransaction>;
   stakingRewardsContractTransaction?: Maybe<StakingRewardsContractTransaction>;
   stakingRewardsContractTransactions: Array<StakingRewardsContractTransaction>;
-  stakingRewardsContractClaimRewardTransaction?: Maybe<
-    StakingRewardsContractClaimRewardTransaction
-  >;
-  stakingRewardsContractClaimRewardTransactions: Array<
-    StakingRewardsContractClaimRewardTransaction
-  >;
-  stakingRewardsContractStakeTransaction?: Maybe<
-    StakingRewardsContractStakeTransaction
-  >;
-  stakingRewardsContractStakeTransactions: Array<
-    StakingRewardsContractStakeTransaction
-  >;
-  stakingRewardsContractWithdrawTransaction?: Maybe<
-    StakingRewardsContractWithdrawTransaction
-  >;
-  stakingRewardsContractWithdrawTransactions: Array<
-    StakingRewardsContractWithdrawTransaction
-  >;
+  stakingRewardsContractClaimRewardTransaction?: Maybe<StakingRewardsContractClaimRewardTransaction>;
+  stakingRewardsContractClaimRewardTransactions: Array<StakingRewardsContractClaimRewardTransaction>;
+  stakingRewardsContractStakeTransaction?: Maybe<StakingRewardsContractStakeTransaction>;
+  stakingRewardsContractStakeTransactions: Array<StakingRewardsContractStakeTransaction>;
+  stakingRewardsContractWithdrawTransaction?: Maybe<StakingRewardsContractWithdrawTransaction>;
+  stakingRewardsContractWithdrawTransactions: Array<StakingRewardsContractWithdrawTransaction>;
   rewardsDistributor?: Maybe<RewardsDistributor>;
   rewardsDistributors: Array<RewardsDistributor>;
   stakingReward?: Maybe<StakingReward>;
@@ -799,10 +794,12 @@ export type Query = {
   transactions: Array<Transaction>;
 };
 
+
 export type QueryTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryTokensArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -813,10 +810,12 @@ export type QueryTokensArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -827,10 +826,12 @@ export type QueryBassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryBasketsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -841,10 +842,12 @@ export type QueryBasketsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryMassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -855,10 +858,12 @@ export type QueryMassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -869,10 +874,12 @@ export type QueryAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryAccountBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryAccountBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -883,10 +890,12 @@ export type QueryAccountBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -897,10 +906,12 @@ export type QueryCreditBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QuerySavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QuerySavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -911,10 +922,12 @@ export type QuerySavingsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -925,10 +938,12 @@ export type QueryExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryVolumeMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryVolumeMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -939,10 +954,12 @@ export type QueryVolumeMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryAggregateMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryAggregateMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -953,10 +970,12 @@ export type QueryAggregateMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QuerySwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QuerySwapTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -967,10 +986,12 @@ export type QuerySwapTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryFeePaidTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryFeePaidTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -981,10 +1002,12 @@ export type QueryFeePaidTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryStakingRewardsContractTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryStakingRewardsContractTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -995,10 +1018,12 @@ export type QueryStakingRewardsContractTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryStakingRewardsContractClaimRewardTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryStakingRewardsContractClaimRewardTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1009,10 +1034,12 @@ export type QueryStakingRewardsContractClaimRewardTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryStakingRewardsContractStakeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryStakingRewardsContractStakeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1023,10 +1050,12 @@ export type QueryStakingRewardsContractStakeTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryStakingRewardsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryStakingRewardsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1037,10 +1066,12 @@ export type QueryStakingRewardsContractWithdrawTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryRewardsDistributorArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryRewardsDistributorsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1051,10 +1082,12 @@ export type QueryRewardsDistributorsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryStakingRewardArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryStakingRewardsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1065,10 +1098,12 @@ export type QueryStakingRewardsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryStakingRewardsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryStakingRewardsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1079,10 +1114,12 @@ export type QueryStakingRewardsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryStakingBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryStakingBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1093,10 +1130,12 @@ export type QueryStakingBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryTimeMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryTimeMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1107,10 +1146,12 @@ export type QueryTimeMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1145,7 +1186,7 @@ export type RewardsDistributor_Filter = {
 
 export enum RewardsDistributor_OrderBy {
   Id = 'id',
-  FundManagers = 'fundManagers',
+  FundManagers = 'fundManagers'
 }
 
 export type SavingsContract = {
@@ -1159,6 +1200,7 @@ export type SavingsContract = {
   automationEnabled: Scalars['Boolean'];
 };
 
+
 export type SavingsContractExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1166,6 +1208,7 @@ export type SavingsContractExchangeRatesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<ExchangeRate_Filter>;
 };
+
 
 export type SavingsContractCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1236,7 +1279,7 @@ export enum SavingsContract_OrderBy {
   ExchangeRates = 'exchangeRates',
   SavingsRate = 'savingsRate',
   CreditBalances = 'creditBalances',
-  AutomationEnabled = 'automationEnabled',
+  AutomationEnabled = 'automationEnabled'
 }
 
 export type StakingBalance = {
@@ -1292,7 +1335,7 @@ export enum StakingBalance_OrderBy {
   Id = 'id',
   Account = 'account',
   StakingRewardsContract = 'stakingRewardsContract',
-  Amount = 'amount',
+  Amount = 'amount'
 }
 
 export type StakingReward = {
@@ -1364,7 +1407,7 @@ export enum StakingReward_OrderBy {
   AmountPerTokenPaid = 'amountPerTokenPaid',
   StakingRewardsContract = 'stakingRewardsContract',
   Account = 'account',
-  Type = 'type',
+  Type = 'type'
 }
 
 export type StakingRewardsContract = {
@@ -1412,6 +1455,7 @@ export type StakingRewardsContract = {
   totalPlatformRewards?: Maybe<Scalars['BigInt']>;
 };
 
+
 export type StakingRewardsContractStakingBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1419,6 +1463,7 @@ export type StakingRewardsContractStakingBalancesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<StakingBalance_Filter>;
 };
+
 
 export type StakingRewardsContractStakingRewardsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1428,6 +1473,7 @@ export type StakingRewardsContractStakingRewardsArgs = {
   where?: Maybe<StakingReward_Filter>;
 };
 
+
 export type StakingRewardsContractClaimRewardTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1436,6 +1482,7 @@ export type StakingRewardsContractClaimRewardTransactionsArgs = {
   where?: Maybe<StakingRewardsContractClaimRewardTransaction_Filter>;
 };
 
+
 export type StakingRewardsContractStakeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1443,6 +1490,7 @@ export type StakingRewardsContractStakeTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<StakingRewardsContractStakeTransaction_Filter>;
 };
+
 
 export type StakingRewardsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1622,7 +1670,7 @@ export enum StakingRewardsContract_OrderBy {
   PlatformToken = 'platformToken',
   PlatformRewardRate = 'platformRewardRate',
   PlatformRewardPerTokenStored = 'platformRewardPerTokenStored',
-  TotalPlatformRewards = 'totalPlatformRewards',
+  TotalPlatformRewards = 'totalPlatformRewards'
 }
 
 export type StakingRewardsContractClaimRewardTransaction = Transaction & {
@@ -1697,7 +1745,7 @@ export enum StakingRewardsContractClaimRewardTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   StakingRewardsContract = 'stakingRewardsContract',
-  Amount = 'amount',
+  Amount = 'amount'
 }
 
 export type StakingRewardsContractStakeTransaction = Transaction & {
@@ -1772,7 +1820,7 @@ export enum StakingRewardsContractStakeTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   StakingRewardsContract = 'stakingRewardsContract',
-  Amount = 'amount',
+  Amount = 'amount'
 }
 
 export type StakingRewardsContractTransaction = Transaction & {
@@ -1837,12 +1885,12 @@ export enum StakingRewardsContractTransaction_OrderBy {
   Type = 'type',
   Sender = 'sender',
   Timestamp = 'timestamp',
-  StakingRewardsContract = 'stakingRewardsContract',
+  StakingRewardsContract = 'stakingRewardsContract'
 }
 
 export enum StakingRewardsContractType {
   StakingRewards = 'STAKING_REWARDS',
-  StakingRewardsWithPlatformToken = 'STAKING_REWARDS_WITH_PLATFORM_TOKEN',
+  StakingRewardsWithPlatformToken = 'STAKING_REWARDS_WITH_PLATFORM_TOKEN'
 }
 
 export type StakingRewardsContractWithdrawTransaction = Transaction & {
@@ -1917,12 +1965,12 @@ export enum StakingRewardsContractWithdrawTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   StakingRewardsContract = 'stakingRewardsContract',
-  Amount = 'amount',
+  Amount = 'amount'
 }
 
 export enum StakingRewardType {
   Reward = 'REWARD',
-  PlatformReward = 'PLATFORM_REWARD',
+  PlatformReward = 'PLATFORM_REWARD'
 }
 
 export type Subscription = {
@@ -1954,24 +2002,12 @@ export type Subscription = {
   feePaidTransactions: Array<FeePaidTransaction>;
   stakingRewardsContractTransaction?: Maybe<StakingRewardsContractTransaction>;
   stakingRewardsContractTransactions: Array<StakingRewardsContractTransaction>;
-  stakingRewardsContractClaimRewardTransaction?: Maybe<
-    StakingRewardsContractClaimRewardTransaction
-  >;
-  stakingRewardsContractClaimRewardTransactions: Array<
-    StakingRewardsContractClaimRewardTransaction
-  >;
-  stakingRewardsContractStakeTransaction?: Maybe<
-    StakingRewardsContractStakeTransaction
-  >;
-  stakingRewardsContractStakeTransactions: Array<
-    StakingRewardsContractStakeTransaction
-  >;
-  stakingRewardsContractWithdrawTransaction?: Maybe<
-    StakingRewardsContractWithdrawTransaction
-  >;
-  stakingRewardsContractWithdrawTransactions: Array<
-    StakingRewardsContractWithdrawTransaction
-  >;
+  stakingRewardsContractClaimRewardTransaction?: Maybe<StakingRewardsContractClaimRewardTransaction>;
+  stakingRewardsContractClaimRewardTransactions: Array<StakingRewardsContractClaimRewardTransaction>;
+  stakingRewardsContractStakeTransaction?: Maybe<StakingRewardsContractStakeTransaction>;
+  stakingRewardsContractStakeTransactions: Array<StakingRewardsContractStakeTransaction>;
+  stakingRewardsContractWithdrawTransaction?: Maybe<StakingRewardsContractWithdrawTransaction>;
+  stakingRewardsContractWithdrawTransactions: Array<StakingRewardsContractWithdrawTransaction>;
   rewardsDistributor?: Maybe<RewardsDistributor>;
   rewardsDistributors: Array<RewardsDistributor>;
   stakingReward?: Maybe<StakingReward>;
@@ -1986,10 +2022,12 @@ export type Subscription = {
   transactions: Array<Transaction>;
 };
 
+
 export type SubscriptionTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionTokensArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2000,10 +2038,12 @@ export type SubscriptionTokensArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2014,10 +2054,12 @@ export type SubscriptionBassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionBasketsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2028,10 +2070,12 @@ export type SubscriptionBasketsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionMassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2042,10 +2086,12 @@ export type SubscriptionMassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2056,10 +2102,12 @@ export type SubscriptionAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionAccountBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionAccountBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2070,10 +2118,12 @@ export type SubscriptionAccountBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2084,10 +2134,12 @@ export type SubscriptionCreditBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionSavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionSavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2098,10 +2150,12 @@ export type SubscriptionSavingsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2112,10 +2166,12 @@ export type SubscriptionExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionVolumeMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionVolumeMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2126,10 +2182,12 @@ export type SubscriptionVolumeMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionAggregateMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionAggregateMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2140,10 +2198,12 @@ export type SubscriptionAggregateMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionSwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionSwapTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2154,10 +2214,12 @@ export type SubscriptionSwapTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionFeePaidTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionFeePaidTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2168,10 +2230,12 @@ export type SubscriptionFeePaidTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionStakingRewardsContractTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionStakingRewardsContractTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2182,10 +2246,12 @@ export type SubscriptionStakingRewardsContractTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionStakingRewardsContractClaimRewardTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionStakingRewardsContractClaimRewardTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2196,10 +2262,12 @@ export type SubscriptionStakingRewardsContractClaimRewardTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionStakingRewardsContractStakeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionStakingRewardsContractStakeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2210,10 +2278,12 @@ export type SubscriptionStakingRewardsContractStakeTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionStakingRewardsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionStakingRewardsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2224,10 +2294,12 @@ export type SubscriptionStakingRewardsContractWithdrawTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionRewardsDistributorArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionRewardsDistributorsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2238,10 +2310,12 @@ export type SubscriptionRewardsDistributorsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionStakingRewardArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionStakingRewardsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2252,10 +2326,12 @@ export type SubscriptionStakingRewardsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionStakingRewardsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionStakingRewardsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2266,10 +2342,12 @@ export type SubscriptionStakingRewardsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionStakingBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionStakingBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2280,10 +2358,12 @@ export type SubscriptionStakingBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionTimeMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionTimeMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2294,10 +2374,12 @@ export type SubscriptionTimeMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2422,7 +2504,7 @@ export enum SwapTransaction_OrderBy {
   MAssetUnits = 'mAssetUnits',
   InputBasset = 'inputBasset',
   OutputBasset = 'outputBasset',
-  Recipient = 'recipient',
+  Recipient = 'recipient'
 }
 
 export type TimeMetric = {
@@ -2465,7 +2547,7 @@ export enum TimeMetric_OrderBy {
   Id = 'id',
   Value = 'value',
   Timestamp = 'timestamp',
-  Period = 'period',
+  Period = 'period'
 }
 
 export enum TimeMetricPeriod {
@@ -2474,7 +2556,7 @@ export enum TimeMetricPeriod {
   Week = 'WEEK',
   Month = 'MONTH',
   Quarter = 'QUARTER',
-  Year = 'YEAR',
+  Year = 'YEAR'
 }
 
 /** An ERC20-compatible token */
@@ -2592,7 +2674,7 @@ export enum Token_OrderBy {
   TotalSupply = 'totalSupply',
   TotalMinted = 'totalMinted',
   TotalTransferred = 'totalTransferred',
-  TotalBurned = 'totalBurned',
+  TotalBurned = 'totalBurned'
 }
 
 /** A common transaction type */
@@ -2642,7 +2724,7 @@ export enum Transaction_OrderBy {
   Tx = 'tx',
   Type = 'type',
   Timestamp = 'timestamp',
-  Sender = 'sender',
+  Sender = 'sender'
 }
 
 export enum TransactionType {
@@ -2656,7 +2738,7 @@ export enum TransactionType {
   StakingRewardsContractClaimReward = 'STAKING_REWARDS_CONTRACT_CLAIM_REWARD',
   StakingRewardsContractExit = 'STAKING_REWARDS_CONTRACT_EXIT',
   StakingRewardsContractStake = 'STAKING_REWARDS_CONTRACT_STAKE',
-  StakingRewardsContractWithdraw = 'STAKING_REWARDS_CONTRACT_WITHDRAW',
+  StakingRewardsContractWithdraw = 'STAKING_REWARDS_CONTRACT_WITHDRAW'
 }
 
 export type VolumeMetric = TimeMetric & {
@@ -2703,7 +2785,7 @@ export enum VolumeMetric_OrderBy {
   Value = 'value',
   Timestamp = 'timestamp',
   Period = 'period',
-  Type = 'type',
+  Type = 'type'
 }
 
 export type RewardsQueryVariables = {
@@ -2714,93 +2796,60 @@ export type RewardsQueryVariables = {
   offset: Scalars['Int'];
 };
 
-export type RewardsQuery = {
-  stakingRewardsContracts: Array<
-    Pick<
-      StakingRewardsContract,
-      | 'lastUpdateTime'
-      | 'periodFinish'
-      | 'rewardPerTokenStored'
-      | 'rewardRate'
-      | 'totalSupply'
-    > & { address: StakingRewardsContract['id'] } & {
-      stakingRewards: Array<
-        Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>
-      >;
-      stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>;
-      claimRewardTransactions: Array<
-        Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>
-      >;
-    }
-  >;
-};
+
+export type RewardsQuery = { stakingRewardsContracts: Array<(
+    Pick<StakingRewardsContract, 'lastUpdateTime' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'totalSupply'>
+    & { address: StakingRewardsContract['id'] }
+    & { stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
+  )> };
 
 export type VaultBalancesQueryVariables = {
   block?: Maybe<Block_Height>;
 };
 
-export type VaultBalancesQuery = {
-  bassets: Array<
-    Pick<Basset, 'id' | 'vaultBalance'> & {
-      token: Pick<Token, 'symbol' | 'decimals'>;
-    }
-  >;
-};
+
+export type VaultBalancesQuery = { bassets: Array<(
+    Pick<Basset, 'id' | 'vaultBalance'>
+    & { token: Pick<Token, 'symbol' | 'decimals'> }
+  )> };
+
 
 export const RewardsDocument = gql`
-  query Rewards(
-    $id: ID!
-    $end: Int!
-    $block: Block_height
-    $limit: Int!
-    $offset: Int!
-  ) @api(name: mstable) {
-    stakingRewardsContracts(where: { id: $id }, block: $block) {
-      address: id
-      lastUpdateTime
-      periodFinish
-      rewardPerTokenStored
-      rewardRate
-      totalSupply
-      stakingRewards(where: { type: REWARD }, first: $limit, skip: $offset) {
-        amount
-        account
-        amountPerTokenPaid
-      }
-      stakingBalances(first: $limit, skip: $offset) {
-        amount
-        account
-      }
-      claimRewardTransactions(
-        first: $limit
-        skip: $offset
-        orderBy: timestamp
-        orderDirection: asc
-        where: { timestamp_lt: $end }
-      ) {
-        amount
-        sender
-      }
+    query Rewards($id: ID!, $end: Int!, $block: Block_height, $limit: Int!, $offset: Int!) @api(name: mstable) {
+  stakingRewardsContracts(where: {id: $id}, block: $block) {
+    address: id
+    lastUpdateTime
+    periodFinish
+    rewardPerTokenStored
+    rewardRate
+    totalSupply
+    stakingRewards(where: {type: REWARD}, first: $limit, skip: $offset) {
+      amount
+      account
+      amountPerTokenPaid
+    }
+    stakingBalances(first: $limit, skip: $offset) {
+      amount
+      account
+    }
+    claimRewardTransactions(first: $limit, skip: $offset, orderBy: timestamp, orderDirection: asc, where: {timestamp_lte: $end}) {
+      amount
+      sender
     }
   }
-`;
-export type RewardsQueryResult = ApolloReactCommon.QueryResult<
-  RewardsQuery,
-  RewardsQueryVariables
->;
+}
+    `;
+export type RewardsQueryResult = ApolloReactCommon.QueryResult<RewardsQuery, RewardsQueryVariables>;
 export const VaultBalancesDocument = gql`
-  query VaultBalances($block: Block_height) @api(name: mstable) {
-    bassets(block: $block) {
-      id
-      token {
-        symbol
-        decimals
-      }
-      vaultBalance
+    query VaultBalances($block: Block_height) @api(name: mstable) {
+  bassets(block: $block) {
+    id
+    token {
+      symbol
+      decimals
     }
+    vaultBalance
   }
-`;
-export type VaultBalancesQueryResult = ApolloReactCommon.QueryResult<
-  VaultBalancesQuery,
-  VaultBalancesQueryVariables
->;
+}
+    `;
+export type VaultBalancesQueryResult = ApolloReactCommon.QueryResult<VaultBalancesQuery, VaultBalancesQueryVariables>;

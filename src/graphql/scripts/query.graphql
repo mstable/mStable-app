@@ -29,7 +29,7 @@ query Rewards(
       skip: $offset
       orderBy: timestamp
       orderDirection: asc
-      where: { timestamp_lt: $end }
+      where: { timestamp_lte: $end }
     ) {
       amount
       sender
