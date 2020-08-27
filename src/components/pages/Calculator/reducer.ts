@@ -1,8 +1,8 @@
 import { Reducer } from 'react';
 import { pipeline } from 'ts-pipe-compose';
+import { differenceInDays } from 'date-fns';
 import { Action, Actions, State } from './types';
 
-const ONE_DAY = 24 * 60 * 60 * 1000;
 const FORM_MIN_DATE = '2020-05-29'; // when contract was deployed
 
 const getTodayDate = (): Date => {
@@ -55,12 +55,11 @@ const setFormDates = (state: State): State => ({
 });
 
 const setPastAndFuture = (state: State): State => {
-  const today = getTodayDate().getTime();
-  const start = new Date(state.startDate).getTime();
-  const end = new Date(state.endDate).getTime();
-
-  const pastDays = Math.round(Math.abs((today - start) / ONE_DAY));
-  const futureDays = Math.round(Math.abs((today - end) / ONE_DAY));
+  const today = getTodayDate();
+  const start = new Date(state.startDate);
+  const end = new Date(state.endDate);
+  const pastDays = differenceInDays(today, start);
+  const futureDays = differenceInDays(end, today);
 
   return {
     ...state,

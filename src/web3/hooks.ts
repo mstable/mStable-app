@@ -3,6 +3,7 @@ import { useMutex } from 'react-context-mutex';
 import useInterval from '@use-it/interval';
 import { BigNumber, parseUnits } from 'ethers/utils';
 import { BigNumber as FractionalBigNumber } from 'bignumber.js';
+import { subDays } from 'date-fns';
 
 import {
   ExchangeRate,
@@ -159,9 +160,7 @@ export const useApyForPast30Days = (): BigNumber | undefined => {
   today.setHours(0, 0, 0, 0);
   today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
 
-  const offset = -30;
-  const past30days = new Date(today);
-  past30days.setDate(past30days.getDate() + offset);
+  const past30days = subDays(today, 30);
 
   return useApyForTimePeriod(past30days, today);
 };
