@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from 'react';
+import { VictoryLabel } from 'victory-core';
 import { VictoryLine } from 'victory-line';
 import { VictoryChart } from 'victory-chart';
 import { VictoryAxis } from 'victory-axis';
@@ -22,12 +23,14 @@ import { H2 } from '../../core/Typography';
 import { useCalculatorState } from './CalculatorProvider';
 import { calculateEarnings } from './utils';
 
+const startDate = endOfHour(new Date());
+
 const dateFilter = {
   dateRange: DateRange.Month,
   period: TimeMetricPeriod.Month,
   label: '',
-  from: endOfHour(new Date()),
-  end: addMonths(new Date(), 3),
+  from: startDate,
+  end: addMonths(startDate, 7),
 };
 
 const days = differenceInDays(dateFilter.end, dateFilter.from);
@@ -37,7 +40,7 @@ const getBottomAndTopValues = (
   futureEarnings: BigNumber,
 ): [number, number] => {
   const bottom = Math.floor(parseFloat(amount || '0'));
-  const earnings = Math.ceil(parseExactAmount(futureEarnings, 18).simple || 0);
+  const earnings = parseExactAmount(futureEarnings, 18).simple || 0;
 
   return [bottom, bottom + earnings];
 };
@@ -62,27 +65,45 @@ export const EarningsChart: FC<{}> = () => {
 
   const data = useMemo<{ x: Date; y: number }[]>(
     () => [
-      { x: endOfHour(new Date()), y: bottomValue },
-      { x: addMonths(new Date(), 3), y: topValue },
+      { x: startDate, y: bottomValue },
+
+      {
+        x: addMonths(startDate, 3),
+        // fake middle value to look like exponential chart
+        y: bottomValue + (topValue - bottomValue) / 3,
+      },
+      { x: addMonths(startDate, 6), y: topValue },
     ],
     [bottomValue, topValue],
   );
 
+  const domain = useMemo<[number, number]>(() => {
+    // increase topValue by 3%
+    const top = topValue + topValue * 0.03;
+    return [bottomValue, Math.ceil(top)];
+  }, [bottomValue, topValue]);
+
   return (
     <div>
-      <H2 borderTop>Projected future earnings</H2>
+      <H2 borderTop>Projected future earnings over next 6 months</H2>
 
-      {data.length ? (
+      {(!amount || parseFloat(amount) === 0) && (
+        <div>Provide deposit amount in the form above</div>
+      )}
+
+      {amount && parseFloat(amount) > 0 ? (
         <VictoryChart
           theme={victoryTheme}
           height={200}
-          domainPadding={25}
+          domainPadding={[20, 30]}
           padding={{ left: 45, top: 20, right: 0, bottom: 30 }}
         >
           <VictoryAxis
             dependentAxis
-            domain={[bottomValue, topValue]}
-            tickFormat={abbreviateNumber}
+            domain={domain}
+            tickFormat={
+              parseFloat(amount || '0') > 1000 ? abbreviateNumber : undefined
+            }
             fixLabelOverlap
             style={{
               ticks: { stroke: 'none' },
@@ -98,6 +119,8 @@ export const EarningsChart: FC<{}> = () => {
           <VictoryLine
             data={data}
             interpolation="natural"
+            labels={({ datum }) => `${Math.ceil(datum.y)} mUSD`}
+            labelComponent={<VictoryLabel />}
             style={{
               data: {
                 stroke: Color.gold,
