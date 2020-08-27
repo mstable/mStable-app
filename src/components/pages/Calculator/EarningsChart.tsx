@@ -1,54 +1,71 @@
 import React, { FC, useMemo } from 'react';
-import { BigNumber, formatUnits } from 'ethers/utils';
-import { VictoryLabel } from 'victory-core';
 import { VictoryLine } from 'victory-line';
 import { VictoryChart } from 'victory-chart';
 import { VictoryAxis } from 'victory-axis';
 import Skeleton from 'react-loading-skeleton';
-import { endOfHour, fromUnixTime, subDays } from 'date-fns';
+import { endOfHour, addMonths, differenceInDays } from 'date-fns';
+import { BigNumber } from 'ethers/utils';
 
-import { useDailyApysForPastWeek } from '../../../web3/hooks';
-import { Color } from '../../../theme';
+import { useApyForPast30Days } from '../../../web3/hooks';
+import { parseExactAmount } from '../../../web3/amounts';
 import { useVictoryTheme } from '../../../context/ThemeProvider';
 import {
   abbreviateNumber,
-  percentageFormat,
   useDateFilterTickValues,
   useDateFilterTickFormat,
 } from '../../stats/utils';
+import { Color } from '../../../theme';
 import { TimeMetricPeriod } from '../../../graphql/mstable';
 import { DateRange } from '../../stats/Metrics';
-
 import { H2 } from '../../core/Typography';
 
+import { useCalculatorState } from './CalculatorProvider';
+import { calculateEarnings } from './utils';
+
 const dateFilter = {
-  dateRange: DateRange.Week,
-  period: TimeMetricPeriod.Day,
-  label: '7 day',
-  from: subDays(new Date(), 6),
-  end: endOfHour(new Date()),
+  dateRange: DateRange.Month,
+  period: TimeMetricPeriod.Month,
+  label: '',
+  from: endOfHour(new Date()),
+  end: addMonths(new Date(), 3),
+};
+
+const days = differenceInDays(dateFilter.end, dateFilter.from);
+
+const getBottomAndTopValues = (
+  amount: string | null,
+  futureEarnings: BigNumber,
+): [number, number] => {
+  const bottom = Math.floor(parseFloat(amount || '0'));
+  const earnings = Math.ceil(parseExactAmount(futureEarnings, 18).simple || 0);
+
+  return [bottom, bottom + earnings];
 };
 
 export const EarningsChart: FC<{}> = () => {
-  const dailyApys = useDailyApysForPastWeek();
   const tickValues = useDateFilterTickValues(dateFilter);
   const tickFormat = useDateFilterTickFormat(dateFilter);
   const victoryTheme = useVictoryTheme();
 
-  const data = useMemo<{ x: Date; y: number }[]>(
-    () =>
-      dailyApys
-        .filter(a => a.value && a.start)
-        .map(({ value, start }) => {
-          const percentage = parseFloat(formatUnits(value as BigNumber, 16));
-          return {
-            x: fromUnixTime(start as number),
-            y: percentage,
-            percentage,
-          };
-        }),
+  const futureApy = useApyForPast30Days();
+  const { amount } = useCalculatorState();
 
-    [dailyApys],
+  const futureEarnings = useMemo(
+    () => calculateEarnings(amount, futureApy, days),
+    [amount, futureApy],
+  );
+
+  const [bottomValue, topValue] = useMemo(
+    () => getBottomAndTopValues(amount, futureEarnings),
+    [amount, futureEarnings],
+  );
+
+  const data = useMemo<{ x: Date; y: number }[]>(
+    () => [
+      { x: endOfHour(new Date()), y: bottomValue },
+      { x: addMonths(new Date(), 3), y: topValue },
+    ],
+    [bottomValue, topValue],
   );
 
   return (
@@ -60,10 +77,11 @@ export const EarningsChart: FC<{}> = () => {
           theme={victoryTheme}
           height={200}
           domainPadding={25}
-          padding={{ left: 45, top: 0, right: 20, bottom: 40 }}
+          padding={{ left: 45, top: 20, right: 0, bottom: 30 }}
         >
           <VictoryAxis
             dependentAxis
+            domain={[bottomValue, topValue]}
             tickFormat={abbreviateNumber}
             fixLabelOverlap
             style={{
@@ -79,16 +97,7 @@ export const EarningsChart: FC<{}> = () => {
           />
           <VictoryLine
             data={data}
-            labelComponent={<VictoryLabel />}
-            labels={({
-              datum: { percentage },
-            }: {
-              datum: { y: number; percentage: number };
-            }) =>
-              percentage > 100
-                ? `${percentageFormat(percentage)} 🔥`
-                : percentageFormat(percentage)
-            }
+            interpolation="natural"
             style={{
               data: {
                 stroke: Color.gold,

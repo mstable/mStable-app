@@ -8,13 +8,13 @@ import { FormRow } from '../../core/Form';
 import { Input } from '../../forms/Input';
 import { AmountInput } from '../../forms/AmountInput';
 import { Size } from '../../../theme';
-import { BigDecimal } from '../../../web3/BigDecimal';
 import { useApyForTimePeriod, useApyForPast30Days } from '../../../web3/hooks';
 import { formatExactAmount } from '../../../web3/amounts';
 import {
   useCalculatorState,
   useCalculatorDispatch,
 } from './CalculatorProvider';
+import { calculateEarnings } from './utils';
 
 const Bold = styled.span`
   font-weight: bold;
@@ -38,25 +38,6 @@ const Section = styled.div`
 
 const ResultValue: FC = ({ children }) =>
   children ? <Bold>{children}</Bold> : <Skeleton width={100} />;
-
-const DAYS_IN_YEAR = 365;
-
-const calculateEarnings = (
-  amount: string | null,
-  apy: BigNumber | undefined,
-  days: number,
-): BigNumber => {
-  const amountBigDecimal = BigDecimal.maybeParse(amount, 18);
-
-  if (amountBigDecimal && apy) {
-    return amountBigDecimal
-      .mulTruncate(apy)
-      .exact.mul(days)
-      .div(DAYS_IN_YEAR);
-  }
-
-  return new BigNumber('0');
-};
 
 export const CalculatorForm: FC = () => {
   const {

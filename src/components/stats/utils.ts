@@ -5,7 +5,7 @@ import {
   eachQuarterOfInterval,
   eachWeekOfInterval,
   eachYearOfInterval,
-  lightFormat,
+  format,
 } from 'date-fns';
 
 import { useMemo } from 'react';
@@ -29,8 +29,8 @@ const periodIntervalMapping: Record<
 const periodFormatMapping: Record<TimeMetricPeriod, string> = {
   [TimeMetricPeriod.Hour]: 'HH',
   [TimeMetricPeriod.Day]: 'dd-MM',
-  [TimeMetricPeriod.Week]: 'W',
-  [TimeMetricPeriod.Month]: 'MM',
+  [TimeMetricPeriod.Week]: 'w',
+  [TimeMetricPeriod.Month]: 'MMM',
   [TimeMetricPeriod.Quarter]: 'Q',
   [TimeMetricPeriod.Year]: 'YYYY',
 };
@@ -57,7 +57,7 @@ export const percentageFormat = (value: number): string =>
 const timestampTickFormat = (
   period: TimeMetricPeriod,
 ): TickFormatFn => timestamp =>
-  timestamp > 1 ? lightFormat(timestamp, periodFormatMapping[period]) : '';
+  timestamp > 1 ? format(timestamp, periodFormatMapping[period]) : '';
 
 export const useDateFilterTickFormat = ({ period }: DateFilter): TickFormatFn =>
   useMemo(() => timestampTickFormat(period), [period]);
