@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
 import {
-  useMusdTotalSupply,
+  useMassetTotalSupply,
   useTotalSavings,
 } from '../../../context/DataProvider/DataProvider';
 import { ReactComponent as AnalyticsIcon } from '../../icons/circle/analytics.svg';
@@ -21,7 +21,7 @@ const Section = styled.section`
 `;
 
 const TotalSupply: FC<{}> = () => {
-  const totalSupply = useMusdTotalSupply();
+  const totalSupply = useMassetTotalSupply();
   return (
     <div>
       <H3 borderTop>Total supply</H3>

@@ -5,8 +5,8 @@ import { useTransactionsDispatch } from '../context/TransactionsProvider';
 import { useAccount } from '../context/UserProvider';
 import { getHistoricTransactions } from '../web3/getHistoricTransactions';
 import {
-  useMusdContract,
-  useSavingsContract,
+  useSelectedMassetContract,
+  useSelectedMassetSavingsContract,
 } from '../context/DataProvider/ContractsProvider';
 import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 
@@ -15,8 +15,8 @@ export const ContractsUpdater = (): null => {
   const account = useAccount();
   const { addHistoric, reset } = useTransactionsDispatch();
 
-  const mUsdContract = useMusdContract();
-  const savingsContract = useSavingsContract();
+  const massetContract = useSelectedMassetContract();
+  const savingsContract = useSelectedMassetSavingsContract();
 
   const blockNumber = useBlockNumber();
 
@@ -34,7 +34,7 @@ export const ContractsUpdater = (): null => {
    * When the account changes (and mUSD exists), get historic transactions.
    */
   useEffect(() => {
-    if (mUsdContract && account && addHistoric) {
+    if (massetContract && account && addHistoric) {
       const indexedAccount = hexZeroPad(account.toLowerCase(), 32);
 
       const {
@@ -43,9 +43,9 @@ export const ContractsUpdater = (): null => {
         Redeemed,
         RedeemedMasset,
         MintedMulti,
-      } = mUsdContract.interface.events;
+      } = massetContract.interface.events;
 
-      const mUSDTopics: (string | null)[][] = [
+      const massetTopics: (string | null)[][] = [
         [Minted.topic, indexedAccount],
         [MintedMulti.topic, indexedAccount],
         [Redeemed.topic, indexedAccount],
@@ -54,15 +54,15 @@ export const ContractsUpdater = (): null => {
       ];
 
       getHistoricTransactions(
-        mUsdContract,
+        massetContract,
         account,
-        mUSDTopics,
+        massetTopics,
         filter.current,
       ).then(logs => {
         addHistoric(logs);
       });
     }
-  }, [addHistoric, account, mUsdContract]);
+  }, [addHistoric, account, massetContract]);
 
   /**
    * When the account changes (and mUSDSavings exists), get historic transactions.
@@ -76,7 +76,7 @@ export const ContractsUpdater = (): null => {
         CreditsRedeemed,
       } = savingsContract.interface.events;
 
-      const mUSDSavingsTopics: (string | null)[][] = [
+      const savingsTopics: (string | null)[][] = [
         [SavingsDeposited.topic, indexedAccount],
         [CreditsRedeemed.topic, indexedAccount],
       ];
@@ -84,7 +84,7 @@ export const ContractsUpdater = (): null => {
       getHistoricTransactions(
         savingsContract,
         account,
-        mUSDSavingsTopics,
+        savingsTopics,
         filter.current,
       ).then(logs => {
         addHistoric(logs);

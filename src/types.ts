@@ -13,6 +13,17 @@ import { MusdGauge } from './typechain/MusdGauge.d';
 import { TokenMinter as ICurveTokenMinter } from './typechain/TokenMinter.d';
 import { CurveDeposit as ICurveDeposit } from './typechain/CurveDeposit.d';
 
+export interface Masset {
+  address: string;
+  name: MassetName;
+  selected?: boolean;
+  savingsContract?: {
+    address: string;
+  };
+}
+
+export type MassetName = 'mUSD' | 'mBTC';
+
 export interface Transaction {
   formId?: string;
   hash: string;
