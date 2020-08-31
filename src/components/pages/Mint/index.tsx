@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { BigNumber } from 'ethers/utils';
 
-import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
+import { useSelectedMassetContract } from '../../../context/DataProvider/ContractsProvider';
 import { useOwnAccount } from '../../../context/UserProvider';
 import {
   FormProvider,
@@ -12,7 +12,7 @@ import { ReactComponent as MintIcon } from '../../icons/circle/mint.svg';
 import { Interfaces } from '../../../types';
 import { MintProvider, useMintState } from './MintProvider';
 import { MintInput } from './MintInput';
-import { MusdStats } from '../../stats/MusdStats';
+import { MassetStats } from '../../stats/MassetStats';
 import { PageHeader } from '../PageHeader';
 import { P } from '../../core/Typography';
 
@@ -20,17 +20,17 @@ const MintForm: FC<{}> = () => {
   const account = useOwnAccount();
   const { error, amountTouched, bAssets, mintAmount } = useMintState();
   const setFormManifest = useSetFormManifest();
-  const mUsdContract = useMusdContract();
+  const contract = useSelectedMassetContract();
 
   // Set the form manifest
   useEffect(() => {
-    if (!error && mUsdContract && mintAmount.exact && account) {
+    if (!error && contract && mintAmount.exact && account) {
       const enabled = Object.values(bAssets).filter(b => b.enabled);
 
       // Mint single for one asset
       if (enabled.length === 1 && enabled[0].amount?.exact) {
         setFormManifest<Interfaces.Masset, 'mint'>({
-          iface: mUsdContract,
+          iface: contract,
           args: [enabled[0].address, enabled[0].amount.exact.toString()],
           fn: 'mint',
         });
@@ -39,7 +39,7 @@ const MintForm: FC<{}> = () => {
 
       // Mint multi for more than one asset
       setFormManifest<Interfaces.Masset, 'mintMulti'>({
-        iface: mUsdContract,
+        iface: contract,
         args: enabled.reduce(
           ([_addresses, _amounts, _receipient], b) => [
             [..._addresses, b.address],
@@ -54,14 +54,7 @@ const MintForm: FC<{}> = () => {
     }
 
     setFormManifest(null);
-  }, [
-    account,
-    bAssets,
-    error,
-    mintAmount.exact,
-    mUsdContract,
-    setFormManifest,
-  ]);
+  }, [account, bAssets, error, mintAmount.exact, contract, setFormManifest]);
 
   return (
     <TransactionForm
@@ -84,7 +77,7 @@ export const Mint: FC<{}> = () => (
         <P>Get mUSD by depositing your stablecoin assets at a 1:1 ratio.</P>
       </PageHeader>
       <MintForm />
-      <MusdStats />
+      <MassetStats />
     </FormProvider>
   </MintProvider>
 );

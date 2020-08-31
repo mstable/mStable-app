@@ -12,6 +12,7 @@ import {
 } from '../../graphql/protocol';
 import { useAccount } from '../UserProvider';
 import { useBlockNumber } from './BlockProvider';
+import { useSelectedMasset } from '../MassetsProvider';
 
 export const useBlockPollingSubscription = <TData, TVariables>(
   lazyQuery: (
@@ -59,18 +60,26 @@ export const useBlockPollingSubscription = <TData, TVariables>(
   return query as never;
 };
 
-export const useMusdSubscription = (): MassetQueryResult => {
+export const useMassetSubscription = (): MassetQueryResult => {
+  const { address } = useSelectedMasset();
   return useBlockPollingSubscription(useMassetLazyQuery, {
     variables: {
-      id: (process.env.REACT_APP_MUSD_ADDRESS as string).toLowerCase(),
+      id: address,
     },
   });
 };
 
-export const useMusdSavingsSubscription = (): SavingsContractQueryResult => {
-  return useBlockPollingSubscription(useSavingsContractLazyQuery, {
-    variables: { id: process.env.REACT_APP_MUSD_SAVINGS_ADDRESS as string },
-  });
+export const useMassetSavingsSubscription = ():
+  | SavingsContractQueryResult
+  | undefined => {
+  const { savingsContract } = useSelectedMasset();
+  return useBlockPollingSubscription(
+    useSavingsContractLazyQuery,
+    {
+      variables: { id: savingsContract?.address as string },
+    },
+    !savingsContract,
+  );
 };
 
 export const useCreditBalancesSubscription = (): CreditBalancesQueryResult => {

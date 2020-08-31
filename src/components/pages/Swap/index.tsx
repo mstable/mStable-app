@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 import { BigNumber } from 'ethers/utils';
-import { MusdStats } from '../../stats/MusdStats';
+import { MassetStats } from '../../stats/MassetStats';
 
 import { useOwnAccount } from '../../../context/UserProvider';
 import {
@@ -14,7 +14,7 @@ import { SwapProvider, useSwapState } from './SwapProvider';
 import { SwapInput } from './SwapInput';
 import { SwapConfirm } from './SwapConfirm';
 import { Interfaces } from '../../../types';
-import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
+import { useSelectedMassetContract } from '../../../context/DataProvider/ContractsProvider';
 import { PageHeader } from '../PageHeader';
 
 const SwapForm: FC<{}> = () => {
@@ -25,7 +25,7 @@ const SwapForm: FC<{}> = () => {
     dataState,
   } = useSwapState();
   const setFormManifest = useSetFormManifest();
-  const mUsdContract = useMusdContract();
+  const contract = useSelectedMassetContract();
 
   const { address: mAssetAddress } = dataState?.mAsset || {};
 
@@ -33,10 +33,10 @@ const SwapForm: FC<{}> = () => {
 
   // Set the form manifest
   useEffect(() => {
-    if (valid && account && mUsdContract) {
+    if (valid && account && contract) {
       if (isMint) {
         setFormManifest<Interfaces.Masset, 'mint'>({
-          iface: mUsdContract,
+          iface: contract,
           fn: 'mint',
           args: [
             input.token.address as string,
@@ -47,7 +47,7 @@ const SwapForm: FC<{}> = () => {
       }
 
       setFormManifest<Interfaces.Masset, 'swap'>({
-        iface: mUsdContract,
+        iface: contract,
         fn: 'swap',
         args: [
           input.token.address as string,
@@ -65,7 +65,7 @@ const SwapForm: FC<{}> = () => {
     input.amount.exact,
     input.token.address,
     isMint,
-    mUsdContract,
+    contract,
     output.token.address,
     setFormManifest,
     valid,
@@ -93,7 +93,7 @@ export const Swap: FC<{}> = () => (
         <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
       </PageHeader>
       <SwapForm />
-      <MusdStats />
+      <MassetStats />
     </FormProvider>
   </SwapProvider>
 );

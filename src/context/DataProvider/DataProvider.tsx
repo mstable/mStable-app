@@ -18,8 +18,8 @@ import { transformRawData } from './transformRawData';
 import {
   useBlockPollingSubscription,
   useCreditBalancesSubscription,
-  useMusdSubscription,
-  useMusdSavingsSubscription,
+  useMassetSubscription,
+  useMassetSavingsSubscription,
 } from './subscriptions';
 
 const dataStateCtx = createContext<DataState | undefined>(undefined);
@@ -38,11 +38,11 @@ const setDataState = (data: PartialRawData): DataState | undefined => {
 const useRawData = (): PartialRawData => {
   const { tokens } = useTokensState();
 
-  const mUsdSub = useMusdSubscription();
-  const mAsset = mUsdSub.data?.masset || undefined;
+  const mAssetSub = useMassetSubscription();
+  const mAsset = mAssetSub.data?.masset || undefined;
 
-  const mUsdSavingsSub = useMusdSavingsSubscription();
-  const savingsContract = mUsdSavingsSub.data?.savingsContracts[0];
+  const savingsSubscription = useMassetSavingsSubscription();
+  const savingsContract = savingsSubscription?.data?.savingsContracts[0];
 
   const creditBalancesSub = useCreditBalancesSubscription();
   const creditBalance = creditBalancesSub.data?.account?.creditBalance;
@@ -93,7 +93,7 @@ export const useSavingsBalance = ():
   | SavingsContractState['savingsBalance']
   | undefined => useSavingsContractData()?.savingsBalance;
 
-export const useMusdTotalSupply = (): BigDecimal | undefined =>
+export const useMassetTotalSupply = (): BigDecimal | undefined =>
   useMassetData()?.totalSupply;
 
 export const useTotalSavings = (): BigDecimal | undefined =>

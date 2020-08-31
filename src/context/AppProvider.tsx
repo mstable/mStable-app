@@ -21,7 +21,6 @@ export enum AccountItems {
 }
 
 enum Actions {
-  SelectMasset,
   SupportedChainSelected,
   SetOnline,
   SetAccountItem,
@@ -38,11 +37,9 @@ interface State {
   supportedChain: boolean;
   accountItem: AccountItems | null;
   online: boolean;
-  selectedMasset: string;
 }
 
 type Action =
-  | { type: Actions.SelectMasset; payload: string }
   | { type: Actions.SetAccountItem; payload: AccountItems | null }
   | { type: Actions.ToggleAccount; payload: AccountItems }
   | { type: Actions.SupportedChainSelected; payload: boolean }
@@ -51,7 +48,6 @@ type Action =
 interface Dispatch {
   closeAccount(): void;
   openWalletRedirect(redirect: string): void;
-  selectMasset(massetName: string): void;
   toggleNotifications(): void;
   toggleWallet(): void;
 }
@@ -75,8 +71,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
         supportedChain: action.payload,
         error: null,
       };
-    case Actions.SelectMasset:
-      return { ...state, selectedMasset: action.payload };
     case Actions.SetOnline:
       return { ...state, online: action.payload };
     default:
@@ -88,7 +82,6 @@ const initialState: State = {
   error: null,
   supportedChain: true,
   accountItem: null,
-  selectedMasset: 'mUSD',
   online: true,
 };
 
@@ -132,39 +125,12 @@ export const AppProvider: FC<{}> = ({ children }) => {
     [history],
   );
 
-  const selectMasset = useCallback<Dispatch['selectMasset']>(
-    massetName => {
-      dispatch({ type: Actions.SelectMasset, payload: massetName });
-    },
-    [dispatch],
-  );
   const connectionListener = useCallback(() => {
     dispatch({
       type: Actions.SetOnline,
       payload: window.navigator.onLine,
     });
   }, [dispatch]);
-
-  /**
-   * Get latest release and add an update notification if necessary
-   */
-  // Temporarily disabled
-  // useEffect(() => {
-  //   fetch('https://api.github.com/repos/mStable/mStable-app/releases/latest')
-  //     .then(result => {
-  //       result.json().then(({ tag_name: tag }: { tag_name: string }) => {
-  //         if (tag && tag.slice(1) !== (DAPP_VERSION as string)) {
-  //           addUpdateNotification(
-  //             'New version available',
-  //             `A new version of the app is available`,
-  //           );
-  //         }
-  //       });
-  //     })
-  //     .catch(() => {
-  //       // Ignore
-  //     });
-  // }, [addUpdateNotification]);
 
   /**
    * Detect internet connection (or lack thereof)
@@ -237,7 +203,6 @@ export const AppProvider: FC<{}> = ({ children }) => {
           {
             closeAccount,
             openWalletRedirect,
-            selectMasset,
             toggleNotifications,
             toggleWallet,
           },
@@ -246,7 +211,6 @@ export const AppProvider: FC<{}> = ({ children }) => {
           state,
           closeAccount,
           openWalletRedirect,
-          selectMasset,
           toggleNotifications,
           toggleWallet,
         ],

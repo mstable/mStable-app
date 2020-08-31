@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 
-import { useMusdContract } from '../../../context/DataProvider/ContractsProvider';
+import { useSelectedMassetContract } from '../../../context/DataProvider/ContractsProvider';
 import { useOwnAccount } from '../../../context/UserProvider';
 import { Interfaces } from '../../../types';
 import {
@@ -18,16 +18,16 @@ import { BigDecimal } from '../../../web3/BigDecimal';
 
 const RedeemForm: FC<{}> = () => {
   const account = useOwnAccount();
-  const mUsdContract = useMusdContract();
+  const contract = useSelectedMassetContract();
   const setFormManifest = useSetFormManifest();
   const { amountInMasset, valid, mode, bAssets } = useRedeemState();
   const enabled = Object.values(bAssets).filter(b => b.enabled);
 
   useEffect(() => {
-    if (valid && account && mUsdContract && amountInMasset) {
+    if (valid && account && contract && amountInMasset) {
       if (mode === Mode.RedeemMasset) {
         setFormManifest<Interfaces.Masset, 'redeemMasset'>({
-          iface: mUsdContract,
+          iface: contract,
           args: [amountInMasset.exact, account],
           fn: 'redeemMasset',
         });
@@ -38,7 +38,7 @@ const RedeemForm: FC<{}> = () => {
         const addresses = enabled.map(b => b.address);
         const amounts = enabled.map(b => (b.amount as BigDecimal).exact);
         setFormManifest<Interfaces.Masset, 'redeemMulti'>({
-          iface: mUsdContract,
+          iface: contract,
           args: [addresses, amounts, account],
           fn: 'redeemMulti',
         });
@@ -48,7 +48,7 @@ const RedeemForm: FC<{}> = () => {
       if (mode === Mode.RedeemSingle && enabled[0]?.amount) {
         const { address, amount } = enabled[0];
         setFormManifest<Interfaces.Masset, 'redeem'>({
-          iface: mUsdContract,
+          iface: contract,
           args: [address, amount.exact],
           fn: 'redeem',
         });
@@ -60,7 +60,7 @@ const RedeemForm: FC<{}> = () => {
   }, [
     account,
     enabled,
-    mUsdContract,
+    contract,
     mode,
     amountInMasset,
     setFormManifest,

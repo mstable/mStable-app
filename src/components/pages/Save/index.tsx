@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 
-import { useSavingsContract } from '../../../context/DataProvider/ContractsProvider';
+import { useSelectedMassetSavingsContract } from '../../../context/DataProvider/ContractsProvider';
 import {
   FormProvider,
   useSetFormManifest,
@@ -20,7 +20,7 @@ const SaveForm: FC<{}> = () => {
   const { amount, amountInCredits, transactionType, valid } = useSaveState();
 
   const setFormManifest = useSetFormManifest();
-  const savingsContract = useSavingsContract();
+  const savingsContract = useSelectedMassetSavingsContract();
 
   // Set the form manifest
   useEffect(() => {
