@@ -68,7 +68,7 @@
     "build:staging": "env-cmd -f .env.example.ropsten react-scripts --max_old_space_size=4096 build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml -r dotenv/config",
-    "codegen:typechain": "yarn typechain --target ethers-v4 --outDir src/typechain './lib/mStable-subgraph/lib/mStable-contracts/build/contracts/*.json'",
+    "codegen:typechain": "yarn typechain --target ethers-v4 --outDir src/typechain './lib/mStable-subgraph/node_modules/@mstable/protocol/build/contracts/*.json'",
     "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "provision": "sh ./scripts/provision.sh",

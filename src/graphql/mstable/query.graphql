@@ -306,7 +306,6 @@ query MerkleDropClaims($account: Bytes!) @api(name: mstable) {
       orderBy: trancheNumber
       where: { expired: false }
     ) {
-      merkleRoot
       trancheNumber
       totalAmount
       claims(where: { account: $account }) {
