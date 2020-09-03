@@ -2,6 +2,12 @@
 
 ## Next
 
+## Version 1.9.3
+
+Bug fixes:
+
+- Fix an issue where The Graph data did not appear
+
 Miscellaneous:
 
 - Visually separate expired pools from current pools, and rewards information
