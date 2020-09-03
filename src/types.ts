@@ -8,7 +8,6 @@ import { IMasset } from './typechain/IMasset.d';
 import { StakingRewards as IStakingRewards } from './typechain/StakingRewards.d';
 import { StakingRewardsWithPlatformToken as IStakingRewardsWithPlatformToken } from './typechain/StakingRewardsWithPlatformToken.d';
 import { BigDecimal } from './web3/BigDecimal';
-import { IRewardsVault } from './typechain/IRewardsVault.d';
 import { RewardsDistributor as IRewardsDistributor } from './typechain/RewardsDistributor.d';
 import { MerkleDrop as IMerkleDrop } from './typechain/MerkleDrop.d';
 
@@ -53,7 +52,6 @@ export enum Interfaces {
   SavingsContract,
   StakingRewards,
   StakingRewardsWithPlatformToken,
-  RewardsVault,
   RewardsDistibutor,
   MerkleDrop,
 }
@@ -64,7 +62,6 @@ export interface Instances {
   [Interfaces.SavingsContract]: ISavingsContract;
   [Interfaces.StakingRewards]: IStakingRewards;
   [Interfaces.StakingRewardsWithPlatformToken]: IStakingRewardsWithPlatformToken;
-  [Interfaces.RewardsVault]: IRewardsVault;
   [Interfaces.RewardsDistibutor]: IRewardsDistributor;
   [Interfaces.MerkleDrop]: IMerkleDrop;
 }
