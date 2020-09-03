@@ -12,7 +12,7 @@ import { Allowances } from '../../types';
 
 export interface RawData {
   creditBalances?: NonNullable<
-    NonNullable<CreditBalancesQueryResult['data']>['account']
+    NonNullable<CreditBalancesQueryResult['data']>
   >['creditBalances'];
   latestExchangeRate?: NonNullable<
     LatestExchangeRateQueryResult['data']

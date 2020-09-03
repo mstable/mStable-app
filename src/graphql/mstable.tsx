@@ -57,7 +57,7 @@ export type Maybe<T> = T | null;
   }
 };
       export default result;
-    
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -2890,11 +2890,11 @@ export type TokenQueryVariables = {
 export type TokenQuery = { token?: Maybe<TokenDetailsFragment> };
 
 export type CreditBalancesQueryVariables = {
-  account: Scalars['ID'];
+  id: Scalars['ID'];
 };
 
 
-export type CreditBalancesQuery = { account?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
+export type CreditBalancesQuery = Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }>;
 
 export type LatestExchangeRateQueryVariables = {};
 
@@ -3354,12 +3354,10 @@ export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
 export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
 export type TokenQueryResult = ApolloReactCommon.QueryResult<TokenQuery, TokenQueryVariables>;
 export const CreditBalancesDocument = gql`
-    query CreditBalances($account: ID!) @api(name: mstable) {
-  account(id: $account) {
-    creditBalances {
+    query CreditBalances($id: ID!) @api(name: mstable) {
+    creditBalances(where: { id: $id }) {
       amount
     }
-  }
 }
     `;
 

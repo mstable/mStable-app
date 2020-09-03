@@ -45,7 +45,7 @@ const useRawData = (): PartialRawData => {
   const savingsContract = mUsdSavingsSub.data?.savingsContracts[0];
 
   const creditBalancesSub = useCreditBalancesSubscription();
-  const creditBalances = creditBalancesSub.data?.account?.creditBalances;
+  const creditBalances = creditBalancesSub.data?.creditBalances;
 
   const latestExchangeRateSub = useBlockPollingSubscription(
     useLatestExchangeRateLazyQuery,

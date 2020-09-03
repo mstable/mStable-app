@@ -54,7 +54,7 @@ const getSavingsContract: TransformFn<'savingsContract'> = (
 ) => ({
   address: savingsContractData.id,
   automationEnabled: savingsContractData.automationEnabled,
-  creditBalances: (creditBalances || []).map(({ amount }) =>
+  creditBalances: (creditBalances || []).map(({ amount }: { amount: string }) =>
     BigDecimal.parse(amount, decimals),
   ),
   latestExchangeRate: latestExchangeRate
