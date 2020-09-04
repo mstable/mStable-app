@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton/lib';
+import { A } from 'hookrouter';
 
 import { Amount, NumberFormat } from '../../../core/Amount';
 import { ViewportWidth } from '../../../../theme';
@@ -14,8 +15,6 @@ import {
 import { ViewAs } from './ViewAs';
 import { P } from '../../../core/Typography';
 import { Protip } from '../../../core/Protip';
-import { ExternalLink } from '../../../core/ExternalLink';
-import { useAccount } from '../../../../context/UserProvider';
 
 interface Props {
   className?: string;
@@ -76,7 +75,6 @@ const Balances = styled.div`
 `;
 
 export const PoolBalances: FC<Props> = () => {
-  const account = useAccount();
   const stakingRewardsContract = useCurrentStakingRewardsContract();
 
   const {
@@ -122,26 +120,10 @@ export const PoolBalances: FC<Props> = () => {
                   {/*   amount={platformRewards}  */}
                   {/*   countup={{ decimals: 18 }}  */}
                   {/* />  */}
-                  <StyledProtip emoji="🚁" title="Airdropped BAL">
+                  <StyledProtip emoji="💰" title="Claim BAL">
                     <P>
-                      For the next few weeks, BAL rewards will continue to be
-                      airdropped proportionately to EARN participants. In the
-                      coming month, the airdrops will be replaced with a CLAIM
-                      button.{' '}
-                      <ExternalLink href="https://medium.com/mstable/plans-for-the-bal-rewards-in-mstable-earn-48434a03bbab">
-                        Read more
-                      </ExternalLink>
-                    </P>
-                    <P>
-                      Any airdrops will be visible{' '}
-                      <ExternalLink
-                        href={`https://etherscan.io/token/0xba100000625a3754423978a60c9317c58a424e3d${
-                          account ? `?a=${account}` : ''
-                        }`}
-                      >
-                        here
-                      </ExternalLink>
-                      .
+                      You can now claim any BAL earned directly from the{' '}
+                      <A href="/earn">EARN dashboard.</A>
                     </P>
                   </StyledProtip>
                 </ProtipContainer>

@@ -247,7 +247,7 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                       {stakingRewardsContract.platformRewards &&
                       platformToken ? (
                         <Tooltip
-                          tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations."
+                          tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations. Earned rewards can be claimed on the EARN dashboard."
                           hideIcon
                         >
                           <StyledTokenAmount

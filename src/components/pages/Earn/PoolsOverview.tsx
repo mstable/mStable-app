@@ -197,7 +197,7 @@ export const PoolsOverview: FC<{}> = () => {
                         price={rewardsToken.price}
                       />
                       {platformRewards ? (
-                        <Tooltip tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations.">
+                        <Tooltip tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations. Earned rewards can be claimed on the EARN dashboard.">
                           <TokenAmount
                             // amount={platformRewards.totalPlatformRewards}
                             format={NumberFormat.Abbreviated}
