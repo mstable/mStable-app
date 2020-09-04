@@ -2,9 +2,23 @@
 
 ## Next
 
-- Add script to calculate and output reports for platform rewards earned via staking
-- Add script to output bAsset vault balances over time
+Features:
 
+- Add Claim button to claim rewards (over multiple weeks in one transaction) with
+  Merkle Drop contracts
+
+Scripts:
+
+- Add script to calculate and output reports for platform rewards earned via staking
+- Add script to create Merkle root hashes for Merkle Drop contracts
+- Add script to output bAsset vault balances over time
+- Output rewards report for week 0
+
+Miscellaneous:
+
+- Minor CSS fixes
+- Better align daily APYs on x-axis of graph
+- Reduce price request volume with Coingecko
 
 ## Version 1.9.3
 
