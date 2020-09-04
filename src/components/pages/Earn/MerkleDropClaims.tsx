@@ -24,8 +24,12 @@ const Container = styled.div`
   min-width: 260px;
 `;
 
+const WeeksLabel = styled.div`
+  font-size: 12px;
+`;
+
 const ConfirmAmount = styled.div`
-  font-size: 14px;
+  font-size: 16px;
 `;
 
 const MerkleDropConfirmLabel: FC<{
@@ -33,19 +37,15 @@ const MerkleDropConfirmLabel: FC<{
   tranches: string[];
   symbol: string;
   decimals: number;
-}> = ({ amount, decimals, symbol, tranches }) => (
+}> = ({ amount, symbol, tranches }) => (
   <>
-    <div>
-      Week{tranches.length > 1 ? 's' : ''} {humanizeList(tranches)}
-    </div>
     <ConfirmAmount>
-      <Amount
-        format={NumberFormat.Long}
-        amount={amount}
-        decimalPlaces={decimals}
-      />{' '}
+      <Amount format={NumberFormat.Long} amount={amount} decimalPlaces={10} />{' '}
       {symbol}
     </ConfirmAmount>
+    <WeeksLabel>
+      Claim week{tranches.length > 1 ? 's' : ''} {humanizeList(tranches)}
+    </WeeksLabel>
   </>
 );
 
