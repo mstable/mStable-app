@@ -63,10 +63,6 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   img {
     width: 36px;
   }
-
-  @media (min-width: ${ViewportWidth.s}) {
-    min-width: 145px;
-  }
 `;
 
 const Placeholder = styled(OptionContainer)`
@@ -112,6 +108,10 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   
   ${OptionContainer}:hover {
     background: transparent;
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    min-width: 145px;
   }
 `;
 
