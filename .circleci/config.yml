@@ -22,11 +22,9 @@ jobs:
           name: Install
           command: yarn
       - run:
-          name: 'Provision (Mimic yarn provision)'
+          name: 'Provision'
           command: |
-            git submodule update --init
-            cd ./lib/mStable-subgraph
-            yarn provision
+            yarn run provision
       - run:
           name: Codegen (TypeChain)
           command: yarn codegen:typechain
@@ -64,11 +62,9 @@ jobs:
           name: Install
           command: yarn
       - run:
-          name: 'Provision (Mimic yarn provision)'
+          name: 'Provision'
           command: |
-            git submodule update --init
-            cd ./lib/mStable-subgraph
-            yarn provision
+            yarn run provision
       - run:
           name: Codegen (TypeChain)
           command: yarn codegen:typechain
