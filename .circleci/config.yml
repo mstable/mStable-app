@@ -39,7 +39,7 @@ jobs:
           command: yarn test --passWithNoTests
       - run:
           name: Build
-          command: yarn build:staging
+          command: yarn build
       - persist_to_workspace:
           root: ~/
           paths:

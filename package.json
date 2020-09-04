@@ -65,7 +65,6 @@
   },
   "scripts": {
     "build": "react-scripts --max_old_space_size=4096 build",
-    "build:staging": "env-cmd -f .env.example.ropsten react-scripts --max_old_space_size=4096 build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml -r dotenv/config",
     "codegen:typechain": "yarn typechain --target ethers-v4 --outDir src/typechain './lib/mStable-subgraph/node_modules/@mstable/protocol/build/contracts/*.json'",
@@ -73,7 +72,8 @@
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "provision": "sh ./scripts/provision.sh",
     "start": "react-scripts start",
-    "test": "env-cmd -f .env.example.ropsten react-scripts test",
+    "test:ropsten": "env-cmd -f .env.example.ropsten react-scripts test",
+    "test": "react-scripts test",
     "script": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/run.ts",
     "vault-breakdown": "yarn run script vault-breakdown",
     "platform-rewards": "yarn run script platform-rewards",
