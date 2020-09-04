@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.10.0
+
+_Released 04.09.20 15.00 CEST_
+
 Features:
 
 - Add Claim button to claim rewards (over multiple weeks in one transaction) with
@@ -21,6 +25,8 @@ Miscellaneous:
 - Reduce price request volume with Coingecko 
 
 ## Version 1.9.3
+
+_Released 03.09.20 21.05 CEST_
 
 Bug fixes:
 
