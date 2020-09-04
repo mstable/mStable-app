@@ -36,11 +36,11 @@ export const DailyApys: FC<{}> = () => {
   const data = useMemo<{ x: Date; y: number }[]>(
     () =>
       dailyApys
-        .filter(a => a.value && a.start)
-        .map(({ value, start }) => {
+        .filter(a => a.value && a.end)
+        .map(({ value, end }) => {
           const percentage = parseFloat(formatUnits(value as BigNumber, 16));
           return {
-            x: fromUnixTime(start as number),
+            x: fromUnixTime(end as number),
             y: percentage,
             percentage,
           };
