@@ -18,7 +18,7 @@ Miscellaneous:
 
 - Minor CSS fixes
 - Better align daily APYs on x-axis of graph
-- Reduce price request volume with Coingecko
+- Reduce price request volume with Coingecko 
 
 ## Version 1.9.3
 
