@@ -3,7 +3,7 @@ version: 2.1
 executors:
   gcp:
     docker:
-      - image: alsco77/node-gcp-dockerfile:suite
+      - image: alsco77/node-gcp-dockerfile:njs12
     resource_class: large
   sentry:
     docker:
