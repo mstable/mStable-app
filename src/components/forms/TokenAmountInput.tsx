@@ -54,10 +54,6 @@ const Items = styled.div`
   }
 `;
 
-const ErrorAndItems = styled.div`
-  max-width: 500px;
-`;
-
 const ItemLabel = styled.div`
   font-size: ${({ theme }) => theme.fontSize.s};
   text-transform: uppercase;
@@ -158,7 +154,7 @@ export const TokenAmountInput: FC<Props> = ({
           />
         ) : null}
       </InputsRow>
-      <ErrorAndItems>
+      <div>
         <Items>
           <Item key="balance">
             <ItemLabel>Balance</ItemLabel>
@@ -183,7 +179,7 @@ export const TokenAmountInput: FC<Props> = ({
           {error && errorLabel ? <ErrorLabel>{errorLabel}</ErrorLabel> : null}
           <div>{error}</div>
         </Error>
-      </ErrorAndItems>
+      </div>
     </>
   );
 };
