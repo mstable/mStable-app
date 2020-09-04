@@ -22,7 +22,7 @@ import fs from 'fs';
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { soliditySha3 } from 'web3-utils';
 
-import { MerkleTree } from '../lib/merkle-tree/src';
+import { MerkleTree } from '../src/web3/MerkleTree';
 
 interface Allocations {
   [address: string]: BigNumber;

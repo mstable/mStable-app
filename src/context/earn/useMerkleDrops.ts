@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { soliditySha3 } from 'web3-utils';
 import { BigNumber, parseUnits } from 'ethers/utils';
-import { MerkleTree } from 'merkle-tree';
 
 import {
   MerkleDropClaimsQueryResult,
   useMerkleDropClaimsLazyQuery,
 } from '../../graphql/mstable';
 import { MerkleDrop, MerkleDropsMap } from './types';
+import { MerkleTree } from '../../web3/MerkleTree';
 import { BigDecimal } from '../../web3/BigDecimal';
 
 interface JsonReport {

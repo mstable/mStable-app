@@ -1,4 +1,5 @@
 // Shamelessly adapted from OpenZeppelin-contracts test utils
+/* eslint-disable */
 
 import { bufferToHex, keccak256, keccakFromString } from 'ethereumjs-util';
 import { hexToBytes } from 'web3-utils';
