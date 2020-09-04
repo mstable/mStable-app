@@ -113,6 +113,28 @@ type Query {
     """
     block: Block_height
   ): [Account!]!
+  accountBalance(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): AccountBalance
+  accountBalances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: AccountBalance_orderBy
+    orderDirection: OrderDirection
+    where: AccountBalance_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [AccountBalance!]!
   creditBalance(
     id: ID!
     """
@@ -985,8 +1007,72 @@ type Account {
   id: ID!
   """Address of the account"""
   address: Bytes!
+  """AccountBalances of the account"""
+  balances(skip: Int = 0, first: Int = 100, orderBy: AccountBalance_orderBy, orderDirection: OrderDirection, where: AccountBalance_filter): [AccountBalance!]!
   """CreditBalances of the account"""
   creditBalances(skip: Int = 0, first: Int = 100, orderBy: CreditBalance_orderBy, orderDirection: OrderDirection, where: CreditBalance_filter): [CreditBalance!]!
+}
+enum AccountBalance_orderBy {
+  id
+  account
+  amount
+  token
+}
+input AccountBalance_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_not_contains: String
+  account_starts_with: String
+  account_not_starts_with: String
+  account_ends_with: String
+  account_not_ends_with: String
+  amount: BigDecimal
+  amount_not: BigDecimal
+  amount_gt: BigDecimal
+  amount_lt: BigDecimal
+  amount_gte: BigDecimal
+  amount_lte: BigDecimal
+  amount_in: [BigDecimal!]
+  amount_not_in: [BigDecimal!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_not_contains: String
+  token_starts_with: String
+  token_not_starts_with: String
+  token_ends_with: String
+  token_not_ends_with: String
+}
+"""An account balance for a given token"""
+type AccountBalance {
+  id: ID!
+  """Account"""
+  account: Account!
+  """Amount as a decimal value"""
+  amount: BigDecimal!
+  """Token"""
+  token: Token!
 }
 enum Basket_orderBy {
   id
@@ -1115,6 +1201,7 @@ input Masset_filter {
 enum Account_orderBy {
   id
   address
+  balances
   creditBalances
 }
 input Account_filter {
@@ -2473,6 +2560,28 @@ type Subscription {
     """
     block: Block_height
   ): [Account!]!
+  accountBalance(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): AccountBalance
+  accountBalances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: AccountBalance_orderBy
+    orderDirection: OrderDirection
+    where: AccountBalance_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [AccountBalance!]!
   creditBalance(
     id: ID!
     """

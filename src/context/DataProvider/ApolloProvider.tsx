@@ -90,7 +90,7 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
       defaultOptions: {
         watchQuery: {
           fetchPolicy: 'network-only',
-          nextFetchPolicy: 'cache-and-network'
+          nextFetchPolicy: 'cache-and-network',
         },
         query: {
           fetchPolicy: 'cache-first',

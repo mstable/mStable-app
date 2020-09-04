@@ -74,8 +74,20 @@ export type Account = {
   id: Scalars['ID'];
   /** Address of the account */
   address: Scalars['Bytes'];
+  /** AccountBalances of the account */
+  balances: Array<AccountBalance>;
   /** CreditBalances of the account */
   creditBalances: Array<CreditBalance>;
+};
+
+
+/** An Ethereum account with balances/credit balances */
+export type AccountBalancesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<AccountBalance_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<AccountBalance_Filter>;
 };
 
 
@@ -108,7 +120,73 @@ export type Account_Filter = {
 export enum Account_OrderBy {
   Id = 'id',
   Address = 'address',
+  Balances = 'balances',
   CreditBalances = 'creditBalances'
+}
+
+/** An account balance for a given token */
+export type AccountBalance = {
+  id: Scalars['ID'];
+  /** Account */
+  account: Account;
+  /** Amount as a decimal value */
+  amount: Scalars['BigDecimal'];
+  /** Token */
+  token: Token;
+};
+
+export type AccountBalance_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  account?: Maybe<Scalars['String']>;
+  account_not?: Maybe<Scalars['String']>;
+  account_gt?: Maybe<Scalars['String']>;
+  account_lt?: Maybe<Scalars['String']>;
+  account_gte?: Maybe<Scalars['String']>;
+  account_lte?: Maybe<Scalars['String']>;
+  account_in?: Maybe<Array<Scalars['String']>>;
+  account_not_in?: Maybe<Array<Scalars['String']>>;
+  account_contains?: Maybe<Scalars['String']>;
+  account_not_contains?: Maybe<Scalars['String']>;
+  account_starts_with?: Maybe<Scalars['String']>;
+  account_not_starts_with?: Maybe<Scalars['String']>;
+  account_ends_with?: Maybe<Scalars['String']>;
+  account_not_ends_with?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['BigDecimal']>;
+  amount_not?: Maybe<Scalars['BigDecimal']>;
+  amount_gt?: Maybe<Scalars['BigDecimal']>;
+  amount_lt?: Maybe<Scalars['BigDecimal']>;
+  amount_gte?: Maybe<Scalars['BigDecimal']>;
+  amount_lte?: Maybe<Scalars['BigDecimal']>;
+  amount_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  amount_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  token?: Maybe<Scalars['String']>;
+  token_not?: Maybe<Scalars['String']>;
+  token_gt?: Maybe<Scalars['String']>;
+  token_lt?: Maybe<Scalars['String']>;
+  token_gte?: Maybe<Scalars['String']>;
+  token_lte?: Maybe<Scalars['String']>;
+  token_in?: Maybe<Array<Scalars['String']>>;
+  token_not_in?: Maybe<Array<Scalars['String']>>;
+  token_contains?: Maybe<Scalars['String']>;
+  token_not_contains?: Maybe<Scalars['String']>;
+  token_starts_with?: Maybe<Scalars['String']>;
+  token_not_starts_with?: Maybe<Scalars['String']>;
+  token_ends_with?: Maybe<Scalars['String']>;
+  token_not_ends_with?: Maybe<Scalars['String']>;
+};
+
+export enum AccountBalance_OrderBy {
+  Id = 'id',
+  Account = 'account',
+  Amount = 'amount',
+  Token = 'token'
 }
 
 export type AggregateMetric = TimeMetric & {
@@ -890,6 +968,8 @@ export type Query = {
   massets: Array<Masset>;
   account?: Maybe<Account>;
   accounts: Array<Account>;
+  accountBalance?: Maybe<AccountBalance>;
+  accountBalances: Array<AccountBalance>;
   creditBalance?: Maybe<CreditBalance>;
   creditBalances: Array<CreditBalance>;
   savingsContract?: Maybe<SavingsContract>;
@@ -1009,6 +1089,22 @@ export type QueryAccountsArgs = {
   orderBy?: Maybe<Account_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Account_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryAccountBalanceArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryAccountBalancesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<AccountBalance_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<AccountBalance_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -2154,6 +2250,8 @@ export type Subscription = {
   massets: Array<Masset>;
   account?: Maybe<Account>;
   accounts: Array<Account>;
+  accountBalance?: Maybe<AccountBalance>;
+  accountBalances: Array<AccountBalance>;
   creditBalance?: Maybe<CreditBalance>;
   creditBalances: Array<CreditBalance>;
   savingsContract?: Maybe<SavingsContract>;
@@ -2273,6 +2371,22 @@ export type SubscriptionAccountsArgs = {
   orderBy?: Maybe<Account_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Account_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionAccountBalanceArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionAccountBalancesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<AccountBalance_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<AccountBalance_Filter>;
   block?: Maybe<Block_Height>;
 };
 

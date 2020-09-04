@@ -78,14 +78,7 @@ export const useCreditBalancesSubscription = (): CreditBalancesQueryResult => {
 
   return useBlockPollingSubscription(
     useCreditBalancesLazyQuery,
-    // TODO temporary fix for the Graph
-    {
-      variables: {
-        id: account
-          ? `${account.toLowerCase()}-0xcf3f73290803fc04425bee135a4caeb2bab2c2a1`
-          : '',
-      },
-    },
+    { variables: { account: account ? account.toLowerCase() : '' } },
     !account,
   );
 };
