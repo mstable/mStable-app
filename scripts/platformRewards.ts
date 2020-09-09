@@ -11,8 +11,9 @@
  * @example
  *
  * ```bash
- * yarn run platform-rewards --trancheNumber=2 \
- *   --startTimestamp=1597062435 \
+ * yarn run platform-rewards --trancheNumber=1 \
+ *   --startBlock=10768694 \
+ *   --startTimestamp=1598876840 \
  *   --token=0xba100000625a3754423978a60c9317c58a424e3d \
  *   --allocations \
  *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,2355.20859652718 \
@@ -166,10 +167,18 @@ const TOKENS_METADATA: {
 
 const parseArgs = async (): Promise<ValidatedArgs> => {
   const {
-    argv: { startTimestamp, trancheNumber, token, allocations, fullOutput },
+    argv: {
+      startBlock,
+      startTimestamp,
+      trancheNumber,
+      token,
+      allocations,
+      fullOutput,
+    },
   } = options({
     token: { type: 'string', demandOption: true },
     allocations: { type: 'array', demandOption: true },
+    startBlock: { type: 'number', demandOption: true },
     startTimestamp: { type: 'number', demandOption: true },
     trancheNumber: { type: 'number', demandOption: true },
     fullOutput: { type: 'boolean' },
@@ -200,14 +209,6 @@ const parseArgs = async (): Promise<ValidatedArgs> => {
 
   const client = getApolloClient();
 
-  const { data: startBlockData } = (await client.query({
-    query: BlockTimestampDocument,
-    variables: {
-      start: startTimestamp.toString(),
-      end: (startTimestamp + 60).toString(),
-    } as BlockTimestampQueryVariables,
-  })) as BlockTimestampQueryResult;
-
   const { data: endBlockData } = (await client.query({
     query: BlockTimestampDocument,
     variables: {
@@ -217,16 +218,8 @@ const parseArgs = async (): Promise<ValidatedArgs> => {
   })) as BlockTimestampQueryResult;
 
   const {
-    blocks: [startBlock],
-  } = startBlockData as NonNullable<typeof startBlockData>;
-
-  const {
     blocks: [endBlock],
   } = endBlockData as NonNullable<typeof endBlockData>;
-
-  if (!startBlock) {
-    throw new Error(`No block found for timestamp ${startTimestamp}`);
-  }
 
   if (!endBlock) {
     throw new Error(`No block found for timestamp ${endTimestamp}`);
@@ -239,8 +232,8 @@ const parseArgs = async (): Promise<ValidatedArgs> => {
     tranche: {
       number: trancheNumber,
       start: {
-        blockNumber: parseInt(startBlock.number),
-        timestamp: parseInt(startBlock.timestamp),
+        blockNumber: startBlock,
+        timestamp: startTimestamp,
       },
       end: {
         blockNumber: parseInt(endBlock.number),
