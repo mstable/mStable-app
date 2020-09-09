@@ -2,6 +2,10 @@
 
 ## Next
 
+## Version 1.11.0
+
+_Released 04.09.20 15.00 CEST_
+
 Features:
 
 - Support withdrawing a partial stake from EARN pools
