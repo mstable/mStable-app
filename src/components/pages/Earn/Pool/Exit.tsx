@@ -33,7 +33,7 @@ const Input: FC<{}> = () => {
 
   return (
     <Row>
-      <H3>Withdraw stake & claim rewards</H3>
+      <H3>Withdraw stake or exit</H3>
       <StakeAmountInput />
     </Row>
   );
@@ -59,7 +59,7 @@ const ExitFormConfirm: FC<{}> = () => {
                 decimals={2}
                 suffix={` ${stakingToken.symbol}`}
               />
-              {rewards.exact.gt(0) ? (
+              {isExiting && rewards.exact.gt(0) ? (
                 <>
                   {' '}
                   and claim rewards of{' '}
@@ -135,10 +135,10 @@ const ExitForm: FC<{}> = () => {
 
   return (
     <StyledTransactionForm
-      confirmLabel="Withdraw"
+      confirmLabel={isExiting ? 'Exit' : 'Withdraw'}
       confirm={<ExitFormConfirm />}
       input={<Input />}
-      transactionsLabel="Withdraw transactions"
+      transactionsLabel="Transactions"
       valid={valid}
     />
   );

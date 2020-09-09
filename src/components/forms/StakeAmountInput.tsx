@@ -6,6 +6,7 @@ import {
   useStakingRewardsContractState,
   useStakingRewardContractDispatch,
 } from '../pages/Earn/StakingRewardsContractProvider';
+import { Tooltip } from '../core/ReactTooltip';
 
 interface Props {
   name: string;
@@ -86,9 +87,11 @@ export const StakeAmountInput: FC = () => {
             onChange={setWithdrawAmount}
             error={error}
           />
-          <Button type="button" onClick={setMaxWithdrawAmount}>
-            Max
-          </Button>
+          <Tooltip tip="Select max amount to exit the pool">
+            <Button type="button" onClick={setMaxWithdrawAmount}>
+              Max
+            </Button>
+          </Tooltip>
         </InputContainer>
       </InputsRow>
       <div>
