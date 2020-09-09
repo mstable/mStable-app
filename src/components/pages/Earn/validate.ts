@@ -62,6 +62,30 @@ const validateActiveTab = (
 
       return [true];
     }
+    case Tabs.Exit: {
+      const {
+        exit,
+        stakingRewardsContract: { stakingBalance },
+      } = state;
+
+      if (!exit.amount) {
+        return [false, Reasons.AmountMustBeSet];
+      }
+
+      if (exit.amount.exact.lte(0)) {
+        return [false, Reasons.AmountMustBeGreaterThanZero];
+      }
+
+      if (!stakingBalance) {
+        return [false, Reasons.FetchingData];
+      }
+
+      if (exit.amount.exact.gt(stakingBalance.exact)) {
+        return [false, Reasons.AmountExceedsBalance];
+      }
+
+      return [true];
+    }
 
     default:
       return [true];
@@ -69,7 +93,8 @@ const validateActiveTab = (
 };
 
 const getValidationResult = (state: State): ValidationResult => {
-  const ready = state.stake.touched && !!state.stakingRewardsContract;
+  const activeTab = state[state.activeTab];
+  const ready = activeTab.touched && !!state.stakingRewardsContract;
 
   if (!ready) return [false];
 
@@ -80,16 +105,31 @@ const getValidationResult = (state: State): ValidationResult => {
 
 export const validate = (state: State): State => {
   const [valid, reason] = getValidationResult(state);
+  const error = valid ? undefined : getReasonMessage(reason);
 
-  return state.activeTab === Tabs.Stake
-    ? {
+  switch (state.activeTab) {
+    case Tabs.Stake:
+      return {
         ...state,
         stake: {
           ...state.stake,
-          error: valid ? undefined : getReasonMessage(reason),
+          error,
           needsUnlock: reason === Reasons.AmountExceedsApprovedAmount,
           valid,
         },
-      }
-    : state;
+      };
+
+    case Tabs.Exit:
+      return {
+        ...state,
+        exit: {
+          ...state.exit,
+          error,
+          valid,
+        },
+      };
+
+    default:
+      return state;
+  }
 };

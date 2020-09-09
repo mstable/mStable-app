@@ -20,6 +20,9 @@ export interface State {
   stakingRewardsContract?: StakingRewardsContract;
   activeTab: Tabs;
   tokens: Tokens;
+  claim: {
+    touched: boolean;
+  };
   stake: {
     amount?: BigDecimal;
     formValue: string | null;
@@ -28,12 +31,22 @@ export interface State {
     valid: boolean;
     touched: boolean;
   };
+  exit: {
+    amount?: BigDecimal;
+    formValue: string | null;
+    error?: string;
+    valid: boolean;
+    touched: boolean;
+    isExiting: boolean;
+  };
 }
 
 export interface Dispatch {
   setActiveTab(tab: Tabs): void;
   setStakeAmount(formValue: string | null): void;
   setMaxStakeAmount(): void;
+  setWithdrawAmount(formValue: string | null): void;
+  setMaxWithdrawAmount(): void;
 }
 
 export enum Actions {
@@ -41,6 +54,8 @@ export enum Actions {
   SetActiveTab,
   SetStakeAmount,
   SetMaxStakeAmount,
+  SetWithdrawAmount,
+  SetMaxWithdrawAmount,
 }
 
 export type Action =
@@ -53,7 +68,9 @@ export type Action =
     }
   | { type: Actions.SetActiveTab; payload: Tabs }
   | { type: Actions.SetStakeAmount; payload: string | null }
-  | { type: Actions.SetMaxStakeAmount };
+  | { type: Actions.SetMaxStakeAmount }
+  | { type: Actions.SetWithdrawAmount; payload: string | null }
+  | { type: Actions.SetMaxWithdrawAmount };
 
 export enum Reasons {
   AmountExceedsApprovedAmount,

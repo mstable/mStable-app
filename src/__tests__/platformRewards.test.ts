@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { parseUnits } from 'ethers/utils';
 
 import {

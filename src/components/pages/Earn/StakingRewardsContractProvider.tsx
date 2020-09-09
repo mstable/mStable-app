@@ -30,11 +30,20 @@ interface Props {
 const initialState: State = {
   activeTab: Tabs.Stake,
   tokens: {},
+  claim: {
+    touched: false,
+  },
   stake: {
     valid: false,
     touched: false,
     formValue: null,
     needsUnlock: false,
+  },
+  exit: {
+    valid: false,
+    touched: false,
+    formValue: null,
+    isExiting: false,
   },
 };
 
@@ -224,6 +233,19 @@ export const StakingRewardsContractProvider: FC<Props> = ({
     dispatch({ type: Actions.SetMaxStakeAmount });
   }, [dispatch]);
 
+  const setWithdrawAmount = useCallback<Dispatch['setWithdrawAmount']>(
+    amount => {
+      dispatch({ type: Actions.SetWithdrawAmount, payload: amount });
+    },
+    [dispatch],
+  );
+
+  const setMaxWithdrawAmount = useCallback<
+    Dispatch['setMaxWithdrawAmount']
+  >(() => {
+    dispatch({ type: Actions.SetMaxWithdrawAmount });
+  }, [dispatch]);
+
   const signer = useSignerContext();
 
   const contract = useMemo(
@@ -234,8 +256,20 @@ export const StakingRewardsContractProvider: FC<Props> = ({
   return (
     <dispatchCtx.Provider
       value={useMemo(
-        () => ({ setActiveTab, setMaxStakeAmount, setStakeAmount }),
-        [setActiveTab, setMaxStakeAmount, setStakeAmount],
+        () => ({
+          setActiveTab,
+          setMaxStakeAmount,
+          setStakeAmount,
+          setWithdrawAmount,
+          setMaxWithdrawAmount,
+        }),
+        [
+          setActiveTab,
+          setMaxStakeAmount,
+          setStakeAmount,
+          setWithdrawAmount,
+          setMaxWithdrawAmount,
+        ],
       )}
     >
       <stateCtx.Provider value={state}>
