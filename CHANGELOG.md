@@ -9,6 +9,7 @@ Features:
 Miscellaneous:
 
 - Remove redundant information about BAL rewards for claim and withdraw confirmations
+- Use closest APY data-points for daily APY chart for each day (i.e. ensure the x-axis lines up)
 
 ## Version 1.10.0
 
