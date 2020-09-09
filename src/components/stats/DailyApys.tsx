@@ -5,7 +5,7 @@ import { VictoryLine } from 'victory-line';
 import { VictoryChart } from 'victory-chart';
 import { VictoryAxis } from 'victory-axis';
 import Skeleton from 'react-loading-skeleton';
-import { endOfHour, fromUnixTime, subDays } from 'date-fns';
+import { endOfHour, fromUnixTime, subDays, closestTo } from 'date-fns';
 
 import { useDailyApysForPastWeek } from '../../web3/hooks';
 import { Color } from '../../theme';
@@ -36,17 +36,19 @@ export const DailyApys: FC<{}> = () => {
   const data = useMemo<{ x: Date; y: number }[]>(
     () =>
       dailyApys
-        .filter(a => a.value && a.end)
-        .map(({ value, end }) => {
+        .filter(a => a.value && a.start)
+        .map(({ value, start }) => {
           const percentage = parseFloat(formatUnits(value as BigNumber, 16));
+          const startTime = fromUnixTime(start as number);
+
           return {
-            x: fromUnixTime(end as number),
+            x: closestTo(startTime, tickValues),
             y: percentage,
             percentage,
           };
         }),
 
-    [dailyApys],
+    [dailyApys, tickValues],
   );
 
   return (

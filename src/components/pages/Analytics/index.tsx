@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
@@ -105,60 +105,66 @@ const ThirdPartySources = styled.ul`
   }
 `;
 
-export const Analytics: FC<{}> = () => (
-  <div>
-    <PageHeader
-      icon={<AnalyticsIcon />}
-      title="Analytics"
-      subtitle="Explore activity across mStable"
-    />
-    <Section id="save">
-      <H2 borderTop>APY</H2>
-      <HistoricalApy />
-    </Section>
-    <Section id="volumes">
-      <H2 borderTop>Volumes</H2>
-      <P size={Size.s}>All values in mUSD</P>
-      <VolumeChart />
-    </Section>
-    <Section id="totals">
-      <H2 borderTop>Totals</H2>
-      <P size={Size.s}>All values in mUSD</P>
-      <NiceBigNumbers>
-        <TotalSupply />
-        <TotalSavings />
-      </NiceBigNumbers>
-      <AggregateChart />
-    </Section>
-    <Section id="basket">
-      <H2 borderTop>Basket share</H2>
-      <BasketStatsContainer>
-        <BasketStats />
-      </BasketStatsContainer>
-    </Section>
-    <Section id="third-party">
-      <H2 borderTop>Other sources</H2>
-      <P>Learn more by exploring these third-party sources:</P>
-      <ThirdPartySources>
-        <li>
-          <a
-            href="https://etherscan.io/token/0xe2f2a5c287993345a840db3b0845fbc70f5935a5#tokenAnalytics"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            mUSD on Etherscan
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://thegraph.com/explorer/subgraph/mstable/mstable-protocol"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            mStable Subgraph explorer
-          </a>
-        </li>
-      </ThirdPartySources>
-    </Section>
-  </div>
-);
+export const Analytics: FC<{}> = () => {
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, []);
+
+  return (
+    <div>
+      <PageHeader
+        icon={<AnalyticsIcon />}
+        title="Analytics"
+        subtitle="Explore activity across mStable"
+      />
+      <Section id="save">
+        <H2 borderTop>APY</H2>
+        <HistoricalApy />
+      </Section>
+      <Section id="volumes">
+        <H2 borderTop>Volumes</H2>
+        <P size={Size.s}>All values in mUSD</P>
+        <VolumeChart />
+      </Section>
+      <Section id="totals">
+        <H2 borderTop>Totals</H2>
+        <P size={Size.s}>All values in mUSD</P>
+        <NiceBigNumbers>
+          <TotalSupply />
+          <TotalSavings />
+        </NiceBigNumbers>
+        <AggregateChart />
+      </Section>
+      <Section id="basket">
+        <H2 borderTop>Basket share</H2>
+        <BasketStatsContainer>
+          <BasketStats />
+        </BasketStatsContainer>
+      </Section>
+      <Section id="third-party">
+        <H2 borderTop>Other sources</H2>
+        <P>Learn more by exploring these third-party sources:</P>
+        <ThirdPartySources>
+          <li>
+            <a
+              href="https://etherscan.io/token/0xe2f2a5c287993345a840db3b0845fbc70f5935a5#tokenAnalytics"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              mUSD on Etherscan
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://thegraph.com/explorer/subgraph/mstable/mstable-protocol"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              mStable Subgraph explorer
+            </a>
+          </li>
+        </ThirdPartySources>
+      </Section>
+    </div>
+  );
+};
