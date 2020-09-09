@@ -56,7 +56,7 @@ const Input: FC<{}> = () => {
 
   return (
     <Row>
-      <H3>Stake {stakingToken?.symbol}</H3>
+      <H3>Deposit stake</H3>
       <div>
         <TokenAmountInput
           needsUnlock={needsUnlock}

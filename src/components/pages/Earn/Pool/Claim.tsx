@@ -11,7 +11,6 @@ import {
   useRewardsEarned,
   useCurrentRewardsToken,
   useCurrentStakingRewardsContractCtx,
-  useCurrentPlatformToken,
 } from '../StakingRewardsContractProvider';
 import { CountUp } from '../../../core/CountUp';
 import { H3, P } from '../../../core/Typography';
@@ -22,9 +21,8 @@ const Row = styled.div`
 `;
 
 const Input: FC<{}> = () => {
-  const { rewards, platformRewards } = useRewardsEarned();
+  const { rewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
-  const platformToken = useCurrentPlatformToken();
 
   return (
     <Row>
@@ -38,17 +36,6 @@ const Input: FC<{}> = () => {
               decimals={6}
               suffix={` ${rewardsToken.symbol}`}
             />
-            {platformToken && platformRewards ? (
-              <>
-                {' '}
-                and{' '}
-                <CountUp
-                  end={platformRewards.simpleRounded}
-                  decimals={6}
-                  suffix={` ${platformToken.symbol}`}
-                />
-              </>
-            ) : null}
             .
           </>
         ) : (
@@ -60,9 +47,8 @@ const Input: FC<{}> = () => {
 };
 
 const Confirm: FC<{}> = () => {
-  const { rewards, platformRewards } = useRewardsEarned();
+  const { rewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
-  const platformToken = useCurrentPlatformToken();
 
   return rewardsToken && rewards?.exact.gt(0) ? (
     <>
@@ -72,16 +58,6 @@ const Confirm: FC<{}> = () => {
           decimals={6}
           suffix={` ${rewardsToken.symbol}`}
         />{' '}
-        {platformToken && platformRewards ? (
-          <>
-            and{' '}
-            <CountUp
-              end={platformRewards.simpleRounded}
-              decimals={6}
-              suffix={` ${platformToken.symbol}`}
-            />{' '}
-          </>
-        ) : null}
         will be claimed.
       </P>
       <P>

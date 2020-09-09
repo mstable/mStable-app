@@ -54,6 +54,40 @@ const reduce: Reducer<State, Action> = (state, action) => {
       };
     }
 
+    case Actions.SetWithdrawAmount: {
+      return {
+        ...state,
+        exit: {
+          ...state.exit,
+          touched: !!action.payload,
+          amount: BigDecimal.maybeParse(action.payload, 18),
+          formValue: action.payload,
+          isExiting: false,
+        },
+      };
+    }
+
+    case Actions.SetMaxWithdrawAmount: {
+      if (!state.stakingRewardsContract) return state;
+
+      const {
+        stakingRewardsContract: { stakingBalance },
+      } = state;
+
+      if (!stakingBalance) return state;
+
+      return {
+        ...state,
+        exit: {
+          ...state.exit,
+          touched: true,
+          amount: stakingBalance,
+          formValue: stakingBalance.format(stakingBalance.decimals, false),
+          isExiting: true,
+        },
+      };
+    }
+
     default:
       throw new Error('Unhandled action type');
   }

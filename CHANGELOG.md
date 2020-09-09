@@ -2,6 +2,14 @@
 
 ## Next
 
+Features:
+
+- Support withdrawing a partial stake from EARN pools
+
+Miscellaneous:
+
+- Remove redundant information about BAL rewards for claim and withdraw confirmations
+
 ## Version 1.10.0
 
 _Released 04.09.20 15.00 CEST_

@@ -15,7 +15,7 @@ import { Exit } from './Exit';
 const TAB_LABELS = {
   [Tabs.Stake]: 'Deposit stake',
   [Tabs.Claim]: 'Claim rewards',
-  [Tabs.Exit]: 'Exit pool',
+  [Tabs.Exit]: 'Withdraw stake',
 };
 
 const TabButton: FC<{ tab: Tabs }> = ({ tab }) => {

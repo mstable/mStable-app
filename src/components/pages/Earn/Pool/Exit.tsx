@@ -10,31 +10,52 @@ import {
 } from '../../../forms/TransactionForm/FormProvider';
 import { CountUp } from '../../../core/CountUp';
 import {
-  useCurrentStakingRewardsContract,
   useCurrentRewardsToken,
   useCurrentStakingToken,
   useCurrentStakingRewardsContractCtx,
   useRewardsEarned,
-  useCurrentPlatformToken,
+  useStakingRewardsContractState,
 } from '../StakingRewardsContractProvider';
-import { P } from '../../../core/Typography';
+import { H3, P } from '../../../core/Typography';
+import { StakeAmountInput } from '../../../forms/StakeAmountInput';
+
+const Row = styled.div`
+  width: 100%;
+  padding-bottom: 16px;
+`;
+
+const Input: FC<{}> = () => {
+  const { stakingRewardsContract } = useStakingRewardsContractState();
+
+  if (!stakingRewardsContract) {
+    return <Skeleton height={300} />;
+  }
+
+  return (
+    <Row>
+      <H3>Withdraw stake & claim rewards</H3>
+      <StakeAmountInput />
+    </Row>
+  );
+};
 
 const ExitFormConfirm: FC<{}> = () => {
-  const { rewards, platformRewards } = useRewardsEarned();
+  const { rewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
-  const platformToken = useCurrentPlatformToken();
   const stakingToken = useCurrentStakingToken();
-  const stakingBalance = useCurrentStakingRewardsContract()?.stakingBalance;
+  const {
+    exit: { amount, isExiting },
+  } = useStakingRewardsContractState();
 
   return (
     <div>
-      {stakingBalance && rewardsToken && stakingToken && rewards ? (
-        stakingBalance.exact.gt(0) ? (
+      {amount && rewardsToken && stakingToken && rewards ? (
+        amount.exact.gt(0) ? (
           <>
             <P>
-              This will return your staking balance of{' '}
+              This will return{' '}
               <CountUp
-                end={stakingBalance.simpleRounded}
+                end={amount.simpleRounded}
                 decimals={2}
                 suffix={` ${stakingToken.symbol}`}
               />
@@ -47,25 +68,20 @@ const ExitFormConfirm: FC<{}> = () => {
                     decimals={6}
                     suffix={` ${rewardsToken.symbol}`}
                   />
-                  {platformToken && platformRewards ? (
-                    <>
-                      {' '}
-                      and{' '}
-                      <CountUp
-                        end={platformRewards.simpleRounded}
-                        decimals={6}
-                        suffix={` ${platformToken.symbol}`}
-                      />
-                    </>
-                  ) : null}
                 </>
               ) : null}
               .
             </P>
-            <P>
-              No more rewards will be earned in this pool until another stake is
-              deposited.
-            </P>
+            {isExiting ? (
+              <P>
+                No more rewards will be earned in this pool until another stake
+                is deposited.
+              </P>
+            ) : (
+              <P>
+                You will continue to earn rewards with your remaining stake.
+              </P>
+            )}
           </>
         ) : (
           <P>No staking balance.</P>
@@ -88,28 +104,41 @@ const ExitForm: FC<{}> = () => {
 
   const setFormManifest = useSetFormManifest();
 
-  const stakingBalance = useCurrentStakingRewardsContract()?.stakingBalance;
-
-  const valid = !!stakingBalance?.exact.gt(0);
+  const {
+    exit: { amount, valid, isExiting },
+  } = useStakingRewardsContractState();
 
   useEffect(() => {
-    if (valid && contract) {
-      const manifest: SendTxManifest<Interfaces.StakingRewards, 'exit'> = {
-        args: [],
-        iface: contract,
-        fn: 'exit',
-      };
-      setFormManifest(manifest);
+    if (valid && contract && amount) {
+      if (isExiting) {
+        const manifest: SendTxManifest<Interfaces.StakingRewards, 'exit'> = {
+          args: [],
+          iface: contract,
+          fn: 'exit',
+        };
+        setFormManifest(manifest);
+      } else {
+        const manifest: SendTxManifest<
+          Interfaces.StakingRewards,
+          'withdraw'
+        > = {
+          args: [amount.exact],
+          iface: contract,
+          fn: 'withdraw',
+        };
+        setFormManifest(manifest);
+      }
     } else {
       setFormManifest(null);
     }
-  }, [setFormManifest, valid, contract]);
+  }, [setFormManifest, valid, contract, amount, isExiting]);
 
   return (
     <StyledTransactionForm
-      confirmLabel="Exit pool"
+      confirmLabel="Withdraw"
       confirm={<ExitFormConfirm />}
-      transactionsLabel="Exit transactions"
+      input={<Input />}
+      transactionsLabel="Withdraw transactions"
       valid={valid}
     />
   );
