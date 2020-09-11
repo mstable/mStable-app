@@ -9,10 +9,10 @@ import { FontSize } from '../../../theme';
 import {
   // useApyForPast24h,
   useAverageApyForPastWeek,
-  useIncreasingNumber,
 } from '../../../web3/hooks';
 import { useSavingsBalance } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
+import { Amount, NumberFormat } from '../../core/Amount';
 
 const CreditBalance = styled.div`
   img {
@@ -91,27 +91,17 @@ export const SaveInfo: FC<{}> = () => {
   );
 
   const savingsBalance = useSavingsBalance();
-  const clampedBalance =
-    savingsBalance?.balance?.simple || 0 > 500
-      ? 500
-      : savingsBalance?.balance?.simple || 0;
-
-  const savingsBalanceIncreasing = useIncreasingNumber(
-    savingsBalance?.balance?.simple || 0,
-    // TODO - re-introduce real APY after it settles down
-    // ((savingsBalance.simple || 0) * (apyPercentage || 10)) /
-    (clampedBalance * 10) / 100 / 365 / 24 / 60 / 60 / 10,
-    100,
-  );
-
-  return (
+   return (
     <>
       <BalanceInfoRow>
         <div>
           <H3>Your mUSD savings balance</H3>
           <CreditBalance>
             <MUSDIconTransparent />
-            <CountUp end={savingsBalanceIncreasing || 0} decimals={7} />
+            <Amount
+            format={NumberFormat.Simple}
+            amount={savingsBalance?.balance}
+            />
             <InfoMsg>
               This amount includes notional interest. For more information{' '}
               <a
