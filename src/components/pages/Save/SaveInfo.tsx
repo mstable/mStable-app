@@ -99,13 +99,13 @@ export const SaveInfo: FC<{}> = () => {
             <MUSDIconTransparent />
             <CountUp end={savingsBalance?.balance?.simple || 0} decimals={7} />
             <InfoMsg>
-              This amount includes notional interest. For more information{' '}
+              See how interest is calculated{' '}
               <a
                 href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#savings-balance-increase"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                see here
+                here
               </a>
               .
             </InfoMsg>
