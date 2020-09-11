@@ -2,6 +2,10 @@
 
 ## Next
 
+Features:
+
+- Savings balance value now increases only when interest accrues, rather than a conservative (but notional) increase in real time
+
 ## Version 1.11.0
 
 _Released 04.09.20 15.00 CEST_

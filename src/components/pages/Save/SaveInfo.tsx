@@ -9,7 +9,6 @@ import { FontSize } from '../../../theme';
 import {
   // useApyForPast24h,
   useAverageApyForPastWeek,
-  useIncreasingNumber,
 } from '../../../web3/hooks';
 import { useSavingsBalance } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
@@ -91,35 +90,22 @@ export const SaveInfo: FC<{}> = () => {
   );
 
   const savingsBalance = useSavingsBalance();
-  const clampedBalance =
-    savingsBalance?.balance?.simple || 0 > 500
-      ? 500
-      : savingsBalance?.balance?.simple || 0;
-
-  const savingsBalanceIncreasing = useIncreasingNumber(
-    savingsBalance?.balance?.simple || 0,
-    // TODO - re-introduce real APY after it settles down
-    // ((savingsBalance.simple || 0) * (apyPercentage || 10)) /
-    (clampedBalance * 10) / 100 / 365 / 24 / 60 / 60 / 10,
-    100,
-  );
-
-  return (
+   return (
     <>
       <BalanceInfoRow>
         <div>
           <H3>Your mUSD savings balance</H3>
           <CreditBalance>
             <MUSDIconTransparent />
-            <CountUp end={savingsBalanceIncreasing || 0} decimals={7} />
+            <CountUp end={savingsBalance?.balance?.simple || 0} decimals={7} />
             <InfoMsg>
-              This amount includes notional interest. For more information{' '}
+              See how interest is calculated{' '}
               <a
                 href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#savings-balance-increase"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                see here
+                here
               </a>
               .
             </InfoMsg>
