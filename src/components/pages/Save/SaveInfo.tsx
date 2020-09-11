@@ -12,7 +12,6 @@ import {
 } from '../../../web3/hooks';
 import { useSavingsBalance } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
-import { Amount, NumberFormat } from '../../core/Amount';
 
 const CreditBalance = styled.div`
   img {
@@ -98,10 +97,7 @@ export const SaveInfo: FC<{}> = () => {
           <H3>Your mUSD savings balance</H3>
           <CreditBalance>
             <MUSDIconTransparent />
-            <Amount
-            format={NumberFormat.Simple}
-            amount={savingsBalance?.balance}
-            />
+            <CountUp end={savingsBalance?.balance?.simple || 0} decimals={7} />
             <InfoMsg>
               This amount includes notional interest. For more information{' '}
               <a
