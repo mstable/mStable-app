@@ -11,9 +11,8 @@ executors:
     resource_class: small
 
 jobs:
-  buildStaging:
+  Build:
     executor: gcp
-    resource_class: medium+
     steps:
       - checkout
       - restore_cache:
@@ -51,47 +50,8 @@ jobs:
           key: dependency-cache-{{ checksum "yarn.lock" }}
           paths:
             - node_modules
-  buildProd:
-    executor: gcp
-    resource_class: medium+
-    steps:
-      - checkout
-      - restore_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}
-      - run:
-          name: Install
-          command: yarn
-      - run:
-          name: 'Provision'
-          command: |
-            yarn run provision
-      - run:
-          name: Codegen (TypeChain)
-          command: yarn codegen:typechain
-      - run:
-          name: TypeScript
-          command: yarn tsc --noEmit
-      - run:
-          name: Lint
-          command: yarn lint
-      - run:
-          name: Test
-          command: yarn test --passWithNoTests
-      - run:
-          name: Build
-          command: yarn build
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/build
-            - project/public
-            - project/package.json
-            - project/*
-      - save_cache:
-          key: dependency-cache-{{ checksum "yarn.lock" }}
-          paths:
-            - node_modules
-  deployStaging:
+
+  Deploy:
     executor: gcp
     steps:
       - attach_workspace:
@@ -99,30 +59,10 @@ jobs:
       - run:
           name: 'Deploy'
           command: |
-            echo "Deploy to staging target GAE instance with project ID $S_GCP_PROJECT_ID"
-            echo $S_GCP_KEY > /tmp/$CI_PIPELINE_ID.json
+            echo "Deploy to target GAE instance with project ID $GCP_PROJECT_ID"
+            echo $GCP_KEY > /tmp/$CI_PIPELINE_ID.json
             gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-            gcloud config set project $S_GCP_PROJECT_ID
-            gcloud --quiet app deploy app.yml
-      - persist_to_workspace:
-         root: ~/
-         paths:
-           - project/build
-           - project/public
-           - project/package.json
-           - project/*
-  deployProd:
-    executor: gcp
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: 'Deploy'
-          command: |
-            echo "Deploy to prod target GAE instance with project ID $P_GCP_PROJECT_ID"
-            echo $P_GCP_KEY > /tmp/$CI_PIPELINE_ID.json
-            gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
-            gcloud config set project $P_GCP_PROJECT_ID
+            gcloud config set project $GCP_PROJECT_ID
             gcloud --quiet app deploy app.yml
       - persist_to_workspace:
           root: ~/
@@ -131,7 +71,8 @@ jobs:
             - project/public
             - project/package.json
             - project/*
-  sentryRelease:
+
+  Sentry:
     executor: sentry
     steps:
       - attach_workspace:
@@ -146,29 +87,87 @@ jobs:
             sentry-cli releases files $PACKAGE_VERSION upload-sourcemaps './build/static/js' --rewrite --url-prefix './build/static/js'
             sentry-cli releases finalize $SENTRY_RELEASE
             exit 0
+
 workflows:
   version: 2.1
-  staging:
+
+  Kovan:
     jobs:
-      - buildStaging:
-          context: mstable-app-staging
-      - Approval:
+      - Build:
+          context:
+            - mstable-app-kovan
+      - Approve deploy:
           type: approval
-      - deployStaging:
+      - Deploy:
+          context:
+            - mstable-kovan
+            - mstable-app-kovan
           requires:
-            - Approval
-            - buildStaging
-  prod:
+            - Build
+            - Approve deploy
+
+  Ropsten:
     jobs:
-      - Approval:
+      - Approve build:
           type: approval
-      - buildProd:
-          context: mstable-app-production
+      - Build:
+          context:
+            - mstable-app-ropsten
           requires:
-            - Approval
-      - deployProd:
+            - Approve build
+      - Approve deploy:
+          type: approval
           requires:
-            - buildProd
-      - sentryRelease:
+            - Approve build
+      - Deploy:
+          context:
+            - mstable-ropsten
+            - mstable-app-ropsten
           requires:
-            - deployProd
+            - Build
+            - Approve deploy
+
+  Staging:
+    jobs:
+      - Approve build:
+          type: approval
+      - Build:
+          context:
+            - mstable-app-staging
+          requires:
+            - Approve build
+      - Approve deploy:
+          type: approval
+          requires:
+            - Approve build
+      - Deploy:
+          context:
+            - mstable-staging
+            - mstable-app-staging
+          requires:
+            - Build
+            - Approve deploy
+
+  Production:
+    jobs:
+      - Approve build:
+          type: approval
+      - Build:
+          context:
+            - mstable-app-production
+          requires:
+            - Approve build
+      - Approve deploy:
+          type: approval
+          requires:
+            - Approve build
+      - Deploy:
+          context:
+            - mstable-app
+            - mstable-app-production
+          requires:
+            - Build
+            - Approve deploy
+      - Sentry:
+          requires:
+            - Deploy
