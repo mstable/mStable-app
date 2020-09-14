@@ -2,9 +2,16 @@
 
 ## Next
 
+## Version 1.11.1
+
 Features:
 
-- Savings balance value now increases only when interest accrues, rather than a conservative (but notional) increase in real time
+- Savings balance value now increases only when interest accrues, rather than a conservative
+  (but notional) increase in real time
+
+Miscellaneous:
+
+- Added Kovan and Ropsten testnet deployments for testing purposes
 
 ## Version 1.11.0
 
