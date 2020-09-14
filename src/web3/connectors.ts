@@ -87,7 +87,11 @@ export const getConnectors = (chainId: number): Connectors => {
         //   chainId,
         // },
       };
-    case 3:
+    case 1337:
+      return {
+        injected,
+      };
+    default:
       return {
         injected,
         portis,
@@ -102,12 +106,6 @@ export const getConnectors = (chainId: number): Connectors => {
         //   chainId,
         // },
       };
-    case 1337:
-      return {
-        injected,
-      };
-    default:
-      return {};
   }
 };
 
