@@ -47,3 +47,9 @@ query VaultBalances($block: Block_height) @api(name: mstable) {
     vaultBalance
   }
 }
+
+query Fees($limit: Int!, $offset: Int!) @api(name: mstable) {
+  feePaidTransactions(first: $limit, skip: $offset) {
+    mAssetUnits
+  }
+}

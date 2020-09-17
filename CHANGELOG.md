@@ -2,6 +2,10 @@
 
 ## Next
 
+Miscellaneous:
+
+- Add script to calculate fees collected for mUSD
+
 ## Version 1.11.1
 
 Features:
