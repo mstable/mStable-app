@@ -36,13 +36,13 @@ export const DailyApys: FC<{}> = () => {
   const data = useMemo<{ x: Date; y: number }[]>(
     () =>
       dailyApys
-        .filter(a => a.value && a.start)
-        .map(({ value, start }) => {
+        .filter(a => a.value && a.end)
+        .map(({ value, end }) => {
           const percentage = parseFloat(formatUnits(value as BigNumber, 16));
-          const startTime = fromUnixTime(start as number);
+          const endTime = fromUnixTime(end as number);
 
           return {
-            x: closestTo(startTime, tickValues),
+            x: closestTo(endTime, tickValues),
             y: percentage,
             percentage,
           };
