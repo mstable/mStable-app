@@ -276,11 +276,9 @@ const fetchPools = async (
   const client = getApolloClient();
 
   let result: Pools = {};
-  console.log('a');
   // For each pool in the manifest
   for (const id of poolAddresses) {
     // Fetch all data and combine the fields which required more fetches
-    console.log('b', id);
     for await (const data of mod.fetchAllData(
       client,
       RewardsDocument,
@@ -291,10 +289,9 @@ const fetchPools = async (
       } as RewardsQueryVariables,
       shouldFetchMore,
     )) {
-      console.log('c', data.stakingRewardsContracts);
       result = data.stakingRewardsContracts.reduce<Pools>((prev, current) => {
         const { address, lastUpdateTime } = current;
-        console.log('d', current);
+
         // Combine the previous and current results
         const stakingRewards = [
           ...(prev[address]?.stakingRewards ?? []),
@@ -354,7 +351,6 @@ const fetchPools = async (
       }, result);
     }
   }
-  console.log('r', result);
   return result;
 };
 
