@@ -11,16 +11,18 @@
  * @example
  *
  * ```bash
- * yarn run platform-rewards --trancheNumber=1 \
- *   --startBlock=10768694 \
- *   --startTimestamp=1598876840 \
+ * yarn run platform-rewards --trancheNumber=3 \
+ *   --startBlock=10860105 \
+ *   --startTimestamp=1600086477 \
  *   --token=0xba100000625a3754423978a60c9317c58a424e3d \
+ *   --fullOutput \
  *   --allocations \
- *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,2355.20859652718 \
- *   0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027,1295.1969489197998 \
- *   0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,7969.988362005548 \
- *   0x25970282aac735cd4c76f30bfb0bf2bc8dad4e70,1600.5797517478354
+ *   0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4,262.502668005595703435 \
+ *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,401.281723512386096284 \
+ *   0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,2231.597480090545314439 \
+ *   0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027,373.253030914300587457 \
  * ```
+ *
  *
  *******************************************************************************
  *
@@ -274,10 +276,11 @@ const fetchPools = async (
   const client = getApolloClient();
 
   let result: Pools = {};
-
+  console.log('a');
   // For each pool in the manifest
   for (const id of poolAddresses) {
     // Fetch all data and combine the fields which required more fetches
+    console.log('b', id);
     for await (const data of mod.fetchAllData(
       client,
       RewardsDocument,
@@ -288,9 +291,10 @@ const fetchPools = async (
       } as RewardsQueryVariables,
       shouldFetchMore,
     )) {
+      console.log('c', data.stakingRewardsContracts);
       result = data.stakingRewardsContracts.reduce<Pools>((prev, current) => {
         const { address, lastUpdateTime } = current;
-
+        console.log('d', current);
         // Combine the previous and current results
         const stakingRewards = [
           ...(prev[address]?.stakingRewards ?? []),
@@ -350,7 +354,7 @@ const fetchPools = async (
       }, result);
     }
   }
-
+  console.log('r', result);
   return result;
 };
 
