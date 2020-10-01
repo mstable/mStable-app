@@ -13,6 +13,7 @@ import { H2, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ViewportWidth } from '../../../theme';
 import { useOpenWalletRedirect } from '../../../context/AppProvider';
+import { ReactComponent as GovernanceIcon } from '../../icons/circle/gavel.svg';
 
 const BETA_WARNING_KEY = 'acknowledged-beta-warning';
 
@@ -40,6 +41,11 @@ const Symbol = styled.div`
   font-weight: bold;
   height: 80px;
   margin-top: 32px;
+
+  svg {
+    height: 80px;
+    width: 80px;
+  }
 
   div {
     font-size: 24px;
@@ -351,6 +357,27 @@ const HOME_STEPS: {
           </P>
           <P>
             <A href="/earn">Go to earn</A>
+          </P>
+        </Block>
+      </>
+    ),
+  },
+  {
+    key: 'govern',
+    children: (
+      <>
+        <SymbolBlock>
+          <Symbol>
+            <div>govern</div>
+            <i><GovernanceIcon/></i>
+          </Symbol>
+        </SymbolBlock>
+        <Block>
+          <P>
+          Participate in system goverance
+          </P>
+          <P>
+            <a href="https://governance.mstable.org">Go to governance</a>
           </P>
         </Block>
       </>
