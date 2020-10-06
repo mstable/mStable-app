@@ -9,8 +9,8 @@ executors:
     docker:
       - image: getsentry/sentry-cli:1.55.0
         auth:
-        username: mstableorg
-        password: $DOCKERHUB_PASSWORD
+          username: mstableorg
+          password: $DOCKERHUB_PASSWORD
     resource_class: small
 
 jobs:
