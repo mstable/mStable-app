@@ -23,10 +23,11 @@ jobs:
       - run:
           name: Install
           command: yarn
-      - run:
-          name: 'Provision'
-          command: |
-            yarn run provision
+#      It's not currently necessary to run provision
+#      - run:
+#          name: 'Provision'
+#          command: |
+#            yarn run provision
       - run:
           name: Codegen (TypeChain)
           command: yarn codegen:typechain
