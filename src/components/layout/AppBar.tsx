@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import React, { FC } from 'react';
-import { A, getWorkingPath } from 'hookrouter';
+import { Link, useLocation } from 'react-router-dom';
 import { useWallet } from 'use-wallet';
 
 import {
@@ -346,20 +346,20 @@ const WalletButton: FC<{}> = () => {
   );
 };
 
-export const AppBar: FC<{}> = () => {
+export const AppBar: FC = () => {
   const accountOpen = useAccountOpen();
   const closeAccount = useCloseAccount();
-  const activePath = getWorkingPath('');
-  const home = activePath === '/';
+  const { pathname } = useLocation();
+  const home = pathname === '/';
 
   return (
     <Container inverted={accountOpen} home={home}>
       <Inner>
         <Top>
           <Logo inverted={accountOpen} full={home}>
-            <A href="/" title="Home" onClick={closeAccount}>
+            <Link to="/" title="Home" onClick={closeAccount}>
               <LogoSvg />
-            </A>
+            </Link>
           </Logo>
           <Buttons>
             {home ? null : <NotificationsButton />}

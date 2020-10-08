@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
-import { A } from 'hookrouter';
+import { Link } from 'react-router-dom';
 import GitHubButton from 'react-github-btn';
 import { isAddress } from 'web3-utils';
 
@@ -160,9 +160,9 @@ export const Footer: FC<Props> = ({ accountOpen }) => {
               {links.map(({ title, href }) => (
                 <li key={href}>
                   {href.startsWith('/') ? (
-                    <A href={href} onClick={collapseWallet}>
+                    <Link to={href} onClick={collapseWallet}>
                       {title}
-                    </A>
+                    </Link>
                   ) : (
                     <a href={href} target="_blank" rel="noopener noreferrer">
                       {title}

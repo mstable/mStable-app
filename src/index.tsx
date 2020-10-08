@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
-import ReactDOM from 'react-dom';
-import { useRoutes } from 'hookrouter';
-
+import { render } from 'react-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
+import useEffectOnce from 'react-use/lib/useEffectOnce';
 
 import * as serviceWorker from './serviceWorker';
 import { checkRequiredEnvVars } from './checkRequiredEnvVars';
@@ -29,40 +29,65 @@ Sentry.init({
   release: `mStable-app@${DAPP_VERSION}`,
 });
 
-const routes = {
-  '/': () => <Home />,
-  '/mint': () => <Mint />,
-  '/earn': () => <Earn />,
-  // '/earn/vault': () => <VaultPage />,
-  '/earn/admin': () => <AdminPage />,
-  '/earn/:slugOrAddress': ({ slugOrAddress }: { slugOrAddress?: string }) => (
-    <PoolPage slugOrAddress={slugOrAddress} />
-  ),
-  '/earn/:slugOrAddress/:userAddress': ({
-    slugOrAddress,
-    userAddress,
-  }: {
-    slugOrAddress?: string;
-    userAddress?: string;
-  }) => <PoolPage slugOrAddress={slugOrAddress} userAddress={userAddress} />,
-  '/save': () => <Save />,
-  '/swap': () => <Swap />,
-  '/redeem': () => <Redeem />,
-  '/faq': () => <FAQ />,
-  '/analytics': () => <Analytics />,
-};
+const Routes: FC = () => {
+  useEffectOnce(() => {
+    // Redirect for legacy links (without hash)
+    if (window.location.pathname !== '/') {
+      window.location.hash = window.location.pathname;
+      window.location.pathname = '';
+    }
+  });
 
-const Root: FC<{}> = () => {
-  const routeResult = useRoutes(routes);
   return (
-    <Providers>
-      <Updaters />
-      <Layout>{routeResult || <NotFound />}</Layout>
-    </Providers>
+    <Switch>
+      <Route exact path="/" component={Home} />
+      <Route exact path="/analytics" component={Analytics} />
+      <Route exact path="/earn" component={Earn} />
+      <Route exact path="/earn/admin" component={AdminPage} />
+      <Route
+        exact
+        path="/earn/:slugOrAddress"
+        component={({ slugOrAddress }: { slugOrAddress?: string }) => (
+          <PoolPage slugOrAddress={slugOrAddress} />
+        )}
+      />
+      <Route
+        exact
+        path="/earn/:slugOrAddress/:userAddress"
+        component={({
+          slugOrAddress,
+          userAddress,
+        }: {
+          slugOrAddress?: string;
+          userAddress?: string;
+        }) => (
+          <PoolPage slugOrAddress={slugOrAddress} userAddress={userAddress} />
+        )}
+      />
+      <Route exact path="/faq" component={FAQ} />
+      <Route exact path="/mint" component={Mint} />
+      <Route exact path="/redeem" component={Redeem} />
+      <Route exact path="/save" component={Save} />
+      <Route exact path="/swap" component={Swap} />
+      <Route component={NotFound} />
+    </Switch>
   );
 };
 
-ReactDOM.render(<Root />, document.querySelector('#root'));
+const Root: FC = () => {
+  return (
+    <HashRouter>
+      <Providers>
+        <Updaters />
+        <Layout>
+          <Routes />
+        </Layout>
+      </Providers>
+    </HashRouter>
+  );
+};
+
+render(<Root />, document.querySelector('#root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

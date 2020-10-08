@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { A, getWorkingPath } from 'hookrouter';
+import { Link, useLocation } from 'react-router-dom';
 import { useCloseAccount } from '../../context/AppProvider';
 import { FontSize, ViewportWidth } from '../../theme';
 
@@ -74,14 +74,14 @@ const navItems: NavItem[] = [
  */
 export const Navigation: FC<{}> = () => {
   const collapseWallet = useCloseAccount();
-  const activePath = getWorkingPath('');
+  const { pathname } = useLocation();
   const items: (NavItem & { active: boolean })[] = useMemo(
     () =>
       navItems.map(item => ({
         ...item,
-        active: !!(item?.path && activePath.startsWith(item.path)),
+        active: !!(item?.path && pathname.startsWith(item.path)),
       })),
-    [activePath],
+    [pathname],
   );
 
   return (
@@ -89,7 +89,7 @@ export const Navigation: FC<{}> = () => {
       <List>
         {items.map(({ title, path, active }) => (
           <Item key={title} active={active} onClick={collapseWallet}>
-            {path ? <A href={path}>{title}</A> : <span>{title}</span>}
+            {path ? <Link to={path}>{title}</Link> : <span>{title}</span>}
           </Item>
         ))}
       </List>

@@ -1,7 +1,7 @@
 import React, { FC, useLayoutEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
-import { getWorkingPath } from 'hookrouter';
+import { useLocation } from 'react-router-dom';
 
 import { ReactTooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
@@ -104,9 +104,9 @@ const PageContainer = styled.div<{ accountOpen: boolean }>`
 export const Layout: FC<{}> = ({ children }) => {
   const accountOpen = useAccountOpen();
   const idle = useIsIdle();
-  const activePath = getWorkingPath('');
-  const home = activePath === '/';
-  const earn = activePath === '/earn';
+  const { pathname } = useLocation();
+  const home = pathname === '/';
+  const earn = pathname === '/earn';
 
   useLayoutEffect(() => {
     // Scroll to the top when the account view is toggled

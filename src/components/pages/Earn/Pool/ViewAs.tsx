@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useClipboard } from 'use-clipboard-copy';
+import { useLocation, useHistory } from 'react-router-dom';
 
-import { getWorkingPath, navigate } from 'hookrouter';
 import {
   useAccount,
   useIsMasquerading,
@@ -47,6 +47,8 @@ export const ViewAs: FC<{}> = () => {
   const account = useAccount();
   const isMasquerading = useIsMasquerading();
   const masquerade = useMasquerade();
+  const { pathname } = useLocation();
+  const history = useHistory();
   const [address, setAddress] = useState<string | undefined>();
 
   const earnUrl = stakingRewards?.earnUrl;
@@ -59,17 +61,16 @@ export const ViewAs: FC<{}> = () => {
 
   const handleResetMasquerade = useCallback(() => {
     // Redirect to the normal path if needed
-    const path = getWorkingPath('');
     if (account) {
-      const index = path.indexOf(`/${account}`);
+      const index = pathname.indexOf(`/${account}`);
       if (index > 0) {
-        navigate(path.slice(0, index));
+        history.push(pathname.slice(0, index));
       }
     }
 
     // Stop masquerading
     masquerade();
-  }, [masquerade, account]);
+  }, [history, account, masquerade, pathname]);
 
   const handleShare = useCallback(() => {
     if (earnUrl && account) {

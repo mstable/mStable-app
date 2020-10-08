@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton/lib';
-import { A } from 'hookrouter';
+import { Link } from 'react-router-dom';
 
 import { Amount, NumberFormat } from '../../../core/Amount';
 import { ViewportWidth } from '../../../../theme';
@@ -123,7 +123,7 @@ export const PoolBalances: FC<Props> = () => {
                   <StyledProtip emoji="💰" title="Claim BAL">
                     <P>
                       You can now claim any BAL earned directly from the{' '}
-                      <A href="/earn">EARN dashboard.</A>
+                      <Link to="/earn">EARN dashboard.</Link>
                     </P>
                   </StyledProtip>
                 </ProtipContainer>

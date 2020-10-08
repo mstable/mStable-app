@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { A } from 'hookrouter';
+import { Link } from 'react-router-dom';
 import { Color, FontSize } from '../../../theme';
 
 const Container = styled.div`
@@ -23,11 +23,11 @@ type Section = 'volumes' | 'totals' | 'basket' | 'save';
 
 export const AnalyticsLink: FC<{ section?: Section }> = () => (
   <Container>
-    <A href="/analytics">
+    <Link to="/analytics">
       <span role="img" aria-label="chart">
         📊
       </span>{' '}
       View analytics
-    </A>
+    </Link>
   </Container>
 );
