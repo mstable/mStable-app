@@ -190,6 +190,7 @@ type Balancer {
   color: String!
   poolCount: Int!
   finalizedPoolCount: Int!
+  crpCount: Int!
   pools(skip: Int = 0, first: Int = 100, orderBy: Pool_orderBy, orderDirection: OrderDirection, where: Pool_filter): [Pool!]
   txCount: BigInt!
   totalLiquidity: BigDecimal!
@@ -201,6 +202,12 @@ enum Pool_orderBy {
   controller
   publicSwap
   finalized
+  crp
+  crpController
+  symbol
+  name
+  rights
+  cap
   active
   swapFee
   totalWeight
@@ -248,6 +255,56 @@ input Pool_filter {
   finalized_not: Boolean
   finalized_in: [Boolean!]
   finalized_not_in: [Boolean!]
+  crp: Boolean
+  crp_not: Boolean
+  crp_in: [Boolean!]
+  crp_not_in: [Boolean!]
+  crpController: Bytes
+  crpController_not: Bytes
+  crpController_in: [Bytes!]
+  crpController_not_in: [Bytes!]
+  crpController_contains: Bytes
+  crpController_not_contains: Bytes
+  symbol: String
+  symbol_not: String
+  symbol_gt: String
+  symbol_lt: String
+  symbol_gte: String
+  symbol_lte: String
+  symbol_in: [String!]
+  symbol_not_in: [String!]
+  symbol_contains: String
+  symbol_not_contains: String
+  symbol_starts_with: String
+  symbol_not_starts_with: String
+  symbol_ends_with: String
+  symbol_not_ends_with: String
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  rights: [String!]
+  rights_not: [String!]
+  rights_contains: [String!]
+  rights_not_contains: [String!]
+  cap: BigInt
+  cap_not: BigInt
+  cap_gt: BigInt
+  cap_lt: BigInt
+  cap_gte: BigInt
+  cap_lte: BigInt
+  cap_in: [BigInt!]
+  cap_not_in: [BigInt!]
   active: Boolean
   active_not: Boolean
   active_in: [Boolean!]
@@ -373,13 +430,19 @@ input Pool_filter {
   tx_contains: Bytes
   tx_not_contains: Bytes
 }
-scalar BigDecimal
 scalar BigInt
+scalar BigDecimal
 type Pool {
   id: ID!
   controller: Bytes!
   publicSwap: Boolean!
   finalized: Boolean!
+  crp: Boolean!
+  crpController: Bytes
+  symbol: String
+  name: String
+  rights: [String!]!
+  cap: BigInt
   active: Boolean!
   swapFee: BigDecimal!
   totalWeight: BigDecimal!
@@ -895,6 +958,7 @@ enum Balancer_orderBy {
   color
   poolCount
   finalizedPoolCount
+  crpCount
   pools
   txCount
   totalLiquidity
@@ -940,6 +1004,14 @@ input Balancer_filter {
   finalizedPoolCount_lte: Int
   finalizedPoolCount_in: [Int!]
   finalizedPoolCount_not_in: [Int!]
+  crpCount: Int
+  crpCount_not: Int
+  crpCount_gt: Int
+  crpCount_lt: Int
+  crpCount_gte: Int
+  crpCount_lte: Int
+  crpCount_in: [Int!]
+  crpCount_not_in: [Int!]
   txCount: BigInt
   txCount_not: BigInt
   txCount_gt: BigInt
