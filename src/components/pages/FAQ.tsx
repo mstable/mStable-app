@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { A } from 'hookrouter';
+import { Link } from 'react-router-dom';
 import { H2, H3, P } from '../core/Typography';
 import { ExternalLink } from '../core/ExternalLink';
 
@@ -58,21 +58,21 @@ export const FAQ: FC<{}> = () => (
           <P>What can I do with the mStable app?</P>
           <ul>
             <li>
-              <A href="/mint">Mint</A> mUSD with your stablecoins
+              <Link to="/mint">Mint</Link> mUSD with your stablecoins
             </li>
             <li>
-              <A href="/save">Save</A> your mUSD to earn our native interest
+              <Link to="/save">Save</Link> your mUSD to earn our native interest
               rate
             </li>
             <li>
-              <A href="/earn">Earn</A> ecosystem rewards by contributing
+              <Link to="/earn">Earn</Link> ecosystem rewards by contributing
               liquidity
             </li>
             <li>
-              <A href="/swap">Swap</A> stablecoins with zero slippage
+              <Link to="/swap">Swap</Link> stablecoins with zero slippage
             </li>
             <li>
-              <A href="/redeem">Redeem</A> your mUSD for the underlying
+              <Link to="/redeem">Redeem</Link> your mUSD for the underlying
               collateral
             </li>
           </ul>
@@ -161,7 +161,7 @@ export const FAQ: FC<{}> = () => (
           <P>How can I earn ecosystem rewards with mStable?</P>
           <P>
             To earn ecosystem rewards, contribute liquidity to one of the
-            Balancer or Uniswap pools available on <A href="/earn">EARN</A>.
+            Balancer or Uniswap pools available on <Link to="/earn">EARN</Link>.
           </P>
           <P>
             Each pool comprises a set of collateral tokens based on a ratio;

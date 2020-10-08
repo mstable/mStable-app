@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, ReactElement, useCallback } from 'react';
 import styled from 'styled-components';
-import { navigate } from 'hookrouter';
+import { useHistory } from 'react-router-dom';
 
 import { AccentColors } from '../../types';
 import { Color, ViewportWidth } from '../../theme';
@@ -111,14 +111,15 @@ const Row: FC<{ href?: string; colors?: AccentColors }> = ({
   children,
   colors,
 }) => {
+  const history = useHistory();
   const handleClick = useCallback(
     event => {
       if (href) {
         event.stopPropagation();
-        navigate(href);
+        history.push(href);
       }
     },
-    [href],
+    [history, href],
   );
 
   return (

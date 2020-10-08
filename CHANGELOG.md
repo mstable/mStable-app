@@ -2,6 +2,10 @@
 
 ## Next
 
+Features:
+
+- Add support for running the dApp on IPFS
+
 Miscellaneous:
 
 - Add script to calculate fees collected for mUSD

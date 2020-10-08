@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { A, navigate } from 'hookrouter';
+import { useHistory, Link } from 'react-router-dom';
 import { useWallet } from 'use-wallet';
 
 import { H2, P } from '../../core/Typography';
@@ -156,6 +156,7 @@ const Start: FC<{}> = () => {
   const { status } = useWallet();
   const connected = status === 'connected';
   const openWallet = useOpenWalletRedirect();
+  const history = useHistory();
   return (
     <>
       <Block>
@@ -174,7 +175,7 @@ const Start: FC<{}> = () => {
             type="button"
             onClick={() => {
               if (connected) {
-                navigate('/mint');
+                history.push('/mint');
               } else {
                 openWallet('/mint');
               }
@@ -232,7 +233,7 @@ const HOME_STEPS: {
             Get mUSD by depositing your USDC, DAI, TUSD or USDT at a 1:1 ratio.
           </P>
           <P>
-            <A href="/mint">Go to mint</A>
+            <Link to="/mint">Go to mint</Link>
           </P>
         </Block>
       </>
@@ -251,7 +252,7 @@ const HOME_STEPS: {
         <Block>
           <P>Earn mUSD&rsquo;s native interest rate.</P>
           <P>
-            <A href="/save">Go to save</A>
+            <Link to="/save">Go to save</Link>
           </P>
         </Block>
       </>
@@ -272,7 +273,7 @@ const HOME_STEPS: {
             Swap between stablecoins at zero slippage (a trading fee applies).
           </P>
           <P>
-            <A href="/swap">Go to swap</A>
+            <Link to="/swap">Go to swap</Link>
           </P>
         </Block>
       </>
@@ -294,7 +295,7 @@ const HOME_STEPS: {
             ecosystem.
           </P>
           <P>
-            <A href="/earn">Go to earn</A>
+            <Link to="/earn">Go to earn</Link>
           </P>
         </Block>
       </>
@@ -327,7 +328,7 @@ const HOME_STEPS: {
   },
 ];
 
-export const Home: FC<{}> = () => {
+export const Home: FC = () => {
   const openWallet = useOpenWalletRedirect();
   const [activeIdx, setActiveIdx] = useState<number>(0);
 

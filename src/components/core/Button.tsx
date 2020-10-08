@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes, ComponentProps } from 'react';
 import styled, { css } from 'styled-components';
-import { A } from 'hookrouter';
+import { Link } from 'react-router-dom';
 
 interface Props extends ButtonHTMLAttributes<unknown> {
   inverted?: boolean;
@@ -42,6 +42,6 @@ export const Button = styled(UnstyledButton).attrs<ButtonHTMLAttributes<never>>(
   ${ButtonCss}
 `;
 
-export const ButtonLink = styled(A)<Props & ComponentProps<typeof A>>`
+export const ButtonLink = styled(Link)<Props & ComponentProps<typeof Link>>`
   ${ButtonCss}
 `;
