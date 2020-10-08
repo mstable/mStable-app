@@ -3122,6 +3122,14 @@ export type VaultBalancesQuery = { bassets: Array<(
     & { token: Pick<Token, 'symbol' | 'decimals'> }
   )> };
 
+export type FeesQueryVariables = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+};
+
+
+export type FeesQuery = { feePaidTransactions: Array<Pick<FeePaidTransaction, 'mAssetUnits'>> };
+
 
 export const RewardsDocument = gql`
     query Rewards($id: ID!, $end: Int!, $block: Block_height, $limit: Int!, $offset: Int!) @api(name: mstable) {
@@ -3162,3 +3170,11 @@ export const VaultBalancesDocument = gql`
 }
     `;
 export type VaultBalancesQueryResult = ApolloReactCommon.QueryResult<VaultBalancesQuery, VaultBalancesQueryVariables>;
+export const FeesDocument = gql`
+    query Fees($limit: Int!, $offset: Int!) @api(name: mstable) {
+  feePaidTransactions(first: $limit, skip: $offset) {
+    mAssetUnits
+  }
+}
+    `;
+export type FeesQueryResult = ApolloReactCommon.QueryResult<FeesQuery, FeesQueryVariables>;

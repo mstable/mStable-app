@@ -4,6 +4,7 @@
 
 Miscellaneous:
 
+- Add script to calculate fees collected for mUSD
 - Removed beta warning from intro and header
 
 ## Version 1.11.1
