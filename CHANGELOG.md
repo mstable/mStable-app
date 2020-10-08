@@ -2,6 +2,10 @@
 
 ## Next
 
+Miscellaneous:
+
+- Removed beta warning from intro and header
+
 ## Version 1.11.1
 
 Features:
