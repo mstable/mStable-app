@@ -21,13 +21,14 @@ export const ContractsProvider: FC<{}> = ({ children }) => {
     () => ({
       mUSD: signer
         ? MassetFactory.connect(
-            process.env.REACT_APP_MUSD_ADDRESS as string,
+            (process.env.REACT_APP_MUSD_ADDRESS as string).toLowerCase(),
             signer,
           )
         : null,
       mUSDSavings: signer
         ? SavingsContractFactory.connect(
-            process.env.REACT_APP_MUSD_SAVINGS_ADDRESS as string,
+            (process.env
+              .REACT_APP_MUSD_SAVINGS_ADDRESS as string).toLowerCase(),
             signer,
           )
         : null,

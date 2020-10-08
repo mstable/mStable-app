@@ -11,7 +11,6 @@ import { useAccountOpen } from '../../context/AppProvider';
 import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
-import { BetaWarning } from './BetaWarning';
 import { NotificationToasts } from './NotificationToasts';
 import { centredLayout } from './css';
 import { Color } from '../../theme';
@@ -120,7 +119,6 @@ export const Layout: FC<{}> = ({ children }) => {
       <HeaderGroup home={home} />
       <PageContainer accountOpen={accountOpen}>
         <Container>
-          {home ? null : <BetaWarning />}
           {earn ? (
             <>{children}</>
           ) : (

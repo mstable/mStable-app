@@ -11,16 +11,19 @@
  * @example
  *
  * ```bash
- * yarn run platform-rewards --trancheNumber=1 \
- *   --startBlock=10768694 \
- *   --startTimestamp=1598876840 \
+ * yarn run platform-rewards --trancheNumber=5 \
+ *   --startBlock=10950964 \
+ *   --startTimestamp=1601296118 \
  *   --token=0xba100000625a3754423978a60c9317c58a424e3d \
+ *   --fullOutput \
  *   --allocations \
- *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,2355.20859652718 \
- *   0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027,1295.1969489197998 \
- *   0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,7969.988362005548 \
- *   0x25970282aac735cd4c76f30bfb0bf2bc8dad4e70,1600.5797517478354
+ *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,572.407053612221530298 \
+ *   0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,4085.579707068339442736 \
+ *   0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027,640.148511955530398958 \
+ *   0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4,199.756828413601291706
+ *
  * ```
+ *
  *
  *******************************************************************************
  *
@@ -274,7 +277,6 @@ const fetchPools = async (
   const client = getApolloClient();
 
   let result: Pools = {};
-
   // For each pool in the manifest
   for (const id of poolAddresses) {
     // Fetch all data and combine the fields which required more fetches
@@ -350,7 +352,6 @@ const fetchPools = async (
       }, result);
     }
   }
-
   return result;
 };
 
