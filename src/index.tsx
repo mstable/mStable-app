@@ -44,25 +44,11 @@ const Routes: FC = () => {
       <Route exact path="/analytics" component={Analytics} />
       <Route exact path="/earn" component={Earn} />
       <Route exact path="/earn/admin" component={AdminPage} />
-      <Route
-        exact
-        path="/earn/:slugOrAddress"
-        component={({ slugOrAddress }: { slugOrAddress?: string }) => (
-          <PoolPage slugOrAddress={slugOrAddress} />
-        )}
-      />
+      <Route exact path="/earn/:slugOrAddress" component={PoolPage} />
       <Route
         exact
         path="/earn/:slugOrAddress/:userAddress"
-        component={({
-          slugOrAddress,
-          userAddress,
-        }: {
-          slugOrAddress?: string;
-          userAddress?: string;
-        }) => (
-          <PoolPage slugOrAddress={slugOrAddress} userAddress={userAddress} />
-        )}
+        component={PoolPage}
       />
       <Route exact path="/faq" component={FAQ} />
       <Route exact path="/mint" component={Mint} />
