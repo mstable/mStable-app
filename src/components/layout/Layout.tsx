@@ -16,7 +16,7 @@ import { centredLayout } from './css';
 import { Color } from '../../theme';
 
 const Main = styled.main`
-  width: 100%;
+  max-width: 100%;
   flex: 1;
   padding: 40px 20px;
 `;
