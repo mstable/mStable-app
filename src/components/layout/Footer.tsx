@@ -20,12 +20,13 @@ interface Props {
 }
 
 const Links = styled.ul`
-  display: flex;
   align-items: center;
   padding-bottom: 16px;
 
   li {
-    margin-right: ${({ theme }) => theme.spacing.s};
+    display: inline-block;
+    margin-right: 8px;
+    margin-bottom: 8px;
   }
 `;
 
@@ -138,7 +139,7 @@ const links = [
   { title: 'Code', href: 'https://github.com/mstable' },
   { title: 'FAQ', href: '/faq' },
   { title: 'Analytics', href: '/analytics' },
-  { title: 'Governance', href: 'https://governance.mstable.org'}
+  { title: 'Governance', href: 'https://governance.mstable.org' },
 ];
 
 const socialIcons = [

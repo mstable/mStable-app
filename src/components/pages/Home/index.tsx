@@ -56,6 +56,7 @@ const SymbolBlock = styled(Block)`
 
 const CarouselItem = styled.section`
   min-height: 400px;
+  padding-bottom: 32px;
 
   > :first-child {
     padding-bottom: 64px;
