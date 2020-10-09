@@ -98,13 +98,13 @@ workflows:
     jobs:
       - Build:
           context:
-            - mstable-app-kovan
+            - mstable-shared
+            - mstable-kovan
       - Approve deploy:
           type: approval
       - Deploy:
           context:
             - mstable-kovan
-            - mstable-app-kovan
           requires:
             - Build
             - Approve deploy
@@ -115,7 +115,8 @@ workflows:
           type: approval
       - Build:
           context:
-            - mstable-app-ropsten
+            - mstable-shared
+            - mstable-ropsten
           requires:
             - Approve build
       - Approve deploy:
@@ -125,7 +126,6 @@ workflows:
       - Deploy:
           context:
             - mstable-ropsten
-            - mstable-app-ropsten
           requires:
             - Build
             - Approve deploy
@@ -136,6 +136,8 @@ workflows:
           type: approval
       - Build:
           context:
+            - mstable-shared
+            - mstable-mainnet
             - mstable-app-staging
           requires:
             - Approve build
@@ -146,7 +148,6 @@ workflows:
       - Deploy:
           context:
             - mstable-staging
-            - mstable-app-staging
           requires:
             - Build
             - Approve deploy
@@ -157,7 +158,8 @@ workflows:
           type: approval
       - Build:
           context:
-            - mstable-app-production
+            - mstable-shared
+            - mstable-mainnet
           requires:
             - Approve build
       - Approve deploy:
@@ -167,7 +169,6 @@ workflows:
       - Deploy:
           context:
             - mstable-app
-            - mstable-app-production
           requires:
             - Build
             - Approve deploy
