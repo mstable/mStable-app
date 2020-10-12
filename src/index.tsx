@@ -32,7 +32,10 @@ Sentry.init({
 const Routes: FC = () => {
   useEffectOnce(() => {
     // Redirect for legacy links (without hash)
-    if (window.location.pathname !== '/') {
+    if (
+      window.location.pathname !== '/' &&
+      !window.location.pathname.startsWith('/ipfs/')
+    ) {
       window.location.hash = window.location.pathname;
       window.location.pathname = '';
     }
