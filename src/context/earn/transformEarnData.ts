@@ -16,6 +16,7 @@ const BAL_REWARDS_EXCEPTIONS: string[] = [
 
 const EXPIRED_POOLS: string[] = [
   '0x25970282aac735cd4c76f30bfb0bf2bc8dad4e70', // MTA/mUSD 80/20
+  '0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4', // MTA/mUSD 95/5
 ];
 
 const getStakingRewardsContractsMap = (
