@@ -1,6 +1,7 @@
 {
   "name": "mStable-app",
   "version": "1.11.1",
+  "homepage": "./",
   "private": true,
   "description": "mStable App",
   "author": "Stability Labs Pty. Ltd. <hello@stabilitylabs.co>",
