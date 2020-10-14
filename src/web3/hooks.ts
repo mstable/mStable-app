@@ -1,3 +1,4 @@
+import { subDays, getUnixTime, endOfDay } from 'date-fns';
 import { useMemo, useEffect, useState } from 'react';
 import { useMutex } from 'react-context-mutex';
 import useInterval from '@use-it/interval';
@@ -140,16 +141,12 @@ export const useApyForPast24h = (): BigNumber | undefined => {
 
 const DAYS_OF_WEEK = [0, 1, 2, 3, 4, 5, 6];
 
-export const useDailyApysForPastWeek = (): DailyApysForWeek => {
+export const useDailyApysForPastWeek = (start: number): DailyApysForWeek => {
   const latest = useLatestExchangeRate();
-  const end = latest?.timestamp;
 
   const variables = useMemo<
     WeeklyExchangeRatesQueryVariables | undefined
   >(() => {
-    if (!end) return undefined;
-
-    const start = Math.floor(end - 7 * 24 * 60 * 60);
     return DAYS_OF_WEEK.reduce(
       (_variables, index) => ({
         ..._variables,
@@ -157,7 +154,7 @@ export const useDailyApysForPastWeek = (): DailyApysForWeek => {
       }),
       {} as WeeklyExchangeRatesQueryVariables,
     );
-  }, [end]);
+  }, [start]);
 
   const query = useWeeklyExchangeRatesQuery({
     variables,
@@ -181,7 +178,7 @@ export const useDailyApysForPastWeek = (): DailyApysForWeek => {
                 timestamp: latest.timestamp,
                 exchangeRate: latest.exchangeRate.string,
               }
-            : query.data[`day${index + 1}` as 'day0'][0];
+            : query.data[`day${index + 1}` as 'day0']?.[0];
 
         const value =
           startRate && endRate && endRate.timestamp > startRate.timestamp
@@ -200,7 +197,10 @@ export const useDailyApysForPastWeek = (): DailyApysForWeek => {
 };
 
 export const useAverageApyForPastWeek = (): BigNumber | undefined => {
-  const dailyApys = useDailyApysForPastWeek();
+  const now = new Date();
+  const dailyApys = useDailyApysForPastWeek(
+    getUnixTime(endOfDay(subDays(now, 7))),
+  );
 
   return useMemo(() => {
     const filtered = dailyApys
