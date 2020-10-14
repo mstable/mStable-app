@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-import { A } from 'hookrouter';
+import { Link } from 'react-router-dom';
 
 import { Amount, NumberFormat } from '../../core/Amount';
 import { TokenAmount } from '../../core/TokenAmount';
@@ -159,9 +159,9 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
       <>
         {linkToPool ? (
           <Title>
-            <A href={stakingRewardsContract.earnUrl}>
+            <Link to={stakingRewardsContract.earnUrl}>
               {stakingRewardsContract.title}
-            </A>
+            </Link>
           </Title>
         ) : (
           <Title>{stakingRewardsContract.title}</Title>

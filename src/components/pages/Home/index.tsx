@@ -1,39 +1,13 @@
-import React, {
-  createContext,
-  FC,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
-import styled, { keyframes } from 'styled-components';
-import { A, navigate } from 'hookrouter';
+import React, { FC, useCallback, useState } from 'react';
+import styled from 'styled-components';
+import { useHistory, Link } from 'react-router-dom';
 import { useWallet } from 'use-wallet';
+
 import { H2, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ViewportWidth } from '../../../theme';
 import { useOpenWalletRedirect } from '../../../context/AppProvider';
 import { ReactComponent as GovernanceIcon } from '../../icons/circle/gavel.svg';
-
-const BETA_WARNING_KEY = 'acknowledged-beta-warning';
-
-const clickMe = keyframes`
-  from {
-    background: transparent;
-  }
-  to {
-    background: white;
-  }
-`;
-
-const AckButton = styled(Button)`
-  animation: ${clickMe} 2s ease infinite alternate-reverse;
-`;
-
-const ctx = createContext<{
-  acknowledgeDisclaimer(): void;
-  alreadyAcked: boolean;
-}>({} as never);
 
 const Symbol = styled.div`
   align-items: center;
@@ -82,6 +56,7 @@ const SymbolBlock = styled(Block)`
 
 const CarouselItem = styled.section`
   min-height: 400px;
+  padding-bottom: 32px;
 
   > :first-child {
     padding-bottom: 64px;
@@ -182,7 +157,7 @@ const Start: FC<{}> = () => {
   const { status } = useWallet();
   const connected = status === 'connected';
   const openWallet = useOpenWalletRedirect();
-  const { alreadyAcked } = useContext(ctx);
+  const history = useHistory();
   return (
     <>
       <Block>
@@ -196,54 +171,19 @@ const Start: FC<{}> = () => {
           By reducing complexity and fragmentation, mStable is a step-change in
           the usability of stablecoins.
         </P>
-        {alreadyAcked ? (
-          <P>
-            <Button
-              type="button"
-              onClick={() => {
-                if (connected) {
-                  navigate('/mint');
-                } else {
-                  openWallet('/mint');
-                }
-              }}
-            >
-              {connected ? 'Go to app' : 'Connect'}
-            </Button>
-          </P>
-        ) : null}
-      </Block>
-    </>
-  );
-};
-
-const Disclaimer: FC<{}> = () => {
-  const { acknowledgeDisclaimer } = useContext(ctx);
-  return (
-    <>
-      <SymbolBlock>
-        <Symbol>
-          <div>Beta</div>
-          <i>!</i>
-        </Symbol>
-      </SymbolBlock>
-      <Block>
         <P>
-          The{' '}
-          <a
-            href="https://github.com/mstable/mstable-contracts"
-            target="_blank"
-            rel="noreferrer noopener"
+          <Button
+            type="button"
+            onClick={() => {
+              if (connected) {
+                history.push('/mint');
+              } else {
+                openWallet('/mint');
+              }
+            }}
           >
-            mStable protocol contracts
-          </a>{' '}
-          have been professionally audited. However, please be aware the project
-          remains in beta. Use at your own risk.
-        </P>
-        <P>
-          <AckButton type="button" onClick={acknowledgeDisclaimer}>
-            I understand
-          </AckButton>
+            {connected ? 'Go to app' : 'Connect'}
+          </Button>
         </P>
       </Block>
     </>
@@ -294,7 +234,7 @@ const HOME_STEPS: {
             Get mUSD by depositing your USDC, DAI, TUSD or USDT at a 1:1 ratio.
           </P>
           <P>
-            <A href="/mint">Go to mint</A>
+            <Link to="/mint">Go to mint</Link>
           </P>
         </Block>
       </>
@@ -313,7 +253,7 @@ const HOME_STEPS: {
         <Block>
           <P>Earn mUSD&rsquo;s native interest rate.</P>
           <P>
-            <A href="/save">Go to save</A>
+            <Link to="/save">Go to save</Link>
           </P>
         </Block>
       </>
@@ -334,7 +274,7 @@ const HOME_STEPS: {
             Swap between stablecoins at zero slippage (a trading fee applies).
           </P>
           <P>
-            <A href="/swap">Go to swap</A>
+            <Link to="/swap">Go to swap</Link>
           </P>
         </Block>
       </>
@@ -356,7 +296,7 @@ const HOME_STEPS: {
             ecosystem.
           </P>
           <P>
-            <A href="/earn">Go to earn</A>
+            <Link to="/earn">Go to earn</Link>
           </P>
         </Block>
       </>
@@ -369,13 +309,13 @@ const HOME_STEPS: {
         <SymbolBlock>
           <Symbol>
             <div>govern</div>
-            <i><GovernanceIcon/></i>
+            <i>
+              <GovernanceIcon />
+            </i>
           </Symbol>
         </SymbolBlock>
         <Block>
-          <P>
-          Participate in system goverance
-          </P>
+          <P>Participate in system goverance</P>
           <P>
             <a href="https://governance.mstable.org">Go to governance</a>
           </P>
@@ -384,22 +324,14 @@ const HOME_STEPS: {
     ),
   },
   {
-    key: 'disclaimer',
-    children: <Disclaimer />,
-  },
-  {
     key: 'get-started',
     children: <GetStarted />,
   },
 ];
 
-export const Home: FC<{}> = () => {
+export const Home: FC = () => {
   const openWallet = useOpenWalletRedirect();
   const [activeIdx, setActiveIdx] = useState<number>(0);
-
-  const alreadyAcked = !!localStorage.getItem(BETA_WARNING_KEY);
-  const [acked, setAcked] = useState<boolean>(alreadyAcked || false);
-  const needsAck = activeIdx === 4 && !acked;
 
   const next = useCallback(() => {
     if (activeIdx < HOME_STEPS.length - 1) {
@@ -415,54 +347,41 @@ export const Home: FC<{}> = () => {
     }
   }, [setActiveIdx, activeIdx]);
 
-  const acknowledgeDisclaimer = useCallback(() => {
-    setAcked(true);
-    localStorage.setItem(BETA_WARNING_KEY, Date.now().toString());
-    next();
-  }, [setAcked, next]);
-
   return (
-    <ctx.Provider
-      value={useMemo(() => ({ acknowledgeDisclaimer, alreadyAcked }), [
-        alreadyAcked,
-        acknowledgeDisclaimer,
-      ])}
-    >
-      <Container>
-        <Carousel>
-          <SliderContainer>
-            <Slider activeIdx={activeIdx}>
-              {HOME_STEPS.map(({ children, key }) => (
-                <CarouselItem key={key}>{children}</CarouselItem>
-              ))}
-            </Slider>
-          </SliderContainer>
-          <Controls>
-            <Button onClick={previous} type="button" disabled={activeIdx === 0}>
-              &lt;
-            </Button>
-            <StepIcons>
-              {HOME_STEPS.map(({ key }, index) => (
-                <StepIcon
-                  key={key}
-                  active={activeIdx === index}
-                  onClick={() => {
-                    if (!needsAck) setActiveIdx(index);
-                  }}
-                  disabled={index === HOME_STEPS.length - 1 && needsAck}
-                />
-              ))}
-            </StepIcons>
-            <Button
-              onClick={next}
-              type="button"
-              disabled={activeIdx === HOME_STEPS.length - 2 && needsAck}
-            >
-              &gt;
-            </Button>
-          </Controls>
-        </Carousel>
-      </Container>
-    </ctx.Provider>
+    <Container>
+      <Carousel>
+        <SliderContainer>
+          <Slider activeIdx={activeIdx}>
+            {HOME_STEPS.map(({ children, key }) => (
+              <CarouselItem key={key}>{children}</CarouselItem>
+            ))}
+          </Slider>
+        </SliderContainer>
+        <Controls>
+          <Button onClick={previous} type="button" disabled={activeIdx === 0}>
+            &lt;
+          </Button>
+          <StepIcons>
+            {HOME_STEPS.map(({ key }, index) => (
+              <StepIcon
+                key={key}
+                active={activeIdx === index}
+                onClick={() => {
+                  setActiveIdx(index);
+                }}
+                disabled={index === HOME_STEPS.length - 1}
+              />
+            ))}
+          </StepIcons>
+          <Button
+            onClick={next}
+            type="button"
+            disabled={activeIdx === HOME_STEPS.length - 1}
+          >
+            &gt;
+          </Button>
+        </Controls>
+      </Carousel>
+    </Container>
   );
 };

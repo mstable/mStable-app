@@ -73,7 +73,7 @@ const MerkleDropClaimForm: FC<{ merkleDrop: MerkleDrop }> = ({
 
       if (tranches.length > 1) {
         setFormManifest<Interfaces.MerkleDrop, 'claimWeeks'>({
-          args: [account, tranches, balances, proofs],
+          args: [account, tranches, balances, proofs as never],
           fn: 'claimWeeks',
           iface: contract,
           onFinalized: refresh,

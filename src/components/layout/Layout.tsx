@@ -1,7 +1,7 @@
 import React, { FC, useLayoutEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
-import { getWorkingPath } from 'hookrouter';
+import { useLocation } from 'react-router-dom';
 
 import { ReactTooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
@@ -11,13 +11,12 @@ import { useAccountOpen } from '../../context/AppProvider';
 import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
-import { BetaWarning } from './BetaWarning';
 import { NotificationToasts } from './NotificationToasts';
 import { centredLayout } from './css';
 import { Color } from '../../theme';
 
 const Main = styled.main`
-  width: 100%;
+  max-width: 100%;
   flex: 1;
   padding: 40px 20px;
 `;
@@ -105,9 +104,9 @@ const PageContainer = styled.div<{ accountOpen: boolean }>`
 export const Layout: FC<{}> = ({ children }) => {
   const accountOpen = useAccountOpen();
   const idle = useIsIdle();
-  const activePath = getWorkingPath('');
-  const home = activePath === '/';
-  const earn = activePath === '/earn';
+  const { pathname } = useLocation();
+  const home = pathname === '/';
+  const earn = pathname === '/earn';
 
   useLayoutEffect(() => {
     // Scroll to the top when the account view is toggled
@@ -120,7 +119,6 @@ export const Layout: FC<{}> = ({ children }) => {
       <HeaderGroup home={home} />
       <PageContainer accountOpen={accountOpen}>
         <Container>
-          {home ? null : <BetaWarning />}
           {earn ? (
             <>{children}</>
           ) : (

@@ -29,8 +29,8 @@ export type Scalars = {
   Int: number;
   Float: number;
   Bytes: string;
-  BigDecimal: string;
   BigInt: string;
+  BigDecimal: string;
 };
 
 export type Balancer = {
@@ -38,6 +38,7 @@ export type Balancer = {
   color: Scalars['String'];
   poolCount: Scalars['Int'];
   finalizedPoolCount: Scalars['Int'];
+  crpCount: Scalars['Int'];
   pools?: Maybe<Array<Pool>>;
   txCount: Scalars['BigInt'];
   totalLiquidity: Scalars['BigDecimal'];
@@ -93,6 +94,14 @@ export type Balancer_Filter = {
   finalizedPoolCount_lte?: Maybe<Scalars['Int']>;
   finalizedPoolCount_in?: Maybe<Array<Scalars['Int']>>;
   finalizedPoolCount_not_in?: Maybe<Array<Scalars['Int']>>;
+  crpCount?: Maybe<Scalars['Int']>;
+  crpCount_not?: Maybe<Scalars['Int']>;
+  crpCount_gt?: Maybe<Scalars['Int']>;
+  crpCount_lt?: Maybe<Scalars['Int']>;
+  crpCount_gte?: Maybe<Scalars['Int']>;
+  crpCount_lte?: Maybe<Scalars['Int']>;
+  crpCount_in?: Maybe<Array<Scalars['Int']>>;
+  crpCount_not_in?: Maybe<Array<Scalars['Int']>>;
   txCount?: Maybe<Scalars['BigInt']>;
   txCount_not?: Maybe<Scalars['BigInt']>;
   txCount_gt?: Maybe<Scalars['BigInt']>;
@@ -132,6 +141,7 @@ export enum Balancer_OrderBy {
   Color = 'color',
   PoolCount = 'poolCount',
   FinalizedPoolCount = 'finalizedPoolCount',
+  CrpCount = 'crpCount',
   Pools = 'pools',
   TxCount = 'txCount',
   TotalLiquidity = 'totalLiquidity',
@@ -157,6 +167,12 @@ export type Pool = {
   controller: Scalars['Bytes'];
   publicSwap: Scalars['Boolean'];
   finalized: Scalars['Boolean'];
+  crp: Scalars['Boolean'];
+  crpController?: Maybe<Scalars['Bytes']>;
+  symbol?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  rights: Array<Scalars['String']>;
+  cap?: Maybe<Scalars['BigInt']>;
   active: Scalars['Boolean'];
   swapFee: Scalars['BigDecimal'];
   totalWeight: Scalars['BigDecimal'];
@@ -228,6 +244,56 @@ export type Pool_Filter = {
   finalized_not?: Maybe<Scalars['Boolean']>;
   finalized_in?: Maybe<Array<Scalars['Boolean']>>;
   finalized_not_in?: Maybe<Array<Scalars['Boolean']>>;
+  crp?: Maybe<Scalars['Boolean']>;
+  crp_not?: Maybe<Scalars['Boolean']>;
+  crp_in?: Maybe<Array<Scalars['Boolean']>>;
+  crp_not_in?: Maybe<Array<Scalars['Boolean']>>;
+  crpController?: Maybe<Scalars['Bytes']>;
+  crpController_not?: Maybe<Scalars['Bytes']>;
+  crpController_in?: Maybe<Array<Scalars['Bytes']>>;
+  crpController_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  crpController_contains?: Maybe<Scalars['Bytes']>;
+  crpController_not_contains?: Maybe<Scalars['Bytes']>;
+  symbol?: Maybe<Scalars['String']>;
+  symbol_not?: Maybe<Scalars['String']>;
+  symbol_gt?: Maybe<Scalars['String']>;
+  symbol_lt?: Maybe<Scalars['String']>;
+  symbol_gte?: Maybe<Scalars['String']>;
+  symbol_lte?: Maybe<Scalars['String']>;
+  symbol_in?: Maybe<Array<Scalars['String']>>;
+  symbol_not_in?: Maybe<Array<Scalars['String']>>;
+  symbol_contains?: Maybe<Scalars['String']>;
+  symbol_not_contains?: Maybe<Scalars['String']>;
+  symbol_starts_with?: Maybe<Scalars['String']>;
+  symbol_not_starts_with?: Maybe<Scalars['String']>;
+  symbol_ends_with?: Maybe<Scalars['String']>;
+  symbol_not_ends_with?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  name_not?: Maybe<Scalars['String']>;
+  name_gt?: Maybe<Scalars['String']>;
+  name_lt?: Maybe<Scalars['String']>;
+  name_gte?: Maybe<Scalars['String']>;
+  name_lte?: Maybe<Scalars['String']>;
+  name_in?: Maybe<Array<Scalars['String']>>;
+  name_not_in?: Maybe<Array<Scalars['String']>>;
+  name_contains?: Maybe<Scalars['String']>;
+  name_not_contains?: Maybe<Scalars['String']>;
+  name_starts_with?: Maybe<Scalars['String']>;
+  name_not_starts_with?: Maybe<Scalars['String']>;
+  name_ends_with?: Maybe<Scalars['String']>;
+  name_not_ends_with?: Maybe<Scalars['String']>;
+  rights?: Maybe<Array<Scalars['String']>>;
+  rights_not?: Maybe<Array<Scalars['String']>>;
+  rights_contains?: Maybe<Array<Scalars['String']>>;
+  rights_not_contains?: Maybe<Array<Scalars['String']>>;
+  cap?: Maybe<Scalars['BigInt']>;
+  cap_not?: Maybe<Scalars['BigInt']>;
+  cap_gt?: Maybe<Scalars['BigInt']>;
+  cap_lt?: Maybe<Scalars['BigInt']>;
+  cap_gte?: Maybe<Scalars['BigInt']>;
+  cap_lte?: Maybe<Scalars['BigInt']>;
+  cap_in?: Maybe<Array<Scalars['BigInt']>>;
+  cap_not_in?: Maybe<Array<Scalars['BigInt']>>;
   active?: Maybe<Scalars['Boolean']>;
   active_not?: Maybe<Scalars['Boolean']>;
   active_in?: Maybe<Array<Scalars['Boolean']>>;
@@ -359,6 +425,12 @@ export enum Pool_OrderBy {
   Controller = 'controller',
   PublicSwap = 'publicSwap',
   Finalized = 'finalized',
+  Crp = 'crp',
+  CrpController = 'crpController',
+  Symbol = 'symbol',
+  Name = 'name',
+  Rights = 'rights',
+  Cap = 'cap',
   Active = 'active',
   SwapFee = 'swapFee',
   TotalWeight = 'totalWeight',

@@ -16,9 +16,8 @@ import {
   ConnectorUnsupportedError,
   useWallet,
 } from 'use-wallet';
-
 import MetamaskOnboarding from '@metamask/onboarding';
-import { navigate } from 'hookrouter';
+import { useHistory } from 'react-router-dom';
 import { configureScope } from '@sentry/react';
 
 import { InjectedEthereum, Connector } from '../types';
@@ -222,6 +221,7 @@ const identifyInjectedSubType = (
  */
 export const AppProvider: FC<{}> = ({ children }) => {
   const attemptedReconnect = useRef(false);
+  const history = useHistory();
   const { connect, reset, status, account, connector, connectors } = useWallet<
     InjectedEthereum
   >();
@@ -248,10 +248,10 @@ export const AppProvider: FC<{}> = ({ children }) => {
 
   const openWalletRedirect = useCallback<Dispatch['openWalletRedirect']>(
     path => {
-      navigate(path);
+      history.push(path);
       dispatch({ type: Actions.SetAccountItem, payload: AccountItems.Wallet });
     },
-    [dispatch],
+    [history],
   );
 
   const selectMasset = useCallback<Dispatch['selectMasset']>(

@@ -62,7 +62,7 @@ export const useBlockPollingSubscription = <TData, TVariables>(
 export const useMusdSubscription = (): MassetQueryResult => {
   return useBlockPollingSubscription(useMassetLazyQuery, {
     variables: {
-      id: process.env.REACT_APP_MUSD_ADDRESS as string,
+      id: (process.env.REACT_APP_MUSD_ADDRESS as string).toLowerCase(),
     },
   });
 };

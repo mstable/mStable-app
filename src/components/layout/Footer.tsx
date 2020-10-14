@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
-import { A } from 'hookrouter';
+import { Link } from 'react-router-dom';
 import GitHubButton from 'react-github-btn';
 import { isAddress } from 'web3-utils';
 
@@ -20,12 +20,13 @@ interface Props {
 }
 
 const Links = styled.ul`
-  display: flex;
   align-items: center;
   padding-bottom: 16px;
 
   li {
-    margin-right: ${({ theme }) => theme.spacing.s};
+    display: inline-block;
+    margin-right: 8px;
+    margin-bottom: 8px;
   }
 `;
 
@@ -138,7 +139,7 @@ const links = [
   { title: 'Code', href: 'https://github.com/mstable' },
   { title: 'FAQ', href: '/faq' },
   { title: 'Analytics', href: '/analytics' },
-  { title: 'Governance', href: 'https://governance.mstable.org'}
+  { title: 'Governance', href: 'https://governance.mstable.org' },
 ];
 
 const socialIcons = [
@@ -160,9 +161,9 @@ export const Footer: FC<Props> = ({ accountOpen }) => {
               {links.map(({ title, href }) => (
                 <li key={href}>
                   {href.startsWith('/') ? (
-                    <A href={href} onClick={collapseWallet}>
+                    <Link to={href} onClick={collapseWallet}>
                       {title}
-                    </A>
+                    </Link>
                   ) : (
                     <a href={href} target="_blank" rel="noopener noreferrer">
                       {title}

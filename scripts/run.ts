@@ -1,6 +1,7 @@
 import { main as vaultBreakdown } from './vaultBreakdown';
 import { main as platformRewards } from './platformRewards';
 import { main as merkleRootHash } from './merkleRootHash';
+import { main as feesBreakdown } from './feesBreakdown';
 
 import { runMain } from './utils/runMain';
 
@@ -15,6 +16,9 @@ switch (script) {
     break;
   case 'merkle-root-hash':
     runMain(merkleRootHash);
+    break;
+  case 'fees-breakdown':
+    runMain(feesBreakdown);
     break;
   default: {
     console.error('Unknown script');

@@ -30,7 +30,7 @@ export const PoolContent: FC<{ address: string }> = ({ address }) => {
   const isMasquerading = useIsMasquerading();
   return (
     <Container>
-      <BackLink href="/earn">Back</BackLink>
+      <BackLink to="/earn">Back</BackLink>
       <CardContainer>
         <Card address={address} />
       </CardContainer>
