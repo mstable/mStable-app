@@ -2,6 +2,10 @@
 
 ## Next
 
+Bug fixes:
+
+- Ensure APY values align on chart by starting from the start of 7 days ago, at the start of the day,
+  and aligning values to the start of the day
 
 ## Version 1.12.0
 
@@ -58,7 +62,7 @@ Miscellaneous:
 
 - Minor CSS fixes
 - Better align daily APYs on x-axis of graph
-- Reduce price request volume with Coingecko 
+- Reduce price request volume with Coingecko
 
 ## Version 1.9.3
 

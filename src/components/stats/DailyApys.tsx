@@ -5,7 +5,7 @@ import { VictoryLine } from 'victory-line';
 import { VictoryChart } from 'victory-chart';
 import { VictoryAxis } from 'victory-axis';
 import Skeleton from 'react-loading-skeleton';
-import { endOfHour, fromUnixTime, subDays, closestTo } from 'date-fns';
+import { endOfDay, fromUnixTime, subDays, startOfDay, getUnixTime } from 'date-fns';
 
 import { useDailyApysForPastWeek } from '../../web3/hooks';
 import { Color } from '../../theme';
@@ -19,38 +19,37 @@ import {
 import { TimeMetricPeriod } from '../../graphql/mstable';
 import { DateRange } from './Metrics';
 
+const now = new Date();
+const from = endOfDay(subDays(now, 7));
 const dateFilter = {
   dateRange: DateRange.Week,
   period: TimeMetricPeriod.Day,
   label: '7 day',
-  from: subDays(new Date(), 6),
-  end: endOfHour(new Date()),
+  from,
+  end: endOfDay(subDays(now, 1)),
 };
 
 export const DailyApys: FC<{}> = () => {
-  const dailyApys = useDailyApysForPastWeek();
+  const dailyApys = useDailyApysForPastWeek(getUnixTime(from));
   const tickValues = useDateFilterTickValues(dateFilter);
   const tickFormat = useDateFilterTickFormat(dateFilter);
   const victoryTheme = useVictoryTheme();
-
   const data = useMemo<{ x: Date; y: number }[]>(
     () =>
       dailyApys
         .filter(a => a.value && a.start)
         .map(({ value, start }) => {
           const percentage = parseFloat(formatUnits(value as BigNumber, 16));
-          const startTime = fromUnixTime(start as number);
-
+          const startTime = fromUnixTime((start as number));
           return {
-            x: closestTo(startTime, tickValues),
+            x: startOfDay(startTime),
             y: percentage,
             percentage,
           };
         }),
 
-    [dailyApys, tickValues],
+    [dailyApys],
   );
-
   return (
     <div>
       {data.length ? (
