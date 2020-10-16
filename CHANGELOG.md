@@ -2,7 +2,12 @@
 
 ## Next
 
+Miscellaneous:
+
+- Updated Protip in Redeem with Curve Finance link
+
 ## Version 1.12.1
+
 
 Bug fixes:
 
