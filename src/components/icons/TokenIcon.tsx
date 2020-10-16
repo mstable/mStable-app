@@ -8,6 +8,7 @@ import USDC, { ReactComponent as UsdcSvg } from './tokens/USDC.svg';
 import DAI, { ReactComponent as DaiSvg } from './tokens/DAI.svg';
 import BUSD, { ReactComponent as BusdSvg } from './tokens/BUSD.svg';
 import SUSD, { ReactComponent as SusdSvg } from './tokens/sUSD.svg';
+import CRV, { ReactComponent as CrvSvg } from './tokens/CRV.svg';
 import MTA, { ReactComponent as MtaSvg } from './tokens/MTA.svg';
 import Uniswap, { ReactComponent as UniswapSvg } from './tokens/Uniswap.svg';
 import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
@@ -33,6 +34,8 @@ export const TOKEN_ICONS: Record<string, string> = {
   BUSD,
   MTA,
   SUSD,
+  CRV,
+  MUSD3CRV: CRV,
   'UNI-V2': Uniswap,
   BAL: Balancer,
   BPT: Balancer,
@@ -50,6 +53,8 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   DAI: DaiSvg as SvgComponent,
   BUSD: BusdSvg as SvgComponent,
   SUSD: SusdSvg as SvgComponent,
+  CRV: CrvSvg as SvgComponent,
+  MUSD3CRV: CrvSvg as SvgComponent,
   MTA: MtaSvg as SvgComponent,
   'UNI-V2': UniswapSvg as SvgComponent,
   BAL: BalancerSvg as SvgComponent,
@@ -76,8 +81,17 @@ export const TokenIcon: FC<Props> = ({ className, symbol }) =>
     />
   ) : null;
 
-export const TokenIconSvg: FC<SvgProps> = ({ symbol, width, height, x, y }) => {
+export const TokenIconSvg: FC<SvgProps> = ({
+  symbol,
+  width,
+  height,
+  x,
+  y,
+  className,
+}) => {
   if (!SVG_ICONS[symbol.toUpperCase()]) return null;
   const Icon = SVG_ICONS[symbol.toUpperCase()];
-  return <Icon width={width} height={height} x={x} y={y} />;
+  return (
+    <Icon width={width} height={height} x={x} y={y} className={className} />
+  );
 };

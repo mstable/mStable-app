@@ -8,7 +8,6 @@ Miscellaneous:
 
 ## Version 1.12.1
 
-
 Bug fixes:
 
 - Ensure APY values align on chart by starting from the start of 7 days ago, at the start of the day,
