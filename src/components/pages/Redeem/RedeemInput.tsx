@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import Skeleton from 'react-loading-skeleton';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
-import { BigDecimal } from '../../../web3/BigDecimal';
 import { FormRow } from '../../core/Form';
 import { H3, H4, P } from '../../core/Typography';
 import { Protip } from '../../core/Protip';
@@ -11,11 +10,11 @@ import { BassetInputs } from '../../core/BassetInputs';
 import { Amount, NumberFormat } from '../../core/Amount';
 import { InlineTokenAmountInput } from '../../forms/InlineTokenAmountInput';
 import { ToggleInput } from '../../forms/ToggleInput';
-import { Color } from '../../../theme';
 import { BasketStats } from '../../stats/BasketStats';
 import { useRedeemDispatch, useRedeemState } from './RedeemProvider';
 import { BassetOutput } from './BassetOutput';
 import { Mode } from './types';
+import { TokenIcon } from '../../icons/TokenIcon';
 
 const RedeemMode = styled.div`
   display: flex;
@@ -29,21 +28,23 @@ const RedeemMode = styled.div`
   }
 `;
 
-const background = keyframes`
-  from {
-    background-color: transparent;
-  }
-  to {
-    background-color: ${Color.goldTransparent};
-  }
+const CurveToken = styled(TokenIcon)`
+  width: 64px;
+  margin-right: 8px;
+  flex-shrink: 0;
 `;
 
-const ProtipContainer = styled.div<{ highlight: boolean }>`
-  margin-bottom: 16px;
-  > * {
-    animation: ${background} 1.5s ease infinite alternate-reverse;
-    background-color: ${({ highlight }) =>
-      highlight ? 'inherit' : 'transparent !important'};
+const CurveProtip = styled(Protip)`
+  background: #3465a4;
+  color: white;
+  font-family: System, monospace;
+  border: 6px double white;
+  box-shadow: 0 0 0 3px #3465a4, 1em 1em 3px 0 rgba(0, 0, 0, 0.5);
+
+  margin-bottom: 32px;
+
+  > :last-child {
+    display: flex;
   }
 `;
 
@@ -90,23 +91,18 @@ export const RedeemInput: FC<{}> = () => {
 
   const mAsset = dataState?.mAsset;
 
-  const considerUsingBalancer =
-    (amountInMasset?.simple || 0) > 0 &&
-    (amountInMasset as BigDecimal).simple < 3000;
-
   return (
     <>
-      <ProtipContainer highlight={considerUsingBalancer}>
-        <Protip>
-          <P>
-            Swap mUSD for many other assets on Curve Finance{' '}
-            <ExternalLink href="https://www.curve.fi/musd">
-              here
-            </ExternalLink>
-            , which might be more cost efficient for small orders.
-          </P>
-        </Protip>
-      </ProtipContainer>
+      <CurveProtip>
+        <CurveToken symbol="CRV" />
+        <P>
+          Swap mUSD for DAI, USDC and USDT on{' '}
+          <ExternalLink href="https://www.curve.fi/musd">
+            Curve Finance
+          </ExternalLink>
+          , which might be more cost efficient for some orders.
+        </P>
+      </CurveProtip>
       <FormRow>
         <H3>Send mUSD</H3>
         <RedeemMode>
