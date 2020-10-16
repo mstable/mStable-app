@@ -99,8 +99,8 @@ export const RedeemInput: FC<{}> = () => {
       <ProtipContainer highlight={considerUsingBalancer}>
         <Protip>
           <P>
-            Swap mUSD for many other assets on Balancer exchange{' '}
-            <ExternalLink href="https://beta.balancer.exchange">
+            Swap mUSD for many other assets on Curve Finance{' '}
+            <ExternalLink href="https://www.curve.fi/musd">
               here
             </ExternalLink>
             , which might be more cost efficient for small orders.
