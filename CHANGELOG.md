@@ -2,6 +2,14 @@
 
 ## Next
 
+Features:
+
+- Add support for the Curve mUSD pool in EARN
+
+Bug fixes:
+
+- Handle all errors from the Graph and avoid spamming error notifications
+
 ## Version 1.12.3
 
 Features:

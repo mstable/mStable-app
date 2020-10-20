@@ -3,6 +3,7 @@ enum PROJECTS {
   balancer
   uniswap
   blocks
+  curve
 }
 
 # https://github.com/habx/apollo-multi-endpoint-link

@@ -235,35 +235,52 @@ query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!)
   }
 }
 
+fragment StakingRewardsContractDetails on StakingRewardsContract {
+  address: id
+  id
+  type
+  duration
+  lastUpdateTime
+  periodFinish
+  rewardRate
+  rewardPerTokenStored
+  platformRewardPerTokenStored
+  platformRewardRate
+  totalSupply
+  totalStakingRewards
+  totalPlatformRewards
+  stakingToken {
+    totalSupply
+    ...TokenDetails
+  }
+  rewardsToken {
+    ...TokenDetails
+  }
+  platformToken {
+    ...TokenDetails
+  }
+}
+
+query StakingRewardsContract($id: ID!, $account: Bytes) @api(name: mstable) {
+  stakingRewardsContract(id: $id) {
+    ...StakingRewardsContractDetails
+    stakingBalances(where: { account: $account }) {
+      amount
+    }
+    stakingRewards: stakingRewards(where: { account: $account, type: REWARD }) {
+      amount
+      amountPerTokenPaid
+    }
+  }
+}
+
 query StakingRewardsContracts(
   $account: Bytes
   $includeHistoric: Boolean!
   $block: Block_height
 ) @api(name: mstable) {
   current: stakingRewardsContracts {
-    address: id
-    id
-    type
-    duration
-    lastUpdateTime
-    periodFinish
-    rewardRate
-    rewardPerTokenStored
-    platformRewardPerTokenStored
-    platformRewardRate
-    totalSupply
-    totalStakingRewards
-    totalPlatformRewards
-    stakingToken {
-      totalSupply
-      ...TokenDetails
-    }
-    rewardsToken {
-      ...TokenDetails
-    }
-    platformToken {
-      ...TokenDetails
-    }
+    ...StakingRewardsContractDetails
     stakingBalances(where: { account: $account }) {
       amount
     }

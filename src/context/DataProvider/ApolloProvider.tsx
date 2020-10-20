@@ -11,6 +11,7 @@ import { ApolloLink } from 'apollo-link';
 import { onError } from 'apollo-link-error';
 import { persistCache } from 'apollo-cache-persist';
 import Skeleton from 'react-loading-skeleton';
+import useThrottleFn from 'react-use/lib/useThrottleFn';
 
 import { useAddErrorNotification } from '../NotificationsProvider';
 
@@ -39,31 +40,43 @@ const cache = new InMemoryCache({
 export const ApolloProvider: FC<{}> = ({ children }) => {
   const addErrorNotification = useAddErrorNotification();
   const [persisted, setPersisted] = useState(false);
+  const [error, setError] = useState<string>();
+
+  useThrottleFn(
+    () => {
+      if (error) {
+        addErrorNotification(error);
+      }
+    },
+    5000,
+    [error] as never,
+  );
 
   const errorLink = onError(({ networkError, graphQLErrors }) => {
     if (graphQLErrors) {
-      graphQLErrors.forEach(({ message, ...error }) => {
+      graphQLErrors.forEach(({ message, ..._error }) => {
         // eslint-disable-next-line no-console
-        console.error(message, error);
+        console.error(message, _error);
       });
     }
     if (networkError) {
-      addErrorNotification(`Network error: ${networkError.message}`);
+      setError(`TheGraph: ${networkError.message}`);
     }
   });
 
   const apolloLink = ApolloLink.from([
+    errorLink,
     new MultiAPILink({
       endpoints: {
         mstable: process.env.REACT_APP_GRAPHQL_ENDPOINT_MSTABLE as string,
         balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
         uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
         blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,
+        curve: process.env.REACT_APP_GRAPHQL_ENDPOINT_CURVE as string,
       },
       httpSuffix: '', // By default, this library adds `/graphql` as a suffix
       createHttpLink: () => (new HttpLink() as unknown) as ApolloLink,
     }),
-    errorLink,
   ]);
 
   useEffect(() => {
@@ -73,7 +86,7 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
       key: CACHE_KEY,
     })
       // eslint-disable-next-line no-console
-      .catch(error => console.warn('Cache persist error', error))
+      .catch(_error => console.warn('Cache persist error', _error))
       .finally(() => {
         setPersisted(true);
       });

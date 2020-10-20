@@ -11,6 +11,9 @@ import {
 import { Stake } from './Stake';
 import { Claim } from './Claim';
 import { Exit } from './Exit';
+import { CurveStake } from './CurveStake';
+import { CurveClaim } from './CurveClaim';
+import { CurveExit } from './CurveExit';
 
 const TAB_LABELS = {
   [Tabs.Stake]: 'Deposit stake',
@@ -42,7 +45,11 @@ const Container = styled.div`
 `;
 
 export const PoolForms: FC<{ address: string }> = () => {
-  const { activeTab } = useStakingRewardsContractState();
+  const {
+    activeTab,
+    stakingRewardsContract,
+  } = useStakingRewardsContractState();
+  const isCurve = !!stakingRewardsContract?.curve;
   return (
     <Container>
       <TabsContainer>
@@ -52,9 +59,19 @@ export const PoolForms: FC<{ address: string }> = () => {
       </TabsContainer>
       <div>
         {activeTab === Tabs.Stake ? (
-          <Stake />
+          isCurve ? (
+            <CurveStake />
+          ) : (
+            <Stake />
+          )
         ) : activeTab === Tabs.Claim ? (
-          <Claim />
+          isCurve ? (
+            <CurveClaim />
+          ) : (
+            <Claim />
+          )
+        ) : isCurve ? (
+          <CurveExit />
         ) : (
           <Exit />
         )}

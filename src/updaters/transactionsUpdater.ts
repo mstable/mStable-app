@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { TransactionReceipt } from 'ethers/providers';
+import { Provider, TransactionReceipt } from 'ethers/providers';
+import { Signer } from 'ethers';
 import { useTransactionsContext } from '../context/TransactionsProvider';
-import { useWeb3Provider } from '../context/SignerProvider';
+import { useSignerOrInfuraProvider } from '../context/SignerProvider';
 import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 import { useAccount } from '../context/UserProvider';
 
@@ -11,7 +12,7 @@ import { useAccount } from '../context/UserProvider';
  */
 export const TransactionsUpdater = (): null => {
   const account = useAccount();
-  const provider = useWeb3Provider();
+  const provider = useSignerOrInfuraProvider();
   const blockNumber = useBlockNumber();
   const accountRef = useRef<string | null>(account);
 
@@ -41,7 +42,7 @@ export const TransactionsUpdater = (): null => {
               current[hash].response.blockNumber !== blockNumber,
           )
           .forEach(hash => {
-            provider
+            (((provider as Signer).provider || provider) as Provider)
               .getTransactionReceipt(hash)
               .then((receipt: TransactionReceipt) => {
                 if (!stale) {

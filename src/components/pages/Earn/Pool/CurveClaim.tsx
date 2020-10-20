@@ -1,0 +1,159 @@
+import React, { FC, useEffect } from 'react';
+import styled from 'styled-components';
+
+import { Interfaces, SendTxManifest } from '../../../../types';
+import { TransactionForm } from '../../../forms/TransactionForm';
+import {
+  FormProvider,
+  useSetFormManifest,
+} from '../../../forms/TransactionForm/FormProvider';
+import { useRewardsEarned } from '../StakingRewardsContractProvider';
+import { CountUp } from '../../../core/CountUp';
+import { H3, P } from '../../../core/Typography';
+import {
+  CURVE_ADDRESSES,
+  useCurveContracts,
+} from '../../../../context/earn/CurveProvider';
+import { ExternalLink } from '../../../core/ExternalLink';
+import { CurveProtip } from './CurveProtip';
+
+const Row = styled.div`
+  width: 100%;
+  padding-bottom: 16px;
+`;
+
+const Input: FC<{ symbol: 'MTA' | 'CRV' }> = ({ symbol }) => {
+  const { rewards, platformRewards } = useRewardsEarned();
+  const selectedRewards = symbol === 'CRV' ? platformRewards : rewards;
+
+  return (
+    <div>
+      {selectedRewards?.exact.gt(0) ? (
+        <P>
+          Claim{' '}
+          <CountUp
+            end={selectedRewards?.simple}
+            decimals={6}
+            suffix={` ${symbol}`}
+          />
+          .
+        </P>
+      ) : (
+        'No rewards to claim.'
+      )}
+    </div>
+  );
+};
+
+const ClaimMTA: FC = () => {
+  const { rewards } = useRewardsEarned();
+  const curveContracts = useCurveContracts();
+  const setFormManifest = useSetFormManifest();
+
+  const valid = !!rewards?.exact.gt(0);
+
+  useEffect(() => {
+    if (valid) {
+      const manifest: SendTxManifest<Interfaces.Gauge, 'claim_rewards()'> = {
+        args: [],
+        iface: curveContracts.musdGauge,
+        fn: 'claim_rewards()',
+      };
+      setFormManifest(manifest);
+    } else {
+      setFormManifest(null);
+    }
+  }, [setFormManifest, valid, curveContracts.musdGauge]);
+
+  return (
+    <TransactionForm
+      compact
+      confirmLabel="Claim MTA"
+      input={<Input symbol="MTA" />}
+      valid={valid}
+    />
+  );
+};
+
+const ClaimCRV: FC = () => {
+  const { platformRewards } = useRewardsEarned();
+  const curveContracts = useCurveContracts();
+  const setFormManifest = useSetFormManifest();
+
+  const valid = !!platformRewards?.exact.gt(0);
+
+  useEffect(() => {
+    if (valid) {
+      const manifest: SendTxManifest<Interfaces.TokenMinter, 'mint'> = {
+        args: [CURVE_ADDRESSES.MUSD_GAUGE],
+        iface: curveContracts.tokenMinter,
+        fn: 'mint',
+      };
+      setFormManifest(manifest);
+    } else {
+      setFormManifest(null);
+    }
+  }, [setFormManifest, valid, curveContracts.tokenMinter]);
+
+  return (
+    <TransactionForm
+      compact
+      confirmLabel="Claim CRV"
+      input={<Input symbol="CRV" />}
+      valid={valid}
+    />
+  );
+};
+
+const ClaimButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  > * {
+    width: 100%;
+  }
+
+  > :first-child {
+    margin-right: 8px;
+  }
+
+  > :last-child {
+    margin-left: 8px;
+  }
+`;
+
+export const CurveClaim: FC = () => {
+  return (
+    <>
+      <CurveProtip
+        alt="Claim MTA and CRV"
+        href="https://www.curve.fi/musd/withdraw"
+        imgSrc="/media/curve-claim.gif"
+        title="Claim with Curve for more options"
+      >
+        <P>
+          You can use the{' '}
+          <ExternalLink href="https://www.curve.fi/musd/withdraw">
+            Curve UI
+          </ExternalLink>{' '}
+          to claim earned MTA and CRV.
+        </P>
+      </CurveProtip>
+      <Row>
+        <H3 borderTop>Claim rewards</H3>
+        <ClaimButtons>
+          <FormProvider formId="claimMTA">
+            <ClaimMTA />
+          </FormProvider>
+          <FormProvider formId="claimCRV">
+            <ClaimCRV />
+          </FormProvider>
+        </ClaimButtons>
+        <P>
+          You will continue to earn any available rewards with your staked
+          balance.
+        </P>
+      </Row>
+    </>
+  );
+};

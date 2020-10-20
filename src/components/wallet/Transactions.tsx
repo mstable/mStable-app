@@ -156,7 +156,14 @@ const getPendingTxDescription = (
       }
 
       const bAsset = bAssets[tx.response.to as string];
-      if (!bAsset) return Loading;
+      if (!bAsset) {
+        return (
+          <>
+            You{' '}
+            <span>{tx.status ? 'approved' : 'are approving'} transfers</span>
+          </>
+        );
+      }
 
       return (
         <>

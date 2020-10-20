@@ -43,6 +43,14 @@ generates:
     config:
       includeDirectives: true
 
+  ./src/graphql/curve/schema.graphql:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_CURVE}
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
   ./src/graphql/mstable.tsx:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_MSTABLE}
@@ -77,6 +85,16 @@ generates:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_BLOCKS}
     documents: 'src/graphql/blocks/*.graphql'
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+
+  ./src/graphql/curve.tsx:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_CURVE}
+    documents: 'src/graphql/curve/*.graphql'
     plugins:
       - 'fragment-matcher'
       - 'typescript'

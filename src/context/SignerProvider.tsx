@@ -7,46 +7,62 @@ import React, {
 } from 'react';
 import {
   Web3Provider as EthersWeb3Provider,
+  Provider,
   AsyncSendable,
+  InfuraProvider,
 } from 'ethers/providers';
-import { Signer } from 'ethers';
+import { Signer, providers } from 'ethers';
 import { useWallet } from 'use-wallet';
+import { CHAIN_ID } from '../web3/constants';
 
 interface InjectedEthereum {
   enable(): Promise<string[]>;
 }
 
-type State = Signer | null;
+interface SignerState {
+  signer?: Signer;
+  infuraProvider: InfuraProvider;
+}
 
-const context = createContext<State>(null);
+const initialState = {
+  infuraProvider: new providers.InfuraProvider(
+    CHAIN_ID,
+    process.env.REACT_APP_RPC_API_KEY,
+  ),
+};
+
+const context = createContext<SignerState>({} as never);
 
 /**
  * Provider for setting and getting a transaction signer (via `use-wallet`).
  */
 export const SignerProvider: FC<{}> = ({ children }) => {
-  const [signer, setSigner] = useState<State>(null);
+  const [state, setState] = useState<SignerState>(initialState);
   const { ethereum, account } = useWallet<InjectedEthereum>();
 
   useEffect((): void => {
     if (!ethereum) {
-      setSigner(null);
+      setState(initialState);
       return;
     }
 
     ethereum.enable().then(() => {
       const web3Provider = new EthersWeb3Provider(ethereum as AsyncSendable);
-      setSigner(web3Provider.getSigner());
+      const signer = web3Provider.getSigner();
+      setState({ ...initialState, signer });
     });
   }, [ethereum, account]);
 
-  return <context.Provider value={signer}>{children}</context.Provider>;
+  return <context.Provider value={state}>{children}</context.Provider>;
 };
 
-export const useSignerContext = (): State => useContext(context);
+export const useInfuraProvider = (): SignerState['infuraProvider'] =>
+  useContext(context).infuraProvider;
 
-export const useWeb3Provider = (): EthersWeb3Provider | null => {
-  const signer = useSignerContext();
-  return signer && signer.provider
-    ? (signer.provider as EthersWeb3Provider)
-    : null;
+export const useSignerContext = (): SignerState['signer'] =>
+  useContext(context).signer;
+
+export const useSignerOrInfuraProvider = (): Signer | Provider => {
+  const { signer, infuraProvider } = useContext(context);
+  return signer ?? infuraProvider;
 };

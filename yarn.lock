@@ -2776,6 +2776,11 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.156.tgz#cbe30909c89a1feeb7c60803e785344ea0ec82d1"
   integrity sha512-l2AgHXcKUwx2DsvP19wtRPqZ4NkONjmorOdq4sMcxIjqdIuuV/ULo2ftuv4NUpevwfW7Ju/UKLqo0ZXuEt/8lQ==
 
+"@types/lossless-json@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/lossless-json/-/lossless-json-1.0.0.tgz#6493f813b9421f45bfef9b30e99242652cbd025e"
+  integrity sha512-knKgXT5I1x87nKLuwCKWi7nfwwYrmyi51ss7O8kAnbj8c116wBm86Laj9yguoN+Ju1S8jkjasam/OdearnQKRw==
+
 "@types/lru-cache@^5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@types/lru-cache/-/lru-cache-5.1.0.tgz#57f228f2b80c046b4a1bd5cac031f81f207f4f03"
@@ -11219,6 +11224,11 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.2.0, loose-envify@^1.3
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
+
+lossless-json@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/lossless-json/-/lossless-json-1.0.4.tgz#4165c5662e630e7f7ff1ee19ae812d15daf6da9e"
+  integrity sha512-zEkWwELMSQQISdtOF44vk0bRJhN/PJ93qcgJLcodizQjxrJKdFrq2H1+Xv5QDe7v3dTYYbBI5hOsh4a9l0B2Ow==
 
 loud-rejection@^1.0.0:
   version "1.6.0"

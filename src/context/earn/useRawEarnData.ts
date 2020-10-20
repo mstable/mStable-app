@@ -2,6 +2,7 @@ import { useBlockPollingSubscription } from '../DataProvider/subscriptions';
 import { useAccount } from '../UserProvider';
 import { useStakingRewardsContractsLazyQuery } from '../../graphql/mstable';
 import { RawEarnData, SyncedEarnData } from './types';
+import { useCurveBalances } from './CurveProvider';
 
 export const useRawEarnData = ({
   block24hAgo,
@@ -17,8 +18,11 @@ export const useRawEarnData = ({
     },
   );
 
+  const curveBalances = useCurveBalances();
+
   return {
     block24hAgo,
+    curveBalances,
     rawStakingRewardsContracts: stakingRewardsContractsSub.data,
   };
 };

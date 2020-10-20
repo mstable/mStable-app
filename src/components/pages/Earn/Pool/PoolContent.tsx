@@ -26,13 +26,18 @@ const Container = styled.div`
   width: 100%;
 `;
 
+const StyledCard = styled(Card)`
+  width: 100%;
+  min-height: 300px;
+`;
+
 export const PoolContent: FC<{ address: string }> = ({ address }) => {
   const isMasquerading = useIsMasquerading();
   return (
     <Container>
       <BackLink to="/earn">Back</BackLink>
       <CardContainer>
-        <Card address={address} />
+        <StyledCard address={address} />
       </CardContainer>
       <Content>
         <PoolBalances />

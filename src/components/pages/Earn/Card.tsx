@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 import { Link } from 'react-router-dom';
@@ -22,6 +22,7 @@ import { PLATFORM_METADATA } from './constants';
 
 interface Props {
   address: string;
+  className?: string;
   linkToPool?: boolean;
 }
 
@@ -104,8 +105,8 @@ const Container = styled.div<{
   linkToPool?: boolean;
 }>`
   padding: 8px 16px;
-  width: 344px;
-  height: 225px;
+  min-width: 344px;
+  min-height: 225px;
   background-image: ${({ colors: { base, accent }, stakingToken }) =>
     stakingToken
       ? `url(${
@@ -136,7 +137,7 @@ const Container = styled.div<{
   
 `;
 
-export const Card: FC<Props> = ({ address, linkToPool }) => {
+export const Card: FC<Props> = ({ address, linkToPool, className }) => {
   const stakingRewardsContract = useStakingRewardsContract(
     address,
   ) as StakingRewardsContract;
@@ -148,14 +149,14 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
   const rewardsToken = useRewardsToken(address);
   const stakingToken = useStakingToken(address);
   const platformToken = usePlatformToken(address);
-
-  const platformLink = useMemo(() => getPlatformLink(stakingRewardsContract), [
-    getPlatformLink,
-    stakingRewardsContract,
-  ]);
+  const platformLink = getPlatformLink(stakingRewardsContract);
 
   return (
-    <Container colors={colors} stakingToken={stakingToken?.symbol}>
+    <Container
+      colors={colors}
+      stakingToken={stakingToken?.symbol}
+      className={className}
+    >
       <>
         {linkToPool ? (
           <Title>
@@ -192,7 +193,12 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                 {stakingRewardsContract.expired ? null : (
                   <>
                     <Tooltip tip="The Annual Percentage Yield is the extrapolated return on investment over the course of a year">
-                      <Heading>{rewardsToken.symbol} APY</Heading>
+                      <Heading>
+                        {stakingRewardsContract.curve
+                          ? 'Pool'
+                          : rewardsToken.symbol}{' '}
+                        APY
+                      </Heading>
                     </Tooltip>
                     <div>
                       {stakingRewardsContract.apy.waitingForData ? (
@@ -244,23 +250,24 @@ export const Card: FC<Props> = ({ address, linkToPool }) => {
                         symbol={rewardsToken.symbol}
                         price={rewardsToken.price}
                       />
-                      {stakingRewardsContract.platformRewards &&
-                      platformToken ? (
-                        <Tooltip
-                          tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations. Earned rewards can be claimed on the EARN dashboard."
-                          hideIcon
-                        >
-                          <StyledTokenAmount
-                            // amount={
-                            //   stakingRewardsContract.platformRewards
-                            //     ?.totalPlatformRewards
-                            // }
-                            format={NumberFormat.Abbreviated}
-                            symbol={platformToken.symbol}
-                            price={platformToken.price}
-                          />
-                        </Tooltip>
-                      ) : null}
+                      {platformToken && (
+                        <>
+                          <Tooltip
+                            tip={
+                              stakingRewardsContract.curve
+                                ? 'CRV rewards are allocated to this pool'
+                                : `Currently BAL rewards are airdropped based on Balancer's reward programme allocations. Earned rewards can be claimed on the EARN dashboard.`
+                            }
+                            hideIcon
+                          >
+                            <StyledTokenAmount
+                              format={NumberFormat.Abbreviated}
+                              symbol={platformToken.symbol}
+                              price={platformToken.price}
+                            />
+                          </Tooltip>
+                        </>
+                      )}
                     </TokenAmounts>
                   </>
                 )}

@@ -12,6 +12,7 @@ import useInterval from 'react-use/lib/useInterval';
 
 import { StakingRewards } from '../../../typechain/StakingRewards.d';
 import { SCALE } from '../../../web3/constants';
+import { CURVE_ADDRESSES } from '../../../context/earn/CurveProvider';
 import { useTokens } from '../../../context/DataProvider/TokensProvider';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { StakingRewardsFactory } from '../../../typechain/StakingRewardsFactory';
@@ -93,7 +94,6 @@ const useRewardsEarnedInterval = (): RewardsEarned => {
   >({});
   const stakingRewardsContract = useCurrentStakingRewardsContract();
   const rewardsToken = useCurrentRewardsToken();
-  const platformToken = useCurrentPlatformToken();
 
   useInterval(() => {
     if (!stakingRewardsContract) {
@@ -101,12 +101,14 @@ const useRewardsEarnedInterval = (): RewardsEarned => {
     }
 
     const {
+      curve,
       lastUpdateTime,
       periodFinish,
       platformRewards: {
         platformReward,
         platformRewardPerTokenStoredNow,
         platformRewardRate,
+        platformToken,
       } = {},
       rewardPerTokenStoredNow,
       rewardRate,
@@ -114,6 +116,21 @@ const useRewardsEarnedInterval = (): RewardsEarned => {
       stakingReward,
       totalSupply: { exact: totalTokens },
     } = stakingRewardsContract;
+
+    if (curve) {
+      return setValue({
+        rewards: curve.rewardsEarned,
+        rewardsUsd:
+          curve.rewardsEarned && rewardsToken?.price
+            ? curve.rewardsEarned.mulTruncate(rewardsToken.price.exact)
+            : undefined,
+        platformRewards: curve.platformRewardsEarned,
+        platformRewardsUsd:
+          curve.platformRewardsEarned && platformToken?.price
+            ? curve.platformRewardsEarned.mulTruncate(platformToken.price.exact)
+            : undefined,
+      });
+    }
 
     const rewardPerToken = (() => {
       if (totalTokens.eq(0)) {
@@ -205,6 +222,7 @@ export const StakingRewardsContractProvider: FC<Props> = ({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const stakingRewardsContract = useStakingRewardsContract(address);
+  const isCurve = !!stakingRewardsContract?.curve;
 
   const tokens = useTokens();
 
@@ -249,8 +267,14 @@ export const StakingRewardsContractProvider: FC<Props> = ({
   const signer = useSignerContext();
 
   const contract = useMemo(
-    () => (signer ? StakingRewardsFactory.connect(address, signer) : undefined),
-    [address, signer],
+    () =>
+      signer
+        ? StakingRewardsFactory.connect(
+            isCurve ? CURVE_ADDRESSES.MUSD_GAUGE : address,
+            signer,
+          )
+        : undefined,
+    [address, signer, isCurve],
   );
 
   return (

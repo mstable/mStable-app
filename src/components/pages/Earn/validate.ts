@@ -1,5 +1,6 @@
 import { StakingRewardsContract } from '../../../context/earn/types';
 import { Reasons, State, Tabs } from './types';
+import { CURVE_ADDRESSES } from '../../../context/earn/CurveProvider';
 
 const getReasonMessage = (reason: Reasons | undefined): string | undefined => {
   switch (reason) {
@@ -28,7 +29,10 @@ type ValidationResult = [boolean] | [boolean, Reasons];
 const validateActiveTab = (
   state: State & { stakingRewardsContract: StakingRewardsContract },
 ): ValidationResult => {
-  const { activeTab } = state;
+  const {
+    activeTab,
+    stakingRewardsContract: { curve },
+  } = state;
   switch (activeTab) {
     case Tabs.Stake: {
       const {
@@ -48,7 +52,8 @@ const validateActiveTab = (
         return [false, Reasons.AmountMustBeGreaterThanZero];
       }
 
-      if (!(stakingToken?.balance && stakingToken.allowances[address]?.exact)) {
+      const spender = curve ? CURVE_ADDRESSES.MUSD_GAUGE : address;
+      if (!(stakingToken?.balance && stakingToken.allowances[spender]?.exact)) {
         return [false, Reasons.FetchingData];
       }
 
@@ -56,7 +61,7 @@ const validateActiveTab = (
         return [false, Reasons.AmountExceedsBalance];
       }
 
-      if (stake.amount.exact.gt(stakingToken.allowances[address].exact)) {
+      if (stake.amount.exact.gt(stakingToken.allowances[spender].exact)) {
         return [false, Reasons.AmountExceedsApprovedAmount];
       }
 

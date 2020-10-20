@@ -69,6 +69,17 @@
           }
         }
       }
+    },
+    "curve": {
+      "includes": ["./shared/*", "./curve/*"],
+      "extensions": {
+        "endpoints": {
+          "mainnet": {
+            "url": "https://api.thegraph.com/subgraphs/name/protofire/curve",
+            "introspect": false
+          }
+        }
+      }
     }
   }
 }
