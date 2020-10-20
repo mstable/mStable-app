@@ -27,7 +27,7 @@ export const CONNECTORS: Connector[] = [
   {
     id: 'injected',
     subType: 'meetOne',
-    label: 'Meet.one',
+    label: 'MEET.ONE',
     icon: MeetOneIcon,
   },
   { id: 'fortmatic', label: 'Fortmatic', icon: FortmaticIcon },
