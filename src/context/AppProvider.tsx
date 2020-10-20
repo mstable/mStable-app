@@ -212,7 +212,7 @@ const identifyInjectedSubType = (
   if (injected.isBrave) return 'brave';
   if (injected.isTrust) return 'trust';
   if (injected.isDapper) return 'dapper';
-
+  if (injected.isMeetOne) return 'meetOne';
   return undefined;
 };
 

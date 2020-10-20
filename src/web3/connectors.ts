@@ -7,6 +7,7 @@ import { ReactComponent as PortisIcon } from '../components/icons/wallets/portis
 import { ReactComponent as SquarelinkIcon } from '../components/icons/wallets/squarelink.svg';
 import { ReactComponent as WalletConnectIcon } from '../components/icons/wallets/walletconnect.svg';
 import { ReactComponent as CoinbaseIcon } from '../components/icons/wallets/coinbase.svg';
+import { ReactComponent as MeetOneIcon } from '../components/icons/wallets/meetone.svg';
 import { Connector } from '../types';
 import { CHAIN_ID } from './constants';
 
@@ -22,6 +23,12 @@ export const CONNECTORS: Connector[] = [
     subType: 'brave',
     label: 'Brave',
     icon: BraveIcon,
+  },
+  {
+    id: 'injected',
+    subType: 'meetOne',
+    label: 'MEET.ONE',
+    icon: MeetOneIcon,
   },
   { id: 'fortmatic', label: 'Fortmatic', icon: FortmaticIcon },
   { id: 'portis', label: 'Portis', icon: PortisIcon },
