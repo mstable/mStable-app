@@ -519,7 +519,6 @@ export const useWalletConnector = (): Connector | undefined => {
   const {
     connector: { id, subType } = { id: undefined, subType: undefined },
   } = useWalletState();
-  console.log(id, subType);
 
   return useMemo(
     () => id && CONNECTORS.find(c => c.id === id && c.subType === subType),
