@@ -2,6 +2,12 @@
 
 ## Next
 
+## Version 1.12.3
+
+Features:
+
+- Add support for Meet.one wallet
+
 ## Version 1.12.2
 
 Miscellaneous:
