@@ -208,11 +208,15 @@ const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 const identifyInjectedSubType = (
   injected: InjectedEthereum,
 ): string | undefined => {
+  if (((injected as unknown) as { wallet: string }).wallet === 'MEETONE') {
+    return 'meetOne';
+  }
+
   if (injected.isMetaMask) return 'metamask';
   if (injected.isBrave) return 'brave';
   if (injected.isTrust) return 'trust';
   if (injected.isDapper) return 'dapper';
-  if (injected.isMeetOne) return 'meetOne';
+
   return undefined;
 };
 
@@ -515,6 +519,7 @@ export const useWalletConnector = (): Connector | undefined => {
   const {
     connector: { id, subType } = { id: undefined, subType: undefined },
   } = useWalletState();
+  console.log(id, subType);
 
   return useMemo(
     () => id && CONNECTORS.find(c => c.id === id && c.subType === subType),
