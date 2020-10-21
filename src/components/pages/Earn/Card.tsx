@@ -193,12 +193,7 @@ export const Card: FC<Props> = ({ address, linkToPool, className }) => {
                 {stakingRewardsContract.expired ? null : (
                   <>
                     <Tooltip tip="The Annual Percentage Yield is the extrapolated return on investment over the course of a year">
-                      <Heading>
-                        {stakingRewardsContract.curve
-                          ? 'Pool'
-                          : rewardsToken.symbol}{' '}
-                        APY
-                      </Heading>
+                      <Heading>{rewardsToken.symbol} APY</Heading>
                     </Tooltip>
                     <div>
                       {stakingRewardsContract.apy.waitingForData ? (
@@ -212,6 +207,17 @@ export const Card: FC<Props> = ({ address, linkToPool, className }) => {
                         />
                       )}
                     </div>
+                    {stakingRewardsContract.apy.yieldApy && (
+                      <>
+                        <Heading>Yield APY</Heading>
+                        <div>
+                          <StyledAmount
+                            format={NumberFormat.CountupPercentage}
+                            amount={stakingRewardsContract.apy.yieldApy}
+                          />
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </div>

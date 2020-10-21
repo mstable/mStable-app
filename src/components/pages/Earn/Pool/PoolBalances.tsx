@@ -121,7 +121,6 @@ export const PoolBalances: FC<Props> = () => {
                         <Link to="/earn">EARN dashboard.</Link>
                       </P>
                     </StyledProtip>
-                    )}
                   </ProtipContainer>
                 </>
               )}

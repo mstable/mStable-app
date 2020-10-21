@@ -1,12 +1,12 @@
 import React, {
-  FC,
   createContext,
+  FC,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
   useState,
-  useEffect,
 } from 'react';
 import useInterval from 'react-use/lib/useInterval';
 
@@ -21,7 +21,7 @@ import {
   useStakingRewardsContract,
   useTokenWithPrice,
 } from '../../../context/earn/EarnDataProvider';
-import { Dispatch, Tabs, State, Actions, RewardsEarned } from './types';
+import { Actions, Dispatch, RewardsEarned, State, Tabs } from './types';
 import { reducer } from './reducer';
 
 interface Props {
@@ -31,6 +31,12 @@ interface Props {
 const initialState: State = {
   activeTab: Tabs.Stake,
   tokens: {},
+  addLiquidity: {
+    valid: false,
+    touched: false,
+    formValue: null,
+    needsUnlock: false,
+  },
   claim: {
     touched: false,
   },
@@ -47,6 +53,11 @@ const initialState: State = {
     isExiting: false,
   },
 };
+
+const initializer = (address: string): State =>
+  address === CURVE_ADDRESSES.MTA_STAKING_REWARDS
+    ? { ...initialState, activeTab: Tabs.AddLiquidity }
+    : initialState;
 
 const dispatchCtx = createContext<Dispatch>({} as never);
 
@@ -219,10 +230,9 @@ export const StakingRewardsContractProvider: FC<Props> = ({
   children,
   address,
 }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, address, initializer);
 
   const stakingRewardsContract = useStakingRewardsContract(address);
-  const isCurve = !!stakingRewardsContract?.curve;
 
   const tokens = useTokens();
 
@@ -264,17 +274,34 @@ export const StakingRewardsContractProvider: FC<Props> = ({
     dispatch({ type: Actions.SetMaxWithdrawAmount });
   }, [dispatch]);
 
+  const setAddLiquidityAmount = useCallback<Dispatch['setAddLiquidityAmount']>(
+    amount => {
+      dispatch({ type: Actions.SetAddLiquidityAmount, payload: amount });
+    },
+    [dispatch],
+  );
+
+  const setAddLiquidityToken = useCallback<Dispatch['setAddLiquidityToken']>(
+    (_, token) => {
+      dispatch({
+        type: Actions.SetAddLiquidityToken,
+        payload: token?.address || null,
+      });
+    },
+    [dispatch],
+  );
+
+  const setAddLiquidityMaxAmount = useCallback<
+    Dispatch['setAddLiquidityMaxAmount']
+  >(() => {
+    dispatch({ type: Actions.SetAddLiquidityMaxAmount });
+  }, [dispatch]);
+
   const signer = useSignerContext();
 
   const contract = useMemo(
-    () =>
-      signer
-        ? StakingRewardsFactory.connect(
-            isCurve ? CURVE_ADDRESSES.MUSD_GAUGE : address,
-            signer,
-          )
-        : undefined,
-    [address, signer, isCurve],
+    () => (signer ? StakingRewardsFactory.connect(address, signer) : undefined),
+    [address, signer],
   );
 
   return (
@@ -286,6 +313,9 @@ export const StakingRewardsContractProvider: FC<Props> = ({
           setStakeAmount,
           setWithdrawAmount,
           setMaxWithdrawAmount,
+          setAddLiquidityAmount,
+          setAddLiquidityMaxAmount,
+          setAddLiquidityToken,
         }),
         [
           setActiveTab,
@@ -293,6 +323,9 @@ export const StakingRewardsContractProvider: FC<Props> = ({
           setStakeAmount,
           setWithdrawAmount,
           setMaxWithdrawAmount,
+          setAddLiquidityAmount,
+          setAddLiquidityMaxAmount,
+          setAddLiquidityToken,
         ],
       )}
     >

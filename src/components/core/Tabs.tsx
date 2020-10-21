@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { Button } from './Button';
-import { Color, FontSize } from '../../theme';
+import { Color, FontSize, ViewportWidth } from '../../theme';
 
 export const TabsContainer = styled.div`
   padding: 16px 0;
@@ -18,8 +18,12 @@ export const TabBtn = styled(Button)<{ active: boolean }>`
   border-bottom: 4px ${({ active }) => (active ? Color.blue : 'transparent')}
     solid;
   color: ${({ active }) => (active ? Color.blue : Color.black)};
-  font-size: ${FontSize.m};
+  font-size: ${FontSize.s};
   text-transform: uppercase;
   transition: all 0.2s ease;
   width: 100%;
+
+  @media (min-width: ${ViewportWidth.s}) {
+    font-size: ${FontSize.m};
+  }
 `;

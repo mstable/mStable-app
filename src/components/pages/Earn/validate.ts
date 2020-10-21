@@ -29,20 +29,20 @@ type ValidationResult = [boolean] | [boolean, Reasons];
 const validateActiveTab = (
   state: State & { stakingRewardsContract: StakingRewardsContract },
 ): ValidationResult => {
-  const {
-    activeTab,
-    stakingRewardsContract: { curve },
-  } = state;
+  const { activeTab } = state;
   switch (activeTab) {
     case Tabs.Stake: {
       const {
         stake,
         stakingRewardsContract: {
           address,
+          curve,
           stakingToken: { address: stakingTokenAddress },
         },
         tokens: { [stakingTokenAddress]: stakingToken },
       } = state;
+
+      const spender = curve ? CURVE_ADDRESSES.MUSD_GAUGE : address;
 
       if (!stake.amount) {
         return [false, Reasons.AmountMustBeSet];
@@ -52,7 +52,6 @@ const validateActiveTab = (
         return [false, Reasons.AmountMustBeGreaterThanZero];
       }
 
-      const spender = curve ? CURVE_ADDRESSES.MUSD_GAUGE : address;
       if (!(stakingToken?.balance && stakingToken.allowances[spender]?.exact)) {
         return [false, Reasons.FetchingData];
       }
@@ -62,6 +61,44 @@ const validateActiveTab = (
       }
 
       if (stake.amount.exact.gt(stakingToken.allowances[spender].exact)) {
+        return [false, Reasons.AmountExceedsApprovedAmount];
+      }
+
+      return [true];
+    }
+    case Tabs.AddLiquidity: {
+      // Currently only validates for Curve
+      const { addLiquidity, tokens } = state;
+
+      const collateralToken = addLiquidity.token
+        ? tokens[addLiquidity.token]
+        : undefined;
+
+      if (!addLiquidity.amount) {
+        return [false, Reasons.AmountMustBeSet];
+      }
+
+      if (addLiquidity.amount.exact.lte(0)) {
+        return [false, Reasons.AmountMustBeGreaterThanZero];
+      }
+
+      const spender = CURVE_ADDRESSES.MUSD_DEPOSIT;
+
+      if (
+        !(
+          collateralToken?.balance && collateralToken.allowances[spender]?.exact
+        )
+      ) {
+        return [false, Reasons.FetchingData];
+      }
+
+      if (addLiquidity.amount.exact.gt(collateralToken.balance.exact)) {
+        return [false, Reasons.AmountExceedsBalance];
+      }
+
+      if (
+        addLiquidity.amount.exact.gt(collateralToken.allowances[spender].exact)
+      ) {
         return [false, Reasons.AmountExceedsApprovedAmount];
       }
 
@@ -118,6 +155,17 @@ export const validate = (state: State): State => {
         ...state,
         stake: {
           ...state.stake,
+          error,
+          needsUnlock: reason === Reasons.AmountExceedsApprovedAmount,
+          valid,
+        },
+      };
+
+    case Tabs.AddLiquidity:
+      return {
+        ...state,
+        addLiquidity: {
+          ...state.addLiquidity,
           error,
           needsUnlock: reason === Reasons.AmountExceedsApprovedAmount,
           valid,

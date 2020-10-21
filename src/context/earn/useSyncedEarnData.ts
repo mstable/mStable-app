@@ -235,7 +235,7 @@ const normalizeCurvePools = (
   } = curveJsonData;
   return [
     {
-      address: CURVE_ADDRESSES.MUSD_SWAP,
+      address: CURVE_ADDRESSES.MUSD_LP_TOKEN,
       platform: Platforms.Curve,
       totalSupply: new BigDecimal(supply.value, 18),
       tokens: [

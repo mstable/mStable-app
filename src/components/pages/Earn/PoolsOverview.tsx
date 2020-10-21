@@ -16,9 +16,13 @@ import { AccentColors, Platforms } from '../../../types';
 import { Tooltip } from '../../core/ReactTooltip';
 
 const ApyAmount = styled(Amount)`
-  font-size: ${FontSize.xl};
+  font-size: ${FontSize.m};
   margin-bottom: 8px;
   display: block;
+`;
+
+const MtaApyAmount = styled(ApyAmount)`
+  font-size: ${FontSize.xl};
 `;
 
 const ApyNote = styled.div`
@@ -171,15 +175,24 @@ export const PoolsOverview: FC<{}> = () => {
                   }
                   return item.apy.value?.exact.gt(0) ? (
                     <div>
-                      <ApyAmount
+                      <MtaApyAmount
                         amount={item.apy.value}
                         format={NumberFormat.CountupPercentage}
                       />
-                      {item.platformRewards ? (
+                      <ApyNote>
+                        + Yield
+                        {item.apy.yieldApy && (
+                          <ApyAmount
+                            amount={item.apy.yieldApy}
+                            format={NumberFormat.CountupPercentage}
+                          />
+                        )}
+                      </ApyNote>
+                      {item.platformRewards && (
                         <ApyNote>
                           + {item.platformRewards.platformToken.symbol}
                         </ApyNote>
-                      ) : null}
+                      )}
                     </div>
                   ) : item.apy.waitingForData ? (
                     <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">

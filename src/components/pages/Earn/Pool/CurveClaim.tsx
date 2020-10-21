@@ -14,8 +14,6 @@ import {
   CURVE_ADDRESSES,
   useCurveContracts,
 } from '../../../../context/earn/CurveProvider';
-import { ExternalLink } from '../../../core/ExternalLink';
-import { CurveProtip } from './CurveProtip';
 
 const Row = styled.div`
   width: 100%;
@@ -54,7 +52,7 @@ const ClaimMTA: FC = () => {
 
   useEffect(() => {
     if (valid) {
-      const manifest: SendTxManifest<Interfaces.Gauge, 'claim_rewards()'> = {
+      const manifest: SendTxManifest<Interfaces.CurveGauge, 'claim_rewards()'> = {
         args: [],
         iface: curveContracts.musdGauge,
         fn: 'claim_rewards()',
@@ -84,7 +82,7 @@ const ClaimCRV: FC = () => {
 
   useEffect(() => {
     if (valid) {
-      const manifest: SendTxManifest<Interfaces.TokenMinter, 'mint'> = {
+      const manifest: SendTxManifest<Interfaces.CurveTokenMinter, 'mint'> = {
         args: [CURVE_ADDRESSES.MUSD_GAUGE],
         iface: curveContracts.tokenMinter,
         fn: 'mint',
@@ -124,36 +122,20 @@ const ClaimButtons = styled.div`
 
 export const CurveClaim: FC = () => {
   return (
-    <>
-      <CurveProtip
-        alt="Claim MTA and CRV"
-        href="https://www.curve.fi/musd/withdraw"
-        imgSrc="/media/curve-claim.gif"
-        title="Claim with Curve for more options"
-      >
-        <P>
-          You can use the{' '}
-          <ExternalLink href="https://www.curve.fi/musd/withdraw">
-            Curve UI
-          </ExternalLink>{' '}
-          to claim earned MTA and CRV.
-        </P>
-      </CurveProtip>
-      <Row>
-        <H3 borderTop>Claim rewards</H3>
-        <ClaimButtons>
-          <FormProvider formId="claimMTA">
-            <ClaimMTA />
-          </FormProvider>
-          <FormProvider formId="claimCRV">
-            <ClaimCRV />
-          </FormProvider>
-        </ClaimButtons>
-        <P>
-          You will continue to earn any available rewards with your staked
-          balance.
-        </P>
-      </Row>
-    </>
+    <Row>
+      <H3 borderTop>Claim rewards</H3>
+      <ClaimButtons>
+        <FormProvider formId="claimMTA">
+          <ClaimMTA />
+        </FormProvider>
+        <FormProvider formId="claimCRV">
+          <ClaimCRV />
+        </FormProvider>
+      </ClaimButtons>
+      <P>
+        You will continue to earn any available rewards with your staked
+        balance.
+      </P>
+    </Row>
   );
 };

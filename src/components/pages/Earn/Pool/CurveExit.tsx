@@ -13,13 +13,14 @@ import {
   useCurrentRewardsToken,
   useCurrentStakingToken,
   useRewardsEarned,
+  useStakingRewardContractDispatch,
   useStakingRewardsContractState,
 } from '../StakingRewardsContractProvider';
 import { H3, P } from '../../../core/Typography';
 import { StakeAmountInput } from '../../../forms/StakeAmountInput';
-import { CurveProtip } from './CurveProtip';
-import { ExternalLink } from '../../../core/ExternalLink';
 import { useCurveContracts } from '../../../../context/earn/CurveProvider';
+import { Button } from '../../../core/Button';
+import { Tabs } from '../types';
 
 const Row = styled.div`
   width: 100%;
@@ -42,9 +43,10 @@ const Input: FC = () => {
 };
 
 const ExitFormConfirm: FC = () => {
-  const { rewards } = useRewardsEarned();
+  const { rewards, platformRewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
   const stakingToken = useCurrentStakingToken();
+  const { setActiveTab } = useStakingRewardContractDispatch();
   const {
     exit: { amount, isExiting },
   } = useStakingRewardsContractState();
@@ -61,19 +63,34 @@ const ExitFormConfirm: FC = () => {
                 decimals={2}
                 suffix={` ${stakingToken.symbol}`}
               />
-              {isExiting && rewards.exact.gt(0) ? (
+              {rewards.exact.gt(0) && (
                 <>
                   {' '}
                   and claim rewards of{' '}
-                  <CountUp
-                    end={rewards.simple}
-                    decimals={6}
-                    suffix={` ${rewardsToken.symbol}`}
-                  />
+                  <CountUp end={rewards.simple} decimals={6} suffix=" MTA" />
                 </>
-              ) : null}
+              )}
               .
             </P>
+            {platformRewards?.exact.gt(0) && (
+              <>
+                <P>
+                  <CountUp
+                    end={platformRewards.simple}
+                    decimals={6}
+                    suffix=" CRV"
+                  />{' '}
+                  must be claimed separately.
+                </P>
+                <Button
+                  onClick={() => {
+                    setActiveTab(Tabs.Claim);
+                  }}
+                >
+                  Claim CRV
+                </Button>
+              </>
+            )}
             {isExiting ? (
               <P>
                 No more rewards will be earned in this pool until another stake
@@ -106,7 +123,7 @@ const ExitForm: FC = () => {
 
   useEffect(() => {
     if (valid && amount) {
-      const manifest: SendTxManifest<Interfaces.Gauge, 'withdraw(uint256)'> = {
+      const manifest: SendTxManifest<Interfaces.CurveGauge, 'withdraw(uint256)'> = {
         args: [amount.exact],
         iface: curveContracts.musdGauge,
         fn: 'withdraw(uint256)',
@@ -130,24 +147,8 @@ const ExitForm: FC = () => {
 
 export const CurveExit: FC = () => {
   return (
-    <>
-      <CurveProtip
-        alt="Withdraw from the pool"
-        href="https://www.curve.fi/musd/withdraw"
-        imgSrc="/media/curve-withdraw.gif"
-        title="Withdraw with Curve for more options"
-      >
-        <P>
-          You can use the{' '}
-          <ExternalLink href="https://www.curve.fi/musd/withdraw">
-            Curve UI
-          </ExternalLink>{' '}
-          to withdraw from the pool, claim rewards and unstake.
-        </P>
-      </CurveProtip>
-      <FormProvider formId="exit">
-        <ExitForm />
-      </FormProvider>
-    </>
+    <FormProvider formId="exit">
+      <ExitForm />
+    </FormProvider>
   );
 };

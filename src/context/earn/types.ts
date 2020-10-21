@@ -129,6 +129,7 @@ export interface StakingRewardsContract {
   type: StakingRewardsContractType;
   apy: {
     value?: BigDecimal;
+    yieldApy?: BigDecimal;
     waitingForData: boolean;
   };
   platformRewards?: {

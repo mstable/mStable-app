@@ -255,10 +255,6 @@ const getStakingRewardsContractsMap = (
         };
 
         const apyValue: number | undefined = (() => {
-          if (isCurve && curveJsonData) {
-            return parseFloat(curveJsonData.poolApy.value);
-          }
-
           const stakingTokenPrice = stakingToken?.price?.simple;
           const rewardsTokenPrice = rewardsToken?.price?.simple;
 
@@ -299,11 +295,13 @@ const getStakingRewardsContractsMap = (
           ...result,
           apy: {
             value: apyValue
-              ? isCurve
-                ? BigDecimal.parse(apyValue.toString(), 18)
-                : new BigDecimal(apyValue.toString(), 18)
+              ? new BigDecimal(apyValue.toString(), 18)
               : undefined,
             waitingForData: !rewardPerTokenStored24hAgo,
+            yieldApy:
+              isCurve && curveJsonData?.yieldApy
+                ? BigDecimal.parse(curveJsonData.yieldApy.toString(), 18)
+                : undefined,
           },
         };
 

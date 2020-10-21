@@ -12,16 +12,18 @@ import { StakingRewardsFactory } from '../../typechain/StakingRewardsFactory';
 import { GaugeControllerFactory } from '../../typechain/GaugeControllerFactory';
 import { MusdGaugeFactory } from '../../typechain/MusdGaugeFactory';
 import { StableSwapFactory } from '../../typechain/StableSwapFactory';
+import { TokenMinterFactory } from '../../typechain/TokenMinterFactory';
+import { CurveDepositFactory } from '../../typechain/CurveDepositFactory';
 import { StakingRewards } from '../../typechain/StakingRewards.d';
 import { GaugeController } from '../../typechain/GaugeController.d';
 import { MusdGauge } from '../../typechain/MusdGauge.d';
 import { StableSwap } from '../../typechain/StableSwap.d';
+import { TokenMinter } from '../../typechain/TokenMinter.d';
+import { CurveDeposit } from '../../typechain/CurveDeposit.d';
 import { useSignerOrInfuraProvider } from '../SignerProvider';
 import { useBlockNumber } from '../DataProvider/BlockProvider';
 import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
-import { TokenMinterFactory } from '../../typechain/TokenMinterFactory';
-import { TokenMinter } from '../../typechain/TokenMinter.d';
 
 export const CURVE_ADDRESSES = {
   CURVE_V2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',
@@ -30,6 +32,11 @@ export const CURVE_ADDRESSES = {
   CRV_TOKEN: '0xd533a949740bb3306d119cc777fa900ba034cd52',
   MUSD_TOKEN: '0xe2f2a5c287993345a840db3b0845fbc70f5935a5',
   '3POOL_TOKEN': '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490',
+  '3POOL_COINS': [
+    '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
+    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+    '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+  ],
 
   MTA_STAKING_REWARDS: '0xe6e6e25efda5f69687aa9914f8d750c523a1d261',
 
@@ -47,6 +54,7 @@ export const CURVE_MUSD_EARN_URL = '/earn/curve-musd-3pool';
 export interface CurveContracts {
   mtaStakingRewards: StakingRewards;
   gaugeController: GaugeController;
+  musdDeposit: CurveDeposit;
   musdGauge: MusdGauge;
   musdSwap: StableSwap;
   tokenMinter: TokenMinter;
@@ -59,7 +67,7 @@ export interface CurveBalances {
 }
 
 export interface CurveJsonData {
-  poolApy: LosslessNumber;
+  yieldApy: LosslessNumber;
   stats: {
     A: LosslessNumber;
     fee: LosslessNumber;
@@ -107,6 +115,10 @@ const CurveContractsProvider: FC = ({ children }) => {
       ),
       tokenMinter: TokenMinterFactory.connect(
         CURVE_ADDRESSES.TOKEN_MINTER,
+        provider,
+      ),
+      musdDeposit: CurveDepositFactory.connect(
+        CURVE_ADDRESSES.MUSD_DEPOSIT,
         provider,
       ),
       musdGauge: MusdGaugeFactory.connect(CURVE_ADDRESSES.MUSD_GAUGE, provider),
@@ -163,9 +175,9 @@ const CurveJsonDataProvider: FC = ({ children }) => {
       Promise.all([apyRes.text(), statsRes.text()]).then(([_apy, _stats]) => {
         const apyJson = parse(_apy);
         const statsJson = parse(_stats);
-        const poolApy = apyJson.apy.day.musd;
+        const yieldApy = apyJson.apy.day.musd;
         const stats = statsJson[statsJson.length - 1];
-        setJsonData({ poolApy, stats });
+        setJsonData({ yieldApy, stats });
       });
     });
   }, [setJsonData]);

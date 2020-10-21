@@ -4,7 +4,7 @@ import useOnClickOutside from 'use-onclickoutside';
 import { TokenDetailsFragment } from '../../graphql/mstable';
 import { TokenIcon } from '../icons/TokenIcon';
 import { useToken } from '../../context/DataProvider/TokensProvider';
-import { ViewportWidth } from '../../theme';
+import { FontSize, ViewportWidth } from '../../theme';
 
 interface Props {
   name: string;
@@ -46,6 +46,7 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   display: flex;
   align-items: center;
   height: 46px;
+  overflow-x: hidden;
 
   padding: ${({ theme }) => theme.spacing.xs};
 
@@ -66,7 +67,20 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
 `;
 
 const Placeholder = styled(OptionContainer)`
-  font-size: ${({ theme }) => theme.fontSize.m};
+  font-size: ${FontSize.s};
+  @media (min-width: ${ViewportWidth.s}) {
+    font-size: ${FontSize.m};
+  }
+`;
+
+const Selected = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const DownArrow = styled.div`
+  padding: 4px;
 `;
 
 const Option: FC<TokenOptionProps> = ({
@@ -88,30 +102,30 @@ const Option: FC<TokenOptionProps> = ({
 
 const placeholderText = 'Select a token';
 
-
 const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   background: ${({ error, theme }) =>
-  error ? theme.color.redTransparenter : theme.color.white};
+    error ? theme.color.redTransparenter : theme.color.white};
   outline: 0;
   border: 1px
     ${({ theme, error }) =>
-  error ? theme.color.redTransparent : theme.color.blackTransparent}
+      error ? theme.color.redTransparent : theme.color.blackTransparent}
     solid;
   border-radius: 3px;
   color: ${({ theme }) => theme.color.black};
-  font-size: ${({ theme }) => theme.fontSize.m};
+  font-size: ${FontSize.s};
   font-weight: bold;
   height: 3rem;
   user-select: none;
   min-width: 100px;
-  
+
   ${OptionContainer}:hover {
     background: transparent;
   }
 
   @media (min-width: ${ViewportWidth.s}) {
     min-width: 145px;
+    font-size: ${FontSize.m};
   }
 `;
 
@@ -191,11 +205,14 @@ export const TokenInput: FC<Props> = ({
       error={error}
       disabled={disabled}
     >
-      {token ? (
-        <Option address={token.address} symbol={token.symbol} />
-      ) : (
-        <Placeholder onClick={handleUnset}>{placeholderText}</Placeholder>
-      )}
+      <Selected>
+        {token ? (
+          <Option address={token.address} symbol={token.symbol} />
+        ) : (
+          <Placeholder onClick={handleUnset}>{placeholderText}</Placeholder>
+        )}
+        {tokens.length > 1 && <DownArrow>▼</DownArrow>}
+      </Selected>
       <RelativeContainer>
         <OptionsContainer open={open}>
           {value ? (

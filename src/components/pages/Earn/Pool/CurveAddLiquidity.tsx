@@ -20,9 +20,6 @@ import {
   useStakingRewardsContractState,
 } from '../StakingRewardsContractProvider';
 import { CountUp } from '../../../core/CountUp';
-import { ExternalLink } from '../../../core/ExternalLink';
-import { PLATFORM_METADATA } from '../constants';
-import { Protip } from '../../../core/Protip';
 import { Tabs } from '../types';
 
 const Row = styled.div`
@@ -35,31 +32,29 @@ const ExitLink = styled.span`
   cursor: pointer;
 `;
 
+const tokenAddresses = [
+  process.env.REACT_APP_MUSD_ADDRESS as string,
+  ...CURVE_ADDRESSES['3POOL_COINS'],
+];
+
 const Input: FC = () => {
   const {
-    stake: { amount, formValue, error, needsUnlock },
+    addLiquidity: { amount, formValue, error, needsUnlock, token },
     stakingRewardsContract,
   } = useStakingRewardsContractState();
   const {
-    setStakeAmount,
-    setMaxStakeAmount,
+    setAddLiquidityMaxAmount,
+    setAddLiquidityAmount,
+    setAddLiquidityToken,
   } = useStakingRewardContractDispatch();
-
-  const stakingToken = useCurrentStakingToken();
-
-  const metadata = stakingRewardsContract
-    ? PLATFORM_METADATA[stakingRewardsContract.pool.platform]
-    : undefined;
 
   if (!stakingRewardsContract) {
     return <Skeleton height={300} />;
   }
 
-  const { address, curve } = stakingRewardsContract;
-
   return (
     <Row>
-      <H3 borderTop>Deposit stake</H3>
+      <H3 borderTop>Add liquidity</H3>
       <div>
         <TokenAmountInput
           needsUnlock={needsUnlock}
@@ -67,23 +62,14 @@ const Input: FC = () => {
           error={error}
           exactDecimals
           name="stake"
-          spender={curve ? CURVE_ADDRESSES.MUSD_GAUGE : address}
-          onChangeAmount={setStakeAmount}
-          onSetMax={setMaxStakeAmount}
-          tokenAddresses={[stakingToken?.address as string]}
-          tokenDisabled
-          tokenValue={stakingToken?.address || null}
+          spender={CURVE_ADDRESSES.MUSD_DEPOSIT}
+          onChangeAmount={setAddLiquidityAmount}
+          onSetMax={setAddLiquidityMaxAmount}
+          onChangeToken={setAddLiquidityToken}
+          tokenAddresses={tokenAddresses}
+          tokenValue={token || null}
           approveAmount={amount}
         />
-        {metadata && stakingToken?.balance.exact.lte(0) ? (
-          <Protip title="Need tokens to stake?">
-            <ExternalLink
-              href={metadata.getPlatformLink(stakingRewardsContract)}
-            >
-              Get tokens to stake by contributing liquidity on {metadata.name}
-            </ExternalLink>
-          </Protip>
-        ) : null}
       </div>
     </Row>
   );
@@ -91,24 +77,38 @@ const Input: FC = () => {
 
 const Confirm: FC = () => {
   const {
-    stake: { amount },
+    tokens,
+    addLiquidity: { amount, token },
   } = useStakingRewardsContractState();
+  const collateralToken = token ? tokens[token] : undefined;
   const stakingToken = useCurrentStakingToken();
 
-  return amount && stakingToken ? (
+  return amount && stakingToken && collateralToken ? (
     <div>
-      You are staking{' '}
-      <CountUp end={amount?.simple} suffix={` ${stakingToken.symbol}`} /> into
-      this pool.
+      <P>
+        You are adding liquidity of{' '}
+        <CountUp end={amount?.simple} suffix={` ${collateralToken.symbol}`} />{' '}
+        into this pool.
+      </P>
+      <P>
+        You will receive {stakingToken.symbol} LP tokens which can be deposited
+        to earn rewards.
+      </P>
     </div>
   ) : null;
 };
 
+const CURVE_ALL_COINS = [
+  process.env.REACT_APP_MUSD_ADDRESS as string,
+  ...CURVE_ADDRESSES['3POOL_COINS'],
+];
+
 const Form: FC = () => {
   const {
-    stake: { amount, valid },
+    addLiquidity: { amount, valid, token },
     stakingRewardsContract: { expired = false } = {},
   } = useStakingRewardsContractState();
+
   const { setActiveTab } = useStakingRewardContractDispatch();
 
   const curveContracts = useCurveContracts();
@@ -116,19 +116,27 @@ const Form: FC = () => {
 
   useEffect(() => {
     if (valid && amount) {
+      const index = CURVE_ALL_COINS.findIndex(address => address === token);
+      const amounts = [0, 0, 0, 0].map((_, _index) =>
+        _index === index ? amount.exact : 0,
+      );
+
+      // 99% of amount (i.e. 1% slippage)
+      const minLPTokensToMint = amount.exact.sub(amount.exact.div(10));
+
       const manifest: SendTxManifest<
-        Interfaces.CurveGauge,
-        'deposit(uint256)'
+        Interfaces.CurveDeposit,
+        'add_liquidity'
       > = {
-        args: [amount.exact],
-        iface: curveContracts.musdGauge,
-        fn: 'deposit(uint256)',
+        args: [amounts, minLPTokensToMint],
+        iface: curveContracts.musdDeposit,
+        fn: 'add_liquidity',
       };
       setFormManifest(manifest);
     } else {
       setFormManifest(null);
     }
-  }, [setFormManifest, valid, amount, curveContracts.musdGauge]);
+  }, [setFormManifest, valid, amount, curveContracts.musdDeposit, token]);
 
   return expired ? (
     <div>
@@ -148,18 +156,17 @@ const Form: FC = () => {
     </div>
   ) : (
     <TransactionForm
-      confirmLabel="Stake"
+      confirmLabel="Add liquidity"
       confirm={<Confirm />}
       input={<Input />}
-      transactionsLabel="Stake transactions"
       valid={valid}
     />
   );
 };
 
-export const CurveStake: FC = () => {
+export const CurveAddLiquidity: FC = () => {
   return (
-    <FormProvider formId="curveStake">
+    <FormProvider formId="curveLP">
       <Form />
     </FormProvider>
   );

@@ -54,6 +54,66 @@ const reduce: Reducer<State, Action> = (state, action) => {
       };
     }
 
+    case Actions.SetAddLiquidityAmount: {
+      const collateralToken = state.addLiquidity.token
+        ? state.tokens[state.addLiquidity.token]
+        : undefined;
+
+      return {
+        ...state,
+        addLiquidity: {
+          ...state.addLiquidity,
+          touched: !!action.payload,
+          amount: collateralToken
+            ? BigDecimal.maybeParse(action.payload, collateralToken.decimals)
+            : undefined,
+          formValue: action.payload,
+        },
+      };
+    }
+
+    case Actions.SetAddLiquidityMaxAmount: {
+      const {
+        addLiquidity: { token },
+        tokens,
+      } = state;
+
+      const collateralToken = token ? tokens[token] : undefined;
+
+      if (!collateralToken?.balance) return state;
+
+      const amount = collateralToken.balance;
+
+      return {
+        ...state,
+        addLiquidity: {
+          ...state.addLiquidity,
+          touched: true,
+          amount,
+          formValue: amount.format(collateralToken.decimals, false),
+        },
+      };
+    }
+
+    case Actions.SetAddLiquidityToken: {
+      const token = action.payload || undefined;
+      const collateralToken = token ? state.tokens[token] : undefined;
+      return {
+        ...state,
+        addLiquidity: {
+          ...state.addLiquidity,
+          token,
+          touched: true,
+          amount: collateralToken
+            ? BigDecimal.maybeParse(
+                state.addLiquidity.formValue,
+                collateralToken.decimals,
+              )
+            : undefined,
+        },
+      };
+    }
+
     case Actions.SetWithdrawAmount: {
       return {
         ...state,
