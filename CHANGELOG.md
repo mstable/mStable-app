@@ -2,9 +2,12 @@
 
 ## Next
 
+## Version 1.13.0
+
 Features:
 
 - Add support for the Curve mUSD pool in EARN
+- Add "+Yield" and "+CRV" to pools where appropriate
 
 Bug fixes:
 
