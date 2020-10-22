@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
-import { usePoolsQuery } from '../../graphql/balancer';
+import { usePoolsQuery as useBalancerPoolsQuery } from '../../graphql/balancer';
+// import { usePoolsQuery as useCurvePoolsQuery } from '../../graphql/curve';
 import { useStakingRewardsContractsQuery } from '../../graphql/mstable';
 import { usePairsQuery } from '../../graphql/uniswap';
 import { useBlockTimestampQuery } from '../../graphql/blocks';
@@ -20,6 +21,11 @@ import {
 } from './types';
 import { STABLECOIN_SYMBOLS } from '../../web3/constants';
 import { useMerkleDrops } from './useMerkleDrops';
+import {
+  CURVE_ADDRESSES,
+  CurveJsonData,
+  useCurveJsonData,
+} from './CurveProvider';
 
 interface CoingeckoPrices {
   [address: string]: { usd: number };
@@ -95,9 +101,10 @@ const getUniqueTokens = (
   );
 
   return {
-    // MTA/BAL
+    // MTA/BAL/CRV
     '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2': 18,
     '0xba100000625a3754423978a60c9317c58a424e3d': 18,
+    [CURVE_ADDRESSES.CRV_TOKEN]: 18,
     ...tokens,
     ...balancerTokens,
     ...uniswapTokens,
@@ -216,6 +223,42 @@ const normalizeUniswapPool = ({
   };
 };
 
+const normalizeCurvePools = (
+  curveJsonData?: CurveJsonData,
+): NormalizedPool[] => {
+  if (!curveJsonData) {
+    return [];
+  }
+
+  const {
+    stats: { balances, prices, supply },
+  } = curveJsonData;
+  return [
+    {
+      address: CURVE_ADDRESSES.MUSD_LP_TOKEN,
+      platform: Platforms.Curve,
+      totalSupply: new BigDecimal(supply.value, 18),
+      tokens: [
+        {
+          address: process.env.REACT_APP_MUSD_ADDRESS as string,
+          symbol: 'mUSD',
+          decimals: 18,
+          liquidity: new BigDecimal(balances[0].value, 18),
+          price: BigDecimal.parse(prices['0-2'][0].value, 18),
+        },
+        {
+          address: CURVE_ADDRESSES['3POOL_TOKEN'],
+          symbol: '3POOL',
+          decimals: 18,
+          liquidity: new BigDecimal(balances[1].value, 18),
+          price: BigDecimal.parse(prices['0-2'][1].value, 18),
+        },
+      ],
+      onlyStablecoins: true,
+    },
+  ];
+};
+
 const normalizeBalancerPool = ({
   address,
   tokens: _tokens,
@@ -270,12 +313,21 @@ const useRawPlatformPools = (
     fetchPolicy: 'cache-and-network',
   };
 
-  const poolsQuery = usePoolsQuery(
-    options as Parameters<typeof usePoolsQuery>[0],
+  const poolsQuery = useBalancerPoolsQuery(
+    options as Parameters<typeof useBalancerPoolsQuery>[0],
   );
   const pairsQuery = usePairsQuery(
     options as Parameters<typeof usePairsQuery>[0],
   );
+
+  // TODO later: include when the subgraph works
+  // const curveQuery = useCurvePoolsQuery({
+  //   variables: {
+  //     basePool: CURVE_ADDRESSES['3POOL_SWAP'],
+  //     musdPool: CURVE_ADDRESSES.MUSD_SWAP,
+  //   },
+  //   fetchPolicy: 'cache-and-network',
+  // });
 
   return {
     [Platforms.Balancer]: {
@@ -286,6 +338,7 @@ const useRawPlatformPools = (
       current: pairsQuery.data?.current || [],
       historic: pairsQuery.data?.historic || [],
     },
+    // [Platforms.Curve]: curveQuery.data,
   };
 };
 
@@ -293,30 +346,35 @@ const addPricesToPools = (
   pools: NormalizedPool[],
   tokenPricesMap: TokenPricesMap,
 ): NormalizedPoolsMap =>
-  pools.reduce(
-    (_pools, pool) => ({
-      ..._pools,
-      [pool.address]: {
+  Object.fromEntries(
+    pools.map(pool => [
+      pool.address,
+      {
         ...pool,
         tokens: pool.tokens.map(token => ({
           ...token,
-          price: tokenPricesMap[token.address],
+          price: token.price || tokenPricesMap[token.address],
         })),
       },
-    }),
-    {},
+    ]),
   );
 
-const getPools = (
-  {
+const getPools = ({
+  rawPlatformPools: {
     [Platforms.Balancer]: balancer,
     [Platforms.Uniswap]: uniswap,
-  }: RawPlatformPools,
-  tokenPricesMap: TokenPricesMap,
-): { current: NormalizedPoolsMap; historic: NormalizedPoolsMap } => {
+  },
+  curveJsonData,
+  tokenPrices,
+}: RawSyncedEarnData): {
+  current: NormalizedPoolsMap;
+  historic: NormalizedPoolsMap;
+} => {
+  const curvePools = normalizeCurvePools(curveJsonData);
   const current = [
     ...balancer.current.map(normalizeBalancerPool),
     ...uniswap.current.map(normalizeUniswapPool),
+    ...curvePools,
   ];
   const historic = [
     ...balancer.historic.map(normalizeBalancerPool),
@@ -324,51 +382,61 @@ const getPools = (
   ];
 
   return {
-    current: addPricesToPools(current, tokenPricesMap),
-    historic: addPricesToPools(historic, tokenPricesMap),
+    current: addPricesToPools(current, tokenPrices),
+    historic: addPricesToPools(historic, tokenPrices),
   };
 };
 
 const getStakingTokenPrices = (normalizedPools: {
   current: NormalizedPoolsMap;
   historic: NormalizedPoolsMap;
-}): TokenPricesMap =>
-  Object.values(normalizedPools.current)
-    .filter(pool =>
-      pool.tokens.every(
-        token => token.liquidity?.exact.gt(0) && token.price?.exact.gt(0),
-      ),
-    )
-    .reduce(
-      (prices, { address, tokens, totalSupply }) => ({
-        ...prices,
-        [address]: BigDecimal.parse(
+}): TokenPricesMap => {
+  return Object.fromEntries(
+    Object.values(normalizedPools.current)
+      .filter(
+        pool =>
+          pool.totalSupply?.exact.gt(0) &&
+          pool.tokens.every(
+            token => token.liquidity?.exact.gt(0) && token.price?.exact.gt(0),
+          ),
+      )
+      .map(({ address, tokens, totalSupply }) => {
+        const price = BigDecimal.parse(
           tokens
+            .filter(t => t.price && t.liquidity)
             .reduce(
               (prev, current) =>
                 prev +
-                current.liquidity.simple * (current.price as BigDecimal).simple,
+                (current.liquidity as BigDecimal).simple *
+                  (current.price as BigDecimal).simple,
               0,
             )
             .toString(),
           18, // Both BPT and UNI-V2 are 18 decimals
-        ).divPrecisely(totalSupply),
-      }),
-      {},
-    );
+        ).divPrecisely(totalSupply as BigDecimal);
 
-const transformRawSyncedEarnData = ({
-  block24hAgo,
-  tokenPrices,
-  rawPlatformPools,
-  merkleDrops,
-}: RawSyncedEarnData): SyncedEarnData => {
-  const pools = getPools(rawPlatformPools, tokenPrices);
+        return [address, price];
+      }),
+  );
+};
+
+const transformRawSyncedEarnData = (
+  rawSyncedEarnData: RawSyncedEarnData,
+): SyncedEarnData => {
+  const {
+    block24hAgo,
+    tokenPrices,
+    curveJsonData,
+    merkleDrops,
+  } = rawSyncedEarnData;
+
+  const pools = getPools(rawSyncedEarnData);
 
   const stakingTokensPrices = getStakingTokenPrices(pools);
 
   return {
     block24hAgo,
+    curveJsonData,
     pools,
     tokenPrices: {
       ...tokenPrices,
@@ -394,6 +462,8 @@ export const useSyncedEarnData = (): SyncedEarnData => {
     block24hAgo,
   );
 
+  const curveJsonData = useCurveJsonData();
+
   const tokenPrices = useTokenPrices(
     stakingRewardsContractsQuery.data,
     rawPlatformPools,
@@ -406,7 +476,9 @@ export const useSyncedEarnData = (): SyncedEarnData => {
         rawPlatformPools,
         tokenPrices,
         merkleDrops,
+        curveJsonData,
       }),
-    [block24hAgo, rawPlatformPools, tokenPrices, merkleDrops],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [rawPlatformPools, tokenPrices, merkleDrops],
   );
 };

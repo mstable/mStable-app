@@ -9,6 +9,10 @@ import DAI, { ReactComponent as DaiSvg } from './tokens/DAI.svg';
 import BUSD, { ReactComponent as BusdSvg } from './tokens/BUSD.svg';
 import SUSD, { ReactComponent as SusdSvg } from './tokens/sUSD.svg';
 import CRV, { ReactComponent as CrvSvg } from './tokens/CRV.svg';
+import MUSD3CRV, { ReactComponent as Musd3CrvSvg } from './tokens/musd3CRV.svg';
+import Curve3Pool, {
+  ReactComponent as Curve3PoolSvg,
+} from './tokens/3pool.svg';
 import MTA, { ReactComponent as MtaSvg } from './tokens/MTA.svg';
 import Uniswap, { ReactComponent as UniswapSvg } from './tokens/Uniswap.svg';
 import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
@@ -35,7 +39,8 @@ export const TOKEN_ICONS: Record<string, string> = {
   MTA,
   SUSD,
   CRV,
-  MUSD3CRV: CRV,
+  '3POOL': Curve3Pool,
+  MUSD3CRV,
   'UNI-V2': Uniswap,
   BAL: Balancer,
   BPT: Balancer,
@@ -54,7 +59,8 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   BUSD: BusdSvg as SvgComponent,
   SUSD: SusdSvg as SvgComponent,
   CRV: CrvSvg as SvgComponent,
-  MUSD3CRV: CrvSvg as SvgComponent,
+  '3POOL': Curve3PoolSvg as SvgComponent,
+  MUSD3CRV: Musd3CrvSvg as SvgComponent,
   MTA: MtaSvg as SvgComponent,
   'UNI-V2': UniswapSvg as SvgComponent,
   BAL: BalancerSvg as SvgComponent,

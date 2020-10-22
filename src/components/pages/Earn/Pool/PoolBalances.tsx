@@ -81,7 +81,7 @@ export const PoolBalances: FC<Props> = () => {
     rewards,
     rewardsUsd,
     platformRewards,
-    // platformRewardsUsd,
+    platformRewardsUsd,
   } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
   const stakingToken = useCurrentStakingToken();
@@ -110,34 +110,41 @@ export const PoolBalances: FC<Props> = () => {
               />
             </AmountContainer>
             {stakingRewardsContract.platformRewards &&
-            platformRewards &&
-            platformToken ? (
-              <>
-                <ProtipContainer>
-                  {/* <Heading>Earned {platformToken.symbol}</Heading> */}
-                  {/* <LargeAmount  */}
-                  {/*   format={NumberFormat.Countup}  */}
-                  {/*   amount={platformRewards}  */}
-                  {/*   countup={{ decimals: 18 }}  */}
-                  {/* />  */}
-                  <StyledProtip emoji="💰" title="Claim BAL">
-                    <P>
-                      You can now claim any BAL earned directly from the{' '}
-                      <Link to="/earn">EARN dashboard.</Link>
-                    </P>
-                  </StyledProtip>
-                </ProtipContainer>
-                {/* <AmountContainer> */}
-                {/*   <span>$</span> */}
-                {/*   <Amount */}
-                {/*     format={NumberFormat.Countup} */}
-                {/*     amount={platformRewardsUsd} */}
-                {/*     countup={{ decimals: 18 }} */}
-                {/*   /> */}
-                {/* </AmountContainer> */}
-              </>
-            ) : null}
+              !stakingRewardsContract.curve &&
+              platformRewards &&
+              platformToken && (
+                <>
+                  <ProtipContainer>
+                    <StyledProtip emoji="💰" title="Claim BAL">
+                      <P>
+                        You can now claim any BAL earned directly from the{' '}
+                        <Link to="/earn">EARN dashboard.</Link>
+                      </P>
+                    </StyledProtip>
+                  </ProtipContainer>
+                </>
+              )}
           </div>
+          {stakingRewardsContract.curve && (
+            <div>
+              <AmountContainer>
+                <Heading>Earned CRV</Heading>
+                <LargeAmount
+                  format={NumberFormat.Countup}
+                  amount={platformRewards}
+                  countup={{ decimals: 6 }}
+                />
+              </AmountContainer>
+              <AmountContainer>
+                <span>$</span>
+                <Amount
+                  format={NumberFormat.Countup}
+                  amount={platformRewardsUsd}
+                  countup={{ decimals: 6 }}
+                />
+              </AmountContainer>
+            </div>
+          )}
           <div>
             <AmountContainer>
               <Heading>Share of pool</Heading>

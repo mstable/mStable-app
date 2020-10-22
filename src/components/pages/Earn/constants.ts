@@ -29,4 +29,15 @@ export const PLATFORM_METADATA: Record<Platforms, PlatformMetadata> = {
     }) => `https://app.uniswap.org/#/add/${token0.address}/${token1.address}`,
     slug: 'uniswap',
   },
+  [Platforms.Curve]: {
+    colors: {
+      light: '#a4a3cc',
+      accent: '#bebebe',
+      base: '#3464a3',
+      text: '#ffffff',
+    },
+    name: 'Curve',
+    getPlatformLink: () => 'https://www.curve.fi/musd',
+    slug: 'curve',
+  },
 };

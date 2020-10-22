@@ -3248,6 +3248,26 @@ export type AggregateMetricsQueryVariables = {
 
 export type AggregateMetricsQuery = { aggregateMetrics: Array<Pick<AggregateMetric, 'type' | 'timestamp' | 'value'>> };
 
+export type StakingRewardsContractDetailsFragment = (
+  Pick<StakingRewardsContract, 'id' | 'type' | 'duration' | 'lastUpdateTime' | 'periodFinish' | 'rewardRate' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored' | 'platformRewardRate' | 'totalSupply' | 'totalStakingRewards' | 'totalPlatformRewards'>
+  & { address: StakingRewardsContract['id'] }
+  & { stakingToken: (
+    Pick<Token, 'totalSupply'>
+    & TokenDetailsFragment
+  ), rewardsToken: TokenDetailsFragment, platformToken?: Maybe<TokenDetailsFragment> }
+);
+
+export type StakingRewardsContractQueryVariables = {
+  id: Scalars['ID'];
+  account?: Maybe<Scalars['Bytes']>;
+};
+
+
+export type StakingRewardsContractQuery = { stakingRewardsContract?: Maybe<(
+    { stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
+    & StakingRewardsContractDetailsFragment
+  )> };
+
 export type StakingRewardsContractsQueryVariables = {
   account?: Maybe<Scalars['Bytes']>;
   includeHistoric: Scalars['Boolean'];
@@ -3256,12 +3276,8 @@ export type StakingRewardsContractsQueryVariables = {
 
 
 export type StakingRewardsContractsQuery = { current: Array<(
-    Pick<StakingRewardsContract, 'id' | 'type' | 'duration' | 'lastUpdateTime' | 'periodFinish' | 'rewardRate' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored' | 'platformRewardRate' | 'totalSupply' | 'totalStakingRewards' | 'totalPlatformRewards'>
-    & { address: StakingRewardsContract['id'] }
-    & { stakingToken: (
-      Pick<Token, 'totalSupply'>
-      & TokenDetailsFragment
-    ), rewardsToken: TokenDetailsFragment, platformToken?: Maybe<TokenDetailsFragment>, stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>>, platformRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
+    { stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>>, platformRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
+    & StakingRewardsContractDetailsFragment
   )>, historic: Array<(
     Pick<StakingRewardsContract, 'id' | 'lastUpdateTime' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored'>
     & { address: StakingRewardsContract['id'] }
@@ -3334,6 +3350,33 @@ export const ErFragmentDoc = gql`
   timestamp
 }
     `;
+export const StakingRewardsContractDetailsFragmentDoc = gql`
+    fragment StakingRewardsContractDetails on StakingRewardsContract {
+  address: id
+  id
+  type
+  duration
+  lastUpdateTime
+  periodFinish
+  rewardRate
+  rewardPerTokenStored
+  platformRewardPerTokenStored
+  platformRewardRate
+  totalSupply
+  totalStakingRewards
+  totalPlatformRewards
+  stakingToken {
+    totalSupply
+    ...TokenDetails
+  }
+  rewardsToken {
+    ...TokenDetails
+  }
+  platformToken {
+    ...TokenDetails
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
 export const CoreTokensDocument = gql`
     query CoreTokens @api(name: mstable) {
   mUSD: tokens(where: {symbol: "mUSD"}) {
@@ -3890,32 +3933,51 @@ export function useAggregateMetricsLazyQuery(baseOptions?: ApolloReactHooks.Lazy
 export type AggregateMetricsQueryHookResult = ReturnType<typeof useAggregateMetricsQuery>;
 export type AggregateMetricsLazyQueryHookResult = ReturnType<typeof useAggregateMetricsLazyQuery>;
 export type AggregateMetricsQueryResult = ApolloReactCommon.QueryResult<AggregateMetricsQuery, AggregateMetricsQueryVariables>;
+export const StakingRewardsContractDocument = gql`
+    query StakingRewardsContract($id: ID!, $account: Bytes) @api(name: mstable) {
+  stakingRewardsContract(id: $id) {
+    ...StakingRewardsContractDetails
+    stakingBalances(where: {account: $account}) {
+      amount
+    }
+    stakingRewards: stakingRewards(where: {account: $account, type: REWARD}) {
+      amount
+      amountPerTokenPaid
+    }
+  }
+}
+    ${StakingRewardsContractDetailsFragmentDoc}`;
+
+/**
+ * __useStakingRewardsContractQuery__
+ *
+ * To run a query within a React component, call `useStakingRewardsContractQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStakingRewardsContractQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStakingRewardsContractQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      account: // value for 'account'
+ *   },
+ * });
+ */
+export function useStakingRewardsContractQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>) {
+        return ApolloReactHooks.useQuery<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>(StakingRewardsContractDocument, baseOptions);
+      }
+export function useStakingRewardsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>(StakingRewardsContractDocument, baseOptions);
+        }
+export type StakingRewardsContractQueryHookResult = ReturnType<typeof useStakingRewardsContractQuery>;
+export type StakingRewardsContractLazyQueryHookResult = ReturnType<typeof useStakingRewardsContractLazyQuery>;
+export type StakingRewardsContractQueryResult = ApolloReactCommon.QueryResult<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>;
 export const StakingRewardsContractsDocument = gql`
     query StakingRewardsContracts($account: Bytes, $includeHistoric: Boolean!, $block: Block_height) @api(name: mstable) {
   current: stakingRewardsContracts {
-    address: id
-    id
-    type
-    duration
-    lastUpdateTime
-    periodFinish
-    rewardRate
-    rewardPerTokenStored
-    platformRewardPerTokenStored
-    platformRewardRate
-    totalSupply
-    totalStakingRewards
-    totalPlatformRewards
-    stakingToken {
-      totalSupply
-      ...TokenDetails
-    }
-    rewardsToken {
-      ...TokenDetails
-    }
-    platformToken {
-      ...TokenDetails
-    }
+    ...StakingRewardsContractDetails
     stakingBalances(where: {account: $account}) {
       amount
     }
@@ -3936,7 +3998,7 @@ export const StakingRewardsContractsDocument = gql`
     platformRewardPerTokenStored
   }
 }
-    ${TokenDetailsFragmentDoc}`;
+    ${StakingRewardsContractDetailsFragmentDoc}`;
 
 /**
  * __useStakingRewardsContractsQuery__

@@ -5,20 +5,25 @@ import {
   StakingRewardsContractsQueryResult,
   StakingRewardsContractType,
 } from '../../graphql/mstable';
-import { PoolsQueryResult } from '../../graphql/balancer';
+import { PoolsQueryResult as BalancerPoolsQueryResult } from '../../graphql/balancer';
+// import { PoolsQueryResult as CurvePoolsQueryResult } from '../../graphql/curve';
 import { PairsQueryResult } from '../../graphql/uniswap';
+import { CurveBalances, CurveJsonData } from './CurveProvider';
 
 export type RawPoolData = NonNullable<
-  PoolsQueryResult['data']
+  BalancerPoolsQueryResult['data']
 >['current'][number];
 
 export type RawPairData = NonNullable<
   PairsQueryResult['data']
 >['current'][number];
 
+// export type RawCurvePoolsData = CurvePoolsQueryResult['data'];
+
 export interface RawPlatformPools {
   [Platforms.Balancer]: { current: RawPoolData[]; historic: RawPoolData[] };
   [Platforms.Uniswap]: { current: RawPairData[]; historic: RawPairData[] };
+  // [Platforms.Curve]: RawCurvePoolsData;
 }
 
 export interface TokenPricesMap {
@@ -36,6 +41,8 @@ export interface RawSyncedEarnData {
   tokenPrices: TokenPricesMap;
   rawPlatformPools: RawPlatformPools;
   merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
+  curveJsonData?: CurveJsonData;
+  // rawCurveData?: RawCurveData;
 }
 
 export interface SyncedEarnData {
@@ -46,10 +53,21 @@ export interface SyncedEarnData {
   };
   tokenPrices: TokenPricesMap;
   merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
+  curveJsonData?: CurveJsonData;
 }
+
+// export interface RawCurveData {
+//   virtualPrice: BigNumber;
+//   inflationRate: BigNumber;
+//   relativeWeight: BigNumber;
+//   workingSupply: BigNumber;
+//   balance0: BigNumber;
+//   balance1: BigNumber;
+// }
 
 export interface RawEarnData {
   block24hAgo?: BlockTimestamp;
+  curveBalances: CurveBalances;
   rawStakingRewardsContracts: RawStakingRewardsContracts;
 }
 
@@ -58,11 +76,11 @@ export type NormalizedPool = {
   platform: Platforms;
   onlyStablecoins: boolean;
   tokens: (Token & {
-    liquidity: BigDecimal;
+    liquidity?: BigDecimal;
     price?: BigDecimal;
-    ratio: number;
+    ratio?: number;
   })[];
-  totalSupply: BigDecimal;
+  totalSupply?: BigDecimal;
 } & (
   | {
       // Uniswap
@@ -73,12 +91,24 @@ export type NormalizedPool = {
       totalSwapVolume: BigDecimal;
       swapFee: BigDecimal;
     }
+  | {}
 );
+
+export interface CurvePool {
+  address: string;
+  platform: Platforms.Curve;
+  onlyStablecoins: true;
+  tokens: {}[];
+}
 
 export interface StakingRewardsContract {
   address: string;
   earnUrl: string;
   title: string;
+  curve?: {
+    rewardsEarned?: BigDecimal;
+    platformRewardsEarned?: BigDecimal;
+  };
   pool: NormalizedPool;
   pool24hAgo?: NormalizedPool;
   duration: number;
@@ -99,6 +129,7 @@ export interface StakingRewardsContract {
   type: StakingRewardsContractType;
   apy: {
     value?: BigDecimal;
+    yieldApy?: BigDecimal;
     waitingForData: boolean;
   };
   platformRewards?: {

@@ -13,6 +13,7 @@ import React, {
 import { Erc20TokensQueryResult } from '../../graphql/mstable';
 import { Allowances, SubscribedToken } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
+import { CURVE_ADDRESSES } from '../earn/CurveProvider';
 
 interface State {
   tokens: {
@@ -85,7 +86,19 @@ type Action =
     }
   | { type: Actions.Reset };
 
-const initialState: State = { tokens: {}, subscriptions: {} };
+const initialState: State = {
+  tokens: {
+    // TODO later: Remove hardcoded token when it's on the subgraph
+    [CURVE_ADDRESSES.CRV_TOKEN]: {
+      symbol: 'CRV',
+      address: CURVE_ADDRESSES.CRV_TOKEN,
+      decimals: 18,
+      balance: new BigDecimal(0, 18),
+      allowances: {},
+    },
+  },
+  subscriptions: {},
+};
 
 const stateCtx = createContext<State>(initialState);
 const dispatchCtx = createContext<Dispatch>({} as Dispatch);

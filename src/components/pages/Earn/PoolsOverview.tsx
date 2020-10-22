@@ -12,13 +12,17 @@ import { PLATFORM_METADATA } from './constants';
 import { TokenIconSvg } from '../../icons/TokenIcon';
 import { EtherscanLink } from '../../core/EtherscanLink';
 import { ExternalLink } from '../../core/ExternalLink';
-import { AccentColors } from '../../../types';
+import { AccentColors, Platforms } from '../../../types';
 import { Tooltip } from '../../core/ReactTooltip';
 
 const ApyAmount = styled(Amount)`
-  font-size: ${FontSize.xl};
+  font-size: ${FontSize.m};
   margin-bottom: 8px;
   display: block;
+`;
+
+const MtaApyAmount = styled(ApyAmount)`
+  font-size: ${FontSize.xl};
 `;
 
 const ApyNote = styled.div`
@@ -32,7 +36,7 @@ const TableGroup = styled.div`
 `;
 
 const PlatformIcon = styled(TokenIconSvg)`
-  margin-right: 8px;
+  margin-right: 16px;
 `;
 
 const PlatformContainer = styled.div<{ colors: AccentColors }>`
@@ -97,7 +101,15 @@ export const PoolsOverview: FC<{}> = () => {
 
   const [activePools, otherPools, expiredPools] = useMemo(() => {
     const items = Object.values(stakingRewardsContracts)
-      .sort()
+      .sort(a => {
+        // *teleports behind you*
+        return a.pool.platform === Platforms.Curve
+          ? -1
+          : // nothing personnel, kid
+          a.pool.platform === Platforms.Balancer
+          ? 0
+          : 1;
+      })
       .map(item => {
         const {
           address: id,
@@ -157,24 +169,30 @@ export const PoolsOverview: FC<{}> = () => {
                       )}
                     </>
                   );
-                // case Columns.StakingApy:
-                //   return (
-                //     <ApyAmount
-                //       amount={stakingRewardsContract.stakingTokenApy}
-                //       format={NumberFormat.Percentage}
-                //     />
-                //   );
                 case Columns.RewardsApy: {
                   if (expired) {
                     return <>N/A</>;
                   }
                   return item.apy.value?.exact.gt(0) ? (
                     <div>
-                      <ApyAmount
+                      <MtaApyAmount
                         amount={item.apy.value}
                         format={NumberFormat.CountupPercentage}
                       />
-                      {item.platformRewards ? <ApyNote>+ BAL</ApyNote> : null}
+                      <ApyNote>
+                        + Yield
+                        {item.apy.yieldApy && (
+                          <ApyAmount
+                            amount={item.apy.yieldApy}
+                            format={NumberFormat.CountupPercentage}
+                          />
+                        )}
+                      </ApyNote>
+                      {item.platformRewards && (
+                        <ApyNote>
+                          + {item.platformRewards.platformToken.symbol}
+                        </ApyNote>
+                      )}
                     </div>
                   ) : item.apy.waitingForData ? (
                     <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
@@ -197,9 +215,14 @@ export const PoolsOverview: FC<{}> = () => {
                         price={rewardsToken.price}
                       />
                       {platformRewards ? (
-                        <Tooltip tip="Currently BAL rewards are airdropped based on Balancer's reward programme allocations. Earned rewards can be claimed on the EARN dashboard.">
+                        <Tooltip
+                          tip={
+                            item.curve
+                              ? 'This pool receives CRV rewards'
+                              : "Currently BAL rewards are airdropped based on Balancer's reward programme allocations. Earned rewards can be claimed on the EARN dashboard."
+                          }
+                        >
                           <TokenAmount
-                            // amount={platformRewards.totalPlatformRewards}
                             format={NumberFormat.Abbreviated}
                             symbol={platformRewards.platformToken.symbol}
                             price={platformRewards.platformToken.price}

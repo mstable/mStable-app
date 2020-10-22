@@ -51,7 +51,7 @@ if (!process.env.REACT_APP_RPC_API_KEY) {
   throw new Error('`REACT_APP_RPC_API_KEY` must be set');
 }
 
-const RPC_URL = `${process.env.REACT_APP_RPC_URL}${process.env.REACT_APP_RPC_API_KEY}`;
+export const RPC_URL = `${process.env.REACT_APP_RPC_URL}${process.env.REACT_APP_RPC_API_KEY}`;
 
 const walletlink = {
   url: RPC_URL,

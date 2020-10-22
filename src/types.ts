@@ -10,6 +10,9 @@ import { StakingRewardsWithPlatformToken as IStakingRewardsWithPlatformToken } f
 import { BigDecimal } from './web3/BigDecimal';
 import { RewardsDistributor as IRewardsDistributor } from './typechain/RewardsDistributor.d';
 import { MerkleDrop as IMerkleDrop } from './typechain/MerkleDrop.d';
+import { MusdGauge } from './typechain/MusdGauge.d';
+import { TokenMinter as ICurveTokenMinter } from './typechain/TokenMinter.d';
+import { CurveDeposit as ICurveDeposit } from './typechain/CurveDeposit.d';
 
 export interface Transaction {
   formId?: string;
@@ -54,6 +57,9 @@ export enum Interfaces {
   StakingRewardsWithPlatformToken,
   RewardsDistibutor,
   MerkleDrop,
+  CurveGauge,
+  CurveTokenMinter,
+  CurveDeposit,
 }
 
 export interface Instances {
@@ -64,6 +70,9 @@ export interface Instances {
   [Interfaces.StakingRewardsWithPlatformToken]: IStakingRewardsWithPlatformToken;
   [Interfaces.RewardsDistibutor]: IRewardsDistributor;
   [Interfaces.MerkleDrop]: IMerkleDrop;
+  [Interfaces.CurveGauge]: MusdGauge;
+  [Interfaces.CurveTokenMinter]: ICurveTokenMinter;
+  [Interfaces.CurveDeposit]: ICurveDeposit;
 }
 
 /**
@@ -144,6 +153,7 @@ export interface Connector {
 export enum Platforms {
   Balancer = 'Balancer',
   Uniswap = 'Uniswap',
+  Curve = 'Curve',
 }
 
 export interface BlockTimestamp {

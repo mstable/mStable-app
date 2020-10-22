@@ -1,17 +1,18 @@
 import React, {
-  FC,
   createContext,
+  FC,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useReducer,
   useState,
-  useEffect,
 } from 'react';
 import useInterval from 'react-use/lib/useInterval';
 
 import { StakingRewards } from '../../../typechain/StakingRewards.d';
 import { SCALE } from '../../../web3/constants';
+import { CURVE_ADDRESSES } from '../../../context/earn/CurveProvider';
 import { useTokens } from '../../../context/DataProvider/TokensProvider';
 import { useSignerContext } from '../../../context/SignerProvider';
 import { StakingRewardsFactory } from '../../../typechain/StakingRewardsFactory';
@@ -20,7 +21,7 @@ import {
   useStakingRewardsContract,
   useTokenWithPrice,
 } from '../../../context/earn/EarnDataProvider';
-import { Dispatch, Tabs, State, Actions, RewardsEarned } from './types';
+import { Actions, Dispatch, RewardsEarned, State, Tabs } from './types';
 import { reducer } from './reducer';
 
 interface Props {
@@ -30,6 +31,12 @@ interface Props {
 const initialState: State = {
   activeTab: Tabs.Stake,
   tokens: {},
+  addLiquidity: {
+    valid: false,
+    touched: false,
+    formValue: null,
+    needsUnlock: false,
+  },
   claim: {
     touched: false,
   },
@@ -46,6 +53,11 @@ const initialState: State = {
     isExiting: false,
   },
 };
+
+const initializer = (address: string): State =>
+  address === CURVE_ADDRESSES.MTA_STAKING_REWARDS
+    ? { ...initialState, activeTab: Tabs.AddLiquidity }
+    : initialState;
 
 const dispatchCtx = createContext<Dispatch>({} as never);
 
@@ -93,7 +105,6 @@ const useRewardsEarnedInterval = (): RewardsEarned => {
   >({});
   const stakingRewardsContract = useCurrentStakingRewardsContract();
   const rewardsToken = useCurrentRewardsToken();
-  const platformToken = useCurrentPlatformToken();
 
   useInterval(() => {
     if (!stakingRewardsContract) {
@@ -101,12 +112,14 @@ const useRewardsEarnedInterval = (): RewardsEarned => {
     }
 
     const {
+      curve,
       lastUpdateTime,
       periodFinish,
       platformRewards: {
         platformReward,
         platformRewardPerTokenStoredNow,
         platformRewardRate,
+        platformToken,
       } = {},
       rewardPerTokenStoredNow,
       rewardRate,
@@ -114,6 +127,21 @@ const useRewardsEarnedInterval = (): RewardsEarned => {
       stakingReward,
       totalSupply: { exact: totalTokens },
     } = stakingRewardsContract;
+
+    if (curve) {
+      return setValue({
+        rewards: curve.rewardsEarned,
+        rewardsUsd:
+          curve.rewardsEarned && rewardsToken?.price
+            ? curve.rewardsEarned.mulTruncate(rewardsToken.price.exact)
+            : undefined,
+        platformRewards: curve.platformRewardsEarned,
+        platformRewardsUsd:
+          curve.platformRewardsEarned && platformToken?.price
+            ? curve.platformRewardsEarned.mulTruncate(platformToken.price.exact)
+            : undefined,
+      });
+    }
 
     const rewardPerToken = (() => {
       if (totalTokens.eq(0)) {
@@ -202,7 +230,7 @@ export const StakingRewardsContractProvider: FC<Props> = ({
   children,
   address,
 }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, address, initializer);
 
   const stakingRewardsContract = useStakingRewardsContract(address);
 
@@ -246,6 +274,29 @@ export const StakingRewardsContractProvider: FC<Props> = ({
     dispatch({ type: Actions.SetMaxWithdrawAmount });
   }, [dispatch]);
 
+  const setAddLiquidityAmount = useCallback<Dispatch['setAddLiquidityAmount']>(
+    amount => {
+      dispatch({ type: Actions.SetAddLiquidityAmount, payload: amount });
+    },
+    [dispatch],
+  );
+
+  const setAddLiquidityToken = useCallback<Dispatch['setAddLiquidityToken']>(
+    (_, token) => {
+      dispatch({
+        type: Actions.SetAddLiquidityToken,
+        payload: token?.address || null,
+      });
+    },
+    [dispatch],
+  );
+
+  const setAddLiquidityMaxAmount = useCallback<
+    Dispatch['setAddLiquidityMaxAmount']
+  >(() => {
+    dispatch({ type: Actions.SetAddLiquidityMaxAmount });
+  }, [dispatch]);
+
   const signer = useSignerContext();
 
   const contract = useMemo(
@@ -262,6 +313,9 @@ export const StakingRewardsContractProvider: FC<Props> = ({
           setStakeAmount,
           setWithdrawAmount,
           setMaxWithdrawAmount,
+          setAddLiquidityAmount,
+          setAddLiquidityMaxAmount,
+          setAddLiquidityToken,
         }),
         [
           setActiveTab,
@@ -269,6 +323,9 @@ export const StakingRewardsContractProvider: FC<Props> = ({
           setStakeAmount,
           setWithdrawAmount,
           setMaxWithdrawAmount,
+          setAddLiquidityAmount,
+          setAddLiquidityMaxAmount,
+          setAddLiquidityToken,
         ],
       )}
     >

@@ -1,7 +1,7 @@
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { Tokens } from '../../../context/DataProvider/TokensProvider';
 import { StakingRewardsContract } from '../../../context/earn/types';
-import { AccentColors } from '../../../types';
+import { AccentColors, Token } from '../../../types';
 
 export interface PlatformMetadata {
   colors: AccentColors;
@@ -11,6 +11,7 @@ export interface PlatformMetadata {
 }
 
 export enum Tabs {
+  AddLiquidity = 'addLiquidity',
   Stake = 'stake',
   Claim = 'claim',
   Exit = 'exit',
@@ -21,6 +22,15 @@ export interface State {
   activeTab: Tabs;
   tokens: Tokens;
   claim: {
+    touched: boolean;
+  };
+  addLiquidity: {
+    amount?: BigDecimal;
+    formValue: string | null;
+    needsUnlock: boolean;
+    error?: string;
+    valid: boolean;
+    token?: string;
     touched: boolean;
   };
   stake: {
@@ -47,12 +57,19 @@ export interface Dispatch {
   setMaxStakeAmount(): void;
   setWithdrawAmount(formValue: string | null): void;
   setMaxWithdrawAmount(): void;
+  setAddLiquidityToken(name: string, token?: Token): void;
+  setAddLiquidityAmount(formValue: string | null): void;
+  setAddLiquidityMaxAmount(): void;
 }
 
 export enum Actions {
   Data,
   SetActiveTab,
+  SetAddLiquidityAmount,
+  SetAddLiquidityMaxAmount,
+  SetAddLiquidityToken,
   SetStakeAmount,
+  SetStakeToken,
   SetMaxStakeAmount,
   SetWithdrawAmount,
   SetMaxWithdrawAmount,
@@ -70,7 +87,10 @@ export type Action =
   | { type: Actions.SetStakeAmount; payload: string | null }
   | { type: Actions.SetMaxStakeAmount }
   | { type: Actions.SetWithdrawAmount; payload: string | null }
-  | { type: Actions.SetMaxWithdrawAmount };
+  | { type: Actions.SetMaxWithdrawAmount }
+  | { type: Actions.SetAddLiquidityToken; payload: string | null }
+  | { type: Actions.SetAddLiquidityAmount; payload: string | null }
+  | { type: Actions.SetAddLiquidityMaxAmount };
 
 export enum Reasons {
   AmountExceedsApprovedAmount,
