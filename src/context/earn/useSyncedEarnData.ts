@@ -226,32 +226,33 @@ const normalizeUniswapPool = ({
 const normalizeCurvePools = (
   curveJsonData?: CurveJsonData,
 ): NormalizedPool[] => {
-  if (!curveJsonData) {
-    return [];
-  }
-
   const {
     stats: { balances, prices, supply },
-  } = curveJsonData;
+  } = curveJsonData || { stats: {} };
+
   return [
     {
       address: CURVE_ADDRESSES.MUSD_LP_TOKEN,
       platform: Platforms.Curve,
-      totalSupply: new BigDecimal(supply.value, 18),
+      totalSupply: supply?.value ? new BigDecimal(supply.value, 18) : undefined,
       tokens: [
         {
           address: process.env.REACT_APP_MUSD_ADDRESS as string,
           symbol: 'mUSD',
           decimals: 18,
-          liquidity: new BigDecimal(balances[0].value, 18),
-          price: BigDecimal.parse(prices['0-2'][0].value, 18),
+          liquidity: balances?.[0]?.value
+            ? new BigDecimal(balances[0].value, 18)
+            : undefined,
+          price: BigDecimal.maybeParse(prices?.['0-2']?.[0]?.value, 18),
         },
         {
           address: CURVE_ADDRESSES['3POOL_TOKEN'],
           symbol: '3POOL',
           decimals: 18,
-          liquidity: new BigDecimal(balances[1].value, 18),
-          price: BigDecimal.parse(prices['0-2'][1].value, 18),
+          liquidity: balances?.[1]?.value
+            ? new BigDecimal(balances[1].value, 18)
+            : undefined,
+          price: BigDecimal.maybeParse(prices?.['0-2']?.[1]?.value, 18),
         },
       ],
       onlyStablecoins: true,

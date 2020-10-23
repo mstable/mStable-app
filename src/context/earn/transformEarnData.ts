@@ -299,8 +299,8 @@ const getStakingRewardsContractsMap = (
               : undefined,
             waitingForData: !rewardPerTokenStored24hAgo,
             yieldApy:
-              isCurve && curveJsonData?.yieldApy
-                ? BigDecimal.parse(curveJsonData.yieldApy.toString(), 18)
+              isCurve && curveJsonData?.yieldApy?.toString
+                ? BigDecimal.maybeParse(curveJsonData.yieldApy.toString(), 18)
                 : undefined,
           },
         };

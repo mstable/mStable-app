@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { parse, LosslessNumber } from 'lossless-json';
+import { DeepPartial } from 'utility-types';
 
 import { StakingRewardsFactory } from '../../typechain/StakingRewardsFactory';
 import { GaugeControllerFactory } from '../../typechain/GaugeControllerFactory';
@@ -68,7 +69,7 @@ export interface CurveBalances {
 
 export interface CurveJsonData {
   yieldApy: LosslessNumber;
-  stats: {
+  stats: DeepPartial<{
     A: LosslessNumber;
     fee: LosslessNumber;
     admin_fee: LosslessNumber;
@@ -86,7 +87,7 @@ export interface CurveJsonData {
       '0-2': [LosslessNumber, LosslessNumber, LosslessNumber, LosslessNumber];
       '0-3': [LosslessNumber, LosslessNumber, LosslessNumber, LosslessNumber];
     };
-  };
+  }>;
 }
 
 const contractsCtx = createContext<CurveContracts>({} as never);
@@ -171,15 +172,32 @@ const CurveJsonDataProvider: FC = ({ children }) => {
     Promise.all([
       fetch('https://www.curve.fi/raw-stats/apys.json'),
       fetch('https://www.curve.fi/raw-stats/musd-1440m.json'),
-    ]).then(([apyRes, statsRes]) => {
-      Promise.all([apyRes.text(), statsRes.text()]).then(([_apy, _stats]) => {
-        const apyJson = parse(_apy);
-        const statsJson = parse(_stats);
-        const yieldApy = apyJson.apy.day.musd;
-        const stats = statsJson[statsJson.length - 1];
-        setJsonData({ yieldApy, stats });
+    ])
+      .then(([apyRes, statsRes]) => {
+        Promise.all([apyRes.text(), statsRes.text()]).then(([_apy, _stats]) => {
+          const apyJson = parse(_apy);
+          const statsJson: CurveJsonData['stats'][] = parse(_stats);
+          const yieldApy = apyJson.apy.day.musd;
+
+          // Find last valid entry
+          const validStats = statsJson.filter(
+            item =>
+              item &&
+              item.prices?.['0-2'] &&
+              item.balances?.[0] &&
+              item.balances[1],
+          );
+          const stats =
+            validStats.length > 1
+              ? validStats[validStats.length - 1]
+              : validStats[0];
+
+          setJsonData({ yieldApy, stats });
+        });
+      })
+      .catch(error => {
+        console.error(`Error retrieving Curve data`, error);
       });
-    });
   }, [setJsonData]);
 
   return (
