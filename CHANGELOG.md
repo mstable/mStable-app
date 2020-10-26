@@ -2,6 +2,8 @@
 
 ## Next
 
+- Add support for running the dApp on IPFS
+
 ## Version 1.13.0
 
 Features:
