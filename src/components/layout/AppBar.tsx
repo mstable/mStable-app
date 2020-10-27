@@ -2,7 +2,8 @@ import styled from 'styled-components';
 import React, { FC } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useWallet } from 'use-wallet';
-
+// eslint-disable-next-line import/no-unresolved
+import { API, Wallet } from 'bnc-onboard/dist/src/interfaces';
 import {
   AccountItems,
   StatusWarnings,
@@ -30,6 +31,7 @@ import {
 } from '../../context/NotificationsProvider';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { Idle } from '../icons/Idle';
+import { useOnboard, useWalletContext } from '../../context/OnboardProvider';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -294,6 +296,8 @@ const WalletButton: FC<{}> = () => {
   const accountItem = useAccountItem();
   const toggleWallet = useToggleWallet();
   const resetWallet = useResetWallet();
+  const onboard = useOnboard();
+  const typedOnboard = onboard as API;
   const { status } = useWallet<InjectedEthereum>();
   const connected = status === 'connected';
   const account = useOwnAccount();
@@ -308,10 +312,15 @@ const WalletButton: FC<{}> = () => {
   const success =
     (!latestStatus && connected) || latestStatus === TransactionStatus.Success;
 
+  const login = async (): Promise<void> => {
+    const userSelectedWallet = await typedOnboard.walletSelect();
+    const userCheckedWallet = await typedOnboard.walletCheck();
+    Promise.all([userSelectedWallet, userCheckedWallet]);
+  };
   return (
     <WalletButtonBtn
       title="Account"
-      onClick={connecting ? resetWallet : toggleWallet}
+      onClick={login}
       active={accountItem === AccountItems.Wallet}
     >
       {connected ? (
