@@ -1,11 +1,11 @@
 import React, { createContext, useContext, FC, useMemo } from 'react';
-import { useSignerContext } from '../SignerProvider';
 import { Erc20Detailed } from '../../typechain/Erc20Detailed.d';
 import { Erc20DetailedFactory } from '../../typechain/Erc20DetailedFactory';
 import { Masset } from '../../typechain/Masset.d';
 import { MassetFactory } from '../../typechain/MassetFactory';
 import { SavingsContract } from '../../typechain/SavingsContract.d';
 import { SavingsContractFactory } from '../../typechain/SavingsContractFactory';
+import { useSigner } from '../OnboardProvider';
 
 interface State {
   mUSD: Masset | null;
@@ -15,7 +15,7 @@ interface State {
 const context = createContext<State>({} as State);
 
 export const ContractsProvider: FC<{}> = ({ children }) => {
-  const signer = useSignerContext();
+  const signer = useSigner();
 
   const state = useMemo<State>(
     () => ({
@@ -49,7 +49,7 @@ export const useSavingsContract = (): State['mUSDSavings'] =>
 export const useErc20Contract = (
   address: string | null,
 ): Erc20Detailed | null => {
-  const signer = useSignerContext();
+  const signer = useSigner();
   return useMemo(
     () =>
       signer && address ? Erc20DetailedFactory.connect(address, signer) : null,

@@ -1,28 +1,31 @@
 /* eslint-disable no-empty */
 
-import { Connectors } from 'use-wallet';
 import { CONNECTORS } from './web3/connectors';
 
 const STORAGE_PREFIX = '__mStable-app__';
-const STORAGE_VERSION = 1;
+const STORAGE_VERSION = 3;
 
 type VersionedStorage<V extends number, T> = {
   version: V;
 } & Omit<T, 'version'>;
 
 export interface StorageV0 extends VersionedStorage<0, {}> {
-  connectorId?: keyof Connectors;
+  connectorId?: string;
 }
 
 export interface StorageV1 extends VersionedStorage<1, {}> {
-  connector?: { id: keyof Connectors; subType?: string };
+  connector?: { id: string; subType?: string };
 }
 
 export interface StorageV2 extends VersionedStorage<2, StorageV1> {
   viewedEarnOnboarding?: boolean;
 }
 
-export type AllStorage = StorageV0 & StorageV1 & StorageV2;
+export interface StorageV3 extends VersionedStorage<3, StorageV2> {
+  walletName?: string;
+}
+
+export type AllStorage = StorageV0 & StorageV1 & StorageV2 & StorageV3;
 
 export type Storage = Extract<AllStorage, { version: typeof STORAGE_VERSION }>;
 
@@ -48,7 +51,7 @@ export const LocalStorage = {
     }
   },
   get<K extends keyof AllStorage>(key: K): AllStorage[K] {
-    const storageKey = getStorageKey(key);
+    const storageKey = getStorageKey(key as string);
     let value;
     try {
       value = window.localStorage.getItem(storageKey);
@@ -91,6 +94,42 @@ const migrateLocalStorage = (): void => {
     }
 
     LocalStorage.setVersion(1);
+  }
+
+  if (version === 2) {
+    const connector = LocalStorage.get<'connector'>('connector');
+
+    if (connector) {
+      const { id, subType } = connector;
+      let walletName;
+      switch (id) {
+        case 'injected':
+          if (subType === 'metamask') {
+            walletName = 'metamask';
+          } else if (subType === 'brave') {
+            walletName = 'brave';
+          } else if (subType === 'meetOne') {
+            walletName = 'meetone';
+          }
+          break;
+        case 'fortmatic':
+        case 'portis':
+        case 'authereum':
+        case 'squarelink':
+        case 'torus':
+          walletName = id;
+          break;
+        case 'walletconnect':
+          walletName = 'walletConnect';
+          break;
+        case 'walletlink':
+          walletName = 'walletLink';
+          break;
+        default:
+          break;
+      }
+      LocalStorage.set('walletName', walletName);
+    }
   }
 
   LocalStorage.setVersion(STORAGE_VERSION);

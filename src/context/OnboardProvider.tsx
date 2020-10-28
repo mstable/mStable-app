@@ -17,10 +17,10 @@ import {
   JsonRpcSigner,
 } from 'ethers/providers';
 import { Signer, providers, ethers } from 'ethers';
-import { BigDecimal } from '../web3/BigDecimal';
 import { CHAIN_ID } from '../web3/constants';
 import { initOnboard } from './onboardUtils';
-import { LocalStorage, Storage } from '../localStorage';
+import { LocalStorage } from '../localStorage';
+import { useAddInfoNotification } from './NotificationsProvider';
 
 export interface State {
   onboard: API;
@@ -32,6 +32,8 @@ export interface State {
   infuraProvider: InfuraProvider;
   provider?: Provider;
   connect?(): void;
+  reset?(): void;
+  connected?: boolean;
 }
 
 const initialState = {
@@ -53,7 +55,9 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
   const [provider, setProvider] = useState<EthersWeb3Provider | undefined>(
     undefined,
   );
+  const [connected, setConnected] = useState<boolean | undefined>(undefined);
   const [onboard, setOnboard] = useState<API>({} as API);
+  const addInfoNotification = useAddInfoNotification();
   useEffect(() => {
     const onboardModal = initOnboard({
       address: setAddress,
@@ -61,25 +65,51 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
       balance: setBalance,
       wallet: walletInstance => {
         if (walletInstance.provider) {
+          setConnected(true);
           setWallet(walletInstance);
           const ethersProvider = new ethers.providers.Web3Provider(
             walletInstance.provider,
           );
           setProvider(ethersProvider);
           setSigner(ethersProvider.getSigner());
-          // LocalStorage.set('walletName', walletInstance.name);
+          addInfoNotification(
+            'Connected',
+            walletInstance ? `Connected with ${walletInstance.name}` : null,
+          );
+          if (walletInstance.name) {
+            LocalStorage.set('walletName', walletInstance.name);
+          } else {
+            LocalStorage.removeItem('walletName');
+          }
         } else {
-          setWallet({} as Wallet);
+          setWallet(undefined);
+          setProvider(undefined);
+          setSigner(undefined);
         }
       },
     });
     setOnboard(onboardModal);
-  }, []);
+  }, [addInfoNotification]);
+
+  useEffect(() => {
+    const previouslySelectedWallet = LocalStorage.get('walletName');
+
+    if (previouslySelectedWallet && onboard.walletSelect) {
+      onboard.walletSelect(previouslySelectedWallet);
+    }
+  }, [onboard]);
 
   const connect = useCallback(async () => {
     const userSelectedWallet = await onboard.walletSelect();
     const userCheckedWallet = await onboard.walletCheck();
     Promise.all([userSelectedWallet, userCheckedWallet]);
+  }, [onboard]);
+
+  const reset = useCallback(() => {
+    onboard.walletReset();
+    LocalStorage.removeItem('walletName');
+    setWallet(undefined);
+    setConnected(false);
   }, [onboard]);
   return (
     <context.Provider
@@ -93,9 +123,22 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
           wallet,
           signer,
           provider,
+          connected,
           connect,
+          reset,
         }),
-        [onboard, address, network, balance, wallet, signer, provider, connect],
+        [
+          onboard,
+          address,
+          network,
+          balance,
+          wallet,
+          signer,
+          provider,
+          connected,
+          connect,
+          reset,
+        ],
       )}
     >
       {children}
@@ -108,6 +151,16 @@ export const useWalletContext = (): State['wallet'] =>
   useContext(context).wallet;
 export const useProviderContext = (): State['provider'] =>
   useContext(context).provider;
-export const useAddressContext = (): State['address'] =>
+export const useWalletAddress = (): State['address'] =>
   useContext(context).address;
 export const useConnect = (): State['connect'] => useContext(context).connect;
+export const useSigner = (): State['signer'] => useContext(context).signer;
+export const useConnected = (): State['connected'] =>
+  useContext(context).connected;
+
+export const useReset = (): State['reset'] => useContext(context).reset;
+
+export const useSignerOrInfuraProvider = (): Signer | Provider => {
+  const { signer, infuraProvider } = useContext(context);
+  return signer ?? infuraProvider;
+};

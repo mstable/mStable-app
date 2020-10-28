@@ -1,5 +1,4 @@
 import { Reducer, useEffect, useReducer, useRef } from 'react';
-import { useSignerContext } from '../context/SignerProvider';
 import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 import { useAccount } from '../context/UserProvider';
 import {
@@ -8,6 +7,7 @@ import {
   useTokenSubscriptionsSerialized,
   useTokensDispatch,
 } from '../context/DataProvider/TokensProvider';
+import { useSigner } from '../context/OnboardProvider';
 import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
 import { BigDecimal } from '../web3/BigDecimal';
@@ -47,12 +47,12 @@ const reducer: Reducer<State, Action> = (state, action) => {
  */
 export const TokenSubscriptionsUpdater = (): null => {
   const { reset, updateBalances, updateAllowances } = useTokensDispatch();
-  const signer = useSignerContext();
+  const signer = useSigner();
 
   const [contracts, dispatch] = useReducer(reducer, initialState);
 
   const account = useAccount();
-  const accountRef = useRef<string | null>(account);
+  const accountRef = useRef<string | null>(account as string);
   const blockNumber = useBlockNumber();
 
   const tokenSubscriptionsSerialized = useTokenSubscriptionsSerialized();
@@ -164,7 +164,7 @@ export const TokenSubscriptionsUpdater = (): null => {
     if (accountRef.current !== account) {
       dispatch({ type: Actions.Reset });
       reset();
-      accountRef.current = account;
+      accountRef.current = account as string;
     }
   }, [account, accountRef, reset]);
 

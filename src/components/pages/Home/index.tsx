@@ -1,13 +1,13 @@
 import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useHistory, Link } from 'react-router-dom';
-import { useWallet } from 'use-wallet';
 
 import { H2, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ViewportWidth } from '../../../theme';
 import { useOpenWalletRedirect } from '../../../context/AppProvider';
 import { ReactComponent as GovernanceIcon } from '../../icons/circle/gavel.svg';
+import { useConnect, useConnected } from '../../../context/OnboardProvider';
 
 const Symbol = styled.div`
   align-items: center;
@@ -154,8 +154,7 @@ const Carousel = styled.div`
 `;
 
 const Start: FC<{}> = () => {
-  const { status } = useWallet();
-  const connected = status === 'connected';
+  const connected = useConnected();
   const openWallet = useOpenWalletRedirect();
   const history = useHistory();
   return (

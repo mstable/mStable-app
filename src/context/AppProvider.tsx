@@ -9,14 +9,6 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
-import {
-  Connectors,
-  ChainUnsupportedError,
-  ConnectionRejectedError,
-  ConnectorUnsupportedError,
-  useWallet,
-} from 'use-wallet';
-import MetamaskOnboarding from '@metamask/onboarding';
 import { useHistory } from 'react-router-dom';
 import { configureScope } from '@sentry/react';
 
@@ -28,6 +20,7 @@ import {
   useAddErrorNotification,
 } from './NotificationsProvider';
 import { LocalStorage, Storage } from '../localStorage';
+import { useWalletAddress, useConnected } from './OnboardProvider';
 
 export enum AccountItems {
   Notifications,
@@ -68,7 +61,7 @@ export enum StatusWarnings {
 interface State {
   wallet: {
     connector?: {
-      id: keyof Connectors;
+      id: string;
       subType?: string;
     };
     status: WalletConnectionStatus;
@@ -88,7 +81,7 @@ type Action =
   | { type: Actions.SupportedChainSelected; payload: boolean }
   | {
       type: Actions.ConnectWallet;
-      payload: { id: keyof Connectors; subType?: string };
+      payload: { id: string; subType?: string };
     }
   | {
       type: Actions.SetWalletSubType;
@@ -100,9 +93,7 @@ type Action =
 
 interface Dispatch {
   closeAccount(): void;
-  connectWallet(connector: keyof Connectors, subType?: string): void;
   openWalletRedirect(redirect: string): void;
-  resetWallet(): void;
   selectMasset(massetName: string): void;
   toggleNotifications(): void;
   toggleWallet(): void;
@@ -205,20 +196,20 @@ const initialState: State = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 
-const identifyInjectedSubType = (
-  injected: InjectedEthereum,
-): string | undefined => {
-  if (((injected as unknown) as { wallet: string }).wallet === 'MEETONE') {
-    return 'meetOne';
-  }
+// const identifyInjectedSubType = (
+//   injected: InjectedEthereum,
+// ): string | undefined => {
+//   if (((injected as unknown) as { wallet: string }).wallet === 'MEETONE') {
+//     return 'meetOne';
+//   }
 
-  if (injected.isMetaMask) return 'metamask';
-  if (injected.isBrave) return 'brave';
-  if (injected.isTrust) return 'trust';
-  if (injected.isDapper) return 'dapper';
+//   if (injected.isMetaMask) return 'metamask';
+//   if (injected.isBrave) return 'brave';
+//   if (injected.isTrust) return 'trust';
+//   if (injected.isDapper) return 'dapper';
 
-  return undefined;
-};
+//   return undefined;
+// };
 
 /**
  * Provider for global App state and interactions.
@@ -226,12 +217,12 @@ const identifyInjectedSubType = (
 export const AppProvider: FC<{}> = ({ children }) => {
   const attemptedReconnect = useRef(false);
   const history = useHistory();
-  const { connect, reset, status, account, connector, connectors } = useWallet<
-    InjectedEthereum
-  >();
   const [state, dispatch] = useReducer(reducer, initialState);
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
+  const address = useWalletAddress();
+  const connected = useConnected();
+  const status = connected ? 'connected' : 'connecting';
 
   const closeAccount = useCallback<Dispatch['closeAccount']>(() => {
     dispatch({ type: Actions.SetAccountItem, payload: null });
@@ -264,73 +255,6 @@ export const AppProvider: FC<{}> = ({ children }) => {
     },
     [dispatch],
   );
-
-  const resetWallet = useCallback<Dispatch['resetWallet']>(() => {
-    reset();
-    dispatch({ type: Actions.ResetWallet });
-    LocalStorage.removeItem<'connectorId'>('connectorId');
-    LocalStorage.removeItem<'connector'>('connector');
-  }, [dispatch, reset]);
-
-  const connectWallet = useCallback<Dispatch['connectWallet']>(
-    (id, subType) => {
-      dispatch({ type: Actions.ConnectWallet, payload: { id, subType } });
-
-      if (id === 'injected' && subType === 'metamask') {
-        const onboarding = new MetamaskOnboarding();
-        if (onboarding.state === 'NOT_INSTALLED') {
-          onboarding.startOnboarding();
-          return;
-        }
-      }
-
-      connect(id)
-        .then(() => {
-          const _connector = CONNECTORS.find(
-            c => c.id === id && c.subType === subType,
-          );
-
-          addInfoNotification(
-            'Connected',
-            _connector ? `Connected with ${_connector.label}` : null,
-          );
-
-          dispatch({ type: Actions.ConnectWalletSuccess });
-
-          if (_connector) {
-            LocalStorage.set<Storage, 'connector'>('connector', {
-              id,
-              subType,
-            });
-          }
-        })
-        .catch(error => {
-          let reason: string;
-
-          if (error instanceof ConnectionRejectedError) {
-            reason = Reasons.RejectedActivation;
-          } else if (error instanceof ChainUnsupportedError) {
-            reason = `${Reasons.UnsupportedChain}; please connect to ${
-              NETWORK_NAMES[CHAIN_ID as keyof typeof NETWORK_NAMES]
-            }`;
-          } else if (error instanceof ConnectorUnsupportedError) {
-            reason = Reasons.UnsupportedConnector;
-          } else {
-            // eslint-disable-next-line no-console
-            console.error(error);
-            reason = Reasons.Unknown;
-          }
-
-          addErrorNotification(reason);
-          dispatch({
-            type: Actions.ConnectWalletError,
-            payload: reason,
-          });
-        });
-    },
-    [connect, addInfoNotification, addErrorNotification],
-  );
-
   const connectionListener = useCallback(() => {
     dispatch({
       type: Actions.SetOnline,
@@ -376,77 +300,77 @@ export const AppProvider: FC<{}> = ({ children }) => {
    * This will be deprecated fairly soon:
    * https://docs.metamask.io/guide/ethereum-provider.html#methods-current-api
    */
-  useEffect(() => {
-    let chainChangedListener: (chainId: number | string) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const injected = (window as any).ethereum;
+  // useEffect(() => {
+  //   let chainChangedListener: (chainId: number | string) => void;
+  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  //   const injected = (window as any).ethereum;
 
-    // The network change listener is only valid when the injected connector is
-    // used, or it's present but no connector is activated.
-    if (injected && (!connector || connector === 'injected')) {
-      chainChangedListener = chainId => {
-        // `chainId` from MetaMask can't be trusted in this event
-        if (!Number.isNaN(chainId as number)) {
-          const supported = CHAIN_ID === parseInt(chainId as string, 10);
-          dispatch({
-            type: Actions.SupportedChainSelected,
-            payload: supported,
-          });
-        }
-      };
-      chainChangedListener(parseInt(injected.chainId, 16));
+  //   // The network change listener is only valid when the injected connector is
+  //   // used, or it's present but no connector is activated.
+  //   if (injected && (!connector || connector === 'injected')) {
+  //     chainChangedListener = chainId => {
+  //       // `chainId` from MetaMask can't be trusted in this event
+  //       if (!Number.isNaN(chainId as number)) {
+  //         const supported = CHAIN_ID === parseInt(chainId as string, 10);
+  //         dispatch({
+  //           type: Actions.SupportedChainSelected,
+  //           payload: supported,
+  //         });
+  //       }
+  //     };
+  //     chainChangedListener(parseInt(injected.chainId, 16));
 
-      const subType = identifyInjectedSubType(injected);
-      if (subType === 'dapper') {
-        addErrorNotification(Reasons.UnsupportedConnector);
-        dispatch({
-          type: Actions.ConnectWalletError,
-          payload: Reasons.UnsupportedConnector,
-        });
-      } else {
-        dispatch({ type: Actions.SetWalletSubType, payload: subType });
+  //     const subType = identifyInjectedSubType(injected);
+  //     if (subType === 'dapper') {
+  //       addErrorNotification(Reasons.UnsupportedConnector);
+  //       dispatch({
+  //         type: Actions.ConnectWalletError,
+  //         payload: Reasons.UnsupportedConnector,
+  //       });
+  //     } else {
+  //       dispatch({ type: Actions.SetWalletSubType, payload: subType });
 
-        injected.on?.('chainChanged', chainChangedListener);
-        injected.on?.('networkChanged', chainChangedListener);
-        injected.autoRefreshOnNetworkChange = false;
-      }
-    }
+  //       injected.on?.('chainChanged', chainChangedListener);
+  //       injected.on?.('networkChanged', chainChangedListener);
+  //       injected.autoRefreshOnNetworkChange = false;
+  //     }
+  //   }
 
-    return () => {
-      if (injected && chainChangedListener) {
-        injected.removeListener?.('networkChanged', chainChangedListener);
-        injected.removeListener?.('chainChanged', chainChangedListener);
-      }
-    };
-  }, [dispatch, connector, addErrorNotification]);
+  //   return () => {
+  //     if (injected && chainChangedListener) {
+  //       injected.removeListener?.('networkChanged', chainChangedListener);
+  //       injected.removeListener?.('chainChanged', chainChangedListener);
+  //     }
+  //   };
+  // }, [dispatch, connector, addErrorNotification]);
 
   /**
    * Automatically reconnect once on startup (if possible)
    */
-  useEffect(() => {
-    if (
-      !attemptedReconnect.current &&
-      !['connected', 'connecting'].includes(status)
-    ) {
-      const { id, subType } = LocalStorage.get('connector') || {};
-      if (id) {
-        if (id === 'injected') {
-          // eslint-disable-next-line
-          (connectors.injected as any)
-            ?.web3ReactConnector?.({})
-            ?.isAuthorized?.()
-            .then((authorized: boolean) => {
-              if (authorized) {
-                connectWallet(id, subType);
-              }
-            });
-        } else {
-          connectWallet(id, subType);
-        }
-      }
-      attemptedReconnect.current = true;
-    }
-  }, [status, connectWallet, connectors.injected]);
+  // useEffect(() => {
+  //   if (
+  //     !attemptedReconnect.current &&
+  //     !['connected', 'connecting'].includes(status)
+  //   ) {
+  //     const { id, subType } = LocalStorage.get('connector') || {};
+  //     if (id) {
+  //       if (id === 'injected') {
+  //         // eslint-disable-next-line
+  //         (connectors.injected as any)
+  //           ?.web3ReactConnector?.({})
+  //           ?.isAuthorized?.()
+  //           .then((authorized: boolean) => {
+  //             if (authorized) {
+  //               connectWallet(id, subType);
+  //             }
+  //           });
+  //       } else {
+  //         connectWallet(id, subType);
+  //       }
+  //     }
+  //     attemptedReconnect.current = true;
+  //   }
+  // }, [status, connectWallet, connectors.injected]);
 
   /**
    * Set then Sentry user scope when the account changes
@@ -454,14 +378,13 @@ export const AppProvider: FC<{}> = ({ children }) => {
   useEffect(() => {
     configureScope(scope => {
       scope.setUser({
-        id: account || 'NOT_CONNECTED',
+        id: address || 'NOT_CONNECTED',
       });
       scope.setTags({
         activated: (status === 'connected').toString(),
-        connector: JSON.stringify(connector),
       });
     });
-  }, [account, status, connector]);
+  }, [address, status]);
 
   return (
     <context.Provider
@@ -470,9 +393,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
           state,
           {
             closeAccount,
-            connectWallet,
             openWalletRedirect,
-            resetWallet,
             selectMasset,
             toggleNotifications,
             toggleWallet,
@@ -481,9 +402,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
         [
           state,
           closeAccount,
-          connectWallet,
           openWalletRedirect,
-          resetWallet,
           selectMasset,
           toggleNotifications,
           toggleWallet,
@@ -515,21 +434,7 @@ export const useAccountOpen = (): boolean => useAppState().accountItem !== null;
 export const useAccountItem = (): State['accountItem'] =>
   useAppState().accountItem;
 
-export const useWalletConnector = (): Connector | undefined => {
-  const {
-    connector: { id, subType } = { id: undefined, subType: undefined },
-  } = useWalletState();
-
-  return useMemo(
-    () => id && CONNECTORS.find(c => c.id === id && c.subType === subType),
-    [id, subType],
-  );
-};
-
 export const useAppDispatch = (): Dispatch => useAppContext()[1];
-
-export const useConnectWallet = (): Dispatch['connectWallet'] =>
-  useAppDispatch().connectWallet;
 
 export const useCloseAccount = (): Dispatch['closeAccount'] =>
   useAppDispatch().closeAccount;
@@ -558,6 +463,3 @@ export const useOpenWalletRedirect = (): Dispatch['openWalletRedirect'] =>
 
 export const useToggleNotifications = (): Dispatch['toggleNotifications'] =>
   useAppDispatch().toggleNotifications;
-
-export const useResetWallet = (): Dispatch['resetWallet'] =>
-  useAppDispatch().resetWallet;
