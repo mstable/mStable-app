@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useRef } from 'react';
+import React, { createContext, FC, useContext, useRef, useEffect } from 'react';
 
 import { useIsIdle } from '../UserProvider';
 import { useProviderContext } from '../OnboardProvider';
@@ -12,14 +12,17 @@ export const BlockProvider: FC<{}> = ({ children }) => {
   const provider = useProviderContext();
   const idle = useIsIdle();
 
-  if (!idle) {
-    // Only set the new block number when the user is active
-    // `getBlockNumber` apparently returns a string
-    const latest = provider?.getBlockNumber();
-    blockNumber.current = latest
-      ? parseInt((latest as unknown) as string, 10)
-      : undefined;
-  }
+  useEffect(() => {
+    if (!idle) {
+      // Only set the new block number when the user is active
+      // getBlockNumber apparently returns a string
+      provider?.getBlockNumber().then(latest => {
+        blockNumber.current = latest
+          ? parseInt((latest as unknown) as string, 10)
+          : undefined;
+      });
+    }
+  }, [idle, provider]);
 
   return <ctx.Provider value={blockNumber.current}>{children}</ctx.Provider>;
 };

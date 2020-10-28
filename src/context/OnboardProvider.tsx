@@ -95,7 +95,9 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
     const previouslySelectedWallet = LocalStorage.get('walletName');
 
     if (previouslySelectedWallet && onboard.walletSelect) {
-      onboard.walletSelect(previouslySelectedWallet);
+      onboard.walletSelect(previouslySelectedWallet).catch(error => {
+        console.error(error);
+      });
     }
   }, [onboard]);
 

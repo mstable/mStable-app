@@ -13,7 +13,7 @@ export const useRawEarnData = ({
   const stakingRewardsContractsSub = useBlockPollingSubscription(
     useStakingRewardsContractsLazyQuery,
     {
-      variables: { account, includeHistoric: !!block, block },
+      variables: { account: account ?? null, includeHistoric: !!block, block },
       fetchPolicy: 'cache-and-network',
     },
   );

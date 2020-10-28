@@ -2,7 +2,7 @@
 
 ## Next
 
-- Add support for running the dApp on IPFS
+- Add onboardjs integration
 
 ## Version 1.13.0
 

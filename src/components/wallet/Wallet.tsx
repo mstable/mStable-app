@@ -10,6 +10,7 @@ import { ReactComponent as AccountIcon } from '../icons/circle/account.svg';
 import { Balances } from './Balances';
 import { HistoricTransactions } from './HistoricTransactions';
 import { Transactions } from './Transactions';
+import { useCloseAccount } from '../../context/AppProvider';
 import {
   useWalletAddress,
   useConnected,
@@ -58,13 +59,20 @@ const Connected: FC<{ walletLabel: string; account: string }> = ({
   account,
 }) => {
   const reset = useReset();
+  const closeWallet = useCloseAccount();
+  const onReset = (): void => {
+    if (reset) {
+      reset();
+      closeWallet();
+    }
+  };
   return (
     <Rows>
       <Row>
         <H3>Connected with {walletLabel}</H3>
         <AddressGroup>
           <Address address={account} type="account" copyable />
-          <DisconnectButton type="button" onClick={reset}>
+          <DisconnectButton type="button" onClick={onReset}>
             Disconnect
           </DisconnectButton>
         </AddressGroup>
