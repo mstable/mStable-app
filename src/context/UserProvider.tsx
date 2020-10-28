@@ -1,8 +1,6 @@
 import React, { createContext, FC, useContext, useMemo, useState } from 'react';
 import useIdle from 'react-use/lib/useIdle';
 
-import { CHAIN_ID } from '../web3/constants';
-import { AVAILABLE_CONNECTORS } from '../web3/connectors';
 import { OnboardProvider, useWalletAddress } from './OnboardProvider';
 
 interface State {

@@ -7,20 +7,18 @@ import React, {
   useReducer,
   Reducer,
   useEffect,
-  useRef,
 } from 'react';
 import { useHistory } from 'react-router-dom';
 import { configureScope } from '@sentry/react';
 
-import { InjectedEthereum, Connector } from '../types';
-import { CHAIN_ID, NETWORK_NAMES } from '../web3/constants';
-import { CONNECTORS } from '../web3/connectors';
+import { InjectedEthereum } from '../types';
+import { CHAIN_ID } from '../web3/constants';
+import { useAddErrorNotification } from './NotificationsProvider';
 import {
-  useAddInfoNotification,
-  useAddErrorNotification,
-} from './NotificationsProvider';
-import { LocalStorage, Storage } from '../localStorage';
-import { useWalletAddress, useConnected } from './OnboardProvider';
+  useWalletAddress,
+  useConnected,
+  useWalletContext,
+} from './OnboardProvider';
 
 export enum AccountItems {
   Notifications,
@@ -196,31 +194,30 @@ const initialState: State = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 
-// const identifyInjectedSubType = (
-//   injected: InjectedEthereum,
-// ): string | undefined => {
-//   if (((injected as unknown) as { wallet: string }).wallet === 'MEETONE') {
-//     return 'meetOne';
-//   }
+const identifyInjectedSubType = (
+  injected: InjectedEthereum,
+): string | undefined => {
+  if (((injected as unknown) as { wallet: string }).wallet === 'MEETONE') {
+    return 'meetOne';
+  }
 
-//   if (injected.isMetaMask) return 'metamask';
-//   if (injected.isBrave) return 'brave';
-//   if (injected.isTrust) return 'trust';
-//   if (injected.isDapper) return 'dapper';
+  if (injected.isMetaMask) return 'metamask';
+  if (injected.isBrave) return 'brave';
+  if (injected.isTrust) return 'trust';
+  if (injected.isDapper) return 'dapper';
 
-//   return undefined;
-// };
+  return undefined;
+};
 
 /**
  * Provider for global App state and interactions.
  */
 export const AppProvider: FC<{}> = ({ children }) => {
-  const attemptedReconnect = useRef(false);
   const history = useHistory();
   const [state, dispatch] = useReducer(reducer, initialState);
-  const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
   const address = useWalletAddress();
+  const wallet = useWalletContext();
   const connected = useConnected();
   const status = connected ? 'connected' : 'connecting';
 
@@ -300,77 +297,48 @@ export const AppProvider: FC<{}> = ({ children }) => {
    * This will be deprecated fairly soon:
    * https://docs.metamask.io/guide/ethereum-provider.html#methods-current-api
    */
-  // useEffect(() => {
-  //   let chainChangedListener: (chainId: number | string) => void;
-  //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  //   const injected = (window as any).ethereum;
+  useEffect(() => {
+    let chainChangedListener: (chainId: number | string) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const injected = (window as any).ethereum;
+    // The network change listener is only valid when the injected connector is
+    // used, or it's present but no connector is activated.
+    if (injected && (!wallet || wallet.type === 'injected')) {
+      chainChangedListener = chainId => {
+        // `chainId` from MetaMask can't be trusted in this event
+        if (!Number.isNaN(chainId as number)) {
+          const supported = CHAIN_ID === parseInt(chainId as string, 10);
+          dispatch({
+            type: Actions.SupportedChainSelected,
+            payload: supported,
+          });
+        }
+      };
+      chainChangedListener(parseInt(injected.chainId, 16));
 
-  //   // The network change listener is only valid when the injected connector is
-  //   // used, or it's present but no connector is activated.
-  //   if (injected && (!connector || connector === 'injected')) {
-  //     chainChangedListener = chainId => {
-  //       // `chainId` from MetaMask can't be trusted in this event
-  //       if (!Number.isNaN(chainId as number)) {
-  //         const supported = CHAIN_ID === parseInt(chainId as string, 10);
-  //         dispatch({
-  //           type: Actions.SupportedChainSelected,
-  //           payload: supported,
-  //         });
-  //       }
-  //     };
-  //     chainChangedListener(parseInt(injected.chainId, 16));
+      const subType = identifyInjectedSubType(injected);
+      if (subType === 'dapper') {
+        addErrorNotification(Reasons.UnsupportedConnector);
+        dispatch({
+          type: Actions.ConnectWalletError,
+          payload: Reasons.UnsupportedConnector,
+        });
+      } else {
+        dispatch({ type: Actions.SetWalletSubType, payload: subType });
 
-  //     const subType = identifyInjectedSubType(injected);
-  //     if (subType === 'dapper') {
-  //       addErrorNotification(Reasons.UnsupportedConnector);
-  //       dispatch({
-  //         type: Actions.ConnectWalletError,
-  //         payload: Reasons.UnsupportedConnector,
-  //       });
-  //     } else {
-  //       dispatch({ type: Actions.SetWalletSubType, payload: subType });
+        injected.on?.('chainChanged', chainChangedListener);
+        injected.on?.('networkChanged', chainChangedListener);
+        injected.autoRefreshOnNetworkChange = false;
+      }
+    }
 
-  //       injected.on?.('chainChanged', chainChangedListener);
-  //       injected.on?.('networkChanged', chainChangedListener);
-  //       injected.autoRefreshOnNetworkChange = false;
-  //     }
-  //   }
-
-  //   return () => {
-  //     if (injected && chainChangedListener) {
-  //       injected.removeListener?.('networkChanged', chainChangedListener);
-  //       injected.removeListener?.('chainChanged', chainChangedListener);
-  //     }
-  //   };
-  // }, [dispatch, connector, addErrorNotification]);
-
-  /**
-   * Automatically reconnect once on startup (if possible)
-   */
-  // useEffect(() => {
-  //   if (
-  //     !attemptedReconnect.current &&
-  //     !['connected', 'connecting'].includes(status)
-  //   ) {
-  //     const { id, subType } = LocalStorage.get('connector') || {};
-  //     if (id) {
-  //       if (id === 'injected') {
-  //         // eslint-disable-next-line
-  //         (connectors.injected as any)
-  //           ?.web3ReactConnector?.({})
-  //           ?.isAuthorized?.()
-  //           .then((authorized: boolean) => {
-  //             if (authorized) {
-  //               connectWallet(id, subType);
-  //             }
-  //           });
-  //       } else {
-  //         connectWallet(id, subType);
-  //       }
-  //     }
-  //     attemptedReconnect.current = true;
-  //   }
-  // }, [status, connectWallet, connectors.injected]);
+    return () => {
+      if (injected && chainChangedListener) {
+        injected.removeListener?.('networkChanged', chainChangedListener);
+        injected.removeListener?.('chainChanged', chainChangedListener);
+      }
+    };
+  }, [dispatch, wallet, addErrorNotification]);
 
   /**
    * Set then Sentry user scope when the account changes
@@ -444,7 +412,6 @@ export const useAppStatusWarnings = (): StatusWarnings[] => {
     online,
     wallet: { supportedChain },
   } = useAppState();
-
   return useMemo(() => {
     const warnings = [];
 
