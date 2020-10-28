@@ -31,7 +31,7 @@ import {
 } from '../../context/NotificationsProvider';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { Idle } from '../icons/Idle';
-import { useOnboard, useWalletContext } from '../../context/OnboardProvider';
+import { useConnect } from '../../context/OnboardProvider';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -296,14 +296,13 @@ const WalletButton: FC<{}> = () => {
   const accountItem = useAccountItem();
   const toggleWallet = useToggleWallet();
   const resetWallet = useResetWallet();
-  const onboard = useOnboard();
-  const typedOnboard = onboard as API;
   const { status } = useWallet<InjectedEthereum>();
   const connected = status === 'connected';
   const account = useOwnAccount();
   const connecting = useIsWalletConnecting();
   const truncatedAddress = useTruncatedAddress(account);
   const WalletIcon = useWalletIcon();
+  const connect = useConnect();
 
   const { pendingCount, latestStatus } = usePendingTxState();
   const pending =
@@ -312,15 +311,10 @@ const WalletButton: FC<{}> = () => {
   const success =
     (!latestStatus && connected) || latestStatus === TransactionStatus.Success;
 
-  const login = async (): Promise<void> => {
-    const userSelectedWallet = await typedOnboard.walletSelect();
-    const userCheckedWallet = await typedOnboard.walletCheck();
-    Promise.all([userSelectedWallet, userCheckedWallet]);
-  };
   return (
     <WalletButtonBtn
       title="Account"
-      onClick={login}
+      onClick={connect}
       active={accountItem === AccountItems.Wallet}
     >
       {connected ? (
