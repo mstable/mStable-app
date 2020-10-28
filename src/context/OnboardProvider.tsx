@@ -100,9 +100,8 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
   }, [onboard]);
 
   const connect = useCallback(async () => {
-    const userSelectedWallet = await onboard.walletSelect();
-    const userCheckedWallet = await onboard.walletCheck();
-    Promise.all([userSelectedWallet, userCheckedWallet]);
+    await onboard.walletSelect();
+    await onboard.walletCheck();
   }, [onboard]);
 
   const reset = useCallback(() => {

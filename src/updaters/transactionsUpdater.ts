@@ -14,7 +14,7 @@ export const TransactionsUpdater = (): null => {
   const account = useAccount();
   const provider = useSignerOrInfuraProvider();
   const blockNumber = useBlockNumber();
-  const accountRef = useRef<string | null>(account as string);
+  const accountRef = useRef<string | undefined>(account);
 
   const [{ current }, { check, finalize, reset }] = useTransactionsContext();
 
@@ -24,7 +24,7 @@ export const TransactionsUpdater = (): null => {
   useEffect(() => {
     if (accountRef.current !== account) {
       reset();
-      accountRef.current = account as string;
+      accountRef.current = account;
     }
   }, [account, accountRef, reset]);
 

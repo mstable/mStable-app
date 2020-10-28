@@ -7,7 +7,7 @@ import { OnboardProvider, useWalletAddress } from './OnboardProvider';
 
 interface State {
   address: string | undefined;
-  masqueradedAccount: string | null;
+  masqueradedAccount: string | undefined;
   idle: boolean;
 }
 
@@ -19,7 +19,7 @@ const dispatchCtx = createContext<Dispatch>({} as never);
 const stateCtx = createContext<State>({
   idle: false,
   address: undefined,
-  masqueradedAccount: null,
+  masqueradedAccount: undefined,
 });
 
 export const useMasquerade = (): Dispatch['masquerade'] =>
@@ -49,7 +49,11 @@ const AccountProvider: FC<{}> = ({ children }) => {
   >();
 
   const state = useMemo<State>(
-    () => ({ address, idle, masqueradedAccount: masqueradedAccount ?? null }),
+    () => ({
+      address,
+      idle,
+      masqueradedAccount: masqueradedAccount ?? undefined,
+    }),
     [address, idle, masqueradedAccount],
   );
 

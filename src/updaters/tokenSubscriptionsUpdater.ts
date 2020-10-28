@@ -52,7 +52,7 @@ export const TokenSubscriptionsUpdater = (): null => {
   const [contracts, dispatch] = useReducer(reducer, initialState);
 
   const account = useAccount();
-  const accountRef = useRef<string | null>(account as string);
+  const accountRef = useRef<string | undefined>(account);
   const blockNumber = useBlockNumber();
 
   const tokenSubscriptionsSerialized = useTokenSubscriptionsSerialized();
@@ -164,7 +164,7 @@ export const TokenSubscriptionsUpdater = (): null => {
     if (accountRef.current !== account) {
       dispatch({ type: Actions.Reset });
       reset();
-      accountRef.current = account as string;
+      accountRef.current = account;
     }
   }, [account, accountRef, reset]);
 
