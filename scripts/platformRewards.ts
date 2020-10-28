@@ -11,15 +11,15 @@
  * @example
  *
  * ```bash
- * yarn run platform-rewards --trancheNumber=7 \
- *   --startBlock=11040782 \
- *   --startTimestamp=1602505722 \
+ * yarn run platform-rewards --trancheNumber=8 \
+ *   --startBlock=11086414 \
+ *   --startTimestamp=1603110537 \
  *   --token=0xba100000625a3754423978a60c9317c58a424e3d \
  *   --fullOutput \
  *   --allocations \
- *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,819.958617423725881135 \
- *   0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,4846.059660074081853268 \
- *   0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027,530.694019202699580434
+ *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,564.569019912248008576 \
+ *   0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,4450.25803340651506426 \
+ *   0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027,266.920195558125662982
  *
  * ```
  *

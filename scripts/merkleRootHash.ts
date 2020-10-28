@@ -6,7 +6,7 @@
  *
  * Example usage:
  *
- * yarn run merkle-root-hash --trancheNumber=7 \
+ * yarn run merkle-root-hash --trancheNumber=8 \
  * --token=0xba100000625a3754423978a60c9317c58a424e3d
  *
  * Example output:
