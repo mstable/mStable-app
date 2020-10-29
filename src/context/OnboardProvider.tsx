@@ -114,18 +114,23 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
 
   const connect = useCallback(async () => {
     await onboard.walletSelect();
-    await onboard.walletCheck().then(res => {
-      if (res === true) {
-        setConnected(true);
-        addInfoNotification('Connected');
-      } else if (res === false) {
-        LocalStorage.removeItem('walletName');
-        onboard.walletReset();
-        addErrorNotification('Error', 'Could not connect to the wallet');
-        setConnected(false);
-        setWallet(undefined);
-      }
-    });
+    onboard
+      .walletCheck()
+      .then(res => {
+        if (res === true) {
+          setConnected(true);
+          addInfoNotification('Connected');
+        } else if (res === false) {
+          LocalStorage.removeItem('walletName');
+          onboard.walletReset();
+          addErrorNotification('Error', 'Could not connect to the wallet');
+          setConnected(false);
+          setWallet(undefined);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }, [onboard, addInfoNotification, addErrorNotification]);
 
   const reset = useCallback(() => {
