@@ -20,7 +20,10 @@ import { Signer, providers, ethers } from 'ethers';
 import { CHAIN_ID } from '../web3/constants';
 import { initOnboard } from './onboardUtils';
 import { LocalStorage } from '../localStorage';
-import { useAddInfoNotification } from './NotificationsProvider';
+import {
+  useAddInfoNotification,
+  useAddErrorNotification,
+} from './NotificationsProvider';
 
 export interface State {
   onboard: API;
@@ -58,6 +61,7 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
   const [connected, setConnected] = useState<boolean | undefined>(undefined);
   const [onboard, setOnboard] = useState<API>({} as API);
   const addInfoNotification = useAddInfoNotification();
+  const addErrorNotification = useAddErrorNotification();
   useEffect(() => {
     const onboardModal = initOnboard({
       address: async account => {
@@ -81,13 +85,9 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
           );
           setProvider(ethersProvider);
           setSigner(ethersProvider.getSigner());
+          setConnected(true);
           if (walletInstance.name) {
             LocalStorage.set('walletName', walletInstance.name);
-            setConnected(true);
-            addInfoNotification(
-              'Connected',
-              walletInstance ? `Connected with ${walletInstance.name}` : null,
-            );
           } else {
             LocalStorage.removeItem('walletName');
           }
@@ -100,7 +100,7 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
       },
     });
     setOnboard(onboardModal);
-  }, [addInfoNotification]);
+  }, []);
 
   useEffect(() => {
     const previouslySelectedWallet = LocalStorage.get('walletName');
@@ -114,8 +114,19 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
 
   const connect = useCallback(async () => {
     await onboard.walletSelect();
-    await onboard.walletCheck();
-  }, [onboard]);
+    await onboard.walletCheck().then(res => {
+      if (res === true) {
+        setConnected(true);
+        addInfoNotification('Connected');
+      } else if (res === false) {
+        LocalStorage.removeItem('walletName');
+        onboard.walletReset();
+        addErrorNotification('Error', 'Could not connect to the wallet');
+        setConnected(false);
+        setWallet(undefined);
+      }
+    });
+  }, [onboard, addInfoNotification, addErrorNotification]);
 
   const reset = useCallback(() => {
     onboard.walletReset();
