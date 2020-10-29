@@ -11,7 +11,6 @@ import React, {
 import { useHistory } from 'react-router-dom';
 import { configureScope } from '@sentry/react';
 
-import { InjectedEthereum } from '../types';
 import { CHAIN_ID } from '../web3/constants';
 import { useAddErrorNotification } from './NotificationsProvider';
 import {
@@ -26,29 +25,11 @@ export enum AccountItems {
 }
 
 enum Actions {
-  ResetWallet,
-  ConnectWallet,
-  ConnectWalletError,
-  ConnectWalletSuccess,
-  SetWalletSubType,
   SelectMasset,
   SupportedChainSelected,
   SetOnline,
   SetAccountItem,
   ToggleAccount,
-}
-
-enum WalletConnectionStatus {
-  Disconnected,
-  Connecting,
-  Connected,
-}
-
-enum Reasons {
-  RejectedActivation = 'Wallet activation rejected',
-  UnsupportedChain = 'Unsupported network',
-  UnsupportedConnector = 'Unsupported connector',
-  Unknown = 'Unknown error',
 }
 
 export enum StatusWarnings {
@@ -57,15 +38,8 @@ export enum StatusWarnings {
 }
 
 interface State {
-  wallet: {
-    connector?: {
-      id: string;
-      subType?: string;
-    };
-    status: WalletConnectionStatus;
-    error: string | null;
-    supportedChain: boolean;
-  };
+  error: string | null;
+  supportedChain: boolean;
   accountItem: AccountItems | null;
   online: boolean;
   selectedMasset: string;
@@ -75,18 +49,7 @@ type Action =
   | { type: Actions.SelectMasset; payload: string }
   | { type: Actions.SetAccountItem; payload: AccountItems | null }
   | { type: Actions.ToggleAccount; payload: AccountItems }
-  | { type: Actions.ResetWallet }
   | { type: Actions.SupportedChainSelected; payload: boolean }
-  | {
-      type: Actions.ConnectWallet;
-      payload: { id: string; subType?: string };
-    }
-  | {
-      type: Actions.SetWalletSubType;
-      payload?: string;
-    }
-  | { type: Actions.ConnectWalletError; payload: string }
-  | { type: Actions.ConnectWalletSuccess }
   | { type: Actions.SetOnline; payload: boolean };
 
 interface Dispatch {
@@ -113,66 +76,11 @@ const reducer: Reducer<State, Action> = (state, action) => {
     case Actions.SupportedChainSelected:
       return {
         ...state,
-        wallet: {
-          ...state.wallet,
-          supportedChain: action.payload,
-          error: null,
-        },
+        supportedChain: action.payload,
+        error: null,
       };
     case Actions.SelectMasset:
       return { ...state, selectedMasset: action.payload };
-    case Actions.ResetWallet:
-      return {
-        ...state,
-        wallet: {
-          ...state.wallet,
-          connector: undefined,
-          status: WalletConnectionStatus.Disconnected,
-          error: null,
-        },
-      };
-    case Actions.ConnectWallet:
-      return {
-        ...state,
-        wallet: {
-          ...state.wallet,
-          status: WalletConnectionStatus.Connecting,
-          connector: action.payload,
-          error: null,
-        },
-      };
-    case Actions.ConnectWalletError:
-      return {
-        ...state,
-        wallet: {
-          ...state.wallet,
-          status: WalletConnectionStatus.Disconnected,
-          error: action.payload,
-        },
-      };
-    case Actions.ConnectWalletSuccess:
-      return {
-        ...state,
-        wallet: {
-          ...state.wallet,
-          expanded: false,
-          status: WalletConnectionStatus.Connected,
-          error: null,
-        },
-      };
-    case Actions.SetWalletSubType:
-      return state.wallet.connector
-        ? {
-            ...state,
-            wallet: {
-              ...state.wallet,
-              connector: {
-                ...state.wallet.connector,
-                subType: action.payload,
-              },
-            },
-          }
-        : state;
     case Actions.SetOnline:
       return { ...state, online: action.payload };
     default:
@@ -181,11 +89,8 @@ const reducer: Reducer<State, Action> = (state, action) => {
 };
 
 const initialState: State = {
-  wallet: {
-    status: WalletConnectionStatus.Disconnected,
-    error: null,
-    supportedChain: true,
-  },
+  error: null,
+  supportedChain: true,
   accountItem: null,
   selectedMasset: 'mUSD',
   online: true,
@@ -193,21 +98,6 @@ const initialState: State = {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const context = createContext<[State, Dispatch]>([initialState, {}] as any);
-
-const identifyInjectedSubType = (
-  injected: InjectedEthereum,
-): string | undefined => {
-  if (((injected as unknown) as { wallet: string }).wallet === 'MEETONE') {
-    return 'meetOne';
-  }
-
-  if (injected.isMetaMask) return 'metamask';
-  if (injected.isBrave) return 'brave';
-  if (injected.isTrust) return 'trust';
-  if (injected.isDapper) return 'dapper';
-
-  return undefined;
-};
 
 /**
  * Provider for global App state and interactions.
@@ -316,20 +206,9 @@ export const AppProvider: FC<{}> = ({ children }) => {
       };
       chainChangedListener(parseInt(injected.chainId, 16));
 
-      const subType = identifyInjectedSubType(injected);
-      if (subType === 'dapper') {
-        addErrorNotification(Reasons.UnsupportedConnector);
-        dispatch({
-          type: Actions.ConnectWalletError,
-          payload: Reasons.UnsupportedConnector,
-        });
-      } else {
-        dispatch({ type: Actions.SetWalletSubType, payload: subType });
-
-        injected.on?.('chainChanged', chainChangedListener);
-        injected.on?.('networkChanged', chainChangedListener);
-        injected.autoRefreshOnNetworkChange = false;
-      }
+      injected.on?.('chainChanged', chainChangedListener);
+      injected.on?.('networkChanged', chainChangedListener);
+      injected.autoRefreshOnNetworkChange = false;
     }
 
     return () => {
@@ -386,16 +265,7 @@ export const useAppContext = (): [State, Dispatch] => useContext(context);
 
 export const useAppState = (): State => useAppContext()[0];
 
-export const useWalletState = (): State['wallet'] => useAppState().wallet;
-
-export const useIsSupportedChain = (): boolean =>
-  useWalletState().supportedChain;
-
-export const useIsWalletConnected = (): boolean =>
-  useWalletState().status === WalletConnectionStatus.Connected;
-
-export const useIsWalletConnecting = (): boolean =>
-  useWalletState().status === WalletConnectionStatus.Connecting;
+export const useIsSupportedChain = (): boolean => useAppState().supportedChain;
 
 export const useAccountOpen = (): boolean => useAppState().accountItem !== null;
 
@@ -408,10 +278,7 @@ export const useCloseAccount = (): Dispatch['closeAccount'] =>
   useAppDispatch().closeAccount;
 
 export const useAppStatusWarnings = (): StatusWarnings[] => {
-  const {
-    online,
-    wallet: { supportedChain },
-  } = useAppState();
+  const { online, supportedChain } = useAppState();
   return useMemo(() => {
     const warnings = [];
 

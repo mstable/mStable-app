@@ -6,7 +6,6 @@ import {
   StatusWarnings,
   useAppStatusWarnings,
   useCloseAccount,
-  useIsWalletConnecting,
   useAccountItem,
   useAccountOpen,
   useToggleNotifications,
@@ -318,7 +317,6 @@ const WalletButton: FC<{}> = () => {
   const toggleWallet = useToggleWallet();
   const connected = useConnected();
   const account = useWalletAddress();
-  const connecting = useIsWalletConnecting();
 
   const truncatedAddress = useTruncatedAddress(account);
   const connect = useConnect();
@@ -346,11 +344,7 @@ const WalletButton: FC<{}> = () => {
           <TruncatedAddress>{truncatedAddress}</TruncatedAddress>
         </>
       ) : (
-        <span>
-          {accountItem === AccountItems.Wallet && connecting
-            ? 'Back'
-            : 'Connect'}
-        </span>
+        <span>{accountItem === AccountItems.Wallet ? 'Back' : 'Connect'}</span>
       )}
       <PendingTxContainer pending={pending} error={error} success={success}>
         <ActivitySpinner pending={pending} error={error} success={success} />

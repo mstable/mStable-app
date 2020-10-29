@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import {
   useToggleWallet,
   useIsSupportedChain,
-  useIsWalletConnected,
 } from '../../context/AppProvider';
 import { FontSize } from '../../theme';
 import { Button } from './Button';
+import { useConnected } from '../../context/OnboardProvider';
 
 interface Props {
   onSubmit?(event: FormEvent<Element>): void;
@@ -32,7 +32,7 @@ const FormError = styled.div`
 `;
 
 export const Form: FC<Props> = ({ children, onSubmit, error, submitting }) => {
-  const connected = useIsWalletConnected();
+  const connected = useConnected();
   const supportedChain = useIsSupportedChain();
   const disabled = !connected;
   const openWallet = useToggleWallet();
