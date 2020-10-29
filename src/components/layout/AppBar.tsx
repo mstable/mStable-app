@@ -207,21 +207,21 @@ const Container = styled.div<{ inverted: boolean; home: boolean }>`
 const WalletIcon: FC = (): JSX.Element => {
   const wallet = useWalletContext();
   switch (wallet?.name) {
-    case 'coinbase':
+    case 'Coinbase':
       return <CoinbaseIcon />;
     case 'MetaMask':
       return <MetaMaskIcon />;
-    case 'fortmatic':
+    case 'Fortmatic':
       return <FortmaticIcon />;
-    case 'portis':
+    case 'Portis':
       return <PortisIcon />;
-    case 'squareLink':
+    case 'SquareLink':
       return <SquarelinkIcon />;
-    case 'walletConnect':
+    case 'WalletConnect':
       return <WalletConnectIcon />;
-    case 'brave':
+    case 'Brave':
       return <BraveIcon />;
-    case 'meetone':
+    case 'Meetone':
       return <MeetOneIcon />;
     default:
       return <div />;
@@ -319,20 +319,23 @@ const WalletButton: FC<{}> = () => {
   const connected = useConnected();
   const account = useWalletAddress();
   const connecting = useIsWalletConnecting();
+
   const truncatedAddress = useTruncatedAddress(account);
   const connect = useConnect();
 
-  const { pendingCount, latestStatus } = usePendingTxState();
+  const { latestStatus } = usePendingTxState();
   const pending =
-    (!latestStatus && connecting) || latestStatus === TransactionStatus.Pending;
+    (!latestStatus && connected && !account) ||
+    latestStatus === TransactionStatus.Pending;
   const error = latestStatus === TransactionStatus.Error;
   const success =
-    (!latestStatus && connected) || latestStatus === TransactionStatus.Success;
+    (!latestStatus && connected && account !== undefined) ||
+    latestStatus === TransactionStatus.Success;
 
   return (
     <WalletButtonBtn
       title="Account"
-      onClick={connected ? toggleWallet : connect}
+      onClick={connected && account ? toggleWallet : connect}
       active={accountItem === AccountItems.Wallet}
     >
       {connected ? (
@@ -351,15 +354,7 @@ const WalletButton: FC<{}> = () => {
       )}
       <PendingTxContainer pending={pending} error={error} success={success}>
         <ActivitySpinner pending={pending} error={error} success={success} />
-        <div>
-          {success
-            ? '✓'
-            : error
-            ? '✗'
-            : pendingCount === 0
-            ? null
-            : pendingCount}
-        </div>
+        <div>{success && account ? '✓' : error ? '✗' : null}</div>
       </PendingTxContainer>
     </WalletButtonBtn>
   );

@@ -105,9 +105,9 @@ export const Wallet: FC<{}> = () => {
           icon={<StyledAccountIcon />}
           title="Account"
           subtitle={
-            connected
+            connected && address
               ? `Connected`
-              : !connected && wallet
+              : !connected && wallet && address !== undefined
               ? `Connecting to ${wallet.name as string} wallet`
               : 'Connect wallet'
           }

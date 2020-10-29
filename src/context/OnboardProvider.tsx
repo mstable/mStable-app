@@ -60,24 +60,34 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
   const addInfoNotification = useAddInfoNotification();
   useEffect(() => {
     const onboardModal = initOnboard({
-      address: setAddress,
+      address: async account => {
+        if (account === undefined) {
+          LocalStorage.removeItem('walletName');
+          setWallet(undefined);
+          setProvider(undefined);
+          setSigner(undefined);
+          setConnected(false);
+          onboardModal.walletReset();
+        }
+        setAddress(account);
+      },
       network: setNetwork,
       balance: setBalance,
       wallet: walletInstance => {
         if (walletInstance.provider) {
-          setConnected(true);
           setWallet(walletInstance);
           const ethersProvider = new ethers.providers.Web3Provider(
             walletInstance.provider,
           );
           setProvider(ethersProvider);
           setSigner(ethersProvider.getSigner());
-          addInfoNotification(
-            'Connected',
-            walletInstance ? `Connected with ${walletInstance.name}` : null,
-          );
           if (walletInstance.name) {
             LocalStorage.set('walletName', walletInstance.name);
+            setConnected(true);
+            addInfoNotification(
+              'Connected',
+              walletInstance ? `Connected with ${walletInstance.name}` : null,
+            );
           } else {
             LocalStorage.removeItem('walletName');
           }
@@ -85,6 +95,7 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
           setWallet(undefined);
           setProvider(undefined);
           setSigner(undefined);
+          setConnected(false);
         }
       },
     });
@@ -112,6 +123,7 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
     setWallet(undefined);
     setConnected(false);
   }, [onboard]);
+
   return (
     <context.Provider
       value={useMemo(

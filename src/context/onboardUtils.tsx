@@ -28,12 +28,12 @@ export const WALLETS = [
   },
   {
     walletName: 'fortmatic',
-    apiKey: process.env.REACT_APP_FORTMATIC_API_KEY,
+    apiKey: 'pk_live_A0F1CE58073CA3D9',
     preferred: true,
   },
   {
     walletName: 'portis',
-    apiKey: process.env.REACT_APP_PORTIS_DAPP_ID,
+    apiKey: '39018c3e-5767-4438-abe2-27d004c2261c',
     preferred: true,
   },
   {
