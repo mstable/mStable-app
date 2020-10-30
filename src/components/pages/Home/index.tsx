@@ -7,6 +7,7 @@ import { Button } from '../../core/Button';
 import { ViewportWidth } from '../../../theme';
 import { ReactComponent as GovernanceIcon } from '../../icons/circle/gavel.svg';
 import { useConnected, useConnect } from '../../../context/OnboardProvider';
+import { useToggleWallet } from '../../../context/AppProvider';
 
 const Symbol = styled.div`
   align-items: center;
@@ -190,6 +191,8 @@ const Start: FC<{}> = () => {
 
 const GetStarted: FC<{}> = () => {
   const connect = useConnect();
+  const connected = useConnected();
+  const toggleWallet = useToggleWallet();
   return (
     <>
       <SymbolBlock>
@@ -200,7 +203,7 @@ const GetStarted: FC<{}> = () => {
       <Block>
         <P>Start by connecting your Ethereum wallet</P>
         <P>
-          <Button type="button" onClick={connect}>
+          <Button type="button" onClick={connected ? toggleWallet : connect}>
             Connect
           </Button>
         </P>

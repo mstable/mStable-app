@@ -29,11 +29,11 @@ export const WALLETS = [
   },
   {
     walletName: 'fortmatic',
-    apiKey: 'pk_live_A0F1CE58073CA3D9',
+    apiKey: process.env.REACT_APP_FORTMATIC_API_KEY,
   },
   {
     walletName: 'portis',
-    apiKey: '39018c3e-5767-4438-abe2-27d004c2261c',
+    apiKey: process.env.REACT_APP_PORTIS_DAPP_ID,
   },
   {
     walletName: 'squarelink',
