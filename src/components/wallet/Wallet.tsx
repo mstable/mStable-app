@@ -14,7 +14,7 @@ import { useCloseAccount } from '../../context/AppProvider';
 import {
   useWalletAddress,
   useConnected,
-  useWalletContext,
+  useWallet,
   useReset,
 } from '../../context/OnboardProvider';
 
@@ -96,7 +96,7 @@ const Connected: FC<{ walletLabel: string; account: string }> = ({
 export const Wallet: FC<{}> = () => {
   const address = useWalletAddress();
   const connected = useConnected();
-  const wallet = useWalletContext();
+  const wallet = useWallet();
 
   return (
     <Container>

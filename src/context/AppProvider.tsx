@@ -13,11 +13,7 @@ import { configureScope } from '@sentry/react';
 
 import { CHAIN_ID } from '../web3/constants';
 import { useAddErrorNotification } from './NotificationsProvider';
-import {
-  useWalletAddress,
-  useConnected,
-  useWalletContext,
-} from './OnboardProvider';
+import { useWalletAddress, useConnected, useWallet } from './OnboardProvider';
 
 export enum AccountItems {
   Notifications,
@@ -107,7 +103,7 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const addErrorNotification = useAddErrorNotification();
   const address = useWalletAddress();
-  const wallet = useWalletContext();
+  const wallet = useWallet();
   const connected = useConnected();
   const status = connected ? 'connected' : 'connecting';
 

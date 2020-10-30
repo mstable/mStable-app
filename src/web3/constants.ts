@@ -51,3 +51,5 @@ export const STABLECOIN_SYMBOLS = [
   'USDT',
   'mUSD',
 ];
+
+export const rpcUrl = `${process.env.REACT_APP_RPC_URL}${process.env.REACT_APP_RPC_API_KEY}`;

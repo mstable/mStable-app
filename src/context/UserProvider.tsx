@@ -50,7 +50,7 @@ const AccountProvider: FC<{}> = ({ children }) => {
     () => ({
       address,
       idle,
-      masqueradedAccount: masqueradedAccount ?? undefined,
+      masqueradedAccount,
     }),
     [address, idle, masqueradedAccount],
   );

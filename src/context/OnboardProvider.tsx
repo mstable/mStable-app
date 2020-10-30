@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, {
   FC,
   createContext,
@@ -34,18 +33,15 @@ export interface State {
   signer?: Signer;
   infuraProvider: InfuraProvider;
   provider?: Provider;
-  connect?(): void;
-  reset?(): void;
-  connected?: boolean;
+  connect(): void;
+  reset(): void;
+  connected: boolean;
 }
 
-const initialState = {
-  infuraProvider: new providers.InfuraProvider(
-    CHAIN_ID,
-    process.env.REACT_APP_RPC_API_KEY,
-  ),
-  onboard: undefined,
-};
+const infuraProvider = new providers.InfuraProvider(
+  CHAIN_ID,
+  process.env.REACT_APP_RPC_API_KEY,
+);
 
 const context = createContext<State>({} as never);
 
@@ -58,20 +54,19 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
   const [provider, setProvider] = useState<EthersWeb3Provider | undefined>(
     undefined,
   );
-  const [connected, setConnected] = useState<boolean | undefined>(undefined);
-  const [onboard, setOnboard] = useState<API>({} as API);
+  const [connected, setConnected] = useState<boolean>(false);
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
-  useEffect(() => {
-    const onboardModal = initOnboard({
-      address: async account => {
+  const onboard = useMemo(() => {
+    return initOnboard({
+      address: account => {
         if (account === undefined) {
           LocalStorage.removeItem('walletName');
           setWallet(undefined);
           setProvider(undefined);
           setSigner(undefined);
           setConnected(false);
-          onboardModal.walletReset();
+          onboard.walletReset();
         }
         setAddress(account);
       },
@@ -99,52 +94,56 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
         }
       },
     });
-    setOnboard(onboardModal);
   }, []);
+
+  const connect = useCallback(
+    async (walletName?: string) => {
+      await onboard.walletSelect(walletName);
+
+      let checkPassed = false;
+      try {
+        checkPassed = await onboard.walletCheck();
+      } catch (error) {
+        console.error(error);
+      }
+      if (checkPassed) {
+        setConnected(true);
+        addInfoNotification('Connected');
+      } else {
+        LocalStorage.removeItem('walletName');
+        onboard.walletReset();
+        addErrorNotification('Error', 'Could not connect to the wallet');
+        setConnected(false);
+        setWallet(undefined);
+        setProvider(undefined);
+        setSigner(undefined);
+      }
+    },
+    [onboard, addInfoNotification, addErrorNotification],
+  );
 
   useEffect(() => {
     const previouslySelectedWallet = LocalStorage.get('walletName');
 
     if (previouslySelectedWallet && onboard.walletSelect) {
-      onboard.walletSelect(previouslySelectedWallet).catch(error => {
-        console.error(error);
-      });
+      connect(previouslySelectedWallet);
     }
-  }, [onboard]);
-
-  const connect = useCallback(async () => {
-    await onboard.walletSelect();
-    onboard
-      .walletCheck()
-      .then(res => {
-        if (res === true) {
-          setConnected(true);
-          addInfoNotification('Connected');
-        } else if (res === false) {
-          LocalStorage.removeItem('walletName');
-          onboard.walletReset();
-          addErrorNotification('Error', 'Could not connect to the wallet');
-          setConnected(false);
-          setWallet(undefined);
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  }, [onboard, addInfoNotification, addErrorNotification]);
+  }, [onboard, connect]);
 
   const reset = useCallback(() => {
     onboard.walletReset();
     LocalStorage.removeItem('walletName');
     setWallet(undefined);
     setConnected(false);
+    setProvider(undefined);
+    setSigner(undefined);
   }, [onboard]);
 
   return (
     <context.Provider
       value={useMemo(
         () => ({
-          ...initialState,
+          infuraProvider,
           onboard,
           address,
           network,
@@ -176,9 +175,8 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
 };
 
 export const useOnboard = (): State['onboard'] => useContext(context).onboard;
-export const useWalletContext = (): State['wallet'] =>
-  useContext(context).wallet;
-export const useProviderContext = (): State['provider'] =>
+export const useWallet = (): State['wallet'] => useContext(context).wallet;
+export const useProvider = (): State['provider'] =>
   useContext(context).provider;
 export const useWalletAddress = (): State['address'] =>
   useContext(context).address;
@@ -190,6 +188,6 @@ export const useConnected = (): State['connected'] =>
 export const useReset = (): State['reset'] => useContext(context).reset;
 
 export const useSignerOrInfuraProvider = (): Signer | Provider => {
-  const { signer, infuraProvider } = useContext(context);
+  const { signer } = useContext(context);
   return signer ?? infuraProvider;
 };

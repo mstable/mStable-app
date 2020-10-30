@@ -105,25 +105,33 @@ const migrateLocalStorage = (): void => {
       switch (id) {
         case 'injected':
           if (subType === 'metamask') {
-            walletName = 'metamask';
+            walletName = 'MetaMask';
           } else if (subType === 'brave') {
-            walletName = 'brave';
+            walletName = 'Brave';
           } else if (subType === 'meetOne') {
-            walletName = 'meetone';
+            walletName = 'MeetOne';
           }
           break;
         case 'fortmatic':
+          walletName = 'Fortmatic';
+          break;
         case 'portis':
+          walletName = 'Portis';
+          break;
         case 'authereum':
+          walletName = 'Authereum';
+          break;
         case 'squarelink':
+          walletName = 'SquareLink';
+          break;
         case 'torus':
-          walletName = id;
+          walletName = 'Torus';
           break;
         case 'walletconnect':
-          walletName = 'walletConnect';
+          walletName = 'WalletConnect';
           break;
         case 'walletlink':
-          walletName = 'walletLink';
+          walletName = 'WalletLink';
           break;
         default:
           break;

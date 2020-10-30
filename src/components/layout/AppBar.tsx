@@ -27,7 +27,7 @@ import {
   useConnect,
   useConnected,
   useWalletAddress,
-  useWalletContext,
+  useWallet,
 } from '../../context/OnboardProvider';
 import { ReactComponent as BraveIcon } from '../icons/wallets/brave.svg';
 import { ReactComponent as MetaMaskIcon } from '../icons/wallets/metamask.svg';
@@ -203,8 +203,8 @@ const Container = styled.div<{ inverted: boolean; home: boolean }>`
   }
 `;
 
-const WalletIcon: FC = (): JSX.Element => {
-  const wallet = useWalletContext();
+const WalletIcon: FC = () => {
+  const wallet = useWallet();
   switch (wallet?.name) {
     case 'Coinbase':
       return <CoinbaseIcon />;
@@ -321,7 +321,7 @@ const WalletButton: FC<{}> = () => {
   const truncatedAddress = useTruncatedAddress(account);
   const connect = useConnect();
 
-  const { latestStatus } = usePendingTxState();
+  const { pendingCount, latestStatus } = usePendingTxState();
   const pending =
     (!latestStatus && connected && !account) ||
     latestStatus === TransactionStatus.Pending;
@@ -348,7 +348,15 @@ const WalletButton: FC<{}> = () => {
       )}
       <PendingTxContainer pending={pending} error={error} success={success}>
         <ActivitySpinner pending={pending} error={error} success={success} />
-        <div>{success && account ? '✓' : error ? '✗' : null}</div>
+        <div>
+          {success && account
+            ? '✓'
+            : error
+            ? '✗'
+            : pendingCount === 0
+            ? null
+            : pendingCount}
+        </div>
       </PendingTxContainer>
     </WalletButtonBtn>
   );

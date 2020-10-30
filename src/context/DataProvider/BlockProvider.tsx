@@ -1,7 +1,7 @@
 import React, { createContext, FC, useContext, useRef, useEffect } from 'react';
 
 import { useIsIdle } from '../UserProvider';
-import { useProviderContext } from '../OnboardProvider';
+import { useProvider } from '../OnboardProvider';
 
 export type MaybeBlockNumber = number | undefined;
 
@@ -9,7 +9,7 @@ const ctx = createContext<MaybeBlockNumber>(undefined);
 
 export const BlockProvider: FC<{}> = ({ children }) => {
   const blockNumber = useRef<MaybeBlockNumber>();
-  const provider = useProviderContext();
+  const provider = useProvider();
   const idle = useIsIdle();
 
   useEffect(() => {

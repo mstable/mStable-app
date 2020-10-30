@@ -1,40 +1,39 @@
 // eslint-disable-next-line import/no-unresolved
 import { API, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 import Onboard from 'bnc-onboard';
-import { CHAIN_ID } from '../web3/constants';
+import { CHAIN_ID, rpcUrl } from '../web3/constants';
 
 const dappId = 'c179119c-5ba8-49bb-9989-0e7584a06028';
-export const RPC_URL = `${process.env.REACT_APP_RPC_URL}${process.env.REACT_APP_RPC_API_KEY}`;
 
 export const WALLETS = [
   { walletName: 'coinbase', preferred: true },
-  { walletName: 'trust', preferred: true, rpcUrl: RPC_URL },
+  { walletName: 'trust', preferred: true, rpcUrl },
   { walletName: 'metamask', preferred: true },
-  { walletName: 'dapper', preferred: true },
+  { walletName: 'dapper' },
   {
     walletName: 'trezor',
     appUrl: window.location.hostname,
     email: 'info@mstable.org',
-    rpcUrl: RPC_URL,
+    rpcUrl,
+    preferred: true,
   },
   {
     walletName: 'ledger',
-    rpcUrl: RPC_URL,
+    rpcUrl,
+    preferred: true,
   },
   {
     walletName: 'lattice',
-    rpcUrl: RPC_URL,
+    rpcUrl,
     appName: 'mStable',
   },
   {
     walletName: 'fortmatic',
     apiKey: 'pk_live_A0F1CE58073CA3D9',
-    preferred: true,
   },
   {
     walletName: 'portis',
     apiKey: '39018c3e-5767-4438-abe2-27d004c2261c',
-    preferred: true,
   },
   {
     walletName: 'squarelink',
@@ -44,19 +43,20 @@ export const WALLETS = [
   {
     walletName: 'walletConnect',
     infuraKey: process.env.REACT_APP_RPC_API_KEY,
+    preferred: true,
   },
   { walletName: 'opera' },
   { walletName: 'operaTouch' },
   { walletName: 'torus' },
   { walletName: 'status' },
   { walletName: 'unilogin' },
-  { walletName: 'walletLink', rpcUrl: RPC_URL, appName: 'mStable' },
-  { walletName: 'imToken', rpcUrl: RPC_URL },
+  { walletName: 'walletLink', rpcUrl, appName: 'mStable' },
+  { walletName: 'imToken', rpcUrl },
   { walletName: 'meetone' },
-  { walletName: 'mykey', rpcUrl: RPC_URL },
-  { walletName: 'huobiwallet', rpcUrl: RPC_URL },
+  { walletName: 'mykey', rpcUrl },
+  { walletName: 'huobiwallet', rpcUrl },
   { walletName: 'hyperpay' },
-  { walletName: 'wallet.io', rpcUrl: RPC_URL },
+  { walletName: 'wallet.io', rpcUrl },
 ];
 
 export const initOnboard = (subscriptions: Subscriptions): API => {
