@@ -344,7 +344,7 @@ const WalletButton: FC<{}> = () => {
           <TruncatedAddress>{truncatedAddress}</TruncatedAddress>
         </>
       ) : (
-        <span>{accountItem === AccountItems.Wallet ? 'Back' : 'Connect'}</span>
+        <span>Connect</span>
       )}
       <PendingTxContainer pending={pending} error={error} success={success}>
         <ActivitySpinner pending={pending} error={error} success={success} />
