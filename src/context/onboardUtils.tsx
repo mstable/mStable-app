@@ -62,7 +62,7 @@ export const WALLETS = [
 export const initOnboard = (subscriptions: Subscriptions): API => {
   return Onboard({
     dappId,
-    hideBranding: false,
+    hideBranding: true,
     networkId: CHAIN_ID,
     subscriptions,
     walletSelect: {

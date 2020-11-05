@@ -55,6 +55,58 @@ const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
     color: ${Color.offBlack};
     line-height: 1.3rem;
   }
+  // Onboard.js
+  aside.bn-onboard-custom {
+    color: ${Color.offBlack};
+    z-index: 1;
+    > section {
+      font-family: 'Poppins', sans-serif !important;
+      border-radius: 2px;
+    }
+    .bn-onboard-modal-content-header {
+      > :first-child {
+        display: none;
+      }
+      > h3 {
+        margin-left: 0;
+      }
+    }
+    .bn-onboard-select-description {
+      display: none;
+    }
+    .bn-onboard-icon-button {
+      font-weight: normal;
+      padding: 4px 16px;
+      border: 1px ${Color.blackTransparent} solid;
+      border-radius: 3px;
+      > :first-child {
+        min-width: 32px;
+      }
+      > span {
+        font-weight: normal;
+        font-size: 16px;
+      }
+      &:hover {
+        box-shadow: none;
+      }
+    }
+    .bn-onboard-prepare-button {
+      appearance: none;
+      outline: none;
+      background: transparent;
+      user-select: none;
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 12px;
+      padding: 8px 16px;
+      border: 1px ${Color.blackTransparent} solid;
+      border-radius: 3px;
+      color: ${Color.black};
+      &:hover {
+        background: white;
+      }
+    }
+  }
 `;
 
 const StickyHeader = styled.div`

@@ -139,17 +139,21 @@ export const TokenSubscriptionsUpdater = (): null => {
           })),
         );
 
-      Promise.all(allowancePromises).then(allowances => {
-        updateAllowances(
-          allowances.reduce<Parameters<typeof updateAllowances>[0]>(
-            (_allowances, { address, allowance, spender }) => ({
-              ..._allowances,
-              [address]: { ..._allowances[address], [spender]: allowance },
-            }),
-            {},
-          ),
-        );
-      });
+      Promise.all(allowancePromises)
+        .then(allowances => {
+          updateAllowances(
+            allowances.reduce<Parameters<typeof updateAllowances>[0]>(
+              (_allowances, { address, allowance, spender }) => ({
+                ..._allowances,
+                [address]: { ..._allowances[address], [spender]: allowance },
+              }),
+              {},
+            ),
+          );
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
   }, [
     account,
