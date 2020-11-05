@@ -2,7 +2,7 @@
 
 ## Next
 
-- Add support for running the dApp on IPFS
+- Remove expired pools from admin screen
 
 ## Version 1.13.0
 
