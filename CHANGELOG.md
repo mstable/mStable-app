@@ -2,9 +2,11 @@
 
 ## Next
 
+- Add a gas prices widget to allow the user to select a gas price and see the transaction fee
+
 ## Version 1.14.0
 
-- Implement Onboard.js for connecting wallets; this supports more wallet types 
+- Implement Onboard.js for connecting wallets; this supports more wallet types
   and reduces complexity of the UI
 
 ## Version 1.13.0

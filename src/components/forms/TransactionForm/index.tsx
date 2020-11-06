@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { InputPane } from './InputPane';
 import { ConfirmPane } from './ConfirmPane';
 import { TransactionsPane } from './TransactionsPane';
+import { GasPrice } from './GasPrice';
 
 interface Props {
   className?: string;
@@ -37,7 +38,10 @@ export const TransactionForm: FC<Props> = ({
       {valid ? confirm : null}
     </ConfirmPane>
     {compact ? null : (
-      <TransactionsPane transactionsLabel={transactionsLabel} />
+      <div>
+        <GasPrice valid={valid} />
+        <TransactionsPane transactionsLabel={transactionsLabel} />
+      </div>
     )}
   </Container>
 );
