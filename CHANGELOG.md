@@ -2,6 +2,8 @@
 
 ## Next
 
+## Version 1.14.0
+
 - Implement Onboard.js for connecting wallets; this supports more wallet types 
   and reduces complexity of the UI
 
