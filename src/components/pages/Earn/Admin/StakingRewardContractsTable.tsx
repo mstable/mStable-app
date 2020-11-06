@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
 import { useStakingRewardsContracts } from '../../../../context/earn/EarnDataProvider';
@@ -9,7 +8,6 @@ import { TokenAmount } from '../../../core/TokenAmount';
 import { Table } from '../../../core/Table';
 import { AmountInput } from '../../../forms/AmountInput';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { Color } from '../../../../theme';
 import { Erc20DetailedFactory } from '../../../../typechain/Erc20DetailedFactory';
 import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider';
 import { StakingRewardsContract } from '../../../../context/earn/types';
@@ -52,29 +50,6 @@ const COLUMNS = [
     title: 'Amount to fund',
   },
 ];
-
-const Warning = styled.div`
-  color: ${Color.red};
-  font-weight: bold;
-  font-size: 18px;
-
-  &:after,
-  &:before {
-    @keyframes scale {
-      from {
-        transform: scale(0.25);
-      }
-      to {
-        transform: scale(1);
-      }
-    }
-    content: '⚠️';
-    display: inline-block;
-    width: 32px;
-    height: 32px;
-    animation: scale 0.25s ease infinite alternate-reverse;
-  }
-`;
 
 export const StakingRewardContractsTable: FC<{}> = () => {
   const signer = useSigner();
@@ -134,116 +109,115 @@ export const StakingRewardContractsTable: FC<{}> = () => {
 
   const items = useMemo(
     () =>
-      Object.values(stakingRewardsContracts).map(stakingRewardsContract => {
-        const {
-          address: id,
-          platformRewards,
-          totalRemainingRewards,
-          rewardsToken,
-          pool,
-          periodFinish,
-        } = stakingRewardsContract;
-        const { colors, getPlatformLink } = PLATFORM_METADATA[pool.platform];
+      Object.values(stakingRewardsContracts)
+        .filter(stakingRewardsContract => !stakingRewardsContract.expired)
+        .map(stakingRewardsContract => {
+          const {
+            address: id,
+            platformRewards,
+            totalRemainingRewards,
+            rewardsToken,
+            pool,
+            periodFinish,
+          } = stakingRewardsContract;
+          const { colors, getPlatformLink } = PLATFORM_METADATA[pool.platform];
 
-        const periodFinishTime = periodFinish * 1e3;
-        const now = Date.now();
+          const periodFinishTime = periodFinish * 1e3;
 
-        return COLUMNS.reduce(
-          (_item, { key }) => {
-            const value = (() => {
-              switch (key) {
-                case Columns.Airdrops: {
-                  return (
-                    <div>
-                      {airdropBalances[id] && platformRewards ? (
-                        <TokenAmount
-                          symbol={platformRewards.platformToken.symbol}
-                          format={NumberFormat.Abbreviated}
-                          amount={airdropBalances[id]}
-                        />
-                      ) : (
-                        '-'
-                      )}
-                    </div>
-                  );
-                }
-                case Columns.Period: {
-                  return (
-                    <div>
-                      {periodFinishTime < now ? (
-                        <Warning>Period ended</Warning>
-                      ) : (
-                        `Period ends in ${formatDistanceToNow(
-                          periodFinishTime,
-                        )}`
-                      )}
-                    </div>
-                  );
-                }
-                case Columns.AmountToFund: {
-                  return (
-                    <div>
-                      <AmountInput
-                        value={recipientAmounts[id]?.formValue}
-                        onChange={formValue =>
-                          setRecipientAmount(id, formValue)
-                        }
-                      />
-                    </div>
-                  );
-                }
-                case Columns.Collateral:
-                  return (
-                    <>
-                      {pool.tokens.map(
-                        ({ address, symbol, liquidity, price }) => (
+          return COLUMNS.reduce(
+            (_item, { key }) => {
+              const value = (() => {
+                switch (key) {
+                  case Columns.Airdrops: {
+                    return (
+                      <div>
+                        {airdropBalances[id] && platformRewards ? (
                           <TokenAmount
-                            key={address}
-                            symbol={symbol}
+                            symbol={platformRewards.platformToken.symbol}
                             format={NumberFormat.Abbreviated}
-                            amount={liquidity}
-                            price={price}
+                            amount={airdropBalances[id]}
                           />
-                        ),
-                      )}
-                    </>
-                  );
-                case Columns.StakingToken:
-                  return (
-                    <TokenAmount
-                      href={getPlatformLink(stakingRewardsContract)}
-                      symbol={stakingRewardsContract.stakingToken.symbol}
-                      format={NumberFormat.Abbreviated}
-                      price={stakingRewardsContract.stakingToken.price}
-                      address={stakingRewardsContract.address}
-                    />
-                  );
-                case Columns.RemainingRewards:
-                  return (
-                    <>
-                      <TokenAmount
-                        amount={totalRemainingRewards}
-                        format={NumberFormat.Abbreviated}
-                        symbol={rewardsToken.symbol}
-                      />
-                      {platformRewards ? (
-                        <TokenAmount
-                          amount={platformRewards.totalRemainingPlatformRewards}
-                          format={NumberFormat.Abbreviated}
-                          symbol={platformRewards.platformToken.symbol}
+                        ) : (
+                          '-'
+                        )}
+                      </div>
+                    );
+                  }
+                  case Columns.Period: {
+                    return (
+                      <div>
+                        {`Period ends in ${formatDistanceToNow(
+                          periodFinishTime,
+                        )}`}
+                      </div>
+                    );
+                  }
+                  case Columns.AmountToFund: {
+                    return (
+                      <div>
+                        <AmountInput
+                          value={recipientAmounts[id]?.formValue}
+                          onChange={formValue =>
+                            setRecipientAmount(id, formValue)
+                          }
                         />
-                      ) : null}
-                    </>
-                  );
-                default:
-                  throw new Error('Unhandled key');
-              }
-            })();
-            return { ..._item, data: { ..._item.data, [key]: value } };
-          },
-          { id, colors, data: {} },
-        );
-      }),
+                      </div>
+                    );
+                  }
+                  case Columns.Collateral:
+                    return (
+                      <>
+                        {pool.tokens.map(
+                          ({ address, symbol, liquidity, price }) => (
+                            <TokenAmount
+                              key={address}
+                              symbol={symbol}
+                              format={NumberFormat.Abbreviated}
+                              amount={liquidity}
+                              price={price}
+                            />
+                          ),
+                        )}
+                      </>
+                    );
+                  case Columns.StakingToken:
+                    return (
+                      <TokenAmount
+                        href={getPlatformLink(stakingRewardsContract)}
+                        symbol={stakingRewardsContract.stakingToken.symbol}
+                        format={NumberFormat.Abbreviated}
+                        price={stakingRewardsContract.stakingToken.price}
+                        address={stakingRewardsContract.address}
+                      />
+                    );
+                  case Columns.RemainingRewards:
+                    return (
+                      <>
+                        <TokenAmount
+                          amount={totalRemainingRewards}
+                          format={NumberFormat.Abbreviated}
+                          symbol={rewardsToken.symbol}
+                        />
+                        {platformRewards ? (
+                          <TokenAmount
+                            amount={
+                              platformRewards.totalRemainingPlatformRewards
+                            }
+                            format={NumberFormat.Abbreviated}
+                            symbol={platformRewards.platformToken.symbol}
+                          />
+                        ) : null}
+                      </>
+                    );
+                  default:
+                    throw new Error('Unhandled key');
+                }
+              })();
+              return { ..._item, data: { ..._item.data, [key]: value } };
+            },
+            { id, colors, data: {} },
+          );
+        }),
     [
       recipientAmounts,
       setRecipientAmount,

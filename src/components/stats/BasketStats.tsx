@@ -22,13 +22,13 @@ import { TokenIconSvg } from '../icons/TokenIcon';
 import { DataState } from '../../context/DataProvider/types';
 import { BigDecimal } from '../../web3/BigDecimal';
 
-type TokenSymbol = 'mUSD' | 'SUSD' | 'DAI' | 'USDT' | 'TUSD' | 'USDC' | 'BUSD';
+type TokenSymbol = 'mUSD' | 'sUSD' | 'DAI' | 'USDT' | 'TUSD' | 'USDC' | 'BUSD';
 
 type TokenColours = Record<TokenSymbol, string>;
 
 const TOKEN_COLOURS: TokenColours = {
   mUSD: '#000',
-  SUSD: '#1e1a31',
+  sUSD: '#1e1a31',
   BUSD: '#ebb532',
   DAI: '#EEB345',
   USDT: '#26A17B',
@@ -38,7 +38,7 @@ const TOKEN_COLOURS: TokenColours = {
 
 const OVERWEIGHT_TOKEN_COLOURS: TokenColours = {
   mUSD: '#000',
-  SUSD: '#0d0b15',
+  sUSD: '#0d0b15',
   BUSD: '#634f14',
   DAI: '#725621',
   USDT: '#155844',
@@ -48,7 +48,7 @@ const OVERWEIGHT_TOKEN_COLOURS: TokenColours = {
 
 const TOKEN_HATCH_COLOURS: TokenColours = {
   mUSD: '#000',
-  SUSD: '#9489bf',
+  sUSD: '#9489bf',
   BUSD: '#ffd375',
   DAI: '#e0c184',
   USDT: '#7dc6af',

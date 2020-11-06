@@ -2,11 +2,8 @@
 
 ## Next
 
-- Add onboardjs integration
-- Support for more wallet types
-- Removing the provider and UI complexity
-- Removing unused libraries
-- Modularizing the codebase to fit the new wallet integration standard
+- Implement Onboard.js for connecting wallets; this supports more wallet types 
+  and reduces complexity of the UI
 
 ## Version 1.13.0
 
