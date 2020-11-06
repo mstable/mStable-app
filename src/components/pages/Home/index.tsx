@@ -1,13 +1,13 @@
 import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useHistory, Link } from 'react-router-dom';
-import { useWallet } from 'use-wallet';
 
 import { H2, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ViewportWidth } from '../../../theme';
-import { useOpenWalletRedirect } from '../../../context/AppProvider';
 import { ReactComponent as GovernanceIcon } from '../../icons/circle/gavel.svg';
+import { useConnected, useConnect } from '../../../context/OnboardProvider';
+import { useToggleWallet } from '../../../context/AppProvider';
 
 const Symbol = styled.div`
   align-items: center;
@@ -154,9 +154,8 @@ const Carousel = styled.div`
 `;
 
 const Start: FC<{}> = () => {
-  const { status } = useWallet();
-  const connected = status === 'connected';
-  const openWallet = useOpenWalletRedirect();
+  const connected = useConnected();
+  const connect = useConnect();
   const history = useHistory();
   return (
     <>
@@ -178,7 +177,7 @@ const Start: FC<{}> = () => {
               if (connected) {
                 history.push('/mint');
               } else {
-                openWallet('/mint');
+                connect();
               }
             }}
           >
@@ -191,7 +190,9 @@ const Start: FC<{}> = () => {
 };
 
 const GetStarted: FC<{}> = () => {
-  const openWallet = useOpenWalletRedirect();
+  const connect = useConnect();
+  const connected = useConnected();
+  const toggleWallet = useToggleWallet();
   return (
     <>
       <SymbolBlock>
@@ -202,7 +203,7 @@ const GetStarted: FC<{}> = () => {
       <Block>
         <P>Start by connecting your Ethereum wallet</P>
         <P>
-          <Button type="button" onClick={() => openWallet('/mint')}>
+          <Button type="button" onClick={connected ? toggleWallet : connect}>
             Connect
           </Button>
         </P>
@@ -330,16 +331,16 @@ const HOME_STEPS: {
 ];
 
 export const Home: FC = () => {
-  const openWallet = useOpenWalletRedirect();
+  const connect = useConnect();
   const [activeIdx, setActiveIdx] = useState<number>(0);
 
   const next = useCallback(() => {
     if (activeIdx < HOME_STEPS.length - 1) {
       setActiveIdx(activeIdx + 1);
     } else {
-      openWallet('/mint');
+      connect();
     }
-  }, [setActiveIdx, activeIdx, openWallet]);
+  }, [setActiveIdx, activeIdx, connect]);
 
   const previous = useCallback(() => {
     if (activeIdx > 0) {

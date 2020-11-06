@@ -1,27 +1,21 @@
 import styled from 'styled-components';
 import React, { FC } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useWallet } from 'use-wallet';
-
 import {
   AccountItems,
   StatusWarnings,
   useAppStatusWarnings,
   useCloseAccount,
-  useIsWalletConnecting,
   useAccountItem,
   useAccountOpen,
-  useResetWallet,
   useToggleNotifications,
   useToggleWallet,
-  useWalletConnector,
 } from '../../context/AppProvider';
-import { useOwnAccount } from '../../context/UserProvider';
 import { Color, ViewportWidth } from '../../theme';
 import { ReactComponent as LogoSvg } from '../icons/mstable.svg';
 import { UnstyledButton } from '../core/Button';
 import { centredLayout } from './css';
-import { InjectedEthereum, TransactionStatus } from '../../types';
+import { TransactionStatus } from '../../types';
 import { useTruncatedAddress } from '../../web3/hooks';
 import { usePendingTxState } from '../../context/TransactionsProvider';
 import {
@@ -29,6 +23,20 @@ import {
   useUnreadNotifications,
 } from '../../context/NotificationsProvider';
 import { ActivitySpinner } from '../core/ActivitySpinner';
+import {
+  useConnect,
+  useConnected,
+  useWalletAddress,
+  useWallet,
+} from '../../context/OnboardProvider';
+import { ReactComponent as BraveIcon } from '../icons/wallets/brave.svg';
+import { ReactComponent as MetaMaskIcon } from '../icons/wallets/metamask.svg';
+import { ReactComponent as FortmaticIcon } from '../icons/wallets/fortmatic.svg';
+import { ReactComponent as PortisIcon } from '../icons/wallets/portis.svg';
+import { ReactComponent as SquarelinkIcon } from '../icons/wallets/squarelink.svg';
+import { ReactComponent as WalletConnectIcon } from '../icons/wallets/walletconnect.svg';
+import { ReactComponent as CoinbaseIcon } from '../icons/wallets/coinbase.svg';
+import { ReactComponent as MeetOneIcon } from '../icons/wallets/meetone.svg';
 import { Idle } from '../icons/Idle';
 
 const statusWarnings: Record<
@@ -195,14 +203,28 @@ const Container = styled.div<{ inverted: boolean; home: boolean }>`
   }
 `;
 
-const useWalletIcon = (): FC<{}> | null => {
-  const connector = useWalletConnector();
-
-  if (connector) {
-    return connector.icon || null;
+const WalletIcon: FC = () => {
+  const wallet = useWallet();
+  switch (wallet?.name) {
+    case 'Coinbase':
+      return <CoinbaseIcon />;
+    case 'MetaMask':
+      return <MetaMaskIcon />;
+    case 'Fortmatic':
+      return <FortmaticIcon />;
+    case 'Portis':
+      return <PortisIcon />;
+    case 'SquareLink':
+      return <SquarelinkIcon />;
+    case 'WalletConnect':
+      return <WalletConnectIcon />;
+    case 'Brave':
+      return <BraveIcon />;
+    case 'Meetone':
+      return <MeetOneIcon />;
+    default:
+      return <div />;
   }
-
-  return null;
 };
 
 const StatusWarning = styled.div<{ error?: boolean }>`
@@ -293,47 +315,41 @@ const PendingTxContainer = styled.div<{
 const WalletButton: FC<{}> = () => {
   const accountItem = useAccountItem();
   const toggleWallet = useToggleWallet();
-  const resetWallet = useResetWallet();
-  const { status } = useWallet<InjectedEthereum>();
-  const connected = status === 'connected';
-  const account = useOwnAccount();
-  const connecting = useIsWalletConnecting();
+  const connected = useConnected();
+  const account = useWalletAddress();
+
   const truncatedAddress = useTruncatedAddress(account);
-  const WalletIcon = useWalletIcon();
+  const connect = useConnect();
 
   const { pendingCount, latestStatus } = usePendingTxState();
   const pending =
-    (!latestStatus && connecting) || latestStatus === TransactionStatus.Pending;
+    (!latestStatus && connected && !account) ||
+    latestStatus === TransactionStatus.Pending;
   const error = latestStatus === TransactionStatus.Error;
   const success =
-    (!latestStatus && connected) || latestStatus === TransactionStatus.Success;
+    (!latestStatus && connected && account !== undefined) ||
+    latestStatus === TransactionStatus.Success;
 
   return (
     <WalletButtonBtn
       title="Account"
-      onClick={connecting ? resetWallet : toggleWallet}
+      onClick={connected && account ? toggleWallet : connect}
       active={accountItem === AccountItems.Wallet}
     >
       {connected ? (
         <>
-          {WalletIcon ? (
-            <Idle>
-              <WalletIcon />
-            </Idle>
-          ) : null}
+          <Idle>
+            <WalletIcon />
+          </Idle>
           <TruncatedAddress>{truncatedAddress}</TruncatedAddress>
         </>
       ) : (
-        <span>
-          {accountItem === AccountItems.Wallet && connecting
-            ? 'Back'
-            : 'Connect'}
-        </span>
+        <span>Connect</span>
       )}
       <PendingTxContainer pending={pending} error={error} success={success}>
         <ActivitySpinner pending={pending} error={error} success={success} />
         <div>
-          {success
+          {success && account
             ? '✓'
             : error
             ? '✗'

@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import { useAccount } from '../../../context/UserProvider';
 import { MerkleDrop } from '../../../context/earn/types';
-import { useSignerContext } from '../../../context/SignerProvider';
 import { useMerkleDrops } from '../../../context/earn/EarnDataProvider';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { humanizeList } from '../../../web3/strings';
@@ -19,6 +18,7 @@ import { H3, P } from '../../core/Typography';
 import { Tooltip } from '../../core/ReactTooltip';
 import { Protip } from '../../core/Protip';
 import { Size } from '../../../theme';
+import { useSigner } from '../../../context/OnboardProvider';
 
 const Container = styled.div`
   min-width: 260px;
@@ -53,7 +53,7 @@ const MerkleDropClaimForm: FC<{ merkleDrop: MerkleDrop }> = ({
   merkleDrop,
 }) => {
   const account = useAccount();
-  const signer = useSignerContext();
+  const signer = useSigner();
   const setFormManifest = useSetFormManifest();
   const {
     totalUnclaimed,

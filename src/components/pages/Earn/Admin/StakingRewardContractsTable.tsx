@@ -9,11 +9,11 @@ import { Table } from '../../../core/Table';
 import { AmountInput } from '../../../forms/AmountInput';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Erc20DetailedFactory } from '../../../../typechain/Erc20DetailedFactory';
-import { useSignerContext } from '../../../../context/SignerProvider';
 import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider';
 import { StakingRewardsContract } from '../../../../context/earn/types';
 import { Erc20Detailed } from '../../../../typechain/Erc20Detailed.d';
 import { Token } from '../../../../types';
+import { useSigner } from '../../../../context/OnboardProvider';
 
 enum Columns {
   StakingToken,
@@ -52,7 +52,7 @@ const COLUMNS = [
 ];
 
 export const StakingRewardContractsTable: FC<{}> = () => {
-  const signer = useSignerContext();
+  const signer = useSigner();
   const stakingRewardsContracts = useStakingRewardsContracts();
   const { setRecipientAmount } = useEarnAdminDispatch();
   const { recipientAmounts } = useEarnAdminState();

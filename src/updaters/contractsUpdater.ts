@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { useWallet } from 'use-wallet';
 import { hexZeroPad } from 'ethers/utils';
-
+import { useConnected } from '../context/OnboardProvider';
 import { useTransactionsDispatch } from '../context/TransactionsProvider';
 import { useAccount } from '../context/UserProvider';
 import { getHistoricTransactions } from '../web3/getHistoricTransactions';
@@ -12,8 +11,7 @@ import {
 import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 
 export const ContractsUpdater = (): null => {
-  const { status, connector } = useWallet();
-  const connected = status === 'connected';
+  const connected = useConnected();
   const account = useAccount();
   const { addHistoric, reset } = useTransactionsDispatch();
 
@@ -30,7 +28,7 @@ export const ContractsUpdater = (): null => {
   /**
    * When the account changes, reset the transactions state.
    */
-  useEffect(reset, [account, connector, connected, reset]);
+  useEffect(reset, [account, connected, reset]);
 
   /**
    * When the account changes (and mUSD exists), get historic transactions.

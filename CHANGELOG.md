@@ -2,7 +2,8 @@
 
 ## Next
 
-- Remove expired pools from admin screen
+- Implement Onboard.js for connecting wallets; this supports more wallet types 
+  and reduces complexity of the UI
 
 ## Version 1.13.0
 

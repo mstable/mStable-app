@@ -1,5 +1,3 @@
-import { Connectors } from 'use-wallet';
-
 import { ReactComponent as BraveIcon } from '../components/icons/wallets/brave.svg';
 import { ReactComponent as MetaMaskIcon } from '../components/icons/wallets/metamask.svg';
 import { ReactComponent as FortmaticIcon } from '../components/icons/wallets/fortmatic.svg';
@@ -77,7 +75,7 @@ const walletconnect = {
 //   },
 // };
 
-export const getConnectors = (chainId: number): Connectors => {
+export const getConnectors = (chainId: number): object => {
   switch (chainId) {
     case 1:
       return {
@@ -116,4 +114,4 @@ export const getConnectors = (chainId: number): Connectors => {
   }
 };
 
-export const AVAILABLE_CONNECTORS: Connectors = getConnectors(CHAIN_ID);
+export const AVAILABLE_CONNECTORS = getConnectors(CHAIN_ID);
