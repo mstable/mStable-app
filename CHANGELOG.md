@@ -2,6 +2,8 @@
 
 ## Next
 
+- Remove expired pools from admin screen
+
 ## Version 1.13.0
 
 Features:
