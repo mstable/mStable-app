@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Provider, TransactionReceipt } from 'ethers/providers';
 import { Signer } from 'ethers';
 import { useTransactionsContext } from '../context/TransactionsProvider';
-import { useSignerOrInfuraProvider } from '../context/SignerProvider';
+import { useSignerOrInfuraProvider } from '../context/OnboardProvider';
 import { useBlockNumber } from '../context/DataProvider/BlockProvider';
 import { useAccount } from '../context/UserProvider';
 
@@ -14,7 +14,7 @@ export const TransactionsUpdater = (): null => {
   const account = useAccount();
   const provider = useSignerOrInfuraProvider();
   const blockNumber = useBlockNumber();
-  const accountRef = useRef<string | null>(account);
+  const accountRef = useRef<string | undefined>(account);
 
   const [{ current }, { check, finalize, reset }] = useTransactionsContext();
 

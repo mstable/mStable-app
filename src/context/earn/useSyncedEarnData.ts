@@ -452,7 +452,7 @@ export const useSyncedEarnData = (): SyncedEarnData => {
   const block24hAgo = useBlockTimestamp24hAgo();
 
   const stakingRewardsContractsQuery = useStakingRewardsContractsQuery({
-    variables: { account, includeHistoric: false },
+    variables: { account: account ?? null, includeHistoric: false },
     fetchPolicy: 'cache-and-network',
   });
 

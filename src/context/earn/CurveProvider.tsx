@@ -21,7 +21,7 @@ import { MusdGauge } from '../../typechain/MusdGauge.d';
 import { StableSwap } from '../../typechain/StableSwap.d';
 import { TokenMinter } from '../../typechain/TokenMinter.d';
 import { CurveDeposit } from '../../typechain/CurveDeposit.d';
-import { useSignerOrInfuraProvider } from '../SignerProvider';
+import { useSignerOrInfuraProvider } from '../OnboardProvider';
 import { useBlockNumber } from '../DataProvider/BlockProvider';
 import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';

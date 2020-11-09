@@ -5,7 +5,6 @@ import styled from 'styled-components';
 
 import { useTokenAllowance } from '../../../../context/DataProvider/TokensProvider';
 import { useOwnAccount } from '../../../../context/UserProvider';
-import { useSignerContext } from '../../../../context/SignerProvider';
 import {
   FormProvider,
   useSetFormManifest,
@@ -20,6 +19,7 @@ import { Interfaces, SendTxManifest } from '../../../../types';
 import { RewardsDistributorFactory } from '../../../../typechain/RewardsDistributorFactory';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Button } from '../../../core/Button';
+import { useSigner } from '../../../../context/OnboardProvider';
 
 const Row = styled.div`
   margin-bottom: 16px;
@@ -36,7 +36,7 @@ const Confirm: FC<{}> = () => {
   const rewardsDistributorAddress = rewardsDistributor?.id;
 
   const setFormManifest = useSetFormManifest();
-  const signer = useSignerContext();
+  const signer = useSigner();
   const iface = useMemo(
     () =>
       signer && rewardsDistributorAddress

@@ -14,7 +14,6 @@ import { StakingRewards } from '../../../typechain/StakingRewards.d';
 import { SCALE } from '../../../web3/constants';
 import { CURVE_ADDRESSES } from '../../../context/earn/CurveProvider';
 import { useTokens } from '../../../context/DataProvider/TokensProvider';
-import { useSignerContext } from '../../../context/SignerProvider';
 import { StakingRewardsFactory } from '../../../typechain/StakingRewardsFactory';
 import { SubscribedToken } from '../../../types';
 import {
@@ -23,6 +22,7 @@ import {
 } from '../../../context/earn/EarnDataProvider';
 import { Actions, Dispatch, RewardsEarned, State, Tabs } from './types';
 import { reducer } from './reducer';
+import { useSigner } from '../../../context/OnboardProvider';
 
 interface Props {
   address: string;
@@ -297,7 +297,7 @@ export const StakingRewardsContractProvider: FC<Props> = ({
     dispatch({ type: Actions.SetAddLiquidityMaxAmount });
   }, [dispatch]);
 
-  const signer = useSignerContext();
+  const signer = useSigner();
 
   const contract = useMemo(
     () => (signer ? StakingRewardsFactory.connect(address, signer) : undefined),

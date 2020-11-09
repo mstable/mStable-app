@@ -1,13 +1,11 @@
 import React, { createContext, FC, useContext, useMemo, useState } from 'react';
-import { useWallet, UseWalletProvider } from 'use-wallet';
 import useIdle from 'react-use/lib/useIdle';
 
-import { CHAIN_ID } from '../web3/constants';
-import { AVAILABLE_CONNECTORS } from '../web3/connectors';
+import { OnboardProvider, useWalletAddress } from './OnboardProvider';
 
 interface State {
-  account: string | null;
-  masqueradedAccount: string | null;
+  address: string | undefined;
+  masqueradedAccount: string | undefined;
   idle: boolean;
 }
 
@@ -18,8 +16,8 @@ interface Dispatch {
 const dispatchCtx = createContext<Dispatch>({} as never);
 const stateCtx = createContext<State>({
   idle: false,
-  account: null,
-  masqueradedAccount: null,
+  address: undefined,
+  masqueradedAccount: undefined,
 });
 
 export const useMasquerade = (): Dispatch['masquerade'] =>
@@ -31,26 +29,30 @@ export const useIsIdle = (): State['idle'] => useUserState().idle;
 
 export const useAccount = ():
   | State['masqueradedAccount']
-  | State['account'] => {
-  const { account, masqueradedAccount } = useUserState();
-  return masqueradedAccount || account;
+  | State['address'] => {
+  const { address, masqueradedAccount } = useUserState();
+  return masqueradedAccount || address;
 };
 
-export const useOwnAccount = (): State['account'] => useUserState().account;
+export const useOwnAccount = (): State['address'] => useUserState().address;
 
 export const useIsMasquerading = (): boolean =>
   Boolean(useUserState().masqueradedAccount);
 
 const AccountProvider: FC<{}> = ({ children }) => {
-  const { account } = useWallet();
+  const address = useWalletAddress();
   const idle = useIdle();
   const [masqueradedAccount, masquerade] = useState<
     State['masqueradedAccount']
   >();
 
   const state = useMemo<State>(
-    () => ({ account, idle, masqueradedAccount: masqueradedAccount ?? null }),
-    [account, idle, masqueradedAccount],
+    () => ({
+      address,
+      idle,
+      masqueradedAccount,
+    }),
+    [address, idle, masqueradedAccount],
   );
 
   return (
@@ -61,7 +63,7 @@ const AccountProvider: FC<{}> = ({ children }) => {
 };
 
 export const UserProvider: FC<{}> = ({ children }) => (
-    <UseWalletProvider chainId={CHAIN_ID} connectors={AVAILABLE_CONNECTORS}>
-      <AccountProvider>{children}</AccountProvider>
-    </UseWalletProvider>
-  );
+  <OnboardProvider>
+    <AccountProvider>{children}</AccountProvider>
+  </OnboardProvider>
+);
