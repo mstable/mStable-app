@@ -27,6 +27,19 @@ const RelativeContainer = styled.div`
   overflow: visible;
 `;
 
+const Token = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+`;
+
+const Balance = styled.div`
+  font-size: ${FontSize.s};
+  font-weight: normal;
+  text-overflow: ellipsis;
+`;
+
 const OptionsContainer = styled.div<{ open: boolean }>`
   display: ${({ open }) => (open ? 'block' : 'none')};
   position: absolute;
@@ -44,25 +57,21 @@ const OptionsContainer = styled.div<{ open: boolean }>`
 
 const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   display: flex;
+  flex-direction: row;
   align-items: center;
-  height: 46px;
   overflow-x: hidden;
-
   padding: ${({ theme }) => theme.spacing.xs};
-
+  box-sizing: border-box;
   background: ${({ selected, theme }) =>
     selected ? theme.color.blueTransparent : 'transparent'};
 
+  img {
+    padding-right: 6px;
+    width: 36px;
+  }
+
   &:hover {
     background: ${({ theme }) => theme.color.blueTransparent};
-  }
-
-  > :first-child {
-    padding-right: 6px;
-  }
-
-  img {
-    width: 36px;
   }
 `;
 
@@ -71,12 +80,24 @@ const Placeholder = styled(OptionContainer)`
   @media (min-width: ${ViewportWidth.s}) {
     font-size: ${FontSize.m};
   }
+  &:hover {
+    background: none;
+  }
 `;
 
 const Selected = styled.div`
   display: flex;
+  height: 100%;
   justify-content: space-between;
   align-items: center;
+
+  > div:hover {
+    background: none;
+  }
+
+  ${Balance} {
+    display: none;
+  }
 `;
 
 const DownArrow = styled.div`
@@ -89,13 +110,18 @@ const Option: FC<TokenOptionProps> = ({
   selected,
   onClick,
 }) => {
+  const token = useToken(address);
+  const hasBalance = !!token?.balance.simple;
   const handleClick = useCallback(() => {
     onClick?.(address);
   }, [onClick, address]);
   return (
     <OptionContainer onClick={handleClick} selected={selected}>
       <TokenIcon symbol={symbol} />
-      <div>{symbol}</div>
+      <Token>
+        <div>{symbol}</div>
+        {hasBalance && <Balance>{token?.balance.format(2, true)}</Balance>}
+      </Token>
     </OptionContainer>
   );
 };
@@ -118,10 +144,6 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   height: 3rem;
   user-select: none;
   min-width: 100px;
-
-  ${OptionContainer}:hover {
-    background: transparent;
-  }
 
   @media (min-width: ${ViewportWidth.s}) {
     min-width: 145px;
