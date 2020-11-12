@@ -3,6 +3,7 @@
 ## Next
 
 - Add a gas prices widget to allow the user to select a gas price and see the transaction fee
+- Added balance to asset dropdown in SWAP
 
 ## Version 1.14.0
 
