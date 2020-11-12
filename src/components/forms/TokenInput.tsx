@@ -61,7 +61,6 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   align-items: center;
   overflow-x: hidden;
   padding: ${({ theme }) => theme.spacing.xs};
-  box-sizing: border-box;
   background: ${({ selected, theme }) =>
     selected ? theme.color.blueTransparent : 'transparent'};
 
@@ -119,7 +118,7 @@ const Option: FC<TokenOptionProps> = ({
     <OptionContainer onClick={handleClick} selected={selected}>
       <TokenIcon symbol={symbol} />
       <Token>
-        <div>{symbol}</div>
+        {symbol}
         {hasBalance && <Balance>{token?.balance.format(2, true)}</Balance>}
       </Token>
     </OptionContainer>
