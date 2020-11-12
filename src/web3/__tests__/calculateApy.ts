@@ -6,11 +6,11 @@ describe('calculateAPY', () => {
     const result = calculateApy(
       {
         timestamp: 0,
-        exchangeRate: '1',
+        rate: '1',
       },
       {
         timestamp: 1,
-        exchangeRate: '1',
+        rate: '1',
       },
     );
 
@@ -22,11 +22,11 @@ describe('calculateAPY', () => {
     const result = calculateApy(
       {
         timestamp: 1,
-        exchangeRate: '1.1',
+        rate: '1.1',
       },
       {
         timestamp: 60 * 60 * 24,
-        exchangeRate: '1.101',
+        rate: '1.101',
       },
     );
 
@@ -38,11 +38,11 @@ describe('calculateAPY', () => {
     const result = calculateApy(
       {
         timestamp: 0,
-        exchangeRate: '1.1',
+        rate: '1.1',
       },
       {
         timestamp: 24 * 60 * 60,
-        exchangeRate: '1.105',
+        rate: '1.105',
       },
     );
 
@@ -54,11 +54,11 @@ describe('calculateAPY', () => {
     const result = calculateApy(
       {
         timestamp: 0,
-        exchangeRate: '1.1',
+        rate: '1.1',
       },
       {
         timestamp: 12 * 60 * 60,
-        exchangeRate: '1.101',
+        rate: '1.101',
       },
     );
 

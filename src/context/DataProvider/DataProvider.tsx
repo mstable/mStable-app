@@ -2,7 +2,7 @@ import React, { createContext, FC, useContext, useMemo } from 'react';
 import { pipe } from 'ts-pipe-compose';
 import useDebouncedMemo from '@sevenoutman/use-debounced-memo';
 
-import { useLatestExchangeRateLazyQuery } from '../../graphql/mstable';
+import { useLatestExchangeRateLazyQuery } from '../../graphql/protocol';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { useTokensState } from './TokensProvider';
 import {
@@ -45,7 +45,7 @@ const useRawData = (): PartialRawData => {
   const savingsContract = mUsdSavingsSub.data?.savingsContracts[0];
 
   const creditBalancesSub = useCreditBalancesSubscription();
-  const creditBalances = creditBalancesSub.data?.account?.creditBalances;
+  const creditBalance = creditBalancesSub.data?.account?.creditBalance;
 
   const latestExchangeRateSub = useBlockPollingSubscription(
     useLatestExchangeRateLazyQuery,
@@ -54,13 +54,13 @@ const useRawData = (): PartialRawData => {
 
   return useDebouncedMemo(
     () => ({
-      creditBalances,
+      creditBalance,
       latestExchangeRate,
       mAsset,
       savingsContract,
       tokens,
     }),
-    [creditBalances, latestExchangeRate, mAsset, savingsContract, tokens],
+    [creditBalance, latestExchangeRate, mAsset, savingsContract, tokens],
     1000,
   );
 };

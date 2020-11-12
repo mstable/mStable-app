@@ -9,7 +9,7 @@ import {
   useCreditBalancesLazyQuery,
   useMassetLazyQuery,
   useSavingsContractLazyQuery,
-} from '../../graphql/mstable';
+} from '../../graphql/protocol';
 import { useAccount } from '../UserProvider';
 import { useBlockNumber } from './BlockProvider';
 

@@ -9,7 +9,7 @@ import {
 } from './types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { CURVE_MUSD_EARN_URL, CURVE_ADDRESSES } from './CurveProvider';
-import { StakingRewardsContractType } from '../../graphql/mstable';
+import { StakingRewardsContractType } from '../../graphql/ecosystem';
 import { BlockTimestamp, Platforms } from '../../types';
 
 const BAL_ADDRESS = '0xba100000625a3754423978a60c9317c58a424e3d';
@@ -89,9 +89,8 @@ const getStakingRewardsContractsMap = (
 
         const stakingToken = {
           ...data.stakingToken,
-          totalSupply: BigDecimal.parse(
+          totalSupply: BigDecimal.fromMetric(
             data.stakingToken.totalSupply,
-            data.stakingToken.decimals,
           ),
           price: tokenPrices[data.stakingToken.address],
         };

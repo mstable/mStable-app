@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import {
   TokenDetailsFragment,
   useErc20TokensQuery,
-} from '../../graphql/mstable';
+} from '../../graphql/protocol';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { AmountInput } from './AmountInput';

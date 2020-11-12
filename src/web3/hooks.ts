@@ -10,7 +10,7 @@ import {
   useLastExchangeRateBeforeTimestampQuery,
   useWeeklyExchangeRatesQuery,
   WeeklyExchangeRatesQueryVariables,
-} from '../graphql/mstable';
+} from '../graphql/protocol';
 import { useLatestExchangeRate } from '../context/DataProvider/DataProvider';
 import { truncateAddress } from './strings';
 import { SCALE } from './constants';
@@ -24,7 +24,7 @@ interface Apy {
 
 type DailyApysForWeek = [Apy, Apy, Apy, Apy, Apy, Apy, Apy];
 
-type RateTimestamp = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
+type RateTimestamp = Pick<ExchangeRate, 'rate' | 'timestamp'>;
 
 export const useTruncatedAddress = (address?: string | null): string | null =>
   useMemo(() => (address ? truncateAddress(address) : null), [address]);
@@ -86,8 +86,8 @@ export const calculateApy = (
   start: RateTimestamp,
   end: RateTimestamp,
 ): BigNumber => {
-  const startRate = parseUnits(start.exchangeRate);
-  const endRate = parseUnits(end.exchangeRate);
+  const startRate = parseUnits(start.rate);
+  const endRate = parseUnits(end.rate);
 
   const rateDiff = endRate
     .mul(SCALE)
@@ -113,7 +113,7 @@ export const calculateApy = (
 
 const useLastExchangeRateBeforeTimestamp = (
   timestamp?: number,
-): Pick<ExchangeRate, 'timestamp' | 'exchangeRate'> | undefined => {
+): Pick<ExchangeRate, 'timestamp' | 'rate'> | undefined => {
   const previousQuery = useLastExchangeRateBeforeTimestampQuery({
     variables: { timestamp: timestamp as number },
     skip: !timestamp,
@@ -134,7 +134,7 @@ export const useApyForPast24h = (): BigNumber | undefined => {
     ? calculateApy(before, {
         // Normalize the type to RateTimestamp
         timestamp: latest.timestamp,
-        exchangeRate: latest.exchangeRate.string,
+        rate: latest.rate.string,
       })
     : undefined;
 };
@@ -176,7 +176,7 @@ export const useDailyApysForPastWeek = (start: number): DailyApysForWeek => {
             ? {
                 // Normalize the type to RateTimestamp
                 timestamp: latest.timestamp,
-                exchangeRate: latest.exchangeRate.string,
+                rate: latest.rate.string,
               }
             : query.data[`day${index + 1}` as 'day0']?.[0];
 

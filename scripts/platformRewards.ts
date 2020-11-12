@@ -69,10 +69,10 @@ import { getApolloClient } from './utils/getApolloClient';
 import { outputJsonReport, JsonReport } from './utils/outputJsonReport';
 import { fetchAllData } from './utils/fetchAllData';
 import {
-  RewardsDocument,
-  RewardsQueryResult,
-  RewardsQueryVariables,
-} from '../src/graphql/scripts';
+  ScriptRewardsDocument,
+  ScriptRewardsQueryResult,
+  ScriptRewardsQueryVariables,
+} from '../src/graphql/ecosystem';
 import { SCALE } from '../src/web3/constants';
 import {
   BlockTimestampDocument,
@@ -138,7 +138,7 @@ interface TokenMetadata {
 }
 
 type Data = NonNullable<
-  RewardsQueryResult['data']
+  ScriptRewardsQueryResult['data']
 >['stakingRewardsContracts'][number];
 
 interface Pool {
@@ -257,7 +257,7 @@ const parseArgs = async (): Promise<ValidatedArgs> => {
 };
 
 const shouldFetchMore = (
-  data: RewardsQueryResult['data'],
+  data: ScriptRewardsQueryResult['data'],
   limit: number,
 ): boolean =>
   Boolean(
@@ -281,12 +281,12 @@ const fetchPools = async (
     // Fetch all data and combine the fields which required more fetches
     for await (const data of mod.fetchAllData(
       client,
-      RewardsDocument,
+      ScriptRewardsDocument,
       {
         id,
         end: end.timestamp,
         block: { number: end.blockNumber },
-      } as RewardsQueryVariables,
+      },
       shouldFetchMore,
     )) {
       result = data.stakingRewardsContracts.reduce<Pools>((prev, current) => {

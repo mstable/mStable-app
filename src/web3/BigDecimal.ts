@@ -50,6 +50,15 @@ export class BigDecimal {
     return BigDecimal.parse(amountStr, decimals);
   }
 
+  static maybeFromMetric(metric?: { decimals: number; exact: string }): BigDecimal | undefined {
+    return metric ? BigDecimal.fromMetric(metric): undefined
+  }
+
+  static fromMetric({ decimals, exact }: { decimals: number; exact: string }): BigDecimal {
+    return new BigDecimal(exact, decimals)
+  }
+
+
   decimals: number;
 
   exact: BigNumber;

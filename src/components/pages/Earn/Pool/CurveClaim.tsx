@@ -45,23 +45,23 @@ const Input: FC<{ symbol: 'MTA' | 'CRV' }> = ({ symbol }) => {
 
 const ClaimMTA: FC = () => {
   const { rewards } = useRewardsEarned();
-  const curveContracts = useCurveContracts();
+  const { musdGauge } = useCurveContracts();
   const setFormManifest = useSetFormManifest();
 
   const valid = !!rewards?.exact.gt(0);
 
   useEffect(() => {
-    if (valid) {
+    if (valid && musdGauge) {
       const manifest: SendTxManifest<Interfaces.CurveGauge, 'claim_rewards()'> = {
         args: [],
-        iface: curveContracts.musdGauge,
+        iface: musdGauge,
         fn: 'claim_rewards()',
       };
       setFormManifest(manifest);
     } else {
       setFormManifest(null);
     }
-  }, [setFormManifest, valid, curveContracts.musdGauge]);
+  }, [setFormManifest, valid, musdGauge]);
 
   return (
     <TransactionForm
@@ -75,23 +75,23 @@ const ClaimMTA: FC = () => {
 
 const ClaimCRV: FC = () => {
   const { platformRewards } = useRewardsEarned();
-  const curveContracts = useCurveContracts();
+  const { tokenMinter } = useCurveContracts();
   const setFormManifest = useSetFormManifest();
 
   const valid = !!platformRewards?.exact.gt(0);
 
   useEffect(() => {
-    if (valid) {
+    if (valid && tokenMinter) {
       const manifest: SendTxManifest<Interfaces.CurveTokenMinter, 'mint'> = {
         args: [CURVE_ADDRESSES.MUSD_GAUGE],
-        iface: curveContracts.tokenMinter,
+        iface: tokenMinter,
         fn: 'mint',
       };
       setFormManifest(manifest);
     } else {
       setFormManifest(null);
     }
-  }, [setFormManifest, valid, curveContracts.tokenMinter]);
+  }, [setFormManifest, valid, tokenMinter]);
 
   return (
     <TransactionForm

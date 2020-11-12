@@ -113,7 +113,7 @@ const ExitFormConfirm: FC = () => {
 };
 
 const ExitForm: FC = () => {
-  const curveContracts = useCurveContracts();
+  const { musdGauge } = useCurveContracts();
 
   const setFormManifest = useSetFormManifest();
 
@@ -122,17 +122,17 @@ const ExitForm: FC = () => {
   } = useStakingRewardsContractState();
 
   useEffect(() => {
-    if (valid && amount) {
+    if (valid && amount && musdGauge) {
       const manifest: SendTxManifest<Interfaces.CurveGauge, 'withdraw(uint256)'> = {
         args: [amount.exact],
-        iface: curveContracts.musdGauge,
+        iface: musdGauge,
         fn: 'withdraw(uint256)',
       };
       setFormManifest(manifest);
     } else {
       setFormManifest(null);
     }
-  }, [setFormManifest, valid, amount, curveContracts.musdGauge]);
+  }, [setFormManifest, valid, amount, musdGauge]);
 
   return (
     <TransactionForm

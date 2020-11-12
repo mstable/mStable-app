@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
-import { TokenDetailsFragment } from '../../graphql/mstable';
+import { TokenDetailsFragment } from '../../graphql/protocol';
 import { TokenIcon } from '../icons/TokenIcon';
 import { useToken } from '../../context/DataProvider/TokensProvider';
 import { FontSize, ViewportWidth } from '../../theme';

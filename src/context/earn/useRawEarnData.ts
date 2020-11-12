@@ -1,6 +1,6 @@
 import { useBlockPollingSubscription } from '../DataProvider/subscriptions';
 import { useAccount } from '../UserProvider';
-import { useStakingRewardsContractsLazyQuery } from '../../graphql/mstable';
+import { useStakingRewardsContractsLazyQuery } from '../../graphql/ecosystem';
 import { RawEarnData, SyncedEarnData } from './types';
 import { useCurveBalances } from './CurveProvider';
 
