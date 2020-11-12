@@ -142,7 +142,13 @@ export const GasPrice: FC<Props> = () => {
   const setGasPriceType = useSetGasPriceType();
   const currentGasPriceType = useCurrentGasPriceType();
   const currentGasPrice = useCurrentGasPrice();
-
+  const customTransactionFee =
+    currentGasPriceType === GasPriceType.Custom &&
+    currentGasPrice &&
+    ethPrice &&
+    manifest?.gasLimit
+      ? currentGasPrice * (ethPrice / 1e9) * manifest.gasLimit.toNumber()
+      : undefined;
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
       setGasPrice(parseInt(event.target.value, 10));
@@ -160,12 +166,7 @@ export const GasPrice: FC<Props> = () => {
   return (
     <Container>
       {gasPriceOptions.map(({ type, label, name }) => {
-        const gasPrice =
-          type === GasPriceType.Custom
-            ? currentGasPrice
-            : name && gasPrices
-            ? gasPrices[name]
-            : undefined;
+        const gasPrice = name && gasPrices ? gasPrices[name] : undefined;
         const transactionFee =
           gasPrice && ethPrice && manifest?.gasLimit
             ? gasPrice * (ethPrice / 1e9) * manifest.gasLimit.toNumber()
@@ -195,7 +196,7 @@ export const GasPrice: FC<Props> = () => {
                     onChange={handleChange}
                   />
                   <p>
-                    {transactionFee ? `$ ${transactionFee.toFixed(2)}` : '$ –'}
+                    {customTransactionFee ? `$ ${customTransactionFee.toFixed(2)}` : '$ –'}
                   </p>
                 </FlexContainer>
               )}
