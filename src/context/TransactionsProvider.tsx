@@ -7,6 +7,9 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
+import useInterval from 'react-use/lib/useInterval';
+
+import useEffectOnce from 'react-use/lib/useEffectOnce';
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
 
@@ -30,6 +33,7 @@ import { getEtherscanLink } from '../web3/strings';
 import { BigDecimal } from '../web3/BigDecimal';
 import { useStakingRewardsContracts } from './earn/EarnDataProvider';
 import { StakingRewardsContractsMap } from './earn/types';
+import { calculateGasMargin } from '../web3/hooks';
 
 enum Actions {
   AddPending,
@@ -38,14 +42,34 @@ enum Actions {
   Finalize,
   Reset,
   ResetLatestStatus,
+  FetchGasPrices,
+  FetchEthPrice,
 }
 
 type TransactionHash = string;
+
+interface GasPriceInfo {
+  health: boolean;
+  block_number: number;
+  block_time: number;
+  slow: number;
+  standard: number;
+  fast: number;
+  instant: number;
+}
+
+interface EthPrice {
+  ethereum: {
+    usd: number;
+  };
+}
 
 interface State {
   current: Record<TransactionHash, Transaction>;
   latestStatus: { status?: TransactionStatus; blockNumber?: number };
   historic: Record<TransactionHash, HistoricTransaction>;
+  gasPriceInfo?: GasPriceInfo;
+  ethPrice?: number;
 }
 
 interface Dispatch {
@@ -89,6 +113,10 @@ interface Dispatch {
    * Reset just the `latestStatus.status` field.
    */
   resetLatestStatus(): void;
+
+  fetchGasPrices(): void;
+
+  fetchEthPrice(): void;
 }
 
 type Action =
@@ -113,7 +141,15 @@ type Action =
       };
     }
   | { type: Actions.Reset }
-  | { type: Actions.ResetLatestStatus };
+  | { type: Actions.ResetLatestStatus }
+  | {
+      type: Actions.FetchGasPrices;
+      payload: { gasPriceInfo: GasPriceInfo };
+    }
+  | {
+      type: Actions.FetchEthPrice;
+      payload: { ethPrice: EthPrice };
+    };
 
 const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -173,6 +209,8 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
     }
     case Actions.Reset:
       return {
+        gasPriceInfo: state.gasPriceInfo,
+        ethPrice: state.ethPrice,
         historic: {},
         current: {},
         latestStatus: {},
@@ -185,6 +223,21 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
           status: undefined,
         },
       };
+    case Actions.FetchGasPrices: {
+      const { gasPriceInfo } = action.payload;
+      return {
+        ...state,
+        gasPriceInfo,
+      };
+    }
+    case Actions.FetchEthPrice: {
+      const { ethPrice } = action.payload;
+      const { usd } = ethPrice.ethereum;
+      return {
+        ...state,
+        ethPrice: usd,
+      };
+    }
     default:
       throw new Error('Unhandled action');
   }
@@ -445,6 +498,49 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   const dataState = useDataState();
   const stakingRewardsContracts = useStakingRewardsContracts();
 
+  const fetchGasPrices = useCallback<Dispatch['fetchGasPrices']>(async () => {
+    try {
+      const response = await fetch('https://gasprice.poa.network/');
+
+      const gasPriceInfo = (await response.json()) as GasPriceInfo;
+      dispatch({
+        type: Actions.FetchGasPrices,
+        payload: {
+          gasPriceInfo,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }, [dispatch]);
+
+  const fetchEthPrice = useCallback<Dispatch['fetchEthPrice']>(async () => {
+    try {
+      const response = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd',
+      );
+      const ethPrice = await response.json();
+      dispatch({
+        type: Actions.FetchEthPrice,
+        payload: {
+          ethPrice,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  useEffectOnce(() => {
+    fetchGasPrices();
+    fetchEthPrice();
+  });
+
+  useInterval(() => {
+    fetchGasPrices();
+    fetchEthPrice();
+  }, 5 * 60 * 1000);
+
   const addPending = useCallback<Dispatch['addPending']>(
     (manifest, pendingTx) => {
       const purpose = getTxPurpose(
@@ -530,6 +626,8 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
             finalize,
             reset,
             resetLatestStatus,
+            fetchGasPrices,
+            fetchEthPrice,
           },
         ],
         [
@@ -540,6 +638,8 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
           finalize,
           reset,
           resetLatestStatus,
+          fetchGasPrices,
+          fetchEthPrice,
         ],
       )}
     >
@@ -555,6 +655,14 @@ export const useTransactionsState = (): State => useTransactionsContext()[0];
 
 export const useTransactionsDispatch = (): Dispatch =>
   useTransactionsContext()[1];
+
+export const useGasPrices = (): GasPriceInfo | undefined => {
+  return useTransactionsState().gasPriceInfo;
+};
+
+export const useEthPrice = (): number | undefined => {
+  return useTransactionsState().ethPrice;
+};
 
 export const useOrderedCurrentTransactions = (
   formId?: string,
@@ -612,12 +720,6 @@ export const useHasPendingApproval = (
 
 const overrideProps = ['nonce', 'gasLimit', 'gasPrice', 'value', 'chainId'];
 
-export const calculateGasMargin = (value: BigNumber): BigNumber => {
-  const GAS_MARGIN = new BigNumber(1000);
-  const offset = value.mul(GAS_MARGIN).div(new BigNumber(10000));
-  return value.add(offset);
-};
-
 const isTransactionOverrides = (arg: unknown): boolean =>
   arg != null &&
   typeof arg === 'object' &&
@@ -628,6 +730,7 @@ const addGasSettings = async (
   manifest: SendTxManifest<any, any>,
 ): Promise<typeof manifest> => {
   const { iface, fn, args } = manifest;
+  let { gasPrice, gasLimit } = manifest;
   const last = args[args.length - 1];
 
   if (
@@ -639,14 +742,19 @@ const addGasSettings = async (
   }
 
   // Set the gas limit (with the calculated gas margin)
-  const gasLimit = await iface.estimate[fn](...args);
+  if (!gasLimit) {
+    gasLimit = (await iface.estimate[fn](...args)) as BigNumber;
+    gasLimit = calculateGasMargin(gasLimit);
+  }
 
   // Also set the gas price, because some providers don't
-  const gasPrice = await iface.provider.getGasPrice();
+  if (!gasPrice) {
+    gasPrice = await iface.provider.getGasPrice();
+  }
 
   return {
     ...manifest,
-    args: [...args, { gasLimit: calculateGasMargin(gasLimit), gasPrice }],
+    args: [...args, { gasLimit, gasPrice }],
   };
 };
 
