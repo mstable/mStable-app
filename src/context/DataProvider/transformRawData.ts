@@ -33,7 +33,7 @@ const getMassetState: TransformFn<'mAsset'> = ({
     feeRate: bigNumberify(feeRate),
     redemptionFeeRate: bigNumberify(redemptionFeeRate || '0'),
     symbol,
-    totalSupply: BigDecimal.parse(totalSupply, decimals),
+    totalSupply: BigDecimal.fromMetric(totalSupply),
     undergoingRecol,
 
     // Initial values
@@ -45,7 +45,7 @@ const getMassetState: TransformFn<'mAsset'> = ({
 
 const getSavingsContract: TransformFn<'savingsContract'> = (
   {
-    creditBalances,
+    creditBalance,
     latestExchangeRate,
     savingsContract: savingsContractData,
     tokens,
@@ -54,13 +54,11 @@ const getSavingsContract: TransformFn<'savingsContract'> = (
 ) => ({
   address: savingsContractData.id,
   automationEnabled: savingsContractData.automationEnabled,
-  creditBalances: (creditBalances || []).map(({ amount }: { amount: string }) =>
-    BigDecimal.parse(amount, decimals),
-  ),
+  creditBalance: BigDecimal.maybeParse(creditBalance?.amount, decimals),
   latestExchangeRate: latestExchangeRate
     ? {
-        exchangeRate: BigDecimal.parse(
-          latestExchangeRate.exchangeRate,
+        rate: BigDecimal.parse(
+          latestExchangeRate.rate,
           decimals,
         ),
         timestamp: latestExchangeRate.timestamp,
@@ -69,9 +67,9 @@ const getSavingsContract: TransformFn<'savingsContract'> = (
   mAssetAllowance:
     tokens[mAssetAddress]?.allowances?.[savingsContractData.id] ??
     new BigDecimal(0, decimals),
-  savingsRate: BigDecimal.parse(savingsContractData.savingsRate, decimals),
-  totalCredits: BigDecimal.parse(savingsContractData.totalCredits, decimals),
-  totalSavings: BigDecimal.parse(savingsContractData.totalSavings, decimals),
+  savingsRate: BigDecimal.fromMetric(savingsContractData.savingsRate),
+  totalCredits: BigDecimal.fromMetric(savingsContractData.totalCredits),
+  totalSavings: BigDecimal.fromMetric(savingsContractData.totalSavings),
   savingsBalance: {},
 });
 
@@ -111,8 +109,8 @@ const getBassetsState: TransformFn<'bAssets'> = (
         ratio: bigNumberify(ratio),
         status: status as BassetStatus,
         symbol,
-        totalSupply: BigDecimal.parse(totalSupply, decimals),
-        totalVault: BigDecimal.parse(vaultBalance, decimals),
+        totalSupply: BigDecimal.fromMetric(totalSupply),
+        totalVault: BigDecimal.fromMetric(vaultBalance),
 
         // Initial values
         balanceInMasset: new BigDecimal(0, mAsset.decimals),

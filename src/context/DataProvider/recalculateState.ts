@@ -43,15 +43,15 @@ const recalculateSavingsContract = (
     mAsset,
     savingsContract: {
       latestExchangeRate,
-      creditBalances: [credits = new BigDecimal(0, mAsset.decimals)],
+      creditBalance = new BigDecimal(0, mAsset.decimals),
     },
   } = dataState;
 
   if (latestExchangeRate) {
-    const balance = credits.mulTruncate(latestExchangeRate.exchangeRate.exact);
+    const balance = creditBalance.mulTruncate(latestExchangeRate.rate.exact);
     return {
       ...dataState.savingsContract,
-      savingsBalance: { balance, credits },
+      savingsBalance: { balance, credits: creditBalance },
     };
   }
 

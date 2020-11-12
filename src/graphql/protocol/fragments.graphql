@@ -3,7 +3,9 @@ fragment TokenDetails on Token {
   address
   decimals
   symbol
-  totalSupply
+  totalSupply {
+    ...MetricFields
+  }
 }
 
 fragment MassetAll on Masset {
@@ -19,7 +21,9 @@ fragment MassetAll on Masset {
     undergoingRecol
     bassets {
       id
-      vaultBalance
+      vaultBalance {
+        ...MetricFields
+      }
       isTransferFeeCharged
       ratio
       status
@@ -31,9 +35,16 @@ fragment MassetAll on Masset {
   }
 }
 
-fragment TransactionDetails on Transaction {
+fragment TransactionFields on Transaction {
   id
-  tx
-  type
+  hash
   timestamp
+  block
+  sender
+}
+
+fragment MetricFields on Metric {
+  exact
+  decimals
+  simple
 }

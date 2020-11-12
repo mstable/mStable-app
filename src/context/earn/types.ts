@@ -4,7 +4,7 @@ import { BigDecimal } from '../../web3/BigDecimal';
 import {
   StakingRewardsContractsQueryResult,
   StakingRewardsContractType,
-} from '../../graphql/mstable';
+} from '../../graphql/ecosystem';
 import { PoolsQueryResult as BalancerPoolsQueryResult } from '../../graphql/balancer';
 // import { PoolsQueryResult as CurvePoolsQueryResult } from '../../graphql/curve';
 import { PairsQueryResult } from '../../graphql/uniswap';

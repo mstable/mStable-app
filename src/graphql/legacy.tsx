@@ -70,6 +70,26 @@ export type Scalars = {
   BigInt: string;
 };
 
+export type _Block_ = {
+  /** The hash of the block */
+  hash?: Maybe<Scalars['Bytes']>;
+  /** The block number */
+  number: Scalars['Int'];
+};
+
+/** The type for the top-level _meta field */
+export type _Meta_ = {
+  /**
+   * Information about a specific subgraph block. The hash of the block
+   * will be null if the _meta field has a block constraint that asks for
+   * a block number. It will be filled if the _meta field has no block constraint
+   * and therefore asks for the latest  block
+   */
+  block: _Block_;
+  /** The deployment ID */
+  deployment: Scalars['String'];
+};
+
 /** An Ethereum account with balances/credit balances */
 export type Account = {
   id: Scalars['ID'];
@@ -650,6 +670,11 @@ export type Masset = {
   /** The token symbol */
   tokenSymbol: Scalars['String'];
   savingsContracts: Array<SavingsContract>;
+  totalMinted: Scalars['BigDecimal'];
+  totalRedeemed: Scalars['BigDecimal'];
+  totalSwapped: Scalars['BigDecimal'];
+  totalSwapFeesPaid: Scalars['BigDecimal'];
+  totalRedemptionFeesPaid: Scalars['BigDecimal'];
 };
 
 
@@ -729,6 +754,46 @@ export type Masset_Filter = {
   tokenSymbol_not_starts_with?: Maybe<Scalars['String']>;
   tokenSymbol_ends_with?: Maybe<Scalars['String']>;
   tokenSymbol_not_ends_with?: Maybe<Scalars['String']>;
+  totalMinted?: Maybe<Scalars['BigDecimal']>;
+  totalMinted_not?: Maybe<Scalars['BigDecimal']>;
+  totalMinted_gt?: Maybe<Scalars['BigDecimal']>;
+  totalMinted_lt?: Maybe<Scalars['BigDecimal']>;
+  totalMinted_gte?: Maybe<Scalars['BigDecimal']>;
+  totalMinted_lte?: Maybe<Scalars['BigDecimal']>;
+  totalMinted_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalMinted_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalRedeemed?: Maybe<Scalars['BigDecimal']>;
+  totalRedeemed_not?: Maybe<Scalars['BigDecimal']>;
+  totalRedeemed_gt?: Maybe<Scalars['BigDecimal']>;
+  totalRedeemed_lt?: Maybe<Scalars['BigDecimal']>;
+  totalRedeemed_gte?: Maybe<Scalars['BigDecimal']>;
+  totalRedeemed_lte?: Maybe<Scalars['BigDecimal']>;
+  totalRedeemed_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalRedeemed_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalSwapped?: Maybe<Scalars['BigDecimal']>;
+  totalSwapped_not?: Maybe<Scalars['BigDecimal']>;
+  totalSwapped_gt?: Maybe<Scalars['BigDecimal']>;
+  totalSwapped_lt?: Maybe<Scalars['BigDecimal']>;
+  totalSwapped_gte?: Maybe<Scalars['BigDecimal']>;
+  totalSwapped_lte?: Maybe<Scalars['BigDecimal']>;
+  totalSwapped_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalSwapped_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalSwapFeesPaid?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFeesPaid_not?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFeesPaid_gt?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFeesPaid_lt?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFeesPaid_gte?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFeesPaid_lte?: Maybe<Scalars['BigDecimal']>;
+  totalSwapFeesPaid_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalSwapFeesPaid_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalRedemptionFeesPaid?: Maybe<Scalars['BigDecimal']>;
+  totalRedemptionFeesPaid_not?: Maybe<Scalars['BigDecimal']>;
+  totalRedemptionFeesPaid_gt?: Maybe<Scalars['BigDecimal']>;
+  totalRedemptionFeesPaid_lt?: Maybe<Scalars['BigDecimal']>;
+  totalRedemptionFeesPaid_gte?: Maybe<Scalars['BigDecimal']>;
+  totalRedemptionFeesPaid_lte?: Maybe<Scalars['BigDecimal']>;
+  totalRedemptionFeesPaid_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalRedemptionFeesPaid_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
 };
 
 export enum Masset_OrderBy {
@@ -738,7 +803,12 @@ export enum Masset_OrderBy {
   RedemptionFeeRate = 'redemptionFeeRate',
   Token = 'token',
   TokenSymbol = 'tokenSymbol',
-  SavingsContracts = 'savingsContracts'
+  SavingsContracts = 'savingsContracts',
+  TotalMinted = 'totalMinted',
+  TotalRedeemed = 'totalRedeemed',
+  TotalSwapped = 'totalSwapped',
+  TotalSwapFeesPaid = 'totalSwapFeesPaid',
+  TotalRedemptionFeesPaid = 'totalRedemptionFeesPaid'
 }
 
 export type MerkleDrop = {
@@ -1011,6 +1081,8 @@ export type Query = {
   timeMetrics: Array<TimeMetric>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
 };
 
 
@@ -1429,6 +1501,11 @@ export type QueryTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
+export type Query_MetaArgs = {
+  block?: Maybe<Block_Height>;
+};
+
 export type RewardsDistributor = {
   /** ID of the rewards distributor contract */
   id: Scalars['ID'];
@@ -1461,6 +1538,8 @@ export type SavingsContract = {
   masset: Masset;
   totalSavings: Scalars['BigDecimal'];
   totalCredits: Scalars['BigDecimal'];
+  totalDeposited: Scalars['BigDecimal'];
+  totalWithdrawn: Scalars['BigDecimal'];
   exchangeRates: Array<ExchangeRate>;
   savingsRate: Scalars['BigDecimal'];
   creditBalances: Array<CreditBalance>;
@@ -1524,6 +1603,22 @@ export type SavingsContract_Filter = {
   totalCredits_lte?: Maybe<Scalars['BigDecimal']>;
   totalCredits_in?: Maybe<Array<Scalars['BigDecimal']>>;
   totalCredits_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalDeposited?: Maybe<Scalars['BigDecimal']>;
+  totalDeposited_not?: Maybe<Scalars['BigDecimal']>;
+  totalDeposited_gt?: Maybe<Scalars['BigDecimal']>;
+  totalDeposited_lt?: Maybe<Scalars['BigDecimal']>;
+  totalDeposited_gte?: Maybe<Scalars['BigDecimal']>;
+  totalDeposited_lte?: Maybe<Scalars['BigDecimal']>;
+  totalDeposited_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalDeposited_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalWithdrawn?: Maybe<Scalars['BigDecimal']>;
+  totalWithdrawn_not?: Maybe<Scalars['BigDecimal']>;
+  totalWithdrawn_gt?: Maybe<Scalars['BigDecimal']>;
+  totalWithdrawn_lt?: Maybe<Scalars['BigDecimal']>;
+  totalWithdrawn_gte?: Maybe<Scalars['BigDecimal']>;
+  totalWithdrawn_lte?: Maybe<Scalars['BigDecimal']>;
+  totalWithdrawn_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  totalWithdrawn_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   savingsRate?: Maybe<Scalars['BigDecimal']>;
   savingsRate_not?: Maybe<Scalars['BigDecimal']>;
   savingsRate_gt?: Maybe<Scalars['BigDecimal']>;
@@ -1543,6 +1638,8 @@ export enum SavingsContract_OrderBy {
   Masset = 'masset',
   TotalSavings = 'totalSavings',
   TotalCredits = 'totalCredits',
+  TotalDeposited = 'totalDeposited',
+  TotalWithdrawn = 'totalWithdrawn',
   ExchangeRates = 'exchangeRates',
   SavingsRate = 'savingsRate',
   CreditBalances = 'creditBalances',
@@ -2293,6 +2390,8 @@ export type Subscription = {
   timeMetrics: Array<TimeMetric>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
 };
 
 
@@ -2711,6 +2810,11 @@ export type SubscriptionTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
+export type Subscription_MetaArgs = {
+  block?: Maybe<Block_Height>;
+};
+
 /** A bAsset<>bAsset swap */
 export type SwapTransaction = Transaction & {
   id: Scalars['ID'];
@@ -3098,118 +3202,6 @@ export enum VolumeMetric_OrderBy {
   Type = 'type'
 }
 
-export type TokenDetailsFragment = Pick<Token, 'id' | 'address' | 'decimals' | 'symbol' | 'totalSupply'>;
-
-export type MassetAllFragment = (
-  Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
-  & { token: TokenDetailsFragment, basket: (
-    Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
-    & { bassets: Array<(
-      Pick<Basset, 'id' | 'vaultBalance' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
-      & { token: TokenDetailsFragment }
-    )> }
-  ) }
-);
-
-type TransactionDetails_SwapTransaction_Fragment = Pick<SwapTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
-
-type TransactionDetails_FeePaidTransaction_Fragment = Pick<FeePaidTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
-
-type TransactionDetails_StakingRewardsContractTransaction_Fragment = Pick<StakingRewardsContractTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
-
-type TransactionDetails_StakingRewardsContractClaimRewardTransaction_Fragment = Pick<StakingRewardsContractClaimRewardTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
-
-type TransactionDetails_StakingRewardsContractStakeTransaction_Fragment = Pick<StakingRewardsContractStakeTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
-
-type TransactionDetails_StakingRewardsContractWithdrawTransaction_Fragment = Pick<StakingRewardsContractWithdrawTransaction, 'id' | 'tx' | 'type' | 'timestamp'>;
-
-export type TransactionDetailsFragment = TransactionDetails_SwapTransaction_Fragment | TransactionDetails_FeePaidTransaction_Fragment | TransactionDetails_StakingRewardsContractTransaction_Fragment | TransactionDetails_StakingRewardsContractClaimRewardTransaction_Fragment | TransactionDetails_StakingRewardsContractStakeTransaction_Fragment | TransactionDetails_StakingRewardsContractWithdrawTransaction_Fragment;
-
-export type CoreTokensQueryVariables = {};
-
-
-export type CoreTokensQuery = { mUSD: Array<TokenDetailsFragment>, mUSDSavings: Array<Pick<SavingsContract, 'id'>> };
-
-export type MassetQueryVariables = {
-  id: Scalars['ID'];
-};
-
-
-export type MassetQuery = { masset?: Maybe<MassetAllFragment> };
-
-export type Erc20TokensQueryVariables = {
-  addresses: Array<Scalars['Bytes']>;
-};
-
-
-export type Erc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
-
-export type AllErc20TokensQueryVariables = {};
-
-
-export type AllErc20TokensQuery = { savingsContracts: Array<(
-    Pick<SavingsContract, 'id'>
-    & { address: SavingsContract['id'] }
-  )>, tokens: Array<TokenDetailsFragment> };
-
-export type TokenByAddressQueryVariables = {
-  id: Scalars['ID'];
-};
-
-
-export type TokenByAddressQuery = { token?: Maybe<Pick<Token, 'id' | 'address' | 'decimals' | 'name' | 'symbol' | 'totalBurned' | 'totalSupply'>> };
-
-export type ErFragment = Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>;
-
-export type LastExchangeRateBeforeTimestampQueryVariables = {
-  timestamp: Scalars['Int'];
-};
-
-
-export type LastExchangeRateBeforeTimestampQuery = { exchangeRates: Array<ErFragment> };
-
-export type WeeklyExchangeRatesQueryVariables = {
-  day0: Scalars['Int'];
-  day1: Scalars['Int'];
-  day2: Scalars['Int'];
-  day3: Scalars['Int'];
-  day4: Scalars['Int'];
-  day5: Scalars['Int'];
-  day6: Scalars['Int'];
-};
-
-
-export type WeeklyExchangeRatesQuery = { day0: Array<ErFragment>, day1: Array<ErFragment>, day2: Array<ErFragment>, day3: Array<ErFragment>, day4: Array<ErFragment>, day5: Array<ErFragment>, day6: Array<ErFragment> };
-
-export type SavingsContractQueryVariables = {
-  id: Scalars['ID'];
-};
-
-
-export type SavingsContractQuery = { savingsContracts: Array<(
-    Pick<SavingsContract, 'id' | 'totalSavings' | 'totalCredits' | 'savingsRate' | 'automationEnabled'>
-    & { exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
-  )> };
-
-export type TokenQueryVariables = {
-  id: Scalars['ID'];
-};
-
-
-export type TokenQuery = { token?: Maybe<TokenDetailsFragment> };
-
-export type CreditBalancesQueryVariables = {
-  account: Scalars['ID'];
-};
-
-
-export type CreditBalancesQuery = { account?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
-
-export type LatestExchangeRateQueryVariables = {};
-
-
-export type LatestExchangeRateQuery = { exchangeRates: Array<Pick<ExchangeRate, 'exchangeRate' | 'timestamp'>> };
-
 export type VolumeMetricsOfTypeQueryVariables = {
   period: TimeMetricPeriod;
   type: TransactionType;
@@ -3248,545 +3240,9 @@ export type AggregateMetricsQueryVariables = {
 
 export type AggregateMetricsQuery = { aggregateMetrics: Array<Pick<AggregateMetric, 'type' | 'timestamp' | 'value'>> };
 
-export type StakingRewardsContractDetailsFragment = (
-  Pick<StakingRewardsContract, 'id' | 'type' | 'duration' | 'lastUpdateTime' | 'periodFinish' | 'rewardRate' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored' | 'platformRewardRate' | 'totalSupply' | 'totalStakingRewards' | 'totalPlatformRewards'>
-  & { address: StakingRewardsContract['id'] }
-  & { stakingToken: (
-    Pick<Token, 'totalSupply'>
-    & TokenDetailsFragment
-  ), rewardsToken: TokenDetailsFragment, platformToken?: Maybe<TokenDetailsFragment> }
-);
 
-export type StakingRewardsContractQueryVariables = {
-  id: Scalars['ID'];
-  account?: Maybe<Scalars['Bytes']>;
-};
-
-
-export type StakingRewardsContractQuery = { stakingRewardsContract?: Maybe<(
-    { stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
-    & StakingRewardsContractDetailsFragment
-  )> };
-
-export type StakingRewardsContractsQueryVariables = {
-  account?: Maybe<Scalars['Bytes']>;
-  includeHistoric: Scalars['Boolean'];
-  block?: Maybe<Block_Height>;
-};
-
-
-export type StakingRewardsContractsQuery = { current: Array<(
-    { stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>>, platformRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
-    & StakingRewardsContractDetailsFragment
-  )>, historic: Array<(
-    Pick<StakingRewardsContract, 'id' | 'lastUpdateTime' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored'>
-    & { address: StakingRewardsContract['id'] }
-  )> };
-
-export type RewardsDistributorQueryVariables = {};
-
-
-export type RewardsDistributorQuery = { rewardsDistributors: Array<Pick<RewardsDistributor, 'id' | 'fundManagers'>> };
-
-export type MerkleDropClaimsQueryVariables = {
-  account: Scalars['Bytes'];
-};
-
-
-export type MerkleDropClaimsQuery = { merkleDrops: Array<(
-    Pick<MerkleDrop, 'id'>
-    & { token: TokenDetailsFragment, tranches: Array<(
-      Pick<MerkleDropTranche, 'trancheNumber' | 'totalAmount'>
-      & { claims: Array<Pick<MerkleDropClaim, 'balance'>> }
-    )> }
-  )> };
-
-export const TokenDetailsFragmentDoc = gql`
-    fragment TokenDetails on Token {
-  id
-  address
-  decimals
-  symbol
-  totalSupply
-}
-    `;
-export const MassetAllFragmentDoc = gql`
-    fragment MassetAll on Masset {
-  id
-  token {
-    ...TokenDetails
-  }
-  feeRate
-  redemptionFeeRate
-  basket {
-    failed
-    collateralisationRatio
-    undergoingRecol
-    bassets {
-      id
-      vaultBalance
-      isTransferFeeCharged
-      ratio
-      status
-      maxWeight
-      token {
-        ...TokenDetails
-      }
-    }
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
-export const TransactionDetailsFragmentDoc = gql`
-    fragment TransactionDetails on Transaction {
-  id
-  tx
-  type
-  timestamp
-}
-    `;
-export const ErFragmentDoc = gql`
-    fragment ER on ExchangeRate {
-  exchangeRate
-  timestamp
-}
-    `;
-export const StakingRewardsContractDetailsFragmentDoc = gql`
-    fragment StakingRewardsContractDetails on StakingRewardsContract {
-  address: id
-  id
-  type
-  duration
-  lastUpdateTime
-  periodFinish
-  rewardRate
-  rewardPerTokenStored
-  platformRewardPerTokenStored
-  platformRewardRate
-  totalSupply
-  totalStakingRewards
-  totalPlatformRewards
-  stakingToken {
-    totalSupply
-    ...TokenDetails
-  }
-  rewardsToken {
-    ...TokenDetails
-  }
-  platformToken {
-    ...TokenDetails
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
-export const CoreTokensDocument = gql`
-    query CoreTokens @api(name: mstable) {
-  mUSD: tokens(where: {symbol: "mUSD"}) {
-    ...TokenDetails
-  }
-  mUSDSavings: savingsContracts(first: 1) {
-    id
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
-
-/**
- * __useCoreTokensQuery__
- *
- * To run a query within a React component, call `useCoreTokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useCoreTokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCoreTokensQuery({
- *   variables: {
- *   },
- * });
- */
-export function useCoreTokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
-      }
-export function useCoreTokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
-        }
-export type CoreTokensQueryHookResult = ReturnType<typeof useCoreTokensQuery>;
-export type CoreTokensLazyQueryHookResult = ReturnType<typeof useCoreTokensLazyQuery>;
-export type CoreTokensQueryResult = ApolloReactCommon.QueryResult<CoreTokensQuery, CoreTokensQueryVariables>;
-export const MassetDocument = gql`
-    query Masset($id: ID!) @api(name: mstable) {
-  masset(id: $id) {
-    ...MassetAll
-  }
-}
-    ${MassetAllFragmentDoc}`;
-
-/**
- * __useMassetQuery__
- *
- * To run a query within a React component, call `useMassetQuery` and pass it any options that fit your needs.
- * When your component renders, `useMassetQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useMassetQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useMassetQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MassetQuery, MassetQueryVariables>) {
-        return ApolloReactHooks.useQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
-      }
-export function useMassetLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MassetQuery, MassetQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
-        }
-export type MassetQueryHookResult = ReturnType<typeof useMassetQuery>;
-export type MassetLazyQueryHookResult = ReturnType<typeof useMassetLazyQuery>;
-export type MassetQueryResult = ApolloReactCommon.QueryResult<MassetQuery, MassetQueryVariables>;
-export const Erc20TokensDocument = gql`
-    query Erc20Tokens($addresses: [Bytes!]!) @api(name: mstable) {
-  tokens(where: {address_in: $addresses}) {
-    ...TokenDetails
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
-
-/**
- * __useErc20TokensQuery__
- *
- * To run a query within a React component, call `useErc20TokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useErc20TokensQuery({
- *   variables: {
- *      addresses: // value for 'addresses'
- *   },
- * });
- */
-export function useErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
-      }
-export function useErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
-        }
-export type Erc20TokensQueryHookResult = ReturnType<typeof useErc20TokensQuery>;
-export type Erc20TokensLazyQueryHookResult = ReturnType<typeof useErc20TokensLazyQuery>;
-export type Erc20TokensQueryResult = ApolloReactCommon.QueryResult<Erc20TokensQuery, Erc20TokensQueryVariables>;
-export const AllErc20TokensDocument = gql`
-    query AllErc20Tokens @api(name: mstable) {
-  savingsContracts {
-    address: id
-    id
-  }
-  tokens {
-    ...TokenDetails
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
-
-/**
- * __useAllErc20TokensQuery__
- *
- * To run a query within a React component, call `useAllErc20TokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useAllErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useAllErc20TokensQuery({
- *   variables: {
- *   },
- * });
- */
-export function useAllErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
-      }
-export function useAllErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
-        }
-export type AllErc20TokensQueryHookResult = ReturnType<typeof useAllErc20TokensQuery>;
-export type AllErc20TokensLazyQueryHookResult = ReturnType<typeof useAllErc20TokensLazyQuery>;
-export type AllErc20TokensQueryResult = ApolloReactCommon.QueryResult<AllErc20TokensQuery, AllErc20TokensQueryVariables>;
-export const TokenByAddressDocument = gql`
-    query TokenByAddress($id: ID!) @api(name: mstable) {
-  token(id: $id) {
-    id
-    address
-    decimals
-    name
-    symbol
-    totalBurned
-    totalBurned
-    totalSupply
-  }
-}
-    `;
-
-/**
- * __useTokenByAddressQuery__
- *
- * To run a query within a React component, call `useTokenByAddressQuery` and pass it any options that fit your needs.
- * When your component renders, `useTokenByAddressQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTokenByAddressQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useTokenByAddressQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TokenByAddressQuery, TokenByAddressQueryVariables>) {
-        return ApolloReactHooks.useQuery<TokenByAddressQuery, TokenByAddressQueryVariables>(TokenByAddressDocument, baseOptions);
-      }
-export function useTokenByAddressLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TokenByAddressQuery, TokenByAddressQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<TokenByAddressQuery, TokenByAddressQueryVariables>(TokenByAddressDocument, baseOptions);
-        }
-export type TokenByAddressQueryHookResult = ReturnType<typeof useTokenByAddressQuery>;
-export type TokenByAddressLazyQueryHookResult = ReturnType<typeof useTokenByAddressLazyQuery>;
-export type TokenByAddressQueryResult = ApolloReactCommon.QueryResult<TokenByAddressQuery, TokenByAddressQueryVariables>;
-export const LastExchangeRateBeforeTimestampDocument = gql`
-    query LastExchangeRateBeforeTimestamp($timestamp: Int!) @api(name: mstable) {
-  exchangeRates(where: {timestamp_lt: $timestamp}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-}
-    ${ErFragmentDoc}`;
-
-/**
- * __useLastExchangeRateBeforeTimestampQuery__
- *
- * To run a query within a React component, call `useLastExchangeRateBeforeTimestampQuery` and pass it any options that fit your needs.
- * When your component renders, `useLastExchangeRateBeforeTimestampQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useLastExchangeRateBeforeTimestampQuery({
- *   variables: {
- *      timestamp: // value for 'timestamp'
- *   },
- * });
- */
-export function useLastExchangeRateBeforeTimestampQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
-        return ApolloReactHooks.useQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
-      }
-export function useLastExchangeRateBeforeTimestampLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
-        }
-export type LastExchangeRateBeforeTimestampQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampQuery>;
-export type LastExchangeRateBeforeTimestampLazyQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampLazyQuery>;
-export type LastExchangeRateBeforeTimestampQueryResult = ApolloReactCommon.QueryResult<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>;
-export const WeeklyExchangeRatesDocument = gql`
-    query WeeklyExchangeRates($day0: Int!, $day1: Int!, $day2: Int!, $day3: Int!, $day4: Int!, $day5: Int!, $day6: Int!) @api(name: mstable) {
-  day0: exchangeRates(where: {timestamp_lt: $day0}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day1: exchangeRates(where: {timestamp_lt: $day1}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day2: exchangeRates(where: {timestamp_lt: $day2}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day3: exchangeRates(where: {timestamp_lt: $day3}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day4: exchangeRates(where: {timestamp_lt: $day4}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day5: exchangeRates(where: {timestamp_lt: $day5}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day6: exchangeRates(where: {timestamp_lt: $day6}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-}
-    ${ErFragmentDoc}`;
-
-/**
- * __useWeeklyExchangeRatesQuery__
- *
- * To run a query within a React component, call `useWeeklyExchangeRatesQuery` and pass it any options that fit your needs.
- * When your component renders, `useWeeklyExchangeRatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useWeeklyExchangeRatesQuery({
- *   variables: {
- *      day0: // value for 'day0'
- *      day1: // value for 'day1'
- *      day2: // value for 'day2'
- *      day3: // value for 'day3'
- *      day4: // value for 'day4'
- *      day5: // value for 'day5'
- *      day6: // value for 'day6'
- *   },
- * });
- */
-export function useWeeklyExchangeRatesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
-        return ApolloReactHooks.useQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
-      }
-export function useWeeklyExchangeRatesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
-        }
-export type WeeklyExchangeRatesQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesQuery>;
-export type WeeklyExchangeRatesLazyQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesLazyQuery>;
-export type WeeklyExchangeRatesQueryResult = ApolloReactCommon.QueryResult<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>;
-export const SavingsContractDocument = gql`
-    query SavingsContract($id: ID!) @api(name: mstable) {
-  savingsContracts(where: {id: $id}) {
-    id
-    totalSavings
-    totalCredits
-    exchangeRates {
-      id
-    }
-    savingsRate
-    automationEnabled
-  }
-}
-    `;
-
-/**
- * __useSavingsContractQuery__
- *
- * To run a query within a React component, call `useSavingsContractQuery` and pass it any options that fit your needs.
- * When your component renders, `useSavingsContractQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useSavingsContractQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useSavingsContractQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
-        return ApolloReactHooks.useQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
-      }
-export function useSavingsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
-        }
-export type SavingsContractQueryHookResult = ReturnType<typeof useSavingsContractQuery>;
-export type SavingsContractLazyQueryHookResult = ReturnType<typeof useSavingsContractLazyQuery>;
-export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<SavingsContractQuery, SavingsContractQueryVariables>;
-export const TokenDocument = gql`
-    query Token($id: ID!) @api(name: mstable) {
-  token(id: $id) {
-    ...TokenDetails
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
-
-/**
- * __useTokenQuery__
- *
- * To run a query within a React component, call `useTokenQuery` and pass it any options that fit your needs.
- * When your component renders, `useTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTokenQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useTokenQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TokenQuery, TokenQueryVariables>) {
-        return ApolloReactHooks.useQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
-      }
-export function useTokenLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TokenQuery, TokenQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
-        }
-export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
-export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
-export type TokenQueryResult = ApolloReactCommon.QueryResult<TokenQuery, TokenQueryVariables>;
-export const CreditBalancesDocument = gql`
-    query CreditBalances($account: ID!) @api(name: mstable) {
-  account(id: $account) {
-    creditBalances {
-      amount
-    }
-  }
-}
-    `;
-
-/**
- * __useCreditBalancesQuery__
- *
- * To run a query within a React component, call `useCreditBalancesQuery` and pass it any options that fit your needs.
- * When your component renders, `useCreditBalancesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCreditBalancesQuery({
- *   variables: {
- *      account: // value for 'account'
- *   },
- * });
- */
-export function useCreditBalancesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
-        return ApolloReactHooks.useQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
-      }
-export function useCreditBalancesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
-        }
-export type CreditBalancesQueryHookResult = ReturnType<typeof useCreditBalancesQuery>;
-export type CreditBalancesLazyQueryHookResult = ReturnType<typeof useCreditBalancesLazyQuery>;
-export type CreditBalancesQueryResult = ApolloReactCommon.QueryResult<CreditBalancesQuery, CreditBalancesQueryVariables>;
-export const LatestExchangeRateDocument = gql`
-    query LatestExchangeRate @api(name: mstable) {
-  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
-    exchangeRate
-    timestamp
-  }
-}
-    `;
-
-/**
- * __useLatestExchangeRateQuery__
- *
- * To run a query within a React component, call `useLatestExchangeRateQuery` and pass it any options that fit your needs.
- * When your component renders, `useLatestExchangeRateQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useLatestExchangeRateQuery({
- *   variables: {
- *   },
- * });
- */
-export function useLatestExchangeRateQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
-        return ApolloReactHooks.useQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
-      }
-export function useLatestExchangeRateLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
-        }
-export type LatestExchangeRateQueryHookResult = ReturnType<typeof useLatestExchangeRateQuery>;
-export type LatestExchangeRateLazyQueryHookResult = ReturnType<typeof useLatestExchangeRateLazyQuery>;
-export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>;
 export const VolumeMetricsOfTypeDocument = gql`
-    query VolumeMetricsOfType($period: TimeMetricPeriod!, $type: TransactionType!, $from: Int!, $to: Int!) @api(name: mstable) {
+    query VolumeMetricsOfType($period: TimeMetricPeriod!, $type: TransactionType!, $from: Int!, $to: Int!) @api(name: legacy) {
   volumeMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, type: $type, timestamp_gte: $from, timestamp_lte: $to}) {
     timestamp
     value
@@ -3823,7 +3279,7 @@ export type VolumeMetricsOfTypeQueryHookResult = ReturnType<typeof useVolumeMetr
 export type VolumeMetricsOfTypeLazyQueryHookResult = ReturnType<typeof useVolumeMetricsOfTypeLazyQuery>;
 export type VolumeMetricsOfTypeQueryResult = ApolloReactCommon.QueryResult<VolumeMetricsOfTypeQuery, VolumeMetricsOfTypeQueryVariables>;
 export const VolumeMetricsDocument = gql`
-    query VolumeMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!) @api(name: mstable) {
+    query VolumeMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!) @api(name: legacy) {
   volumeMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, timestamp_gte: $from, timestamp_lte: $to}) {
     type
     timestamp
@@ -3860,7 +3316,7 @@ export type VolumeMetricsQueryHookResult = ReturnType<typeof useVolumeMetricsQue
 export type VolumeMetricsLazyQueryHookResult = ReturnType<typeof useVolumeMetricsLazyQuery>;
 export type VolumeMetricsQueryResult = ApolloReactCommon.QueryResult<VolumeMetricsQuery, VolumeMetricsQueryVariables>;
 export const AggregateMetricsOfTypeDocument = gql`
-    query AggregateMetricsOfType($period: TimeMetricPeriod!, $type: AggregateMetricType!, $from: Int!, $to: Int!) @api(name: mstable) {
+    query AggregateMetricsOfType($period: TimeMetricPeriod!, $type: AggregateMetricType!, $from: Int!, $to: Int!) @api(name: legacy) {
   aggregateMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, type: $type, timestamp_gte: $from, timestamp_lte: $to}) {
     timestamp
     value
@@ -3897,7 +3353,7 @@ export type AggregateMetricsOfTypeQueryHookResult = ReturnType<typeof useAggrega
 export type AggregateMetricsOfTypeLazyQueryHookResult = ReturnType<typeof useAggregateMetricsOfTypeLazyQuery>;
 export type AggregateMetricsOfTypeQueryResult = ApolloReactCommon.QueryResult<AggregateMetricsOfTypeQuery, AggregateMetricsOfTypeQueryVariables>;
 export const AggregateMetricsDocument = gql`
-    query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!) @api(name: mstable) {
+    query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!) @api(name: legacy) {
   aggregateMetrics(orderBy: timestamp, orderDirection: asc, where: {period: $period, timestamp_gte: $from, timestamp_lte: $to}) {
     type
     timestamp
@@ -3933,173 +3389,3 @@ export function useAggregateMetricsLazyQuery(baseOptions?: ApolloReactHooks.Lazy
 export type AggregateMetricsQueryHookResult = ReturnType<typeof useAggregateMetricsQuery>;
 export type AggregateMetricsLazyQueryHookResult = ReturnType<typeof useAggregateMetricsLazyQuery>;
 export type AggregateMetricsQueryResult = ApolloReactCommon.QueryResult<AggregateMetricsQuery, AggregateMetricsQueryVariables>;
-export const StakingRewardsContractDocument = gql`
-    query StakingRewardsContract($id: ID!, $account: Bytes) @api(name: mstable) {
-  stakingRewardsContract(id: $id) {
-    ...StakingRewardsContractDetails
-    stakingBalances(where: {account: $account}) {
-      amount
-    }
-    stakingRewards: stakingRewards(where: {account: $account, type: REWARD}) {
-      amount
-      amountPerTokenPaid
-    }
-  }
-}
-    ${StakingRewardsContractDetailsFragmentDoc}`;
-
-/**
- * __useStakingRewardsContractQuery__
- *
- * To run a query within a React component, call `useStakingRewardsContractQuery` and pass it any options that fit your needs.
- * When your component renders, `useStakingRewardsContractQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useStakingRewardsContractQuery({
- *   variables: {
- *      id: // value for 'id'
- *      account: // value for 'account'
- *   },
- * });
- */
-export function useStakingRewardsContractQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>) {
-        return ApolloReactHooks.useQuery<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>(StakingRewardsContractDocument, baseOptions);
-      }
-export function useStakingRewardsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>(StakingRewardsContractDocument, baseOptions);
-        }
-export type StakingRewardsContractQueryHookResult = ReturnType<typeof useStakingRewardsContractQuery>;
-export type StakingRewardsContractLazyQueryHookResult = ReturnType<typeof useStakingRewardsContractLazyQuery>;
-export type StakingRewardsContractQueryResult = ApolloReactCommon.QueryResult<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>;
-export const StakingRewardsContractsDocument = gql`
-    query StakingRewardsContracts($account: Bytes, $includeHistoric: Boolean!, $block: Block_height) @api(name: mstable) {
-  current: stakingRewardsContracts {
-    ...StakingRewardsContractDetails
-    stakingBalances(where: {account: $account}) {
-      amount
-    }
-    stakingRewards: stakingRewards(where: {account: $account, type: REWARD}) {
-      amount
-      amountPerTokenPaid
-    }
-    platformRewards: stakingRewards(where: {account: $account, type: PLATFORM_REWARD}) {
-      amount
-      amountPerTokenPaid
-    }
-  }
-  historic: stakingRewardsContracts(block: $block) @include(if: $includeHistoric) {
-    address: id
-    id
-    lastUpdateTime
-    rewardPerTokenStored
-    platformRewardPerTokenStored
-  }
-}
-    ${StakingRewardsContractDetailsFragmentDoc}`;
-
-/**
- * __useStakingRewardsContractsQuery__
- *
- * To run a query within a React component, call `useStakingRewardsContractsQuery` and pass it any options that fit your needs.
- * When your component renders, `useStakingRewardsContractsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useStakingRewardsContractsQuery({
- *   variables: {
- *      account: // value for 'account'
- *      includeHistoric: // value for 'includeHistoric'
- *      block: // value for 'block'
- *   },
- * });
- */
-export function useStakingRewardsContractsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>) {
-        return ApolloReactHooks.useQuery<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>(StakingRewardsContractsDocument, baseOptions);
-      }
-export function useStakingRewardsContractsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>(StakingRewardsContractsDocument, baseOptions);
-        }
-export type StakingRewardsContractsQueryHookResult = ReturnType<typeof useStakingRewardsContractsQuery>;
-export type StakingRewardsContractsLazyQueryHookResult = ReturnType<typeof useStakingRewardsContractsLazyQuery>;
-export type StakingRewardsContractsQueryResult = ApolloReactCommon.QueryResult<StakingRewardsContractsQuery, StakingRewardsContractsQueryVariables>;
-export const RewardsDistributorDocument = gql`
-    query RewardsDistributor @api(name: mstable) {
-  rewardsDistributors(first: 1) {
-    id
-    fundManagers
-  }
-}
-    `;
-
-/**
- * __useRewardsDistributorQuery__
- *
- * To run a query within a React component, call `useRewardsDistributorQuery` and pass it any options that fit your needs.
- * When your component renders, `useRewardsDistributorQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useRewardsDistributorQuery({
- *   variables: {
- *   },
- * });
- */
-export function useRewardsDistributorQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<RewardsDistributorQuery, RewardsDistributorQueryVariables>) {
-        return ApolloReactHooks.useQuery<RewardsDistributorQuery, RewardsDistributorQueryVariables>(RewardsDistributorDocument, baseOptions);
-      }
-export function useRewardsDistributorLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RewardsDistributorQuery, RewardsDistributorQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<RewardsDistributorQuery, RewardsDistributorQueryVariables>(RewardsDistributorDocument, baseOptions);
-        }
-export type RewardsDistributorQueryHookResult = ReturnType<typeof useRewardsDistributorQuery>;
-export type RewardsDistributorLazyQueryHookResult = ReturnType<typeof useRewardsDistributorLazyQuery>;
-export type RewardsDistributorQueryResult = ApolloReactCommon.QueryResult<RewardsDistributorQuery, RewardsDistributorQueryVariables>;
-export const MerkleDropClaimsDocument = gql`
-    query MerkleDropClaims($account: Bytes!) @api(name: mstable) {
-  merkleDrops {
-    id
-    token {
-      ...TokenDetails
-    }
-    tranches(orderDirection: asc, orderBy: trancheNumber, where: {expired: false}) {
-      trancheNumber
-      totalAmount
-      claims(where: {account: $account}) {
-        balance
-      }
-    }
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
-
-/**
- * __useMerkleDropClaimsQuery__
- *
- * To run a query within a React component, call `useMerkleDropClaimsQuery` and pass it any options that fit your needs.
- * When your component renders, `useMerkleDropClaimsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useMerkleDropClaimsQuery({
- *   variables: {
- *      account: // value for 'account'
- *   },
- * });
- */
-export function useMerkleDropClaimsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>) {
-        return ApolloReactHooks.useQuery<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>(MerkleDropClaimsDocument, baseOptions);
-      }
-export function useMerkleDropClaimsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>(MerkleDropClaimsDocument, baseOptions);
-        }
-export type MerkleDropClaimsQueryHookResult = ReturnType<typeof useMerkleDropClaimsQuery>;
-export type MerkleDropClaimsLazyQueryHookResult = ReturnType<typeof useMerkleDropClaimsLazyQuery>;
-export type MerkleDropClaimsQueryResult = ApolloReactCommon.QueryResult<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>;

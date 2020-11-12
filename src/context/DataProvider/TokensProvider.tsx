@@ -10,7 +10,7 @@ import React, {
   useRef,
 } from 'react';
 
-import { Erc20TokensQueryResult } from '../../graphql/mstable';
+import { Erc20TokensQueryResult } from '../../graphql/protocol';
 import { Allowances, SubscribedToken } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { CURVE_ADDRESSES } from '../earn/CurveProvider';

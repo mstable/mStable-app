@@ -55,8 +55,10 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
     undefined,
   );
   const [connected, setConnected] = useState<boolean>(false);
+
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
+
   const onboard = useMemo(() => {
     return initOnboard({
       address: account => {
@@ -108,11 +110,11 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
       }
       if (checkPassed) {
         setConnected(true);
-        addInfoNotification('Connected');
+        addInfoNotification(`Connected with ${walletName}`);
       } else {
         LocalStorage.removeItem('walletName');
         onboard.walletReset();
-        addErrorNotification('Error', 'Could not connect to the wallet');
+        addErrorNotification('Unable to connect wallet');
         setConnected(false);
         setWallet(undefined);
         setProvider(undefined);
@@ -126,7 +128,9 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
     const previouslySelectedWallet = LocalStorage.get('walletName');
 
     if (previouslySelectedWallet && onboard.walletSelect) {
-      connect(previouslySelectedWallet);
+      connect(previouslySelectedWallet).catch((error) => {
+        console.error(error)
+      });
     }
   }, [onboard, connect]);
 
@@ -174,14 +178,18 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
   );
 };
 
-export const useOnboard = (): State['onboard'] => useContext(context).onboard;
 export const useWallet = (): State['wallet'] => useContext(context).wallet;
+
 export const useProvider = (): State['provider'] =>
   useContext(context).provider;
+
 export const useWalletAddress = (): State['address'] =>
   useContext(context).address;
+
 export const useConnect = (): State['connect'] => useContext(context).connect;
+
 export const useSigner = (): State['signer'] => useContext(context).signer;
+
 export const useConnected = (): State['connected'] =>
   useContext(context).connected;
 

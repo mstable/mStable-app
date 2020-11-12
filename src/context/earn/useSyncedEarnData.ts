@@ -4,7 +4,7 @@ import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { usePoolsQuery as useBalancerPoolsQuery } from '../../graphql/balancer';
 // import { usePoolsQuery as useCurvePoolsQuery } from '../../graphql/curve';
-import { useStakingRewardsContractsQuery } from '../../graphql/mstable';
+import { useStakingRewardsContractsQuery } from '../../graphql/ecosystem';
 import { usePairsQuery } from '../../graphql/uniswap';
 import { useBlockTimestampQuery } from '../../graphql/blocks';
 import { BlockTimestamp, Platforms } from '../../types';

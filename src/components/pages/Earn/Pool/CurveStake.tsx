@@ -111,24 +111,24 @@ const Form: FC = () => {
   } = useStakingRewardsContractState();
   const { setActiveTab } = useStakingRewardContractDispatch();
 
-  const curveContracts = useCurveContracts();
+  const { musdGauge } = useCurveContracts();
   const setFormManifest = useSetFormManifest();
 
   useEffect(() => {
-    if (valid && amount) {
+    if (valid && amount && musdGauge) {
       const manifest: SendTxManifest<
         Interfaces.CurveGauge,
         'deposit(uint256)'
       > = {
         args: [amount.exact],
-        iface: curveContracts.musdGauge,
+        iface: musdGauge,
         fn: 'deposit(uint256)',
       };
       setFormManifest(manifest);
     } else {
       setFormManifest(null);
     }
-  }, [setFormManifest, valid, amount, curveContracts.musdGauge]);
+  }, [setFormManifest, valid, amount, musdGauge]);
 
   return expired ? (
     <div>

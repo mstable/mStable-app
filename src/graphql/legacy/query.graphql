@@ -1,0 +1,67 @@
+query VolumeMetricsOfType(
+    $period: TimeMetricPeriod!
+    $type: TransactionType!
+    $from: Int!
+    $to: Int!
+) @api(name: legacy) {
+    volumeMetrics(
+        orderBy: timestamp
+        orderDirection: asc
+        where: {
+            period: $period
+            type: $type
+            timestamp_gte: $from
+            timestamp_lte: $to
+        }
+    ) {
+        timestamp
+        value
+    }
+}
+
+query VolumeMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!)
+@api(name: legacy) {
+    volumeMetrics(
+        orderBy: timestamp
+        orderDirection: asc
+        where: { period: $period, timestamp_gte: $from, timestamp_lte: $to }
+    ) {
+        type
+        timestamp
+        value
+    }
+}
+
+query AggregateMetricsOfType(
+    $period: TimeMetricPeriod!
+    $type: AggregateMetricType!
+    $from: Int!
+    $to: Int!
+) @api(name: legacy) {
+    aggregateMetrics(
+        orderBy: timestamp
+        orderDirection: asc
+        where: {
+            period: $period
+            type: $type
+            timestamp_gte: $from
+            timestamp_lte: $to
+        }
+    ) {
+        timestamp
+        value
+    }
+}
+
+query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!)
+@api(name: legacy) {
+    aggregateMetrics(
+        orderBy: timestamp
+        orderDirection: asc
+        where: { period: $period, timestamp_gte: $from, timestamp_lte: $to }
+    ) {
+        type
+        timestamp
+        value
+    }
+}

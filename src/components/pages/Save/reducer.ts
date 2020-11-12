@@ -57,7 +57,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
 
       const { decimals } = dataState.mAsset;
       const exchangeRate =
-        dataState.savingsContract.latestExchangeRate?.exchangeRate;
+        dataState.savingsContract.latestExchangeRate?.rate;
 
       const maybeAmount = BigDecimal.maybeParse(formValue, decimals);
 

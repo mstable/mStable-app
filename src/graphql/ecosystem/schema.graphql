@@ -1,0 +1,1744 @@
+schema {
+  query: Query
+  subscription: Subscription
+}
+type Query {
+  token(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Token
+  tokens(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Token_orderBy
+    orderDirection: OrderDirection
+    where: Token_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Token!]!
+  metric(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Metric
+  metrics(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Metric_orderBy
+    orderDirection: OrderDirection
+    where: Metric_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Metric!]!
+  counter(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Counter
+  counters(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Counter_orderBy
+    orderDirection: OrderDirection
+    where: Counter_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Counter!]!
+  rewardsDistributor(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): RewardsDistributor
+  rewardsDistributors(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: RewardsDistributor_orderBy
+    orderDirection: OrderDirection
+    where: RewardsDistributor_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [RewardsDistributor!]!
+  stakingReward(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingReward
+  stakingRewards(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingReward_orderBy
+    orderDirection: OrderDirection
+    where: StakingReward_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingReward!]!
+  stakingRewardsContract(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingRewardsContract
+  stakingRewardsContracts(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingRewardsContract_orderBy
+    orderDirection: OrderDirection
+    where: StakingRewardsContract_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingRewardsContract!]!
+  stakingBalance(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingBalance
+  stakingBalances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingBalance_orderBy
+    orderDirection: OrderDirection
+    where: StakingBalance_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingBalance!]!
+  merkleDropClaim(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDropClaim
+  merkleDropClaims(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDropClaim_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDropClaim_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDropClaim!]!
+  merkleDropTranche(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDropTranche
+  merkleDropTranches(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDropTranche_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDropTranche_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDropTranche!]!
+  merkleDrop(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDrop
+  merkleDrops(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDrop_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDrop_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDrop!]!
+  stakingRewardsContractClaimRewardTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingRewardsContractClaimRewardTransaction
+  stakingRewardsContractClaimRewardTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingRewardsContractClaimRewardTransaction_orderBy
+    orderDirection: OrderDirection
+    where: StakingRewardsContractClaimRewardTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingRewardsContractClaimRewardTransaction!]!
+  stakingRewardsContractStakeTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingRewardsContractStakeTransaction
+  stakingRewardsContractStakeTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingRewardsContractStakeTransaction_orderBy
+    orderDirection: OrderDirection
+    where: StakingRewardsContractStakeTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingRewardsContractStakeTransaction!]!
+  stakingRewardsContractWithdrawTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingRewardsContractWithdrawTransaction
+  stakingRewardsContractWithdrawTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingRewardsContractWithdrawTransaction_orderBy
+    orderDirection: OrderDirection
+    where: StakingRewardsContractWithdrawTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingRewardsContractWithdrawTransaction!]!
+  transaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Transaction
+  transactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Transaction_orderBy
+    orderDirection: OrderDirection
+    where: Transaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Transaction!]!
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+}
+input Block_height {
+  hash: Bytes
+  number: Int
+}
+scalar Bytes
+"""An ERC20-compatible token"""
+type Token {
+  id: ID!
+  """Token address"""
+  address: Bytes!
+  """Token decimals"""
+  decimals: Int!
+  """Token name"""
+  name: String!
+  """Token symbol"""
+  symbol: String!
+  """Total supply of the token"""
+  totalSupply: Metric!
+  """Total quantity of tokens burned"""
+  totalBurned: Metric!
+  """Total quantity of tokens minted"""
+  totalMinted: Metric!
+  """Count of transfer transactions"""
+  transfers: Counter!
+  """Count of transfer transactions that minted the token"""
+  totalMints: Counter!
+  """Count of transfer transactions that burned the token"""
+  totalBurns: Counter!
+}
+type Metric {
+  id: ID!
+  """Exact value of the metric, i.e. in base units as an integer"""
+  exact: BigInt!
+  """Decimals used for the exact value (default: 18)"""
+  decimals: Int!
+  """Simple value of the metric, i.e. the exact value represented as a decimal"""
+  simple: BigDecimal!
+}
+scalar BigInt
+scalar BigDecimal
+type Counter {
+  id: ID!
+  """Value of the counter; should be positive"""
+  value: BigInt!
+}
+enum Token_orderBy {
+  id
+  address
+  decimals
+  name
+  symbol
+  totalSupply
+  totalBurned
+  totalMinted
+  transfers
+  totalMints
+  totalBurns
+}
+enum OrderDirection {
+  asc
+  desc
+}
+input Token_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  address: Bytes
+  address_not: Bytes
+  address_in: [Bytes!]
+  address_not_in: [Bytes!]
+  address_contains: Bytes
+  address_not_contains: Bytes
+  decimals: Int
+  decimals_not: Int
+  decimals_gt: Int
+  decimals_lt: Int
+  decimals_gte: Int
+  decimals_lte: Int
+  decimals_in: [Int!]
+  decimals_not_in: [Int!]
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  symbol: String
+  symbol_not: String
+  symbol_gt: String
+  symbol_lt: String
+  symbol_gte: String
+  symbol_lte: String
+  symbol_in: [String!]
+  symbol_not_in: [String!]
+  symbol_contains: String
+  symbol_not_contains: String
+  symbol_starts_with: String
+  symbol_not_starts_with: String
+  symbol_ends_with: String
+  symbol_not_ends_with: String
+  totalSupply: String
+  totalSupply_not: String
+  totalSupply_gt: String
+  totalSupply_lt: String
+  totalSupply_gte: String
+  totalSupply_lte: String
+  totalSupply_in: [String!]
+  totalSupply_not_in: [String!]
+  totalSupply_contains: String
+  totalSupply_not_contains: String
+  totalSupply_starts_with: String
+  totalSupply_not_starts_with: String
+  totalSupply_ends_with: String
+  totalSupply_not_ends_with: String
+  totalBurned: String
+  totalBurned_not: String
+  totalBurned_gt: String
+  totalBurned_lt: String
+  totalBurned_gte: String
+  totalBurned_lte: String
+  totalBurned_in: [String!]
+  totalBurned_not_in: [String!]
+  totalBurned_contains: String
+  totalBurned_not_contains: String
+  totalBurned_starts_with: String
+  totalBurned_not_starts_with: String
+  totalBurned_ends_with: String
+  totalBurned_not_ends_with: String
+  totalMinted: String
+  totalMinted_not: String
+  totalMinted_gt: String
+  totalMinted_lt: String
+  totalMinted_gte: String
+  totalMinted_lte: String
+  totalMinted_in: [String!]
+  totalMinted_not_in: [String!]
+  totalMinted_contains: String
+  totalMinted_not_contains: String
+  totalMinted_starts_with: String
+  totalMinted_not_starts_with: String
+  totalMinted_ends_with: String
+  totalMinted_not_ends_with: String
+  transfers: String
+  transfers_not: String
+  transfers_gt: String
+  transfers_lt: String
+  transfers_gte: String
+  transfers_lte: String
+  transfers_in: [String!]
+  transfers_not_in: [String!]
+  transfers_contains: String
+  transfers_not_contains: String
+  transfers_starts_with: String
+  transfers_not_starts_with: String
+  transfers_ends_with: String
+  transfers_not_ends_with: String
+  totalMints: String
+  totalMints_not: String
+  totalMints_gt: String
+  totalMints_lt: String
+  totalMints_gte: String
+  totalMints_lte: String
+  totalMints_in: [String!]
+  totalMints_not_in: [String!]
+  totalMints_contains: String
+  totalMints_not_contains: String
+  totalMints_starts_with: String
+  totalMints_not_starts_with: String
+  totalMints_ends_with: String
+  totalMints_not_ends_with: String
+  totalBurns: String
+  totalBurns_not: String
+  totalBurns_gt: String
+  totalBurns_lt: String
+  totalBurns_gte: String
+  totalBurns_lte: String
+  totalBurns_in: [String!]
+  totalBurns_not_in: [String!]
+  totalBurns_contains: String
+  totalBurns_not_contains: String
+  totalBurns_starts_with: String
+  totalBurns_not_starts_with: String
+  totalBurns_ends_with: String
+  totalBurns_not_ends_with: String
+}
+enum Metric_orderBy {
+  id
+  exact
+  decimals
+  simple
+}
+input Metric_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  exact: BigInt
+  exact_not: BigInt
+  exact_gt: BigInt
+  exact_lt: BigInt
+  exact_gte: BigInt
+  exact_lte: BigInt
+  exact_in: [BigInt!]
+  exact_not_in: [BigInt!]
+  decimals: Int
+  decimals_not: Int
+  decimals_gt: Int
+  decimals_lt: Int
+  decimals_gte: Int
+  decimals_lte: Int
+  decimals_in: [Int!]
+  decimals_not_in: [Int!]
+  simple: BigDecimal
+  simple_not: BigDecimal
+  simple_gt: BigDecimal
+  simple_lt: BigDecimal
+  simple_gte: BigDecimal
+  simple_lte: BigDecimal
+  simple_in: [BigDecimal!]
+  simple_not_in: [BigDecimal!]
+}
+enum Counter_orderBy {
+  id
+  value
+}
+input Counter_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  value: BigInt
+  value_not: BigInt
+  value_gt: BigInt
+  value_lt: BigInt
+  value_gte: BigInt
+  value_lte: BigInt
+  value_in: [BigInt!]
+  value_not_in: [BigInt!]
+}
+type RewardsDistributor {
+  """ID of the rewards distributor contract"""
+  id: ID!
+  """Whitelisted fund managers"""
+  fundManagers: [Bytes!]!
+}
+enum RewardsDistributor_orderBy {
+  id
+  fundManagers
+}
+input RewardsDistributor_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  fundManagers: [Bytes!]
+  fundManagers_not: [Bytes!]
+  fundManagers_contains: [Bytes!]
+  fundManagers_not_contains: [Bytes!]
+}
+type StakingReward {
+  id: ID!
+  """Reward amount"""
+  amount: BigInt!
+  """The reward amount per token paid"""
+  amountPerTokenPaid: BigInt!
+  """The staking rewards contract this reward is kept on"""
+  stakingRewardsContract: StakingRewardsContract!
+  """The account the reward belongs to"""
+  account: Bytes!
+  """
+  The type of staking reward, e.g. "REWARD" or "PLATFORM_REWARD"
+  """
+  type: StakingRewardType!
+}
+type StakingRewardsContract {
+  """ID of the staking rewards contract"""
+  id: ID!
+  """The type of staking rewards contract, e.g. `STAKING_REWARDS` or `STAKING_REWARDS_WITH_PLATFORM_TOKEN`"""
+  type: StakingRewardsContractType!
+  """Duration"""
+  duration: Int!
+  """Period finish"""
+  periodFinish: Int!
+  """Last update time"""
+  lastUpdateTime: Int!
+  """Staking token"""
+  stakingToken: Token!
+  """Reward per token stored"""
+  rewardPerTokenStored: BigInt!
+  """Reward rate"""
+  rewardRate: BigInt!
+  """Rewards token"""
+  rewardsToken: Token!
+  """Rewards distributor"""
+  rewardsDistributor: RewardsDistributor!
+  """Total supply"""
+  totalSupply: BigInt!
+  """Total staking rewards"""
+  totalStakingRewards: BigInt!
+  """Accessor for staking balances kept on this contract"""
+  stakingBalances(skip: Int = 0, first: Int = 100, orderBy: StakingBalance_orderBy, orderDirection: OrderDirection, where: StakingBalance_filter): [StakingBalance!]!
+  """Accessor for staking rewards kept on this contract"""
+  stakingRewards(skip: Int = 0, first: Int = 100, orderBy: StakingReward_orderBy, orderDirection: OrderDirection, where: StakingReward_filter): [StakingReward!]!
+  """Accessor for claim reward transactions sent to this contract"""
+  claimRewardTransactions(skip: Int = 0, first: Int = 100, orderBy: StakingRewardsContractClaimRewardTransaction_orderBy, orderDirection: OrderDirection, where: StakingRewardsContractClaimRewardTransaction_filter): [StakingRewardsContractClaimRewardTransaction!]!
+  """Accessor for stake transactions sent to this contract"""
+  stakeTransactions(skip: Int = 0, first: Int = 100, orderBy: StakingRewardsContractStakeTransaction_orderBy, orderDirection: OrderDirection, where: StakingRewardsContractStakeTransaction_filter): [StakingRewardsContractStakeTransaction!]!
+  """Accessor for withdraw transactions sent to this contract"""
+  withdrawTransactions(skip: Int = 0, first: Int = 100, orderBy: StakingRewardsContractWithdrawTransaction_orderBy, orderDirection: OrderDirection, where: StakingRewardsContractWithdrawTransaction_filter): [StakingRewardsContractWithdrawTransaction!]!
+  """Platform token"""
+  platformToken: Token
+  """Platform reward rate"""
+  platformRewardRate: BigInt
+  """Platform reward per token stored"""
+  platformRewardPerTokenStored: BigInt
+  """Total platform rewards"""
+  totalPlatformRewards: BigInt
+}
+enum StakingRewardsContractType {
+  STAKING_REWARDS
+  STAKING_REWARDS_WITH_PLATFORM_TOKEN
+}
+enum StakingBalance_orderBy {
+  id
+  account
+  stakingRewardsContract
+  amount
+}
+input StakingBalance_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  account: Bytes
+  account_not: Bytes
+  account_in: [Bytes!]
+  account_not_in: [Bytes!]
+  account_contains: Bytes
+  account_not_contains: Bytes
+  stakingRewardsContract: String
+  stakingRewardsContract_not: String
+  stakingRewardsContract_gt: String
+  stakingRewardsContract_lt: String
+  stakingRewardsContract_gte: String
+  stakingRewardsContract_lte: String
+  stakingRewardsContract_in: [String!]
+  stakingRewardsContract_not_in: [String!]
+  stakingRewardsContract_contains: String
+  stakingRewardsContract_not_contains: String
+  stakingRewardsContract_starts_with: String
+  stakingRewardsContract_not_starts_with: String
+  stakingRewardsContract_ends_with: String
+  stakingRewardsContract_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+}
+type StakingBalance {
+  id: ID!
+  """Account this staking balance belongs to"""
+  account: Bytes!
+  """Staking rewards contract this staking balance is kept on"""
+  stakingRewardsContract: StakingRewardsContract!
+  """Staking balance amount"""
+  amount: BigInt!
+}
+enum StakingReward_orderBy {
+  id
+  amount
+  amountPerTokenPaid
+  stakingRewardsContract
+  account
+  type
+}
+input StakingReward_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  amountPerTokenPaid: BigInt
+  amountPerTokenPaid_not: BigInt
+  amountPerTokenPaid_gt: BigInt
+  amountPerTokenPaid_lt: BigInt
+  amountPerTokenPaid_gte: BigInt
+  amountPerTokenPaid_lte: BigInt
+  amountPerTokenPaid_in: [BigInt!]
+  amountPerTokenPaid_not_in: [BigInt!]
+  stakingRewardsContract: String
+  stakingRewardsContract_not: String
+  stakingRewardsContract_gt: String
+  stakingRewardsContract_lt: String
+  stakingRewardsContract_gte: String
+  stakingRewardsContract_lte: String
+  stakingRewardsContract_in: [String!]
+  stakingRewardsContract_not_in: [String!]
+  stakingRewardsContract_contains: String
+  stakingRewardsContract_not_contains: String
+  stakingRewardsContract_starts_with: String
+  stakingRewardsContract_not_starts_with: String
+  stakingRewardsContract_ends_with: String
+  stakingRewardsContract_not_ends_with: String
+  account: Bytes
+  account_not: Bytes
+  account_in: [Bytes!]
+  account_not_in: [Bytes!]
+  account_contains: Bytes
+  account_not_contains: Bytes
+  type: StakingRewardType
+  type_not: StakingRewardType
+}
+enum StakingRewardType {
+  REWARD
+  PLATFORM_REWARD
+}
+enum StakingRewardsContractClaimRewardTransaction_orderBy {
+  id
+  hash
+  sender
+  block
+  timestamp
+  stakingRewardsContract
+  amount
+}
+input StakingRewardsContractClaimRewardTransaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  hash: Bytes
+  hash_not: Bytes
+  hash_in: [Bytes!]
+  hash_not_in: [Bytes!]
+  hash_contains: Bytes
+  hash_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  block: Int
+  block_not: Int
+  block_gt: Int
+  block_lt: Int
+  block_gte: Int
+  block_lte: Int
+  block_in: [Int!]
+  block_not_in: [Int!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  stakingRewardsContract: String
+  stakingRewardsContract_not: String
+  stakingRewardsContract_gt: String
+  stakingRewardsContract_lt: String
+  stakingRewardsContract_gte: String
+  stakingRewardsContract_lte: String
+  stakingRewardsContract_in: [String!]
+  stakingRewardsContract_not_in: [String!]
+  stakingRewardsContract_contains: String
+  stakingRewardsContract_not_contains: String
+  stakingRewardsContract_starts_with: String
+  stakingRewardsContract_not_starts_with: String
+  stakingRewardsContract_ends_with: String
+  stakingRewardsContract_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+}
+type StakingRewardsContractClaimRewardTransaction implements Transaction {
+  id: ID!
+  hash: Bytes!
+  sender: Bytes!
+  block: Int!
+  timestamp: BigInt!
+  stakingRewardsContract: StakingRewardsContract!
+  amount: BigInt!
+}
+interface Transaction {
+  """Transaction hash + log index"""
+  id: ID!
+  """Transaction hash"""
+  hash: Bytes!
+  """Block number the transaction is in"""
+  block: Int!
+  """Timestamp of the block the transaction is in"""
+  timestamp: BigInt!
+  """Address of the sender of the transaction"""
+  sender: Bytes!
+}
+enum StakingRewardsContractStakeTransaction_orderBy {
+  id
+  hash
+  sender
+  block
+  timestamp
+  stakingRewardsContract
+  amount
+}
+input StakingRewardsContractStakeTransaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  hash: Bytes
+  hash_not: Bytes
+  hash_in: [Bytes!]
+  hash_not_in: [Bytes!]
+  hash_contains: Bytes
+  hash_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  block: Int
+  block_not: Int
+  block_gt: Int
+  block_lt: Int
+  block_gte: Int
+  block_lte: Int
+  block_in: [Int!]
+  block_not_in: [Int!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  stakingRewardsContract: String
+  stakingRewardsContract_not: String
+  stakingRewardsContract_gt: String
+  stakingRewardsContract_lt: String
+  stakingRewardsContract_gte: String
+  stakingRewardsContract_lte: String
+  stakingRewardsContract_in: [String!]
+  stakingRewardsContract_not_in: [String!]
+  stakingRewardsContract_contains: String
+  stakingRewardsContract_not_contains: String
+  stakingRewardsContract_starts_with: String
+  stakingRewardsContract_not_starts_with: String
+  stakingRewardsContract_ends_with: String
+  stakingRewardsContract_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+}
+type StakingRewardsContractStakeTransaction implements Transaction {
+  id: ID!
+  hash: Bytes!
+  sender: Bytes!
+  block: Int!
+  timestamp: BigInt!
+  stakingRewardsContract: StakingRewardsContract!
+  amount: BigInt!
+}
+enum StakingRewardsContractWithdrawTransaction_orderBy {
+  id
+  hash
+  sender
+  block
+  timestamp
+  stakingRewardsContract
+  amount
+}
+input StakingRewardsContractWithdrawTransaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  hash: Bytes
+  hash_not: Bytes
+  hash_in: [Bytes!]
+  hash_not_in: [Bytes!]
+  hash_contains: Bytes
+  hash_not_contains: Bytes
+  sender: Bytes
+  sender_not: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  block: Int
+  block_not: Int
+  block_gt: Int
+  block_lt: Int
+  block_gte: Int
+  block_lte: Int
+  block_in: [Int!]
+  block_not_in: [Int!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  stakingRewardsContract: String
+  stakingRewardsContract_not: String
+  stakingRewardsContract_gt: String
+  stakingRewardsContract_lt: String
+  stakingRewardsContract_gte: String
+  stakingRewardsContract_lte: String
+  stakingRewardsContract_in: [String!]
+  stakingRewardsContract_not_in: [String!]
+  stakingRewardsContract_contains: String
+  stakingRewardsContract_not_contains: String
+  stakingRewardsContract_starts_with: String
+  stakingRewardsContract_not_starts_with: String
+  stakingRewardsContract_ends_with: String
+  stakingRewardsContract_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+}
+type StakingRewardsContractWithdrawTransaction implements Transaction {
+  id: ID!
+  hash: Bytes!
+  sender: Bytes!
+  block: Int!
+  timestamp: BigInt!
+  stakingRewardsContract: StakingRewardsContract!
+  amount: BigInt!
+}
+enum StakingRewardsContract_orderBy {
+  id
+  type
+  duration
+  periodFinish
+  lastUpdateTime
+  stakingToken
+  rewardPerTokenStored
+  rewardRate
+  rewardsToken
+  rewardsDistributor
+  totalSupply
+  totalStakingRewards
+  stakingBalances
+  stakingRewards
+  claimRewardTransactions
+  stakeTransactions
+  withdrawTransactions
+  platformToken
+  platformRewardRate
+  platformRewardPerTokenStored
+  totalPlatformRewards
+}
+input StakingRewardsContract_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  type: StakingRewardsContractType
+  type_not: StakingRewardsContractType
+  duration: Int
+  duration_not: Int
+  duration_gt: Int
+  duration_lt: Int
+  duration_gte: Int
+  duration_lte: Int
+  duration_in: [Int!]
+  duration_not_in: [Int!]
+  periodFinish: Int
+  periodFinish_not: Int
+  periodFinish_gt: Int
+  periodFinish_lt: Int
+  periodFinish_gte: Int
+  periodFinish_lte: Int
+  periodFinish_in: [Int!]
+  periodFinish_not_in: [Int!]
+  lastUpdateTime: Int
+  lastUpdateTime_not: Int
+  lastUpdateTime_gt: Int
+  lastUpdateTime_lt: Int
+  lastUpdateTime_gte: Int
+  lastUpdateTime_lte: Int
+  lastUpdateTime_in: [Int!]
+  lastUpdateTime_not_in: [Int!]
+  stakingToken: String
+  stakingToken_not: String
+  stakingToken_gt: String
+  stakingToken_lt: String
+  stakingToken_gte: String
+  stakingToken_lte: String
+  stakingToken_in: [String!]
+  stakingToken_not_in: [String!]
+  stakingToken_contains: String
+  stakingToken_not_contains: String
+  stakingToken_starts_with: String
+  stakingToken_not_starts_with: String
+  stakingToken_ends_with: String
+  stakingToken_not_ends_with: String
+  rewardPerTokenStored: BigInt
+  rewardPerTokenStored_not: BigInt
+  rewardPerTokenStored_gt: BigInt
+  rewardPerTokenStored_lt: BigInt
+  rewardPerTokenStored_gte: BigInt
+  rewardPerTokenStored_lte: BigInt
+  rewardPerTokenStored_in: [BigInt!]
+  rewardPerTokenStored_not_in: [BigInt!]
+  rewardRate: BigInt
+  rewardRate_not: BigInt
+  rewardRate_gt: BigInt
+  rewardRate_lt: BigInt
+  rewardRate_gte: BigInt
+  rewardRate_lte: BigInt
+  rewardRate_in: [BigInt!]
+  rewardRate_not_in: [BigInt!]
+  rewardsToken: String
+  rewardsToken_not: String
+  rewardsToken_gt: String
+  rewardsToken_lt: String
+  rewardsToken_gte: String
+  rewardsToken_lte: String
+  rewardsToken_in: [String!]
+  rewardsToken_not_in: [String!]
+  rewardsToken_contains: String
+  rewardsToken_not_contains: String
+  rewardsToken_starts_with: String
+  rewardsToken_not_starts_with: String
+  rewardsToken_ends_with: String
+  rewardsToken_not_ends_with: String
+  rewardsDistributor: String
+  rewardsDistributor_not: String
+  rewardsDistributor_gt: String
+  rewardsDistributor_lt: String
+  rewardsDistributor_gte: String
+  rewardsDistributor_lte: String
+  rewardsDistributor_in: [String!]
+  rewardsDistributor_not_in: [String!]
+  rewardsDistributor_contains: String
+  rewardsDistributor_not_contains: String
+  rewardsDistributor_starts_with: String
+  rewardsDistributor_not_starts_with: String
+  rewardsDistributor_ends_with: String
+  rewardsDistributor_not_ends_with: String
+  totalSupply: BigInt
+  totalSupply_not: BigInt
+  totalSupply_gt: BigInt
+  totalSupply_lt: BigInt
+  totalSupply_gte: BigInt
+  totalSupply_lte: BigInt
+  totalSupply_in: [BigInt!]
+  totalSupply_not_in: [BigInt!]
+  totalStakingRewards: BigInt
+  totalStakingRewards_not: BigInt
+  totalStakingRewards_gt: BigInt
+  totalStakingRewards_lt: BigInt
+  totalStakingRewards_gte: BigInt
+  totalStakingRewards_lte: BigInt
+  totalStakingRewards_in: [BigInt!]
+  totalStakingRewards_not_in: [BigInt!]
+  platformToken: String
+  platformToken_not: String
+  platformToken_gt: String
+  platformToken_lt: String
+  platformToken_gte: String
+  platformToken_lte: String
+  platformToken_in: [String!]
+  platformToken_not_in: [String!]
+  platformToken_contains: String
+  platformToken_not_contains: String
+  platformToken_starts_with: String
+  platformToken_not_starts_with: String
+  platformToken_ends_with: String
+  platformToken_not_ends_with: String
+  platformRewardRate: BigInt
+  platformRewardRate_not: BigInt
+  platformRewardRate_gt: BigInt
+  platformRewardRate_lt: BigInt
+  platformRewardRate_gte: BigInt
+  platformRewardRate_lte: BigInt
+  platformRewardRate_in: [BigInt!]
+  platformRewardRate_not_in: [BigInt!]
+  platformRewardPerTokenStored: BigInt
+  platformRewardPerTokenStored_not: BigInt
+  platformRewardPerTokenStored_gt: BigInt
+  platformRewardPerTokenStored_lt: BigInt
+  platformRewardPerTokenStored_gte: BigInt
+  platformRewardPerTokenStored_lte: BigInt
+  platformRewardPerTokenStored_in: [BigInt!]
+  platformRewardPerTokenStored_not_in: [BigInt!]
+  totalPlatformRewards: BigInt
+  totalPlatformRewards_not: BigInt
+  totalPlatformRewards_gt: BigInt
+  totalPlatformRewards_lt: BigInt
+  totalPlatformRewards_gte: BigInt
+  totalPlatformRewards_lte: BigInt
+  totalPlatformRewards_in: [BigInt!]
+  totalPlatformRewards_not_in: [BigInt!]
+}
+type MerkleDropClaim {
+  id: ID!
+  account: Bytes!
+  merkleDrop: MerkleDrop!
+  tranche: MerkleDropTranche!
+  balance: BigInt!
+}
+type MerkleDrop {
+  id: ID!
+  token: Token!
+  claims(skip: Int = 0, first: Int = 100, orderBy: MerkleDropClaim_orderBy, orderDirection: OrderDirection, where: MerkleDropClaim_filter): [MerkleDropClaim!]!
+  tranches(skip: Int = 0, first: Int = 100, orderBy: MerkleDropTranche_orderBy, orderDirection: OrderDirection, where: MerkleDropTranche_filter): [MerkleDropTranche!]!
+  funders: [Bytes!]!
+}
+enum MerkleDropClaim_orderBy {
+  id
+  account
+  merkleDrop
+  tranche
+  balance
+}
+input MerkleDropClaim_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  account: Bytes
+  account_not: Bytes
+  account_in: [Bytes!]
+  account_not_in: [Bytes!]
+  account_contains: Bytes
+  account_not_contains: Bytes
+  merkleDrop: String
+  merkleDrop_not: String
+  merkleDrop_gt: String
+  merkleDrop_lt: String
+  merkleDrop_gte: String
+  merkleDrop_lte: String
+  merkleDrop_in: [String!]
+  merkleDrop_not_in: [String!]
+  merkleDrop_contains: String
+  merkleDrop_not_contains: String
+  merkleDrop_starts_with: String
+  merkleDrop_not_starts_with: String
+  merkleDrop_ends_with: String
+  merkleDrop_not_ends_with: String
+  tranche: String
+  tranche_not: String
+  tranche_gt: String
+  tranche_lt: String
+  tranche_gte: String
+  tranche_lte: String
+  tranche_in: [String!]
+  tranche_not_in: [String!]
+  tranche_contains: String
+  tranche_not_contains: String
+  tranche_starts_with: String
+  tranche_not_starts_with: String
+  tranche_ends_with: String
+  tranche_not_ends_with: String
+  balance: BigInt
+  balance_not: BigInt
+  balance_gt: BigInt
+  balance_lt: BigInt
+  balance_gte: BigInt
+  balance_lte: BigInt
+  balance_in: [BigInt!]
+  balance_not_in: [BigInt!]
+}
+enum MerkleDropTranche_orderBy {
+  id
+  merkleDrop
+  expired
+  trancheNumber
+  merkleRoot
+  totalAmount
+  claims
+}
+input MerkleDropTranche_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  merkleDrop: String
+  merkleDrop_not: String
+  merkleDrop_gt: String
+  merkleDrop_lt: String
+  merkleDrop_gte: String
+  merkleDrop_lte: String
+  merkleDrop_in: [String!]
+  merkleDrop_not_in: [String!]
+  merkleDrop_contains: String
+  merkleDrop_not_contains: String
+  merkleDrop_starts_with: String
+  merkleDrop_not_starts_with: String
+  merkleDrop_ends_with: String
+  merkleDrop_not_ends_with: String
+  expired: Boolean
+  expired_not: Boolean
+  expired_in: [Boolean!]
+  expired_not_in: [Boolean!]
+  trancheNumber: Int
+  trancheNumber_not: Int
+  trancheNumber_gt: Int
+  trancheNumber_lt: Int
+  trancheNumber_gte: Int
+  trancheNumber_lte: Int
+  trancheNumber_in: [Int!]
+  trancheNumber_not_in: [Int!]
+  merkleRoot: Bytes
+  merkleRoot_not: Bytes
+  merkleRoot_in: [Bytes!]
+  merkleRoot_not_in: [Bytes!]
+  merkleRoot_contains: Bytes
+  merkleRoot_not_contains: Bytes
+  totalAmount: BigInt
+  totalAmount_not: BigInt
+  totalAmount_gt: BigInt
+  totalAmount_lt: BigInt
+  totalAmount_gte: BigInt
+  totalAmount_lte: BigInt
+  totalAmount_in: [BigInt!]
+  totalAmount_not_in: [BigInt!]
+}
+type MerkleDropTranche {
+  id: ID!
+  merkleDrop: MerkleDrop!
+  expired: Boolean!
+  trancheNumber: Int!
+  merkleRoot: Bytes!
+  totalAmount: BigInt!
+  claims(skip: Int = 0, first: Int = 100, orderBy: MerkleDropClaim_orderBy, orderDirection: OrderDirection, where: MerkleDropClaim_filter): [MerkleDropClaim!]!
+}
+enum MerkleDrop_orderBy {
+  id
+  token
+  claims
+  tranches
+  funders
+}
+input MerkleDrop_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_not_contains: String
+  token_starts_with: String
+  token_not_starts_with: String
+  token_ends_with: String
+  token_not_ends_with: String
+  funders: [Bytes!]
+  funders_not: [Bytes!]
+  funders_contains: [Bytes!]
+  funders_not_contains: [Bytes!]
+}
+enum Transaction_orderBy {
+  id
+  hash
+  block
+  timestamp
+  sender
+}
+input Transaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  hash: Bytes
+  hash_not: Bytes
+  hash_in: [Bytes!]
+  hash_not_in: [Bytes!]
+  hash_contains: Bytes
+  hash_not_contains: Bytes
+  block: Int
+  block_not: Int
+  block_gt: Int
+  block_lt: Int
+  block_gte: Int
+  block_lte: Int
+  block_in: [Int!]
+  block_not_in: [Int!]
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  sender: Bytes
+  sender_not: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+}
+"""The type for the top-level _meta field"""
+type _Meta_ {
+  """
+  Information about a specific subgraph block. The hash of the block
+  will be null if the _meta field has a block constraint that asks for
+  a block number. It will be filled if the _meta field has no block constraint
+  and therefore asks for the latest  block
+  """
+  block: _Block_!
+  """The deployment ID"""
+  deployment: String!
+}
+type _Block_ {
+  """The hash of the block"""
+  hash: Bytes
+  """The block number"""
+  number: Int!
+}
+type Subscription {
+  token(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Token
+  tokens(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Token_orderBy
+    orderDirection: OrderDirection
+    where: Token_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Token!]!
+  metric(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Metric
+  metrics(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Metric_orderBy
+    orderDirection: OrderDirection
+    where: Metric_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Metric!]!
+  counter(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Counter
+  counters(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Counter_orderBy
+    orderDirection: OrderDirection
+    where: Counter_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Counter!]!
+  rewardsDistributor(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): RewardsDistributor
+  rewardsDistributors(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: RewardsDistributor_orderBy
+    orderDirection: OrderDirection
+    where: RewardsDistributor_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [RewardsDistributor!]!
+  stakingReward(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingReward
+  stakingRewards(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingReward_orderBy
+    orderDirection: OrderDirection
+    where: StakingReward_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingReward!]!
+  stakingRewardsContract(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingRewardsContract
+  stakingRewardsContracts(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingRewardsContract_orderBy
+    orderDirection: OrderDirection
+    where: StakingRewardsContract_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingRewardsContract!]!
+  stakingBalance(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingBalance
+  stakingBalances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingBalance_orderBy
+    orderDirection: OrderDirection
+    where: StakingBalance_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingBalance!]!
+  merkleDropClaim(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDropClaim
+  merkleDropClaims(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDropClaim_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDropClaim_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDropClaim!]!
+  merkleDropTranche(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDropTranche
+  merkleDropTranches(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDropTranche_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDropTranche_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDropTranche!]!
+  merkleDrop(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): MerkleDrop
+  merkleDrops(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MerkleDrop_orderBy
+    orderDirection: OrderDirection
+    where: MerkleDrop_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [MerkleDrop!]!
+  stakingRewardsContractClaimRewardTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingRewardsContractClaimRewardTransaction
+  stakingRewardsContractClaimRewardTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingRewardsContractClaimRewardTransaction_orderBy
+    orderDirection: OrderDirection
+    where: StakingRewardsContractClaimRewardTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingRewardsContractClaimRewardTransaction!]!
+  stakingRewardsContractStakeTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingRewardsContractStakeTransaction
+  stakingRewardsContractStakeTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingRewardsContractStakeTransaction_orderBy
+    orderDirection: OrderDirection
+    where: StakingRewardsContractStakeTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingRewardsContractStakeTransaction!]!
+  stakingRewardsContractWithdrawTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): StakingRewardsContractWithdrawTransaction
+  stakingRewardsContractWithdrawTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: StakingRewardsContractWithdrawTransaction_orderBy
+    orderDirection: OrderDirection
+    where: StakingRewardsContractWithdrawTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [StakingRewardsContractWithdrawTransaction!]!
+  transaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): Transaction
+  transactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Transaction_orderBy
+    orderDirection: OrderDirection
+    where: Transaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [Transaction!]!
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+}

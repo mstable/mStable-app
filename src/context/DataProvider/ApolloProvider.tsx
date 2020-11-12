@@ -68,11 +68,11 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
     errorLink,
     new MultiAPILink({
       endpoints: {
-        mstable: process.env.REACT_APP_GRAPHQL_ENDPOINT_MSTABLE as string,
+        legacy: process.env.REACT_APP_GRAPHQL_ENDPOINT_LEGACY as string,
+        protocol: process.env.REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL as string,
         balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
         uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
         blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,
-        curve: process.env.REACT_APP_GRAPHQL_ENDPOINT_CURVE as string,
       },
       httpSuffix: '', // By default, this library adds `/graphql` as a suffix
       createHttpLink: () => (new HttpLink() as unknown) as ApolloLink,

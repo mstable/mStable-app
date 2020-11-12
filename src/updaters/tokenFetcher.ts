@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAllErc20TokensQuery } from '../graphql/mstable';
+import { useAllErc20TokensQuery } from '../graphql/protocol';
 import { useTokensDispatch } from '../context/DataProvider/TokensProvider';
 
 /**
@@ -8,6 +8,7 @@ import { useTokensDispatch } from '../context/DataProvider/TokensProvider';
 export const TokenFetcher = (): null => {
   const { setFetched } = useTokensDispatch();
 
+  // FIXME may also need to use ecosystem subgraph
   const query = useAllErc20TokensQuery({
     fetchPolicy: 'network-only',
   });

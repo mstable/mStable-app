@@ -5,7 +5,7 @@ import { BigNumber, parseUnits } from 'ethers/utils';
 import {
   MerkleDropClaimsQueryResult,
   useMerkleDropClaimsLazyQuery,
-} from '../../graphql/mstable';
+} from '../../graphql/ecosystem';
 import { MerkleDrop, MerkleDropsMap } from './types';
 import { MerkleTree } from '../../web3/MerkleTree';
 import { BigDecimal } from '../../web3/BigDecimal';

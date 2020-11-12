@@ -25,6 +25,7 @@ import { useSignerOrInfuraProvider } from '../OnboardProvider';
 import { useBlockNumber } from '../DataProvider/BlockProvider';
 import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
+import { CHAIN_ID } from '../../web3/constants';
 
 export const CURVE_ADDRESSES = {
   CURVE_V2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',
@@ -53,12 +54,12 @@ export const CURVE_ADDRESSES = {
 export const CURVE_MUSD_EARN_URL = '/earn/curve-musd-3pool';
 
 export interface CurveContracts {
-  mtaStakingRewards: StakingRewards;
-  gaugeController: GaugeController;
-  musdDeposit: CurveDeposit;
-  musdGauge: MusdGauge;
-  musdSwap: StableSwap;
-  tokenMinter: TokenMinter;
+  mtaStakingRewards?: StakingRewards;
+  gaugeController?: GaugeController;
+  musdDeposit?: CurveDeposit;
+  musdGauge?: MusdGauge;
+  musdSwap?: StableSwap;
+  tokenMinter?: TokenMinter;
 }
 
 export interface CurveBalances {
@@ -90,7 +91,7 @@ export interface CurveJsonData {
   }>;
 }
 
-const contractsCtx = createContext<CurveContracts>({} as never);
+const contractsCtx = createContext<CurveContracts>({});
 const balancesCtx = createContext<CurveBalances>({});
 const jsonDataCtx = createContext<CurveJsonData | undefined>(undefined);
 
@@ -105,26 +106,29 @@ const CurveContractsProvider: FC = ({ children }) => {
   const provider = useSignerOrInfuraProvider();
 
   const contracts = useMemo<CurveContracts>(() => {
-    return {
-      mtaStakingRewards: StakingRewardsFactory.connect(
-        CURVE_ADDRESSES.MTA_STAKING_REWARDS,
-        provider,
-      ),
-      gaugeController: GaugeControllerFactory.connect(
-        CURVE_ADDRESSES.GAUGE_CONTROLLER,
-        provider,
-      ),
-      tokenMinter: TokenMinterFactory.connect(
-        CURVE_ADDRESSES.TOKEN_MINTER,
-        provider,
-      ),
-      musdDeposit: CurveDepositFactory.connect(
-        CURVE_ADDRESSES.MUSD_DEPOSIT,
-        provider,
-      ),
-      musdGauge: MusdGaugeFactory.connect(CURVE_ADDRESSES.MUSD_GAUGE, provider),
-      musdSwap: StableSwapFactory.connect(CURVE_ADDRESSES.MUSD_SWAP, provider),
-    };
+    if (CHAIN_ID === 1) {
+      return {
+        mtaStakingRewards: StakingRewardsFactory.connect(
+          CURVE_ADDRESSES.MTA_STAKING_REWARDS,
+          provider,
+        ),
+        gaugeController: GaugeControllerFactory.connect(
+          CURVE_ADDRESSES.GAUGE_CONTROLLER,
+          provider,
+        ),
+        tokenMinter: TokenMinterFactory.connect(
+          CURVE_ADDRESSES.TOKEN_MINTER,
+          provider,
+        ),
+        musdDeposit: CurveDepositFactory.connect(
+          CURVE_ADDRESSES.MUSD_DEPOSIT,
+          provider,
+        ),
+        musdGauge: MusdGaugeFactory.connect(CURVE_ADDRESSES.MUSD_GAUGE, provider),
+        musdSwap: StableSwapFactory.connect(CURVE_ADDRESSES.MUSD_SWAP, provider),
+      };
+    }
+    return {}
   }, [provider]);
 
   return (
@@ -139,7 +143,7 @@ const CurveBalancesProvider: FC = ({ children }) => {
   const { musdGauge } = useCurveContracts();
 
   useEffect(() => {
-    if (account) {
+    if (account && musdGauge) {
       Promise.all([
         musdGauge.claimed_rewards_for(account),
         musdGauge.claimable_reward(account),

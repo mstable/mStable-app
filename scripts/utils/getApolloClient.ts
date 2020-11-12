@@ -35,7 +35,7 @@ export const getApolloClient = () => {
   const apolloLink = ApolloLink.from([
     new MultiAPILink({
       endpoints: {
-        mstable: process.env.REACT_APP_GRAPHQL_ENDPOINT_MSTABLE as string,
+        mstable: process.env.REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL as string,
         balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
         uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
         blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,

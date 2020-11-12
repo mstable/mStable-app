@@ -6,14 +6,14 @@ import {
   LatestExchangeRateQueryResult,
   MassetQueryResult,
   SavingsContractQueryResult,
-} from '../../graphql/mstable';
+} from '../../graphql/protocol';
 import { Tokens } from './TokensProvider';
 import { Allowances } from '../../types';
 
 export interface RawData {
-  creditBalances?: NonNullable<
+  creditBalance?: NonNullable<
     NonNullable<CreditBalancesQueryResult['data']>['account']
-  >['creditBalances'];
+  >['creditBalance'];
   latestExchangeRate?: NonNullable<
     LatestExchangeRateQueryResult['data']
   >['exchangeRates'][0];
@@ -25,7 +25,7 @@ export interface RawData {
 }
 
 export type PartialRawData = {
-  creditBalances: RawData['creditBalances'];
+  creditBalance: RawData['creditBalance'];
   latestExchangeRate: RawData['latestExchangeRate'];
   mAsset?: RawData['mAsset'];
   savingsContract?: RawData['savingsContract'];
@@ -83,10 +83,10 @@ export interface MassetState {
 export interface SavingsContractState {
   address: string;
   automationEnabled: boolean;
-  creditBalances: BigDecimal[];
+  creditBalance?: BigDecimal;
   latestExchangeRate?: {
     timestamp: number;
-    exchangeRate: BigDecimal;
+    rate: BigDecimal;
   };
   mAssetAllowance: BigDecimal;
   savingsRate: BigDecimal;

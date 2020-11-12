@@ -16,7 +16,7 @@ import { SubscribedToken } from '../../../../types';
 import {
   RewardsDistributor,
   useRewardsDistributorQuery,
-} from '../../../../graphql/mstable';
+} from '../../../../graphql/ecosystem';
 
 interface RecipientAmounts {
   [recipient: string]: {

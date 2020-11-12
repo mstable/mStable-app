@@ -115,7 +115,7 @@ const Form: FC = () => {
   const setFormManifest = useSetFormManifest();
 
   useEffect(() => {
-    if (valid && amount) {
+    if (valid && amount && curveContracts.musdDeposit) {
       const index = CURVE_ALL_COINS.findIndex(address => address === token);
       const amounts = [0, 0, 0, 0].map((_, _index) =>
         _index === index ? amount.exact : 0,

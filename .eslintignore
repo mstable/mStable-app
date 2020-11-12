@@ -1,9 +1,9 @@
-src/graphql/mstable.tsx
+src/graphql/protocol.tsx
 src/graphql/balancer.tsx
 src/graphql/uniswap.tsx
 src/graphql/blocks.tsx
-src/graphql/scripts.tsx
-src/graphql/curve.tsx
+src/graphql/ecosystem.tsx
+src/graphql/legacy.tsx
 src/react-app-env.d.ts
 src/typechain
 scripts/*

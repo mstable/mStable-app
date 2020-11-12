@@ -1,37 +1,25 @@
 {
   "name": "mStable",
   "projects": {
-    "mstable": {
-      "includes": ["./shared/*", "./mstable/*"],
+    "protocol": {
+      "includes": ["./shared/*", "./protocol/*"],
       "schemaPath": "remote-schema.graphql",
       "extensions": {
         "endpoints": {
-          "ropsten": {
-            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-ropsten",
-            "introspect": false
-          },
-          "mainnet-production": {
-            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
-            "introspect": false
-          },
-          "mainnet-staging": {
-            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging",
+          "kovan-staging": {
+            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-kovan-staging",
             "introspect": false
           }
         }
       }
     },
-    "scripts": {
-      "includes": ["./shared/*", "./scripts/*", "./mstable/*"],
+    "ecosystem": {
+      "includes": ["./shared/*", "./ecosystem/*"],
       "schemaPath": "remote-schema.graphql",
       "extensions": {
         "endpoints": {
-          "mainnet-production": {
-            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol",
-            "introspect": false
-          },
-          "mainnet-staging": {
-            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging",
+          "kovan-staging": {
+            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem-kovan",
             "introspect": false
           }
         }
@@ -65,17 +53,6 @@
         "endpoints": {
           "mainnet": {
             "url": "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
-            "introspect": false
-          }
-        }
-      }
-    },
-    "curve": {
-      "includes": ["./shared/*", "./curve/*"],
-      "extensions": {
-        "endpoints": {
-          "mainnet": {
-            "url": "https://api.thegraph.com/subgraphs/name/protofire/curve",
             "introspect": false
           }
         }

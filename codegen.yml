@@ -11,9 +11,25 @@ config:
     ID: string
 
 generates:
-  ./src/graphql/mstable/schema.graphql:
+  ./src/graphql/legacy/schema.graphql:
     overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_MSTABLE}
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_LEGACY}
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
+  ./src/graphql/protocol/schema.graphql:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL}
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
+  ./src/graphql/ecosystem/schema.graphql:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM}
     plugins:
       - 'schema-ast'
     config:
@@ -43,18 +59,30 @@ generates:
     config:
       includeDirectives: true
 
-  ./src/graphql/curve/schema.graphql:
+  ./src/graphql/legacy.tsx:
     overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_CURVE}
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_LEGACY}
+    documents: 'src/graphql/legacy/*.graphql'
     plugins:
-      - 'schema-ast'
-    config:
-      includeDirectives: true
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
 
-  ./src/graphql/mstable.tsx:
+  ./src/graphql/protocol.tsx:
     overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_MSTABLE}
-    documents: 'src/graphql/mstable/*.graphql'
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL}
+    documents: 'src/graphql/protocol/*.graphql'
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+
+  ./src/graphql/ecosystem.tsx:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM}
+    documents: 'src/graphql/ecosystem/*.graphql'
     plugins:
       - 'fragment-matcher'
       - 'typescript'
@@ -85,31 +113,6 @@ generates:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_BLOCKS}
     documents: 'src/graphql/blocks/*.graphql'
-    plugins:
-      - 'fragment-matcher'
-      - 'typescript'
-      - 'typescript-operations'
-      - 'typescript-react-apollo'
-
-  ./src/graphql/curve.tsx:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_CURVE}
-    documents: 'src/graphql/curve/*.graphql'
-    plugins:
-      - 'fragment-matcher'
-      - 'typescript'
-      - 'typescript-operations'
-      - 'typescript-react-apollo'
-
-  ./src/graphql/scripts.tsx:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_MSTABLE}
-    documents: 'src/graphql/scripts/*.graphql'
-    config:
-      skipTypename: true
-      withComponent: false
-      withHOC: false
-      withHooks: false
     plugins:
       - 'fragment-matcher'
       - 'typescript'

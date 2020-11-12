@@ -1,0 +1,11 @@
+fragment TokenDetails on Token {
+  id
+  address
+  decimals
+  symbol
+  totalSupply {
+    exact
+    simple
+    decimals
+  }
+}

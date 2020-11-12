@@ -16,7 +16,7 @@ import {
   useVolumeMetricsOfTypeQuery,
   VolumeMetricsOfTypeQuery,
   VolumeMetricsOfTypeQueryVariables,
-} from '../../graphql/mstable';
+} from '../../graphql/legacy';
 import {
   DateRange,
   Metric,
