@@ -30,6 +30,12 @@ fragment StakingRewardsContractDetails on StakingRewardsContract {
     }
 }
 
+query AllErc20Tokens @api(name: ecosystem) {
+    tokens {
+        ...TokenDetails
+    }
+}
+
 query StakingRewardsContract($id: ID!, $account: Bytes) @api(name: ecosystem) {
     stakingRewardsContract(id: $id) {
         ...StakingRewardsContractDetails

@@ -5,7 +5,13 @@ import { VictoryLine } from 'victory-line';
 import { VictoryChart } from 'victory-chart';
 import { VictoryAxis } from 'victory-axis';
 import Skeleton from 'react-loading-skeleton';
-import { endOfDay, fromUnixTime, subDays, startOfDay, getUnixTime } from 'date-fns';
+import {
+  endOfDay,
+  fromUnixTime,
+  subDays,
+  startOfDay,
+  getUnixTime,
+} from 'date-fns';
 
 import { useDailyApysForPastWeek } from '../../web3/hooks';
 import { Color } from '../../theme';
@@ -40,7 +46,7 @@ export const DailyApys: FC<{}> = () => {
         .filter(a => a.value && a.start)
         .map(({ value, start }) => {
           const percentage = parseFloat(formatUnits(value as BigNumber, 16));
-          const startTime = fromUnixTime((start as number));
+          const startTime = fromUnixTime(start as number);
           return {
             x: startOfDay(startTime),
             y: percentage,

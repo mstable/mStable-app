@@ -54,13 +54,12 @@ const getSavingsContract: TransformFn<'savingsContract'> = (
 ) => ({
   address: savingsContractData.id,
   automationEnabled: savingsContractData.automationEnabled,
-  creditBalance: BigDecimal.maybeParse(creditBalance?.amount, decimals),
+  creditBalance: creditBalance
+    ? new BigDecimal(creditBalance.amount, decimals)
+    : undefined,
   latestExchangeRate: latestExchangeRate
     ? {
-        rate: BigDecimal.parse(
-          latestExchangeRate.rate,
-          decimals,
-        ),
+        rate: BigDecimal.parse(latestExchangeRate.rate, decimals),
         timestamp: latestExchangeRate.timestamp,
       }
     : undefined,

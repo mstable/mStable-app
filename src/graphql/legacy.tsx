@@ -670,11 +670,6 @@ export type Masset = {
   /** The token symbol */
   tokenSymbol: Scalars['String'];
   savingsContracts: Array<SavingsContract>;
-  totalMinted: Scalars['BigDecimal'];
-  totalRedeemed: Scalars['BigDecimal'];
-  totalSwapped: Scalars['BigDecimal'];
-  totalSwapFeesPaid: Scalars['BigDecimal'];
-  totalRedemptionFeesPaid: Scalars['BigDecimal'];
 };
 
 
@@ -754,46 +749,6 @@ export type Masset_Filter = {
   tokenSymbol_not_starts_with?: Maybe<Scalars['String']>;
   tokenSymbol_ends_with?: Maybe<Scalars['String']>;
   tokenSymbol_not_ends_with?: Maybe<Scalars['String']>;
-  totalMinted?: Maybe<Scalars['BigDecimal']>;
-  totalMinted_not?: Maybe<Scalars['BigDecimal']>;
-  totalMinted_gt?: Maybe<Scalars['BigDecimal']>;
-  totalMinted_lt?: Maybe<Scalars['BigDecimal']>;
-  totalMinted_gte?: Maybe<Scalars['BigDecimal']>;
-  totalMinted_lte?: Maybe<Scalars['BigDecimal']>;
-  totalMinted_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalMinted_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalRedeemed?: Maybe<Scalars['BigDecimal']>;
-  totalRedeemed_not?: Maybe<Scalars['BigDecimal']>;
-  totalRedeemed_gt?: Maybe<Scalars['BigDecimal']>;
-  totalRedeemed_lt?: Maybe<Scalars['BigDecimal']>;
-  totalRedeemed_gte?: Maybe<Scalars['BigDecimal']>;
-  totalRedeemed_lte?: Maybe<Scalars['BigDecimal']>;
-  totalRedeemed_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalRedeemed_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalSwapped?: Maybe<Scalars['BigDecimal']>;
-  totalSwapped_not?: Maybe<Scalars['BigDecimal']>;
-  totalSwapped_gt?: Maybe<Scalars['BigDecimal']>;
-  totalSwapped_lt?: Maybe<Scalars['BigDecimal']>;
-  totalSwapped_gte?: Maybe<Scalars['BigDecimal']>;
-  totalSwapped_lte?: Maybe<Scalars['BigDecimal']>;
-  totalSwapped_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalSwapped_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalSwapFeesPaid?: Maybe<Scalars['BigDecimal']>;
-  totalSwapFeesPaid_not?: Maybe<Scalars['BigDecimal']>;
-  totalSwapFeesPaid_gt?: Maybe<Scalars['BigDecimal']>;
-  totalSwapFeesPaid_lt?: Maybe<Scalars['BigDecimal']>;
-  totalSwapFeesPaid_gte?: Maybe<Scalars['BigDecimal']>;
-  totalSwapFeesPaid_lte?: Maybe<Scalars['BigDecimal']>;
-  totalSwapFeesPaid_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalSwapFeesPaid_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalRedemptionFeesPaid?: Maybe<Scalars['BigDecimal']>;
-  totalRedemptionFeesPaid_not?: Maybe<Scalars['BigDecimal']>;
-  totalRedemptionFeesPaid_gt?: Maybe<Scalars['BigDecimal']>;
-  totalRedemptionFeesPaid_lt?: Maybe<Scalars['BigDecimal']>;
-  totalRedemptionFeesPaid_gte?: Maybe<Scalars['BigDecimal']>;
-  totalRedemptionFeesPaid_lte?: Maybe<Scalars['BigDecimal']>;
-  totalRedemptionFeesPaid_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalRedemptionFeesPaid_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
 };
 
 export enum Masset_OrderBy {
@@ -803,12 +758,7 @@ export enum Masset_OrderBy {
   RedemptionFeeRate = 'redemptionFeeRate',
   Token = 'token',
   TokenSymbol = 'tokenSymbol',
-  SavingsContracts = 'savingsContracts',
-  TotalMinted = 'totalMinted',
-  TotalRedeemed = 'totalRedeemed',
-  TotalSwapped = 'totalSwapped',
-  TotalSwapFeesPaid = 'totalSwapFeesPaid',
-  TotalRedemptionFeesPaid = 'totalRedemptionFeesPaid'
+  SavingsContracts = 'savingsContracts'
 }
 
 export type MerkleDrop = {
@@ -1538,8 +1488,6 @@ export type SavingsContract = {
   masset: Masset;
   totalSavings: Scalars['BigDecimal'];
   totalCredits: Scalars['BigDecimal'];
-  totalDeposited: Scalars['BigDecimal'];
-  totalWithdrawn: Scalars['BigDecimal'];
   exchangeRates: Array<ExchangeRate>;
   savingsRate: Scalars['BigDecimal'];
   creditBalances: Array<CreditBalance>;
@@ -1603,22 +1551,6 @@ export type SavingsContract_Filter = {
   totalCredits_lte?: Maybe<Scalars['BigDecimal']>;
   totalCredits_in?: Maybe<Array<Scalars['BigDecimal']>>;
   totalCredits_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalDeposited?: Maybe<Scalars['BigDecimal']>;
-  totalDeposited_not?: Maybe<Scalars['BigDecimal']>;
-  totalDeposited_gt?: Maybe<Scalars['BigDecimal']>;
-  totalDeposited_lt?: Maybe<Scalars['BigDecimal']>;
-  totalDeposited_gte?: Maybe<Scalars['BigDecimal']>;
-  totalDeposited_lte?: Maybe<Scalars['BigDecimal']>;
-  totalDeposited_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalDeposited_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalWithdrawn?: Maybe<Scalars['BigDecimal']>;
-  totalWithdrawn_not?: Maybe<Scalars['BigDecimal']>;
-  totalWithdrawn_gt?: Maybe<Scalars['BigDecimal']>;
-  totalWithdrawn_lt?: Maybe<Scalars['BigDecimal']>;
-  totalWithdrawn_gte?: Maybe<Scalars['BigDecimal']>;
-  totalWithdrawn_lte?: Maybe<Scalars['BigDecimal']>;
-  totalWithdrawn_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  totalWithdrawn_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   savingsRate?: Maybe<Scalars['BigDecimal']>;
   savingsRate_not?: Maybe<Scalars['BigDecimal']>;
   savingsRate_gt?: Maybe<Scalars['BigDecimal']>;
@@ -1638,8 +1570,6 @@ export enum SavingsContract_OrderBy {
   Masset = 'masset',
   TotalSavings = 'totalSavings',
   TotalCredits = 'totalCredits',
-  TotalDeposited = 'totalDeposited',
-  TotalWithdrawn = 'totalWithdrawn',
   ExchangeRates = 'exchangeRates',
   SavingsRate = 'savingsRate',
   CreditBalances = 'creditBalances',

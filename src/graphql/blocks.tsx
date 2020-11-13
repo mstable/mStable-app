@@ -33,6 +33,26 @@ export type Scalars = {
   BigDecimal: string;
 };
 
+export type _Block_ = {
+  /** The hash of the block */
+  hash?: Maybe<Scalars['Bytes']>;
+  /** The block number */
+  number: Scalars['Int'];
+};
+
+/** The type for the top-level _meta field */
+export type _Meta_ = {
+  /**
+   * Information about a specific subgraph block. The hash of the block
+   * will be null if the _meta field has a block constraint that asks for
+   * a block number. It will be filled if the _meta field has no block constraint
+   * and therefore asks for the latest  block
+   */
+  block: _Block_;
+  /** The deployment ID */
+  deployment: Scalars['String'];
+};
+
 
 
 export type Block = {
@@ -234,6 +254,8 @@ export enum OrderDirection {
 export type Query = {
   block?: Maybe<Block>;
   blocks: Array<Block>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
 };
 
 
@@ -252,9 +274,16 @@ export type QueryBlocksArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
+export type Query_MetaArgs = {
+  block?: Maybe<Block_Height>;
+};
+
 export type Subscription = {
   block?: Maybe<Block>;
   blocks: Array<Block>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
 };
 
 
@@ -270,6 +299,11 @@ export type SubscriptionBlocksArgs = {
   orderBy?: Maybe<Block_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Block_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type Subscription_MetaArgs = {
   block?: Maybe<Block_Height>;
 };
 

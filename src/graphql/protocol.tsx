@@ -552,6 +552,8 @@ export type ExchangeRate = {
   timestamp: Scalars['Int'];
   /** The SavingsContract this ExchangeRate relates to. */
   savingsContract: SavingsContract;
+  /** The next exchange rate for the savings contract (by timestamp); used for calculating APY. */
+  next?: Maybe<ExchangeRate>;
 };
 
 export type ExchangeRate_Filter = {
@@ -593,13 +595,28 @@ export type ExchangeRate_Filter = {
   savingsContract_not_starts_with?: Maybe<Scalars['String']>;
   savingsContract_ends_with?: Maybe<Scalars['String']>;
   savingsContract_not_ends_with?: Maybe<Scalars['String']>;
+  next?: Maybe<Scalars['String']>;
+  next_not?: Maybe<Scalars['String']>;
+  next_gt?: Maybe<Scalars['String']>;
+  next_lt?: Maybe<Scalars['String']>;
+  next_gte?: Maybe<Scalars['String']>;
+  next_lte?: Maybe<Scalars['String']>;
+  next_in?: Maybe<Array<Scalars['String']>>;
+  next_not_in?: Maybe<Array<Scalars['String']>>;
+  next_contains?: Maybe<Scalars['String']>;
+  next_not_contains?: Maybe<Scalars['String']>;
+  next_starts_with?: Maybe<Scalars['String']>;
+  next_not_starts_with?: Maybe<Scalars['String']>;
+  next_ends_with?: Maybe<Scalars['String']>;
+  next_not_ends_with?: Maybe<Scalars['String']>;
 };
 
 export enum ExchangeRate_OrderBy {
   Id = 'id',
   Rate = 'rate',
   Timestamp = 'timestamp',
-  SavingsContract = 'savingsContract'
+  SavingsContract = 'savingsContract',
+  Next = 'next'
 }
 
 /** An mStable asset (e.g. mUSD) */
@@ -1925,7 +1942,7 @@ export type SavingsContract = {
    * The exchange rate that is closest to 24h ago from the latest exchange rate;
    * used to derive daily APYs.
    */
-  previousExchangeRate?: Maybe<ExchangeRate>;
+  exchangeRate24hAgo?: Maybe<ExchangeRate>;
   /** All credit balances relating to this Savings Contract. */
   creditBalances: Array<CreditBalance>;
   /** All exchange rates relating to this Savings Contract. */
@@ -2125,20 +2142,20 @@ export type SavingsContract_Filter = {
   latestExchangeRate_not_starts_with?: Maybe<Scalars['String']>;
   latestExchangeRate_ends_with?: Maybe<Scalars['String']>;
   latestExchangeRate_not_ends_with?: Maybe<Scalars['String']>;
-  previousExchangeRate?: Maybe<Scalars['String']>;
-  previousExchangeRate_not?: Maybe<Scalars['String']>;
-  previousExchangeRate_gt?: Maybe<Scalars['String']>;
-  previousExchangeRate_lt?: Maybe<Scalars['String']>;
-  previousExchangeRate_gte?: Maybe<Scalars['String']>;
-  previousExchangeRate_lte?: Maybe<Scalars['String']>;
-  previousExchangeRate_in?: Maybe<Array<Scalars['String']>>;
-  previousExchangeRate_not_in?: Maybe<Array<Scalars['String']>>;
-  previousExchangeRate_contains?: Maybe<Scalars['String']>;
-  previousExchangeRate_not_contains?: Maybe<Scalars['String']>;
-  previousExchangeRate_starts_with?: Maybe<Scalars['String']>;
-  previousExchangeRate_not_starts_with?: Maybe<Scalars['String']>;
-  previousExchangeRate_ends_with?: Maybe<Scalars['String']>;
-  previousExchangeRate_not_ends_with?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_not?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_gt?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_lt?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_gte?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_lte?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_in?: Maybe<Array<Scalars['String']>>;
+  exchangeRate24hAgo_not_in?: Maybe<Array<Scalars['String']>>;
+  exchangeRate24hAgo_contains?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_not_contains?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_starts_with?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_not_starts_with?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_ends_with?: Maybe<Scalars['String']>;
+  exchangeRate24hAgo_not_ends_with?: Maybe<Scalars['String']>;
 };
 
 export enum SavingsContract_OrderBy {
@@ -2154,7 +2171,7 @@ export enum SavingsContract_OrderBy {
   UtilisationRate = 'utilisationRate',
   AutomationEnabled = 'automationEnabled',
   LatestExchangeRate = 'latestExchangeRate',
-  PreviousExchangeRate = 'previousExchangeRate',
+  ExchangeRate24hAgo = 'exchangeRate24hAgo',
   CreditBalances = 'creditBalances',
   ExchangeRates = 'exchangeRates',
   DepositTransactions = 'depositTransactions',

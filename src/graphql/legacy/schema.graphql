@@ -817,19 +817,12 @@ type Masset {
   """The token symbol"""
   tokenSymbol: String!
   savingsContracts(skip: Int = 0, first: Int = 100, orderBy: SavingsContract_orderBy, orderDirection: OrderDirection, where: SavingsContract_filter): [SavingsContract!]!
-  totalMinted: BigDecimal!
-  totalRedeemed: BigDecimal!
-  totalSwapped: BigDecimal!
-  totalSwapFeesPaid: BigDecimal!
-  totalRedemptionFeesPaid: BigDecimal!
 }
 enum SavingsContract_orderBy {
   id
   masset
   totalSavings
   totalCredits
-  totalDeposited
-  totalWithdrawn
   exchangeRates
   savingsRate
   creditBalances
@@ -874,22 +867,6 @@ input SavingsContract_filter {
   totalCredits_lte: BigDecimal
   totalCredits_in: [BigDecimal!]
   totalCredits_not_in: [BigDecimal!]
-  totalDeposited: BigDecimal
-  totalDeposited_not: BigDecimal
-  totalDeposited_gt: BigDecimal
-  totalDeposited_lt: BigDecimal
-  totalDeposited_gte: BigDecimal
-  totalDeposited_lte: BigDecimal
-  totalDeposited_in: [BigDecimal!]
-  totalDeposited_not_in: [BigDecimal!]
-  totalWithdrawn: BigDecimal
-  totalWithdrawn_not: BigDecimal
-  totalWithdrawn_gt: BigDecimal
-  totalWithdrawn_lt: BigDecimal
-  totalWithdrawn_gte: BigDecimal
-  totalWithdrawn_lte: BigDecimal
-  totalWithdrawn_in: [BigDecimal!]
-  totalWithdrawn_not_in: [BigDecimal!]
   savingsRate: BigDecimal
   savingsRate_not: BigDecimal
   savingsRate_gt: BigDecimal
@@ -908,8 +885,6 @@ type SavingsContract {
   masset: Masset!
   totalSavings: BigDecimal!
   totalCredits: BigDecimal!
-  totalDeposited: BigDecimal!
-  totalWithdrawn: BigDecimal!
   exchangeRates(skip: Int = 0, first: Int = 100, orderBy: ExchangeRate_orderBy, orderDirection: OrderDirection, where: ExchangeRate_filter): [ExchangeRate!]!
   savingsRate: BigDecimal!
   creditBalances(skip: Int = 0, first: Int = 100, orderBy: CreditBalance_orderBy, orderDirection: OrderDirection, where: CreditBalance_filter): [CreditBalance!]!
@@ -1156,11 +1131,6 @@ enum Masset_orderBy {
   token
   tokenSymbol
   savingsContracts
-  totalMinted
-  totalRedeemed
-  totalSwapped
-  totalSwapFeesPaid
-  totalRedemptionFeesPaid
 }
 input Masset_filter {
   id: ID
@@ -1229,46 +1199,6 @@ input Masset_filter {
   tokenSymbol_not_starts_with: String
   tokenSymbol_ends_with: String
   tokenSymbol_not_ends_with: String
-  totalMinted: BigDecimal
-  totalMinted_not: BigDecimal
-  totalMinted_gt: BigDecimal
-  totalMinted_lt: BigDecimal
-  totalMinted_gte: BigDecimal
-  totalMinted_lte: BigDecimal
-  totalMinted_in: [BigDecimal!]
-  totalMinted_not_in: [BigDecimal!]
-  totalRedeemed: BigDecimal
-  totalRedeemed_not: BigDecimal
-  totalRedeemed_gt: BigDecimal
-  totalRedeemed_lt: BigDecimal
-  totalRedeemed_gte: BigDecimal
-  totalRedeemed_lte: BigDecimal
-  totalRedeemed_in: [BigDecimal!]
-  totalRedeemed_not_in: [BigDecimal!]
-  totalSwapped: BigDecimal
-  totalSwapped_not: BigDecimal
-  totalSwapped_gt: BigDecimal
-  totalSwapped_lt: BigDecimal
-  totalSwapped_gte: BigDecimal
-  totalSwapped_lte: BigDecimal
-  totalSwapped_in: [BigDecimal!]
-  totalSwapped_not_in: [BigDecimal!]
-  totalSwapFeesPaid: BigDecimal
-  totalSwapFeesPaid_not: BigDecimal
-  totalSwapFeesPaid_gt: BigDecimal
-  totalSwapFeesPaid_lt: BigDecimal
-  totalSwapFeesPaid_gte: BigDecimal
-  totalSwapFeesPaid_lte: BigDecimal
-  totalSwapFeesPaid_in: [BigDecimal!]
-  totalSwapFeesPaid_not_in: [BigDecimal!]
-  totalRedemptionFeesPaid: BigDecimal
-  totalRedemptionFeesPaid_not: BigDecimal
-  totalRedemptionFeesPaid_gt: BigDecimal
-  totalRedemptionFeesPaid_lt: BigDecimal
-  totalRedemptionFeesPaid_gte: BigDecimal
-  totalRedemptionFeesPaid_lte: BigDecimal
-  totalRedemptionFeesPaid_in: [BigDecimal!]
-  totalRedemptionFeesPaid_not_in: [BigDecimal!]
 }
 enum Account_orderBy {
   id
