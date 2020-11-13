@@ -186,7 +186,7 @@ export const GasPrice: FC<Props> = () => {
                 <PricesContent>
                   <p>{gasPrice}</p>
                   <p>
-                    {transactionFee ? `$ ${transactionFee.toFixed(2)}` : '$ –'}
+                    {transactionFee ? `$${transactionFee.toFixed(2)}` : '$–'}
                   </p>
                 </PricesContent>
               ) : (
@@ -198,8 +198,8 @@ export const GasPrice: FC<Props> = () => {
                   />
                   <p>
                     {customTransactionFee
-                      ? `$ ${customTransactionFee.toFixed(2)}`
-                      : '$ –'}
+                      ? `$${customTransactionFee.toFixed(2)}`
+                      : '$–'}
                   </p>
                 </FlexContainer>
               )}
