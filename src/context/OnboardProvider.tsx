@@ -110,7 +110,8 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
       }
       if (checkPassed) {
         setConnected(true);
-        addInfoNotification(`Connected with ${walletName}`);
+        const message = typeof walletName === 'string' ? `Connected with ${walletName}` : 'Connected'
+        addInfoNotification(message);
       } else {
         LocalStorage.removeItem('walletName');
         onboard.walletReset();
