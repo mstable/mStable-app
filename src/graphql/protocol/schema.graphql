@@ -997,7 +997,7 @@ enum SavingsContract_orderBy {
   utilisationRate
   automationEnabled
   latestExchangeRate
-  previousExchangeRate
+  exchangeRate24hAgo
   creditBalances
   exchangeRates
   depositTransactions
@@ -1156,20 +1156,20 @@ input SavingsContract_filter {
   latestExchangeRate_not_starts_with: String
   latestExchangeRate_ends_with: String
   latestExchangeRate_not_ends_with: String
-  previousExchangeRate: String
-  previousExchangeRate_not: String
-  previousExchangeRate_gt: String
-  previousExchangeRate_lt: String
-  previousExchangeRate_gte: String
-  previousExchangeRate_lte: String
-  previousExchangeRate_in: [String!]
-  previousExchangeRate_not_in: [String!]
-  previousExchangeRate_contains: String
-  previousExchangeRate_not_contains: String
-  previousExchangeRate_starts_with: String
-  previousExchangeRate_not_starts_with: String
-  previousExchangeRate_ends_with: String
-  previousExchangeRate_not_ends_with: String
+  exchangeRate24hAgo: String
+  exchangeRate24hAgo_not: String
+  exchangeRate24hAgo_gt: String
+  exchangeRate24hAgo_lt: String
+  exchangeRate24hAgo_gte: String
+  exchangeRate24hAgo_lte: String
+  exchangeRate24hAgo_in: [String!]
+  exchangeRate24hAgo_not_in: [String!]
+  exchangeRate24hAgo_contains: String
+  exchangeRate24hAgo_not_contains: String
+  exchangeRate24hAgo_starts_with: String
+  exchangeRate24hAgo_not_starts_with: String
+  exchangeRate24hAgo_ends_with: String
+  exchangeRate24hAgo_not_ends_with: String
 }
 type SavingsContract {
   """Address of the SavingsContract"""
@@ -1206,7 +1206,7 @@ type SavingsContract {
   The exchange rate that is closest to 24h ago from the latest exchange rate;
   used to derive daily APYs.
   """
-  previousExchangeRate: ExchangeRate
+  exchangeRate24hAgo: ExchangeRate
   """All credit balances relating to this Savings Contract."""
   creditBalances(skip: Int = 0, first: Int = 100, orderBy: CreditBalance_orderBy, orderDirection: OrderDirection, where: CreditBalance_filter): [CreditBalance!]!
   """All exchange rates relating to this Savings Contract."""
@@ -1227,6 +1227,8 @@ type ExchangeRate {
   timestamp: Int!
   """The SavingsContract this ExchangeRate relates to."""
   savingsContract: SavingsContract!
+  """The next exchange rate for the savings contract (by timestamp); used for calculating APY."""
+  next: ExchangeRate
 }
 enum CreditBalance_orderBy {
   id
@@ -1302,6 +1304,7 @@ enum ExchangeRate_orderBy {
   rate
   timestamp
   savingsContract
+  next
 }
 input ExchangeRate_filter {
   id: ID
@@ -1342,6 +1345,20 @@ input ExchangeRate_filter {
   savingsContract_not_starts_with: String
   savingsContract_ends_with: String
   savingsContract_not_ends_with: String
+  next: String
+  next_not: String
+  next_gt: String
+  next_lt: String
+  next_gte: String
+  next_lte: String
+  next_in: [String!]
+  next_not_in: [String!]
+  next_contains: String
+  next_not_contains: String
+  next_starts_with: String
+  next_not_starts_with: String
+  next_ends_with: String
+  next_not_ends_with: String
 }
 enum SavingsContractDepositTransaction_orderBy {
   id

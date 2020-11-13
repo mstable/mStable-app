@@ -1821,6 +1821,11 @@ export type StakingRewardsContractDetailsFragment = (
   ), rewardsToken: TokenDetailsFragment, platformToken?: Maybe<TokenDetailsFragment> }
 );
 
+export type AllErc20TokensQueryVariables = {};
+
+
+export type AllErc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
+
 export type StakingRewardsContractQueryVariables = {
   id: Scalars['ID'];
   account?: Maybe<Scalars['Bytes']>;
@@ -1924,6 +1929,38 @@ export const StakingRewardsContractDetailsFragmentDoc = gql`
   }
 }
     ${TokenDetailsFragmentDoc}`;
+export const AllErc20TokensDocument = gql`
+    query AllErc20Tokens @api(name: ecosystem) {
+  tokens {
+    ...TokenDetails
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
+
+/**
+ * __useAllErc20TokensQuery__
+ *
+ * To run a query within a React component, call `useAllErc20TokensQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllErc20TokensQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
+        return ApolloReactHooks.useQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
+      }
+export function useAllErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
+        }
+export type AllErc20TokensQueryHookResult = ReturnType<typeof useAllErc20TokensQuery>;
+export type AllErc20TokensLazyQueryHookResult = ReturnType<typeof useAllErc20TokensLazyQuery>;
+export type AllErc20TokensQueryResult = ApolloReactCommon.QueryResult<AllErc20TokensQuery, AllErc20TokensQueryVariables>;
 export const StakingRewardsContractDocument = gql`
     query StakingRewardsContract($id: ID!, $account: Bytes) @api(name: ecosystem) {
   stakingRewardsContract(id: $id) {

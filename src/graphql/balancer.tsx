@@ -33,6 +33,26 @@ export type Scalars = {
   BigDecimal: string;
 };
 
+export type _Block_ = {
+  /** The hash of the block */
+  hash?: Maybe<Scalars['Bytes']>;
+  /** The block number */
+  number: Scalars['Int'];
+};
+
+/** The type for the top-level _meta field */
+export type _Meta_ = {
+  /**
+   * Information about a specific subgraph block. The hash of the block
+   * will be null if the _meta field has a block constraint that asks for
+   * a block number. It will be filled if the _meta field has no block constraint
+   * and therefore asks for the latest  block
+   */
+  block: _Block_;
+  /** The deployment ID */
+  deployment: Scalars['String'];
+};
+
 export type Balancer = {
   id: Scalars['ID'];
   color: Scalars['String'];
@@ -643,6 +663,8 @@ export type Query = {
   transactions: Array<Transaction>;
   tokenPrice?: Maybe<TokenPrice>;
   tokenPrices: Array<TokenPrice>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
 };
 
 
@@ -773,6 +795,11 @@ export type QueryTokenPricesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
+export type Query_MetaArgs = {
+  block?: Maybe<Block_Height>;
+};
+
 export type Subscription = {
   balancer?: Maybe<Balancer>;
   balancers: Array<Balancer>;
@@ -790,6 +817,8 @@ export type Subscription = {
   transactions: Array<Transaction>;
   tokenPrice?: Maybe<TokenPrice>;
   tokenPrices: Array<TokenPrice>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
 };
 
 
@@ -917,6 +946,11 @@ export type SubscriptionTokenPricesArgs = {
   orderBy?: Maybe<TokenPrice_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<TokenPrice_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type Subscription_MetaArgs = {
   block?: Maybe<Block_Height>;
 };
 

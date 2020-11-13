@@ -179,6 +179,8 @@ type Query {
     """
     block: Block_height
   ): [TokenPrice!]!
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
 }
 input Block_height {
   hash: Bytes
@@ -1155,6 +1157,24 @@ input TokenPrice_filter {
   poolTokenId_ends_with: String
   poolTokenId_not_ends_with: String
 }
+"""The type for the top-level _meta field"""
+type _Meta_ {
+  """
+  Information about a specific subgraph block. The hash of the block
+  will be null if the _meta field has a block constraint that asks for
+  a block number. It will be filled if the _meta field has no block constraint
+  and therefore asks for the latest  block
+  """
+  block: _Block_!
+  """The deployment ID"""
+  deployment: String!
+}
+type _Block_ {
+  """The hash of the block"""
+  hash: Bytes
+  """The block number"""
+  number: Int!
+}
 type Subscription {
   balancer(
     id: ID!
@@ -1332,4 +1352,6 @@ type Subscription {
     """
     block: Block_height
   ): [TokenPrice!]!
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
 }

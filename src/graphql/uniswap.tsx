@@ -33,6 +33,26 @@ export type Scalars = {
   BigInt: string;
 };
 
+export type _Block_ = {
+  /** The hash of the block */
+  hash?: Maybe<Scalars['Bytes']>;
+  /** The block number */
+  number: Scalars['Int'];
+};
+
+/** The type for the top-level _meta field */
+export type _Meta_ = {
+  /**
+   * Information about a specific subgraph block. The hash of the block
+   * will be null if the _meta field has a block constraint that asks for
+   * a block number. It will be filled if the _meta field has no block constraint
+   * and therefore asks for the latest  block
+   */
+  block: _Block_;
+  /** The deployment ID */
+  deployment: Scalars['String'];
+};
+
 
 
 export type Block_Height = {
@@ -1095,6 +1115,8 @@ export type Query = {
   pairDayDatas: Array<PairDayData>;
   tokenDayData?: Maybe<TokenDayData>;
   tokenDayDatas: Array<TokenDayData>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
 };
 
 
@@ -1337,6 +1359,11 @@ export type QueryTokenDayDatasArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
+export type Query_MetaArgs = {
+  block?: Maybe<Block_Height>;
+};
+
 export type Subscription = {
   uniswapFactory?: Maybe<UniswapFactory>;
   uniswapFactories: Array<UniswapFactory>;
@@ -1368,6 +1395,8 @@ export type Subscription = {
   pairDayDatas: Array<PairDayData>;
   tokenDayData?: Maybe<TokenDayData>;
   tokenDayDatas: Array<TokenDayData>;
+  /** Access to subgraph metadata */
+  _meta?: Maybe<_Meta_>;
 };
 
 
@@ -1610,6 +1639,11 @@ export type SubscriptionTokenDayDatasArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
+export type Subscription_MetaArgs = {
+  block?: Maybe<Block_Height>;
+};
+
 export type Swap = {
   id: Scalars['ID'];
   transaction: Transaction;
@@ -1759,16 +1793,6 @@ export type Token = {
   txCount: Scalars['BigInt'];
   totalLiquidity: Scalars['BigDecimal'];
   derivedETH?: Maybe<Scalars['BigDecimal']>;
-  mostLiquidPairs: Array<Maybe<PairDayData>>;
-};
-
-
-export type TokenMostLiquidPairsArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<PairDayData_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<PairDayData_Filter>;
 };
 
 export type Token_Filter = {
@@ -1872,10 +1896,6 @@ export type Token_Filter = {
   derivedETH_lte?: Maybe<Scalars['BigDecimal']>;
   derivedETH_in?: Maybe<Array<Scalars['BigDecimal']>>;
   derivedETH_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  mostLiquidPairs?: Maybe<Array<Scalars['String']>>;
-  mostLiquidPairs_not?: Maybe<Array<Scalars['String']>>;
-  mostLiquidPairs_contains?: Maybe<Array<Scalars['String']>>;
-  mostLiquidPairs_not_contains?: Maybe<Array<Scalars['String']>>;
 };
 
 export enum Token_OrderBy {
@@ -1889,8 +1909,7 @@ export enum Token_OrderBy {
   UntrackedVolumeUsd = 'untrackedVolumeUSD',
   TxCount = 'txCount',
   TotalLiquidity = 'totalLiquidity',
-  DerivedEth = 'derivedETH',
-  MostLiquidPairs = 'mostLiquidPairs'
+  DerivedEth = 'derivedETH'
 }
 
 export type TokenDayData = {
@@ -1905,17 +1924,6 @@ export type TokenDayData = {
   totalLiquidityETH: Scalars['BigDecimal'];
   totalLiquidityUSD: Scalars['BigDecimal'];
   priceUSD: Scalars['BigDecimal'];
-  maxStored: Scalars['Int'];
-  mostLiquidPairs: Array<PairDayData>;
-};
-
-
-export type TokenDayDataMostLiquidPairsArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<PairDayData_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<PairDayData_Filter>;
 };
 
 export type TokenDayData_Filter = {
@@ -2013,18 +2021,6 @@ export type TokenDayData_Filter = {
   priceUSD_lte?: Maybe<Scalars['BigDecimal']>;
   priceUSD_in?: Maybe<Array<Scalars['BigDecimal']>>;
   priceUSD_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  maxStored?: Maybe<Scalars['Int']>;
-  maxStored_not?: Maybe<Scalars['Int']>;
-  maxStored_gt?: Maybe<Scalars['Int']>;
-  maxStored_lt?: Maybe<Scalars['Int']>;
-  maxStored_gte?: Maybe<Scalars['Int']>;
-  maxStored_lte?: Maybe<Scalars['Int']>;
-  maxStored_in?: Maybe<Array<Scalars['Int']>>;
-  maxStored_not_in?: Maybe<Array<Scalars['Int']>>;
-  mostLiquidPairs?: Maybe<Array<Scalars['String']>>;
-  mostLiquidPairs_not?: Maybe<Array<Scalars['String']>>;
-  mostLiquidPairs_contains?: Maybe<Array<Scalars['String']>>;
-  mostLiquidPairs_not_contains?: Maybe<Array<Scalars['String']>>;
 };
 
 export enum TokenDayData_OrderBy {
@@ -2038,9 +2034,7 @@ export enum TokenDayData_OrderBy {
   TotalLiquidityToken = 'totalLiquidityToken',
   TotalLiquidityEth = 'totalLiquidityETH',
   TotalLiquidityUsd = 'totalLiquidityUSD',
-  PriceUsd = 'priceUSD',
-  MaxStored = 'maxStored',
-  MostLiquidPairs = 'mostLiquidPairs'
+  PriceUsd = 'priceUSD'
 }
 
 export type Transaction = {
@@ -2137,18 +2131,7 @@ export type UniswapDayData = {
   totalLiquidityETH: Scalars['BigDecimal'];
   totalVolumeUSD: Scalars['BigDecimal'];
   totalLiquidityUSD: Scalars['BigDecimal'];
-  maxStored?: Maybe<Scalars['Int']>;
-  mostLiquidTokens: Array<TokenDayData>;
   txCount: Scalars['BigInt'];
-};
-
-
-export type UniswapDayDataMostLiquidTokensArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<TokenDayData_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<TokenDayData_Filter>;
 };
 
 export type UniswapDayData_Filter = {
@@ -2224,18 +2207,6 @@ export type UniswapDayData_Filter = {
   totalLiquidityUSD_lte?: Maybe<Scalars['BigDecimal']>;
   totalLiquidityUSD_in?: Maybe<Array<Scalars['BigDecimal']>>;
   totalLiquidityUSD_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
-  maxStored?: Maybe<Scalars['Int']>;
-  maxStored_not?: Maybe<Scalars['Int']>;
-  maxStored_gt?: Maybe<Scalars['Int']>;
-  maxStored_lt?: Maybe<Scalars['Int']>;
-  maxStored_gte?: Maybe<Scalars['Int']>;
-  maxStored_lte?: Maybe<Scalars['Int']>;
-  maxStored_in?: Maybe<Array<Scalars['Int']>>;
-  maxStored_not_in?: Maybe<Array<Scalars['Int']>>;
-  mostLiquidTokens?: Maybe<Array<Scalars['String']>>;
-  mostLiquidTokens_not?: Maybe<Array<Scalars['String']>>;
-  mostLiquidTokens_contains?: Maybe<Array<Scalars['String']>>;
-  mostLiquidTokens_not_contains?: Maybe<Array<Scalars['String']>>;
   txCount?: Maybe<Scalars['BigInt']>;
   txCount_not?: Maybe<Scalars['BigInt']>;
   txCount_gt?: Maybe<Scalars['BigInt']>;
@@ -2256,8 +2227,6 @@ export enum UniswapDayData_OrderBy {
   TotalLiquidityEth = 'totalLiquidityETH',
   TotalVolumeUsd = 'totalVolumeUSD',
   TotalLiquidityUsd = 'totalLiquidityUSD',
-  MaxStored = 'maxStored',
-  MostLiquidTokens = 'mostLiquidTokens',
   TxCount = 'txCount'
 }
 
@@ -2270,16 +2239,6 @@ export type UniswapFactory = {
   totalLiquidityUSD: Scalars['BigDecimal'];
   totalLiquidityETH: Scalars['BigDecimal'];
   txCount: Scalars['BigInt'];
-  mostLiquidTokens: Array<TokenDayData>;
-};
-
-
-export type UniswapFactoryMostLiquidTokensArgs = {
-  skip?: Maybe<Scalars['Int']>;
-  first?: Maybe<Scalars['Int']>;
-  orderBy?: Maybe<TokenDayData_OrderBy>;
-  orderDirection?: Maybe<OrderDirection>;
-  where?: Maybe<TokenDayData_Filter>;
 };
 
 export type UniswapFactory_Filter = {
@@ -2347,10 +2306,6 @@ export type UniswapFactory_Filter = {
   txCount_lte?: Maybe<Scalars['BigInt']>;
   txCount_in?: Maybe<Array<Scalars['BigInt']>>;
   txCount_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  mostLiquidTokens?: Maybe<Array<Scalars['String']>>;
-  mostLiquidTokens_not?: Maybe<Array<Scalars['String']>>;
-  mostLiquidTokens_contains?: Maybe<Array<Scalars['String']>>;
-  mostLiquidTokens_not_contains?: Maybe<Array<Scalars['String']>>;
 };
 
 export enum UniswapFactory_OrderBy {
@@ -2361,8 +2316,7 @@ export enum UniswapFactory_OrderBy {
   UntrackedVolumeUsd = 'untrackedVolumeUSD',
   TotalLiquidityUsd = 'totalLiquidityUSD',
   TotalLiquidityEth = 'totalLiquidityETH',
-  TxCount = 'txCount',
-  MostLiquidTokens = 'mostLiquidTokens'
+  TxCount = 'txCount'
 }
 
 export type User = {
