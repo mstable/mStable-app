@@ -3,8 +3,6 @@ import { API, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 import Onboard from 'bnc-onboard';
 import { CHAIN_ID, rpcUrl } from '../web3/constants';
 
-const dappId = 'c179119c-5ba8-49bb-9989-0e7584a06028';
-
 export const WALLETS = [
   { walletName: 'coinbase', preferred: true },
   { walletName: 'trust', preferred: true, rpcUrl },
@@ -61,7 +59,6 @@ export const WALLETS = [
 
 export const initOnboard = (subscriptions: Subscriptions): API => {
   return Onboard({
-    dappId,
     hideBranding: true,
     networkId: CHAIN_ID,
     subscriptions,
