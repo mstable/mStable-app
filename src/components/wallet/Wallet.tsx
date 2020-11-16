@@ -87,7 +87,7 @@ const Connected: FC<{ walletLabel: string; account: string }> = ({
       </Row>
       <Row>
         <H3>Historic transactions</H3>
-        <HistoricTransactions />
+        <HistoricTransactions account={account} />
       </Row>
     </Rows>
   );

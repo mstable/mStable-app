@@ -3128,6 +3128,48 @@ export type TransactionFieldsFragment = TransactionFields_SavingsContractDeposit
 
 export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
 
+type TransactionAll_SavingsContractDepositTransaction_Fragment = (
+  Pick<SavingsContractDepositTransaction, 'amount'>
+  & { savingsContract: Pick<SavingsContract, 'id'> }
+);
+
+type TransactionAll_SavingsContractWithdrawTransaction_Fragment = (
+  Pick<SavingsContractWithdrawTransaction, 'amount'>
+  & { savingsContract: Pick<SavingsContract, 'id'> }
+);
+
+type TransactionAll_SwapTransaction_Fragment = (
+  Pick<SwapTransaction, 'massetUnits'>
+  & { masset: Pick<Masset, 'id'>, inputBasset: { token: Pick<Token, 'name'> }, outputBasset: { token: Pick<Token, 'name'> } }
+);
+
+type TransactionAll_PaidFeeTransaction_Fragment = (
+  Pick<PaidFeeTransaction, 'bassetUnits' | 'massetUnits'>
+  & { basset: Pick<Basset, 'id'>, masset: Pick<Masset, 'id'> }
+);
+
+type TransactionAll_RedeemMassetTransaction_Fragment = (
+  Pick<RedeemMassetTransaction, 'massetUnits' | 'recipient'>
+  & { masset: Pick<Masset, 'id'> }
+);
+
+type TransactionAll_MintMultiTransaction_Fragment = (
+  Pick<MintMultiTransaction, 'massetUnits'>
+  & { masset: Pick<Masset, 'id'> }
+);
+
+type TransactionAll_MintSingleTransaction_Fragment = (
+  Pick<MintSingleTransaction, 'bassetUnits' | 'massetUnits'>
+  & { masset: Pick<Masset, 'id'> }
+);
+
+type TransactionAll_RedeemTransaction_Fragment = (
+  Pick<RedeemTransaction, 'massetUnits' | 'bassetsUnits' | 'recipient'>
+  & { masset: Pick<Masset, 'id'>, bassets: Array<Pick<Basset, 'id'>> }
+);
+
+export type TransactionAllFragment = TransactionAll_SavingsContractDepositTransaction_Fragment | TransactionAll_SavingsContractWithdrawTransaction_Fragment | TransactionAll_SwapTransaction_Fragment | TransactionAll_PaidFeeTransaction_Fragment | TransactionAll_RedeemMassetTransaction_Fragment | TransactionAll_MintMultiTransaction_Fragment | TransactionAll_MintSingleTransaction_Fragment | TransactionAll_RedeemTransaction_Fragment;
+
 export type CoreTokensQueryVariables = {};
 
 
@@ -3224,6 +3266,13 @@ export type ScriptFeesQueryVariables = {
 
 export type ScriptFeesQuery = { paidFeeTransactions: Array<Pick<PaidFeeTransaction, 'massetUnits'>> };
 
+export type HistoricTransactionsQueryVariables = {
+  account?: Maybe<Scalars['Bytes']>;
+};
+
+
+export type HistoricTransactionsQuery = { transactions: Array<TransactionAll_SavingsContractDepositTransaction_Fragment | TransactionAll_SavingsContractWithdrawTransaction_Fragment | TransactionAll_SwapTransaction_Fragment | TransactionAll_PaidFeeTransaction_Fragment | TransactionAll_RedeemMassetTransaction_Fragment | TransactionAll_MintMultiTransaction_Fragment | TransactionAll_MintSingleTransaction_Fragment | TransactionAll_RedeemTransaction_Fragment> };
+
 export const MetricFieldsFragmentDoc = gql`
     fragment MetricFields on Metric {
   exact
@@ -3278,6 +3327,79 @@ export const TransactionFieldsFragmentDoc = gql`
   timestamp
   block
   sender
+}
+    `;
+export const TransactionAllFragmentDoc = gql`
+    fragment TransactionAll on Transaction {
+  ... on RedeemTransaction {
+    masset {
+      id
+    }
+    massetUnits
+    bassets {
+      id
+    }
+    bassetsUnits
+    recipient
+  }
+  ... on RedeemMassetTransaction {
+    masset {
+      id
+    }
+    massetUnits
+    recipient
+  }
+  ... on MintMultiTransaction {
+    masset {
+      id
+    }
+    massetUnits
+  }
+  ... on MintSingleTransaction {
+    bassetUnits
+    masset {
+      id
+    }
+    massetUnits
+  }
+  ... on PaidFeeTransaction {
+    basset {
+      id
+    }
+    bassetUnits
+    masset {
+      id
+    }
+    massetUnits
+  }
+  ... on SavingsContractDepositTransaction {
+    amount
+    savingsContract {
+      id
+    }
+  }
+  ... on SavingsContractWithdrawTransaction {
+    amount
+    savingsContract {
+      id
+    }
+  }
+  ... on SwapTransaction {
+    masset {
+      id
+    }
+    inputBasset {
+      token {
+        name
+      }
+    }
+    outputBasset {
+      token {
+        name
+      }
+    }
+    massetUnits
+  }
 }
     `;
 export const ErFragmentDoc = gql`
@@ -3730,3 +3852,36 @@ export function useScriptFeesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryH
 export type ScriptFeesQueryHookResult = ReturnType<typeof useScriptFeesQuery>;
 export type ScriptFeesLazyQueryHookResult = ReturnType<typeof useScriptFeesLazyQuery>;
 export type ScriptFeesQueryResult = ApolloReactCommon.QueryResult<ScriptFeesQuery, ScriptFeesQueryVariables>;
+export const HistoricTransactionsDocument = gql`
+    query HistoricTransactions($account: Bytes) @api(name: protocol) {
+  transactions(where: {sender: $account}, orderBy: timestamp) {
+    ...TransactionAll
+  }
+}
+    ${TransactionAllFragmentDoc}`;
+
+/**
+ * __useHistoricTransactionsQuery__
+ *
+ * To run a query within a React component, call `useHistoricTransactionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHistoricTransactionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHistoricTransactionsQuery({
+ *   variables: {
+ *      account: // value for 'account'
+ *   },
+ * });
+ */
+export function useHistoricTransactionsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>) {
+        return ApolloReactHooks.useQuery<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>(HistoricTransactionsDocument, baseOptions);
+      }
+export function useHistoricTransactionsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>(HistoricTransactionsDocument, baseOptions);
+        }
+export type HistoricTransactionsQueryHookResult = ReturnType<typeof useHistoricTransactionsQuery>;
+export type HistoricTransactionsLazyQueryHookResult = ReturnType<typeof useHistoricTransactionsLazyQuery>;
+export type HistoricTransactionsQueryResult = ApolloReactCommon.QueryResult<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>;
