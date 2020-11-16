@@ -1,6 +1,6 @@
+import BigNumber from 'bignumber.js';
 import { HistoricTransactionsQueryResult } from '../../graphql/protocol';
 import { HistoricTransaction, HistoricTxsArr } from './types';
-import { BigDecimal } from '../../web3/BigDecimal';
 
 export const transformRawData = (
   data: HistoricTransactionsQueryResult['data'],
@@ -19,6 +19,7 @@ export const transformRawData = (
     switch (tx.__typename) {
       case 'RedeemTransaction':
         return {
+          type: tx.__typename,
           hash,
           block,
           sender,
@@ -30,13 +31,14 @@ export const transformRawData = (
           bassets: tx.bassets.map(basset => {
             return basset.id;
           }),
-          massetUnits: new BigDecimal(tx.massetUnits, 18),
+          massetUnits: new BigNumber(tx.massetUnits),
           bassetsUnits: tx.bassetsUnits.map(bassetUnit => {
-            return parseInt(bassetUnit, 10);
+            return new BigNumber(bassetUnit);
           }),
         };
       case 'RedeemMassetTransaction':
         return {
+          type: tx.__typename,
           hash,
           block,
           sender,
@@ -45,11 +47,12 @@ export const transformRawData = (
           masset: {
             id: tx.masset.id,
           },
-          massetUnits: new BigDecimal(tx.massetUnits, 18),
+          massetUnits: new BigNumber(tx.massetUnits),
           recipient: tx.recipient,
         };
       case 'MintMultiTransaction':
         return {
+          type: tx.__typename,
           hash,
           block,
           sender,
@@ -58,16 +61,17 @@ export const transformRawData = (
           masset: {
             id: tx.masset.id,
           },
-          massetUnits: new BigDecimal(tx.massetUnits, 18),
+          massetUnits: new BigNumber(tx.massetUnits),
           bassets: tx.bassets.map(basset => {
             return basset.id;
           }),
           bassetsUnits: tx.bassetsUnits.map(bassetUnit => {
-            return parseFloat(bassetUnit);
+            return new BigNumber(bassetUnit);
           }),
         };
       case 'MintSingleTransaction':
         return {
+          type: tx.__typename,
           hash,
           block,
           sender,
@@ -76,14 +80,15 @@ export const transformRawData = (
           masset: {
             id: tx.masset.id,
           },
-          massetUnits: new BigDecimal(tx.massetUnits, 18),
+          massetUnits: new BigNumber(tx.massetUnits),
           basset: {
             id: tx.basset.id,
           },
-          bassetsUnits: parseFloat(tx.bassetUnits),
+          bassetsUnits: new BigNumber(tx.bassetUnits),
         };
       case 'PaidFeeTransaction':
         return {
+          type: tx.__typename,
           hash,
           block,
           sender,
@@ -92,38 +97,41 @@ export const transformRawData = (
           masset: {
             id: tx.masset.id,
           },
-          massetUnits: new BigDecimal(tx.massetUnits, 18),
+          massetUnits: new BigNumber(tx.massetUnits),
           basset: {
             id: tx.basset.id,
           },
-          bassetsUnits: parseFloat(tx.bassetUnits),
+          bassetsUnits: new BigNumber(tx.bassetUnits),
         };
       case 'SavingsContractDepositTransaction':
         return {
+          type: tx.__typename,
           hash,
           block,
           sender,
           timestamp,
           id,
-          amount: parseFloat(tx.amount),
+          amount: new BigNumber(tx.amount),
           savingsContract: {
             id: tx.savingsContract.id,
           },
         };
       case 'SavingsContractWithdrawTransaction':
         return {
+          type: tx.__typename,
           hash,
           block,
           sender,
           timestamp,
           id,
-          amount: new BigDecimal(tx.amount, 18),
+          amount: new BigNumber(tx.amount),
           savingsContract: {
             id: tx.savingsContract.id,
           },
         };
       case 'SwapTransaction':
         return {
+          type: tx.__typename,
           hash,
           block,
           sender,
@@ -132,7 +140,7 @@ export const transformRawData = (
           masset: {
             id: tx.masset.id,
           },
-          massetUnits: new BigDecimal(tx.massetUnits, 18),
+          massetUnits: new BigNumber(tx.massetUnits),
           inputBasset: {
             id: tx.inputBasset.id,
           },
