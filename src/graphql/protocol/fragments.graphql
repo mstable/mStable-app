@@ -48,3 +48,75 @@ fragment MetricFields on Metric {
   decimals
   simple
 }
+
+fragment TransactionAll on Transaction {
+  ... on RedeemTransaction {
+    masset {
+      id
+    }
+    massetUnits
+    bassets {
+      id
+    }
+    bassetsUnits
+    recipient
+  }
+  ... on RedeemMassetTransaction {
+    masset {
+      id
+    }
+    massetUnits
+    recipient
+  }
+  ... on MintMultiTransaction {
+    masset {
+      id
+    }
+    massetUnits
+  }
+  ... on MintSingleTransaction {
+    bassetUnits
+    masset {
+      id
+    }
+    massetUnits
+  }
+  ... on PaidFeeTransaction {
+    basset {
+      id
+    }
+    bassetUnits
+    masset {
+      id
+    }
+    massetUnits
+  }
+  ... on SavingsContractDepositTransaction {
+    amount
+    savingsContract {
+      id
+    }
+  }
+  ... on SavingsContractWithdrawTransaction {
+    amount
+    savingsContract {
+      id
+    }
+  }
+  ... on SwapTransaction {
+    masset {
+      id
+    }
+    inputBasset {
+      token {
+        name
+      }
+    }
+    outputBasset {
+      token {
+        name
+      }
+    }
+    massetUnits
+  }
+}

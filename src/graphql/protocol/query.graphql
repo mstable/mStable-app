@@ -174,3 +174,9 @@ query ScriptFees($limit: Int!, $offset: Int!) @api(name: protocol) {
     massetUnits
   }
 }
+
+query HistoricTransactions($account: Bytes) @api(name: protocol) {
+  transactions(where: { sender: $account }, orderBy: timestamp) {
+    ...TransactionAll
+  }
+}
