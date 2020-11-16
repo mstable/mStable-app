@@ -1,4 +1,4 @@
-import { BigDecimal } from '../../web3/BigDecimal';
+import BigNumber from 'bignumber.js';
 import { HistoricTransactionsQueryResult } from '../../graphql/protocol';
 
 export type HistoricTxsData = NonNullable<
@@ -13,19 +13,20 @@ export interface BaseHistoricTransaction {
   block: number;
   id: string;
   sender: string;
+  type: string;
 }
 
 export interface RedeemTransaction extends BaseHistoricTransaction {
   masset: {
     id: string;
   };
-  massetUnits: BigDecimal;
+  massetUnits: BigNumber;
   bassets: [
     {
       id: string;
     },
   ];
-  bassetUnits: BigDecimal[];
+  bassetUnits: BigNumber[];
   recipient: string;
 }
 
@@ -33,7 +34,7 @@ export interface RedeemMassetTransaction extends BaseHistoricTransaction {
   masset: {
     id: string;
   };
-  massetUnits: BigDecimal;
+  massetUnits: BigNumber;
   recipient: string;
 }
 
@@ -41,47 +42,47 @@ export interface MintMultiTransaction extends BaseHistoricTransaction {
   masset: {
     id: string;
   };
-  massetUnits: BigDecimal;
+  massetUnits: BigNumber;
   bassets: [
     {
       id: string;
     },
   ];
-  bassetUnits: BigDecimal[];
+  bassetUnits: BigNumber[];
 }
 
 export interface MintSingleTransaction extends BaseHistoricTransaction {
   masset: {
     id: string;
   };
-  massetUnits: BigDecimal;
+  massetUnits: BigNumber;
   basset: {
     id: string;
   };
-  bassetUnits: BigDecimal;
+  bassetUnits: BigNumber;
 }
 
 export interface PaidFeeTransaction extends BaseHistoricTransaction {
   masset: {
     id: string;
   };
-  massetUnits: BigDecimal;
+  massetUnits: BigNumber;
   basset: {
     id: string;
   };
-  bassetUnits: BigDecimal;
+  bassetUnits: BigNumber;
 }
 
 export interface SavingsContractDepositTransaction
   extends BaseHistoricTransaction {
-  amount: BigDecimal;
+  amount: BigNumber;
   savingsContract: {
     id: string;
   };
 }
 export interface SavingsContractWithdrawTransaction
   extends BaseHistoricTransaction {
-  amount: BigDecimal;
+  amount: BigNumber;
   savingsContract: {
     id: string;
   };
@@ -97,7 +98,7 @@ export interface SwapTransaction extends BaseHistoricTransaction {
   outputBasset: {
     id: string;
   };
-  massetUnits: BigDecimal;
+  massetUnits: BigNumber;
   recipient: string;
 }
 
