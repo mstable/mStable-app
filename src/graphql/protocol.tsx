@@ -3140,7 +3140,7 @@ type TransactionAll_SavingsContractWithdrawTransaction_Fragment = (
 
 type TransactionAll_SwapTransaction_Fragment = (
   Pick<SwapTransaction, 'massetUnits'>
-  & { masset: Pick<Masset, 'id'>, inputBasset: { token: Pick<Token, 'name'> }, outputBasset: { token: Pick<Token, 'name'> } }
+  & { masset: Pick<Masset, 'id'>, inputBasset: Pick<Basset, 'id'>, outputBasset: Pick<Basset, 'id'> }
 );
 
 type TransactionAll_PaidFeeTransaction_Fragment = (
@@ -3271,7 +3271,39 @@ export type HistoricTransactionsQueryVariables = {
 };
 
 
-export type HistoricTransactionsQuery = { transactions: Array<TransactionAll_SavingsContractDepositTransaction_Fragment | TransactionAll_SavingsContractWithdrawTransaction_Fragment | TransactionAll_SwapTransaction_Fragment | TransactionAll_PaidFeeTransaction_Fragment | TransactionAll_RedeemMassetTransaction_Fragment | TransactionAll_MintMultiTransaction_Fragment | TransactionAll_MintSingleTransaction_Fragment | TransactionAll_RedeemTransaction_Fragment> };
+export type HistoricTransactionsQuery = { transactions: Array<(
+    { __typename: 'SavingsContractDepositTransaction' }
+    & Pick<SavingsContractDepositTransaction, 'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { savingsContract: Pick<SavingsContract, 'id'> }
+  ) | (
+    { __typename: 'SavingsContractWithdrawTransaction' }
+    & Pick<SavingsContractWithdrawTransaction, 'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { savingsContract: Pick<SavingsContract, 'id'> }
+  ) | (
+    { __typename: 'SwapTransaction' }
+    & Pick<SwapTransaction, 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'>, inputBasset: Pick<Basset, 'id'>, outputBasset: Pick<Basset, 'id'> }
+  ) | (
+    { __typename: 'PaidFeeTransaction' }
+    & Pick<PaidFeeTransaction, 'bassetUnits' | 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { basset: Pick<Basset, 'id'>, masset: Pick<Masset, 'id'> }
+  ) | (
+    { __typename: 'RedeemMassetTransaction' }
+    & Pick<RedeemMassetTransaction, 'massetUnits' | 'recipient' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'> }
+  ) | (
+    { __typename: 'MintMultiTransaction' }
+    & Pick<MintMultiTransaction, 'massetUnits' | 'bassetsUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'>, bassets: Array<Pick<Basset, 'id'>> }
+  ) | (
+    { __typename: 'MintSingleTransaction' }
+    & Pick<MintSingleTransaction, 'bassetUnits' | 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'>, basset: Pick<Basset, 'id'> }
+  ) | (
+    { __typename: 'RedeemTransaction' }
+    & Pick<RedeemTransaction, 'massetUnits' | 'bassetsUnits' | 'recipient' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'>, bassets: Array<Pick<Basset, 'id'>> }
+  )> };
 
 export const MetricFieldsFragmentDoc = gql`
     fragment MetricFields on Metric {
@@ -3389,14 +3421,10 @@ export const TransactionAllFragmentDoc = gql`
       id
     }
     inputBasset {
-      token {
-        name
-      }
+      id
     }
     outputBasset {
-      token {
-        name
-      }
+      id
     }
     massetUnits
   }
@@ -3855,10 +3883,87 @@ export type ScriptFeesQueryResult = ApolloReactCommon.QueryResult<ScriptFeesQuer
 export const HistoricTransactionsDocument = gql`
     query HistoricTransactions($account: Bytes) @api(name: protocol) {
   transactions(where: {sender: $account}, orderBy: timestamp) {
-    ...TransactionAll
+    id
+    hash
+    block
+    timestamp
+    sender
+    __typename
+    ... on RedeemTransaction {
+      masset {
+        id
+      }
+      massetUnits
+      bassets {
+        id
+      }
+      bassetsUnits
+      recipient
+    }
+    ... on RedeemMassetTransaction {
+      masset {
+        id
+      }
+      massetUnits
+      recipient
+    }
+    ... on MintMultiTransaction {
+      masset {
+        id
+      }
+      massetUnits
+      bassets {
+        id
+      }
+      bassetsUnits
+    }
+    ... on MintSingleTransaction {
+      bassetUnits
+      masset {
+        id
+      }
+      basset {
+        id
+      }
+      massetUnits
+    }
+    ... on PaidFeeTransaction {
+      basset {
+        id
+      }
+      bassetUnits
+      masset {
+        id
+      }
+      massetUnits
+    }
+    ... on SavingsContractDepositTransaction {
+      amount
+      savingsContract {
+        id
+      }
+    }
+    ... on SavingsContractWithdrawTransaction {
+      amount
+      savingsContract {
+        id
+      }
+    }
+    ... on SwapTransaction {
+      masset {
+        id
+      }
+      inputBasset {
+        id
+      }
+      outputBasset {
+        id
+      }
+      massetUnits
+    }
   }
 }
-    ${TransactionAllFragmentDoc}`;
+    `;
 
 /**
  * __useHistoricTransactionsQuery__

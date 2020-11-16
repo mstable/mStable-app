@@ -177,6 +177,83 @@ query ScriptFees($limit: Int!, $offset: Int!) @api(name: protocol) {
 
 query HistoricTransactions($account: Bytes) @api(name: protocol) {
   transactions(where: { sender: $account }, orderBy: timestamp) {
-    ...TransactionAll
+    id
+    hash
+    block
+    timestamp
+    sender
+    __typename
+    ... on RedeemTransaction {
+      masset {
+        id
+      }
+      massetUnits
+      bassets {
+        id
+      }
+      bassetsUnits
+      recipient
+    }
+    ... on RedeemMassetTransaction {
+      masset {
+        id
+      }
+      massetUnits
+      recipient
+    }
+    ... on MintMultiTransaction {
+      masset {
+        id
+      }
+      massetUnits
+      bassets {
+        id
+      }
+      bassetsUnits
+    }
+    ... on MintSingleTransaction {
+      bassetUnits
+      masset {
+        id
+      }
+      basset {
+        id
+      }
+      massetUnits
+    }
+    ... on PaidFeeTransaction {
+      basset {
+        id
+      }
+      bassetUnits
+      masset {
+        id
+      }
+      massetUnits
+    }
+    ... on SavingsContractDepositTransaction {
+      amount
+      savingsContract {
+        id
+      }
+    }
+    ... on SavingsContractWithdrawTransaction {
+      amount
+      savingsContract {
+        id
+      }
+    }
+    ... on SwapTransaction {
+      masset {
+        id
+      }
+      inputBasset {
+        id
+      }
+      outputBasset {
+        id
+      }
+      massetUnits
+    }
   }
 }
