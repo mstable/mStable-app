@@ -6,6 +6,7 @@ import { EtherscanLink } from '../core/EtherscanLink';
 import { List, ListItem } from '../core/List';
 import { P } from '../core/Typography';
 import { HistoricTransaction } from './types';
+import { useDataState } from '../../context/DataProvider/DataProvider';
 
 const TxContainer = styled.div<{}>`
   display: flex;
@@ -14,45 +15,13 @@ const TxContainer = styled.div<{}>`
   }
 `;
 
-const getTxDescription = (tx: HistoricTransaction): JSX.Element => {
-  switch (tx.type) {
-    case 'RedeemTransaction': {
-      return <>TODO</>;
-    }
-    case 'RedeemMassetTransaction': {
-      return <>TODO</>;
-    }
-    case 'MintMultiTransaction': {
-      return <>TODO</>;
-    }
-    case 'MintSingleTransaction': {
-      return <>TODO</>;
-    }
-    case 'PaidFeeTransaction': {
-      return <>TODO</>;
-    }
-    case 'SavingsContractDepositTransaction': {
-      return <>TODO</>;
-    }
-    case 'SavingsContractWithdrawTransaction': {
-      return <>TODO</>;
-    }
-    case 'SwapTransaction': {
-      return <></>;
-    }
-    default:
-      return <> Unsupported transaction </>;
-  }
-};
-
 const Tx: FC<{
   tx: HistoricTransaction;
 }> = ({ tx }) => {
-  const description = getTxDescription(tx);
   return (
     <TxContainer>
       <EtherscanLink data={tx.hash as string} type="transaction">
-        {description}
+        {tx.formattedDate}: {tx.description}
       </EtherscanLink>
     </TxContainer>
   );
@@ -65,10 +34,11 @@ export const HistoricTransactions: FC<{ account?: string }> = ({ account }) => {
     },
   });
   const historicTxsData = historicTxsQuery.data;
-  const transformedData = useMemo(() => transformRawData(historicTxsData), [
-    historicTxsData,
-  ]);
-
+  const dataState = useDataState();
+  const transformedData = useMemo(
+    () => transformRawData(historicTxsData, dataState),
+    [historicTxsData, dataState],
+  );
   return (
     <div>
       {transformedData.length === 0 ? (
