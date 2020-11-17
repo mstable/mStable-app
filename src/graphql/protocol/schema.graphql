@@ -421,7 +421,9 @@ type Query {
     """
     block: Block_height
   ): [Transaction!]!
-  """Access to subgraph metadata"""
+  """
+  Access to subgraph metadata
+  """
   _meta(block: Block_height): _Meta_
 }
 input Block_height {
@@ -429,44 +431,74 @@ input Block_height {
   number: Int
 }
 scalar Bytes
-"""An ERC20-compatible token"""
+"""
+An ERC20-compatible token
+"""
 type Token {
   id: ID!
-  """Token address"""
+  """
+  Token address
+  """
   address: Bytes!
-  """Token decimals"""
+  """
+  Token decimals
+  """
   decimals: Int!
-  """Token name"""
+  """
+  Token name
+  """
   name: String!
-  """Token symbol"""
+  """
+  Token symbol
+  """
   symbol: String!
-  """Total supply of the token"""
+  """
+  Total supply of the token
+  """
   totalSupply: Metric!
-  """Total quantity of tokens burned"""
+  """
+  Total quantity of tokens burned
+  """
   totalBurned: Metric!
-  """Total quantity of tokens minted"""
+  """
+  Total quantity of tokens minted
+  """
   totalMinted: Metric!
-  """Count of transfer transactions"""
+  """
+  Count of transfer transactions
+  """
   totalTransfers: Counter!
-  """Count of transfer transactions that minted the token"""
+  """
+  Count of transfer transactions that minted the token
+  """
   totalMints: Counter!
-  """Count of transfer transactions that burned the token"""
+  """
+  Count of transfer transactions that burned the token
+  """
   totalBurns: Counter!
 }
 type Metric {
   id: ID!
-  """Exact value of the metric, i.e. in base units as an integer"""
+  """
+  Exact value of the metric, i.e. in base units as an integer
+  """
   exact: BigInt!
-  """Decimals used for the exact value (default: 18)"""
+  """
+  Decimals used for the exact value (default: 18)
+  """
   decimals: Int!
-  """Simple value of the metric, i.e. the exact value represented as a decimal"""
+  """
+  Simple value of the metric, i.e. the exact value represented as a decimal
+  """
   simple: BigDecimal!
 }
 scalar BigInt
 scalar BigDecimal
 type Counter {
   id: ID!
-  """Value of the counter; should be positive"""
+  """
+  Value of the counter; should be positive
+  """
   value: BigInt!
 }
 enum Token_orderBy {
@@ -684,57 +716,113 @@ input Counter_filter {
   value_in: [BigInt!]
   value_not_in: [BigInt!]
 }
-"""Basket Asset (e.g. DAI for the mUSD basket)"""
+"""
+Basket Asset (e.g. DAI for the mUSD basket)
+"""
 type Basset {
-  """Address of the Basset token contract"""
+  """
+  Address of the Basset token contract
+  """
   id: ID!
-  """Basket the Basset is contained in"""
+  """
+  Basket the Basset is contained in
+  """
   basket: Basket!
-  """Target weight of the Basset"""
+  """
+  Target weight of the Basset
+  """
   maxWeight: BigInt!
-  """Basset to Masset ratio for quantity conversion"""
+  """
+  Basset to Masset ratio for quantity conversion
+  """
   ratio: BigInt!
-  """Status of the Basset, e.g. 'Normal'"""
+  """
+  Status of the Basset, e.g. 'Normal'
+  """
   status: String!
-  """An ERC20 can charge transfer fee, e.g. USDT or DGX tokens"""
+  """
+  An ERC20 can charge transfer fee, e.g. USDT or DGX tokens
+  """
   isTransferFeeCharged: Boolean!
-  """The underlying Token for the Basset"""
+  """
+  The underlying Token for the Basset
+  """
   token: Token!
-  """Amount of the Basset that is held in collateral"""
+  """
+  Amount of the Basset that is held in collateral
+  """
   vaultBalance: Metric!
-  """Total number of mint transactions in which the Basset was an input"""
+  """
+  Total number of mint transactions in which the Basset was an input
+  """
   totalMints: Counter!
-  """Total number of swap transactions in which the Basset was an input"""
+  """
+  Total number of swap transactions in which the Basset was an input
+  """
   totalSwapsAsInput: Counter!
-  """Total number of swap transactions in which the Basset was an output"""
+  """
+  Total number of swap transactions in which the Basset was an output
+  """
   totalSwapsAsOutput: Counter!
-  """Total number of redemption transactions in which the Basset was an output"""
+  """
+  Total number of redemption transactions in which the Basset was an output
+  """
   totalRedemptions: Counter!
-  """Total supply of the Basset token"""
+  """
+  Total supply of the Basset token
+  """
   totalSupply: Metric!
-  """Cumulative amount of the Basset that was used in mint transactions as input"""
+  """
+  Cumulative amount of the Basset that was used in mint transactions as input
+  """
   cumulativeMinted: Metric!
-  """Cumulative amount of the Basset that was used in swap transactions as output"""
+  """
+  Cumulative amount of the Basset that was used in swap transactions as output
+  """
   cumulativeSwappedAsOutput: Metric!
-  """Cumulative amount of the Basset that was used in redemption transactions as output (excluding proportional redemption)"""
+  """
+  Cumulative amount of the Basset that was used in redemption transactions as output (excluding proportional redemption)
+  """
   cumulativeRedeemed: Metric!
-  """Cumulative amount of fees paid (e.g. for swaps and redemptions) using this Basset"""
+  """
+  Cumulative amount of fees paid (e.g. for swaps and redemptions) using this Basset
+  """
   cumulativeFeesPaid: Metric!
 }
-"""A Basket of Bassets (e.g. for mUSD)"""
+"""
+A Basket of Bassets (e.g. for mUSD)
+"""
 type Basket {
   id: ID!
-  """The Bassets in the Basket"""
-  bassets(skip: Int = 0, first: Int = 100, orderBy: Basset_orderBy, orderDirection: OrderDirection, where: Basset_filter): [Basset!]!
-  """The collateralisation ratio of the Basket"""
+  """
+  The Bassets in the Basket
+  """
+  bassets(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Basset_orderBy
+    orderDirection: OrderDirection
+    where: Basset_filter
+  ): [Basset!]!
+  """
+  The collateralisation ratio of the Basket
+  """
   collateralisationRatio: BigInt!
-  """Max number of Bassets that can be present in the Basket"""
+  """
+  Max number of Bassets that can be present in the Basket
+  """
   maxBassets: Int!
-  """Flag for whether the Basket has failed"""
+  """
+  Flag for whether the Basket has failed
+  """
   undergoingRecol: Boolean!
-  """Flag for whether the Basket has failed"""
+  """
+  Flag for whether the Basket has failed
+  """
   failed: Boolean!
-  """Masset the Basket belongs to"""
+  """
+  Masset the Basket belongs to
+  """
   masset: Masset!
 }
 enum Basset_orderBy {
@@ -954,54 +1042,144 @@ input Basset_filter {
   cumulativeFeesPaid_ends_with: String
   cumulativeFeesPaid_not_ends_with: String
 }
-"""An mStable asset (e.g. mUSD)"""
+"""
+An mStable asset (e.g. mUSD)
+"""
 type Masset {
-  """Address of the Masset contract"""
+  """
+  Address of the Masset contract
+  """
   id: ID!
-  """The Basket of Bassets for this Masset"""
+  """
+  The Basket of Bassets for this Masset
+  """
   basket: Basket!
-  """The address of the `BasketManager` contract for this Masset"""
+  """
+  The address of the `BasketManager` contract for this Masset
+  """
   basketManager: Bytes!
-  """The swap fee rate"""
+  """
+  The swap fee rate
+  """
   feeRate: BigInt!
-  """The redemption fee rate"""
+  """
+  The redemption fee rate
+  """
   redemptionFeeRate: BigInt!
-  """Total number of mint transactions for this Masset"""
+  """
+  Total number of mint transactions for this Masset
+  """
   totalMints: Counter!
-  """Total number of swap transactions for this Masset"""
+  """
+  Total number of swap transactions for this Masset
+  """
   totalSwaps: Counter!
-  """Total number of redemption transactions for this Masset (excluding proportional redemption)"""
+  """
+  Total number of redemption transactions for this Masset (excluding proportional redemption)
+  """
   totalRedemptions: Counter!
-  """Total number of proportional redemption (i.e. `RedeemMasset`) transactions for this Masset"""
+  """
+  Total number of proportional redemption (i.e. `RedeemMasset`) transactions for this Masset
+  """
   totalRedeemMassets: Counter!
-  """Total supply of the Masset token"""
+  """
+  Total supply of the Masset token
+  """
   totalSupply: Metric!
-  """Cumulative amount of this Masset that has been minted"""
+  """
+  Cumulative amount of this Masset that has been minted
+  """
   cumulativeMinted: Metric!
-  """Cumulative amount of this Masset that has been swapped"""
+  """
+  Cumulative amount of this Masset that has been swapped
+  """
   cumulativeSwapped: Metric!
-  """Cumulative amount of this Masset that has been redeemed"""
+  """
+  Cumulative amount of this Masset that has been redeemed
+  """
   cumulativeRedeemed: Metric!
-  """Cumulative amount of this Masset that has been proportionally redeemed (i.e. `RedeemMasset`)"""
+  """
+  Cumulative amount of this Masset that has been proportionally redeemed (i.e. `RedeemMasset`)
+  """
   cumulativeRedeemedMasset: Metric!
-  """Cumulative amount of fees paid (e.g. for swaps and redemptions) for this Masset"""
+  """
+  Cumulative amount of fees paid (e.g. for swaps and redemptions) for this Masset
+  """
   cumulativeFeesPaid: Metric!
-  """The underlying Token for this Masset"""
+  """
+  The underlying Token for this Masset
+  """
   token: Token!
-  """All savings Contracts for this Masset"""
-  savingsContracts(skip: Int = 0, first: Int = 100, orderBy: SavingsContract_orderBy, orderDirection: OrderDirection, where: SavingsContract_filter): [SavingsContract!]!
-  """All swap transactions sent with this Masset"""
-  swapTransactions(skip: Int = 0, first: Int = 100, orderBy: SwapTransaction_orderBy, orderDirection: OrderDirection, where: SwapTransaction_filter): [SwapTransaction!]!
-  """All transactions sent with this Masset where a fee was paid"""
-  paidFeeTransactions(skip: Int = 0, first: Int = 100, orderBy: PaidFeeTransaction_orderBy, orderDirection: OrderDirection, where: PaidFeeTransaction_filter): [PaidFeeTransaction!]!
-  """All proportional redemption (`RedeemMasset`) transactions sent with this Masset"""
-  redeemMassetTransactions(skip: Int = 0, first: Int = 100, orderBy: RedeemMassetTransaction_orderBy, orderDirection: OrderDirection, where: RedeemMassetTransaction_filter): [RedeemMassetTransaction!]!
-  """All mint-multi transactions sent with this Masset"""
-  mintMultiTransactions(skip: Int = 0, first: Int = 100, orderBy: MintMultiTransaction_orderBy, orderDirection: OrderDirection, where: MintMultiTransaction_filter): [MintMultiTransaction!]!
-  """All mint-single transactions sent with this Masset"""
-  mintSingleTransactions(skip: Int = 0, first: Int = 100, orderBy: MintSingleTransaction_orderBy, orderDirection: OrderDirection, where: MintSingleTransaction_filter): [MintSingleTransaction!]!
-  """All redemption transactions sent with this Masset (excluding proportional redemptions)"""
-  redeemTransactions(skip: Int = 0, first: Int = 100, orderBy: RedeemTransaction_orderBy, orderDirection: OrderDirection, where: RedeemTransaction_filter): [RedeemTransaction!]!
+  """
+  All savings Contracts for this Masset
+  """
+  savingsContracts(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: SavingsContract_orderBy
+    orderDirection: OrderDirection
+    where: SavingsContract_filter
+  ): [SavingsContract!]!
+  """
+  All swap transactions sent with this Masset
+  """
+  swapTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: SwapTransaction_orderBy
+    orderDirection: OrderDirection
+    where: SwapTransaction_filter
+  ): [SwapTransaction!]!
+  """
+  All transactions sent with this Masset where a fee was paid
+  """
+  paidFeeTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: PaidFeeTransaction_orderBy
+    orderDirection: OrderDirection
+    where: PaidFeeTransaction_filter
+  ): [PaidFeeTransaction!]!
+  """
+  All proportional redemption (`RedeemMasset`) transactions sent with this Masset
+  """
+  redeemMassetTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: RedeemMassetTransaction_orderBy
+    orderDirection: OrderDirection
+    where: RedeemMassetTransaction_filter
+  ): [RedeemMassetTransaction!]!
+  """
+  All mint-multi transactions sent with this Masset
+  """
+  mintMultiTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MintMultiTransaction_orderBy
+    orderDirection: OrderDirection
+    where: MintMultiTransaction_filter
+  ): [MintMultiTransaction!]!
+  """
+  All mint-single transactions sent with this Masset
+  """
+  mintSingleTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: MintSingleTransaction_orderBy
+    orderDirection: OrderDirection
+    where: MintSingleTransaction_filter
+  ): [MintSingleTransaction!]!
+  """
+  All redemption transactions sent with this Masset (excluding proportional redemptions)
+  """
+  redeemTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: RedeemTransaction_orderBy
+    orderDirection: OrderDirection
+    where: RedeemTransaction_filter
+  ): [RedeemTransaction!]!
 }
 enum SavingsContract_orderBy {
   id
@@ -1191,21 +1369,37 @@ input SavingsContract_filter {
   exchangeRate24hAgo_not_ends_with: String
 }
 type SavingsContract {
-  """Address of the SavingsContract"""
+  """
+  Address of the SavingsContract
+  """
   id: ID!
-  """The Masset using this SavingsContract"""
+  """
+  The Masset using this SavingsContract
+  """
   masset: Masset!
-  """The amount of underlying savings in the contract"""
+  """
+  The amount of underlying savings in the contract
+  """
   totalSavings: Metric!
-  """Total number of savings credits issued"""
+  """
+  Total number of savings credits issued
+  """
   totalCredits: Metric!
-  """The total number of deposits made"""
+  """
+  The total number of deposits made
+  """
   totalDeposits: Counter!
-  """The total number of withdrawals made"""
+  """
+  The total number of withdrawals made
+  """
   totalWithdrawals: Counter!
-  """The cumulative amount of savings deposited"""
+  """
+  The cumulative amount of savings deposited
+  """
   cumulativeDeposited: Metric!
-  """The cumulative amount of savings withdrawn"""
+  """
+  The cumulative amount of savings withdrawn
+  """
   cumulativeWithdrawn: Metric!
   """
   The daily APY value; this is derived from the `ExchangeRate` closest to 24h ago from the last-received
@@ -1217,23 +1411,59 @@ type SavingsContract {
   Masset being deposited in the Savings Contract.
   """
   utilisationRate: Metric!
-  """Flag for whether the automatic collection of interest is enabled."""
+  """
+  Flag for whether the automatic collection of interest is enabled.
+  """
   automationEnabled: Boolean!
-  """The latest exchange rate that was received"""
+  """
+  The latest exchange rate that was received
+  """
   latestExchangeRate: ExchangeRate
   """
   The exchange rate that is closest to 24h ago from the latest exchange rate;
   used to derive daily APYs.
   """
   exchangeRate24hAgo: ExchangeRate
-  """All credit balances relating to this Savings Contract."""
-  creditBalances(skip: Int = 0, first: Int = 100, orderBy: CreditBalance_orderBy, orderDirection: OrderDirection, where: CreditBalance_filter): [CreditBalance!]!
-  """All exchange rates relating to this Savings Contract."""
-  exchangeRates(skip: Int = 0, first: Int = 100, orderBy: ExchangeRate_orderBy, orderDirection: OrderDirection, where: ExchangeRate_filter): [ExchangeRate!]!
-  """All deposit transactions sent with this Savings Contract."""
-  depositTransactions(skip: Int = 0, first: Int = 100, orderBy: SavingsContractDepositTransaction_orderBy, orderDirection: OrderDirection, where: SavingsContractDepositTransaction_filter): [SavingsContractDepositTransaction!]!
-  """All withdraw transactions sent with this Savings Contract."""
-  withdrawTransactions(skip: Int = 0, first: Int = 100, orderBy: SavingsContractWithdrawTransaction_orderBy, orderDirection: OrderDirection, where: SavingsContractWithdrawTransaction_filter): [SavingsContractWithdrawTransaction!]!
+  """
+  All credit balances relating to this Savings Contract.
+  """
+  creditBalances(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: CreditBalance_orderBy
+    orderDirection: OrderDirection
+    where: CreditBalance_filter
+  ): [CreditBalance!]!
+  """
+  All exchange rates relating to this Savings Contract.
+  """
+  exchangeRates(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ExchangeRate_orderBy
+    orderDirection: OrderDirection
+    where: ExchangeRate_filter
+  ): [ExchangeRate!]!
+  """
+  All deposit transactions sent with this Savings Contract.
+  """
+  depositTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: SavingsContractDepositTransaction_orderBy
+    orderDirection: OrderDirection
+    where: SavingsContractDepositTransaction_filter
+  ): [SavingsContractDepositTransaction!]!
+  """
+  All withdraw transactions sent with this Savings Contract.
+  """
+  withdrawTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: SavingsContractWithdrawTransaction_orderBy
+    orderDirection: OrderDirection
+    where: SavingsContractWithdrawTransaction_filter
+  ): [SavingsContractWithdrawTransaction!]!
 }
 type ExchangeRate {
   id: ID!
@@ -1242,11 +1472,17 @@ type ExchangeRate {
   totalCredits * exchangeRate = totalSavings
   """
   rate: BigDecimal!
-  """The timestamp at which the rate was created."""
+  """
+  The timestamp at which the rate was created.
+  """
   timestamp: Int!
-  """The SavingsContract this ExchangeRate relates to."""
+  """
+  The SavingsContract this ExchangeRate relates to.
+  """
   savingsContract: SavingsContract!
-  """The next exchange rate for the savings contract (by timestamp); used for calculating APY."""
+  """
+  The next exchange rate for the savings contract (by timestamp); used for calculating APY.
+  """
   next: ExchangeRate
 }
 enum CreditBalance_orderBy {
@@ -1301,21 +1537,35 @@ input CreditBalance_filter {
   savingsContract_ends_with: String
   savingsContract_not_ends_with: String
 }
-"""A credit balance for a given savings contract"""
+"""
+A credit balance for a given savings contract
+"""
 type CreditBalance {
   id: ID!
-  """Account"""
+  """
+  Account
+  """
   account: Account!
-  """Amount as an exact value"""
+  """
+  Amount as an exact value
+  """
   amount: BigInt!
-  """Savings contract"""
+  """
+  Savings contract
+  """
   savingsContract: SavingsContract!
 }
-"""An Ethereum account that has interacted with parts of mStable"""
+"""
+An Ethereum account that has interacted with parts of mStable
+"""
 type Account {
-  """Address of the account"""
+  """
+  Address of the account
+  """
   id: ID!
-  """CreditBalance of the account"""
+  """
+  CreditBalance of the account
+  """
   creditBalance: CreditBalance
 }
 enum ExchangeRate_orderBy {
@@ -1454,21 +1704,35 @@ type SavingsContractDepositTransaction implements Transaction {
   block: Int!
   sender: Bytes!
   timestamp: BigInt!
-  """The SavingsContract the transaction relates to."""
+  """
+  The SavingsContract the transaction relates to.
+  """
   savingsContract: SavingsContract!
-  """The amount deposited."""
+  """
+  The amount deposited.
+  """
   amount: BigInt!
 }
 interface Transaction {
-  """Transaction hash + log index"""
+  """
+  Transaction hash + log index
+  """
   id: ID!
-  """Transaction hash"""
+  """
+  Transaction hash
+  """
   hash: Bytes!
-  """Block number the transaction is in"""
+  """
+  Block number the transaction is in
+  """
   block: Int!
-  """Timestamp of the block the transaction is in"""
+  """
+  Timestamp of the block the transaction is in
+  """
   timestamp: BigInt!
-  """Address of the sender of the transaction"""
+  """
+  Address of the sender of the transaction
+  """
   sender: Bytes!
 }
 enum SavingsContractWithdrawTransaction_orderBy {
@@ -1546,9 +1810,13 @@ type SavingsContractWithdrawTransaction implements Transaction {
   block: Int!
   sender: Bytes!
   timestamp: BigInt!
-  """The SavingsContract the transaction relates to."""
+  """
+  The SavingsContract the transaction relates to.
+  """
   savingsContract: SavingsContract!
-  """The amount withdrawn."""
+  """
+  The amount withdrawn.
+  """
   amount: BigInt!
 }
 enum SwapTransaction_orderBy {
@@ -1663,15 +1931,25 @@ type SwapTransaction implements Transaction {
   block: Int!
   sender: Bytes!
   timestamp: BigInt!
-  """The Masset the transaction relates to."""
+  """
+  The Masset the transaction relates to.
+  """
   masset: Masset!
-  """The amount of the swap output in Masset units"""
+  """
+  The amount of the swap output in Masset units
+  """
   massetUnits: BigInt!
-  """The Basset used as the input for this swap."""
+  """
+  The Basset used as the input for this swap.
+  """
   inputBasset: Basset!
-  """The Basset used as the output for this swap."""
+  """
+  The Basset used as the output for this swap.
+  """
   outputBasset: Basset!
-  """The recipient of the swap output."""
+  """
+  The recipient of the swap output.
+  """
   recipient: Bytes!
 }
 enum PaidFeeTransaction_orderBy {
@@ -1773,13 +2051,21 @@ type PaidFeeTransaction implements Transaction {
   block: Int!
   sender: Bytes!
   timestamp: BigInt!
-  """The Masset the transaction relates to."""
+  """
+  The Masset the transaction relates to.
+  """
   masset: Masset!
-  """The amount of the fee that was paid, in Masset units."""
+  """
+  The amount of the fee that was paid, in Masset units.
+  """
   massetUnits: BigInt!
-  """The Basset the fee was paid in."""
+  """
+  The Basset the fee was paid in.
+  """
   basset: Basset!
-  """The amount of the fee that was paid, in Basset units."""
+  """
+  The amount of the fee that was paid, in Basset units.
+  """
   bassetUnits: BigInt!
 }
 enum RedeemMassetTransaction_orderBy {
@@ -1865,9 +2151,13 @@ type RedeemMassetTransaction implements Transaction {
   sender: Bytes!
   recipient: Bytes!
   timestamp: BigInt!
-  """The Masset the transaction relates to."""
+  """
+  The Masset the transaction relates to.
+  """
   masset: Masset!
-  """The amount redeemed in Masset units."""
+  """
+  The amount redeemed in Masset units.
+  """
   massetUnits: BigInt!
 }
 enum MintMultiTransaction_orderBy {
@@ -1963,13 +2253,27 @@ type MintMultiTransaction implements Transaction {
   sender: Bytes!
   recipient: Bytes!
   timestamp: BigInt!
-  """The Masset the transaction relates to."""
+  """
+  The Masset the transaction relates to.
+  """
   masset: Masset!
-  """The amount of the Masset minted, in Masset units."""
+  """
+  The amount of the Masset minted, in Masset units.
+  """
   massetUnits: BigInt!
-  """The Bassets used as collateral assets for this mint."""
-  bassets(skip: Int = 0, first: Int = 100, orderBy: Basset_orderBy, orderDirection: OrderDirection, where: Basset_filter): [Basset!]!
-  """The respective Basset units for each Basset used in this mint."""
+  """
+  The Bassets used as collateral assets for this mint.
+  """
+  bassets(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Basset_orderBy
+    orderDirection: OrderDirection
+    where: Basset_filter
+  ): [Basset!]!
+  """
+  The respective Basset units for each Basset used in this mint.
+  """
   bassetsUnits: [BigInt!]!
 }
 enum MintSingleTransaction_orderBy {
@@ -2079,13 +2383,21 @@ type MintSingleTransaction implements Transaction {
   sender: Bytes!
   recipient: Bytes!
   timestamp: BigInt!
-  """The Masset the transaction relates to."""
+  """
+  The Masset the transaction relates to.
+  """
   masset: Masset!
-  """The amount of the Masset minted, in Masset units."""
+  """
+  The amount of the Masset minted, in Masset units.
+  """
   massetUnits: BigInt!
-  """The Basset used as the collateral asset for this mint."""
+  """
+  The Basset used as the collateral asset for this mint.
+  """
   basset: Basset!
-  """The amount of the Basset used for this mint, in Basset units."""
+  """
+  The amount of the Basset used for this mint, in Basset units.
+  """
   bassetUnits: BigInt!
 }
 enum RedeemTransaction_orderBy {
@@ -2181,13 +2493,27 @@ type RedeemTransaction implements Transaction {
   sender: Bytes!
   recipient: Bytes!
   timestamp: BigInt!
-  """The Masset the transaction relates to."""
+  """
+  The Masset the transaction relates to.
+  """
   masset: Masset!
-  """The amount redeemed in Masset units."""
+  """
+  The amount redeemed in Masset units.
+  """
   massetUnits: BigInt!
-  """The Bassets selected as assets to redeem."""
-  bassets(skip: Int = 0, first: Int = 100, orderBy: Basset_orderBy, orderDirection: OrderDirection, where: Basset_filter): [Basset!]!
-  """The respective units of each Basset selected to redeem."""
+  """
+  The Bassets selected as assets to redeem.
+  """
+  bassets(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Basset_orderBy
+    orderDirection: OrderDirection
+    where: Basset_filter
+  ): [Basset!]!
+  """
+  The respective units of each Basset selected to redeem.
+  """
   bassetsUnits: [BigInt!]!
 }
 enum Basket_orderBy {
@@ -2535,7 +2861,9 @@ input Transaction_filter {
   sender_contains: Bytes
   sender_not_contains: Bytes
 }
-"""The type for the top-level _meta field"""
+"""
+The type for the top-level _meta field
+"""
 type _Meta_ {
   """
   Information about a specific subgraph block. The hash of the block
@@ -2544,13 +2872,19 @@ type _Meta_ {
   and therefore asks for the latest  block
   """
   block: _Block_!
-  """The deployment ID"""
+  """
+  The deployment ID
+  """
   deployment: String!
 }
 type _Block_ {
-  """The hash of the block"""
+  """
+  The hash of the block
+  """
   hash: Bytes
-  """The block number"""
+  """
+  The block number
+  """
   number: Int!
 }
 type Subscription {
@@ -2972,6 +3306,8 @@ type Subscription {
     """
     block: Block_height
   ): [Transaction!]!
-  """Access to subgraph metadata"""
+  """
+  Access to subgraph metadata
+  """
   _meta(block: Block_height): _Meta_
 }
