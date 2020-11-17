@@ -2,6 +2,8 @@
 
 ## Next
 
+- Added Historic Transactions view with the data coming from The Graph
+
 ## Version 1.15.0
 
 - Add a gas prices widget to allow the user to select a gas price and see the transaction fee
