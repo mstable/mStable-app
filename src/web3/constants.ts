@@ -40,7 +40,8 @@ export const EMOJIS = {
   'stake(uint256)': '🔒',
 };
 
-export const DAPP_VERSION = process.env.REACT_APP_VERSION;
+export const DAPP_VERSION =
+  process.env.REACT_APP_VERSION || process.env.npm_package_version;
 
 export const STABLECOIN_SYMBOLS = [
   'BUSD',
