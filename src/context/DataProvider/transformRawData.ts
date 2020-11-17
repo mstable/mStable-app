@@ -66,7 +66,7 @@ const getSavingsContract: TransformFn<'savingsContract'> = (
   mAssetAllowance:
     tokens[mAssetAddress]?.allowances?.[savingsContractData.id] ??
     new BigDecimal(0, decimals),
-  savingsRate: BigDecimal.fromMetric(savingsContractData.savingsRate),
+  // savingsRate: BigDecimal.fromMetric(savingsContractData.savingsRate),
   totalCredits: BigDecimal.fromMetric(savingsContractData.totalCredits),
   totalSavings: BigDecimal.fromMetric(savingsContractData.totalSavings),
   savingsBalance: {},

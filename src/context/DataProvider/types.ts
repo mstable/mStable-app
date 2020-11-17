@@ -89,7 +89,7 @@ export interface SavingsContractState {
     rate: BigDecimal;
   };
   mAssetAllowance: BigDecimal;
-  savingsRate: BigDecimal;
+  // savingsRate: BigDecimal;
   totalCredits: BigDecimal;
   totalSavings: BigDecimal;
   savingsBalance: {
