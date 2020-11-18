@@ -46,6 +46,7 @@ const FlexContainer = styled.div`
 `;
 
 const ButtonContent = styled.div`
+  min-height: 58px;
   display: flex;
   background: white;
   color: rgb(37, 39, 45);
