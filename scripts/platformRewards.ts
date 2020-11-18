@@ -11,15 +11,15 @@
  * @example
  *
  * ```bash
- * yarn run platform-rewards --trancheNumber=10 \
- *   --startBlock=11177639 \
- *   --startTimestamp=1604320193 \
+ * yarn run platform-rewards --trancheNumber=11 \
+ *   --startBlock=11223303 \
+ *   --startTimestamp=1604924998 \
  *   --token=0xba100000625a3754423978a60c9317c58a424e3d \
  *   --fullOutput \
  *   --allocations \
- *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,572.257494178134198901 \
- *   0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,3816.734352385960797536 \
- *   0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027,251.886455728335525715
+ *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,477.536505404832853905 \
+ *   0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,3345.724088613123102064 \
+ *   0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027,192.87247468926858117
  *
  * ```
  *
@@ -72,7 +72,7 @@ import {
   ScriptRewardsDocument,
   ScriptRewardsQueryResult,
   ScriptRewardsQueryVariables,
-} from '../src/graphql/ecosystem';
+} from '../src/graphql/legacy';
 import { SCALE } from '../src/web3/constants';
 import {
   BlockTimestampDocument,
