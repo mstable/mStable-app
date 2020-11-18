@@ -118,8 +118,9 @@ export const transformRawData = (
         case 'SwapTransaction': {
           const mappedInputBasset = bAssets[tx.inputBasset.id].symbol;
           const mappedOutputBasset = bAssets[tx.outputBasset.id].symbol;
+          const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
           return {
-            description: `You swapped ${mappedInputBasset} for ${mappedOutputBasset}`,
+            description: `You swapped ${massetUnits.format()} ${mappedInputBasset} for ${mappedOutputBasset}`,
             hash,
             timestamp,
             formattedDate,
