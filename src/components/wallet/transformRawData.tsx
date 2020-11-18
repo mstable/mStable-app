@@ -3,6 +3,7 @@ import { HistoricTransaction } from './types';
 import { DataState } from '../../context/DataProvider/types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { formatUnix } from './utils';
+import { humanizeList } from '../../web3/strings';
 
 export const transformRawData = (
   data: HistoricTransactionsQueryResult['data'],
@@ -14,9 +15,8 @@ export const transformRawData = (
 
   const { transactions } = data;
   const { mAsset, bAssets } = dataState as DataState;
-
   return transactions
-    .map(({ hash, ...tx }) => {
+    .map(({ hash, id, ...tx }) => {
       const timestamp = parseInt(tx.timestamp, 10);
       const formattedDate = formatUnix(timestamp);
       switch (tx.__typename) {
@@ -26,22 +26,25 @@ export const transformRawData = (
           );
           const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
           return {
-            description: `You've redeemed ${massetUnits.simple.toFixed(2)} of ${
+            description: `You redeemed ${massetUnits.format()} ${
               mAsset.symbol
-            } with ${mappedBassets}`,
+            } into ${humanizeList(mappedBassets)}`,
             hash,
             timestamp,
+            formattedDate,
+            id,
           };
         }
         case 'RedeemMassetTransaction': {
           const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
           return {
-            description: `You've redeemed ${massetUnits.simple.toFixed(2)} of ${
+            description: `You redeemed ${massetUnits.format()} ${
               mAsset.symbol
-            }`,
+            } proportionally into all assets`,
             hash,
             timestamp,
             formattedDate,
+            id,
           };
         }
         case 'MintMultiTransaction': {
@@ -50,67 +53,77 @@ export const transformRawData = (
           );
           const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
           return {
-            description: `You've minted ${massetUnits.simple.toFixed(2)} of ${
+            description: `You minted ${massetUnits.simple.toFixed(2)} ${
               mAsset.symbol
-            } with ${mappedBassets}`,
+            } with ${humanizeList(mappedBassets)}`,
             hash,
             timestamp,
             formattedDate,
+            id,
           };
         }
         case 'MintSingleTransaction': {
           const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
           const mappedBasset = bAssets[tx.basset.id].symbol;
           return {
-            description: `You've minted ${massetUnits.simple.toFixed(2)} of ${
+            description: `You minted ${massetUnits.format()} ${
               mAsset.symbol
             } with ${mappedBasset}`,
             hash,
             timestamp,
             formattedDate,
+            id,
           };
         }
         case 'PaidFeeTransaction': {
-          const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
-          const mappedBasset = bAssets[tx.basset.id].symbol;
+          const mappedBasset = bAssets[tx.basset.id];
+          const bassetUnit = new BigDecimal(
+            tx.bassetUnits,
+            mappedBasset.decimals,
+          );
           return {
-            description: `You've paid a fee of ${massetUnits.simple.toFixed(
-              2,
-            )} in ${mAsset.symbol} with ${mappedBasset}`,
+            description: `You paid ${bassetUnit.format()} ${
+              mappedBasset.symbol
+            } in fees`,
             hash,
             timestamp,
             formattedDate,
+            id,
           };
         }
         case 'SavingsContractDepositTransaction': {
           const massetUnits = new BigDecimal(tx.amount, mAsset.decimals);
           return {
-            description: `You've deposited ${massetUnits.simple.toFixed(
-              2,
-            )} of ${mAsset.symbol}`,
+            description: `You deposited ${massetUnits.format()} ${
+              mAsset.symbol
+            } into SAVE`,
             hash,
             timestamp,
             formattedDate,
+            id,
           };
         }
         case 'SavingsContractWithdrawTransaction': {
           const massetUnits = new BigDecimal(tx.amount, mAsset.decimals);
           return {
-            description: `You've withdrawn ${massetUnits.simple.toFixed(
-              2,
-            )} of ${mAsset.symbol}`,
+            description: `You withdrew ${massetUnits.format()} ${
+              mAsset.symbol
+            } from SAVE`,
             hash,
             timestamp,
             formattedDate,
+            id,
           };
         }
         case 'SwapTransaction': {
-          const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
+          const mappedInputBasset = bAssets[tx.inputBasset.id].symbol;
+          const mappedOutputBasset = bAssets[tx.outputBasset.id].symbol;
           return {
-            description: `You've swapped ${tx.inputBasset} for ${tx.outputBasset} with the value of ${massetUnits} ${mAsset.symbol} `,
+            description: `You swapped ${mappedInputBasset} for ${mappedOutputBasset}`,
             hash,
             timestamp,
             formattedDate,
+            id,
           };
         }
         default:
