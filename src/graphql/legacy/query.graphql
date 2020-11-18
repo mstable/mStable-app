@@ -65,3 +65,66 @@ query AggregateMetrics($period: TimeMetricPeriod!, $from: Int!, $to: Int!)
         value
     }
 }
+
+query MerkleDropClaims($account: Bytes!) @api(name: legacy) {
+    merkleDrops {
+        id
+        token {
+            id
+            address
+            decimals
+            symbol
+            totalSupply
+        }
+        tranches(
+            orderDirection: asc
+            orderBy: trancheNumber
+            where: { expired: false }
+        ) {
+            trancheNumber
+            totalAmount
+            claims(where: { account: $account }) {
+                balance
+            }
+        }
+    }
+}
+
+query ScriptRewards(
+    $id: ID!
+    $end: Int!
+    $block: Block_height
+    $limit: Int!
+    $offset: Int!
+) @api(name: legacy) {
+    stakingRewardsContracts(where: { id: $id }, block: $block) {
+        address: id
+        lastUpdateTime
+        periodFinish
+        rewardPerTokenStored
+        rewardRate
+        totalSupply
+
+        stakingRewards(where: { type: REWARD }, first: $limit, skip: $offset) {
+            amount
+            account
+            amountPerTokenPaid
+        }
+
+        stakingBalances(first: $limit, skip: $offset) {
+            amount
+            account
+        }
+
+        claimRewardTransactions(
+            first: $limit
+            skip: $offset
+            orderBy: timestamp
+            orderDirection: asc
+            where: { timestamp_lt: $end }
+        ) {
+            amount
+            sender
+        }
+    }
+}

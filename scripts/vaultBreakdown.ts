@@ -8,10 +8,10 @@ import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import { getApolloClient } from './utils/getApolloClient';
 import { runMain } from './utils/runMain';
 import {
-  VaultBalancesDocument,
-  VaultBalancesQueryResult,
-  VaultBalancesQueryVariables,
-} from '../src/graphql/scripts';
+  ScriptVaultBalancesDocument,
+  ScriptVaultBalancesQueryResult,
+  ScriptVaultBalancesQueryVariables,
+} from '../src/graphql/protocol';
 import { outputJsonReport } from './utils/outputJsonReport';
 
 interface BlockTimestamps {
@@ -61,11 +61,11 @@ const getHistoricalVaultBalances = async ({
     await Promise.all(
       blocks.map(async ({ number, timestamp }, index) => {
         const { data } = (await client.query({
-          query: VaultBalancesDocument,
+          query: ScriptVaultBalancesDocument,
           variables: {
             block: { number: parseInt(number) },
-          } as VaultBalancesQueryVariables,
-        })) as VaultBalancesQueryResult;
+          } as ScriptVaultBalancesQueryVariables,
+        })) as ScriptVaultBalancesQueryResult;
         return data;
       }),
     )
