@@ -141,6 +141,7 @@ export const FormProvider: FC<{ formId: string }> = ({ children, formId }) => {
   const [state, dispatch] = useReducer(reducer, {
     submitting: false,
     formId,
+    gasPriceType: GasPriceType.Standard,
   });
 
   const { args, fn, iface } = state.manifest || {};
