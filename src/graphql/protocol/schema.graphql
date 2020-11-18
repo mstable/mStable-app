@@ -447,7 +447,7 @@ type Token {
   """Total quantity of tokens minted"""
   totalMinted: Metric!
   """Count of transfer transactions"""
-  transfers: Counter!
+  totalTransfers: Counter!
   """Count of transfer transactions that minted the token"""
   totalMints: Counter!
   """Count of transfer transactions that burned the token"""
@@ -478,7 +478,7 @@ enum Token_orderBy {
   totalSupply
   totalBurned
   totalMinted
-  transfers
+  totalTransfers
   totalMints
   totalBurns
 }
@@ -579,20 +579,20 @@ input Token_filter {
   totalMinted_not_starts_with: String
   totalMinted_ends_with: String
   totalMinted_not_ends_with: String
-  transfers: String
-  transfers_not: String
-  transfers_gt: String
-  transfers_lt: String
-  transfers_gte: String
-  transfers_lte: String
-  transfers_in: [String!]
-  transfers_not_in: [String!]
-  transfers_contains: String
-  transfers_not_contains: String
-  transfers_starts_with: String
-  transfers_not_starts_with: String
-  transfers_ends_with: String
-  transfers_not_ends_with: String
+  totalTransfers: String
+  totalTransfers_not: String
+  totalTransfers_gt: String
+  totalTransfers_lt: String
+  totalTransfers_gte: String
+  totalTransfers_lte: String
+  totalTransfers_in: [String!]
+  totalTransfers_not_in: [String!]
+  totalTransfers_contains: String
+  totalTransfers_not_contains: String
+  totalTransfers_starts_with: String
+  totalTransfers_not_starts_with: String
+  totalTransfers_ends_with: String
+  totalTransfers_not_ends_with: String
   totalMints: String
   totalMints_not: String
   totalMints_gt: String
@@ -710,14 +710,16 @@ type Basset {
   totalSwapsAsOutput: Counter!
   """Total number of redemption transactions in which the Basset was an output"""
   totalRedemptions: Counter!
-  """Total amount of the Basset that was used in mint transactions as input"""
-  totalMinted: Metric!
-  """Total amount of the Basset that was used in swap transactions as output"""
-  totalSwappedAsOutput: Metric!
-  """Total amount of the Basset that was used in redemption transactions as output (excluding proportional redemption)"""
-  totalRedeemed: Metric!
-  """Total amount of fees paid (e.g. for swaps and redemptions) using this Basset"""
-  totalFeesPaid: Metric!
+  """Total supply of the Basset token"""
+  totalSupply: Metric!
+  """Cumulative amount of the Basset that was used in mint transactions as input"""
+  cumulativeMinted: Metric!
+  """Cumulative amount of the Basset that was used in swap transactions as output"""
+  cumulativeSwappedAsOutput: Metric!
+  """Cumulative amount of the Basset that was used in redemption transactions as output (excluding proportional redemption)"""
+  cumulativeRedeemed: Metric!
+  """Cumulative amount of fees paid (e.g. for swaps and redemptions) using this Basset"""
+  cumulativeFeesPaid: Metric!
 }
 """A Basket of Bassets (e.g. for mUSD)"""
 type Basket {
@@ -748,10 +750,11 @@ enum Basset_orderBy {
   totalSwapsAsInput
   totalSwapsAsOutput
   totalRedemptions
-  totalMinted
-  totalSwappedAsOutput
-  totalRedeemed
-  totalFeesPaid
+  totalSupply
+  cumulativeMinted
+  cumulativeSwappedAsOutput
+  cumulativeRedeemed
+  cumulativeFeesPaid
 }
 input Basset_filter {
   id: ID
@@ -880,62 +883,76 @@ input Basset_filter {
   totalRedemptions_not_starts_with: String
   totalRedemptions_ends_with: String
   totalRedemptions_not_ends_with: String
-  totalMinted: String
-  totalMinted_not: String
-  totalMinted_gt: String
-  totalMinted_lt: String
-  totalMinted_gte: String
-  totalMinted_lte: String
-  totalMinted_in: [String!]
-  totalMinted_not_in: [String!]
-  totalMinted_contains: String
-  totalMinted_not_contains: String
-  totalMinted_starts_with: String
-  totalMinted_not_starts_with: String
-  totalMinted_ends_with: String
-  totalMinted_not_ends_with: String
-  totalSwappedAsOutput: String
-  totalSwappedAsOutput_not: String
-  totalSwappedAsOutput_gt: String
-  totalSwappedAsOutput_lt: String
-  totalSwappedAsOutput_gte: String
-  totalSwappedAsOutput_lte: String
-  totalSwappedAsOutput_in: [String!]
-  totalSwappedAsOutput_not_in: [String!]
-  totalSwappedAsOutput_contains: String
-  totalSwappedAsOutput_not_contains: String
-  totalSwappedAsOutput_starts_with: String
-  totalSwappedAsOutput_not_starts_with: String
-  totalSwappedAsOutput_ends_with: String
-  totalSwappedAsOutput_not_ends_with: String
-  totalRedeemed: String
-  totalRedeemed_not: String
-  totalRedeemed_gt: String
-  totalRedeemed_lt: String
-  totalRedeemed_gte: String
-  totalRedeemed_lte: String
-  totalRedeemed_in: [String!]
-  totalRedeemed_not_in: [String!]
-  totalRedeemed_contains: String
-  totalRedeemed_not_contains: String
-  totalRedeemed_starts_with: String
-  totalRedeemed_not_starts_with: String
-  totalRedeemed_ends_with: String
-  totalRedeemed_not_ends_with: String
-  totalFeesPaid: String
-  totalFeesPaid_not: String
-  totalFeesPaid_gt: String
-  totalFeesPaid_lt: String
-  totalFeesPaid_gte: String
-  totalFeesPaid_lte: String
-  totalFeesPaid_in: [String!]
-  totalFeesPaid_not_in: [String!]
-  totalFeesPaid_contains: String
-  totalFeesPaid_not_contains: String
-  totalFeesPaid_starts_with: String
-  totalFeesPaid_not_starts_with: String
-  totalFeesPaid_ends_with: String
-  totalFeesPaid_not_ends_with: String
+  totalSupply: String
+  totalSupply_not: String
+  totalSupply_gt: String
+  totalSupply_lt: String
+  totalSupply_gte: String
+  totalSupply_lte: String
+  totalSupply_in: [String!]
+  totalSupply_not_in: [String!]
+  totalSupply_contains: String
+  totalSupply_not_contains: String
+  totalSupply_starts_with: String
+  totalSupply_not_starts_with: String
+  totalSupply_ends_with: String
+  totalSupply_not_ends_with: String
+  cumulativeMinted: String
+  cumulativeMinted_not: String
+  cumulativeMinted_gt: String
+  cumulativeMinted_lt: String
+  cumulativeMinted_gte: String
+  cumulativeMinted_lte: String
+  cumulativeMinted_in: [String!]
+  cumulativeMinted_not_in: [String!]
+  cumulativeMinted_contains: String
+  cumulativeMinted_not_contains: String
+  cumulativeMinted_starts_with: String
+  cumulativeMinted_not_starts_with: String
+  cumulativeMinted_ends_with: String
+  cumulativeMinted_not_ends_with: String
+  cumulativeSwappedAsOutput: String
+  cumulativeSwappedAsOutput_not: String
+  cumulativeSwappedAsOutput_gt: String
+  cumulativeSwappedAsOutput_lt: String
+  cumulativeSwappedAsOutput_gte: String
+  cumulativeSwappedAsOutput_lte: String
+  cumulativeSwappedAsOutput_in: [String!]
+  cumulativeSwappedAsOutput_not_in: [String!]
+  cumulativeSwappedAsOutput_contains: String
+  cumulativeSwappedAsOutput_not_contains: String
+  cumulativeSwappedAsOutput_starts_with: String
+  cumulativeSwappedAsOutput_not_starts_with: String
+  cumulativeSwappedAsOutput_ends_with: String
+  cumulativeSwappedAsOutput_not_ends_with: String
+  cumulativeRedeemed: String
+  cumulativeRedeemed_not: String
+  cumulativeRedeemed_gt: String
+  cumulativeRedeemed_lt: String
+  cumulativeRedeemed_gte: String
+  cumulativeRedeemed_lte: String
+  cumulativeRedeemed_in: [String!]
+  cumulativeRedeemed_not_in: [String!]
+  cumulativeRedeemed_contains: String
+  cumulativeRedeemed_not_contains: String
+  cumulativeRedeemed_starts_with: String
+  cumulativeRedeemed_not_starts_with: String
+  cumulativeRedeemed_ends_with: String
+  cumulativeRedeemed_not_ends_with: String
+  cumulativeFeesPaid: String
+  cumulativeFeesPaid_not: String
+  cumulativeFeesPaid_gt: String
+  cumulativeFeesPaid_lt: String
+  cumulativeFeesPaid_gte: String
+  cumulativeFeesPaid_lte: String
+  cumulativeFeesPaid_in: [String!]
+  cumulativeFeesPaid_not_in: [String!]
+  cumulativeFeesPaid_contains: String
+  cumulativeFeesPaid_not_contains: String
+  cumulativeFeesPaid_starts_with: String
+  cumulativeFeesPaid_not_starts_with: String
+  cumulativeFeesPaid_ends_with: String
+  cumulativeFeesPaid_not_ends_with: String
 }
 """An mStable asset (e.g. mUSD)"""
 type Masset {
@@ -957,16 +974,18 @@ type Masset {
   totalRedemptions: Counter!
   """Total number of proportional redemption (i.e. `RedeemMasset`) transactions for this Masset"""
   totalRedeemMassets: Counter!
-  """Total amount of this Masset that has been minted"""
-  totalMinted: Metric!
-  """Total amount of this Masset that has been swapped"""
-  totalSwapped: Metric!
-  """Total amount of this Masset that has been redeemed"""
-  totalRedeemed: Metric!
-  """Total amount of this Masset that has been proportionally redeemed (i.e. `RedeemMasset`)"""
-  totalRedeemedMasset: Metric!
-  """Total amount of fees paid (e.g. for swaps and redemptions) for this Masset"""
-  totalFeesPaid: Metric!
+  """Total supply of the Masset token"""
+  totalSupply: Metric!
+  """Cumulative amount of this Masset that has been minted"""
+  cumulativeMinted: Metric!
+  """Cumulative amount of this Masset that has been swapped"""
+  cumulativeSwapped: Metric!
+  """Cumulative amount of this Masset that has been redeemed"""
+  cumulativeRedeemed: Metric!
+  """Cumulative amount of this Masset that has been proportionally redeemed (i.e. `RedeemMasset`)"""
+  cumulativeRedeemedMasset: Metric!
+  """Cumulative amount of fees paid (e.g. for swaps and redemptions) for this Masset"""
+  cumulativeFeesPaid: Metric!
   """The underlying Token for this Masset"""
   token: Token!
   """All savings Contracts for this Masset"""
@@ -989,11 +1008,11 @@ enum SavingsContract_orderBy {
   masset
   totalSavings
   totalCredits
-  totalDeposited
   totalDeposits
   totalWithdrawals
+  cumulativeDeposited
+  cumulativeWithdrawn
   dailyAPY
-  savingsRate
   utilisationRate
   automationEnabled
   latestExchangeRate
@@ -1054,20 +1073,6 @@ input SavingsContract_filter {
   totalCredits_not_starts_with: String
   totalCredits_ends_with: String
   totalCredits_not_ends_with: String
-  totalDeposited: String
-  totalDeposited_not: String
-  totalDeposited_gt: String
-  totalDeposited_lt: String
-  totalDeposited_gte: String
-  totalDeposited_lte: String
-  totalDeposited_in: [String!]
-  totalDeposited_not_in: [String!]
-  totalDeposited_contains: String
-  totalDeposited_not_contains: String
-  totalDeposited_starts_with: String
-  totalDeposited_not_starts_with: String
-  totalDeposited_ends_with: String
-  totalDeposited_not_ends_with: String
   totalDeposits: String
   totalDeposits_not: String
   totalDeposits_gt: String
@@ -1096,6 +1101,34 @@ input SavingsContract_filter {
   totalWithdrawals_not_starts_with: String
   totalWithdrawals_ends_with: String
   totalWithdrawals_not_ends_with: String
+  cumulativeDeposited: String
+  cumulativeDeposited_not: String
+  cumulativeDeposited_gt: String
+  cumulativeDeposited_lt: String
+  cumulativeDeposited_gte: String
+  cumulativeDeposited_lte: String
+  cumulativeDeposited_in: [String!]
+  cumulativeDeposited_not_in: [String!]
+  cumulativeDeposited_contains: String
+  cumulativeDeposited_not_contains: String
+  cumulativeDeposited_starts_with: String
+  cumulativeDeposited_not_starts_with: String
+  cumulativeDeposited_ends_with: String
+  cumulativeDeposited_not_ends_with: String
+  cumulativeWithdrawn: String
+  cumulativeWithdrawn_not: String
+  cumulativeWithdrawn_gt: String
+  cumulativeWithdrawn_lt: String
+  cumulativeWithdrawn_gte: String
+  cumulativeWithdrawn_lte: String
+  cumulativeWithdrawn_in: [String!]
+  cumulativeWithdrawn_not_in: [String!]
+  cumulativeWithdrawn_contains: String
+  cumulativeWithdrawn_not_contains: String
+  cumulativeWithdrawn_starts_with: String
+  cumulativeWithdrawn_not_starts_with: String
+  cumulativeWithdrawn_ends_with: String
+  cumulativeWithdrawn_not_ends_with: String
   dailyAPY: String
   dailyAPY_not: String
   dailyAPY_gt: String
@@ -1110,20 +1143,6 @@ input SavingsContract_filter {
   dailyAPY_not_starts_with: String
   dailyAPY_ends_with: String
   dailyAPY_not_ends_with: String
-  savingsRate: String
-  savingsRate_not: String
-  savingsRate_gt: String
-  savingsRate_lt: String
-  savingsRate_gte: String
-  savingsRate_lte: String
-  savingsRate_in: [String!]
-  savingsRate_not_in: [String!]
-  savingsRate_contains: String
-  savingsRate_not_contains: String
-  savingsRate_starts_with: String
-  savingsRate_not_starts_with: String
-  savingsRate_ends_with: String
-  savingsRate_not_ends_with: String
   utilisationRate: String
   utilisationRate_not: String
   utilisationRate_gt: String
@@ -1180,19 +1199,19 @@ type SavingsContract {
   totalSavings: Metric!
   """Total number of savings credits issued"""
   totalCredits: Metric!
-  """The total amount of deposits"""
-  totalDeposited: Metric!
   """The total number of deposits made"""
   totalDeposits: Counter!
   """The total number of withdrawals made"""
   totalWithdrawals: Counter!
+  """The cumulative amount of savings deposited"""
+  cumulativeDeposited: Metric!
+  """The cumulative amount of savings withdrawn"""
+  cumulativeWithdrawn: Metric!
   """
   The daily APY value; this is derived from the `ExchangeRate` closest to 24h ago from the last-received
   `ExchangeRate`, and will change whenever a new `ExchangeRate` is created.
   """
   dailyAPY: Metric!
-  """The amount of collected interest that will be sent to the Savings Contract"""
-  savingsRate: Metric!
   """
   The share of the Masset that is deposited in the Savings Contract; a rate of 100% would mean all of the
   Masset being deposited in the Savings Contract.
@@ -2228,11 +2247,12 @@ enum Masset_orderBy {
   totalSwaps
   totalRedemptions
   totalRedeemMassets
-  totalMinted
-  totalSwapped
-  totalRedeemed
-  totalRedeemedMasset
-  totalFeesPaid
+  totalSupply
+  cumulativeMinted
+  cumulativeSwapped
+  cumulativeRedeemed
+  cumulativeRedeemedMasset
+  cumulativeFeesPaid
   token
   savingsContracts
   swapTransactions
@@ -2343,76 +2363,90 @@ input Masset_filter {
   totalRedeemMassets_not_starts_with: String
   totalRedeemMassets_ends_with: String
   totalRedeemMassets_not_ends_with: String
-  totalMinted: String
-  totalMinted_not: String
-  totalMinted_gt: String
-  totalMinted_lt: String
-  totalMinted_gte: String
-  totalMinted_lte: String
-  totalMinted_in: [String!]
-  totalMinted_not_in: [String!]
-  totalMinted_contains: String
-  totalMinted_not_contains: String
-  totalMinted_starts_with: String
-  totalMinted_not_starts_with: String
-  totalMinted_ends_with: String
-  totalMinted_not_ends_with: String
-  totalSwapped: String
-  totalSwapped_not: String
-  totalSwapped_gt: String
-  totalSwapped_lt: String
-  totalSwapped_gte: String
-  totalSwapped_lte: String
-  totalSwapped_in: [String!]
-  totalSwapped_not_in: [String!]
-  totalSwapped_contains: String
-  totalSwapped_not_contains: String
-  totalSwapped_starts_with: String
-  totalSwapped_not_starts_with: String
-  totalSwapped_ends_with: String
-  totalSwapped_not_ends_with: String
-  totalRedeemed: String
-  totalRedeemed_not: String
-  totalRedeemed_gt: String
-  totalRedeemed_lt: String
-  totalRedeemed_gte: String
-  totalRedeemed_lte: String
-  totalRedeemed_in: [String!]
-  totalRedeemed_not_in: [String!]
-  totalRedeemed_contains: String
-  totalRedeemed_not_contains: String
-  totalRedeemed_starts_with: String
-  totalRedeemed_not_starts_with: String
-  totalRedeemed_ends_with: String
-  totalRedeemed_not_ends_with: String
-  totalRedeemedMasset: String
-  totalRedeemedMasset_not: String
-  totalRedeemedMasset_gt: String
-  totalRedeemedMasset_lt: String
-  totalRedeemedMasset_gte: String
-  totalRedeemedMasset_lte: String
-  totalRedeemedMasset_in: [String!]
-  totalRedeemedMasset_not_in: [String!]
-  totalRedeemedMasset_contains: String
-  totalRedeemedMasset_not_contains: String
-  totalRedeemedMasset_starts_with: String
-  totalRedeemedMasset_not_starts_with: String
-  totalRedeemedMasset_ends_with: String
-  totalRedeemedMasset_not_ends_with: String
-  totalFeesPaid: String
-  totalFeesPaid_not: String
-  totalFeesPaid_gt: String
-  totalFeesPaid_lt: String
-  totalFeesPaid_gte: String
-  totalFeesPaid_lte: String
-  totalFeesPaid_in: [String!]
-  totalFeesPaid_not_in: [String!]
-  totalFeesPaid_contains: String
-  totalFeesPaid_not_contains: String
-  totalFeesPaid_starts_with: String
-  totalFeesPaid_not_starts_with: String
-  totalFeesPaid_ends_with: String
-  totalFeesPaid_not_ends_with: String
+  totalSupply: String
+  totalSupply_not: String
+  totalSupply_gt: String
+  totalSupply_lt: String
+  totalSupply_gte: String
+  totalSupply_lte: String
+  totalSupply_in: [String!]
+  totalSupply_not_in: [String!]
+  totalSupply_contains: String
+  totalSupply_not_contains: String
+  totalSupply_starts_with: String
+  totalSupply_not_starts_with: String
+  totalSupply_ends_with: String
+  totalSupply_not_ends_with: String
+  cumulativeMinted: String
+  cumulativeMinted_not: String
+  cumulativeMinted_gt: String
+  cumulativeMinted_lt: String
+  cumulativeMinted_gte: String
+  cumulativeMinted_lte: String
+  cumulativeMinted_in: [String!]
+  cumulativeMinted_not_in: [String!]
+  cumulativeMinted_contains: String
+  cumulativeMinted_not_contains: String
+  cumulativeMinted_starts_with: String
+  cumulativeMinted_not_starts_with: String
+  cumulativeMinted_ends_with: String
+  cumulativeMinted_not_ends_with: String
+  cumulativeSwapped: String
+  cumulativeSwapped_not: String
+  cumulativeSwapped_gt: String
+  cumulativeSwapped_lt: String
+  cumulativeSwapped_gte: String
+  cumulativeSwapped_lte: String
+  cumulativeSwapped_in: [String!]
+  cumulativeSwapped_not_in: [String!]
+  cumulativeSwapped_contains: String
+  cumulativeSwapped_not_contains: String
+  cumulativeSwapped_starts_with: String
+  cumulativeSwapped_not_starts_with: String
+  cumulativeSwapped_ends_with: String
+  cumulativeSwapped_not_ends_with: String
+  cumulativeRedeemed: String
+  cumulativeRedeemed_not: String
+  cumulativeRedeemed_gt: String
+  cumulativeRedeemed_lt: String
+  cumulativeRedeemed_gte: String
+  cumulativeRedeemed_lte: String
+  cumulativeRedeemed_in: [String!]
+  cumulativeRedeemed_not_in: [String!]
+  cumulativeRedeemed_contains: String
+  cumulativeRedeemed_not_contains: String
+  cumulativeRedeemed_starts_with: String
+  cumulativeRedeemed_not_starts_with: String
+  cumulativeRedeemed_ends_with: String
+  cumulativeRedeemed_not_ends_with: String
+  cumulativeRedeemedMasset: String
+  cumulativeRedeemedMasset_not: String
+  cumulativeRedeemedMasset_gt: String
+  cumulativeRedeemedMasset_lt: String
+  cumulativeRedeemedMasset_gte: String
+  cumulativeRedeemedMasset_lte: String
+  cumulativeRedeemedMasset_in: [String!]
+  cumulativeRedeemedMasset_not_in: [String!]
+  cumulativeRedeemedMasset_contains: String
+  cumulativeRedeemedMasset_not_contains: String
+  cumulativeRedeemedMasset_starts_with: String
+  cumulativeRedeemedMasset_not_starts_with: String
+  cumulativeRedeemedMasset_ends_with: String
+  cumulativeRedeemedMasset_not_ends_with: String
+  cumulativeFeesPaid: String
+  cumulativeFeesPaid_not: String
+  cumulativeFeesPaid_gt: String
+  cumulativeFeesPaid_lt: String
+  cumulativeFeesPaid_gte: String
+  cumulativeFeesPaid_lte: String
+  cumulativeFeesPaid_in: [String!]
+  cumulativeFeesPaid_not_in: [String!]
+  cumulativeFeesPaid_contains: String
+  cumulativeFeesPaid_not_contains: String
+  cumulativeFeesPaid_starts_with: String
+  cumulativeFeesPaid_not_starts_with: String
+  cumulativeFeesPaid_ends_with: String
+  cumulativeFeesPaid_not_ends_with: String
   token: String
   token_not: String
   token_gt: String

@@ -224,14 +224,16 @@ export type Basset = {
   totalSwapsAsOutput: Counter;
   /** Total number of redemption transactions in which the Basset was an output */
   totalRedemptions: Counter;
-  /** Total amount of the Basset that was used in mint transactions as input */
-  totalMinted: Metric;
-  /** Total amount of the Basset that was used in swap transactions as output */
-  totalSwappedAsOutput: Metric;
-  /** Total amount of the Basset that was used in redemption transactions as output (excluding proportional redemption) */
-  totalRedeemed: Metric;
-  /** Total amount of fees paid (e.g. for swaps and redemptions) using this Basset */
-  totalFeesPaid: Metric;
+  /** Total supply of the Basset token */
+  totalSupply: Metric;
+  /** Cumulative amount of the Basset that was used in mint transactions as input */
+  cumulativeMinted: Metric;
+  /** Cumulative amount of the Basset that was used in swap transactions as output */
+  cumulativeSwappedAsOutput: Metric;
+  /** Cumulative amount of the Basset that was used in redemption transactions as output (excluding proportional redemption) */
+  cumulativeRedeemed: Metric;
+  /** Cumulative amount of fees paid (e.g. for swaps and redemptions) using this Basset */
+  cumulativeFeesPaid: Metric;
 };
 
 export type Basset_Filter = {
@@ -361,62 +363,76 @@ export type Basset_Filter = {
   totalRedemptions_not_starts_with?: Maybe<Scalars['String']>;
   totalRedemptions_ends_with?: Maybe<Scalars['String']>;
   totalRedemptions_not_ends_with?: Maybe<Scalars['String']>;
-  totalMinted?: Maybe<Scalars['String']>;
-  totalMinted_not?: Maybe<Scalars['String']>;
-  totalMinted_gt?: Maybe<Scalars['String']>;
-  totalMinted_lt?: Maybe<Scalars['String']>;
-  totalMinted_gte?: Maybe<Scalars['String']>;
-  totalMinted_lte?: Maybe<Scalars['String']>;
-  totalMinted_in?: Maybe<Array<Scalars['String']>>;
-  totalMinted_not_in?: Maybe<Array<Scalars['String']>>;
-  totalMinted_contains?: Maybe<Scalars['String']>;
-  totalMinted_not_contains?: Maybe<Scalars['String']>;
-  totalMinted_starts_with?: Maybe<Scalars['String']>;
-  totalMinted_not_starts_with?: Maybe<Scalars['String']>;
-  totalMinted_ends_with?: Maybe<Scalars['String']>;
-  totalMinted_not_ends_with?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_not?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_gt?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_lt?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_gte?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_lte?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_in?: Maybe<Array<Scalars['String']>>;
-  totalSwappedAsOutput_not_in?: Maybe<Array<Scalars['String']>>;
-  totalSwappedAsOutput_contains?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_not_contains?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_starts_with?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_not_starts_with?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_ends_with?: Maybe<Scalars['String']>;
-  totalSwappedAsOutput_not_ends_with?: Maybe<Scalars['String']>;
-  totalRedeemed?: Maybe<Scalars['String']>;
-  totalRedeemed_not?: Maybe<Scalars['String']>;
-  totalRedeemed_gt?: Maybe<Scalars['String']>;
-  totalRedeemed_lt?: Maybe<Scalars['String']>;
-  totalRedeemed_gte?: Maybe<Scalars['String']>;
-  totalRedeemed_lte?: Maybe<Scalars['String']>;
-  totalRedeemed_in?: Maybe<Array<Scalars['String']>>;
-  totalRedeemed_not_in?: Maybe<Array<Scalars['String']>>;
-  totalRedeemed_contains?: Maybe<Scalars['String']>;
-  totalRedeemed_not_contains?: Maybe<Scalars['String']>;
-  totalRedeemed_starts_with?: Maybe<Scalars['String']>;
-  totalRedeemed_not_starts_with?: Maybe<Scalars['String']>;
-  totalRedeemed_ends_with?: Maybe<Scalars['String']>;
-  totalRedeemed_not_ends_with?: Maybe<Scalars['String']>;
-  totalFeesPaid?: Maybe<Scalars['String']>;
-  totalFeesPaid_not?: Maybe<Scalars['String']>;
-  totalFeesPaid_gt?: Maybe<Scalars['String']>;
-  totalFeesPaid_lt?: Maybe<Scalars['String']>;
-  totalFeesPaid_gte?: Maybe<Scalars['String']>;
-  totalFeesPaid_lte?: Maybe<Scalars['String']>;
-  totalFeesPaid_in?: Maybe<Array<Scalars['String']>>;
-  totalFeesPaid_not_in?: Maybe<Array<Scalars['String']>>;
-  totalFeesPaid_contains?: Maybe<Scalars['String']>;
-  totalFeesPaid_not_contains?: Maybe<Scalars['String']>;
-  totalFeesPaid_starts_with?: Maybe<Scalars['String']>;
-  totalFeesPaid_not_starts_with?: Maybe<Scalars['String']>;
-  totalFeesPaid_ends_with?: Maybe<Scalars['String']>;
-  totalFeesPaid_not_ends_with?: Maybe<Scalars['String']>;
+  totalSupply?: Maybe<Scalars['String']>;
+  totalSupply_not?: Maybe<Scalars['String']>;
+  totalSupply_gt?: Maybe<Scalars['String']>;
+  totalSupply_lt?: Maybe<Scalars['String']>;
+  totalSupply_gte?: Maybe<Scalars['String']>;
+  totalSupply_lte?: Maybe<Scalars['String']>;
+  totalSupply_in?: Maybe<Array<Scalars['String']>>;
+  totalSupply_not_in?: Maybe<Array<Scalars['String']>>;
+  totalSupply_contains?: Maybe<Scalars['String']>;
+  totalSupply_not_contains?: Maybe<Scalars['String']>;
+  totalSupply_starts_with?: Maybe<Scalars['String']>;
+  totalSupply_not_starts_with?: Maybe<Scalars['String']>;
+  totalSupply_ends_with?: Maybe<Scalars['String']>;
+  totalSupply_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeMinted?: Maybe<Scalars['String']>;
+  cumulativeMinted_not?: Maybe<Scalars['String']>;
+  cumulativeMinted_gt?: Maybe<Scalars['String']>;
+  cumulativeMinted_lt?: Maybe<Scalars['String']>;
+  cumulativeMinted_gte?: Maybe<Scalars['String']>;
+  cumulativeMinted_lte?: Maybe<Scalars['String']>;
+  cumulativeMinted_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeMinted_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeMinted_contains?: Maybe<Scalars['String']>;
+  cumulativeMinted_not_contains?: Maybe<Scalars['String']>;
+  cumulativeMinted_starts_with?: Maybe<Scalars['String']>;
+  cumulativeMinted_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeMinted_ends_with?: Maybe<Scalars['String']>;
+  cumulativeMinted_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_not?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_gt?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_lt?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_gte?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_lte?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeSwappedAsOutput_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeSwappedAsOutput_contains?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_not_contains?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_starts_with?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_ends_with?: Maybe<Scalars['String']>;
+  cumulativeSwappedAsOutput_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_gt?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_lt?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_gte?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_lte?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeRedeemed_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeRedeemed_contains?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not_contains?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_starts_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_ends_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_gt?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_lt?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_gte?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_lte?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeFeesPaid_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeFeesPaid_contains?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not_contains?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_starts_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_ends_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not_ends_with?: Maybe<Scalars['String']>;
 };
 
 export enum Basset_OrderBy {
@@ -432,10 +448,11 @@ export enum Basset_OrderBy {
   TotalSwapsAsInput = 'totalSwapsAsInput',
   TotalSwapsAsOutput = 'totalSwapsAsOutput',
   TotalRedemptions = 'totalRedemptions',
-  TotalMinted = 'totalMinted',
-  TotalSwappedAsOutput = 'totalSwappedAsOutput',
-  TotalRedeemed = 'totalRedeemed',
-  TotalFeesPaid = 'totalFeesPaid'
+  TotalSupply = 'totalSupply',
+  CumulativeMinted = 'cumulativeMinted',
+  CumulativeSwappedAsOutput = 'cumulativeSwappedAsOutput',
+  CumulativeRedeemed = 'cumulativeRedeemed',
+  CumulativeFeesPaid = 'cumulativeFeesPaid'
 }
 
 
@@ -639,16 +656,18 @@ export type Masset = {
   totalRedemptions: Counter;
   /** Total number of proportional redemption (i.e. `RedeemMasset`) transactions for this Masset */
   totalRedeemMassets: Counter;
-  /** Total amount of this Masset that has been minted */
-  totalMinted: Metric;
-  /** Total amount of this Masset that has been swapped */
-  totalSwapped: Metric;
-  /** Total amount of this Masset that has been redeemed */
-  totalRedeemed: Metric;
-  /** Total amount of this Masset that has been proportionally redeemed (i.e. `RedeemMasset`) */
-  totalRedeemedMasset: Metric;
-  /** Total amount of fees paid (e.g. for swaps and redemptions) for this Masset */
-  totalFeesPaid: Metric;
+  /** Total supply of the Masset token */
+  totalSupply: Metric;
+  /** Cumulative amount of this Masset that has been minted */
+  cumulativeMinted: Metric;
+  /** Cumulative amount of this Masset that has been swapped */
+  cumulativeSwapped: Metric;
+  /** Cumulative amount of this Masset that has been redeemed */
+  cumulativeRedeemed: Metric;
+  /** Cumulative amount of this Masset that has been proportionally redeemed (i.e. `RedeemMasset`) */
+  cumulativeRedeemedMasset: Metric;
+  /** Cumulative amount of fees paid (e.g. for swaps and redemptions) for this Masset */
+  cumulativeFeesPaid: Metric;
   /** The underlying Token for this Masset */
   token: Token;
   /** All savings Contracts for this Masset */
@@ -838,76 +857,90 @@ export type Masset_Filter = {
   totalRedeemMassets_not_starts_with?: Maybe<Scalars['String']>;
   totalRedeemMassets_ends_with?: Maybe<Scalars['String']>;
   totalRedeemMassets_not_ends_with?: Maybe<Scalars['String']>;
-  totalMinted?: Maybe<Scalars['String']>;
-  totalMinted_not?: Maybe<Scalars['String']>;
-  totalMinted_gt?: Maybe<Scalars['String']>;
-  totalMinted_lt?: Maybe<Scalars['String']>;
-  totalMinted_gte?: Maybe<Scalars['String']>;
-  totalMinted_lte?: Maybe<Scalars['String']>;
-  totalMinted_in?: Maybe<Array<Scalars['String']>>;
-  totalMinted_not_in?: Maybe<Array<Scalars['String']>>;
-  totalMinted_contains?: Maybe<Scalars['String']>;
-  totalMinted_not_contains?: Maybe<Scalars['String']>;
-  totalMinted_starts_with?: Maybe<Scalars['String']>;
-  totalMinted_not_starts_with?: Maybe<Scalars['String']>;
-  totalMinted_ends_with?: Maybe<Scalars['String']>;
-  totalMinted_not_ends_with?: Maybe<Scalars['String']>;
-  totalSwapped?: Maybe<Scalars['String']>;
-  totalSwapped_not?: Maybe<Scalars['String']>;
-  totalSwapped_gt?: Maybe<Scalars['String']>;
-  totalSwapped_lt?: Maybe<Scalars['String']>;
-  totalSwapped_gte?: Maybe<Scalars['String']>;
-  totalSwapped_lte?: Maybe<Scalars['String']>;
-  totalSwapped_in?: Maybe<Array<Scalars['String']>>;
-  totalSwapped_not_in?: Maybe<Array<Scalars['String']>>;
-  totalSwapped_contains?: Maybe<Scalars['String']>;
-  totalSwapped_not_contains?: Maybe<Scalars['String']>;
-  totalSwapped_starts_with?: Maybe<Scalars['String']>;
-  totalSwapped_not_starts_with?: Maybe<Scalars['String']>;
-  totalSwapped_ends_with?: Maybe<Scalars['String']>;
-  totalSwapped_not_ends_with?: Maybe<Scalars['String']>;
-  totalRedeemed?: Maybe<Scalars['String']>;
-  totalRedeemed_not?: Maybe<Scalars['String']>;
-  totalRedeemed_gt?: Maybe<Scalars['String']>;
-  totalRedeemed_lt?: Maybe<Scalars['String']>;
-  totalRedeemed_gte?: Maybe<Scalars['String']>;
-  totalRedeemed_lte?: Maybe<Scalars['String']>;
-  totalRedeemed_in?: Maybe<Array<Scalars['String']>>;
-  totalRedeemed_not_in?: Maybe<Array<Scalars['String']>>;
-  totalRedeemed_contains?: Maybe<Scalars['String']>;
-  totalRedeemed_not_contains?: Maybe<Scalars['String']>;
-  totalRedeemed_starts_with?: Maybe<Scalars['String']>;
-  totalRedeemed_not_starts_with?: Maybe<Scalars['String']>;
-  totalRedeemed_ends_with?: Maybe<Scalars['String']>;
-  totalRedeemed_not_ends_with?: Maybe<Scalars['String']>;
-  totalRedeemedMasset?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_not?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_gt?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_lt?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_gte?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_lte?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_in?: Maybe<Array<Scalars['String']>>;
-  totalRedeemedMasset_not_in?: Maybe<Array<Scalars['String']>>;
-  totalRedeemedMasset_contains?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_not_contains?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_starts_with?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_not_starts_with?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_ends_with?: Maybe<Scalars['String']>;
-  totalRedeemedMasset_not_ends_with?: Maybe<Scalars['String']>;
-  totalFeesPaid?: Maybe<Scalars['String']>;
-  totalFeesPaid_not?: Maybe<Scalars['String']>;
-  totalFeesPaid_gt?: Maybe<Scalars['String']>;
-  totalFeesPaid_lt?: Maybe<Scalars['String']>;
-  totalFeesPaid_gte?: Maybe<Scalars['String']>;
-  totalFeesPaid_lte?: Maybe<Scalars['String']>;
-  totalFeesPaid_in?: Maybe<Array<Scalars['String']>>;
-  totalFeesPaid_not_in?: Maybe<Array<Scalars['String']>>;
-  totalFeesPaid_contains?: Maybe<Scalars['String']>;
-  totalFeesPaid_not_contains?: Maybe<Scalars['String']>;
-  totalFeesPaid_starts_with?: Maybe<Scalars['String']>;
-  totalFeesPaid_not_starts_with?: Maybe<Scalars['String']>;
-  totalFeesPaid_ends_with?: Maybe<Scalars['String']>;
-  totalFeesPaid_not_ends_with?: Maybe<Scalars['String']>;
+  totalSupply?: Maybe<Scalars['String']>;
+  totalSupply_not?: Maybe<Scalars['String']>;
+  totalSupply_gt?: Maybe<Scalars['String']>;
+  totalSupply_lt?: Maybe<Scalars['String']>;
+  totalSupply_gte?: Maybe<Scalars['String']>;
+  totalSupply_lte?: Maybe<Scalars['String']>;
+  totalSupply_in?: Maybe<Array<Scalars['String']>>;
+  totalSupply_not_in?: Maybe<Array<Scalars['String']>>;
+  totalSupply_contains?: Maybe<Scalars['String']>;
+  totalSupply_not_contains?: Maybe<Scalars['String']>;
+  totalSupply_starts_with?: Maybe<Scalars['String']>;
+  totalSupply_not_starts_with?: Maybe<Scalars['String']>;
+  totalSupply_ends_with?: Maybe<Scalars['String']>;
+  totalSupply_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeMinted?: Maybe<Scalars['String']>;
+  cumulativeMinted_not?: Maybe<Scalars['String']>;
+  cumulativeMinted_gt?: Maybe<Scalars['String']>;
+  cumulativeMinted_lt?: Maybe<Scalars['String']>;
+  cumulativeMinted_gte?: Maybe<Scalars['String']>;
+  cumulativeMinted_lte?: Maybe<Scalars['String']>;
+  cumulativeMinted_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeMinted_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeMinted_contains?: Maybe<Scalars['String']>;
+  cumulativeMinted_not_contains?: Maybe<Scalars['String']>;
+  cumulativeMinted_starts_with?: Maybe<Scalars['String']>;
+  cumulativeMinted_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeMinted_ends_with?: Maybe<Scalars['String']>;
+  cumulativeMinted_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeSwapped?: Maybe<Scalars['String']>;
+  cumulativeSwapped_not?: Maybe<Scalars['String']>;
+  cumulativeSwapped_gt?: Maybe<Scalars['String']>;
+  cumulativeSwapped_lt?: Maybe<Scalars['String']>;
+  cumulativeSwapped_gte?: Maybe<Scalars['String']>;
+  cumulativeSwapped_lte?: Maybe<Scalars['String']>;
+  cumulativeSwapped_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeSwapped_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeSwapped_contains?: Maybe<Scalars['String']>;
+  cumulativeSwapped_not_contains?: Maybe<Scalars['String']>;
+  cumulativeSwapped_starts_with?: Maybe<Scalars['String']>;
+  cumulativeSwapped_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeSwapped_ends_with?: Maybe<Scalars['String']>;
+  cumulativeSwapped_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_gt?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_lt?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_gte?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_lte?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeRedeemed_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeRedeemed_contains?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not_contains?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_starts_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_ends_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_not?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_gt?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_lt?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_gte?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_lte?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeRedeemedMasset_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeRedeemedMasset_contains?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_not_contains?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_starts_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_ends_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemedMasset_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_gt?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_lt?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_gte?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_lte?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeFeesPaid_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeFeesPaid_contains?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not_contains?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_starts_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_ends_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not_ends_with?: Maybe<Scalars['String']>;
   token?: Maybe<Scalars['String']>;
   token_not?: Maybe<Scalars['String']>;
   token_gt?: Maybe<Scalars['String']>;
@@ -934,11 +967,12 @@ export enum Masset_OrderBy {
   TotalSwaps = 'totalSwaps',
   TotalRedemptions = 'totalRedemptions',
   TotalRedeemMassets = 'totalRedeemMassets',
-  TotalMinted = 'totalMinted',
-  TotalSwapped = 'totalSwapped',
-  TotalRedeemed = 'totalRedeemed',
-  TotalRedeemedMasset = 'totalRedeemedMasset',
-  TotalFeesPaid = 'totalFeesPaid',
+  TotalSupply = 'totalSupply',
+  CumulativeMinted = 'cumulativeMinted',
+  CumulativeSwapped = 'cumulativeSwapped',
+  CumulativeRedeemed = 'cumulativeRedeemed',
+  CumulativeRedeemedMasset = 'cumulativeRedeemedMasset',
+  CumulativeFeesPaid = 'cumulativeFeesPaid',
   Token = 'token',
   SavingsContracts = 'savingsContracts',
   SwapTransactions = 'swapTransactions',
@@ -1916,19 +1950,19 @@ export type SavingsContract = {
   totalSavings: Metric;
   /** Total number of savings credits issued */
   totalCredits: Metric;
-  /** The total amount of deposits */
-  totalDeposited: Metric;
   /** The total number of deposits made */
   totalDeposits: Counter;
   /** The total number of withdrawals made */
   totalWithdrawals: Counter;
+  /** The cumulative amount of savings deposited */
+  cumulativeDeposited: Metric;
+  /** The cumulative amount of savings withdrawn */
+  cumulativeWithdrawn: Metric;
   /**
    * The daily APY value; this is derived from the `ExchangeRate` closest to 24h ago from the last-received
    * `ExchangeRate`, and will change whenever a new `ExchangeRate` is created.
    */
   dailyAPY: Metric;
-  /** The amount of collected interest that will be sent to the Savings Contract */
-  savingsRate: Metric;
   /**
    * The share of the Masset that is deposited in the Savings Contract; a rate of 100% would mean all of the
    * Masset being deposited in the Savings Contract.
@@ -2040,20 +2074,6 @@ export type SavingsContract_Filter = {
   totalCredits_not_starts_with?: Maybe<Scalars['String']>;
   totalCredits_ends_with?: Maybe<Scalars['String']>;
   totalCredits_not_ends_with?: Maybe<Scalars['String']>;
-  totalDeposited?: Maybe<Scalars['String']>;
-  totalDeposited_not?: Maybe<Scalars['String']>;
-  totalDeposited_gt?: Maybe<Scalars['String']>;
-  totalDeposited_lt?: Maybe<Scalars['String']>;
-  totalDeposited_gte?: Maybe<Scalars['String']>;
-  totalDeposited_lte?: Maybe<Scalars['String']>;
-  totalDeposited_in?: Maybe<Array<Scalars['String']>>;
-  totalDeposited_not_in?: Maybe<Array<Scalars['String']>>;
-  totalDeposited_contains?: Maybe<Scalars['String']>;
-  totalDeposited_not_contains?: Maybe<Scalars['String']>;
-  totalDeposited_starts_with?: Maybe<Scalars['String']>;
-  totalDeposited_not_starts_with?: Maybe<Scalars['String']>;
-  totalDeposited_ends_with?: Maybe<Scalars['String']>;
-  totalDeposited_not_ends_with?: Maybe<Scalars['String']>;
   totalDeposits?: Maybe<Scalars['String']>;
   totalDeposits_not?: Maybe<Scalars['String']>;
   totalDeposits_gt?: Maybe<Scalars['String']>;
@@ -2082,6 +2102,34 @@ export type SavingsContract_Filter = {
   totalWithdrawals_not_starts_with?: Maybe<Scalars['String']>;
   totalWithdrawals_ends_with?: Maybe<Scalars['String']>;
   totalWithdrawals_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeDeposited?: Maybe<Scalars['String']>;
+  cumulativeDeposited_not?: Maybe<Scalars['String']>;
+  cumulativeDeposited_gt?: Maybe<Scalars['String']>;
+  cumulativeDeposited_lt?: Maybe<Scalars['String']>;
+  cumulativeDeposited_gte?: Maybe<Scalars['String']>;
+  cumulativeDeposited_lte?: Maybe<Scalars['String']>;
+  cumulativeDeposited_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeDeposited_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeDeposited_contains?: Maybe<Scalars['String']>;
+  cumulativeDeposited_not_contains?: Maybe<Scalars['String']>;
+  cumulativeDeposited_starts_with?: Maybe<Scalars['String']>;
+  cumulativeDeposited_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeDeposited_ends_with?: Maybe<Scalars['String']>;
+  cumulativeDeposited_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_not?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_gt?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_lt?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_gte?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_lte?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeWithdrawn_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeWithdrawn_contains?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_not_contains?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_starts_with?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_ends_with?: Maybe<Scalars['String']>;
+  cumulativeWithdrawn_not_ends_with?: Maybe<Scalars['String']>;
   dailyAPY?: Maybe<Scalars['String']>;
   dailyAPY_not?: Maybe<Scalars['String']>;
   dailyAPY_gt?: Maybe<Scalars['String']>;
@@ -2096,20 +2144,6 @@ export type SavingsContract_Filter = {
   dailyAPY_not_starts_with?: Maybe<Scalars['String']>;
   dailyAPY_ends_with?: Maybe<Scalars['String']>;
   dailyAPY_not_ends_with?: Maybe<Scalars['String']>;
-  savingsRate?: Maybe<Scalars['String']>;
-  savingsRate_not?: Maybe<Scalars['String']>;
-  savingsRate_gt?: Maybe<Scalars['String']>;
-  savingsRate_lt?: Maybe<Scalars['String']>;
-  savingsRate_gte?: Maybe<Scalars['String']>;
-  savingsRate_lte?: Maybe<Scalars['String']>;
-  savingsRate_in?: Maybe<Array<Scalars['String']>>;
-  savingsRate_not_in?: Maybe<Array<Scalars['String']>>;
-  savingsRate_contains?: Maybe<Scalars['String']>;
-  savingsRate_not_contains?: Maybe<Scalars['String']>;
-  savingsRate_starts_with?: Maybe<Scalars['String']>;
-  savingsRate_not_starts_with?: Maybe<Scalars['String']>;
-  savingsRate_ends_with?: Maybe<Scalars['String']>;
-  savingsRate_not_ends_with?: Maybe<Scalars['String']>;
   utilisationRate?: Maybe<Scalars['String']>;
   utilisationRate_not?: Maybe<Scalars['String']>;
   utilisationRate_gt?: Maybe<Scalars['String']>;
@@ -2163,11 +2197,11 @@ export enum SavingsContract_OrderBy {
   Masset = 'masset',
   TotalSavings = 'totalSavings',
   TotalCredits = 'totalCredits',
-  TotalDeposited = 'totalDeposited',
   TotalDeposits = 'totalDeposits',
   TotalWithdrawals = 'totalWithdrawals',
+  CumulativeDeposited = 'cumulativeDeposited',
+  CumulativeWithdrawn = 'cumulativeWithdrawn',
   DailyApy = 'dailyAPY',
-  SavingsRate = 'savingsRate',
   UtilisationRate = 'utilisationRate',
   AutomationEnabled = 'automationEnabled',
   LatestExchangeRate = 'latestExchangeRate',
@@ -2840,7 +2874,7 @@ export type Token = {
   /** Total quantity of tokens minted */
   totalMinted: Metric;
   /** Count of transfer transactions */
-  transfers: Counter;
+  totalTransfers: Counter;
   /** Count of transfer transactions that minted the token */
   totalMints: Counter;
   /** Count of transfer transactions that burned the token */
@@ -2940,20 +2974,20 @@ export type Token_Filter = {
   totalMinted_not_starts_with?: Maybe<Scalars['String']>;
   totalMinted_ends_with?: Maybe<Scalars['String']>;
   totalMinted_not_ends_with?: Maybe<Scalars['String']>;
-  transfers?: Maybe<Scalars['String']>;
-  transfers_not?: Maybe<Scalars['String']>;
-  transfers_gt?: Maybe<Scalars['String']>;
-  transfers_lt?: Maybe<Scalars['String']>;
-  transfers_gte?: Maybe<Scalars['String']>;
-  transfers_lte?: Maybe<Scalars['String']>;
-  transfers_in?: Maybe<Array<Scalars['String']>>;
-  transfers_not_in?: Maybe<Array<Scalars['String']>>;
-  transfers_contains?: Maybe<Scalars['String']>;
-  transfers_not_contains?: Maybe<Scalars['String']>;
-  transfers_starts_with?: Maybe<Scalars['String']>;
-  transfers_not_starts_with?: Maybe<Scalars['String']>;
-  transfers_ends_with?: Maybe<Scalars['String']>;
-  transfers_not_ends_with?: Maybe<Scalars['String']>;
+  totalTransfers?: Maybe<Scalars['String']>;
+  totalTransfers_not?: Maybe<Scalars['String']>;
+  totalTransfers_gt?: Maybe<Scalars['String']>;
+  totalTransfers_lt?: Maybe<Scalars['String']>;
+  totalTransfers_gte?: Maybe<Scalars['String']>;
+  totalTransfers_lte?: Maybe<Scalars['String']>;
+  totalTransfers_in?: Maybe<Array<Scalars['String']>>;
+  totalTransfers_not_in?: Maybe<Array<Scalars['String']>>;
+  totalTransfers_contains?: Maybe<Scalars['String']>;
+  totalTransfers_not_contains?: Maybe<Scalars['String']>;
+  totalTransfers_starts_with?: Maybe<Scalars['String']>;
+  totalTransfers_not_starts_with?: Maybe<Scalars['String']>;
+  totalTransfers_ends_with?: Maybe<Scalars['String']>;
+  totalTransfers_not_ends_with?: Maybe<Scalars['String']>;
   totalMints?: Maybe<Scalars['String']>;
   totalMints_not?: Maybe<Scalars['String']>;
   totalMints_gt?: Maybe<Scalars['String']>;
@@ -2993,7 +3027,7 @@ export enum Token_OrderBy {
   TotalSupply = 'totalSupply',
   TotalBurned = 'totalBurned',
   TotalMinted = 'totalMinted',
-  Transfers = 'transfers',
+  TotalTransfers = 'totalTransfers',
   TotalMints = 'totalMints',
   TotalBurns = 'totalBurns'
 }
@@ -3150,7 +3184,7 @@ export type SavingsContractQueryVariables = {
 
 export type SavingsContractQuery = { savingsContracts: Array<(
     Pick<SavingsContract, 'id' | 'automationEnabled'>
-    & { totalSavings: MetricFieldsFragment, totalCredits: MetricFieldsFragment, exchangeRates: Array<Pick<ExchangeRate, 'id'>>, savingsRate: MetricFieldsFragment }
+    & { totalSavings: MetricFieldsFragment, totalCredits: MetricFieldsFragment, exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
   )> };
 
 export type TokenQueryVariables = {
@@ -3491,9 +3525,6 @@ export const SavingsContractDocument = gql`
     }
     exchangeRates {
       id
-    }
-    savingsRate {
-      ...MetricFields
     }
     automationEnabled
   }

@@ -132,9 +132,6 @@ query SavingsContract($id: ID!) @api(name: protocol) {
     exchangeRates {
       id
     }
-    savingsRate {
-      ...MetricFields
-    }
     automationEnabled
   }
 }
