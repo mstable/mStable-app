@@ -27,7 +27,7 @@ const Tx: FC<{
   );
 };
 
-export const HistoricTransactions: FC<{ account?: string }> = ({ account }) => {
+export const HistoricTransactions: FC<{ account: string }> = ({ account }) => {
   const historicTxsQuery = useHistoricTransactionsQuery({
     variables: {
       account: account as string,
@@ -46,7 +46,7 @@ export const HistoricTransactions: FC<{ account?: string }> = ({ account }) => {
       ) : (
         <List>
           {transformedData.map(tx => (
-            <ListItem key={tx.hash}>
+            <ListItem key={tx.id}>
               <Tx tx={tx} />
             </ListItem>
           ))}

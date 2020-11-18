@@ -9,4 +9,5 @@ export interface HistoricTransaction {
   description: string;
   timestamp: number;
   formattedDate: string;
+  id: string;
 }
