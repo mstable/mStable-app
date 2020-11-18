@@ -20,7 +20,7 @@ import { useAddErrorNotification } from '../NotificationsProvider';
 
 const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
 
-const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}`;
+const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}.v2`;
 
 const ENDPOINTS = {
   legacy: process.env.REACT_APP_GRAPHQL_ENDPOINT_LEGACY as string,
