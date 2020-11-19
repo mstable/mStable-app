@@ -98,10 +98,8 @@ export const main = async () => {
 
   const files = await outputJsonReport({
     dirName: 'vault-breakdown',
-    fullOutputReportFileName: `${startTime}-${endTime}`,
-    simpleOutputReportFileName: `${startTime}-${endTime}`,
-    fullOutputReport: balances,
-    simpleOutputReport: balances,
+    fileName: `${startTime}-${endTime}`,
+    data: balances,
   });
 
   console.log(`Created files: ${files}`);
