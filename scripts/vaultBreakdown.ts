@@ -96,11 +96,13 @@ export const main = async () => {
   const startTime = balances.dates[0].getTime();
   const endTime = balances.dates[balances.dates.length - 1].getTime();
 
-  const file = await outputJsonReport({
+  const files = await outputJsonReport({
     dirName: 'vault-breakdown',
-    fileName: `${startTime}-${endTime}`,
-    data: balances,
+    fullOutputReportFileName: `${startTime}-${endTime}`,
+    simpleOutputReportFileName: `${startTime}-${endTime}`,
+    fullOutputReport: balances,
+    simpleOutputReport: balances,
   });
 
-  console.log(`Created file: ${file}`);
+  console.log(`Created files: ${files}`);
 };
