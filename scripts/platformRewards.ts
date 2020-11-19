@@ -15,7 +15,6 @@
  *   --startBlock=11223303 \
  *   --startTimestamp=1604924998 \
  *   --token=0xba100000625a3754423978a60c9317c58a424e3d \
- *   --fullOutput \
  *   --allocations \
  *   0x881c72d1e6317f10a1cdcbe05040e7564e790c80,477.536505404832853905 \
  *   0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,3345.724088613123102064 \
@@ -64,14 +63,14 @@
 import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
 import { options } from 'yargs';
 
+import { getMerkleRootHash } from './merkleRootHash';
 import './utils/init';
 import { getApolloClient } from './utils/getApolloClient';
-import { outputJsonReport, JsonReport } from './utils/outputJsonReport';
+import { outputJsonReport } from './utils/outputJsonReport';
 import { fetchAllData } from './utils/fetchAllData';
 import {
   ScriptRewardsDocument,
   ScriptRewardsQueryResult,
-  ScriptRewardsQueryVariables,
 } from '../src/graphql/legacy';
 import { SCALE } from '../src/web3/constants';
 import {
@@ -156,6 +155,16 @@ interface Pools {
   [poolAddress: string]: Pool;
 }
 
+interface ReportData {
+  tranche: Tranche;
+  token: TokenMetadata;
+  dirName: string;
+  fullOutputReportFileName: string;
+  simpleOutputReportFileName: string;
+  fullOutputReport: PlatformEarningsReport;
+  simpleOutputReport: PlatformEarningsReport['rewards'];
+}
+
 const TOKENS_METADATA: {
   [tokenAddress: string]: TokenMetadata;
 } = {
@@ -175,7 +184,6 @@ const parseArgs = async (): Promise<ValidatedArgs> => {
     startBlock: { type: 'number', demandOption: true },
     startTimestamp: { type: 'number', demandOption: true },
     trancheNumber: { type: 'number', demandOption: true },
-    // fullOutput: { type: 'boolean' },
   });
 
   if (startTimestamp.toString().length !== 10) {
@@ -551,7 +559,7 @@ const getPlatformEarnings = (
   };
 };
 
-const getPlatformEarningsReport = ({
+const getReportData = ({
   args: { tranche, token },
   platformEarnings: { totalEarnedForAllStakers, totalEarnedPerStaker },
   mtaEarningsAndShares: {
@@ -564,16 +572,7 @@ const getPlatformEarningsReport = ({
   args: ValidatedArgs;
   platformEarnings: PlatformEarnings;
   mtaEarningsAndShares: MtaEarningsAndShares;
-}): {
-  dirName: string;
-  fullOutputReportFileName: string;
-  simpleOutputReportFileName: string;
-  fullOutputReport: object;
-  simpleOutputReport: object;
-} => {
-  let fullOutputReport: PlatformEarningsReport;
-  let simpleOutputReport: PlatformEarningsReport['rewards'];
-
+}): ReportData => {
   const rewards = Object.fromEntries(
     Object.entries(totalEarnedPerStaker)
       .sort(([, a], [, b]) => (b.gt(a) ? 1 : -1))
@@ -583,7 +582,7 @@ const getPlatformEarningsReport = ({
       ]),
   );
 
-  fullOutputReport = {
+  const fullOutputReport: PlatformEarningsReport = {
     tranche,
     tokenAddress: token.address,
     totalRewards: formatUnits(totalEarnedForAllStakers, token.decimals),
@@ -619,20 +618,21 @@ const getPlatformEarningsReport = ({
       ),
     },
   };
-  simpleOutputReport = rewards;
 
   return {
+    tranche,
+    token,
     dirName: `tranches/${tranche.number}`,
     fullOutputReportFileName: `${token.address}${
       fullOutputReport ? '-full' : ''
     }`,
-    simpleOutputReportFileName: `${token.address}`,
     fullOutputReport,
-    simpleOutputReport,
+    simpleOutputReportFileName: token.address,
+    simpleOutputReport: fullOutputReport.rewards,
   };
 };
 
-export const generateReport = async (): Promise<JsonReport> => {
+export const generateReportData = async (): Promise<ReportData> => {
   const args = await mod.parseArgs();
   const { tranche, allocations, poolAddresses } = args;
 
@@ -646,7 +646,7 @@ export const generateReport = async (): Promise<JsonReport> => {
     mtaEarningsAndShares,
   );
 
-  return getPlatformEarningsReport({
+  return getReportData({
     args,
     platformEarnings,
     mtaEarningsAndShares,
@@ -654,11 +654,32 @@ export const generateReport = async (): Promise<JsonReport> => {
 };
 
 export const main = async () => {
-  const report = await generateReport();
+  const {
+    dirName,
+    fullOutputReport,
+    fullOutputReportFileName,
+    simpleOutputReport,
+    simpleOutputReportFileName,
+    token,
+    tranche,
+  } = await generateReportData();
 
-  const files = await outputJsonReport(report);
+  const fullReport = await outputJsonReport({
+    dirName,
+    data: fullOutputReport,
+    fileName: fullOutputReportFileName,
+  });
+  const simpleReport = await outputJsonReport({
+    dirName,
+    data: simpleOutputReport,
+    fileName: simpleOutputReportFileName,
+  });
 
-  console.log(`Created files: ${files}`);
+  console.log('---');
+  console.log(`Created files:\n\n${[fullReport, simpleReport].join('\n')}`);
+  console.log('---');
+
+  await getMerkleRootHash(tranche.number, token.address);
 };
 
 // For testing purposes
