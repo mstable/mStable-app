@@ -111,7 +111,6 @@ interface ValidatedArgs {
   allocations: AddressBnMap;
   poolAddresses: string[];
   tranche: Tranche;
-  fullOutput: boolean;
 }
 
 interface PlatformEarnings {
@@ -169,21 +168,14 @@ const TOKENS_METADATA: {
 
 const parseArgs = async (): Promise<ValidatedArgs> => {
   const {
-    argv: {
-      startBlock,
-      startTimestamp,
-      trancheNumber,
-      token,
-      allocations,
-      fullOutput,
-    },
+    argv: { startBlock, startTimestamp, trancheNumber, token, allocations },
   } = options({
     token: { type: 'string', demandOption: true },
     allocations: { type: 'array', demandOption: true },
     startBlock: { type: 'number', demandOption: true },
     startTimestamp: { type: 'number', demandOption: true },
     trancheNumber: { type: 'number', demandOption: true },
-    fullOutput: { type: 'boolean' },
+    // fullOutput: { type: 'boolean' },
   });
 
   if (startTimestamp.toString().length !== 10) {
@@ -242,7 +234,6 @@ const parseArgs = async (): Promise<ValidatedArgs> => {
         timestamp: parseInt(endBlock.timestamp),
       },
     },
-    fullOutput: !!fullOutput,
   };
 
   console.log(
@@ -561,7 +552,7 @@ const getPlatformEarnings = (
 };
 
 const getPlatformEarningsReport = ({
-  args: { tranche, token, fullOutput },
+  args: { tranche, token },
   platformEarnings: { totalEarnedForAllStakers, totalEarnedPerStaker },
   mtaEarningsAndShares: {
     // sharesPerPool,
@@ -573,8 +564,15 @@ const getPlatformEarningsReport = ({
   args: ValidatedArgs;
   platformEarnings: PlatformEarnings;
   mtaEarningsAndShares: MtaEarningsAndShares;
-}): { dirName: string; fileName: string; data: object } => {
-  let data: PlatformEarningsReport | PlatformEarningsReport['rewards'];
+}): {
+  dirName: string;
+  fullOutputReportFileName: string;
+  simpleOutputReportFileName: string;
+  fullOutputReport: object;
+  simpleOutputReport: object;
+} => {
+  let fullOutputReport: PlatformEarningsReport;
+  let simpleOutputReport: PlatformEarningsReport['rewards'];
 
   const rewards = Object.fromEntries(
     Object.entries(totalEarnedPerStaker)
@@ -585,54 +583,52 @@ const getPlatformEarningsReport = ({
       ]),
   );
 
-  if (fullOutput) {
-    data = {
-      tranche,
-      tokenAddress: token.address,
-      totalRewards: formatUnits(totalEarnedForAllStakers, token.decimals),
-      rewards,
-      mtaEarnings: {
-        mtaEarningsPerStakerPerPool: Object.fromEntries(
-          Object.keys(mtaEarningsPerStakerPerPool)
-            .sort()
-            .map(poolAddress => {
-              const earnings = Object.fromEntries(
-                Object.entries(mtaEarningsPerStakerPerPool[poolAddress])
-                  .sort(([, a], [, b]) => (b.gt(a) ? 1 : -1))
-                  .map(([account, amount]) => [
-                    account,
-                    formatUnits(amount, 18),
-                  ]),
-              );
-              return [poolAddress, earnings];
-            }),
-        ),
-        totalMtaEarningsPerPoolAtEnd: Object.fromEntries(
-          Object.keys(totalMtaEarningsPerPoolAtEnd)
-            .sort()
-            .map(poolAddress => [
-              poolAddress,
-              formatUnits(totalMtaEarningsPerPoolAtEnd[poolAddress], 18),
-            ]),
-        ),
-        totalMtaEarningsPerPoolAtStart: Object.fromEntries(
-          Object.keys(totalMtaEarningsPerPoolAtStart)
-            .sort()
-            .map(poolAddress => [
-              poolAddress,
-              formatUnits(totalMtaEarningsPerPoolAtStart[poolAddress], 18),
-            ]),
-        ),
-      },
-    };
-  } else {
-    data = rewards;
-  }
+  fullOutputReport = {
+    tranche,
+    tokenAddress: token.address,
+    totalRewards: formatUnits(totalEarnedForAllStakers, token.decimals),
+    rewards,
+    mtaEarnings: {
+      mtaEarningsPerStakerPerPool: Object.fromEntries(
+        Object.keys(mtaEarningsPerStakerPerPool)
+          .sort()
+          .map(poolAddress => {
+            const earnings = Object.fromEntries(
+              Object.entries(mtaEarningsPerStakerPerPool[poolAddress])
+                .sort(([, a], [, b]) => (b.gt(a) ? 1 : -1))
+                .map(([account, amount]) => [account, formatUnits(amount, 18)]),
+            );
+            return [poolAddress, earnings];
+          }),
+      ),
+      totalMtaEarningsPerPoolAtEnd: Object.fromEntries(
+        Object.keys(totalMtaEarningsPerPoolAtEnd)
+          .sort()
+          .map(poolAddress => [
+            poolAddress,
+            formatUnits(totalMtaEarningsPerPoolAtEnd[poolAddress], 18),
+          ]),
+      ),
+      totalMtaEarningsPerPoolAtStart: Object.fromEntries(
+        Object.keys(totalMtaEarningsPerPoolAtStart)
+          .sort()
+          .map(poolAddress => [
+            poolAddress,
+            formatUnits(totalMtaEarningsPerPoolAtStart[poolAddress], 18),
+          ]),
+      ),
+    },
+  };
+  simpleOutputReport = rewards;
 
   return {
     dirName: `tranches/${tranche.number}`,
-    fileName: `${token.address}${fullOutput ? '-full' : ''}`,
-    data,
+    fullOutputReportFileName: `${token.address}${
+      fullOutputReport ? '-full' : ''
+    }`,
+    simpleOutputReportFileName: `${token.address}`,
+    fullOutputReport,
+    simpleOutputReport,
   };
 };
 
@@ -660,9 +656,9 @@ export const generateReport = async (): Promise<JsonReport> => {
 export const main = async () => {
   const report = await generateReport();
 
-  const file = await outputJsonReport(report);
+  const files = await outputJsonReport(report);
 
-  console.log(`Created file: ${file}`);
+  console.log(`Created files: ${files}`);
 };
 
 // For testing purposes
