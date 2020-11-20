@@ -7,7 +7,6 @@ import {
   generateReportData,
   PlatformEarningsReport,
 } from '../../scripts/platformRewards';
-import { JsonReport } from '../../scripts/utils/outputJsonReport';
 
 describe('platformRewards', () => {
   const acct1 = {
