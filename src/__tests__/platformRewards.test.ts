@@ -4,9 +4,10 @@ import { parseUnits } from 'ethers/utils';
 
 import {
   mod,
-  generateReport,
+  generateReportData,
   PlatformEarningsReport,
 } from '../../scripts/platformRewards';
+import { JsonReport } from '../../scripts/utils/outputJsonReport';
 
 describe('platformRewards', () => {
   const acct1 = {
@@ -232,9 +233,9 @@ describe('platformRewards', () => {
     jest.spyOn(mod, 'parseArgs').mockImplementation(async () => args);
 
     const {
-      data: { mtaEarnings, rewards, totalRewards },
-    } = (await generateReport()) as {
-      data: PlatformEarningsReport;
+      fullOutputReport: { mtaEarnings, rewards, totalRewards },
+    } = (await generateReportData()) as {
+      fullOutputReport: PlatformEarningsReport;
     };
 
     expect(totalRewards).toEqual('1000.0');
@@ -263,9 +264,9 @@ describe('platformRewards', () => {
     mockFetchAllData(DATA.twoStakers);
 
     const {
-      data: { mtaEarnings, rewards },
-    } = (await generateReport()) as {
-      data: PlatformEarningsReport;
+      fullOutputReport: { mtaEarnings, rewards },
+    } = (await generateReportData()) as {
+      fullOutputReport: PlatformEarningsReport;
     };
 
     // Two stakers
