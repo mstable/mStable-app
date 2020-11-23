@@ -13,7 +13,9 @@ import {
   startOfDay,
   getUnixTime,
   eachDayOfInterval,
+  eachHourOfInterval,
 } from 'date-fns';
+import { zonedTimeToUtc } from 'date-fns-tz';
 import { useQuery, gql, DocumentNode } from '@apollo/client';
 import { useDailyApysForPastWeek } from '../../web3/hooks';
 import { Color } from '../../theme';
@@ -32,6 +34,11 @@ type BlocksData = {
   [timestamp: string]: [{ number: number }];
 };
 
+interface ApyResults {
+  __typename: string;
+  dailyAPY: string;
+}
+
 const getBlockTimestampsDocument = (dates: Date[]): DocumentNode => {
   return gql`query BlockTimestamps @api(name: blocks) {
       ${dates
@@ -46,6 +53,17 @@ const getBlockTimestampsDocument = (dates: Date[]): DocumentNode => {
 };
 
 const getApysDocument = (data?: BlocksData): DocumentNode => {
+  if (!data) {
+    return gql`
+      query DailyApys @api(name: protocol) {
+        current: savingsContract(
+          id: "0xcf3f73290803fc04425bee135a4caeb2bab2c2a1"
+        ) {
+          dailyAPY
+        }
+      }
+    `;
+  }
   return gql`query DailyApys @api(name: protocol) {
           ${Object.keys(data ?? {})
             .map(
@@ -73,31 +91,50 @@ const dateFilter = {
   end: endOfDay(subDays(now, 1)),
 };
 
+const nowUtc = new Date(now.toUTCString().slice(0, -4));
+
 const timestamps = eachDayOfInterval({
-  start: endOfDay(subDays(now, 7)),
-  end: endOfDay(now),
+  start: subDays(now, 7),
+  end: subDays(now, 1),
+});
+
+const transformedTimestamps = timestamps.map(timestamp => {
+  return endOfDay(timestamp);
 });
 
 export const DailyApys: FC<{}> = () => {
   const dailyApys = useDailyApysForPastWeek(getUnixTime(from));
   const currentAPY = useGetCurrentAPY();
-  const blocksDoc = getBlockTimestampsDocument(timestamps);
+  const blocksDoc = getBlockTimestampsDocument(transformedTimestamps);
   const queryResult = useQuery(blocksDoc);
   const apysDoc = useMemo(() => getApysDocument(queryResult.data), [
     queryResult.data,
   ]);
-  const apysQuery = useQuery(apysDoc);
+  const apysQuery = useQuery(apysDoc as DocumentNode, {
+    skip: !queryResult.data,
+  });
+
+  const transformedData =
+    apysQuery.data &&
+    Object.entries(apysQuery.data).map(([key, value]) => {
+      const [, timestamp] = key.split('t');
+      return {
+        timestamp,
+        apyResults: value as ApyResults,
+      };
+    });
 
   const tickValues = useDateFilterTickValues(dateFilter);
   const tickFormat = useDateFilterTickFormat(dateFilter);
   const victoryTheme = useVictoryTheme();
   const data = useMemo<{ x: Date; y: number }[]>(
     () =>
-      dailyApys
-        .filter(a => a.value && a.start)
-        .map(({ value, start }) => {
-          const percentage = parseFloat(formatUnits(value as BigNumber, 16));
-          const startTime = fromUnixTime(start as number);
+      transformedData &&
+      transformedData
+        .filter(a => a.timestamp && a.apyResults)
+        .map(({ timestamp, apyResults }) => {
+          const percentage = parseFloat(apyResults.dailyAPY);
+          const startTime = fromUnixTime(parseInt(timestamp, 10));
           return {
             x: startOfDay(startTime),
             y: percentage,
@@ -105,11 +142,11 @@ export const DailyApys: FC<{}> = () => {
           };
         }),
 
-    [dailyApys],
+    [transformedData],
   );
   return (
     <div>
-      {data.length ? (
+      {data && data.length ? (
         <VictoryChart
           theme={victoryTheme}
           height={200}
