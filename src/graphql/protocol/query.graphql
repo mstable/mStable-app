@@ -132,6 +132,7 @@ query SavingsContract($id: ID!) @api(name: protocol) {
     exchangeRates {
       id
     }
+    dailyAPY
     automationEnabled
   }
 }
