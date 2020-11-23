@@ -101,3 +101,7 @@ export const useTotalSavings = (): BigDecimal | undefined =>
 
 export const useBassetState = (address: string): BassetState | undefined =>
   useDataState()?.bAssets[address];
+
+export const useGetCurrentAPY = ():
+  | SavingsContractState['dailyAPY']
+  | undefined => useSavingsContractData()?.dailyAPY;
