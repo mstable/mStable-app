@@ -1129,20 +1129,14 @@ input SavingsContract_filter {
   cumulativeWithdrawn_not_starts_with: String
   cumulativeWithdrawn_ends_with: String
   cumulativeWithdrawn_not_ends_with: String
-  dailyAPY: String
-  dailyAPY_not: String
-  dailyAPY_gt: String
-  dailyAPY_lt: String
-  dailyAPY_gte: String
-  dailyAPY_lte: String
-  dailyAPY_in: [String!]
-  dailyAPY_not_in: [String!]
-  dailyAPY_contains: String
-  dailyAPY_not_contains: String
-  dailyAPY_starts_with: String
-  dailyAPY_not_starts_with: String
-  dailyAPY_ends_with: String
-  dailyAPY_not_ends_with: String
+  dailyAPY: BigDecimal
+  dailyAPY_not: BigDecimal
+  dailyAPY_gt: BigDecimal
+  dailyAPY_lt: BigDecimal
+  dailyAPY_gte: BigDecimal
+  dailyAPY_lte: BigDecimal
+  dailyAPY_in: [BigDecimal!]
+  dailyAPY_not_in: [BigDecimal!]
   utilisationRate: String
   utilisationRate_not: String
   utilisationRate_gt: String
@@ -1211,7 +1205,7 @@ type SavingsContract {
   The daily APY value; this is derived from the `ExchangeRate` closest to 24h ago from the last-received
   `ExchangeRate`, and will change whenever a new `ExchangeRate` is created.
   """
-  dailyAPY: Metric!
+  dailyAPY: BigDecimal!
   """
   The share of the Masset that is deposited in the Savings Contract; a rate of 100% would mean all of the
   Masset being deposited in the Savings Contract.

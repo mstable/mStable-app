@@ -96,6 +96,7 @@ export interface SavingsContractState {
     balance?: BigDecimal;
     credits?: BigDecimal;
   };
+  dailyAPY: number;
 }
 
 export interface DataState {

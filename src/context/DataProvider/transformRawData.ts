@@ -70,6 +70,7 @@ const getSavingsContract: TransformFn<'savingsContract'> = (
   totalCredits: BigDecimal.fromMetric(savingsContractData.totalCredits),
   totalSavings: BigDecimal.fromMetric(savingsContractData.totalSavings),
   savingsBalance: {},
+  dailyAPY: parseFloat(savingsContractData.dailyAPY),
 });
 
 const getBassetsState: TransformFn<'bAssets'> = (

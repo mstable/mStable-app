@@ -1962,7 +1962,7 @@ export type SavingsContract = {
    * The daily APY value; this is derived from the `ExchangeRate` closest to 24h ago from the last-received
    * `ExchangeRate`, and will change whenever a new `ExchangeRate` is created.
    */
-  dailyAPY: Metric;
+  dailyAPY: Scalars['BigDecimal'];
   /**
    * The share of the Masset that is deposited in the Savings Contract; a rate of 100% would mean all of the
    * Masset being deposited in the Savings Contract.
@@ -2130,20 +2130,14 @@ export type SavingsContract_Filter = {
   cumulativeWithdrawn_not_starts_with?: Maybe<Scalars['String']>;
   cumulativeWithdrawn_ends_with?: Maybe<Scalars['String']>;
   cumulativeWithdrawn_not_ends_with?: Maybe<Scalars['String']>;
-  dailyAPY?: Maybe<Scalars['String']>;
-  dailyAPY_not?: Maybe<Scalars['String']>;
-  dailyAPY_gt?: Maybe<Scalars['String']>;
-  dailyAPY_lt?: Maybe<Scalars['String']>;
-  dailyAPY_gte?: Maybe<Scalars['String']>;
-  dailyAPY_lte?: Maybe<Scalars['String']>;
-  dailyAPY_in?: Maybe<Array<Scalars['String']>>;
-  dailyAPY_not_in?: Maybe<Array<Scalars['String']>>;
-  dailyAPY_contains?: Maybe<Scalars['String']>;
-  dailyAPY_not_contains?: Maybe<Scalars['String']>;
-  dailyAPY_starts_with?: Maybe<Scalars['String']>;
-  dailyAPY_not_starts_with?: Maybe<Scalars['String']>;
-  dailyAPY_ends_with?: Maybe<Scalars['String']>;
-  dailyAPY_not_ends_with?: Maybe<Scalars['String']>;
+  dailyAPY?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_not?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_gt?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_lt?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_gte?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_lte?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  dailyAPY_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   utilisationRate?: Maybe<Scalars['String']>;
   utilisationRate_not?: Maybe<Scalars['String']>;
   utilisationRate_gt?: Maybe<Scalars['String']>;
@@ -3183,7 +3177,7 @@ export type SavingsContractQueryVariables = {
 
 
 export type SavingsContractQuery = { savingsContracts: Array<(
-    Pick<SavingsContract, 'id' | 'automationEnabled'>
+    Pick<SavingsContract, 'id' | 'dailyAPY' | 'automationEnabled'>
     & { totalSavings: MetricFieldsFragment, totalCredits: MetricFieldsFragment, exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
   )> };
 
@@ -3526,6 +3520,7 @@ export const SavingsContractDocument = gql`
     exchangeRates {
       id
     }
+    dailyAPY
     automationEnabled
   }
 }
