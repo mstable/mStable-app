@@ -1,7 +1,6 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-import { formatUnits } from 'ethers/utils';
 import { H3 } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
@@ -74,23 +73,9 @@ const BalanceInfoRow = styled(InfoRow)`
 `;
 
 export const SaveInfo: FC<{}> = () => {
-  // const apyForPast24h = useApyForPast24h();
   const apyForPastWeek = useAverageApyForPastWeek();
-
-  const formattedApys = useMemo<{ pastWeek?: number; past24h?: number }>(
-    () => ({
-      // past24h: apyForPast24h
-      //   ? parseFloat(formatUnits(apyForPast24h, 16))
-      //   : undefined,
-      pastWeek: apyForPastWeek
-        ? parseFloat(formatUnits(apyForPastWeek, 16))
-        : undefined,
-    }),
-    [apyForPastWeek],
-  );
-
   const savingsBalance = useSavingsBalance();
-   return (
+  return (
     <>
       <BalanceInfoRow>
         <div>
@@ -115,13 +100,9 @@ export const SaveInfo: FC<{}> = () => {
       <InfoRow>
         <div>
           <H3>APY</H3>
-          {formattedApys.pastWeek ? (
+          {apyForPastWeek ? (
             <>
-              <InfoCountUp
-                end={formattedApys.pastWeek}
-                suffix="%"
-                decimals={2}
-              />
+              <InfoCountUp end={apyForPastWeek} suffix="%" decimals={2} />
               <InfoMsg>
                 {' '}
                 <a
