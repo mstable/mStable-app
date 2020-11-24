@@ -94,13 +94,15 @@ const dateFilter = {
 const nowUtc = new Date(now.toUTCString().slice(0, -4));
 
 const timestamps = eachDayOfInterval({
-  start: subDays(now, 7),
+  start: subDays(now, 6),
   end: subDays(now, 1),
 });
 
 const transformedTimestamps = timestamps.map(timestamp => {
   return endOfDay(timestamp);
 });
+
+transformedTimestamps.push(now);
 
 export const DailyApys: FC<{}> = () => {
   const dailyApys = useDailyApysForPastWeek(getUnixTime(from));
