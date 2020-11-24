@@ -1,33 +1,82 @@
-import { subDays, getUnixTime, endOfDay } from 'date-fns';
+import { subDays, getUnixTime, endOfDay, eachDayOfInterval } from 'date-fns';
 import { useMemo, useEffect, useState } from 'react';
 import { useMutex } from 'react-context-mutex';
 import useInterval from '@use-it/interval';
 import { BigNumber, parseUnits } from 'ethers/utils';
 import { BigNumber as FractionalBigNumber } from 'bignumber.js';
-
-import {
-  ExchangeRate,
-  useLastExchangeRateBeforeTimestampQuery,
-  useWeeklyExchangeRatesQuery,
-  WeeklyExchangeRatesQueryVariables,
-} from '../graphql/protocol';
-import { useLatestExchangeRate } from '../context/DataProvider/DataProvider';
+import { useQuery, gql, DocumentNode } from '@apollo/client';
 import { truncateAddress } from './strings';
 import { SCALE } from './constants';
 import { parseExactAmount, parseAmount } from './amounts';
+import { ExchangeRate } from '../graphql/protocol';
 
-interface Apy {
-  value?: BigNumber;
-  start?: number;
-  end?: number;
+interface ApyResults {
+  __typename: string;
+  dailyAPY: string;
 }
 
-type DailyApysForWeek = [Apy, Apy, Apy, Apy, Apy, Apy, Apy];
-
-type RateTimestamp = Pick<ExchangeRate, 'rate' | 'timestamp'>;
+interface TransformedData {
+  timestamp: string;
+  apyResults: ApyResults;
+}
 
 export const useTruncatedAddress = (address?: string | null): string | null =>
   useMemo(() => (address ? truncateAddress(address) : null), [address]);
+
+type BlocksData = {
+  [timestamp: string]: [{ number: number }];
+};
+
+type RateTimestamp = Pick<ExchangeRate, 'rate' | 'timestamp'>;
+
+export const getBlockTimestampsDocument = (dates: Date[]): DocumentNode => {
+  return gql`query BlockTimestamps @api(name: blocks) {
+        ${dates
+          .map(getUnixTime)
+          .map(
+            ts =>
+              `t${ts}: blocks(first: 1, orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: ${ts}, timestamp_lt: ${ts +
+                60000} }) { number }`,
+          )
+          .join('\n')}
+    }`;
+};
+
+export const getApysDocument = (data?: BlocksData): DocumentNode => {
+  const current = `t${getUnixTime(Date.now())}: savingsContract(
+            id: "0xcf3f73290803fc04425bee135a4caeb2bab2c2a1"
+          ) {
+            dailyAPY
+          }`;
+
+  if (!data) {
+    return gql`
+        query DailyApys @api(name: protocol) {
+          ${current}
+        }
+      `;
+  }
+
+  return gql`query DailyApys @api(name: protocol) {
+        ${current}
+        ${Object.keys(data ?? {})
+          .filter(key => {
+            return !!data[key]?.[0]?.number;
+          })
+          .map(
+            key => `
+                  ${key}: savingsContract(id: "0xcf3f73290803fc04425bee135a4caeb2bab2c2a1", block:{number: ${
+              (data as BlocksData)[key][0].number
+            }}) {
+                    dailyAPY
+                  } 
+  
+          `,
+          )
+          .join('\n')}
+        }
+    `;
+};
 
 /**
  * Given a unique key and a promise, run the promise within a mutex
@@ -58,24 +107,6 @@ export const useAsyncMutex = (
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mutexKey]);
-};
-
-export const useIncreasingNumber = (
-  value: number | null,
-  increment: number,
-  interval: number,
-): number | null => {
-  const [valueInc, setValueInc] = useState<typeof value>(null);
-
-  useEffect(() => {
-    setValueInc(value || 0);
-  }, [value, setValueInc]);
-
-  useInterval(() => {
-    if (valueInc && value && value > 0.001) setValueInc(valueInc + increment);
-  }, interval);
-
-  return valueInc;
 };
 
 // NB: Without milliseconds
@@ -111,113 +142,111 @@ export const calculateApy = (
   return new BigNumber(0);
 };
 
-const useLastExchangeRateBeforeTimestamp = (
-  timestamp?: number,
-): Pick<ExchangeRate, 'timestamp' | 'rate'> | undefined => {
-  const previousQuery = useLastExchangeRateBeforeTimestampQuery({
-    variables: { timestamp: timestamp as number },
-    skip: !timestamp,
-    fetchPolicy: 'cache-and-network',
-  });
-  return previousQuery.data?.exchangeRates[0];
+export const useIncreasingNumber = (
+  value: number | null,
+  increment: number,
+  interval: number,
+): number | null => {
+  const [valueInc, setValueInc] = useState<typeof value>(null);
+
+  useEffect(() => {
+    setValueInc(value || 0);
+  }, [value, setValueInc]);
+
+  useInterval(() => {
+    if (valueInc && value && value > 0.001) setValueInc(valueInc + increment);
+  }, interval);
+
+  return valueInc;
 };
 
-export const useApyForPast24h = (): BigNumber | undefined => {
-  const latest = useLatestExchangeRate();
-  const timestamp = latest?.timestamp;
+export const useDailApysForGivenTimestamps = (
+  dates: Date[],
+): TransformedData[] => {
+  const blocksDoc = getBlockTimestampsDocument(dates);
+  const queryResult = useQuery(blocksDoc);
+  const apysDoc = useMemo(() => getApysDocument(queryResult.data), [
+    queryResult.data,
+  ]);
+  const apysQuery = useQuery(apysDoc as DocumentNode);
 
-  const before = useLastExchangeRateBeforeTimestamp(
-    timestamp ? timestamp - 24 * 60 * 60 : undefined,
-  );
-
-  return latest && before && latest.timestamp > before.timestamp
-    ? calculateApy(before, {
-        // Normalize the type to RateTimestamp
-        timestamp: latest.timestamp,
-        rate: latest.rate.string,
-      })
-    : undefined;
+  const transformedData =
+    apysQuery.data &&
+    Object.entries(apysQuery.data).map(([key, value]) => {
+      const [, timestamp] = key.split('t');
+      return {
+        timestamp,
+        apyResults: value as ApyResults,
+      };
+    });
+  return transformedData;
 };
 
-const DAYS_OF_WEEK = [0, 1, 2, 3, 4, 5, 6];
-
-export const useDailyApysForPastWeek = (start: number): DailyApysForWeek => {
-  const latest = useLatestExchangeRate();
-
-  const variables = useMemo<
-    WeeklyExchangeRatesQueryVariables | undefined
-  >(() => {
-    return DAYS_OF_WEEK.reduce(
-      (_variables, index) => ({
-        ..._variables,
-        [`day${index}`]: start + index * 24 * 60 * 60,
-      }),
-      {} as WeeklyExchangeRatesQueryVariables,
-    );
-  }, [start]);
-
-  const query = useWeeklyExchangeRatesQuery({
-    variables,
-    skip: !variables,
-    fetchPolicy: 'cache-and-network',
-  });
-
-  return useMemo<DailyApysForWeek>(
-    () =>
-      DAYS_OF_WEEK.map<Apy>(index => {
-        if (!query.data) return {};
-
-        const { [`day${index}` as 'day0']: [startRate] = [] } = query.data;
-
-        // For the last day of the week, use the latest APY as the end rate;
-        // otherwise, use the next day's start APY
-        const endRate =
-          index === 6 && latest
-            ? {
-                // Normalize the type to RateTimestamp
-                timestamp: latest.timestamp,
-                rate: latest.rate.string,
-              }
-            : query.data[`day${index + 1}` as 'day0']?.[0];
-
-        const value =
-          startRate && endRate && endRate.timestamp > startRate.timestamp
-            ? calculateApy(startRate, endRate)
-            : undefined;
-
-        const apy: Apy = {
-          value,
-          start: startRate?.timestamp,
-          end: endRate?.timestamp,
-        };
-        return apy;
-      }) as DailyApysForWeek,
-    [query, latest],
-  );
-};
-
-export const useAverageApyForPastWeek = (): BigNumber | undefined => {
+export const useAverageApyForPastWeek = (): number | undefined => {
   const now = new Date();
-  const dailyApys = useDailyApysForPastWeek(
-    getUnixTime(endOfDay(subDays(now, 7))),
-  );
+  const timestamps = eachDayOfInterval({
+    start: subDays(now, 6),
+    end: subDays(now, 1),
+  })
+    .map(endOfDay)
+    .concat(now);
 
+  const dailyApys = useDailApysForGivenTimestamps(timestamps);
   return useMemo(() => {
-    const filtered = dailyApys
-      .map(a =>
-        // Cap numbers at 100
-        a.value ? a.value : undefined,
-      )
-      .filter(Boolean) as BigNumber[];
-
-    if (filtered.length < 2) {
+    const filtered =
+      dailyApys &&
+      dailyApys
+        .map(a =>
+          // Cap numbers at 100
+          a.apyResults.dailyAPY ? a.apyResults.dailyAPY : undefined,
+        )
+        .filter(Boolean);
+    if (filtered && filtered.length < 2) {
       // Not enough data to sample an average
       return undefined;
     }
 
-    return filtered
-      .reduce((_average, apy) => _average.add(apy), new BigNumber(0))
-      .div(filtered.length);
+    return (
+      filtered &&
+      filtered.reduce(
+        (_average, apy) => _average + parseInt(apy as string, 10),
+        0,
+      ) / filtered.length
+    );
+  }, [dailyApys]);
+};
+
+export const useAverageApyForPastMonth = (): number | undefined => {
+  const now = new Date();
+  const timestamps = eachDayOfInterval({
+    start: subDays(now, 29),
+    end: subDays(now, 1),
+  })
+    .map(endOfDay)
+    .concat(now);
+
+  const dailyApys = useDailApysForGivenTimestamps(timestamps);
+  return useMemo(() => {
+    const filtered =
+      dailyApys &&
+      dailyApys
+        .map(a =>
+          // Cap numbers at 100
+          a.apyResults.dailyAPY ? a.apyResults.dailyAPY : undefined,
+        )
+        .filter(Boolean);
+    if (filtered && filtered.length < 2) {
+      // Not enough data to sample an average
+      return undefined;
+    }
+
+    return (
+      filtered &&
+      filtered.reduce(
+        (_average, apy) => _average + parseInt(apy as string, 10),
+        0,
+      ) / filtered.length
+    );
   }, [dailyApys]);
 };
 
