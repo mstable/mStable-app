@@ -182,16 +182,16 @@ export const useDailApysForGivenTimestamps = (
   return transformedData;
 };
 
-export const useAverageApyForPastWeek = (): number | undefined => {
-  const now = new Date();
-  const timestamps = eachDayOfInterval({
-    start: subDays(now, 6),
-    end: subDays(now, 1),
-  })
-    .map(endOfDay)
-    .concat(now);
+const now = new Date();
+export const timestampsForWeek = eachDayOfInterval({
+  start: subDays(now, 6),
+  end: subDays(now, 1),
+})
+  .map(endOfDay)
+  .concat(now);
 
-  const dailyApys = useDailApysForGivenTimestamps(timestamps);
+export const useAverageApyForPastWeek = (): number | undefined => {
+  const dailyApys = useDailApysForGivenTimestamps(timestampsForWeek);
   return useMemo(() => {
     const filtered =
       dailyApys &&
@@ -216,16 +216,15 @@ export const useAverageApyForPastWeek = (): number | undefined => {
   }, [dailyApys]);
 };
 
-export const useAverageApyForPastMonth = (): number | undefined => {
-  const now = new Date();
-  const timestamps = eachDayOfInterval({
-    start: subDays(now, 29),
-    end: subDays(now, 1),
-  })
-    .map(endOfDay)
-    .concat(now);
+export const timestampsForMonth = eachDayOfInterval({
+  start: subDays(now, 29),
+  end: subDays(now, 1),
+})
+  .map(endOfDay)
+  .concat(now);
 
-  const dailyApys = useDailApysForGivenTimestamps(timestamps);
+export const useAverageApyForPastMonth = (): number | undefined => {
+  const dailyApys = useDailApysForGivenTimestamps(timestampsForMonth);
   return useMemo(() => {
     const filtered =
       dailyApys &&

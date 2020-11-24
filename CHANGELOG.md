@@ -2,7 +2,8 @@
 
 ## Next
 
-- Added Historic Transactions view with the data coming from The Graph
+- Fetch historic transactions from the subgraph
+- Fetch daily APY from the subgraph
 
 ## Version 1.15.0
 
