@@ -2,6 +2,12 @@
 
 ## Next
 
+- APY values are pulled from The Graph now
+- Added new hook for live Daily APY
+- Added new hooks for average 7 and 30 days APY
+- Added query for getting the block numbers based on a given timestamp
+- Added query for getting APY based on a given timestamp
+
 ## Version 1.15.0
 
 - Add a gas prices widget to allow the user to select a gas price and see the transaction fee

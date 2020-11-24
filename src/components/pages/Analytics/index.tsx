@@ -1,7 +1,6 @@
-import React, { FC, useLayoutEffect } from 'react';
+import React, { FC, useLayoutEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-
 import {
   useMusdTotalSupply,
   useTotalSavings,
@@ -15,6 +14,8 @@ import { VolumeChart } from '../../stats/VolumeChart';
 import { AggregateChart } from '../../stats/AggregateChart';
 import { PageHeader } from '../PageHeader';
 import { Size } from '../../../theme';
+import { Button } from '../../core/Button';
+import { MonthDailyApys } from '../../stats/MonthDailyApys';
 
 const Section = styled.section`
   padding-bottom: 32px;
@@ -75,22 +76,44 @@ const HistoricalApyContainer = styled.div`
   }
 `;
 
-const HistoricalApy: FC<{}> = () => (
-  <HistoricalApyContainer>
-    <div>
-      <DailyApys />
-      <P size={Size.s}>
-        <a
-          href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Average daily APY over the past 7 days
-        </a>
-      </P>
-    </div>
-  </HistoricalApyContainer>
-);
+enum ChartType {
+  SevenDays = '7d',
+  ThirtyDays = '30d',
+}
+
+const HistoricalApy: FC<{}> = () => {
+  const [selectedChart, setSelectedChart] = useState(ChartType.SevenDays);
+
+  const selectThirty = useCallback(() => {
+    setSelectedChart(ChartType.ThirtyDays);
+  }, [setSelectedChart]);
+
+  const selectSeven = useCallback(() => {
+    setSelectedChart(ChartType.SevenDays);
+  }, [setSelectedChart]);
+  return (
+    <HistoricalApyContainer>
+      <div>
+        <Button onClick={selectSeven}>7d</Button>
+        <Button onClick={selectThirty}>30</Button>
+        {selectedChart === ChartType.SevenDays ? (
+          <DailyApys />
+        ) : (
+          <MonthDailyApys />
+        )}
+        <P size={Size.s}>
+          <a
+            href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Average daily APY over the past 7 days
+          </a>
+        </P>
+      </div>
+    </HistoricalApyContainer>
+  );
+};
 
 const BasketStatsContainer = styled.div`
   > :first-child {
