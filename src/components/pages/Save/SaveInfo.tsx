@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 import { H3 } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
@@ -11,6 +10,7 @@ import {
 } from '../../../web3/hooks';
 import { useSavingsBalance } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
+import { Spinner } from '../../core/Spinner';
 
 const CreditBalance = styled.div`
   img {
@@ -115,7 +115,7 @@ export const SaveInfo: FC<{}> = () => {
               </InfoMsg>
             </>
           ) : (
-            <Skeleton />
+            <Spinner />
           )}
           <div>
             <AnalyticsLink section="save" />
