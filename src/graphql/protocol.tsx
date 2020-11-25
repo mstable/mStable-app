@@ -3,55 +3,55 @@ import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
 
-export interface IntrospectionResultData {
-  __schema: {
-    types: {
-      kind: string;
-      name: string;
-      possibleTypes: {
-        name: string;
-      }[];
-    }[];
-  };
-}
-const result: IntrospectionResultData = {
-  __schema: {
-    types: [
+      export interface IntrospectionResultData {
+        __schema: {
+          types: {
+            kind: string;
+            name: string;
+            possibleTypes: {
+              name: string;
+            }[];
+          }[];
+        };
+      }
+      const result: IntrospectionResultData = {
+  "__schema": {
+    "types": [
       {
-        kind: 'INTERFACE',
-        name: 'Transaction',
-        possibleTypes: [
+        "kind": "INTERFACE",
+        "name": "Transaction",
+        "possibleTypes": [
           {
-            name: 'SavingsContractDepositTransaction',
+            "name": "SavingsContractDepositTransaction"
           },
           {
-            name: 'SavingsContractWithdrawTransaction',
+            "name": "SavingsContractWithdrawTransaction"
           },
           {
-            name: 'SwapTransaction',
+            "name": "SwapTransaction"
           },
           {
-            name: 'PaidFeeTransaction',
+            "name": "PaidFeeTransaction"
           },
           {
-            name: 'RedeemMassetTransaction',
+            "name": "RedeemMassetTransaction"
           },
           {
-            name: 'MintMultiTransaction',
+            "name": "MintMultiTransaction"
           },
           {
-            name: 'MintSingleTransaction',
+            "name": "MintSingleTransaction"
           },
           {
-            name: 'RedeemTransaction',
-          },
-        ],
-      },
-    ],
-  },
+            "name": "RedeemTransaction"
+          }
+        ]
+      }
+    ]
+  }
 };
-export default result;
-
+      export default result;
+    
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -119,7 +119,7 @@ export type Account_Filter = {
 
 export enum Account_OrderBy {
   Id = 'id',
-  CreditBalance = 'creditBalance',
+  CreditBalance = 'creditBalance'
 }
 
 /** A Basket of Bassets (e.g. for mUSD) */
@@ -138,6 +138,7 @@ export type Basket = {
   /** Masset the Basket belongs to */
   masset: Masset;
 };
+
 
 /** A Basket of Bassets (e.g. for mUSD) */
 export type BasketBassetsArgs = {
@@ -194,7 +195,7 @@ export enum Basket_OrderBy {
   MaxBassets = 'maxBassets',
   UndergoingRecol = 'undergoingRecol',
   Failed = 'failed',
-  Masset = 'masset',
+  Masset = 'masset'
 }
 
 /** Basket Asset (e.g. DAI for the mUSD basket) */
@@ -451,13 +452,16 @@ export enum Basset_OrderBy {
   CumulativeMinted = 'cumulativeMinted',
   CumulativeSwappedAsOutput = 'cumulativeSwappedAsOutput',
   CumulativeRedeemed = 'cumulativeRedeemed',
-  CumulativeFeesPaid = 'cumulativeFeesPaid',
+  CumulativeFeesPaid = 'cumulativeFeesPaid'
 }
+
+
 
 export type Block_Height = {
   hash?: Maybe<Scalars['Bytes']>;
   number?: Maybe<Scalars['Int']>;
 };
+
 
 export type Counter = {
   id: Scalars['ID'];
@@ -486,7 +490,7 @@ export type Counter_Filter = {
 
 export enum Counter_OrderBy {
   Id = 'id',
-  Value = 'value',
+  Value = 'value'
 }
 
 /** A credit balance for a given savings contract */
@@ -551,7 +555,7 @@ export enum CreditBalance_OrderBy {
   Id = 'id',
   Account = 'account',
   Amount = 'amount',
-  SavingsContract = 'savingsContract',
+  SavingsContract = 'savingsContract'
 }
 
 export type ExchangeRate = {
@@ -629,7 +633,7 @@ export enum ExchangeRate_OrderBy {
   Rate = 'rate',
   Timestamp = 'timestamp',
   SavingsContract = 'savingsContract',
-  Next = 'next',
+  Next = 'next'
 }
 
 /** An mStable asset (e.g. mUSD) */
@@ -682,6 +686,7 @@ export type Masset = {
   redeemTransactions: Array<RedeemTransaction>;
 };
 
+
 /** An mStable asset (e.g. mUSD) */
 export type MassetSavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -690,6 +695,7 @@ export type MassetSavingsContractsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContract_Filter>;
 };
+
 
 /** An mStable asset (e.g. mUSD) */
 export type MassetSwapTransactionsArgs = {
@@ -700,6 +706,7 @@ export type MassetSwapTransactionsArgs = {
   where?: Maybe<SwapTransaction_Filter>;
 };
 
+
 /** An mStable asset (e.g. mUSD) */
 export type MassetPaidFeeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -708,6 +715,7 @@ export type MassetPaidFeeTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<PaidFeeTransaction_Filter>;
 };
+
 
 /** An mStable asset (e.g. mUSD) */
 export type MassetRedeemMassetTransactionsArgs = {
@@ -718,6 +726,7 @@ export type MassetRedeemMassetTransactionsArgs = {
   where?: Maybe<RedeemMassetTransaction_Filter>;
 };
 
+
 /** An mStable asset (e.g. mUSD) */
 export type MassetMintMultiTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -727,6 +736,7 @@ export type MassetMintMultiTransactionsArgs = {
   where?: Maybe<MintMultiTransaction_Filter>;
 };
 
+
 /** An mStable asset (e.g. mUSD) */
 export type MassetMintSingleTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -735,6 +745,7 @@ export type MassetMintSingleTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<MintSingleTransaction_Filter>;
 };
+
 
 /** An mStable asset (e.g. mUSD) */
 export type MassetRedeemTransactionsArgs = {
@@ -969,7 +980,7 @@ export enum Masset_OrderBy {
   RedeemMassetTransactions = 'redeemMassetTransactions',
   MintMultiTransactions = 'mintMultiTransactions',
   MintSingleTransactions = 'mintSingleTransactions',
-  RedeemTransactions = 'redeemTransactions',
+  RedeemTransactions = 'redeemTransactions'
 }
 
 export type Metric = {
@@ -1021,7 +1032,7 @@ export enum Metric_OrderBy {
   Id = 'id',
   Exact = 'exact',
   Decimals = 'decimals',
-  Simple = 'simple',
+  Simple = 'simple'
 }
 
 export type MintMultiTransaction = Transaction & {
@@ -1040,6 +1051,7 @@ export type MintMultiTransaction = Transaction & {
   /** The respective Basset units for each Basset used in this mint. */
   bassetsUnits: Array<Scalars['BigInt']>;
 };
+
 
 export type MintMultiTransactionBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1134,7 +1146,7 @@ export enum MintMultiTransaction_OrderBy {
   Masset = 'masset',
   MassetUnits = 'massetUnits',
   Bassets = 'bassets',
-  BassetsUnits = 'bassetsUnits',
+  BassetsUnits = 'bassetsUnits'
 }
 
 export type MintSingleTransaction = Transaction & {
@@ -1253,12 +1265,12 @@ export enum MintSingleTransaction_OrderBy {
   Masset = 'masset',
   MassetUnits = 'massetUnits',
   Basset = 'basset',
-  BassetUnits = 'bassetUnits',
+  BassetUnits = 'bassetUnits'
 }
 
 export enum OrderDirection {
   Asc = 'asc',
-  Desc = 'desc',
+  Desc = 'desc'
 }
 
 export type PaidFeeTransaction = Transaction & {
@@ -1369,7 +1381,7 @@ export enum PaidFeeTransaction_OrderBy {
   Masset = 'masset',
   MassetUnits = 'massetUnits',
   Basset = 'basset',
-  BassetUnits = 'bassetUnits',
+  BassetUnits = 'bassetUnits'
 }
 
 export type Query = {
@@ -1407,22 +1419,20 @@ export type Query = {
   redeemMassetTransactions: Array<RedeemMassetTransaction>;
   savingsContractDepositTransaction?: Maybe<SavingsContractDepositTransaction>;
   savingsContractDepositTransactions: Array<SavingsContractDepositTransaction>;
-  savingsContractWithdrawTransaction?: Maybe<
-    SavingsContractWithdrawTransaction
-  >;
-  savingsContractWithdrawTransactions: Array<
-    SavingsContractWithdrawTransaction
-  >;
+  savingsContractWithdrawTransaction?: Maybe<SavingsContractWithdrawTransaction>;
+  savingsContractWithdrawTransactions: Array<SavingsContractWithdrawTransaction>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
 
+
 export type QueryTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryTokensArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1433,10 +1443,12 @@ export type QueryTokensArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1447,10 +1459,12 @@ export type QueryMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryCounterArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryCountersArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1461,10 +1475,12 @@ export type QueryCountersArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1475,10 +1491,12 @@ export type QueryBassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryBasketsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1489,10 +1507,12 @@ export type QueryBasketsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryMassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1503,10 +1523,12 @@ export type QueryMassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1517,10 +1539,12 @@ export type QueryAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1531,10 +1555,12 @@ export type QueryCreditBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QuerySavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QuerySavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1545,10 +1571,12 @@ export type QuerySavingsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1559,10 +1587,12 @@ export type QueryExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QuerySwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QuerySwapTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1573,10 +1603,12 @@ export type QuerySwapTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryPaidFeeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryPaidFeeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1587,10 +1619,12 @@ export type QueryPaidFeeTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryMintSingleTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryMintSingleTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1601,10 +1635,12 @@ export type QueryMintSingleTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryMintMultiTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryMintMultiTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1615,10 +1651,12 @@ export type QueryMintMultiTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryRedeemTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryRedeemTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1629,10 +1667,12 @@ export type QueryRedeemTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryRedeemMassetTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryRedeemMassetTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1643,10 +1683,12 @@ export type QueryRedeemMassetTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QuerySavingsContractDepositTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QuerySavingsContractDepositTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1657,10 +1699,12 @@ export type QuerySavingsContractDepositTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QuerySavingsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QuerySavingsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1671,10 +1715,12 @@ export type QuerySavingsContractWithdrawTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type QueryTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type QueryTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1684,6 +1730,7 @@ export type QueryTransactionsArgs = {
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
 };
+
 
 export type Query_MetaArgs = {
   block?: Maybe<Block_Height>;
@@ -1777,7 +1824,7 @@ export enum RedeemMassetTransaction_OrderBy {
   Recipient = 'recipient',
   Timestamp = 'timestamp',
   Masset = 'masset',
-  MassetUnits = 'massetUnits',
+  MassetUnits = 'massetUnits'
 }
 
 export type RedeemTransaction = Transaction & {
@@ -1796,6 +1843,7 @@ export type RedeemTransaction = Transaction & {
   /** The respective units of each Basset selected to redeem. */
   bassetsUnits: Array<Scalars['BigInt']>;
 };
+
 
 export type RedeemTransactionBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1890,7 +1938,7 @@ export enum RedeemTransaction_OrderBy {
   Masset = 'masset',
   MassetUnits = 'massetUnits',
   Bassets = 'bassets',
-  BassetsUnits = 'bassetsUnits',
+  BassetsUnits = 'bassetsUnits'
 }
 
 export type SavingsContract = {
@@ -1914,7 +1962,7 @@ export type SavingsContract = {
    * The daily APY value; this is derived from the `ExchangeRate` closest to 24h ago from the last-received
    * `ExchangeRate`, and will change whenever a new `ExchangeRate` is created.
    */
-  dailyAPY: Metric;
+  dailyAPY: Scalars['BigDecimal'];
   /**
    * The share of the Masset that is deposited in the Savings Contract; a rate of 100% would mean all of the
    * Masset being deposited in the Savings Contract.
@@ -1939,6 +1987,7 @@ export type SavingsContract = {
   withdrawTransactions: Array<SavingsContractWithdrawTransaction>;
 };
 
+
 export type SavingsContractCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1946,6 +1995,7 @@ export type SavingsContractCreditBalancesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<CreditBalance_Filter>;
 };
+
 
 export type SavingsContractExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1955,6 +2005,7 @@ export type SavingsContractExchangeRatesArgs = {
   where?: Maybe<ExchangeRate_Filter>;
 };
 
+
 export type SavingsContractDepositTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -1962,6 +2013,7 @@ export type SavingsContractDepositTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContractDepositTransaction_Filter>;
 };
+
 
 export type SavingsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2078,20 +2130,14 @@ export type SavingsContract_Filter = {
   cumulativeWithdrawn_not_starts_with?: Maybe<Scalars['String']>;
   cumulativeWithdrawn_ends_with?: Maybe<Scalars['String']>;
   cumulativeWithdrawn_not_ends_with?: Maybe<Scalars['String']>;
-  dailyAPY?: Maybe<Scalars['String']>;
-  dailyAPY_not?: Maybe<Scalars['String']>;
-  dailyAPY_gt?: Maybe<Scalars['String']>;
-  dailyAPY_lt?: Maybe<Scalars['String']>;
-  dailyAPY_gte?: Maybe<Scalars['String']>;
-  dailyAPY_lte?: Maybe<Scalars['String']>;
-  dailyAPY_in?: Maybe<Array<Scalars['String']>>;
-  dailyAPY_not_in?: Maybe<Array<Scalars['String']>>;
-  dailyAPY_contains?: Maybe<Scalars['String']>;
-  dailyAPY_not_contains?: Maybe<Scalars['String']>;
-  dailyAPY_starts_with?: Maybe<Scalars['String']>;
-  dailyAPY_not_starts_with?: Maybe<Scalars['String']>;
-  dailyAPY_ends_with?: Maybe<Scalars['String']>;
-  dailyAPY_not_ends_with?: Maybe<Scalars['String']>;
+  dailyAPY?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_not?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_gt?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_lt?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_gte?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_lte?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  dailyAPY_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
   utilisationRate?: Maybe<Scalars['String']>;
   utilisationRate_not?: Maybe<Scalars['String']>;
   utilisationRate_gt?: Maybe<Scalars['String']>;
@@ -2157,7 +2203,7 @@ export enum SavingsContract_OrderBy {
   CreditBalances = 'creditBalances',
   ExchangeRates = 'exchangeRates',
   DepositTransactions = 'depositTransactions',
-  WithdrawTransactions = 'withdrawTransactions',
+  WithdrawTransactions = 'withdrawTransactions'
 }
 
 export type SavingsContractDepositTransaction = Transaction & {
@@ -2240,7 +2286,7 @@ export enum SavingsContractDepositTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   SavingsContract = 'savingsContract',
-  Amount = 'amount',
+  Amount = 'amount'
 }
 
 export type SavingsContractWithdrawTransaction = Transaction & {
@@ -2323,7 +2369,7 @@ export enum SavingsContractWithdrawTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   SavingsContract = 'savingsContract',
-  Amount = 'amount',
+  Amount = 'amount'
 }
 
 export type Subscription = {
@@ -2361,22 +2407,20 @@ export type Subscription = {
   redeemMassetTransactions: Array<RedeemMassetTransaction>;
   savingsContractDepositTransaction?: Maybe<SavingsContractDepositTransaction>;
   savingsContractDepositTransactions: Array<SavingsContractDepositTransaction>;
-  savingsContractWithdrawTransaction?: Maybe<
-    SavingsContractWithdrawTransaction
-  >;
-  savingsContractWithdrawTransactions: Array<
-    SavingsContractWithdrawTransaction
-  >;
+  savingsContractWithdrawTransaction?: Maybe<SavingsContractWithdrawTransaction>;
+  savingsContractWithdrawTransactions: Array<SavingsContractWithdrawTransaction>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
 
+
 export type SubscriptionTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionTokensArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2387,10 +2431,12 @@ export type SubscriptionTokensArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2401,10 +2447,12 @@ export type SubscriptionMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionCounterArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionCountersArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2415,10 +2463,12 @@ export type SubscriptionCountersArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2429,10 +2479,12 @@ export type SubscriptionBassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionBasketsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2443,10 +2495,12 @@ export type SubscriptionBasketsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionMassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2457,10 +2511,12 @@ export type SubscriptionMassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2471,10 +2527,12 @@ export type SubscriptionAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2485,10 +2543,12 @@ export type SubscriptionCreditBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionSavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionSavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2499,10 +2559,12 @@ export type SubscriptionSavingsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2513,10 +2575,12 @@ export type SubscriptionExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionSwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionSwapTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2527,10 +2591,12 @@ export type SubscriptionSwapTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionPaidFeeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionPaidFeeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2541,10 +2607,12 @@ export type SubscriptionPaidFeeTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionMintSingleTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionMintSingleTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2555,10 +2623,12 @@ export type SubscriptionMintSingleTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionMintMultiTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionMintMultiTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2569,10 +2639,12 @@ export type SubscriptionMintMultiTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionRedeemTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionRedeemTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2583,10 +2655,12 @@ export type SubscriptionRedeemTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionRedeemMassetTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionRedeemMassetTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2597,10 +2671,12 @@ export type SubscriptionRedeemMassetTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionSavingsContractDepositTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionSavingsContractDepositTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2611,10 +2687,12 @@ export type SubscriptionSavingsContractDepositTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionSavingsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionSavingsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2625,10 +2703,12 @@ export type SubscriptionSavingsContractWithdrawTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
+
 export type SubscriptionTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
+
 
 export type SubscriptionTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2638,6 +2718,7 @@ export type SubscriptionTransactionsArgs = {
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
 };
+
 
 export type Subscription_MetaArgs = {
   block?: Maybe<Block_Height>;
@@ -2766,7 +2847,7 @@ export enum SwapTransaction_OrderBy {
   MassetUnits = 'massetUnits',
   InputBasset = 'inputBasset',
   OutputBasset = 'outputBasset',
-  Recipient = 'recipient',
+  Recipient = 'recipient'
 }
 
 /** An ERC20-compatible token */
@@ -2942,7 +3023,7 @@ export enum Token_OrderBy {
   TotalMinted = 'totalMinted',
   TotalTransfers = 'totalTransfers',
   TotalMints = 'totalMints',
-  TotalBurns = 'totalBurns',
+  TotalBurns = 'totalBurns'
 }
 
 export type Transaction = {
@@ -3002,151 +3083,54 @@ export enum Transaction_OrderBy {
   Hash = 'hash',
   Block = 'block',
   Timestamp = 'timestamp',
-  Sender = 'sender',
+  Sender = 'sender'
 }
 
-export type TokenDetailsFragment = Pick<
-  Token,
-  'id' | 'address' | 'decimals' | 'symbol'
-> & { totalSupply: MetricFieldsFragment };
+export type TokenDetailsFragment = (
+  Pick<Token, 'id' | 'address' | 'decimals' | 'symbol'>
+  & { totalSupply: MetricFieldsFragment }
+);
 
-export type MassetAllFragment = Pick<
-  Masset,
-  'id' | 'feeRate' | 'redemptionFeeRate'
-> & {
-  token: TokenDetailsFragment;
-  basket: Pick<
-    Basket,
-    'failed' | 'collateralisationRatio' | 'undergoingRecol'
-  > & {
-    bassets: Array<
-      Pick<
-        Basset,
-        'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'
-      > & { vaultBalance: MetricFieldsFragment; token: TokenDetailsFragment }
-    >;
-  };
-};
+export type MassetAllFragment = (
+  Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
+  & { token: TokenDetailsFragment, basket: (
+    Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
+    & { bassets: Array<(
+      Pick<Basset, 'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
+      & { vaultBalance: MetricFieldsFragment, token: TokenDetailsFragment }
+    )> }
+  ) }
+);
 
-type TransactionFields_SavingsContractDepositTransaction_Fragment = Pick<
-  SavingsContractDepositTransaction,
-  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
->;
+type TransactionFields_SavingsContractDepositTransaction_Fragment = Pick<SavingsContractDepositTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-type TransactionFields_SavingsContractWithdrawTransaction_Fragment = Pick<
-  SavingsContractWithdrawTransaction,
-  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
->;
+type TransactionFields_SavingsContractWithdrawTransaction_Fragment = Pick<SavingsContractWithdrawTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-type TransactionFields_SwapTransaction_Fragment = Pick<
-  SwapTransaction,
-  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
->;
+type TransactionFields_SwapTransaction_Fragment = Pick<SwapTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-type TransactionFields_PaidFeeTransaction_Fragment = Pick<
-  PaidFeeTransaction,
-  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
->;
+type TransactionFields_PaidFeeTransaction_Fragment = Pick<PaidFeeTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-type TransactionFields_RedeemMassetTransaction_Fragment = Pick<
-  RedeemMassetTransaction,
-  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
->;
+type TransactionFields_RedeemMassetTransaction_Fragment = Pick<RedeemMassetTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-type TransactionFields_MintMultiTransaction_Fragment = Pick<
-  MintMultiTransaction,
-  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
->;
+type TransactionFields_MintMultiTransaction_Fragment = Pick<MintMultiTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-type TransactionFields_MintSingleTransaction_Fragment = Pick<
-  MintSingleTransaction,
-  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
->;
+type TransactionFields_MintSingleTransaction_Fragment = Pick<MintSingleTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-type TransactionFields_RedeemTransaction_Fragment = Pick<
-  RedeemTransaction,
-  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
->;
+type TransactionFields_RedeemTransaction_Fragment = Pick<RedeemTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-export type TransactionFieldsFragment =
-  | TransactionFields_SavingsContractDepositTransaction_Fragment
-  | TransactionFields_SavingsContractWithdrawTransaction_Fragment
-  | TransactionFields_SwapTransaction_Fragment
-  | TransactionFields_PaidFeeTransaction_Fragment
-  | TransactionFields_RedeemMassetTransaction_Fragment
-  | TransactionFields_MintMultiTransaction_Fragment
-  | TransactionFields_MintSingleTransaction_Fragment
-  | TransactionFields_RedeemTransaction_Fragment;
+export type TransactionFieldsFragment = TransactionFields_SavingsContractDepositTransaction_Fragment | TransactionFields_SavingsContractWithdrawTransaction_Fragment | TransactionFields_SwapTransaction_Fragment | TransactionFields_PaidFeeTransaction_Fragment | TransactionFields_RedeemMassetTransaction_Fragment | TransactionFields_MintMultiTransaction_Fragment | TransactionFields_MintSingleTransaction_Fragment | TransactionFields_RedeemTransaction_Fragment;
 
-export type MetricFieldsFragment = Pick<
-  Metric,
-  'exact' | 'decimals' | 'simple'
->;
-
-type TransactionAll_SavingsContractDepositTransaction_Fragment = Pick<
-  SavingsContractDepositTransaction,
-  'amount'
-> & { savingsContract: Pick<SavingsContract, 'id'> };
-
-type TransactionAll_SavingsContractWithdrawTransaction_Fragment = Pick<
-  SavingsContractWithdrawTransaction,
-  'amount'
-> & { savingsContract: Pick<SavingsContract, 'id'> };
-
-type TransactionAll_SwapTransaction_Fragment = Pick<
-  SwapTransaction,
-  'massetUnits'
-> & {
-  masset: Pick<Masset, 'id'>;
-  inputBasset: Pick<Basset, 'id'>;
-  outputBasset: Pick<Basset, 'id'>;
-};
-
-type TransactionAll_PaidFeeTransaction_Fragment = Pick<
-  PaidFeeTransaction,
-  'bassetUnits' | 'massetUnits'
-> & { basset: Pick<Basset, 'id'>; masset: Pick<Masset, 'id'> };
-
-type TransactionAll_RedeemMassetTransaction_Fragment = Pick<
-  RedeemMassetTransaction,
-  'massetUnits' | 'recipient'
-> & { masset: Pick<Masset, 'id'> };
-
-type TransactionAll_MintMultiTransaction_Fragment = Pick<
-  MintMultiTransaction,
-  'massetUnits'
-> & { masset: Pick<Masset, 'id'> };
-
-type TransactionAll_MintSingleTransaction_Fragment = Pick<
-  MintSingleTransaction,
-  'bassetUnits' | 'massetUnits'
-> & { masset: Pick<Masset, 'id'> };
-
-type TransactionAll_RedeemTransaction_Fragment = Pick<
-  RedeemTransaction,
-  'massetUnits' | 'bassetsUnits' | 'recipient'
-> & { masset: Pick<Masset, 'id'>; bassets: Array<Pick<Basset, 'id'>> };
-
-export type TransactionAllFragment =
-  | TransactionAll_SavingsContractDepositTransaction_Fragment
-  | TransactionAll_SavingsContractWithdrawTransaction_Fragment
-  | TransactionAll_SwapTransaction_Fragment
-  | TransactionAll_PaidFeeTransaction_Fragment
-  | TransactionAll_RedeemMassetTransaction_Fragment
-  | TransactionAll_MintMultiTransaction_Fragment
-  | TransactionAll_MintSingleTransaction_Fragment
-  | TransactionAll_RedeemTransaction_Fragment;
+export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
 
 export type CoreTokensQueryVariables = {};
 
-export type CoreTokensQuery = {
-  mUSD: Array<TokenDetailsFragment>;
-  mUSDSavings: Array<Pick<SavingsContract, 'id'>>;
-};
+
+export type CoreTokensQuery = { mUSD: Array<TokenDetailsFragment>, mUSDSavings: Array<Pick<SavingsContract, 'id'>> };
 
 export type MassetQueryVariables = {
   id: Scalars['ID'];
 };
+
 
 export type MassetQuery = { masset?: Maybe<MassetAllFragment> };
 
@@ -3154,16 +3138,16 @@ export type Erc20TokensQueryVariables = {
   addresses: Array<Scalars['Bytes']>;
 };
 
+
 export type Erc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
 
 export type AllErc20TokensQueryVariables = {};
 
-export type AllErc20TokensQuery = {
-  savingsContracts: Array<
-    Pick<SavingsContract, 'id'> & { address: SavingsContract['id'] }
-  >;
-  tokens: Array<TokenDetailsFragment>;
-};
+
+export type AllErc20TokensQuery = { savingsContracts: Array<(
+    Pick<SavingsContract, 'id'>
+    & { address: SavingsContract['id'] }
+  )>, tokens: Array<TokenDetailsFragment> };
 
 export type ErFragment = Pick<ExchangeRate, 'rate' | 'timestamp'>;
 
@@ -3171,9 +3155,8 @@ export type LastExchangeRateBeforeTimestampQueryVariables = {
   timestamp: Scalars['Int'];
 };
 
-export type LastExchangeRateBeforeTimestampQuery = {
-  exchangeRates: Array<ErFragment>;
-};
+
+export type LastExchangeRateBeforeTimestampQuery = { exchangeRates: Array<ErFragment> };
 
 export type WeeklyExchangeRatesQueryVariables = {
   day0: Scalars['Int'];
@@ -3185,33 +3168,23 @@ export type WeeklyExchangeRatesQueryVariables = {
   day6: Scalars['Int'];
 };
 
-export type WeeklyExchangeRatesQuery = {
-  day0: Array<ErFragment>;
-  day1: Array<ErFragment>;
-  day2: Array<ErFragment>;
-  day3: Array<ErFragment>;
-  day4: Array<ErFragment>;
-  day5: Array<ErFragment>;
-  day6: Array<ErFragment>;
-};
+
+export type WeeklyExchangeRatesQuery = { day0: Array<ErFragment>, day1: Array<ErFragment>, day2: Array<ErFragment>, day3: Array<ErFragment>, day4: Array<ErFragment>, day5: Array<ErFragment>, day6: Array<ErFragment> };
 
 export type SavingsContractQueryVariables = {
   id: Scalars['ID'];
 };
 
-export type SavingsContractQuery = {
-  savingsContracts: Array<
-    Pick<SavingsContract, 'id' | 'automationEnabled'> & {
-      totalSavings: MetricFieldsFragment;
-      totalCredits: MetricFieldsFragment;
-      exchangeRates: Array<Pick<ExchangeRate, 'id'>>;
-    }
-  >;
-};
+
+export type SavingsContractQuery = { savingsContracts: Array<(
+    Pick<SavingsContract, 'id' | 'dailyAPY' | 'automationEnabled'>
+    & { totalSavings: MetricFieldsFragment, totalCredits: MetricFieldsFragment, exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
+  )> };
 
 export type TokenQueryVariables = {
   id: Scalars['ID'];
 };
+
 
 export type TokenQuery = { token?: Maybe<TokenDetailsFragment> };
 
@@ -3219,11 +3192,11 @@ export type CreditBalancesQueryVariables = {
   account: Scalars['ID'];
 };
 
-export type CreditBalancesQuery = {
-  account?: Maybe<{ creditBalance?: Maybe<Pick<CreditBalance, 'amount'>> }>;
-};
+
+export type CreditBalancesQuery = { account?: Maybe<{ creditBalance?: Maybe<Pick<CreditBalance, 'amount'>> }> };
 
 export type LatestExchangeRateQueryVariables = {};
+
 
 export type LatestExchangeRateQuery = { exchangeRates: Array<ErFragment> };
 
@@ -3231,160 +3204,575 @@ export type ScriptVaultBalancesQueryVariables = {
   block?: Maybe<Block_Height>;
 };
 
-export type ScriptVaultBalancesQuery = {
-  bassets: Array<
-    Pick<Basset, 'id'> & {
-      token: Pick<Token, 'symbol' | 'decimals'>;
-      vaultBalance: MetricFieldsFragment;
-    }
-  >;
-};
+
+export type ScriptVaultBalancesQuery = { bassets: Array<(
+    Pick<Basset, 'id'>
+    & { token: Pick<Token, 'symbol' | 'decimals'>, vaultBalance: MetricFieldsFragment }
+  )> };
 
 export type ScriptFeesQueryVariables = {
   limit: Scalars['Int'];
   offset: Scalars['Int'];
 };
 
-export type ScriptFeesQuery = {
-  paidFeeTransactions: Array<Pick<PaidFeeTransaction, 'massetUnits'>>;
-};
+
+export type ScriptFeesQuery = { paidFeeTransactions: Array<Pick<PaidFeeTransaction, 'massetUnits'>> };
 
 export type HistoricTransactionsQueryVariables = {
   account?: Maybe<Scalars['Bytes']>;
 };
 
-export type HistoricTransactionsQuery = {
-  transactions: Array<
-    | ({ __typename: 'SavingsContractDepositTransaction' } & Pick<
-        SavingsContractDepositTransaction,
-        'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'
-      > & { savingsContract: Pick<SavingsContract, 'id'> })
-    | ({ __typename: 'SavingsContractWithdrawTransaction' } & Pick<
-        SavingsContractWithdrawTransaction,
-        'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'
-      > & { savingsContract: Pick<SavingsContract, 'id'> })
-    | ({ __typename: 'SwapTransaction' } & Pick<
-        SwapTransaction,
-        'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'
-      > & {
-          masset: Pick<Masset, 'id'>;
-          inputBasset: Pick<Basset, 'id'>;
-          outputBasset: Pick<Basset, 'id'>;
-        })
-    | ({ __typename: 'PaidFeeTransaction' } & Pick<
-        PaidFeeTransaction,
-        | 'bassetUnits'
-        | 'massetUnits'
-        | 'id'
-        | 'hash'
-        | 'block'
-        | 'timestamp'
-        | 'sender'
-      > & { basset: Pick<Basset, 'id'>; masset: Pick<Masset, 'id'> })
-    | ({ __typename: 'RedeemMassetTransaction' } & Pick<
-        RedeemMassetTransaction,
-        | 'massetUnits'
-        | 'recipient'
-        | 'id'
-        | 'hash'
-        | 'block'
-        | 'timestamp'
-        | 'sender'
-      > & { masset: Pick<Masset, 'id'> })
-    | ({ __typename: 'MintMultiTransaction' } & Pick<
-        MintMultiTransaction,
-        | 'massetUnits'
-        | 'bassetsUnits'
-        | 'id'
-        | 'hash'
-        | 'block'
-        | 'timestamp'
-        | 'sender'
-      > & { masset: Pick<Masset, 'id'>; bassets: Array<Pick<Basset, 'id'>> })
-    | ({ __typename: 'MintSingleTransaction' } & Pick<
-        MintSingleTransaction,
-        | 'bassetUnits'
-        | 'massetUnits'
-        | 'id'
-        | 'hash'
-        | 'block'
-        | 'timestamp'
-        | 'sender'
-      > & { masset: Pick<Masset, 'id'>; basset: Pick<Basset, 'id'> })
-    | ({ __typename: 'RedeemTransaction' } & Pick<
-        RedeemTransaction,
-        | 'massetUnits'
-        | 'bassetsUnits'
-        | 'recipient'
-        | 'id'
-        | 'hash'
-        | 'block'
-        | 'timestamp'
-        | 'sender'
-      > & { masset: Pick<Masset, 'id'>; bassets: Array<Pick<Basset, 'id'>> })
-  >;
-};
+
+export type HistoricTransactionsQuery = { transactions: Array<(
+    { __typename: 'SavingsContractDepositTransaction' }
+    & Pick<SavingsContractDepositTransaction, 'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { savingsContract: Pick<SavingsContract, 'id'> }
+  ) | (
+    { __typename: 'SavingsContractWithdrawTransaction' }
+    & Pick<SavingsContractWithdrawTransaction, 'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { savingsContract: Pick<SavingsContract, 'id'> }
+  ) | (
+    { __typename: 'SwapTransaction' }
+    & Pick<SwapTransaction, 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'>, inputBasset: Pick<Basset, 'id'>, outputBasset: Pick<Basset, 'id'> }
+  ) | (
+    { __typename: 'PaidFeeTransaction' }
+    & Pick<PaidFeeTransaction, 'bassetUnits' | 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { basset: Pick<Basset, 'id'>, masset: Pick<Masset, 'id'> }
+  ) | (
+    { __typename: 'RedeemMassetTransaction' }
+    & Pick<RedeemMassetTransaction, 'massetUnits' | 'recipient' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'> }
+  ) | (
+    { __typename: 'MintMultiTransaction' }
+    & Pick<MintMultiTransaction, 'massetUnits' | 'bassetsUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'>, bassets: Array<Pick<Basset, 'id'>> }
+  ) | (
+    { __typename: 'MintSingleTransaction' }
+    & Pick<MintSingleTransaction, 'bassetUnits' | 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'>, basset: Pick<Basset, 'id'> }
+  ) | (
+    { __typename: 'RedeemTransaction' }
+    & Pick<RedeemTransaction, 'massetUnits' | 'bassetsUnits' | 'recipient' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+    & { masset: Pick<Masset, 'id'>, bassets: Array<Pick<Basset, 'id'>> }
+  )> };
 
 export const MetricFieldsFragmentDoc = gql`
-  fragment MetricFields on Metric {
-    exact
-    decimals
-    simple
-  }
-`;
+    fragment MetricFields on Metric {
+  exact
+  decimals
+  simple
+}
+    `;
 export const TokenDetailsFragmentDoc = gql`
-  fragment TokenDetails on Token {
-    id
-    address
-    decimals
-    symbol
-    totalSupply {
-      ...MetricFields
-    }
+    fragment TokenDetails on Token {
+  id
+  address
+  decimals
+  symbol
+  totalSupply {
+    ...MetricFields
   }
-  ${MetricFieldsFragmentDoc}
-`;
+}
+    ${MetricFieldsFragmentDoc}`;
 export const MassetAllFragmentDoc = gql`
-  fragment MassetAll on Masset {
-    id
-    token {
-      ...TokenDetails
-    }
-    feeRate
-    redemptionFeeRate
-    basket {
-      failed
-      collateralisationRatio
-      undergoingRecol
-      bassets {
-        id
-        vaultBalance {
-          ...MetricFields
-        }
-        isTransferFeeCharged
-        ratio
-        status
-        maxWeight
-        token {
-          ...TokenDetails
-        }
+    fragment MassetAll on Masset {
+  id
+  token {
+    ...TokenDetails
+  }
+  feeRate
+  redemptionFeeRate
+  basket {
+    failed
+    collateralisationRatio
+    undergoingRecol
+    bassets {
+      id
+      vaultBalance {
+        ...MetricFields
+      }
+      isTransferFeeCharged
+      ratio
+      status
+      maxWeight
+      token {
+        ...TokenDetails
       }
     }
   }
-  ${TokenDetailsFragmentDoc}
-  ${MetricFieldsFragmentDoc}
-`;
+}
+    ${TokenDetailsFragmentDoc}
+${MetricFieldsFragmentDoc}`;
 export const TransactionFieldsFragmentDoc = gql`
-  fragment TransactionFields on Transaction {
+    fragment TransactionFields on Transaction {
+  id
+  hash
+  timestamp
+  block
+  sender
+}
+    `;
+export const ErFragmentDoc = gql`
+    fragment ER on ExchangeRate {
+  rate
+  timestamp
+}
+    `;
+export const CoreTokensDocument = gql`
+    query CoreTokens @api(name: protocol) {
+  mUSD: tokens(where: {symbol: "mUSD"}) {
+    ...TokenDetails
+  }
+  mUSDSavings: savingsContracts(first: 1) {
+    id
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
+
+/**
+ * __useCoreTokensQuery__
+ *
+ * To run a query within a React component, call `useCoreTokensQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCoreTokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCoreTokensQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useCoreTokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
+        return ApolloReactHooks.useQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
+      }
+export function useCoreTokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
+        }
+export type CoreTokensQueryHookResult = ReturnType<typeof useCoreTokensQuery>;
+export type CoreTokensLazyQueryHookResult = ReturnType<typeof useCoreTokensLazyQuery>;
+export type CoreTokensQueryResult = ApolloReactCommon.QueryResult<CoreTokensQuery, CoreTokensQueryVariables>;
+export const MassetDocument = gql`
+    query Masset($id: ID!) @api(name: protocol) {
+  masset(id: $id) {
+    ...MassetAll
+  }
+}
+    ${MassetAllFragmentDoc}`;
+
+/**
+ * __useMassetQuery__
+ *
+ * To run a query within a React component, call `useMassetQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMassetQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMassetQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useMassetQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MassetQuery, MassetQueryVariables>) {
+        return ApolloReactHooks.useQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
+      }
+export function useMassetLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MassetQuery, MassetQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
+        }
+export type MassetQueryHookResult = ReturnType<typeof useMassetQuery>;
+export type MassetLazyQueryHookResult = ReturnType<typeof useMassetLazyQuery>;
+export type MassetQueryResult = ApolloReactCommon.QueryResult<MassetQuery, MassetQueryVariables>;
+export const Erc20TokensDocument = gql`
+    query Erc20Tokens($addresses: [Bytes!]!) @api(name: protocol) {
+  tokens(where: {address_in: $addresses}) {
+    ...TokenDetails
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
+
+/**
+ * __useErc20TokensQuery__
+ *
+ * To run a query within a React component, call `useErc20TokensQuery` and pass it any options that fit your needs.
+ * When your component renders, `useErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useErc20TokensQuery({
+ *   variables: {
+ *      addresses: // value for 'addresses'
+ *   },
+ * });
+ */
+export function useErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
+        return ApolloReactHooks.useQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
+      }
+export function useErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
+        }
+export type Erc20TokensQueryHookResult = ReturnType<typeof useErc20TokensQuery>;
+export type Erc20TokensLazyQueryHookResult = ReturnType<typeof useErc20TokensLazyQuery>;
+export type Erc20TokensQueryResult = ApolloReactCommon.QueryResult<Erc20TokensQuery, Erc20TokensQueryVariables>;
+export const AllErc20TokensDocument = gql`
+    query AllErc20Tokens @api(name: protocol) {
+  savingsContracts {
+    address: id
+    id
+  }
+  tokens {
+    ...TokenDetails
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
+
+/**
+ * __useAllErc20TokensQuery__
+ *
+ * To run a query within a React component, call `useAllErc20TokensQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAllErc20TokensQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAllErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
+        return ApolloReactHooks.useQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
+      }
+export function useAllErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
+        }
+export type AllErc20TokensQueryHookResult = ReturnType<typeof useAllErc20TokensQuery>;
+export type AllErc20TokensLazyQueryHookResult = ReturnType<typeof useAllErc20TokensLazyQuery>;
+export type AllErc20TokensQueryResult = ApolloReactCommon.QueryResult<AllErc20TokensQuery, AllErc20TokensQueryVariables>;
+export const LastExchangeRateBeforeTimestampDocument = gql`
+    query LastExchangeRateBeforeTimestamp($timestamp: Int!) @api(name: protocol) {
+  exchangeRates(where: {timestamp_lt: $timestamp}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+}
+    ${ErFragmentDoc}`;
+
+/**
+ * __useLastExchangeRateBeforeTimestampQuery__
+ *
+ * To run a query within a React component, call `useLastExchangeRateBeforeTimestampQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLastExchangeRateBeforeTimestampQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLastExchangeRateBeforeTimestampQuery({
+ *   variables: {
+ *      timestamp: // value for 'timestamp'
+ *   },
+ * });
+ */
+export function useLastExchangeRateBeforeTimestampQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
+        return ApolloReactHooks.useQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
+      }
+export function useLastExchangeRateBeforeTimestampLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
+        }
+export type LastExchangeRateBeforeTimestampQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampQuery>;
+export type LastExchangeRateBeforeTimestampLazyQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampLazyQuery>;
+export type LastExchangeRateBeforeTimestampQueryResult = ApolloReactCommon.QueryResult<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>;
+export const WeeklyExchangeRatesDocument = gql`
+    query WeeklyExchangeRates($day0: Int!, $day1: Int!, $day2: Int!, $day3: Int!, $day4: Int!, $day5: Int!, $day6: Int!) @api(name: protocol) {
+  day0: exchangeRates(where: {timestamp_lt: $day0}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day1: exchangeRates(where: {timestamp_lt: $day1}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day2: exchangeRates(where: {timestamp_lt: $day2}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day3: exchangeRates(where: {timestamp_lt: $day3}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day4: exchangeRates(where: {timestamp_lt: $day4}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day5: exchangeRates(where: {timestamp_lt: $day5}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+  day6: exchangeRates(where: {timestamp_lt: $day6}, orderDirection: desc, orderBy: timestamp, first: 1) {
+    ...ER
+  }
+}
+    ${ErFragmentDoc}`;
+
+/**
+ * __useWeeklyExchangeRatesQuery__
+ *
+ * To run a query within a React component, call `useWeeklyExchangeRatesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useWeeklyExchangeRatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useWeeklyExchangeRatesQuery({
+ *   variables: {
+ *      day0: // value for 'day0'
+ *      day1: // value for 'day1'
+ *      day2: // value for 'day2'
+ *      day3: // value for 'day3'
+ *      day4: // value for 'day4'
+ *      day5: // value for 'day5'
+ *      day6: // value for 'day6'
+ *   },
+ * });
+ */
+export function useWeeklyExchangeRatesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
+        return ApolloReactHooks.useQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
+      }
+export function useWeeklyExchangeRatesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
+        }
+export type WeeklyExchangeRatesQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesQuery>;
+export type WeeklyExchangeRatesLazyQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesLazyQuery>;
+export type WeeklyExchangeRatesQueryResult = ApolloReactCommon.QueryResult<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>;
+export const SavingsContractDocument = gql`
+    query SavingsContract($id: ID!) @api(name: protocol) {
+  savingsContracts(where: {id: $id}) {
+    id
+    totalSavings {
+      ...MetricFields
+    }
+    totalCredits {
+      ...MetricFields
+    }
+    exchangeRates {
+      id
+    }
+    dailyAPY
+    automationEnabled
+  }
+}
+    ${MetricFieldsFragmentDoc}`;
+
+/**
+ * __useSavingsContractQuery__
+ *
+ * To run a query within a React component, call `useSavingsContractQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSavingsContractQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSavingsContractQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSavingsContractQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
+        return ApolloReactHooks.useQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
+      }
+export function useSavingsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
+        }
+export type SavingsContractQueryHookResult = ReturnType<typeof useSavingsContractQuery>;
+export type SavingsContractLazyQueryHookResult = ReturnType<typeof useSavingsContractLazyQuery>;
+export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<SavingsContractQuery, SavingsContractQueryVariables>;
+export const TokenDocument = gql`
+    query Token($id: ID!) @api(name: protocol) {
+  token(id: $id) {
+    ...TokenDetails
+  }
+}
+    ${TokenDetailsFragmentDoc}`;
+
+/**
+ * __useTokenQuery__
+ *
+ * To run a query within a React component, call `useTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTokenQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTokenQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TokenQuery, TokenQueryVariables>) {
+        return ApolloReactHooks.useQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
+      }
+export function useTokenLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TokenQuery, TokenQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
+        }
+export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
+export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
+export type TokenQueryResult = ApolloReactCommon.QueryResult<TokenQuery, TokenQueryVariables>;
+export const CreditBalancesDocument = gql`
+    query CreditBalances($account: ID!) @api(name: protocol) {
+  account(id: $account) {
+    creditBalance {
+      amount
+    }
+  }
+}
+    `;
+
+/**
+ * __useCreditBalancesQuery__
+ *
+ * To run a query within a React component, call `useCreditBalancesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useCreditBalancesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useCreditBalancesQuery({
+ *   variables: {
+ *      account: // value for 'account'
+ *   },
+ * });
+ */
+export function useCreditBalancesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
+        return ApolloReactHooks.useQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
+      }
+export function useCreditBalancesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
+        }
+export type CreditBalancesQueryHookResult = ReturnType<typeof useCreditBalancesQuery>;
+export type CreditBalancesLazyQueryHookResult = ReturnType<typeof useCreditBalancesLazyQuery>;
+export type CreditBalancesQueryResult = ApolloReactCommon.QueryResult<CreditBalancesQuery, CreditBalancesQueryVariables>;
+export const LatestExchangeRateDocument = gql`
+    query LatestExchangeRate @api(name: protocol) {
+  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
+    ...ER
+  }
+}
+    ${ErFragmentDoc}`;
+
+/**
+ * __useLatestExchangeRateQuery__
+ *
+ * To run a query within a React component, call `useLatestExchangeRateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLatestExchangeRateQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLatestExchangeRateQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLatestExchangeRateQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
+        return ApolloReactHooks.useQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
+      }
+export function useLatestExchangeRateLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
+        }
+export type LatestExchangeRateQueryHookResult = ReturnType<typeof useLatestExchangeRateQuery>;
+export type LatestExchangeRateLazyQueryHookResult = ReturnType<typeof useLatestExchangeRateLazyQuery>;
+export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>;
+export const ScriptVaultBalancesDocument = gql`
+    query ScriptVaultBalances($block: Block_height) @api(name: protocol) {
+  bassets(block: $block) {
+    id
+    token {
+      symbol
+      decimals
+    }
+    vaultBalance {
+      ...MetricFields
+    }
+  }
+}
+    ${MetricFieldsFragmentDoc}`;
+
+/**
+ * __useScriptVaultBalancesQuery__
+ *
+ * To run a query within a React component, call `useScriptVaultBalancesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useScriptVaultBalancesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useScriptVaultBalancesQuery({
+ *   variables: {
+ *      block: // value for 'block'
+ *   },
+ * });
+ */
+export function useScriptVaultBalancesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>) {
+        return ApolloReactHooks.useQuery<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>(ScriptVaultBalancesDocument, baseOptions);
+      }
+export function useScriptVaultBalancesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>(ScriptVaultBalancesDocument, baseOptions);
+        }
+export type ScriptVaultBalancesQueryHookResult = ReturnType<typeof useScriptVaultBalancesQuery>;
+export type ScriptVaultBalancesLazyQueryHookResult = ReturnType<typeof useScriptVaultBalancesLazyQuery>;
+export type ScriptVaultBalancesQueryResult = ApolloReactCommon.QueryResult<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>;
+export const ScriptFeesDocument = gql`
+    query ScriptFees($limit: Int!, $offset: Int!) @api(name: protocol) {
+  paidFeeTransactions(first: $limit, skip: $offset) {
+    massetUnits
+  }
+}
+    `;
+
+/**
+ * __useScriptFeesQuery__
+ *
+ * To run a query within a React component, call `useScriptFeesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useScriptFeesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useScriptFeesQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useScriptFeesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ScriptFeesQuery, ScriptFeesQueryVariables>) {
+        return ApolloReactHooks.useQuery<ScriptFeesQuery, ScriptFeesQueryVariables>(ScriptFeesDocument, baseOptions);
+      }
+export function useScriptFeesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ScriptFeesQuery, ScriptFeesQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ScriptFeesQuery, ScriptFeesQueryVariables>(ScriptFeesDocument, baseOptions);
+        }
+export type ScriptFeesQueryHookResult = ReturnType<typeof useScriptFeesQuery>;
+export type ScriptFeesLazyQueryHookResult = ReturnType<typeof useScriptFeesLazyQuery>;
+export type ScriptFeesQueryResult = ApolloReactCommon.QueryResult<ScriptFeesQuery, ScriptFeesQueryVariables>;
+export const HistoricTransactionsDocument = gql`
+    query HistoricTransactions($account: Bytes) @api(name: protocol) {
+  transactions(where: {sender: $account}, orderBy: timestamp) {
     id
     hash
-    timestamp
     block
+    timestamp
     sender
-  }
-`;
-export const TransactionAllFragmentDoc = gql`
-  fragment TransactionAll on Transaction {
+    __typename
     ... on RedeemTransaction {
       masset {
         id
@@ -3408,10 +3796,17 @@ export const TransactionAllFragmentDoc = gql`
         id
       }
       massetUnits
+      bassets {
+        id
+      }
+      bassetsUnits
     }
     ... on MintSingleTransaction {
       bassetUnits
       masset {
+        id
+      }
+      basset {
         id
       }
       massetUnits
@@ -3451,861 +3846,8 @@ export const TransactionAllFragmentDoc = gql`
       massetUnits
     }
   }
-`;
-export const ErFragmentDoc = gql`
-  fragment ER on ExchangeRate {
-    rate
-    timestamp
-  }
-`;
-export const CoreTokensDocument = gql`
-  query CoreTokens @api(name: protocol) {
-    mUSD: tokens(where: { symbol: "mUSD" }) {
-      ...TokenDetails
-    }
-    mUSDSavings: savingsContracts(first: 1) {
-      id
-    }
-  }
-  ${TokenDetailsFragmentDoc}
-`;
-
-/**
- * __useCoreTokensQuery__
- *
- * To run a query within a React component, call `useCoreTokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useCoreTokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCoreTokensQuery({
- *   variables: {
- *   },
- * });
- */
-export function useCoreTokensQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    CoreTokensQuery,
-    CoreTokensQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<CoreTokensQuery, CoreTokensQueryVariables>(
-    CoreTokensDocument,
-    baseOptions,
-  );
 }
-export function useCoreTokensLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    CoreTokensQuery,
-    CoreTokensQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    CoreTokensQuery,
-    CoreTokensQueryVariables
-  >(CoreTokensDocument, baseOptions);
-}
-export type CoreTokensQueryHookResult = ReturnType<typeof useCoreTokensQuery>;
-export type CoreTokensLazyQueryHookResult = ReturnType<
-  typeof useCoreTokensLazyQuery
->;
-export type CoreTokensQueryResult = ApolloReactCommon.QueryResult<
-  CoreTokensQuery,
-  CoreTokensQueryVariables
->;
-export const MassetDocument = gql`
-  query Masset($id: ID!) @api(name: protocol) {
-    masset(id: $id) {
-      ...MassetAll
-    }
-  }
-  ${MassetAllFragmentDoc}
-`;
-
-/**
- * __useMassetQuery__
- *
- * To run a query within a React component, call `useMassetQuery` and pass it any options that fit your needs.
- * When your component renders, `useMassetQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useMassetQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useMassetQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    MassetQuery,
-    MassetQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<MassetQuery, MassetQueryVariables>(
-    MassetDocument,
-    baseOptions,
-  );
-}
-export function useMassetLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    MassetQuery,
-    MassetQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<MassetQuery, MassetQueryVariables>(
-    MassetDocument,
-    baseOptions,
-  );
-}
-export type MassetQueryHookResult = ReturnType<typeof useMassetQuery>;
-export type MassetLazyQueryHookResult = ReturnType<typeof useMassetLazyQuery>;
-export type MassetQueryResult = ApolloReactCommon.QueryResult<
-  MassetQuery,
-  MassetQueryVariables
->;
-export const Erc20TokensDocument = gql`
-  query Erc20Tokens($addresses: [Bytes!]!) @api(name: protocol) {
-    tokens(where: { address_in: $addresses }) {
-      ...TokenDetails
-    }
-  }
-  ${TokenDetailsFragmentDoc}
-`;
-
-/**
- * __useErc20TokensQuery__
- *
- * To run a query within a React component, call `useErc20TokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useErc20TokensQuery({
- *   variables: {
- *      addresses: // value for 'addresses'
- *   },
- * });
- */
-export function useErc20TokensQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    Erc20TokensQuery,
-    Erc20TokensQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(
-    Erc20TokensDocument,
-    baseOptions,
-  );
-}
-export function useErc20TokensLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    Erc20TokensQuery,
-    Erc20TokensQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    Erc20TokensQuery,
-    Erc20TokensQueryVariables
-  >(Erc20TokensDocument, baseOptions);
-}
-export type Erc20TokensQueryHookResult = ReturnType<typeof useErc20TokensQuery>;
-export type Erc20TokensLazyQueryHookResult = ReturnType<
-  typeof useErc20TokensLazyQuery
->;
-export type Erc20TokensQueryResult = ApolloReactCommon.QueryResult<
-  Erc20TokensQuery,
-  Erc20TokensQueryVariables
->;
-export const AllErc20TokensDocument = gql`
-  query AllErc20Tokens @api(name: protocol) {
-    savingsContracts {
-      address: id
-      id
-    }
-    tokens {
-      ...TokenDetails
-    }
-  }
-  ${TokenDetailsFragmentDoc}
-`;
-
-/**
- * __useAllErc20TokensQuery__
- *
- * To run a query within a React component, call `useAllErc20TokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useAllErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useAllErc20TokensQuery({
- *   variables: {
- *   },
- * });
- */
-export function useAllErc20TokensQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    AllErc20TokensQuery,
-    AllErc20TokensQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<
-    AllErc20TokensQuery,
-    AllErc20TokensQueryVariables
-  >(AllErc20TokensDocument, baseOptions);
-}
-export function useAllErc20TokensLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    AllErc20TokensQuery,
-    AllErc20TokensQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    AllErc20TokensQuery,
-    AllErc20TokensQueryVariables
-  >(AllErc20TokensDocument, baseOptions);
-}
-export type AllErc20TokensQueryHookResult = ReturnType<
-  typeof useAllErc20TokensQuery
->;
-export type AllErc20TokensLazyQueryHookResult = ReturnType<
-  typeof useAllErc20TokensLazyQuery
->;
-export type AllErc20TokensQueryResult = ApolloReactCommon.QueryResult<
-  AllErc20TokensQuery,
-  AllErc20TokensQueryVariables
->;
-export const LastExchangeRateBeforeTimestampDocument = gql`
-  query LastExchangeRateBeforeTimestamp($timestamp: Int!) @api(name: protocol) {
-    exchangeRates(
-      where: { timestamp_lt: $timestamp }
-      orderDirection: desc
-      orderBy: timestamp
-      first: 1
-    ) {
-      ...ER
-    }
-  }
-  ${ErFragmentDoc}
-`;
-
-/**
- * __useLastExchangeRateBeforeTimestampQuery__
- *
- * To run a query within a React component, call `useLastExchangeRateBeforeTimestampQuery` and pass it any options that fit your needs.
- * When your component renders, `useLastExchangeRateBeforeTimestampQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useLastExchangeRateBeforeTimestampQuery({
- *   variables: {
- *      timestamp: // value for 'timestamp'
- *   },
- * });
- */
-export function useLastExchangeRateBeforeTimestampQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    LastExchangeRateBeforeTimestampQuery,
-    LastExchangeRateBeforeTimestampQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<
-    LastExchangeRateBeforeTimestampQuery,
-    LastExchangeRateBeforeTimestampQueryVariables
-  >(LastExchangeRateBeforeTimestampDocument, baseOptions);
-}
-export function useLastExchangeRateBeforeTimestampLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    LastExchangeRateBeforeTimestampQuery,
-    LastExchangeRateBeforeTimestampQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    LastExchangeRateBeforeTimestampQuery,
-    LastExchangeRateBeforeTimestampQueryVariables
-  >(LastExchangeRateBeforeTimestampDocument, baseOptions);
-}
-export type LastExchangeRateBeforeTimestampQueryHookResult = ReturnType<
-  typeof useLastExchangeRateBeforeTimestampQuery
->;
-export type LastExchangeRateBeforeTimestampLazyQueryHookResult = ReturnType<
-  typeof useLastExchangeRateBeforeTimestampLazyQuery
->;
-export type LastExchangeRateBeforeTimestampQueryResult = ApolloReactCommon.QueryResult<
-  LastExchangeRateBeforeTimestampQuery,
-  LastExchangeRateBeforeTimestampQueryVariables
->;
-export const WeeklyExchangeRatesDocument = gql`
-  query WeeklyExchangeRates(
-    $day0: Int!
-    $day1: Int!
-    $day2: Int!
-    $day3: Int!
-    $day4: Int!
-    $day5: Int!
-    $day6: Int!
-  ) @api(name: protocol) {
-    day0: exchangeRates(
-      where: { timestamp_lt: $day0 }
-      orderDirection: desc
-      orderBy: timestamp
-      first: 1
-    ) {
-      ...ER
-    }
-    day1: exchangeRates(
-      where: { timestamp_lt: $day1 }
-      orderDirection: desc
-      orderBy: timestamp
-      first: 1
-    ) {
-      ...ER
-    }
-    day2: exchangeRates(
-      where: { timestamp_lt: $day2 }
-      orderDirection: desc
-      orderBy: timestamp
-      first: 1
-    ) {
-      ...ER
-    }
-    day3: exchangeRates(
-      where: { timestamp_lt: $day3 }
-      orderDirection: desc
-      orderBy: timestamp
-      first: 1
-    ) {
-      ...ER
-    }
-    day4: exchangeRates(
-      where: { timestamp_lt: $day4 }
-      orderDirection: desc
-      orderBy: timestamp
-      first: 1
-    ) {
-      ...ER
-    }
-    day5: exchangeRates(
-      where: { timestamp_lt: $day5 }
-      orderDirection: desc
-      orderBy: timestamp
-      first: 1
-    ) {
-      ...ER
-    }
-    day6: exchangeRates(
-      where: { timestamp_lt: $day6 }
-      orderDirection: desc
-      orderBy: timestamp
-      first: 1
-    ) {
-      ...ER
-    }
-  }
-  ${ErFragmentDoc}
-`;
-
-/**
- * __useWeeklyExchangeRatesQuery__
- *
- * To run a query within a React component, call `useWeeklyExchangeRatesQuery` and pass it any options that fit your needs.
- * When your component renders, `useWeeklyExchangeRatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useWeeklyExchangeRatesQuery({
- *   variables: {
- *      day0: // value for 'day0'
- *      day1: // value for 'day1'
- *      day2: // value for 'day2'
- *      day3: // value for 'day3'
- *      day4: // value for 'day4'
- *      day5: // value for 'day5'
- *      day6: // value for 'day6'
- *   },
- * });
- */
-export function useWeeklyExchangeRatesQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    WeeklyExchangeRatesQuery,
-    WeeklyExchangeRatesQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<
-    WeeklyExchangeRatesQuery,
-    WeeklyExchangeRatesQueryVariables
-  >(WeeklyExchangeRatesDocument, baseOptions);
-}
-export function useWeeklyExchangeRatesLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    WeeklyExchangeRatesQuery,
-    WeeklyExchangeRatesQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    WeeklyExchangeRatesQuery,
-    WeeklyExchangeRatesQueryVariables
-  >(WeeklyExchangeRatesDocument, baseOptions);
-}
-export type WeeklyExchangeRatesQueryHookResult = ReturnType<
-  typeof useWeeklyExchangeRatesQuery
->;
-export type WeeklyExchangeRatesLazyQueryHookResult = ReturnType<
-  typeof useWeeklyExchangeRatesLazyQuery
->;
-export type WeeklyExchangeRatesQueryResult = ApolloReactCommon.QueryResult<
-  WeeklyExchangeRatesQuery,
-  WeeklyExchangeRatesQueryVariables
->;
-export const SavingsContractDocument = gql`
-  query SavingsContract($id: ID!) @api(name: protocol) {
-    savingsContracts(where: { id: $id }) {
-      id
-      totalSavings {
-        ...MetricFields
-      }
-      totalCredits {
-        ...MetricFields
-      }
-      exchangeRates {
-        id
-      }
-      automationEnabled
-    }
-  }
-  ${MetricFieldsFragmentDoc}
-`;
-
-/**
- * __useSavingsContractQuery__
- *
- * To run a query within a React component, call `useSavingsContractQuery` and pass it any options that fit your needs.
- * When your component renders, `useSavingsContractQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useSavingsContractQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useSavingsContractQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    SavingsContractQuery,
-    SavingsContractQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<
-    SavingsContractQuery,
-    SavingsContractQueryVariables
-  >(SavingsContractDocument, baseOptions);
-}
-export function useSavingsContractLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    SavingsContractQuery,
-    SavingsContractQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    SavingsContractQuery,
-    SavingsContractQueryVariables
-  >(SavingsContractDocument, baseOptions);
-}
-export type SavingsContractQueryHookResult = ReturnType<
-  typeof useSavingsContractQuery
->;
-export type SavingsContractLazyQueryHookResult = ReturnType<
-  typeof useSavingsContractLazyQuery
->;
-export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<
-  SavingsContractQuery,
-  SavingsContractQueryVariables
->;
-export const TokenDocument = gql`
-  query Token($id: ID!) @api(name: protocol) {
-    token(id: $id) {
-      ...TokenDetails
-    }
-  }
-  ${TokenDetailsFragmentDoc}
-`;
-
-/**
- * __useTokenQuery__
- *
- * To run a query within a React component, call `useTokenQuery` and pass it any options that fit your needs.
- * When your component renders, `useTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTokenQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useTokenQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    TokenQuery,
-    TokenQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<TokenQuery, TokenQueryVariables>(
-    TokenDocument,
-    baseOptions,
-  );
-}
-export function useTokenLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    TokenQuery,
-    TokenQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<TokenQuery, TokenQueryVariables>(
-    TokenDocument,
-    baseOptions,
-  );
-}
-export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
-export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
-export type TokenQueryResult = ApolloReactCommon.QueryResult<
-  TokenQuery,
-  TokenQueryVariables
->;
-export const CreditBalancesDocument = gql`
-  query CreditBalances($account: ID!) @api(name: protocol) {
-    account(id: $account) {
-      creditBalance {
-        amount
-      }
-    }
-  }
-`;
-
-/**
- * __useCreditBalancesQuery__
- *
- * To run a query within a React component, call `useCreditBalancesQuery` and pass it any options that fit your needs.
- * When your component renders, `useCreditBalancesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCreditBalancesQuery({
- *   variables: {
- *      account: // value for 'account'
- *   },
- * });
- */
-export function useCreditBalancesQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    CreditBalancesQuery,
-    CreditBalancesQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<
-    CreditBalancesQuery,
-    CreditBalancesQueryVariables
-  >(CreditBalancesDocument, baseOptions);
-}
-export function useCreditBalancesLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    CreditBalancesQuery,
-    CreditBalancesQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    CreditBalancesQuery,
-    CreditBalancesQueryVariables
-  >(CreditBalancesDocument, baseOptions);
-}
-export type CreditBalancesQueryHookResult = ReturnType<
-  typeof useCreditBalancesQuery
->;
-export type CreditBalancesLazyQueryHookResult = ReturnType<
-  typeof useCreditBalancesLazyQuery
->;
-export type CreditBalancesQueryResult = ApolloReactCommon.QueryResult<
-  CreditBalancesQuery,
-  CreditBalancesQueryVariables
->;
-export const LatestExchangeRateDocument = gql`
-  query LatestExchangeRate @api(name: protocol) {
-    exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
-      ...ER
-    }
-  }
-  ${ErFragmentDoc}
-`;
-
-/**
- * __useLatestExchangeRateQuery__
- *
- * To run a query within a React component, call `useLatestExchangeRateQuery` and pass it any options that fit your needs.
- * When your component renders, `useLatestExchangeRateQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useLatestExchangeRateQuery({
- *   variables: {
- *   },
- * });
- */
-export function useLatestExchangeRateQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    LatestExchangeRateQuery,
-    LatestExchangeRateQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<
-    LatestExchangeRateQuery,
-    LatestExchangeRateQueryVariables
-  >(LatestExchangeRateDocument, baseOptions);
-}
-export function useLatestExchangeRateLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    LatestExchangeRateQuery,
-    LatestExchangeRateQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    LatestExchangeRateQuery,
-    LatestExchangeRateQueryVariables
-  >(LatestExchangeRateDocument, baseOptions);
-}
-export type LatestExchangeRateQueryHookResult = ReturnType<
-  typeof useLatestExchangeRateQuery
->;
-export type LatestExchangeRateLazyQueryHookResult = ReturnType<
-  typeof useLatestExchangeRateLazyQuery
->;
-export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<
-  LatestExchangeRateQuery,
-  LatestExchangeRateQueryVariables
->;
-export const ScriptVaultBalancesDocument = gql`
-  query ScriptVaultBalances($block: Block_height) @api(name: protocol) {
-    bassets(block: $block) {
-      id
-      token {
-        symbol
-        decimals
-      }
-      vaultBalance {
-        ...MetricFields
-      }
-    }
-  }
-  ${MetricFieldsFragmentDoc}
-`;
-
-/**
- * __useScriptVaultBalancesQuery__
- *
- * To run a query within a React component, call `useScriptVaultBalancesQuery` and pass it any options that fit your needs.
- * When your component renders, `useScriptVaultBalancesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useScriptVaultBalancesQuery({
- *   variables: {
- *      block: // value for 'block'
- *   },
- * });
- */
-export function useScriptVaultBalancesQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    ScriptVaultBalancesQuery,
-    ScriptVaultBalancesQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<
-    ScriptVaultBalancesQuery,
-    ScriptVaultBalancesQueryVariables
-  >(ScriptVaultBalancesDocument, baseOptions);
-}
-export function useScriptVaultBalancesLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    ScriptVaultBalancesQuery,
-    ScriptVaultBalancesQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    ScriptVaultBalancesQuery,
-    ScriptVaultBalancesQueryVariables
-  >(ScriptVaultBalancesDocument, baseOptions);
-}
-export type ScriptVaultBalancesQueryHookResult = ReturnType<
-  typeof useScriptVaultBalancesQuery
->;
-export type ScriptVaultBalancesLazyQueryHookResult = ReturnType<
-  typeof useScriptVaultBalancesLazyQuery
->;
-export type ScriptVaultBalancesQueryResult = ApolloReactCommon.QueryResult<
-  ScriptVaultBalancesQuery,
-  ScriptVaultBalancesQueryVariables
->;
-export const ScriptFeesDocument = gql`
-  query ScriptFees($limit: Int!, $offset: Int!) @api(name: protocol) {
-    paidFeeTransactions(first: $limit, skip: $offset) {
-      massetUnits
-    }
-  }
-`;
-
-/**
- * __useScriptFeesQuery__
- *
- * To run a query within a React component, call `useScriptFeesQuery` and pass it any options that fit your needs.
- * When your component renders, `useScriptFeesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useScriptFeesQuery({
- *   variables: {
- *      limit: // value for 'limit'
- *      offset: // value for 'offset'
- *   },
- * });
- */
-export function useScriptFeesQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    ScriptFeesQuery,
-    ScriptFeesQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<ScriptFeesQuery, ScriptFeesQueryVariables>(
-    ScriptFeesDocument,
-    baseOptions,
-  );
-}
-export function useScriptFeesLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    ScriptFeesQuery,
-    ScriptFeesQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    ScriptFeesQuery,
-    ScriptFeesQueryVariables
-  >(ScriptFeesDocument, baseOptions);
-}
-export type ScriptFeesQueryHookResult = ReturnType<typeof useScriptFeesQuery>;
-export type ScriptFeesLazyQueryHookResult = ReturnType<
-  typeof useScriptFeesLazyQuery
->;
-export type ScriptFeesQueryResult = ApolloReactCommon.QueryResult<
-  ScriptFeesQuery,
-  ScriptFeesQueryVariables
->;
-export const HistoricTransactionsDocument = gql`
-  query HistoricTransactions($account: Bytes) @api(name: protocol) {
-    transactions(where: { sender: $account }, orderBy: timestamp) {
-      id
-      hash
-      block
-      timestamp
-      sender
-      __typename
-      ... on RedeemTransaction {
-        masset {
-          id
-        }
-        massetUnits
-        bassets {
-          id
-        }
-        bassetsUnits
-        recipient
-      }
-      ... on RedeemMassetTransaction {
-        masset {
-          id
-        }
-        massetUnits
-        recipient
-      }
-      ... on MintMultiTransaction {
-        masset {
-          id
-        }
-        massetUnits
-        bassets {
-          id
-        }
-        bassetsUnits
-      }
-      ... on MintSingleTransaction {
-        bassetUnits
-        masset {
-          id
-        }
-        basset {
-          id
-        }
-        massetUnits
-      }
-      ... on PaidFeeTransaction {
-        basset {
-          id
-        }
-        bassetUnits
-        masset {
-          id
-        }
-        massetUnits
-      }
-      ... on SavingsContractDepositTransaction {
-        amount
-        savingsContract {
-          id
-        }
-      }
-      ... on SavingsContractWithdrawTransaction {
-        amount
-        savingsContract {
-          id
-        }
-      }
-      ... on SwapTransaction {
-        masset {
-          id
-        }
-        inputBasset {
-          id
-        }
-        outputBasset {
-          id
-        }
-        massetUnits
-      }
-    }
-  }
-`;
+    `;
 
 /**
  * __useHistoricTransactionsQuery__
@@ -4323,35 +3865,12 @@ export const HistoricTransactionsDocument = gql`
  *   },
  * });
  */
-export function useHistoricTransactionsQuery(
-  baseOptions?: ApolloReactHooks.QueryHookOptions<
-    HistoricTransactionsQuery,
-    HistoricTransactionsQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useQuery<
-    HistoricTransactionsQuery,
-    HistoricTransactionsQueryVariables
-  >(HistoricTransactionsDocument, baseOptions);
-}
-export function useHistoricTransactionsLazyQuery(
-  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
-    HistoricTransactionsQuery,
-    HistoricTransactionsQueryVariables
-  >,
-) {
-  return ApolloReactHooks.useLazyQuery<
-    HistoricTransactionsQuery,
-    HistoricTransactionsQueryVariables
-  >(HistoricTransactionsDocument, baseOptions);
-}
-export type HistoricTransactionsQueryHookResult = ReturnType<
-  typeof useHistoricTransactionsQuery
->;
-export type HistoricTransactionsLazyQueryHookResult = ReturnType<
-  typeof useHistoricTransactionsLazyQuery
->;
-export type HistoricTransactionsQueryResult = ApolloReactCommon.QueryResult<
-  HistoricTransactionsQuery,
-  HistoricTransactionsQueryVariables
->;
+export function useHistoricTransactionsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>) {
+        return ApolloReactHooks.useQuery<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>(HistoricTransactionsDocument, baseOptions);
+      }
+export function useHistoricTransactionsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>(HistoricTransactionsDocument, baseOptions);
+        }
+export type HistoricTransactionsQueryHookResult = ReturnType<typeof useHistoricTransactionsQuery>;
+export type HistoricTransactionsLazyQueryHookResult = ReturnType<typeof useHistoricTransactionsLazyQuery>;
+export type HistoricTransactionsQueryResult = ApolloReactCommon.QueryResult<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>;
