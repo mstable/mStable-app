@@ -94,8 +94,10 @@ const HistoricalApy: FC<{}> = () => {
   return (
     <HistoricalApyContainer>
       <div>
-        <Button onClick={selectSeven}>7d</Button>
-        <Button onClick={selectThirty}>30</Button>
+        <div>
+          <Button onClick={selectSeven}>7d</Button>
+          <Button onClick={selectThirty}>30d</Button>
+        </div>
         {selectedChart === ChartType.SevenDays ? (
           <DailyApys />
         ) : (
