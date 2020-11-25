@@ -109,7 +109,8 @@ const HistoricalApy: FC<{}> = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Average daily APY over the past 7 days
+            Average daily APY over the past{' '}
+            {selectedChart === ChartType.SevenDays ? '7' : '30'} days
           </a>
         </P>
       </div>
