@@ -73,7 +73,7 @@ export const MonthDailyApys: FC<{}> = () => {
           theme={victoryTheme}
           height={200}
           domainPadding={25}
-          padding={{ left: 45, top: 0, right: 20, bottom: 40 }}
+          padding={{ left: 45, top: 10, right: 20, bottom: 40 }}
         >
           <VictoryAxis
             dependentAxis
@@ -88,11 +88,12 @@ export const MonthDailyApys: FC<{}> = () => {
             tickFormat={tickFormat}
             style={{
               grid: { stroke: 'none' },
+              tickLabels: { angle: 45 },
             }}
           />
           <VictoryLine
             data={data}
-            labelComponent={<VictoryLabel />}
+            labelComponent={<VictoryLabel angle={45} />}
             labels={({
               datum: { percentage },
             }: {

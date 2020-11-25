@@ -26,7 +26,6 @@ import {
 } from './utils';
 import { TimeMetricPeriod } from '../../graphql/legacy';
 import { DateRange } from './Metrics';
-import { useGetCurrentAPY } from '../../context/DataProvider/DataProvider';
 
 const now = new Date();
 
@@ -74,7 +73,7 @@ export const DailyApys: FC<{}> = () => {
           theme={victoryTheme}
           height={200}
           domainPadding={25}
-          padding={{ left: 45, top: 0, right: 20, bottom: 40 }}
+          padding={{ left: 45, top: 10, right: 20, bottom: 40 }}
         >
           <VictoryAxis
             dependentAxis
