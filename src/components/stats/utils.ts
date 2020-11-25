@@ -1,3 +1,4 @@
+import Numeral from 'numeral';
 import {
   eachDayOfInterval,
   eachHourOfInterval,
@@ -7,14 +8,16 @@ import {
   eachYearOfInterval,
   lightFormat,
 } from 'date-fns';
-
 import { useMemo } from 'react';
+
 import { TimeMetricPeriod } from '../../graphql/legacy';
+
+// eslint-disable-next-line
 import { DateFilter } from './Metrics';
 
 type TickFormatFn = (timestamp: number) => string;
 
-const periodIntervalMapping: Record<
+export const periodIntervalMapping: Record<
   TimeMetricPeriod,
   (interval: Interval) => Date[]
 > = {
@@ -26,10 +29,10 @@ const periodIntervalMapping: Record<
   [TimeMetricPeriod.Year]: eachYearOfInterval,
 };
 
-const periodFormatMapping: Record<TimeMetricPeriod, string> = {
+export const periodFormatMapping: Record<TimeMetricPeriod, string> = {
   [TimeMetricPeriod.Hour]: 'HH',
   [TimeMetricPeriod.Day]: 'dd-MM',
-  [TimeMetricPeriod.Week]: 'W',
+  [TimeMetricPeriod.Week]: 'w',
   [TimeMetricPeriod.Month]: 'MM',
   [TimeMetricPeriod.Quarter]: 'Q',
   [TimeMetricPeriod.Year]: 'YYYY',
@@ -50,6 +53,8 @@ export const abbreviateNumber = (value: number): string => {
 
   return value.toFixed(0);
 };
+
+export const toK = (value: number): string => Numeral(value).format('0.[00]a');
 
 export const percentageFormat = (value: number): string =>
   `${value.toFixed(2)}%`;

@@ -26,10 +26,14 @@ import { TabsContainer, TabBtn } from '../core/Tabs';
 import { H3 } from '../core/Typography';
 import { Color, FontSize, ViewportWidth } from '../../theme';
 
+// eslint-disable-next-line
+import { periodIntervalMapping } from './utils';
+
 export enum DateRange {
   Day,
   Week,
   Month,
+  Days90,
 }
 
 export interface Metric<T extends string> {
@@ -135,8 +139,6 @@ const ChartContainer = styled.div`
   }
 `;
 
-const Container = styled.div``;
-
 const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
   switch (action.type) {
     case Actions.SetDateRange: {
@@ -155,7 +157,7 @@ const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
       const type = action.payload;
       return {
         ...state,
-        metrics: state.metrics.map(t =>
+        metrics: state.metrics?.map(t =>
           t.type === type ? { ...t, enabled: !t.enabled } : t,
         ),
       };
@@ -191,10 +193,17 @@ const DATE_RANGES: State<never>['dates'] = [
     from: startOfDay(subDays(new Date(), 29)),
     end: END_OF_DAY,
   },
+  {
+    dateRange: DateRange.Days90,
+    period: TimeMetricPeriod.Day,
+    label: '90 day',
+    from: startOfDay(subDays(new Date(), 90)),
+    end: END_OF_DAY,
+  },
 ];
 
 interface Props<T extends string> {
-  metrics: Metric<T>[];
+  metrics?: Metric<T>[];
   defaultDateRange?: DateRange;
 }
 
@@ -216,7 +225,7 @@ const initializer = <T extends string>({
 });
 
 export const Metrics = <T extends string>({
-  metrics,
+  metrics = [],
   defaultDateRange,
   children,
 }: PropsWithChildren<Props<T>>): ReactElement => {
@@ -248,25 +257,29 @@ export const Metrics = <T extends string>({
           setDateRange,
         ])}
       >
-        <Container>
+        <div>
           <ControlsContainer>
-            <Control>
-              <H3 borderTop>Metrics</H3>
-              <MetricToggles>
-                {state.metrics.map(({ type, enabled, label, color }) => (
-                  <Toggle key={type}>
-                    <div>
-                      <ToggleInput
-                        enabledColor={color}
-                        onClick={() => toggleType(type)}
-                        checked={!!enabled}
-                      />
-                    </div>
-                    <ToggleLabel>{label}</ToggleLabel>
-                  </Toggle>
-                ))}
-              </MetricToggles>
-            </Control>
+            {state.metrics?.length > 0 ? (
+              <Control>
+                <H3 borderTop>Metrics</H3>
+                <MetricToggles>
+                  {state.metrics.map(({ type, enabled, label, color }) => (
+                    <Toggle key={type}>
+                      <div>
+                        <ToggleInput
+                          enabledColor={color}
+                          onClick={() => toggleType(type)}
+                          checked={!!enabled}
+                        />
+                      </div>
+                      <ToggleLabel>{label}</ToggleLabel>
+                    </Toggle>
+                  ))}
+                </MetricToggles>
+              </Control>
+            ) : (
+              <div />
+            )}
             <Control>
               <H3 borderTop>Range</H3>
               <TabsContainer>
@@ -284,7 +297,7 @@ export const Metrics = <T extends string>({
             </Control>
           </ControlsContainer>
           <ChartContainer>{children}</ChartContainer>
-        </Container>
+        </div>
       </dispatchCtx.Provider>
     </stateCtx.Provider>
   );
@@ -296,12 +309,22 @@ export const useMetricsState = <T extends string>(): State<T> =>
 export const useMetricsDispatch = <T extends string>(): Dispatch<T> =>
   useContext(dispatchCtx);
 
-export const useDateFilter = (): DateFilter => {
+const now = new Date();
+
+export const useDateFilter = (): DateFilter & { dates: Date[] } => {
   const { dates } = useMetricsState();
-  return useMemo(
-    () => dates.find(d => d.enabled) as NonNullable<typeof dates[0]>,
-    [dates],
-  );
+  return useMemo(() => {
+    const dateFilter = dates.find(d => d.enabled) as DateFilter;
+
+    const intervalFn = periodIntervalMapping[dateFilter.period];
+
+    const datesForRange = intervalFn({
+      start: dateFilter.from,
+      end: dateFilter.end,
+    }).concat(now);
+
+    return { ...dateFilter, dates: datesForRange };
+  }, [dates]);
 };
 
 export const useMetrics = <T extends string>(): Record<T, Metric<T>> => {

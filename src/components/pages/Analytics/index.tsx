@@ -1,12 +1,12 @@
-import React, { FC, useLayoutEffect, useState, useCallback } from 'react';
+import React, { FC, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
+
 import {
   useMassetTotalSupply,
   useTotalSavings,
 } from '../../../context/DataProvider/DataProvider';
 import { ReactComponent as AnalyticsIcon } from '../../icons/circle/analytics.svg';
-import { DailyApys } from '../../stats/DailyApys';
 import { BasketStats } from '../../stats/BasketStats';
 import { H2, H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
@@ -14,14 +14,13 @@ import { VolumeChart } from '../../stats/VolumeChart';
 import { AggregateChart } from '../../stats/AggregateChart';
 import { PageHeader } from '../PageHeader';
 import { Size } from '../../../theme';
-import { Button } from '../../core/Button';
-import { MonthDailyApys } from '../../stats/MonthDailyApys';
+import { DailyApys } from '../../stats/DailyApys';
 
 const Section = styled.section`
   padding-bottom: 32px;
 `;
 
-const TotalSupply: FC<{}> = () => {
+const TotalSupply: FC = () => {
   const totalSupply = useMassetTotalSupply();
   return (
     <div>
@@ -35,7 +34,7 @@ const TotalSupply: FC<{}> = () => {
   );
 };
 
-const TotalSavings: FC<{}> = () => {
+const TotalSavings: FC = () => {
   const totalSavings = useTotalSavings();
   return (
     <div>
@@ -64,60 +63,6 @@ const NiceBigNumbers = styled.div`
   }
 `;
 
-const HistoricalApyContainer = styled.div`
-  display: flex;
-  justify-content: center;
-
-  > div {
-    width: 100%;
-    > p {
-      text-align: center;
-    }
-  }
-`;
-
-enum ChartType {
-  SevenDays = '7d',
-  ThirtyDays = '30d',
-}
-
-const HistoricalApy: FC<{}> = () => {
-  const [selectedChart, setSelectedChart] = useState(ChartType.SevenDays);
-
-  const selectThirty = useCallback(() => {
-    setSelectedChart(ChartType.ThirtyDays);
-  }, [setSelectedChart]);
-
-  const selectSeven = useCallback(() => {
-    setSelectedChart(ChartType.SevenDays);
-  }, [setSelectedChart]);
-  return (
-    <HistoricalApyContainer>
-      <div>
-        <div>
-          <Button onClick={selectSeven}>7d</Button>
-          <Button onClick={selectThirty}>30d</Button>
-        </div>
-        {selectedChart === ChartType.SevenDays ? (
-          <DailyApys />
-        ) : (
-          <MonthDailyApys />
-        )}
-        <P size={Size.s}>
-          <a
-            href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Average daily APY over the past{' '}
-            {selectedChart === ChartType.SevenDays ? '7' : '30'} days
-          </a>
-        </P>
-      </div>
-    </HistoricalApyContainer>
-  );
-};
-
 const BasketStatsContainer = styled.div`
   > :first-child {
     max-width: 400px;
@@ -131,7 +76,7 @@ const ThirdPartySources = styled.ul`
   }
 `;
 
-export const Analytics: FC<{}> = () => {
+export const Analytics: FC = () => {
   useLayoutEffect(() => {
     window.scrollTo({ top: 0 });
   }, []);
@@ -144,8 +89,8 @@ export const Analytics: FC<{}> = () => {
         subtitle="Explore activity across mStable"
       />
       <Section id="save">
-        <H2 borderTop>APY</H2>
-        <HistoricalApy />
+        <H2 borderTop>SAVE</H2>
+        <DailyApys />
       </Section>
       <Section id="volumes">
         <H2 borderTop>Volumes</H2>
