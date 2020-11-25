@@ -1,26 +1,31 @@
-/* eslint-disable react/jsx-props-no-spreading */
-
-import React, {
-  ComponentProps,
-  FC,
-  ReactComponentElement,
-  useMemo,
-} from 'react';
-import { VictoryBar } from 'victory-bar';
-import { VictoryChart } from 'victory-chart';
-import { VictoryStack } from 'victory-stack';
-import { VictoryAxis } from 'victory-axis';
-import {
-  VictoryLabel,
-  VictoryContainerProps,
-  VictoryContainer,
-} from 'victory-core';
+import React, { FC, ReactComponentElement, useMemo } from 'react';
+import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton/lib';
+import {
+  Bar,
+  BarChart,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+
+import { Props as DefaultTooltipContentProps } from 'recharts/types/component/DefaultTooltipContent.d';
+// eslint-disable-next-line
+// @ts-ignore
+import DefaultTooltipContent from 'recharts/lib/component/DefaultTooltipContent';
 
 import { useDataState } from '../../context/DataProvider/DataProvider';
 import { TokenIconSvg } from '../icons/TokenIcon';
 import { DataState } from '../../context/DataProvider/types';
 import { BigDecimal } from '../../web3/BigDecimal';
+import { Color } from '../../theme';
+import { toK } from './utils';
+import { RechartsContainer } from './RechartsContainer';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TooltipProps = DefaultTooltipContentProps<any, any>;
 
 type TokenSymbol = 'mUSD' | 'sUSD' | 'DAI' | 'USDT' | 'TUSD' | 'USDC' | 'BUSD';
 
@@ -62,44 +67,6 @@ interface Datum {
   maxWeightAsPercentage: number;
 }
 
-const ICON_SIZE = 16;
-
-const numericLabels = {
-  fontFamily: `'DM Mono', monospace`,
-  fontSize: 8,
-  textAnchor: 'end',
-};
-
-const AxisLabel: FC<ComponentProps<typeof VictoryLabel>> = ({
-  text,
-  x,
-  y,
-  style,
-  ...props
-}) => (
-  <g>
-    <TokenIconSvg
-      width={ICON_SIZE}
-      height={ICON_SIZE}
-      x={0}
-      y={(y || 0) - ICON_SIZE / 2}
-      symbol={text as string}
-    />
-    <VictoryLabel
-      text={text}
-      x={x}
-      y={y}
-      dx={16}
-      style={{
-        ...style,
-        textAnchor: 'start',
-        textShadow: `0 0 3px ${TOKEN_COLOURS[text as TokenSymbol]}`,
-      }}
-      {...props}
-    />
-  </g>
-);
-
 const Hatch = ({
   symbol,
 }: {
@@ -125,18 +92,40 @@ const Hatch = ({
   </pattern>
 );
 
-const Container: FC<VictoryContainerProps & {
-  bAssets: DataState['bAssets'];
-}> = ({ children, bAssets, ...props }) => (
-  <VictoryContainer {...props}>
-    <>
-      {Object.values(bAssets).map(b => (
-        <Hatch key={b.symbol} symbol={b.symbol as TokenSymbol} />
-      ))}
-      {children}
-    </>
-  </VictoryContainer>
-);
+// Horrific typing here because recharts types are inaccurate
+const CustomTooltip: FC<TooltipProps> = ((({
+  active,
+  payload,
+  ...props
+}: // eslint-disable-next-line @typescript-eslint/no-explicit-any
+TooltipProps & { active: boolean }) => {
+  if (!active) return null;
+  return (
+    <DefaultTooltipContent
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
+      payload={[
+        {
+          dataKey: 'vaultBalance',
+          name: 'Vault balance',
+          value: ((payload as NonNullable<typeof payload>)[0] as {
+            payload: { vaultBalance: string };
+          }).payload.vaultBalance,
+        },
+        ...(payload as NonNullable<typeof payload>),
+      ]}
+    />
+  );
+}) as unknown) as FC<TooltipProps>;
+
+const Container = styled(RechartsContainer)`
+  .recharts-default-tooltip > .recharts-tooltip-label {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  padding: 16px 0;
+`;
 
 export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
   const dataState = useDataState();
@@ -145,7 +134,7 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
   const data: Datum[] = useMemo(
     () =>
       Object.values(bAssets).map(
-        ({ basketShare, maxWeight, symbol, overweight }) => {
+        ({ basketShare, maxWeight, symbol, overweight, totalVault }) => {
           const basketShareAsPercentage = basketShare.toPercent();
           const maxWeightAsPercentage = new BigDecimal(
             maxWeight,
@@ -153,78 +142,123 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
           ).toPercent();
 
           // Get the remainder so that it can be stacked after the basket share
-          const remainderMaxWeight =
-            basketShareAsPercentage > maxWeightAsPercentage
+          const remainderMaxWeight = parseFloat(
+            (basketShareAsPercentage > maxWeightAsPercentage
               ? 0
-              : maxWeightAsPercentage - basketShareAsPercentage;
+              : maxWeightAsPercentage - basketShareAsPercentage
+            ).toFixed(2),
+          );
 
           return {
-            symbol: symbol as string,
+            symbol,
             basketShareAsPercentage,
             maxWeightAsPercentage: remainderMaxWeight,
             overweight,
+            vaultBalance: toK(totalVault.simple),
+            fill: overweight
+              ? OVERWEIGHT_TOKEN_COLOURS[symbol as TokenSymbol]
+              : TOKEN_COLOURS[symbol as TokenSymbol],
           };
         },
       ),
     [bAssets],
   );
 
-  return data.length > 0 ? (
-    <VictoryChart
-      containerComponent={<Container bAssets={bAssets} />}
-      height={100}
-      width={200}
-      padding={{ left: 20, top: 16, bottom: 16, right: 40 }}
-      animate
-    >
-      <VictoryStack horizontal>
-        <VictoryBar
-          style={{
-            data: {
-              fill: ({ datum: { symbol, overweight } }) =>
-                overweight
-                  ? OVERWEIGHT_TOKEN_COLOURS[symbol as TokenSymbol]
-                  : TOKEN_COLOURS[symbol as TokenSymbol],
-            },
-            labels: numericLabels,
-          }}
-          labelComponent={<VictoryLabel x={185} />}
-          labels={({ datum: { basketShareAsPercentage } }: { datum: Datum }) =>
-            `${basketShareAsPercentage.toFixed(2)}%`
-          }
-          barRatio={1.8}
-          data={data}
-          x="symbol"
-          y="basketShareAsPercentage"
-        />
-        <VictoryBar
-          style={{
-            data: {
-              fill: ({ datum: { symbol } }) => `url(#hatch-${symbol})`,
-            },
-          }}
-          labelComponent={<div />}
-          barRatio={1.8}
-          data={data}
-          x="symbol"
-          y="maxWeightAsPercentage"
-        />
-      </VictoryStack>
-      <VictoryAxis
-        tickLabelComponent={<AxisLabel />}
-        style={{
-          axis: { stroke: 'none' },
-          tickLabels: {
-            fontFamily: `'Poppins-Bold', sans-serif`,
-            fontWeight: 'bold',
-            fontSize: 12,
-            fill: '#fff',
-            textAnchor: 'start',
-          },
-        }}
-      />
-    </VictoryChart>
-  ) : (
-    <Skeleton height={132} />
+  return (
+    <Container>
+      {data && data.length ? (
+        <ResponsiveContainer aspect={1.8}>
+          <BarChart
+            layout="vertical"
+            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+            barCategoryGap={1}
+            data={data}
+          >
+            <defs>
+              {Object.values(bAssets).map(b => (
+                <Hatch key={b.symbol} symbol={b.symbol as TokenSymbol} />
+              ))}
+            </defs>
+            <Tooltip
+              cursor={false}
+              separator=" "
+              contentStyle={{
+                fontSize: '14px',
+                padding: '8px',
+                background: 'rgba(255, 255, 255, 0.8)',
+                textAlign: 'right',
+                border: 'none',
+                borderRadius: '4px',
+                color: Color.black,
+              }}
+              content={CustomTooltip}
+              wrapperStyle={{
+                top: 0,
+                left: 0,
+              }}
+            />
+            <XAxis
+              type="number"
+              unit="%"
+              padding={{ left: 16 }}
+              axisLine={false}
+            />
+            <YAxis
+              type="category"
+              dataKey="symbol"
+              tickCount={data.length}
+              minTickGap={0}
+              axisLine={false}
+              tick={({
+                payload: { value },
+                x,
+                y,
+                height,
+              }: {
+                payload: {
+                  value: TokenSymbol;
+                };
+                x: number;
+                y: number;
+                height: number;
+              }) => {
+                const diameter = (height - data.length * 4) / data.length;
+                return ((
+                  <TokenIconSvg
+                    x={x - diameter / 2}
+                    y={y - diameter / 2}
+                    height={diameter}
+                    width={diameter}
+                    symbol={value}
+                    key={value}
+                  />
+                ) as unknown) as SVGElement;
+              }}
+            />
+            <Bar
+              type="monotone"
+              dataKey="basketShareAsPercentage"
+              name="Basket share"
+              unit="%"
+              stackId="a"
+            />
+            <Bar
+              type="monotone"
+              dataKey="maxWeightAsPercentage"
+              name="Max weight"
+              unit="%"
+              stackId="a"
+            >
+              {data.map(({ symbol }) => (
+                <Cell key={symbol} fill={`url(#hatch-${symbol})`} />
+              ))}
+            </Bar>
+            )
+          </BarChart>
+        </ResponsiveContainer>
+      ) : (
+        <Skeleton height={132} />
+      )}
+    </Container>
   );
 };

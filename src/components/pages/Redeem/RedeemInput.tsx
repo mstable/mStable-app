@@ -15,6 +15,7 @@ import { useRedeemDispatch, useRedeemState } from './RedeemProvider';
 import { BassetOutput } from './BassetOutput';
 import { Mode } from './types';
 import { TokenIcon } from '../../icons/TokenIcon';
+import { ViewportWidth } from '../../../theme';
 
 const RedeemMode = styled.div`
   display: flex;
@@ -49,16 +50,24 @@ const CurveProtip = styled(Protip)`
 `;
 
 const BasketImpact = styled.div`
-  display: flex;
-  justify-content: space-between;
+  margin: 16px 0;
 
   > div {
-    flex: 1;
-    max-width: 360px;
+    margin-bottom: 32px;
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    display: flex;
+    justify-content: space-between;
 
     > div {
-      min-height: 60px;
-      margin-bottom: 16px;
+      flex: 1;
+      max-width: 360px;
+
+      > div {
+        min-height: 60px;
+        margin-bottom: 16px;
+      }
     }
   }
 `;

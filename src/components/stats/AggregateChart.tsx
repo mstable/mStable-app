@@ -1,194 +1,235 @@
 import React, { FC, useMemo } from 'react';
-import { VictoryChart } from 'victory-chart';
-import { VictoryLine } from 'victory-line';
-import { VictoryAxis } from 'victory-axis';
-import { VictoryTooltip } from 'victory-tooltip';
-import { VictoryVoronoiContainer } from 'victory-voronoi-container';
-import { addDays, fromUnixTime, getUnixTime } from 'date-fns';
-import { commify } from 'ethers/utils';
+import { DocumentNode, gql, useQuery } from '@apollo/client';
+import {
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { format, getUnixTime } from 'date-fns';
 import Skeleton from 'react-loading-skeleton';
 
-import { useVictoryTheme } from '../../context/ThemeProvider';
+import { getKeyTimestamp, useBlockTimesForDates } from '../../web3/hooks';
 import { Color } from '../../theme';
-import {
-  AggregateMetricsOfTypeQuery,
-  AggregateMetricsOfTypeQueryVariables,
-  AggregateMetricType,
-  useAggregateMetricsOfTypeQuery,
-} from '../../graphql/legacy';
-import {
-  DateRange,
-  Metric,
-  Metrics,
-  useDateFilter,
-  useMetrics,
-} from './Metrics';
-import {
-  abbreviateNumber,
-  useDateFilterTickFormat,
-  useDateFilterTickValues,
-} from './utils';
+import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
+import { periodFormatMapping, toK } from './utils';
+import { RechartsContainer } from './RechartsContainer';
 
-interface Datum {
-  x: number;
-  y: number;
-  date: Date;
-  type: AggregateMetricType;
-}
-
-type Data = Datum[];
-
-interface Group {
-  data: Data;
-  loading: boolean;
-  metric: Metric<AggregateMetricType>;
+interface AggregateMetricsQueryResult {
+  [timestamp: string]: {
+    totalSupply: {
+      simple: string;
+    };
+    savingsContracts: [
+      {
+        totalSavings: {
+          simple: string;
+        };
+      },
+    ];
+  };
 }
 
 const colors = {
-  [AggregateMetricType.TotalSupply]: Color.green,
-  [AggregateMetricType.TotalSavings]: Color.blue,
+  totalSupply: Color.green,
+  totalSavings: Color.blue,
 };
 
 const aggregateMetrics = [
   {
-    type: AggregateMetricType.TotalSupply,
+    type: 'totalSupply',
     enabled: true,
     label: 'Total supply',
-    color: colors[AggregateMetricType.TotalSupply],
+    color: colors.totalSupply,
   },
   {
-    type: AggregateMetricType.TotalSavings,
+    type: 'totalSavings',
     enabled: true,
     label: 'Total savings',
-    color: colors[AggregateMetricType.TotalSavings],
+    color: colors.totalSavings,
   },
 ];
 
-const useGroup = (
-  metric: Metric<AggregateMetricType>,
-  variables: Omit<AggregateMetricsOfTypeQueryVariables, 'type'>,
-): Group => {
-  const query = useAggregateMetricsOfTypeQuery({
-    variables: { ...variables, type: metric?.type },
-    skip: !metric?.enabled,
-    fetchPolicy: 'cache-and-network',
+const nowUnix = getUnixTime(new Date());
+
+const useAggregateMetrics = (): {
+  timestamp: number;
+  totalSupply: number;
+  totalSavings: number;
+}[] => {
+  const dateFilter = useDateFilter();
+
+  const blockTimes = useBlockTimesForDates(dateFilter.dates);
+
+  const metricsDoc = useMemo<DocumentNode>(() => {
+    const massetId = process.env.REACT_APP_MUSD_ADDRESS as string;
+
+    const current = `t${nowUnix}: masset(id: "${massetId}") { ...AggregateMetricsFields }`;
+
+    const blockMetrics = blockTimes
+      .map(
+        ({ timestamp, number }) =>
+          `t${timestamp}: masset(id: "${massetId}", block: { number: ${number} }) { ...AggregateMetricsFields }`,
+      )
+      .join('\n');
+
+    return gql`
+      fragment AggregateMetricsFields on Masset {
+        totalSupply {
+          simple
+        }
+        savingsContracts {
+          totalSavings {
+            simple
+          }
+        }
+      }
+      query AggregateMetrics @api(name: protocol) {
+        ${current}
+        ${blockMetrics}
+      }
+    `;
+  }, [blockTimes]);
+
+  const query = useQuery<AggregateMetricsQueryResult>(metricsDoc, {
+    fetchPolicy: 'no-cache',
   });
 
-  return useMemo(
-    () => ({
-      metric,
-      loading: query.loading,
-      data: ((query.data?.aggregateMetrics ||
-        []) as AggregateMetricsOfTypeQuery['aggregateMetrics']).map<Datum>(
-        ({ timestamp, value }) => {
-          const date = fromUnixTime(timestamp);
+  return useMemo(() => {
+    const filtered = Object.entries(query.data ?? {})
+      .filter(([, value]) => !!value.totalSupply)
+      .map(([key, value]) => [getKeyTimestamp(key), value]) as [
+      number,
+      AggregateMetricsQueryResult[string],
+    ][];
+
+    return filtered
+      .sort(([a], [b]) => (a > b ? 1 : -1))
+      .map(
+        ([
+          timestamp,
+          {
+            totalSupply,
+            savingsContracts: [{ totalSavings }],
+          },
+        ]) => {
           return {
-            x: date.getTime(),
-            y: parseFloat(parseFloat(value).toFixed(2)),
-            date,
-            type: metric.type,
+            timestamp,
+            totalSupply: parseFloat(totalSupply.simple),
+            totalSavings: parseFloat(totalSavings.simple),
           };
         },
-      ),
-    }),
-    [query.data, query.loading, metric],
-  );
+      );
+  }, [query.data]);
 };
 
-const TOMORROW = addDays(new Date(), 1);
-
-const Chart: FC<{}> = () => {
-  const metrics = useMetrics<AggregateMetricType>();
+const Chart: FC = () => {
+  const data = useAggregateMetrics();
   const dateFilter = useDateFilter();
-  const tickValues = useDateFilterTickValues(dateFilter);
-  const tickFormat = useDateFilterTickFormat(dateFilter);
-
-  const vars = useMemo<Omit<AggregateMetricsOfTypeQueryVariables, 'type'>>(
-    () => ({
-      period: dateFilter.period,
-      from: getUnixTime(dateFilter.from),
-      to: getUnixTime(TOMORROW),
-    }),
-    [dateFilter],
-  );
-
-  const totalSupply = useGroup(metrics[AggregateMetricType.TotalSupply], vars);
-  const totalSavings = useGroup(
-    metrics[AggregateMetricType.TotalSavings],
-    vars,
-  );
-
-  const groups = useMemo<Group[]>(
-    () => [totalSupply, totalSavings].filter(g => g.metric.enabled),
-    [totalSupply, totalSavings],
-  );
-
-  const loading = groups.some(g => g.loading);
-
-  const victoryTheme = useVictoryTheme();
+  const { metrics } = useMetricsState();
 
   return (
-    <div>
-      {loading ? (
-        <Skeleton height={400} />
-      ) : (
-        <VictoryChart
-          theme={victoryTheme}
-          scale="linear"
-          height={300}
-          domainPadding={{ y: 50 }}
-          containerComponent={
-            <VictoryVoronoiContainer
-              voronoiDimension="x"
-              labels={({ datum }: { datum: Datum }) => commify(datum.y)}
-              labelComponent={
-                <VictoryTooltip
-                  style={
-                    {
-                      fill: ({ datum }: { datum: Datum }) => colors[datum.type],
-                    } as {}
-                  }
-                />
+    <RechartsContainer>
+      {data && data.length ? (
+        <ResponsiveContainer aspect={2}>
+          <AreaChart
+            margin={{ top: 0, right: 16, bottom: 16, left: 16 }}
+            barCategoryGap={1}
+            data={data}
+          >
+            <defs>
+              {aggregateMetrics.map(({ type, color }) => (
+                <linearGradient
+                  id={type}
+                  key={type}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="5%" stopColor={color} stopOpacity={0.5} />
+                  <stop offset="95%" stopColor={color} stopOpacity={0} />
+                </linearGradient>
+              ))}
+            </defs>
+            <XAxis
+              dataKey="timestamp"
+              axisLine={false}
+              xAxisId={0}
+              tickSize={12}
+              padding={{ left: 16 }}
+              minTickGap={16}
+              tickLine
+              tickFormatter={timestamp =>
+                timestamp
+                  ? format(
+                      timestamp * 1000,
+                      periodFormatMapping[dateFilter.period],
+                    )
+                  : ''
               }
             />
-          }
-        >
-          <VictoryAxis
-            dependentAxis
-            tickFormat={abbreviateNumber}
-            fixLabelOverlap
-            style={{
-              ticks: { stroke: 'none' },
-            }}
-          />
-          <VictoryAxis
-            scale="time"
-            tickValues={tickValues}
-            tickFormat={tickFormat}
-            fixLabelOverlap
-            style={{
-              grid: { stroke: 'none' },
-              tickLabels: { padding: 6 },
-            }}
-          />
-          {groups.map(({ metric: { type, color }, data }) => (
-            <VictoryLine
-              key={type}
-              data={data}
-              style={{
-                data: {
-                  stroke: color,
-                },
+            <YAxis
+              type="number"
+              orientation="left"
+              tickFormatter={toK}
+              axisLine={false}
+              tickLine
+              tickSize={12}
+              padding={{ bottom: 16 }}
+              interval="preserveEnd"
+              minTickGap={8}
+              yAxisId={0}
+            />
+            <Tooltip
+              cursor
+              labelFormatter={timestamp =>
+                format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
+              }
+              formatter={toK}
+              separator=""
+              contentStyle={{
+                fontSize: '14px',
+                padding: '8px',
+                background: 'rgba(255, 255, 255, 0.8)',
+                textAlign: 'right',
+                border: 'none',
+                borderRadius: '4px',
+                color: Color.black,
+              }}
+              wrapperStyle={{
+                top: 0,
+                left: 0,
               }}
             />
-          ))}
-        </VictoryChart>
+            {metrics.map(({ color, type, label, enabled }) => (
+              <Area
+                isAnimationActive={false}
+                key={type}
+                type="monotone"
+                hide={!enabled}
+                dataKey={type}
+                name={`${label} `}
+                opacity={1}
+                dot={false}
+                yAxisId={0}
+                stroke={color}
+                strokeWidth={2}
+                fill={`url(#${type})`}
+              />
+            ))}
+          </AreaChart>
+        </ResponsiveContainer>
+      ) : (
+        <Skeleton height={270} />
       )}
-    </div>
+    </RechartsContainer>
   );
 };
 
-export const AggregateChart: FC<{}> = () => (
+export const AggregateChart: FC = () => (
   <Metrics metrics={aggregateMetrics} defaultDateRange={DateRange.Month}>
     <Chart />
   </Metrics>

@@ -1,48 +1,51 @@
 import React, { FC, useMemo } from 'react';
-import { VictoryGroup } from 'victory-group';
-import { VictoryTooltip } from 'victory-tooltip';
-import { VictoryChart } from 'victory-chart';
-import { VictoryAxis } from 'victory-axis';
-import { VictoryBar } from 'victory-bar';
-import { VictoryVoronoiContainer } from 'victory-voronoi-container';
 import Skeleton from 'react-loading-skeleton';
-import { fromUnixTime, getUnixTime } from 'date-fns';
-import { commify } from 'ethers/utils';
+import { DocumentNode, gql, useQuery } from '@apollo/client';
+import { format, getUnixTime } from 'date-fns';
+import {
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
 
-import { useVictoryTheme } from '../../context/ThemeProvider';
 import { Color } from '../../theme';
-import {
-  TransactionType,
-  useVolumeMetricsOfTypeQuery,
-  VolumeMetricsOfTypeQuery,
-  VolumeMetricsOfTypeQueryVariables,
-} from '../../graphql/legacy';
-import {
-  DateRange,
-  Metric,
-  Metrics,
-  useDateFilter,
-  useMetrics,
-} from './Metrics';
-import {
-  abbreviateNumber,
-  useDateFilterTickFormat,
-  useDateFilterTickValues,
-} from './utils';
+import { TransactionType } from '../../graphql/legacy';
+import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
+import { getKeyTimestamp, useBlockTimesForDates } from '../../web3/hooks';
+import { periodFormatMapping, toK } from './utils';
+import { RechartsContainer } from './RechartsContainer';
 
-interface Datum {
-  x: number;
-  y: number;
-  date: Date;
-  type: TransactionType;
-}
-
-type Data = Datum[];
-
-interface Group {
-  metric: Metric<TransactionType>;
-  data: Data;
-  loading: boolean;
+interface MetricsQueryResult {
+  [timestamp: string]: {
+    cumulativeMinted: {
+      simple: string;
+    };
+    cumulativeSwapped: {
+      simple: string;
+    };
+    cumulativeRedeemed: {
+      simple: string;
+    };
+    cumulativeRedeemedMasset: {
+      simple: string;
+    };
+    cumulativeFeesPaid: {
+      simple: string;
+    };
+    savingsContracts: [
+      {
+        cumulativeDeposited: {
+          simple: string;
+        };
+        cumulativeWithdrawn: {
+          simple: string;
+        };
+      },
+    ];
+  };
 }
 
 const labels = {
@@ -51,6 +54,7 @@ const labels = {
   [TransactionType.SavingsContractDeposit]: 'Deposit',
   [TransactionType.SavingsContractWithdraw]: 'Withdraw',
   [TransactionType.MassetSwap]: 'Swap',
+  [TransactionType.MassetPaidFee]: 'Fees',
 };
 
 const colors = {
@@ -61,11 +65,6 @@ const colors = {
   [TransactionType.SavingsContractWithdraw]: Color.orange,
   [TransactionType.MassetSwap]: Color.gold,
   [TransactionType.MassetPaidFee]: Color.offBlack,
-  // TODO: set colours when these are used
-  [TransactionType.StakingRewardsContractClaimReward]: 'gray',
-  [TransactionType.StakingRewardsContractExit]: 'gray',
-  [TransactionType.StakingRewardsContractStake]: 'gray',
-  [TransactionType.StakingRewardsContractWithdraw]: 'gray',
 };
 
 const volumeMetrics = [
@@ -96,158 +95,265 @@ const volumeMetrics = [
     label: labels[TransactionType.MassetRedeem],
     color: colors[TransactionType.MassetRedeem],
   },
+  {
+    type: TransactionType.MassetPaidFee,
+    label: labels[TransactionType.MassetPaidFee],
+    color: colors[TransactionType.MassetPaidFee],
+  },
 ];
 
-const useGroup = (
-  metric: Metric<TransactionType>,
-  variables: Omit<VolumeMetricsOfTypeQueryVariables, 'type'>,
-): Group => {
-  const query = useVolumeMetricsOfTypeQuery({
-    variables: { ...variables, type: metric?.type },
-    skip: !metric?.enabled,
-    fetchPolicy: 'cache-and-network',
+const nowUnix = getUnixTime(new Date());
+
+const useVolumeMetrics = (): ({ timestamp: number } & Record<
+  | TransactionType.MassetMint
+  | TransactionType.SavingsContractDeposit
+  | TransactionType.SavingsContractWithdraw
+  | TransactionType.MassetSwap
+  | TransactionType.MassetPaidFee
+  | TransactionType.MassetRedeem,
+  number
+>)[] => {
+  const dateFilter = useDateFilter();
+
+  const blockTimes = useBlockTimesForDates(dateFilter.dates);
+
+  const metricsDoc = useMemo<DocumentNode>(() => {
+    const massetId = process.env.REACT_APP_MUSD_ADDRESS as string;
+
+    const current = `t${nowUnix}: masset(id: "${massetId}") { ...VolumeMetricsFields }`;
+
+    const blockMetrics = blockTimes
+      .map(
+        ({ timestamp, number }) =>
+          `t${timestamp}: masset(id: "${massetId}", block: { number: ${number} }) { ...VolumeMetricsFields }`,
+      )
+      .join('\n');
+
+    return gql`
+      fragment VolumeMetricsFields on Masset {
+        cumulativeMinted {
+          simple
+        }
+        cumulativeSwapped {
+          simple
+        }
+        cumulativeRedeemed {
+          simple
+        }
+        cumulativeRedeemedMasset {
+          simple
+        }
+        cumulativeFeesPaid {
+          simple
+        }
+        savingsContracts {
+          cumulativeDeposited {
+            simple
+          }
+          cumulativeWithdrawn {
+            simple
+          }
+        }
+      }
+      query Metrics @api(name: protocol) {
+        ${current}
+        ${blockMetrics}
+      }
+    `;
+  }, [blockTimes]);
+
+  const query = useQuery<MetricsQueryResult>(metricsDoc, {
+    fetchPolicy: 'no-cache',
   });
 
-  return useMemo(
-    () => ({
-      loading: query.loading,
-      metric,
-      data: ((query.data?.volumeMetrics ||
-        []) as VolumeMetricsOfTypeQuery['volumeMetrics']).map<Datum>(
-        ({ timestamp, value }) => {
-          const date = fromUnixTime(timestamp);
+  return useMemo(() => {
+    const filtered = Object.entries(query.data ?? {})
+      .filter(([, value]) => !!value.cumulativeMinted)
+      .map(([key, value]) => [getKeyTimestamp(key), value]) as [
+      number,
+      MetricsQueryResult[string],
+    ][];
+
+    return (
+      filtered
+        .sort(([a], [b]) => (a > b ? 1 : -1))
+        .map(([timestamp, values], index, arr) => {
+          const {
+            cumulativeMinted,
+            cumulativeSwapped,
+            cumulativeRedeemed,
+            cumulativeRedeemedMasset,
+            cumulativeFeesPaid,
+            savingsContracts: [{ cumulativeDeposited, cumulativeWithdrawn }],
+          } = values;
+
+          let minted = parseFloat(cumulativeMinted.simple);
+          let deposited = parseFloat(cumulativeDeposited.simple);
+          let withdrawn = parseFloat(cumulativeWithdrawn.simple);
+          let swapped = parseFloat(cumulativeSwapped.simple);
+          let redeemed =
+            parseFloat(cumulativeRedeemed.simple) +
+            parseFloat(cumulativeRedeemedMasset.simple);
+          let fees = parseFloat(cumulativeFeesPaid.simple);
+
+          const prev = index > 0 ? arr[index - 1]?.[1] : undefined;
+          if (prev) {
+            // TODO too repetitive; shouldn't be doing this anyway;
+            // the daily values should be on the subgraph
+            minted -= parseFloat(prev.cumulativeMinted.simple);
+            deposited -= parseFloat(
+              prev.savingsContracts[0].cumulativeDeposited.simple,
+            );
+            withdrawn -= parseFloat(
+              prev.savingsContracts[0].cumulativeWithdrawn.simple,
+            );
+            swapped -= parseFloat(prev.cumulativeSwapped.simple);
+            redeemed -=
+              parseFloat(prev.cumulativeRedeemed.simple) +
+              parseFloat(prev.cumulativeRedeemedMasset.simple);
+            fees -= parseFloat(prev.cumulativeFeesPaid.simple);
+          }
+
           return {
-            x: date.getTime(),
-            y: parseFloat(parseFloat(value).toFixed(2)),
-            date,
-            type: metric.type,
+            timestamp,
+            [TransactionType.MassetMint]: minted,
+            [TransactionType.SavingsContractDeposit]: deposited,
+            [TransactionType.SavingsContractWithdraw]: withdrawn,
+            [TransactionType.MassetSwap]: swapped,
+            [TransactionType.MassetRedeem]: redeemed,
+            [TransactionType.MassetPaidFee]: fees,
           };
-        },
-      ),
-    }),
-    [query.loading, query.data, metric],
-  );
+        })
+        // FIXME should not be needed
+        .slice(1)
+    );
+  }, [query.data]);
 };
 
-const useGroups = (): Group[] => {
-  const metrics = useMetrics<TransactionType>();
+const Chart: FC = () => {
   const dateFilter = useDateFilter();
-
-  const vars = useMemo<Omit<VolumeMetricsOfTypeQueryVariables, 'type'>>(
-    () => ({
-      period: dateFilter.period,
-      from: getUnixTime(dateFilter.from),
-      to: getUnixTime(dateFilter.end),
-    }),
-    [dateFilter],
-  );
-
-  const mint = useGroup(metrics[TransactionType.MassetMint], vars);
-  const redeem = useGroup(metrics[TransactionType.MassetRedeem], vars);
-  const exit = useGroup(metrics[TransactionType.MassetRedeemMasset], vars);
-  const swap = useGroup(metrics[TransactionType.MassetSwap], vars);
-  const deposit = useGroup(
-    metrics[TransactionType.SavingsContractDeposit],
-    vars,
-  );
-  const withdraw = useGroup(
-    metrics[TransactionType.SavingsContractWithdraw],
-    vars,
-  );
-
-  return useMemo<Group[]>(
-    () =>
-      [
-        mint,
-        deposit,
-        withdraw,
-        swap,
-        // Redeem and Exit (`redeemMasset`) are treated as one
-        { ...redeem, data: redeem.data.concat(exit.data) },
-      ].filter(g => g.metric.enabled),
-    [mint, redeem, swap, deposit, withdraw, exit],
-  );
-};
-
-const Chart: FC<{}> = () => {
-  const groups = useGroups();
-  const loading = groups.some(g => g.loading);
-  const dateFilter = useDateFilter();
-  const tickValues = useDateFilterTickValues(dateFilter);
-  const tickFormat = useDateFilterTickFormat(dateFilter);
-  const barWidth = dateFilter.dateRange === DateRange.Week ? 8 : 2;
-  const victoryTheme = useVictoryTheme();
+  const data = useVolumeMetrics();
+  const { metrics } = useMetricsState();
 
   return (
-    <div>
-      {loading ? (
-        <Skeleton height={300} />
-      ) : (
-        <VictoryChart
-          theme={victoryTheme}
-          height={250}
-          padding={{ left: 45, top: 10, right: 20, bottom: 40 }}
-          scale="linear"
-          domainPadding={{ x: 20 }}
-          containerComponent={
-            <VictoryVoronoiContainer
-              voronoiDimension="x"
-              labels={({ datum }: { datum: Datum }) => commify(datum.y)}
-              labelComponent={
-                <VictoryTooltip
-                  constrainToVisibleArea
-                  style={
-                    {
-                      fill: ({ datum }: { datum: Datum }) => colors[datum.type],
-                    } as {}
-                  }
-                />
+    <RechartsContainer>
+      {data && data.length ? (
+        <ResponsiveContainer aspect={2}>
+          <AreaChart
+            margin={{ top: 0, right: 16, bottom: 16, left: 16 }}
+            barCategoryGap={1}
+            data={data}
+          >
+            <defs>
+              {volumeMetrics.map(({ type, color }) => (
+                <linearGradient
+                  id={type}
+                  key={type}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="5%" stopColor={color} stopOpacity={0.5} />
+                  <stop offset="95%" stopColor={color} stopOpacity={0} />
+                </linearGradient>
+              ))}
+            </defs>
+            <XAxis
+              dataKey="timestamp"
+              axisLine={false}
+              xAxisId={0}
+              tickSize={12}
+              padding={{ left: 16 }}
+              minTickGap={16}
+              tickLine
+              tickFormatter={timestamp =>
+                timestamp
+                  ? format(
+                      timestamp * 1000,
+                      periodFormatMapping[dateFilter.period],
+                    )
+                  : ''
               }
             />
-          }
-        >
-          <VictoryAxis
-            dependentAxis
-            tickFormat={abbreviateNumber}
-            style={{
-              ticks: { stroke: 'none' },
-            }}
-          />
-          <VictoryAxis
-            scale="time"
-            tickValues={tickValues}
-            tickFormat={tickFormat}
-            fixLabelOverlap
-            style={{
-              grid: { stroke: 'none' },
-              tickLabels: { padding: 6 },
-            }}
-          />
-          <VictoryGroup offset={barWidth}>
-            {groups.map(({ data, metric }: Group) => (
-              <VictoryBar
-                alignment="start"
-                key={metric.type}
-                data={data}
-                barWidth={barWidth}
-                style={{
-                  data: {
-                    fill: metric.color,
-                    opacity: ({ active }: { active: boolean }) =>
-                      active ? '1' : '0.6',
-                  },
-                }}
+            <YAxis
+              type="number"
+              orientation="left"
+              tickFormatter={toK}
+              axisLine={false}
+              tickLine
+              tickSize={12}
+              padding={{ bottom: 16 }}
+              interval="preserveEnd"
+              minTickGap={8}
+              yAxisId={0}
+            />
+            <YAxis
+              type="number"
+              hide={
+                !metrics.find(
+                  m => m.type === TransactionType.MassetPaidFee && m.enabled,
+                )
+              }
+              orientation="right"
+              tickFormatter={toK}
+              axisLine={false}
+              tickLine
+              tickSize={12}
+              name="Fees"
+              padding={{ bottom: 16 }}
+              interval="preserveEnd"
+              minTickGap={8}
+              yAxisId={1}
+            />
+            <Tooltip
+              cursor
+              labelFormatter={timestamp =>
+                format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
+              }
+              formatter={toK}
+              separator=""
+              contentStyle={{
+                fontSize: '14px',
+                padding: '8px',
+                background: 'rgba(255, 255, 255, 0.8)',
+                textAlign: 'right',
+                border: 'none',
+                borderRadius: '4px',
+                color: Color.black,
+              }}
+              wrapperStyle={{
+                top: 0,
+                left: 0,
+              }}
+            />
+            {metrics.map(({ color, type, label, enabled }) => (
+              <Area
+                isAnimationActive={false}
+                key={type}
+                type="monotone"
+                hide={!enabled}
+                dataKey={type}
+                name={`${label} `}
+                opacity={1}
+                dot={false}
+                yAxisId={type === TransactionType.MassetPaidFee ? 1 : 0}
+                stroke={color}
+                strokeWidth={2}
+                fill={`url(#${type})`}
               />
             ))}
-          </VictoryGroup>
-        </VictoryChart>
+          </AreaChart>
+        </ResponsiveContainer>
+      ) : (
+        <Skeleton height={270} />
       )}
-    </div>
+    </RechartsContainer>
   );
 };
 
-export const VolumeChart: FC<{}> = () => (
-  <Metrics metrics={volumeMetrics}>
+export const VolumeChart: FC = () => (
+  <Metrics metrics={volumeMetrics} defaultDateRange={DateRange.Month}>
     <Chart />
   </Metrics>
 );
