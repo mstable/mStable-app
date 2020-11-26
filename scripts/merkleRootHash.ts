@@ -6,7 +6,7 @@
  *
  * Example usage:
  *
- * yarn run merkle-root-hash --trancheNumber=10 \
+ * yarn run merkle-root-hash --trancheNumber=11 \
  * --token=0xba100000625a3754423978a60c9317c58a424e3d
  *
  * Example output:
@@ -56,15 +56,10 @@ const getAllocations = async (
   );
 };
 
-export const main = async () => {
-  const { argv } = options({
-    token: { type: 'string', demandOption: true },
-    trancheNumber: { type: 'number', demandOption: true },
-  });
-
-  const token = argv.token.toLowerCase();
-  const { trancheNumber } = argv;
-
+export const getMerkleRootHash = async (
+  trancheNumber: number,
+  token: string,
+) => {
   const allocations = await getAllocations(trancheNumber, token);
 
   const elements = Object.entries(allocations).map(([account, amount]) =>
@@ -94,4 +89,16 @@ export const main = async () => {
   };
 
   console.log(JSON.stringify(output, null, 2));
+};
+
+export const main = async () => {
+  const { argv } = options({
+    token: { type: 'string', demandOption: true },
+    trancheNumber: { type: 'number', demandOption: true },
+  });
+
+  const token = argv.token.toLowerCase();
+  const { trancheNumber } = argv;
+
+  await getMerkleRootHash(trancheNumber, token);
 };

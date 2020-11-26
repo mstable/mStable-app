@@ -46,6 +46,7 @@ const FlexContainer = styled.div`
 `;
 
 const ButtonContent = styled.div`
+  min-height: 58px;
   display: flex;
   background: white;
   color: rgb(37, 39, 45);
@@ -147,12 +148,13 @@ export const GasPrice: FC<Props> = () => {
     currentGasPrice &&
     ethPrice &&
     manifest?.gasLimit
-      ? currentGasPrice * (ethPrice / 1e9) * manifest.gasLimit.toNumber()
+      ? (currentGasPrice / 1e9) *
+        (ethPrice / 1e9) *
+        manifest.gasLimit.toNumber()
       : undefined;
-
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
-      setGasPrice(parseFloat(event.target.value));
+      setGasPrice(parseFloat(event.target.value) * 1e9);
     },
     [setGasPrice],
   );

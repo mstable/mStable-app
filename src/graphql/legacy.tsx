@@ -3170,6 +3170,34 @@ export type AggregateMetricsQueryVariables = {
 
 export type AggregateMetricsQuery = { aggregateMetrics: Array<Pick<AggregateMetric, 'type' | 'timestamp' | 'value'>> };
 
+export type MerkleDropClaimsQueryVariables = {
+  account: Scalars['Bytes'];
+};
+
+
+export type MerkleDropClaimsQuery = { merkleDrops: Array<(
+    Pick<MerkleDrop, 'id'>
+    & { token: Pick<Token, 'id' | 'address' | 'decimals' | 'symbol' | 'totalSupply'>, tranches: Array<(
+      Pick<MerkleDropTranche, 'trancheNumber' | 'totalAmount'>
+      & { claims: Array<Pick<MerkleDropClaim, 'balance'>> }
+    )> }
+  )> };
+
+export type ScriptRewardsQueryVariables = {
+  id: Scalars['ID'];
+  end: Scalars['Int'];
+  block?: Maybe<Block_Height>;
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+};
+
+
+export type ScriptRewardsQuery = { stakingRewardsContracts: Array<(
+    Pick<StakingRewardsContract, 'lastUpdateTime' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'totalSupply'>
+    & { address: StakingRewardsContract['id'] }
+    & { stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
+  )> };
+
 
 export const VolumeMetricsOfTypeDocument = gql`
     query VolumeMetricsOfType($period: TimeMetricPeriod!, $type: TransactionType!, $from: Int!, $to: Int!) @api(name: legacy) {
@@ -3319,3 +3347,105 @@ export function useAggregateMetricsLazyQuery(baseOptions?: ApolloReactHooks.Lazy
 export type AggregateMetricsQueryHookResult = ReturnType<typeof useAggregateMetricsQuery>;
 export type AggregateMetricsLazyQueryHookResult = ReturnType<typeof useAggregateMetricsLazyQuery>;
 export type AggregateMetricsQueryResult = ApolloReactCommon.QueryResult<AggregateMetricsQuery, AggregateMetricsQueryVariables>;
+export const MerkleDropClaimsDocument = gql`
+    query MerkleDropClaims($account: Bytes!) @api(name: legacy) {
+  merkleDrops {
+    id
+    token {
+      id
+      address
+      decimals
+      symbol
+      totalSupply
+    }
+    tranches(orderDirection: asc, orderBy: trancheNumber, where: {expired: false}) {
+      trancheNumber
+      totalAmount
+      claims(where: {account: $account}) {
+        balance
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useMerkleDropClaimsQuery__
+ *
+ * To run a query within a React component, call `useMerkleDropClaimsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMerkleDropClaimsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMerkleDropClaimsQuery({
+ *   variables: {
+ *      account: // value for 'account'
+ *   },
+ * });
+ */
+export function useMerkleDropClaimsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>) {
+        return ApolloReactHooks.useQuery<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>(MerkleDropClaimsDocument, baseOptions);
+      }
+export function useMerkleDropClaimsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>(MerkleDropClaimsDocument, baseOptions);
+        }
+export type MerkleDropClaimsQueryHookResult = ReturnType<typeof useMerkleDropClaimsQuery>;
+export type MerkleDropClaimsLazyQueryHookResult = ReturnType<typeof useMerkleDropClaimsLazyQuery>;
+export type MerkleDropClaimsQueryResult = ApolloReactCommon.QueryResult<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>;
+export const ScriptRewardsDocument = gql`
+    query ScriptRewards($id: ID!, $end: Int!, $block: Block_height, $limit: Int!, $offset: Int!) @api(name: legacy) {
+  stakingRewardsContracts(where: {id: $id}, block: $block) {
+    address: id
+    lastUpdateTime
+    periodFinish
+    rewardPerTokenStored
+    rewardRate
+    totalSupply
+    stakingRewards(where: {type: REWARD}, first: $limit, skip: $offset) {
+      amount
+      account
+      amountPerTokenPaid
+    }
+    stakingBalances(first: $limit, skip: $offset) {
+      amount
+      account
+    }
+    claimRewardTransactions(first: $limit, skip: $offset, orderBy: timestamp, orderDirection: asc, where: {timestamp_lt: $end}) {
+      amount
+      sender
+    }
+  }
+}
+    `;
+
+/**
+ * __useScriptRewardsQuery__
+ *
+ * To run a query within a React component, call `useScriptRewardsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useScriptRewardsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useScriptRewardsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      end: // value for 'end'
+ *      block: // value for 'block'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useScriptRewardsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ScriptRewardsQuery, ScriptRewardsQueryVariables>) {
+        return ApolloReactHooks.useQuery<ScriptRewardsQuery, ScriptRewardsQueryVariables>(ScriptRewardsDocument, baseOptions);
+      }
+export function useScriptRewardsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ScriptRewardsQuery, ScriptRewardsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ScriptRewardsQuery, ScriptRewardsQueryVariables>(ScriptRewardsDocument, baseOptions);
+        }
+export type ScriptRewardsQueryHookResult = ReturnType<typeof useScriptRewardsQuery>;
+export type ScriptRewardsLazyQueryHookResult = ReturnType<typeof useScriptRewardsLazyQuery>;
+export type ScriptRewardsQueryResult = ApolloReactCommon.QueryResult<ScriptRewardsQuery, ScriptRewardsQueryVariables>;
