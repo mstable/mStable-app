@@ -8,7 +8,7 @@ import {
 } from 'ethers/utils';
 import { BigNumber as FractionalBigNumber } from 'bignumber.js';
 
-import { abbreviateNumber } from '../components/stats/utils';
+import { toK } from '../components/stats/utils';
 import { RATIO_SCALE, SCALE } from './constants';
 
 export class BigDecimal {
@@ -50,14 +50,22 @@ export class BigDecimal {
     return BigDecimal.parse(amountStr, decimals);
   }
 
-  static maybeFromMetric(metric?: { decimals: number; exact: string }): BigDecimal | undefined {
-    return metric ? BigDecimal.fromMetric(metric): undefined
+  static maybeFromMetric(metric?: {
+    decimals: number;
+    exact: string;
+  }): BigDecimal | undefined {
+    return metric ? BigDecimal.fromMetric(metric) : undefined;
   }
 
-  static fromMetric({ decimals, exact }: { decimals: number; exact: string }): BigDecimal {
-    return new BigDecimal(exact, decimals)
+  static fromMetric({
+    decimals,
+    exact,
+  }: {
+    decimals: number;
+    exact: string;
+  }): BigDecimal {
+    return new BigDecimal(exact, decimals);
   }
-
 
   decimals: number;
 
@@ -121,7 +129,7 @@ export class BigDecimal {
   }
 
   get abbreviated(): string {
-    return abbreviateNumber(this.simple);
+    return toK(this.simple);
   }
 
   toPercent(decimalPlaces = 2): number {

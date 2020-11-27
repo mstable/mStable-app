@@ -12,11 +12,20 @@ import {
 } from 'recharts';
 
 import { Color } from '../../theme';
-import { TransactionType } from '../../graphql/legacy';
 import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
 import { getKeyTimestamp, useBlockTimesForDates } from '../../web3/hooks';
 import { periodFormatMapping, toK } from './utils';
 import { RechartsContainer } from './RechartsContainer';
+
+export enum TransactionType {
+  MassetMint = 'MASSET_MINT',
+  MassetSwap = 'MASSET_SWAP',
+  MassetRedeem = 'MASSET_REDEEM',
+  MassetRedeemMasset = 'MASSET_REDEEM_MASSET',
+  MassetPaidFee = 'MASSET_PAID_FEE',
+  SavingsContractDeposit = 'SAVINGS_CONTRACT_DEPOSIT',
+  SavingsContractWithdraw = 'SAVINGS_CONTRACT_WITHDRAW',
+}
 
 interface MetricsQueryResult {
   [timestamp: string]: {

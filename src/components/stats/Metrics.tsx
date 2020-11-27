@@ -20,14 +20,11 @@ import {
   startOfHour,
 } from 'date-fns';
 
-import { TimeMetricPeriod } from '../../graphql/legacy';
+import { periodIntervalMapping, TimeMetricPeriod } from './utils';
 import { ToggleInput } from '../forms/ToggleInput';
 import { TabsContainer, TabBtn } from '../core/Tabs';
 import { H3 } from '../core/Typography';
 import { Color, FontSize, ViewportWidth } from '../../theme';
-
-// eslint-disable-next-line
-import { periodIntervalMapping } from './utils';
 
 export enum DateRange {
   Day,
