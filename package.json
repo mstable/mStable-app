@@ -66,7 +66,7 @@
     "web3-utils": "^1.2.6"
   },
   "scripts": {
-    "build": "react-scripts --max_old_space_size=4096 build",
+    "build": "REACT_APP_VERSION=$npm_package_version react-scripts --max_old_space_size=4096 build",
     "build:ipfs": "cp .env.example.mainnet .env && yarn && yarn run codegen && yarn run build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml -r dotenv/config",
