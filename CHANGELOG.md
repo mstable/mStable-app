@@ -2,6 +2,8 @@
 
 ## Next
 
+## Version 1.16.0
+
 - Improve analytics page with 30 and 90 day views (including for APY), SAVE utilisation, bAsset vault balances,
   and fees paid
 - Fetch historic transactions from the subgraph
