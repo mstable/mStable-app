@@ -40,7 +40,10 @@ import { ReactComponent as SquarelinkIcon } from '../icons/wallets/squarelink.sv
 import { ReactComponent as WalletConnectIcon } from '../icons/wallets/walletconnect.svg';
 import { ReactComponent as CoinbaseIcon } from '../icons/wallets/coinbase.svg';
 import { ReactComponent as MeetOneIcon } from '../icons/wallets/meetone.svg';
+import { ReactComponent as MusdIcon } from '../icons/musd_logo.svg';
+import { ReactComponent as BtcIcon } from '../icons/btc_logo.svg';
 import { Idle } from '../icons/Idle';
+import { useSelectedMasset } from '../../context/MassetsProvider';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -312,6 +315,36 @@ const PendingTxContainer = styled.div<{
   }
 `;
 
+const MassetSwitch = styled(UnstyledButton)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 31.25rem;
+  cursor: pointer;
+  span {
+    padding-right: 0.625rem;
+    font-size: 18px;
+    font-weight: 700;
+  }
+`;
+
+const IconContainer = styled.div`
+  background: #176ede;
+  border-radius: 50%;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  width: 1.9375rem;
+  height: 1.9375rem;
+  z-index: 1;
+`;
+
+const IdleIconContainer = styled(IconContainer)`
+  background: #c5c5c5;
+  margin-left: -10px;
+  z-index: 0;
+`;
+
 const WalletButton: FC = () => {
   const accountItem = useAccountItem();
   const toggleWallet = useToggleWallet();
@@ -366,9 +399,9 @@ export const AppBar: FC = () => {
   const { pathname } = useLocation();
   const accountOpen = useAccountOpen();
   const closeAccount = useCloseAccount();
+  const selectedMasset = useSelectedMasset();
   const massetState = useSelectedMassetState();
   const massetToken = useTokenSubscription(massetState?.address);
-
   const home = pathname === '/';
 
   return (
@@ -386,6 +419,15 @@ export const AppBar: FC = () => {
               </Balance>
             )}
           </Logo>
+          <MassetSwitch>
+            <span>{selectedMasset.name}</span>
+            <IconContainer>
+              <MusdIcon />
+            </IconContainer>
+            <IdleIconContainer>
+              <BtcIcon />
+            </IdleIconContainer>
+          </MassetSwitch>
           <Buttons>
             {!home && <NotificationsButton />}
             <WalletButton />
