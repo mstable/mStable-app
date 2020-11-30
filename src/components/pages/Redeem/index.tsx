@@ -8,7 +8,6 @@ import {
   useSetFormManifest,
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
-import { ReactComponent as RedeemIcon } from '../../icons/circle/redeem.svg';
 import { PageHeader } from '../PageHeader';
 import { RedeemInput } from './RedeemInput';
 import { RedeemConfirm } from './RedeemConfirm';

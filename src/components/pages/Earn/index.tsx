@@ -12,7 +12,6 @@ import { ExternalLink } from '../../core/ExternalLink';
 import { Color, FontSize, ViewportWidth } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
 import { centredLayout } from '../../layout/css';
-import { ReactComponent as MtaIcon } from '../../icons/circle/mta.svg';
 import { PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';

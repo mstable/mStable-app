@@ -13,7 +13,6 @@ import { MintProvider, useMintState } from './MintProvider';
 import { MintInput } from './MintInput';
 import { MassetStats } from '../../stats/MassetStats';
 import { PageHeader } from '../PageHeader';
-import { P } from '../../core/Typography';
 
 const MintForm: FC<{}> = () => {
   const account = useOwnAccount();
