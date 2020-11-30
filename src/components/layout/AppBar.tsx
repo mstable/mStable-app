@@ -191,10 +191,9 @@ const Inner = styled.div`
   ${centredLayout}
 `;
 
-const Container = styled.div<{ inverted: boolean; home: boolean }>`
-  background: ${({ inverted, home }) =>
-    inverted ? Color.black : home ? Color.gold : Color.offWhite};
-  height: 32px;
+const Container = styled.div<{ inverted: boolean }>`
+  background: ${({ inverted }) => (inverted ? Color.black : Color.white)};
+  height: 48px;
   display: flex;
   justify-content: center;
 
@@ -369,7 +368,7 @@ export const AppBar: FC = () => {
   const home = pathname === '/';
 
   return (
-    <Container inverted={accountOpen} home={home}>
+    <Container inverted={accountOpen}>
       <Inner>
         <Top>
           <Logo inverted={accountOpen} full={home}>

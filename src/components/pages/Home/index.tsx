@@ -67,7 +67,7 @@ const CarouselItem = styled.section`
     line-height: 1.3em;
 
     span {
-      color: white;
+      color: ${({ theme }) => theme.color.gold};
     }
 
     @media (min-width: ${ViewportWidth.s}) {
