@@ -8,7 +8,6 @@ import {
   useSetFormManifest,
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
-import { ReactComponent as MintIcon } from '../../icons/circle/mint.svg';
 import { Interfaces } from '../../../types';
 import { MintProvider, useMintState } from './MintProvider';
 import { MintInput } from './MintInput';
@@ -69,13 +68,7 @@ const MintForm: FC<{}> = () => {
 export const Mint: FC<{}> = () => (
   <MintProvider>
     <FormProvider formId="mint">
-      <PageHeader
-        icon={<MintIcon />}
-        title="MINT"
-        subtitle="Convert stablecoins into mUSD"
-      >
-        <P>Get mUSD by depositing your stablecoin assets at a 1:1 ratio.</P>
-      </PageHeader>
+      <PageHeader title="Mint" subtitle="Convert stablecoins into mUSD" />
       <MintForm />
       <MassetStats />
     </FormProvider>
