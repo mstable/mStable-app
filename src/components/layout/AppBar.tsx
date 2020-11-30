@@ -43,7 +43,6 @@ import { ReactComponent as MeetOneIcon } from '../icons/wallets/meetone.svg';
 import { ReactComponent as MusdIcon } from '../icons/musd_logo.svg';
 import { ReactComponent as BtcIcon } from '../icons/btc_logo.svg';
 import { Idle } from '../icons/Idle';
-import { useSelectedMasset } from '../../context/MassetsProvider';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -180,6 +179,12 @@ const Top = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  flex-flow: wrap;
+  margin-bottom: 1.5rem;
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-flow: none;
+    margin-bottom: none;
+  }
 `;
 
 const Inner = styled.div`
@@ -314,12 +319,15 @@ const MassetSwitch = styled(UnstyledButton)`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 31.25rem;
   cursor: pointer;
   span {
     padding-right: 0.625rem;
     font-size: 18px;
     font-weight: 700;
+  }
+  @media (min-width: ${ViewportWidth.m}) {
+    // FIXME
+    margin-right: 31.25rem;
   }
 `;
 
@@ -329,8 +337,8 @@ const IconContainer = styled.div`
   justify-content: center;
   display: flex;
   align-items: center;
-  width: 1.9375rem;
-  height: 1.9375rem;
+  width: 1.5rem;
+  height: 1.5rem;
   z-index: 1;
 `;
 
