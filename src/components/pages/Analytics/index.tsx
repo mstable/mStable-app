@@ -6,7 +6,6 @@ import {
   useMassetTotalSupply,
   useTotalSavings,
 } from '../../../context/DataProvider/DataProvider';
-import { ReactComponent as AnalyticsIcon } from '../../icons/circle/analytics.svg';
 import { BasketStats } from '../../stats/BasketStats';
 import { H2, H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
