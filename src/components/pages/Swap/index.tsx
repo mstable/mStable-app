@@ -8,7 +8,6 @@ import {
   useSetFormManifest,
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
-import { ReactComponent as SwapIcon } from '../../icons/circle/swap.svg';
 import { P } from '../../core/Typography';
 import { SwapProvider, useSwapState } from './SwapProvider';
 import { SwapInput } from './SwapInput';

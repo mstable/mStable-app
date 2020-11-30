@@ -6,7 +6,6 @@ import { H3 } from '../core/Typography';
 import { Address } from '../core/Address';
 import { FlexRow } from '../core/Containers';
 import { PageHeader } from '../pages/PageHeader';
-import { ReactComponent as AccountIcon } from '../icons/circle/account.svg';
 import { Balances } from './Balances';
 import { HistoricTransactions } from './HistoricTransactions';
 import { Transactions } from './Transactions';
@@ -36,12 +35,6 @@ const Rows = styled.div`
 const Row = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing.xl};
   border-top: 1px ${({ theme }) => theme.color.whiteTransparent} solid;
-`;
-
-const StyledAccountIcon = styled(AccountIcon)`
-  > g:first-child > circle:first-child {
-    fill: white;
-  }
 `;
 
 const DisconnectButton = styled(Button)`
