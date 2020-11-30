@@ -70,11 +70,7 @@ const SaveForm: FC<{}> = () => {
 export const Save: FC<{}> = () => (
   <SaveProvider>
     <FormProvider formId="save">
-      <PageHeader
-        icon={<SaveIcon />}
-        title="SAVE"
-        subtitle="Earn mUSD’s native interest rate"
-      >
+      <PageHeader title="Save" subtitle="Earn mUSD’s native interest rate">
         <P>
           Deposit your mUSD into the mUSD SAVE contract and start earning
           interest.

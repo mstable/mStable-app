@@ -84,7 +84,6 @@ export const Analytics: FC = () => {
   return (
     <div>
       <PageHeader
-        icon={<AnalyticsIcon />}
         title="Analytics"
         subtitle="Explore activity across mStable"
       />
