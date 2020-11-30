@@ -56,12 +56,8 @@ const Container = styled.header<{ accountOpen: boolean; home: boolean }>`
   width: 100%;
   min-height: 48px;
   min-width: ${ViewportWidth.xs};
-  background: ${({ home, accountOpen, theme }) =>
-    accountOpen
-      ? theme.color.black
-      : home
-      ? theme.color.gold
-      : theme.color.offWhite};
+  background: ${({ accountOpen, theme }) =>
+    accountOpen ? theme.color.black : theme.color.white};
 `;
 
 export const Header: FC<{ home: boolean }> = ({ home }) => {

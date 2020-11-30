@@ -114,7 +114,7 @@ const Container = styled.footer<Props>`
   display: flex;
   justify-content: center;
   color: ${({ theme, accountOpen }) =>
-    accountOpen ? theme.color.offWhite : theme.color.offBlack};
+    accountOpen ? theme.color.white : theme.color.offBlack};
 
   ${Inner} {
     border-top: ${({ theme, accountOpen }) =>
@@ -129,7 +129,7 @@ const Container = styled.footer<Props>`
 
   a {
     color: ${({ theme, accountOpen }) =>
-      accountOpen ? theme.color.offWhite : theme.color.offBlack};
+      accountOpen ? theme.color.white : theme.color.offBlack};
   }
 `;
 

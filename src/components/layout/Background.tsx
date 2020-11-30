@@ -15,12 +15,8 @@ const Container = styled.div<Props>`
   pointer-events: none;
   z-index: -1;
   transition: background-color 0.3s ease;
-  background-color: ${({ theme, home, accountOpen }) =>
-    accountOpen
-      ? theme.color.black
-      : home
-      ? theme.color.gold
-      : theme.color.offWhite};
+  background-color: ${({ theme, accountOpen }) =>
+    accountOpen ? theme.color.black : theme.color.white};
 `;
 
 export const Background: FC<Props> = ({ home, accountOpen }) => (

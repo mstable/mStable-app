@@ -18,7 +18,14 @@ import { Color } from '../../theme';
 const Main = styled.main`
   max-width: 100%;
   flex: 1;
-  padding: 40px 20px;
+  padding: 2.5rem 5rem;
+  background: linear-gradient(
+    rgba(248, 248, 248, 1) 4rem,
+    transparent 36rem,
+    transparent
+  );
+  border-radius: 2.25rem;
+  margin-top: 2rem;
 `;
 
 const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
