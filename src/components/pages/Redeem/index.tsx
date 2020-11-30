@@ -82,8 +82,7 @@ export const Redeem: FC<{}> = () => (
   <RedeemProvider>
     <FormProvider formId="redeem">
       <PageHeader
-        icon={<RedeemIcon />}
-        title="REDEEM"
+        title="Redeem"
         subtitle="Exchange mUSD for its underlying collateral"
       />
       <RedeemForm />
