@@ -380,8 +380,7 @@ export const Earn: FC<{}> = () => {
           <div>
             <PageHeaderContainer>
               <PageHeader
-                icon={<MtaIcon />}
-                title="EARN"
+                title="Earn"
                 subtitle="Ecosystem rewards with mStable"
               >
                 <Button onClick={toggleOnboardingVisible}>

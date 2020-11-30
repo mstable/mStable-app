@@ -102,7 +102,6 @@ export const Wallet: FC<{}> = () => {
     <Container>
       <div>
         <PageHeader
-          icon={<StyledAccountIcon />}
           title="Account"
           subtitle={
             connected && address
