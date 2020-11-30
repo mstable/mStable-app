@@ -85,11 +85,7 @@ const SwapForm: FC<{}> = () => {
 export const Swap: FC<{}> = () => (
   <SwapProvider>
     <FormProvider formId="swap">
-      <PageHeader
-        icon={<SwapIcon />}
-        title="SWAP"
-        subtitle="Exchange stablecoins with mStable"
-      >
+      <PageHeader title="Swap" subtitle="Exchange stablecoins with mStable">
         <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
       </PageHeader>
       <SwapForm />
