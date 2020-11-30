@@ -13,7 +13,7 @@ import {
   useToggleWallet,
 } from '../../context/AppProvider';
 import { Color, ViewportWidth } from '../../theme';
-import { ReactComponent as LogoSvg } from '../icons/mstable-small.svg';
+import { ReactComponent as LogoSvg } from '../icons/mstable-icon.svg';
 import { UnstyledButton } from '../core/Button';
 import { centredLayout } from './css';
 import { TransactionStatus } from '../../types';
@@ -81,17 +81,12 @@ const CountBadge: FC<{ count: number; error: boolean }> = ({
 );
 
 const Logo = styled.div<{ inverted?: boolean }>`
-  display: flex;
-  align-items: center;
-
   a {
     border-bottom: 0;
   }
 
   svg {
-    width: 20px;
-    height: 24px;
-    padding-top: 2px;
+    height: 20px;
 
     path,
     rect {
