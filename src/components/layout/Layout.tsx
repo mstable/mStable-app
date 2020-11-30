@@ -13,19 +13,29 @@ import { Background } from './Background';
 import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
 import { centredLayout } from './css';
-import { Color } from '../../theme';
+import { Color, ViewportWidth } from '../../theme';
 
 const Main = styled.main`
   max-width: 100%;
   flex: 1;
-  padding: 2.5rem 5rem;
+  padding: 2rem 1rem;
   background: linear-gradient(
     rgba(248, 248, 248, 1) 4rem,
     transparent 36rem,
     transparent
   );
-  border-radius: 2.25rem;
+  border-radius: 1rem;
   margin-top: 2rem;
+
+  @media (min-width: ${ViewportWidth.s}) {
+    border-radius: 1.75rem;
+    padding: 2rem 2.5rem;
+  }
+
+  @media (min-width: ${ViewportWidth.xl}) {
+    border-radius: 2.25rem;
+    padding: 2.5rem 4rem;
+  }
 `;
 
 const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
