@@ -45,6 +45,9 @@ const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
     text-decoration: none;
     border-bottom: 1px ${({ theme }) => theme.color.offBlack} solid;
   }
+  b {
+    font-weight: 600;
+  }
   html {
     overflow-y: scroll;
     scroll-behavior: smooth;
