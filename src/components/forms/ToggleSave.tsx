@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import styled from 'styled-components';
-import { UnstyledButton } from '../core/Button';
+import { BubbleButton } from '../core/Button';
 
 export type ToggleSaveSelection = 'primary' | 'secondary';
 
@@ -11,57 +11,45 @@ interface Props {
   defaultSelection?: ToggleSaveSelection;
 }
 
-const Container = styled(UnstyledButton)`
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+const Container = styled.div`
   padding: 0;
   border-radius: 1.5rem;
   background: #eee;
-`;
 
-const DefaultTitle = styled.span<{ enabled: boolean }>`
-  padding: 0.5rem 1.5rem;
-  border-radius: 1.5rem;
-  display: inline-block;
-  font-weight: 600;
-  color: ${({ theme, enabled }) =>
-    enabled ? theme.color.white : theme.color.offBlack};
-  background: ${({ theme, enabled }) => enabled && theme.color.blue};
-  font-size: 1rem;
-  opacity: ${({ enabled }) => (enabled ? 1 : 0.25)};
-  transition: 0.15s linear all;
-
-  &:hover {
-    opacity: 1;
+  button:nth-last-child(1) {
+    margin-left: -0.5rem;
   }
 `;
 
-const PrimaryTitle = styled(DefaultTitle)``;
-
-const SecondaryTitle = styled(DefaultTitle)`
-  margin-left: -0.5rem;
-`;
-
 export const ToggleSave: FC<Props> = props => {
-  const { onClick, className, disabled, defaultSelection } = props;
+  const { onClick, className, defaultSelection } = props;
   const [selected, setSelected] = useState(defaultSelection ?? 'primary');
 
   const isPrimary = selected === 'primary';
-  const isSecondary = selected === 'secondary';
 
-  const handleOnClick = (): void => {
-    setSelected(isPrimary ? 'secondary' : 'primary');
-    onClick(isPrimary ? 'secondary' : 'primary');
+  const handleOnClick = (state: ToggleSaveSelection): void => {
+    setSelected(state);
+    onClick(state);
   };
 
   return (
-    <Container
-      onClick={handleOnClick}
-      type="button"
-      disabled={disabled}
-      className={className}
-    >
-      <PrimaryTitle enabled={isPrimary}>Current</PrimaryTitle>
-      <SecondaryTitle enabled={isSecondary}>Deprecated</SecondaryTitle>
+    <Container className={className}>
+      <BubbleButton
+        onClick={() => handleOnClick('primary')}
+        type="button"
+        highlighted={isPrimary}
+        scale={0.9}
+      >
+        Current
+      </BubbleButton>
+      <BubbleButton
+        onClick={() => handleOnClick('secondary')}
+        type="button"
+        highlighted={!isPrimary}
+        scale={0.9}
+      >
+        Deprecated
+      </BubbleButton>
     </Container>
   );
 };
