@@ -38,11 +38,22 @@ const Container = styled.div`
   display: flex;
   align-items: flex-start;
   max-width: 500px;
+  flex-direction: column;
 
   h2 {
     font-size: ${FontSize.xl};
     font-weight: 600;
   }
+`;
+
+const Row = styled.div`
+  display: flex;
+  margin-bottom: 0.5rem;
+`;
+
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 export const PageHeader: FC<Props> = ({ children, title, subtitle }) => {
@@ -51,12 +62,14 @@ export const PageHeader: FC<Props> = ({ children, title, subtitle }) => {
 
   return (
     <Container>
-      <Icon>{icon}</Icon>
-      <div>
-        <H2>{title}</H2>
-        <H3>{subtitle}</H3>
-        <div>{children}</div>
-      </div>
+      <Row>
+        <Icon>{icon}</Icon>
+        <Column>
+          <H2>{title}</H2>
+          <H3>{subtitle}</H3>
+        </Column>
+      </Row>
+      <div>{children}</div>
     </Container>
   );
 };
