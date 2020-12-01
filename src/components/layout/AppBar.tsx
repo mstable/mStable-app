@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import React, { FC } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { FC, useCallback } from 'react';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 
 import {
   AccountItems,
@@ -12,12 +12,6 @@ import {
   useToggleNotifications,
   useToggleWallet,
 } from '../../context/AppProvider';
-import { Color, ViewportWidth } from '../../theme';
-import { ReactComponent as LogoSvg } from '../icons/mstable-icon.svg';
-import { UnstyledButton } from '../core/Button';
-import { centredLayout } from './css';
-import { TransactionStatus } from '../../types';
-import { useTruncatedAddress } from '../../web3/hooks';
 import { usePendingTxState } from '../../context/TransactionsProvider';
 import {
   NotificationType,
@@ -32,6 +26,17 @@ import {
 } from '../../context/OnboardProvider';
 import { useTokenSubscription } from '../../context/TokensProvider';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
+import {
+  useSelectedMasset,
+  useSetSelectedMasset,
+} from '../../context/MassetsProvider';
+
+import { Color, ViewportWidth } from '../../theme';
+import { ReactComponent as LogoSvg } from '../icons/mstable-icon.svg';
+import { UnstyledButton } from '../core/Button';
+import { centredLayout } from './css';
+import { TransactionStatus } from '../../types';
+import { useTruncatedAddress } from '../../web3/hooks';
 import { ReactComponent as BraveIcon } from '../icons/wallets/brave.svg';
 import { ReactComponent as MetaMaskIcon } from '../icons/wallets/metamask.svg';
 import { ReactComponent as FortmaticIcon } from '../icons/wallets/fortmatic.svg';
@@ -332,6 +337,7 @@ const MassetSwitch = styled(UnstyledButton)`
 `;
 
 const IconContainer = styled.div`
+  // FIXME
   background: #176ede;
   border-radius: 50%;
   justify-content: center;
@@ -399,6 +405,7 @@ const WalletButton: FC = () => {
 };
 
 export const AppBar: FC = () => {
+  // FIXME
   const { pathname } = useLocation();
   const accountOpen = useAccountOpen();
   const closeAccount = useCloseAccount();
@@ -406,6 +413,18 @@ export const AppBar: FC = () => {
   const massetState = useSelectedMassetState();
   const massetToken = useTokenSubscription(massetState?.address);
   const home = pathname === '/';
+  const history = useHistory();
+  const selectMasset = useSetSelectedMasset();
+
+  const handleMusdClick = useCallback(() => {
+    selectMasset('mUSD');
+    history.push('/musd/mint');
+  }, [history, selectMasset]);
+
+  const handleMbtcClick = useCallback(() => {
+    selectMasset('mBTC');
+    history.push('/mbtc/mint');
+  }, [history, selectMasset]);
 
   return (
     <Container inverted={accountOpen}>
@@ -422,13 +441,17 @@ export const AppBar: FC = () => {
               </Balance>
             )}
           </Logo>
-          <MassetSwitch>
+          <MassetSwitch
+            onClick={
+              selectedMasset.name === 'mUSD' ? handleMbtcClick : handleMusdClick
+            }
+          >
             <span>{selectedMasset.name}</span>
-            <IconContainer>
-              <MusdIcon />
+            <IconContainer name={selectedMasset.name}>
+              {selectedMasset.name === 'mUSD' ? <MusdIcon /> : <BtcIcon />}
             </IconContainer>
-            <IdleIconContainer>
-              <BtcIcon />
+            <IdleIconContainer name={selectedMasset.name}>
+              {selectedMasset.name === 'mUSD' ? <BtcIcon /> : <MusdIcon />}
             </IdleIconContainer>
           </MassetSwitch>
           <Buttons>

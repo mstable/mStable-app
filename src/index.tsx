@@ -45,7 +45,7 @@ const Routes: FC = () => {
     <Switch>
       <Route exact path="/" component={Home} />
       <Route exact path="/:mAsset/analytics" component={Analytics} />
-      <Route exact path="/:mAsset/earn" component={Earn} />
+      <Route exact path="/earn" component={Earn} />
       <Route exact path="/:mAsset/earn/admin" component={AdminPage} />
       <Route exact path="/:mAsset/earn/:slugOrAddress" component={PoolPage} />
       <Route
@@ -53,7 +53,7 @@ const Routes: FC = () => {
         path="/earn/:slugOrAddress/:userAddress"
         component={PoolPage}
       />
-      <Route exact path="/:mAsset/faq" component={FAQ} />
+      <Route exact path="/faq" component={FAQ} />
       <Route exact path="/:mAsset/mint" component={Mint} />
       <Route exact path="/:mAsset/redeem" component={Redeem} />
       <Route exact path="/:mAsset/save" component={Save} />

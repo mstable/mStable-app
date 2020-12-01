@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+
 import { ReactComponent as MstableIcon } from '../../icons/mstable_horizontal.svg';
 import { ReactComponent as MusdIcon } from '../../icons/musd_logo.svg';
 import { ReactComponent as BtcIcon } from '../../icons/btc_logo.svg';
@@ -64,7 +65,18 @@ const Mbtc = styled(Musd)`
 `;
 
 export const Home: FC = () => {
+  // FIXME
   const selectMasset = useSetSelectedMasset();
+  const history = useHistory();
+  const handleMusdClick = useCallback(() => {
+    selectMasset('mUSD');
+    history.push('/musd/mint');
+  }, [history, selectMasset]);
+
+  const handleMbtcClick = useCallback(() => {
+    selectMasset('mBTC');
+    history.push('/mbtc/mint');
+  }, [history, selectMasset]);
   return (
     <Container>
       <MstableIcon />
@@ -75,7 +87,7 @@ export const Home: FC = () => {
           </IconContainer>
           <span>mUSD</span>
         </Musd>
-        <Mbtc onClick={() => selectMasset('mUSD')}>
+        <Mbtc onClick={handleMbtcClick}>
           <IconContainer>
             <BtcIcon />
           </IconContainer>
