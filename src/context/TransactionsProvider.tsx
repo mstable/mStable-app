@@ -37,7 +37,6 @@ import { calculateGasMargin } from '../web3/hooks';
 
 enum Actions {
   AddPending,
-  AddHistoric,
   Check,
   Finalize,
   Reset,
@@ -83,13 +82,6 @@ interface Dispatch {
   ): void;
 
   /**
-   * Add many historic transactions
-   *
-   * @param historicTxs Map of historic transactions indexed by hash
-   */
-  addHistoric(historicTxs: Record<TransactionHash, HistoricTransaction>): void;
-
-  /**
    * Check that a current transaction is present at a given block number.
    * @param hash
    * @param blockNumber
@@ -123,10 +115,6 @@ type Action =
   | {
       type: Actions.AddPending;
       payload: Transaction;
-    }
-  | {
-      type: Actions.AddHistoric;
-      payload: Record<TransactionHash, HistoricTransaction>;
     }
   | {
       type: Actions.Check;
@@ -163,15 +151,6 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
         latestStatus: {
           ...state.latestStatus,
           status: TransactionStatus.Pending,
-        },
-      };
-    }
-    case Actions.AddHistoric: {
-      return {
-        ...state,
-        historic: {
-          ...state.historic,
-          ...action.payload,
         },
       };
     }
@@ -571,16 +550,6 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
     [dispatch, dataState, stakingRewardsContracts, addInfoNotification],
   );
 
-  const addHistoric = useCallback<Dispatch['addHistoric']>(
-    historicTransactions => {
-      dispatch({
-        type: Actions.AddHistoric,
-        payload: historicTransactions,
-      });
-    },
-    [dispatch],
-  );
-
   const check = useCallback<Dispatch['check']>(
     (hash, blockNumber) => {
       dispatch({ type: Actions.Check, payload: { hash, blockNumber } });
@@ -621,7 +590,6 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
           state,
           {
             addPending,
-            addHistoric,
             check,
             finalize,
             reset,
@@ -633,7 +601,6 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
         [
           state,
           addPending,
-          addHistoric,
           check,
           finalize,
           reset,
