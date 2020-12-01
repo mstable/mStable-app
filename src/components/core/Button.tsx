@@ -14,6 +14,30 @@ export const UnstyledButton = styled.button`
   user-select: none;
 `;
 
+export const BubbleButton = styled(UnstyledButton)<{
+  highlighted?: boolean;
+  scale?: number;
+}>`
+  font-size: ${({ scale }) => (scale ? `${scale}rem` : `1rem`)};
+  padding: 0.75em 1.5em;
+  border-radius: 1.5em;
+  background: ${({ theme, highlighted }) =>
+    highlighted ? theme.color.blue : `#eee`};
+  color: ${({ theme, highlighted }) =>
+    highlighted ? theme.color.white : theme.color.black};
+  z-index: ${({ highlighted }) => (highlighted ? 2 : 1)};
+  font-weight: 600;
+  position: relative;
+  cursor: pointer;
+  transition: 0.5s linear text-decoration;
+
+  :hover {
+    text-decoration: ${({ theme, highlighted }) => !highlighted && `underline`};
+    color: ${({ theme, highlighted }) =>
+      highlighted ? theme.color.white : theme.color.black};
+  }
+`;
+
 const ButtonCss = css<Props>`
   background: ${({ inverted, theme }) =>
     inverted ? theme.color.offBlack : theme.color.white};
