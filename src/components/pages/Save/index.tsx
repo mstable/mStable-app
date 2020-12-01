@@ -70,6 +70,7 @@ const SaveForm: FC<{}> = () => {
 
 export const Save: FC<{}> = () => {
   const [activeVersion, setActiveVersion] = useState(CURRENT);
+  const versionNumber = activeVersion === CURRENT ? 2 : 1;
 
   const handleVersionToggle = useCallback(
     (selection: ToggleSaveSelection) =>
@@ -80,7 +81,10 @@ export const Save: FC<{}> = () => {
   return (
     <SaveProvider>
       <FormProvider formId="save">
-        <PageHeader title="Save" subtitle="Earn mUSD’s native interest rate">
+        <PageHeader
+          title={`Save V${versionNumber}`}
+          subtitle="Earn mUSD’s native interest rate"
+        >
           <ToggleSave onClick={handleVersionToggle} />
         </PageHeader>
         <SaveInfo version={activeVersion} />
