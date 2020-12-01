@@ -10,8 +10,10 @@ import { useAverageApyForPastWeek } from '../../../web3/hooks';
 import { useSavingsBalance } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
 import { SaveVersion } from '../../../types';
+import { BubbleButton } from '../../core/Button';
+import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
 
-const { CURRENT, DEPRECATED } = SaveVersion;
+const { CURRENT } = SaveVersion;
 
 const CreditBalance = styled.div`
   img {
@@ -20,7 +22,6 @@ const CreditBalance = styled.div`
   }
 
   span {
-    font-weight: bold;
     font-size: 6vw;
     line-height: 1em;
   }
@@ -39,6 +40,17 @@ const CreditBalance = styled.div`
 const InfoMsg = styled.div`
   padding-top: 4px;
   font-size: 12px;
+`;
+
+const WarningMsg = styled.div`
+  padding-top: 4px;
+  font-size: 12px;
+  background: #ffeaea;
+  color: #de1717;
+  padding: 0.5rem 1.5rem;
+  border-radius: 1.5rem;
+  width: fit-content;
+  margin: 1rem auto;
 `;
 
 const InfoCountUp = styled(CountUp)`
@@ -68,6 +80,8 @@ const InfoRow = styled.div`
 `;
 
 const BalanceInfoRow = styled(InfoRow)`
+  padding: 1.5rem 0;
+
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     display: block;
   }
@@ -76,6 +90,12 @@ const BalanceInfoRow = styled(InfoRow)`
 interface Props {
   version: SaveVersion;
 }
+
+const StyledWarningBadge = styled(WarningBadge)`
+  width: 1.5rem;
+  height: 1.5rem;
+  vertical-align: top;
+`;
 
 export const SaveInfo: FC<Props> = ({ version }) => {
   const apyForPastWeek = useAverageApyForPastWeek();
@@ -86,14 +106,13 @@ export const SaveInfo: FC<Props> = ({ version }) => {
     <>
       <BalanceInfoRow>
         <div>
-          <H3>Your mUSD savings balance</H3>
-          {isCurrentVersion ? (
-            <CreditBalance>
-              <MUSDIconTransparent />
-              <CountUp
-                end={savingsBalance?.balance?.simple || 0}
-                decimals={7}
-              />
+          <H3>
+            Your <b>mUSD</b> savings balance
+          </H3>
+          <CreditBalance>
+            <MUSDIconTransparent />
+            <CountUp end={savingsBalance?.balance?.simple || 0} decimals={7} />
+            {isCurrentVersion ? (
               <InfoMsg>
                 See how interest is calculated{' '}
                 <a
@@ -105,10 +124,19 @@ export const SaveInfo: FC<Props> = ({ version }) => {
                 </a>
                 .
               </InfoMsg>
-            </CreditBalance>
-          ) : (
-            <p>None</p>
-          )}
+            ) : (
+              <>
+                <StyledWarningBadge />
+                <WarningMsg>
+                  Migrate your <b>mUSD</b> to continue earning interest on your
+                  balance.
+                </WarningMsg>
+                <BubbleButton highlighted scale={1.15}>
+                  Migrate
+                </BubbleButton>
+              </>
+            )}
+          </CreditBalance>
         </div>
       </BalanceInfoRow>
       <InfoRow>
