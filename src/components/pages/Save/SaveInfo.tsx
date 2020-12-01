@@ -89,6 +89,7 @@ const BalanceInfoRow = styled(InfoRow)`
 
 interface Props {
   version: SaveVersion;
+  onMigrateClick: () => void;
 }
 
 const StyledWarningBadge = styled(WarningBadge)`
@@ -97,7 +98,7 @@ const StyledWarningBadge = styled(WarningBadge)`
   vertical-align: top;
 `;
 
-export const SaveInfo: FC<Props> = ({ version }) => {
+export const SaveInfo: FC<Props> = ({ version, onMigrateClick }) => {
   const apyForPastWeek = useAverageApyForPastWeek();
   const savingsBalance = useSavingsBalance();
   const isCurrentVersion = version === CURRENT;
@@ -131,7 +132,7 @@ export const SaveInfo: FC<Props> = ({ version }) => {
                   Migrate your <b>mUSD</b> to continue earning interest on your
                   balance.
                 </WarningMsg>
-                <BubbleButton highlighted scale={1.15}>
+                <BubbleButton highlighted scale={1.15} onClick={onMigrateClick}>
                   Migrate
                 </BubbleButton>
               </>

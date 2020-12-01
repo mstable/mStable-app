@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 import { BubbleButton } from '../core/Button';
 
@@ -8,7 +8,7 @@ interface Props {
   onClick: (selection: ToggleSaveSelection) => void;
   className?: string;
   disabled?: boolean;
-  defaultSelection?: ToggleSaveSelection;
+  selection?: ToggleSaveSelection;
 }
 
 const Container = styled.div`
@@ -22,20 +22,14 @@ const Container = styled.div`
 `;
 
 export const ToggleSave: FC<Props> = props => {
-  const { onClick, className, defaultSelection } = props;
-  const [selected, setSelected] = useState(defaultSelection ?? 'primary');
+  const { onClick, className, selection = 'primary' } = props;
 
-  const isPrimary = selected === 'primary';
-
-  const handleOnClick = (state: ToggleSaveSelection): void => {
-    setSelected(state);
-    onClick(state);
-  };
+  const isPrimary = selection === 'primary';
 
   return (
     <Container className={className}>
       <BubbleButton
-        onClick={() => handleOnClick('primary')}
+        onClick={() => onClick('primary')}
         type="button"
         highlighted={isPrimary}
         scale={0.9}
@@ -43,7 +37,7 @@ export const ToggleSave: FC<Props> = props => {
         Current
       </BubbleButton>
       <BubbleButton
-        onClick={() => handleOnClick('secondary')}
+        onClick={() => onClick('secondary')}
         type="button"
         highlighted={!isPrimary}
         scale={0.9}
