@@ -441,19 +441,23 @@ export const AppBar: FC = () => {
               </Balance>
             )}
           </Logo>
-          <MassetSwitch
-            onClick={
-              selectedMasset.name === 'mUSD' ? handleMbtcClick : handleMusdClick
-            }
-          >
-            <span>{selectedMasset.name}</span>
-            <IconContainer name={selectedMasset.name}>
-              {selectedMasset.name === 'mUSD' ? <MusdIcon /> : <BtcIcon />}
-            </IconContainer>
-            <IdleIconContainer name={selectedMasset.name}>
-              {selectedMasset.name === 'mUSD' ? <BtcIcon /> : <MusdIcon />}
-            </IdleIconContainer>
-          </MassetSwitch>
+          {home ? null : (
+            <MassetSwitch
+              onClick={
+                selectedMasset.name === 'mUSD'
+                  ? handleMbtcClick
+                  : handleMusdClick
+              }
+            >
+              <span>{selectedMasset.name}</span>
+              <IconContainer name={selectedMasset.name}>
+                {selectedMasset.name === 'mUSD' ? <MusdIcon /> : <BtcIcon />}
+              </IconContainer>
+              <IdleIconContainer name={selectedMasset.name}>
+                {selectedMasset.name === 'mUSD' ? <BtcIcon /> : <MusdIcon />}
+              </IdleIconContainer>
+            </MassetSwitch>
+          )}
           <Buttons>
             {!home && <NotificationsButton />}
             <WalletButton />

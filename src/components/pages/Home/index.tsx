@@ -39,7 +39,7 @@ const MassetsContainer = styled.div`
 
 const Musd = styled(UnstyledButton)`
   flex: 1 1 auto;
-  margin: 1rem;
+  margin: 2rem;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -57,6 +57,9 @@ const Musd = styled(UnstyledButton)`
     color: #ffffff;
   }
   border: 10px solid #e3efff;
+  @media (min-width: ${ViewportWidth.m}) {
+    margin: 5rem;
+  }
 `;
 
 const Mbtc = styled(Musd)`
