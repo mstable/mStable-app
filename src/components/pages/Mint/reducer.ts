@@ -107,6 +107,7 @@ const enableFirstBasset = (state: State): State => {
   const bAssetsArr = Object.values(state.bAssets);
 
   if (bAssetsArr.find(b => b.enabled)) return state;
+  if (!dataState.mAsset) return state;
 
   const [first] = bAssetsArr
     .map(b => massetState.bAssets[b.address])

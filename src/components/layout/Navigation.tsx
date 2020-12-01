@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
 import { useCloseAccount } from '../../context/AppProvider';
 import { FontSize, ViewportWidth } from '../../theme';
-import { useMassetSlug } from '../../context/MassetsProvider';
+import { useSelectedMasset } from '../../context/MassetsProvider';
 
 interface NavItem {
   title: string;
@@ -75,7 +75,7 @@ const navItems: NavItem[] = [
  */
 export const Navigation: FC<{}> = () => {
   const collapseWallet = useCloseAccount();
-  const selectedMassetSlug = useMassetSlug();
+  const selectedMasset = useSelectedMasset();
   const { pathname } = useLocation();
   const items: (NavItem & { active: boolean })[] = useMemo(
     () =>
@@ -84,13 +84,15 @@ export const Navigation: FC<{}> = () => {
         path:
           item.path === '/earn' || item.path === '/faq'
             ? item.path
-            : `/${selectedMassetSlug}${item.path}`,
+            : `/${selectedMasset?.name.toLocaleLowerCase()}${item.path}`,
         active: !!(item.path === '/earn'
           ? item?.path && pathname.startsWith(item.path)
           : item?.path &&
-            pathname.startsWith(`/${selectedMassetSlug}${item.path}`)),
+            pathname.startsWith(
+              `/${selectedMasset?.name.toLocaleLowerCase()}${item.path}`,
+            )),
       })),
-    [pathname, selectedMassetSlug],
+    [pathname, selectedMasset],
   );
 
   return (

@@ -184,8 +184,6 @@ const Top = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  flex-flow: wrap;
-  margin-bottom: 1.5rem;
   @media (min-width: ${ViewportWidth.m}) {
     flex-flow: none;
     margin-bottom: none;
@@ -441,23 +439,33 @@ export const AppBar: FC = () => {
               </Balance>
             )}
           </Logo>
-          {home ? null : (
-            <MassetSwitch
-              onClick={
-                selectedMasset.name === 'mUSD'
-                  ? handleMbtcClick
-                  : handleMusdClick
-              }
-            >
-              <span>{selectedMasset.name}</span>
-              <IconContainer name={selectedMasset.name}>
-                {selectedMasset.name === 'mUSD' ? <MusdIcon /> : <BtcIcon />}
-              </IconContainer>
-              <IdleIconContainer name={selectedMasset.name}>
-                {selectedMasset.name === 'mUSD' ? <BtcIcon /> : <MusdIcon />}
-              </IdleIconContainer>
-            </MassetSwitch>
-          )}
+          {home
+            ? null
+            : selectedMasset && (
+                <MassetSwitch
+                  onClick={
+                    selectedMasset.name === 'mUSD'
+                      ? handleMbtcClick
+                      : handleMusdClick
+                  }
+                >
+                  <span>{selectedMasset.name}</span>
+                  <IconContainer name={selectedMasset.name}>
+                    {selectedMasset.name === 'mUSD' ? (
+                      <MusdIcon />
+                    ) : (
+                      <BtcIcon />
+                    )}
+                  </IconContainer>
+                  <IdleIconContainer name={selectedMasset.name}>
+                    {selectedMasset.name === 'mUSD' ? (
+                      <BtcIcon />
+                    ) : (
+                      <MusdIcon />
+                    )}
+                  </IdleIconContainer>
+                </MassetSwitch>
+              )}
           <Buttons>
             {!home && <NotificationsButton />}
             <WalletButton />
