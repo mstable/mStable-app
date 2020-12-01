@@ -179,3 +179,8 @@ export interface AccentColors {
   base: string;
   text: string;
 }
+
+export enum SaveVersion {
+  CURRENT,
+  DEPRECATED,
+}

@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 
 import { useSelectedMassetSavingsContract } from '../../../context/DataProvider/ContractsProvider';
 import {
@@ -6,14 +6,16 @@ import {
   useSetFormManifest,
 } from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
-import { P } from '../../core/Typography';
-import { Interfaces } from '../../../types';
+import { Interfaces, SaveVersion } from '../../../types';
 import { SaveProvider, useSaveState } from './SaveProvider';
 import { SaveInput } from './SaveInput';
 import { SaveInfo } from './SaveInfo';
 import { SaveConfirm } from './SaveConfirm';
 import { TransactionType } from './types';
 import { PageHeader } from '../PageHeader';
+import { ToggleSave, ToggleSaveSelection } from '../../forms/ToggleSave';
+
+const { CURRENT, DEPRECATED } = SaveVersion;
 
 const SaveForm: FC<{}> = () => {
   const { amount, amountInCredits, transactionType, valid } = useSaveState();
@@ -66,17 +68,24 @@ const SaveForm: FC<{}> = () => {
   );
 };
 
-export const Save: FC<{}> = () => (
-  <SaveProvider>
-    <FormProvider formId="save">
-      <PageHeader title="Save" subtitle="Earn mUSD’s native interest rate">
-        <P>
-          Deposit your mUSD into the mUSD SAVE contract and start earning
-          interest.
-        </P>
-      </PageHeader>
-      <SaveInfo />
-      <SaveForm />
-    </FormProvider>
-  </SaveProvider>
-);
+export const Save: FC<{}> = () => {
+  const [activeVersion, setActiveVersion] = useState(CURRENT);
+
+  const handleVersionToggle = useCallback(
+    (selection: ToggleSaveSelection) =>
+      setActiveVersion(selection === 'primary' ? CURRENT : DEPRECATED),
+    [],
+  );
+
+  return (
+    <SaveProvider>
+      <FormProvider formId="save">
+        <PageHeader title="Save" subtitle="Earn mUSD’s native interest rate">
+          <ToggleSave onClick={handleVersionToggle} />
+        </PageHeader>
+        <SaveInfo version={activeVersion} />
+        <SaveForm />
+      </FormProvider>
+    </SaveProvider>
+  );
+};
