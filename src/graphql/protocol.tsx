@@ -3766,7 +3766,7 @@ export type ScriptFeesLazyQueryHookResult = ReturnType<typeof useScriptFeesLazyQ
 export type ScriptFeesQueryResult = ApolloReactCommon.QueryResult<ScriptFeesQuery, ScriptFeesQueryVariables>;
 export const HistoricTransactionsDocument = gql`
     query HistoricTransactions($account: Bytes) @api(name: protocol) {
-  transactions(where: {sender: $account}, orderBy: timestamp) {
+  transactions(where: {sender: $account}, orderBy: timestamp, orderDirection: desc) {
     id
     hash
     block
