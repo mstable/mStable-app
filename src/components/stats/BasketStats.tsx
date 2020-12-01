@@ -152,7 +152,8 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
           return {
             symbol,
             basketShareAsPercentage,
-            maxWeightAsPercentage: remainderMaxWeight,
+            maxWeightAsPercentage,
+            remainderMaxWeight,
             overweight,
             vaultBalance: toK(totalVault.simple),
             fill: overweight
@@ -200,7 +201,7 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
             <XAxis
               type="number"
               unit="%"
-              padding={{ left: 16 }}
+              padding={{ left: 24 }}
               axisLine={false}
             />
             <YAxis
@@ -222,7 +223,7 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
                 y: number;
                 height: number;
               }) => {
-                const diameter = (height - data.length * 4) / data.length;
+                const diameter = (height - data.length * 6) / data.length;
                 return ((
                   <TokenIconSvg
                     x={x - diameter / 2}
@@ -244,7 +245,7 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
             />
             <Bar
               type="monotone"
-              dataKey="maxWeightAsPercentage"
+              dataKey="remainderMaxWeight"
               name="Max weight"
               unit="%"
               stackId="a"

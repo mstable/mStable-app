@@ -3,6 +3,7 @@
 ## Next
 
 - Fix an issue where some historic transactions with removed bAssets would not show
+- Fix an issue where some of the basket stats were not displayed correctly
 
 ## Version 1.16.0
 
