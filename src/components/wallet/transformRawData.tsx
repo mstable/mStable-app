@@ -134,5 +134,5 @@ export const transformRawData = (
           throw new Error('Unhandled transaction type');
       }
     })
-    .sort((a, b) => a.timestamp - b.timestamp) as HistoricTransaction[];
+    .sort((a, b) => b.timestamp - a.timestamp) as HistoricTransaction[];
 };
