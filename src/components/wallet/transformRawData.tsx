@@ -14,21 +14,21 @@ export const transformRawData = (
   }
 
   const { transactions } = data;
-  const { mAsset, bAssets } = dataState as DataState;
+  const { mAsset, bAssets, removedBassets } = dataState as DataState;
   return transactions
     .map(({ hash, id, ...tx }) => {
       const timestamp = parseInt(tx.timestamp, 10);
       const formattedDate = formatUnix(timestamp);
       switch (tx.__typename) {
         case 'RedeemTransaction': {
-          const mappedBassets = tx.bassets.map(
-            basset => bAssets[basset.id].symbol,
+          const bassetSymbols = tx.bassets.map(
+            basset => (bAssets[basset.id] ?? removedBassets[basset.id])?.symbol,
           );
           const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
           return {
             description: `You redeemed ${massetUnits.format()} ${
               mAsset.symbol
-            } into ${humanizeList(mappedBassets)}`,
+            } into ${humanizeList(bassetSymbols)}`,
             hash,
             timestamp,
             formattedDate,
@@ -48,14 +48,14 @@ export const transformRawData = (
           };
         }
         case 'MintMultiTransaction': {
-          const mappedBassets = tx.bassets.map(
-            basset => bAssets[basset.id].symbol,
+          const bassetSymbols = tx.bassets.map(
+            basset => (bAssets[basset.id] ?? removedBassets[basset.id])?.symbol,
           );
           const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
           return {
             description: `You minted ${massetUnits.simple.toFixed(2)} ${
               mAsset.symbol
-            } with ${humanizeList(mappedBassets)}`,
+            } with ${humanizeList(bassetSymbols)}`,
             hash,
             timestamp,
             formattedDate,
@@ -64,11 +64,13 @@ export const transformRawData = (
         }
         case 'MintSingleTransaction': {
           const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
-          const mappedBasset = bAssets[tx.basset.id].symbol;
+          const bassetSymbol = (
+            bAssets[tx.basset.id] ?? removedBassets[tx.basset.id]
+          )?.symbol;
           return {
             description: `You minted ${massetUnits.format()} ${
               mAsset.symbol
-            } with ${mappedBasset}`,
+            } with ${bassetSymbol}`,
             hash,
             timestamp,
             formattedDate,
@@ -76,14 +78,11 @@ export const transformRawData = (
           };
         }
         case 'PaidFeeTransaction': {
-          const mappedBasset = bAssets[tx.basset.id];
-          const bassetUnit = new BigDecimal(
-            tx.bassetUnits,
-            mappedBasset.decimals,
-          );
+          const basset = bAssets[tx.basset.id] ?? removedBassets[tx.basset.id];
+          const bassetUnit = new BigDecimal(tx.bassetUnits, basset.decimals);
           return {
             description: `You paid ${bassetUnit.format()} ${
-              mappedBasset.symbol
+              basset.symbol
             } in fees`,
             hash,
             timestamp,
@@ -116,11 +115,15 @@ export const transformRawData = (
           };
         }
         case 'SwapTransaction': {
-          const mappedInputBasset = bAssets[tx.inputBasset.id].symbol;
-          const mappedOutputBasset = bAssets[tx.outputBasset.id].symbol;
+          const inputBasset = (
+            bAssets[tx.inputBasset.id] ?? removedBassets[tx.inputBasset.id]
+          )?.symbol;
+          const outputBasset = (
+            bAssets[tx.outputBasset.id] ?? removedBassets[tx.outputBasset.id]
+          )?.symbol;
           const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
           return {
-            description: `You swapped ${massetUnits.format()} ${mappedInputBasset} for ${mappedOutputBasset}`,
+            description: `You swapped ${massetUnits.format()} ${inputBasset} for ${outputBasset}`,
             hash,
             timestamp,
             formattedDate,

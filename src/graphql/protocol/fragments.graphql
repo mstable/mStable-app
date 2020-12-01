@@ -21,6 +21,8 @@ fragment MassetAll on Masset {
     undergoingRecol
     bassets {
       id
+      # TODO enable this field
+      # removed
       vaultBalance {
         ...MetricFields
       }
