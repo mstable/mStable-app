@@ -72,11 +72,22 @@ export const Save: FC<{}> = () => {
   const [activeVersion, setActiveVersion] = useState(CURRENT);
   const versionNumber = activeVersion === CURRENT ? 2 : 1;
 
+  const getVersion = (selection: ToggleSaveSelection): SaveVersion =>
+    selection === 'primary' ? CURRENT : DEPRECATED;
+
+  const getSelection = (version: SaveVersion): ToggleSaveSelection =>
+    version === CURRENT ? 'primary' : 'secondary';
+
   const handleVersionToggle = useCallback(
-    (selection: ToggleSaveSelection) =>
-      setActiveVersion(selection === 'primary' ? CURRENT : DEPRECATED),
+    (selection: ToggleSaveSelection) => setActiveVersion(getVersion(selection)),
     [],
   );
+
+  const handleMigrateClick = async (): Promise<void> => {
+    // await transaction trigger for withdraw.
+    // switch state and allow user to select deposit w/ new balance
+    setActiveVersion(CURRENT);
+  };
 
   return (
     <SaveProvider>
@@ -85,9 +96,12 @@ export const Save: FC<{}> = () => {
           title={`Save V${versionNumber}`}
           subtitle="Earn mUSD’s native interest rate"
         >
-          <ToggleSave onClick={handleVersionToggle} />
+          <ToggleSave
+            onClick={handleVersionToggle}
+            selection={getSelection(activeVersion)}
+          />
         </PageHeader>
-        <SaveInfo version={activeVersion} />
+        <SaveInfo version={activeVersion} onMigrateClick={handleMigrateClick} />
         <SaveForm />
       </FormProvider>
     </SaveProvider>
