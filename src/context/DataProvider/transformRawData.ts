@@ -82,55 +82,82 @@ const getBassetsState: TransformFn<'bAssets'> = (
   },
   { mAsset },
 ) =>
-  bassets.reduce(
-    (
-      _bAssets,
-      {
-        isTransferFeeCharged,
-        maxWeight,
-        ratio,
-        status,
-        token: { address, decimals, symbol, totalSupply },
-        vaultBalance,
-      },
-    ) => {
-      const { balance, allowances } = tokens[address] ?? {
-        balance: new BigDecimal(0, decimals),
-        allowances: {},
-      };
-      const bAsset: BassetState = {
-        address,
-        allowances,
-        balance,
-        decimals,
-        isTransferFeeCharged,
-        mAssetAddress: mAsset.address,
-        maxWeight: bigNumberify(maxWeight),
-        ratio: bigNumberify(ratio),
-        status: status as BassetStatus,
-        symbol,
-        totalSupply: BigDecimal.fromMetric(totalSupply),
-        totalVault: BigDecimal.fromMetric(vaultBalance),
+  bassets
+    // TODO use this field once subgraph is deployed
+    // .filter(b => !b.removed)
+    .filter(b => b.id !== '0x6b175474e89094c44da98b954eedeac495271d0f')
+    .reduce(
+      (
+        _bAssets,
+        {
+          isTransferFeeCharged,
+          maxWeight,
+          ratio,
+          status,
+          token: { address, decimals, symbol, totalSupply },
+          vaultBalance,
+        },
+      ) => {
+        const { balance, allowances } = tokens[address] ?? {
+          balance: new BigDecimal(0, decimals),
+          allowances: {},
+        };
+        const bAsset: BassetState = {
+          address,
+          allowances,
+          balance,
+          decimals,
+          isTransferFeeCharged,
+          mAssetAddress: mAsset.address,
+          maxWeight: bigNumberify(maxWeight),
+          ratio: bigNumberify(ratio),
+          status: status as BassetStatus,
+          symbol,
+          totalSupply: BigDecimal.fromMetric(totalSupply),
+          totalVault: BigDecimal.fromMetric(vaultBalance),
 
-        // Initial values
-        balanceInMasset: new BigDecimal(0, mAsset.decimals),
-        basketShare: new BigDecimal(0, mAsset.decimals),
-        maxWeightInMasset: new BigDecimal(0, mAsset.decimals),
-        overweight: false,
-        totalVaultInMasset: new BigDecimal(0, mAsset.decimals),
+          // Initial values
+          balanceInMasset: new BigDecimal(0, mAsset.decimals),
+          basketShare: new BigDecimal(0, mAsset.decimals),
+          maxWeightInMasset: new BigDecimal(0, mAsset.decimals),
+          overweight: false,
+          totalVaultInMasset: new BigDecimal(0, mAsset.decimals),
+        };
+
+        return {
+          ..._bAssets,
+          [address]: bAsset,
+        };
+      },
+      {},
+    );
+
+const getRemovedBassets: TransformFn<'removedBassets'> = ({
+  mAsset: {
+    basket: { bassets },
+  },
+}) =>
+  bassets
+    // TODO use this field once subgraph is deployed
+    // .filter(b => b.removed)
+    .filter(b => b.id === '0x6b175474e89094c44da98b954eedeac495271d0f')
+    .reduce((prev, { token: { address, decimals, symbol } }) => {
+      const bAsset: DataState['removedBassets'][string] = {
+        address,
+        decimals,
+        symbol,
       };
 
       return {
-        ..._bAssets,
+        ...prev,
         [address]: bAsset,
       };
-    },
-    {},
-  );
+    }, {});
 
 const pipelineItems: TransformPipelineItem<keyof DataState>[] = [
   ['mAsset', getMassetState],
   ['bAssets', getBassetsState],
+  ['removedBassets', getRemovedBassets],
   ['savingsContract', getSavingsContract],
 ];
 

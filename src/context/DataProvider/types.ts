@@ -105,4 +105,7 @@ export interface DataState {
   bAssets: {
     [address: string]: BassetState;
   };
+  removedBassets: {
+    [address: string]: { decimals: number; symbol: string; address: string };
+  };
 }
