@@ -4,7 +4,7 @@ executors:
   gcp:
     docker:
       - image: alsco77/node-gcp-dockerfile:njs12
-    resource_class: medium
+    resource_class: medium+
   sentry:
     docker:
       - image: getsentry/sentry-cli:1.55.0
