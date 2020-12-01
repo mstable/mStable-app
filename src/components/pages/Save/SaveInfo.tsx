@@ -9,6 +9,9 @@ import { FontSize } from '../../../theme';
 import { useAverageApyForPastWeek } from '../../../web3/hooks';
 import { useSavingsBalance } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
+import { SaveVersion } from '../../../types';
+
+const { CURRENT, DEPRECATED } = SaveVersion;
 
 const CreditBalance = styled.div`
   img {
@@ -70,29 +73,42 @@ const BalanceInfoRow = styled(InfoRow)`
   }
 `;
 
-export const SaveInfo: FC<{}> = () => {
+interface Props {
+  version: SaveVersion;
+}
+
+export const SaveInfo: FC<Props> = ({ version }) => {
   const apyForPastWeek = useAverageApyForPastWeek();
   const savingsBalance = useSavingsBalance();
+  const isCurrentVersion = version === CURRENT;
+
   return (
     <>
       <BalanceInfoRow>
         <div>
           <H3>Your mUSD savings balance</H3>
-          <CreditBalance>
-            <MUSDIconTransparent />
-            <CountUp end={savingsBalance?.balance?.simple || 0} decimals={7} />
-            <InfoMsg>
-              See how interest is calculated{' '}
-              <a
-                href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#savings-balance-increase"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                here
-              </a>
-              .
-            </InfoMsg>
-          </CreditBalance>
+          {isCurrentVersion ? (
+            <CreditBalance>
+              <MUSDIconTransparent />
+              <CountUp
+                end={savingsBalance?.balance?.simple || 0}
+                decimals={7}
+              />
+              <InfoMsg>
+                See how interest is calculated{' '}
+                <a
+                  href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#savings-balance-increase"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  here
+                </a>
+                .
+              </InfoMsg>
+            </CreditBalance>
+          ) : (
+            <p>None</p>
+          )}
         </div>
       </BalanceInfoRow>
       <InfoRow>
