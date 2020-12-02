@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import React, { FC, useCallback } from 'react';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import React, { FC } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 import {
   AccountItems,
@@ -17,7 +17,6 @@ import {
   NotificationType,
   useUnreadNotifications,
 } from '../../context/NotificationsProvider';
-import { ActivitySpinner } from '../core/ActivitySpinner';
 import {
   useConnect,
   useConnected,
@@ -29,8 +28,10 @@ import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 import {
   useSelectedMasset,
   useSetSelectedMasset,
+  useHandleMassetClick,
 } from '../../context/MassetsProvider';
 
+import { ActivitySpinner } from '../core/ActivitySpinner';
 import { Color, ViewportWidth } from '../../theme';
 import { ReactComponent as LogoSvg } from '../icons/mstable-icon.svg';
 import { UnstyledButton } from '../core/Button';
@@ -411,18 +412,7 @@ export const AppBar: FC = () => {
   const massetState = useSelectedMassetState();
   const massetToken = useTokenSubscription(massetState?.address);
   const home = pathname === '/';
-  const history = useHistory();
-  const selectMasset = useSetSelectedMasset();
-
-  const handleMusdClick = useCallback(() => {
-    selectMasset('mUSD');
-    history.push('/musd/mint');
-  }, [history, selectMasset]);
-
-  const handleMbtcClick = useCallback(() => {
-    selectMasset('mBTC');
-    history.push('/mbtc/mint');
-  }, [history, selectMasset]);
+  const handleMassetClick = useHandleMassetClick();
 
   return (
     <Container inverted={accountOpen}>
@@ -445,8 +435,8 @@ export const AppBar: FC = () => {
                 <MassetSwitch
                   onClick={
                     selectedMasset.name === 'mUSD'
-                      ? handleMbtcClick
-                      : handleMusdClick
+                      ? () => handleMassetClick('mBTC')
+                      : () => handleMassetClick('mUSD')
                   }
                 >
                   <span>{selectedMasset.name}</span>

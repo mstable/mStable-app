@@ -46,8 +46,8 @@ const Routes: FC = () => {
       <Route exact path="/" component={Home} />
       <Route exact path="/:mAsset/analytics" component={Analytics} />
       <Route exact path="/earn" component={Earn} />
-      <Route exact path="/:mAsset/earn/admin" component={AdminPage} />
-      <Route exact path="/:mAsset/earn/:slugOrAddress" component={PoolPage} />
+      <Route exact path="/earn/admin" component={AdminPage} />
+      <Route exact path="/earn/:slugOrAddress" component={PoolPage} />
       <Route
         exact
         path="/earn/:slugOrAddress/:userAddress"

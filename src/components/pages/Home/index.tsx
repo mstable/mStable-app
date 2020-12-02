@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { ReactComponent as MstableIcon } from '../../icons/mstable_horizontal.svg';
 import { ReactComponent as MusdIcon } from '../../icons/musd_logo.svg';
 import { ReactComponent as BtcIcon } from '../../icons/btc_logo.svg';
-import { useSetSelectedMasset } from '../../../context/MassetsProvider';
+import { useHandleMassetClick } from '../../../context/MassetsProvider';
 import { UnstyledButton } from '../../core/Button';
 
 const Container = styled.div`
@@ -69,28 +69,18 @@ const Mbtc = styled(Musd)`
 
 export const Home: FC = () => {
   // FIXME
-  const selectMasset = useSetSelectedMasset();
-  const history = useHistory();
-  const handleMusdClick = useCallback(() => {
-    selectMasset('mUSD');
-    history.push('/musd/mint');
-  }, [history, selectMasset]);
-
-  const handleMbtcClick = useCallback(() => {
-    selectMasset('mBTC');
-    history.push('/mbtc/mint');
-  }, [history, selectMasset]);
+  const handleMassetClick = useHandleMassetClick();
   return (
     <Container>
       <MstableIcon />
       <MassetsContainer>
-        <Musd onClick={() => selectMasset('mUSD')}>
+        <Musd onClick={() => handleMassetClick('mUSD')}>
           <IconContainer>
             <MusdIcon />
           </IconContainer>
           <span>mUSD</span>
         </Musd>
-        <Mbtc onClick={handleMbtcClick}>
+        <Mbtc onClick={() => handleMassetClick('mBTC')}>
           <IconContainer>
             <BtcIcon />
           </IconContainer>
