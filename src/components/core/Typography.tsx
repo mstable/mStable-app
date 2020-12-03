@@ -5,7 +5,7 @@ export const P = styled.p<{ center?: boolean; size?: Size }>`
   font-size: ${({ theme, size = theme.size.m }) => mapSizeToFontSize(size)};
   padding-top: 4px;
   padding-bottom: 12px;
-  
+
   &:last-of-type {
     padding-bottom: 0;
   }
@@ -27,8 +27,8 @@ export const H2 = styled.h2<{ center?: boolean; borderTop?: boolean }>`
 export const H3 = styled.h3<{ borderTop?: boolean }>`
   font-size: ${FontSize.l};
   line-height: 1.5rem;
-  padding-top: 4px;
   padding-bottom: 12px;
+  padding-top: ${({ borderTop }) => (borderTop ? `1rem` : `4px`)};
 
   ${({ theme, borderTop }) => (borderTop ? theme.mixins.borderTop : '')}
 `;
