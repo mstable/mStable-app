@@ -75,7 +75,7 @@ const Image = styled.img`
 `;
 
 export const MUSDIconTransparent = (): JSX.Element => (
-  <Image src={mUSDTransparent} alt="mUSD" />
+  <img src={mUSDTransparent} alt="mUSD" />
 );
 
 export const TokenIcon: FC<Props> = ({ className, symbol }) =>

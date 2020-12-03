@@ -1,4 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
+import Skeleton from 'react-loading-skeleton';
+import styled from 'styled-components';
+import CountUp from 'react-countup';
 
 import { useSelectedMassetSavingsContract } from '../../../context/DataProvider/ContractsProvider';
 import {
@@ -14,8 +17,11 @@ import { SaveConfirm } from './SaveConfirm';
 import { TransactionType } from './types';
 import { PageHeader } from '../PageHeader';
 import { ToggleSave, ToggleSaveSelection } from '../../forms/ToggleSave';
+import { useAverageApyForPastWeek } from '../../../web3/hooks';
 
 const { CURRENT, DEPRECATED } = SaveVersion;
+
+const SaveMigration: FC<{}> = () => <p>migrate me!</p>;
 
 const SaveForm: FC<{}> = () => {
   const { amount, amountInCredits, transactionType, valid } = useSaveState();
@@ -59,7 +65,7 @@ const SaveForm: FC<{}> = () => {
     <TransactionForm
       confirm={<SaveConfirm />}
       confirmLabel={
-        transactionType === TransactionType.Deposit ? 'Deposit' : 'Withdrawal'
+        transactionType === TransactionType.Deposit ? 'Deposit' : 'Withdraw'
       }
       input={<SaveInput />}
       transactionsLabel="Save transactions"
@@ -68,8 +74,43 @@ const SaveForm: FC<{}> = () => {
   );
 };
 
+const APYStats = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  text-align: center;
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.xs}) {
+    margin: 0;
+    text-align: right;
+    justify-content: flex-end;
+  }
+`;
+
+const ToggleContainer = styled.div`
+  display: flex;
+`;
+
+const InfoCountUp = styled(CountUp)`
+  font-size: 1.5rem;
+  font-family: 'DM Mono', monospace;
+  color: ${({ theme }) => theme.color.blue};
+`;
+
+const InfoMsg = styled.div`
+  padding-top: 4px;
+  font-size: 12px;
+
+  a {
+    color: ${({ theme }) => theme.color.greyTransparent};
+    border: none;
+    text-decoration: underline;
+  }
+`;
+
 export const Save: FC<{}> = () => {
   const [activeVersion, setActiveVersion] = useState(CURRENT);
+  const apyForPastWeek = useAverageApyForPastWeek();
   const versionNumber = activeVersion === CURRENT ? 2 : 1;
 
   const getVersion = (selection: ToggleSaveSelection): SaveVersion =>
@@ -89,20 +130,43 @@ export const Save: FC<{}> = () => {
     setActiveVersion(CURRENT);
   };
 
+  const isCurrent = activeVersion === CURRENT;
+
   return (
     <SaveProvider>
       <FormProvider formId="save">
         <PageHeader
           title={`Save V${versionNumber}`}
-          subtitle="Earn mUSD’s native interest rate"
+          subtitle="Earn interest on your deposited mUSD"
         >
-          <ToggleSave
-            onClick={handleVersionToggle}
-            selection={getSelection(activeVersion)}
-          />
+          <ToggleContainer>
+            <ToggleSave
+              onClick={handleVersionToggle}
+              selection={getSelection(activeVersion)}
+            />
+          </ToggleContainer>
+          <APYStats>
+            {apyForPastWeek ? (
+              <>
+                <InfoCountUp end={apyForPastWeek} suffix="%" decimals={2} />
+                <InfoMsg>
+                  {' '}
+                  <a
+                    href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Average daily APY
+                  </a>
+                </InfoMsg>
+              </>
+            ) : (
+              <Skeleton height={42} width={100} />
+            )}
+          </APYStats>
         </PageHeader>
         <SaveInfo version={activeVersion} onMigrateClick={handleMigrateClick} />
-        <SaveForm />
+        {isCurrent ? <SaveForm /> : <SaveMigration />}
       </FormProvider>
     </SaveProvider>
   );
