@@ -24,8 +24,8 @@ export const BubbleButton = styled(UnstyledButton)<{
   background: ${({ theme, highlighted }) =>
     highlighted ? theme.color.blue : `#eee`};
   color: ${({ theme, highlighted }) =>
-    highlighted ? theme.color.white : theme.color.black};
-  z-index: ${({ highlighted }) => (highlighted ? 2 : 1)};
+    highlighted ? theme.color.white : theme.color.grey};
+  z-index: ${({ highlighted }) => (highlighted ? 1 : 0)};
   font-weight: 600;
   position: relative;
   cursor: pointer;

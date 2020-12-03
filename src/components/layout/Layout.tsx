@@ -18,22 +18,23 @@ import { Color, ViewportWidth } from '../../theme';
 const Main = styled.main`
   max-width: 100%;
   flex: 1;
-  padding: 2rem 1rem;
+  padding: 20px;
+`;
+
+const BackgroundWrapper = styled.div`
   background: linear-gradient(
     rgba(248, 248, 248, 1) 4rem,
     transparent 36rem,
     transparent
   );
-  border-radius: 1rem;
-  margin-top: 2rem;
+  padding: 2rem 1rem;
+  border-radius: 2rem;
 
   @media (min-width: ${ViewportWidth.s}) {
-    border-radius: 1.75rem;
     padding: 2rem 2.5rem;
   }
 
   @media (min-width: ${ViewportWidth.xl}) {
-    border-radius: 2.25rem;
     padding: 2.5rem 4rem;
   }
 `;
@@ -133,14 +134,16 @@ const StickyHeader = styled.div`
   position: sticky;
   top: 0;
   width: 100%;
-  z-index: 1;
+  z-index: 100;
 `;
 
 const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
-  <StickyHeader>
-    <AppBar />
+  <>
+    <StickyHeader>
+      <AppBar />
+    </StickyHeader>
     <Header home={home} />
-  </StickyHeader>
+  </>
 );
 
 const Centred = styled.div`
@@ -195,7 +198,9 @@ export const Layout: FC<{}> = ({ children }) => {
             <>{children}</>
           ) : (
             <Centred>
-              <Main>{children}</Main>
+              <Main>
+                <BackgroundWrapper>{children}</BackgroundWrapper>
+              </Main>
             </Centred>
           )}
         </Container>

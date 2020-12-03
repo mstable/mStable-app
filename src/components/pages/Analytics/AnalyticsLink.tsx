@@ -5,7 +5,6 @@ import { Color, FontSize } from '../../../theme';
 
 const Container = styled.div`
   padding: 4px 8px;
-  margin: 8px 0;
   background: ${Color.white};
   border: 1px ${Color.blackTransparent} solid;
   display: inline-block;
