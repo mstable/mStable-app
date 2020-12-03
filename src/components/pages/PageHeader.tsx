@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { H2, H3 } from '../core/Typography';
+import { H2, P } from '../core/Typography';
 import { FontSize } from '../../theme';
 import { ReactComponent as MUSDBadge } from '../icons/badges/musd.svg';
 
@@ -20,6 +20,7 @@ const MassetIcons: { [masset: string]: JSX.Element } = {
 
 const Icon = styled.div`
   padding: 0;
+  display: flex;
 
   img,
   svg {
@@ -34,26 +35,44 @@ const Icon = styled.div`
 `;
 
 const Container = styled.div`
-  margin-bottom: 1rem;
   display: flex;
   align-items: flex-start;
-  max-width: 500px;
   flex-direction: column;
+  padding-bottom: 1rem;
 
   h2 {
     font-size: ${FontSize.xl};
     font-weight: 600;
   }
+
+  p {
+    padding: 0;
+    font-size: 1rem;
+  }
 `;
 
 const Row = styled.div`
   display: flex;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
 `;
 
 const Column = styled.div`
   display: flex;
   flex-direction: column;
+`;
+
+const ChildrenRow = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.xs}) {
+    align-items: flex-start;
+    flex-direction: row;
+  }
 `;
 
 export const PageHeader: FC<Props> = ({ children, title, subtitle }) => {
@@ -66,10 +85,10 @@ export const PageHeader: FC<Props> = ({ children, title, subtitle }) => {
         <Icon>{icon}</Icon>
         <Column>
           <H2>{title}</H2>
-          <H3>{subtitle}</H3>
+          <P>{subtitle}</P>
         </Column>
       </Row>
-      <div>{children}</div>
+      {children && <ChildrenRow>{children}</ChildrenRow>}
     </Container>
   );
 };

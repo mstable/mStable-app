@@ -55,6 +55,7 @@ const Container = styled.header<{ accountOpen: boolean; home: boolean }>`
   align-items: center;
   width: 100%;
   min-height: 48px;
+  padding: 40px 0 20px;
   min-width: ${ViewportWidth.xs};
   background: ${({ accountOpen, theme }) =>
     accountOpen ? theme.color.black : theme.color.white};

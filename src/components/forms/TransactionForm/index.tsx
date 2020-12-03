@@ -33,11 +33,11 @@ export const TransactionForm: FC<Props> = ({
   valid,
 }) => (
   <Container className={className} compact={compact}>
-    {input ? <InputPane>{input}</InputPane> : null}
+    {input && <InputPane>{input}</InputPane>}
     <ConfirmPane compact={compact} confirmLabel={confirmLabel} valid={valid}>
       {valid ? confirm : null}
     </ConfirmPane>
-    {compact ? null : (
+    {!compact && (
       <div>
         <GasPrice valid={valid} />
         <TransactionsPane transactionsLabel={transactionsLabel} />
