@@ -12,7 +12,7 @@ import {
   useToggleWallet,
 } from '../../context/AppProvider';
 import { Color, ViewportWidth } from '../../theme';
-import { ReactComponent as LogoSvg } from '../icons/mstable-icon.svg';
+import { ReactComponent as LogoSvg } from '../icons/mstable-small.svg';
 import { UnstyledButton } from '../core/Button';
 import { centredLayout } from './css';
 import { TransactionStatus } from '../../types';
@@ -159,11 +159,16 @@ const Balance = styled.div`
   font-size: 0.875rem;
   margin-left: 2rem;
   margin-top: -2px;
+  display: none;
 
   span {
     ${({ theme }) => theme.mixins.numeric};
     font-weight: normal;
     margin-right: 0.5rem;
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    display: block;
   }
 `;
 
