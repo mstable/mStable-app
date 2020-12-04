@@ -3,7 +3,7 @@ import { Provider, TransactionReceipt } from 'ethers/providers';
 import { Signer } from 'ethers';
 import { useTransactionsContext } from '../context/TransactionsProvider';
 import { useSignerOrInfuraProvider } from '../context/OnboardProvider';
-import { useBlockNumber } from '../context/DataProvider/BlockProvider';
+import { useBlockNumber } from '../context/BlockProvider';
 import { useAccount } from '../context/UserProvider';
 
 /**

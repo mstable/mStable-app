@@ -1,12 +1,12 @@
 import { Reducer, useEffect, useReducer, useRef } from 'react';
-import { useBlockNumber } from '../context/DataProvider/BlockProvider';
+import { useBlockNumber } from '../context/BlockProvider';
 import { useAccount } from '../context/UserProvider';
 import {
   useAllowanceSubscriptionsSerialized,
   useBalanceSubscriptionsSerialized,
   useTokenSubscriptionsSerialized,
   useTokensDispatch,
-} from '../context/DataProvider/TokensProvider';
+} from '../context/TokensProvider';
 import { useSigner } from '../context/OnboardProvider';
 import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
