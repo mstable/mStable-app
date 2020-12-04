@@ -54,7 +54,6 @@ const Container = styled.div`
 const Row = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
 `;
 
 const Column = styled.div`
@@ -68,6 +67,7 @@ const ChildrenRow = styled.div`
   justify-content: space-between;
   flex-direction: column;
   align-items: center;
+  margin-top: 1rem;
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.xs}) {
     align-items: flex-start;
