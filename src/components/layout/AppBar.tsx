@@ -38,6 +38,8 @@ import { ReactComponent as WalletConnectIcon } from '../icons/wallets/walletconn
 import { ReactComponent as CoinbaseIcon } from '../icons/wallets/coinbase.svg';
 import { ReactComponent as MeetOneIcon } from '../icons/wallets/meetone.svg';
 import { Idle } from '../icons/Idle';
+import { useToken } from '../../context/DataProvider/TokensProvider';
+import { useMassetData } from '../../context/DataProvider/DataProvider';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -75,6 +77,9 @@ const CountBadge: FC<{ count: number; error: boolean }> = ({
 );
 
 const Logo = styled.div<{ inverted?: boolean }>`
+  display: flex;
+  align-items: center;
+
   a {
     border-bottom: 0;
   }
@@ -82,6 +87,7 @@ const Logo = styled.div<{ inverted?: boolean }>`
   svg {
     width: 20px;
     height: 24px;
+    padding-top: 2px;
 
     path,
     rect {
@@ -124,7 +130,6 @@ const AccountButton = styled(UnstyledButton)<{ active: boolean }>`
 `;
 
 const TruncatedAddress = styled.span`
-  //font-weight: normal;
   text-transform: none;
 `;
 
@@ -143,6 +148,22 @@ const WalletButtonBtn = styled(AccountButton)`
         height: 28px;
       }
     }
+  }
+`;
+
+const Balance = styled.div`
+  border: 1px solid ${({ theme }) => theme.color.blackTransparent};
+  padding: 0.33rem 0.75rem;
+  font-weight: 600;
+  border-radius: 1.5rem;
+  font-size: 0.875rem;
+  margin-left: 2rem;
+  margin-top: -2px;
+
+  span {
+    ${({ theme }) => theme.mixins.numeric};
+    font-weight: normal;
+    margin-right: 0.5rem;
   }
 `;
 
@@ -354,9 +375,12 @@ const WalletButton: FC<{}> = () => {
 };
 
 export const AppBar: FC = () => {
+  const massetData = useMassetData();
+  const { pathname } = useLocation();
   const accountOpen = useAccountOpen();
   const closeAccount = useCloseAccount();
-  const { pathname } = useLocation();
+  const token = useToken(massetData?.address || null);
+
   const home = pathname === '/';
 
   return (
@@ -367,9 +391,15 @@ export const AppBar: FC = () => {
             <Link to="/" title="Home" onClick={closeAccount}>
               <LogoSvg />
             </Link>
+            {token && (
+              <Balance>
+                <span>{token.balance.format(2, true)}</span>
+                {`${token.symbol}`}
+              </Balance>
+            )}
           </Logo>
           <Buttons>
-            {home ? null : <NotificationsButton />}
+            {!home && <NotificationsButton />}
             <WalletButton />
           </Buttons>
         </Top>
