@@ -110,7 +110,10 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
       }
       if (checkPassed) {
         setConnected(true);
-        const message = typeof walletName === 'string' ? `Connected with ${walletName}` : 'Connected'
+        const message =
+          typeof walletName === 'string'
+            ? `Connected with ${walletName}`
+            : 'Connected';
         addInfoNotification(message);
       } else {
         LocalStorage.removeItem('walletName');
@@ -129,8 +132,8 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
     const previouslySelectedWallet = LocalStorage.get('walletName');
 
     if (previouslySelectedWallet && onboard.walletSelect) {
-      connect(previouslySelectedWallet).catch((error) => {
-        console.error(error)
+      connect(previouslySelectedWallet).catch(error => {
+        console.error(error);
       });
     }
   }, [onboard, connect]);
@@ -185,7 +188,7 @@ export const useProvider = (): State['provider'] =>
   useContext(context).provider;
 
 export const useWalletAddress = (): State['address'] =>
-  useContext(context).address;
+  useContext(context).address?.toLowerCase();
 
 export const useConnect = (): State['connect'] => useContext(context).connect;
 
