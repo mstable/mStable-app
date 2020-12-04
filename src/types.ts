@@ -143,18 +143,6 @@ export interface TokenQuantity {
   };
 }
 
-export interface InjectedEthereum {
-  enable(): Promise<string[]>;
-  on(event: 'chainChanged', listener: (chainId: number) => void): void;
-  autoRefreshOnNetworkChange: boolean;
-  removeListener(event: 'chainChanged', listener: Function): void;
-  isMetaMask?: boolean;
-  isBrave?: boolean;
-  isTrust?: boolean;
-  isDapper?: boolean;
-  isMeetOne?: boolean;
-}
-
 export interface Connector {
   id: string;
   subType?: string;
