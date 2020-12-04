@@ -24,7 +24,7 @@ const Row = styled.div`
   padding-bottom: 16px;
 `;
 
-const Input: FC<{}> = () => {
+const Input: FC = () => {
   const { stakingRewardsContract } = useStakingRewardsContractState();
 
   if (!stakingRewardsContract) {
@@ -39,7 +39,7 @@ const Input: FC<{}> = () => {
   );
 };
 
-const ExitFormConfirm: FC<{}> = () => {
+const ExitFormConfirm: FC = () => {
   const { rewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
   const stakingToken = useCurrentStakingToken();
@@ -99,12 +99,13 @@ const StyledTransactionForm = styled(TransactionForm)`
   }
 `;
 
-const ExitForm: FC<{}> = () => {
+const ExitForm: FC = () => {
   const contract = useCurrentStakingRewardsContractCtx();
 
   const setFormManifest = useSetFormManifest();
 
   const {
+    stakingRewardsContract: { title } = { title: 'pool' },
     exit: { amount, valid, isExiting },
   } = useStakingRewardsContractState();
 
@@ -115,9 +116,14 @@ const ExitForm: FC<{}> = () => {
           args: [],
           iface: contract,
           fn: 'exit',
+          purpose: {
+            present: `Exiting ${title}`,
+            past: `Exited ${title}`,
+          },
         };
         setFormManifest(manifest);
       } else {
+        const body = `stake of ${amount.format()} from ${title}`;
         const manifest: SendTxManifest<
           Interfaces.StakingRewards,
           'withdraw'
@@ -125,13 +131,17 @@ const ExitForm: FC<{}> = () => {
           args: [amount.exact],
           iface: contract,
           fn: 'withdraw',
+          purpose: {
+            present: `Withdrawing ${body}`,
+            past: `Withdrew ${body}`,
+          },
         };
         setFormManifest(manifest);
       }
     } else {
       setFormManifest(null);
     }
-  }, [setFormManifest, valid, contract, amount, isExiting]);
+  }, [setFormManifest, valid, contract, amount, isExiting, title]);
 
   return (
     <StyledTransactionForm
@@ -144,7 +154,7 @@ const ExitForm: FC<{}> = () => {
   );
 };
 
-export const Exit: FC<{}> = () => (
+export const Exit: FC = () => (
   <FormProvider formId="exit">
     <ExitForm />
   </FormProvider>

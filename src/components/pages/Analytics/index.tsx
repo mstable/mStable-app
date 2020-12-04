@@ -2,10 +2,7 @@ import React, { FC, useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
-import {
-  useMassetTotalSupply,
-  useTotalSavings,
-} from '../../../context/DataProvider/DataProvider';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { BasketStats } from '../../stats/BasketStats';
 import { H2, H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
@@ -20,7 +17,8 @@ const Section = styled.section`
 `;
 
 const TotalSupply: FC = () => {
-  const totalSupply = useMassetTotalSupply();
+  const massetState = useSelectedMassetState();
+  const totalSupply = massetState?.token.totalSupply;
   return (
     <div>
       <H3 borderTop>Total supply</H3>
@@ -34,7 +32,8 @@ const TotalSupply: FC = () => {
 };
 
 const TotalSavings: FC = () => {
-  const totalSavings = useTotalSavings();
+  const massetState = useSelectedMassetState();
+  const totalSavings = massetState?.savingsContracts?.v1?.totalSavings;
   return (
     <div>
       <H3 borderTop>Total savings</H3>

@@ -5,23 +5,25 @@ import { validate } from './validate';
 import { Action, Actions, State, TransactionType } from './types';
 
 const initialize = (state: State): State =>
-  !state.initialized && state.dataState
+  !state.initialized && state.massetState
     ? {
         ...state,
         initialized: true,
-        amount: new BigDecimal(0, state.dataState.mAsset.decimals),
-        amountInCredits: new BigDecimal(0, state.dataState.mAsset.decimals),
+        amount: new BigDecimal(0, state.massetState.token.decimals),
+        amountInCredits: new BigDecimal(0, state.massetState.token.decimals),
       }
     : state;
 
 const updateNeedsUnlock = (state: State): State =>
-  state.initialized && state.dataState
+  state.initialized &&
+  state.massetState &&
+  state.massetState.savingsContracts.v1
     ? {
         ...state,
         needsUnlock:
           state.transactionType === TransactionType.Deposit &&
           state.amount?.exact.gt(
-            state.dataState.savingsContract.mAssetAllowance.exact,
+            state.massetState.savingsContracts.v1.mAssetAllowance.exact,
           ),
       }
     : state;
@@ -32,7 +34,7 @@ const simulateWithdrawal = (state: State): State['simulated'] =>
   state.simulated;
 
 const simulate = (state: State): State =>
-  state.initialized && state.dataState
+  state.initialized && state.massetState
     ? {
         ...state,
         simulated:
@@ -45,19 +47,19 @@ const simulate = (state: State): State =>
 const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.Data:
-      return { ...state, dataState: action.payload };
+      return { ...state, massetState: action.payload };
 
     case Actions.SetAmount: {
-      const { dataState, transactionType } = state;
+      const { massetState, transactionType } = state;
       const isWithdraw = transactionType === TransactionType.Withdraw;
 
-      if (!dataState) return state;
+      if (!massetState) return state;
 
       const { formValue } = action.payload;
 
-      const { decimals } = dataState.mAsset;
+      const { decimals } = massetState.token;
       const exchangeRate =
-        dataState.savingsContract.latestExchangeRate?.rate;
+        massetState.savingsContracts.v1?.latestExchangeRate?.rate;
 
       const maybeAmount = BigDecimal.maybeParse(formValue, decimals);
 
@@ -76,15 +78,15 @@ const reduce: Reducer<State, Action> = (state, action) => {
     }
 
     case Actions.SetMaxAmount: {
-      const { transactionType, dataState } = state;
+      const { transactionType, massetState } = state;
 
-      if (!dataState) return state;
+      if (!massetState) return state;
 
       if (transactionType === TransactionType.Deposit) {
-        const formValue = dataState.mAsset.balance.format(2, false);
+        const formValue = massetState.token.balance.format(2, false);
         return {
           ...state,
-          amount: dataState.mAsset.balance,
+          amount: massetState.token.balance,
           amountInCredits: undefined,
           formValue,
           touched: !!formValue,
@@ -93,7 +95,9 @@ const reduce: Reducer<State, Action> = (state, action) => {
 
       const {
         savingsBalance: { balance, credits },
-      } = dataState.savingsContract;
+      } = massetState.savingsContracts.v1 as NonNullable<
+        typeof massetState['savingsContracts']['v1']
+      >;
 
       if (balance) {
         const formValue = balance.format(2, false);

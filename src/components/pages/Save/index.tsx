@@ -3,7 +3,7 @@ import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 import CountUp from 'react-countup';
 
-import { useSelectedMassetSavingsContract } from '../../../context/DataProvider/ContractsProvider';
+import { useSelectedSaveV1Contract } from '../../../web3/hooks';
 import {
   FormProvider,
   useSetFormManifest,
@@ -21,31 +21,48 @@ import { useAverageApyForPastWeek } from '../../../web3/hooks';
 
 const { CURRENT, DEPRECATED } = SaveVersion;
 
-const SaveMigration: FC<{}> = () => <p>migrate me!</p>;
+const SaveMigration: FC = () => <p>migrate me!</p>;
 
-const SaveForm: FC<{}> = () => {
-  const { amount, amountInCredits, transactionType, valid } = useSaveState();
+const SaveForm: FC = () => {
+  const {
+    amount,
+    amountInCredits,
+    transactionType,
+    valid,
+    massetState,
+  } = useSaveState();
+  const massetSymbol = massetState?.token.symbol;
 
   const setFormManifest = useSetFormManifest();
-  const savingsContract = useSelectedMassetSavingsContract();
+  const savingsContract = useSelectedSaveV1Contract();
 
   // Set the form manifest
   useEffect(() => {
     if (valid && savingsContract && amount) {
       if (transactionType === TransactionType.Deposit) {
+        const body = `${amount.format()} ${massetSymbol}`;
         setFormManifest<Interfaces.SavingsContract, 'depositSavings'>({
           iface: savingsContract,
           args: [amount.exact],
           fn: 'depositSavings',
+          purpose: {
+            present: `Depositing ${body}`,
+            past: `Deposited ${body}`,
+          },
         });
         return;
       }
 
       if (transactionType === TransactionType.Withdraw && amountInCredits) {
+        const body = `${massetSymbol} savings`;
         setFormManifest<Interfaces.SavingsContract, 'redeem'>({
           iface: savingsContract,
           args: [amountInCredits.exact],
           fn: 'redeem',
+          purpose: {
+            present: `Withdrawing ${body}`,
+            past: `Withdrew ${body}`,
+          },
         });
         return;
       }
@@ -59,6 +76,7 @@ const SaveForm: FC<{}> = () => {
     savingsContract,
     setFormManifest,
     transactionType,
+    massetSymbol,
   ]);
 
   return (
@@ -117,7 +135,7 @@ const InfoMsg = styled.div`
   }
 `;
 
-export const Save: FC<{}> = () => {
+export const Save: FC = () => {
   const [activeVersion, setActiveVersion] = useState(CURRENT);
   const apyForPastWeek = useAverageApyForPastWeek();
   const versionNumber = activeVersion === CURRENT ? 2 : 1;

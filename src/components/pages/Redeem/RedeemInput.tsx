@@ -83,7 +83,7 @@ export const RedeemInput: FC<{}> = () => {
     amountInMasset,
     bAssets,
     cappedSimulation,
-    dataState,
+    massetState,
     error,
     feeAmount,
     formValue,
@@ -97,8 +97,6 @@ export const RedeemInput: FC<{}> = () => {
     setMassetAmount,
     toggleRedeemMasset,
   } = useRedeemDispatch();
-
-  const mAsset = dataState?.mAsset;
 
   return (
     <>
@@ -121,7 +119,7 @@ export const RedeemInput: FC<{}> = () => {
           />
           <span>Redeem with all assets proportionally</span>
         </RedeemMode>
-        {initialized && mAsset ? (
+        {initialized && massetState ? (
           <MassetInputGroup>
             <InlineTokenAmountInput
               amount={{
@@ -133,7 +131,7 @@ export const RedeemInput: FC<{}> = () => {
                   mode === Mode.RedeemMasset ? setMassetMaxAmount : undefined,
               }}
               token={{
-                address: mAsset.address,
+                address: massetState.address,
                 disabled: true,
               }}
               error={
@@ -181,7 +179,7 @@ export const RedeemInput: FC<{}> = () => {
                 <H4>Current total supply</H4>
                 <Amount
                   format={NumberFormat.Countup}
-                  amount={dataState?.mAsset.totalSupply}
+                  amount={massetState?.token.totalSupply}
                 />
               </div>
             </div>
@@ -196,7 +194,7 @@ export const RedeemInput: FC<{}> = () => {
                     <H4>New total supply</H4>
                     <Amount
                       format={NumberFormat.Countup}
-                      amount={cappedSimulation.mAsset.totalSupply}
+                      amount={cappedSimulation.token.totalSupply}
                     />
                   </div>
                 </>

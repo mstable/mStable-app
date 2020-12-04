@@ -1,74 +1,106 @@
 import { BigDecimal } from '../../web3/BigDecimal';
-import { BassetState, BassetStatus, DataState, MassetState } from './types';
+import {
+  BassetStatus,
+  DataState,
+  MassetState,
+  SavingsContractState,
+} from './types';
 
-const calculateBasset = (
-  bAsset: BassetState,
-  mAsset: MassetState,
-): BassetState => {
-  const balanceInMasset = bAsset.balance
-    .mulRatioTruncate(bAsset.ratio)
-    .setDecimals(mAsset.decimals);
-  const maxWeightInMasset = mAsset.totalSupply
-    .mulTruncate(bAsset.maxWeight)
-    .setDecimals(mAsset.decimals);
-  const totalVaultInMasset = bAsset.totalVault
-    .mulRatioTruncate(bAsset.ratio)
-    .setDecimals(mAsset.decimals);
-
-  const overweight =
-    bAsset.totalSupply.exact.gt(0) &&
-    totalVaultInMasset.exact.gt(maxWeightInMasset.exact);
-
-  const basketShare = mAsset.totalSupply.exact.eq(0)
-    ? new BigDecimal(0, 18)
-    : (mAsset.totalSupply.exact.gt(0)
-        ? totalVaultInMasset
-        : new BigDecimal(0, mAsset.decimals)
-      ).divPrecisely(mAsset.totalSupply);
-
-  return {
-    ...bAsset,
-    balanceInMasset,
-    basketShare,
-    maxWeightInMasset,
-    overweight,
-    totalVaultInMasset,
-  };
-};
-
-const recalculateSavingsContract = (
-  dataState: DataState,
-): DataState['savingsContract'] => {
+const recalculateSavingsContractV1 = (
+  v1: Extract<SavingsContractState, { version: 1 }>,
+  token: MassetState['token'],
+): Extract<SavingsContractState, { version: 1 }> => {
   const {
-    mAsset,
-    savingsContract: {
-      latestExchangeRate,
-      creditBalance = new BigDecimal(0, mAsset.decimals),
-    },
-  } = dataState;
+    latestExchangeRate,
+    creditBalance = new BigDecimal(0, token?.decimals),
+  } = v1;
 
   if (latestExchangeRate) {
     const balance = creditBalance.mulTruncate(latestExchangeRate.rate.exact);
     return {
-      ...dataState.savingsContract,
+      ...v1,
       savingsBalance: { balance, credits: creditBalance },
     };
   }
 
-  return {
-    ...dataState.savingsContract,
-    savingsBalance: {},
-  };
+  return v1;
+};
+const recalculateSavingsContractV2 = (
+  v2: Extract<SavingsContractState, { version: 2 }>,
+  // TODO
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  token: MassetState['token'],
+): Extract<SavingsContractState, { version: 2 }> => {
+  // const { latestExchangeRate } = v2;
+
+  // TODO
+  // const balance = v2.token?.balance;
+  //
+  // if (latestExchangeRate) {
+  //   const balance = creditBalance.mulTruncate(latestExchangeRate.rate.exact);
+  //   return {
+  //     ...v2,
+  //     savingsBalance: { balance, credits: creditBalance },
+  //   };
+  // }
+
+  return v2;
 };
 
-export const recalculateState = (dataState: DataState): DataState => {
-  const bAssets: DataState['bAssets'] = Object.keys(dataState.bAssets).reduce(
-    (_bAssets, address) => ({
-      ..._bAssets,
-      [address]: calculateBasset(dataState.bAssets[address], dataState.mAsset),
+const recalculateSavingsContracts = ({
+  token,
+  savingsContracts: { v1, v2 },
+}: MassetState): MassetState['savingsContracts'] => ({
+  v1: v1 ? recalculateSavingsContractV1(v1, token) : undefined,
+  v2: v2 ? recalculateSavingsContractV2(v2, token) : undefined,
+});
+
+const recalculateBassets = (masset: MassetState): MassetState['bAssets'] =>
+  Object.fromEntries(
+    Object.entries(masset.bAssets).map(([address, basset]) => {
+      const massetDecimals = masset.token.decimals;
+
+      const balanceInMasset =
+        basset.token.balance
+          .mulRatioTruncate(basset.ratio)
+          .setDecimals(massetDecimals) ?? new BigDecimal(0);
+
+      const maxWeightInMasset =
+        masset.token.totalSupply
+          .mulTruncate(basset.maxWeight)
+          .setDecimals(massetDecimals) ?? new BigDecimal(0);
+
+      const totalVaultInMasset = basset.totalVault
+        .mulRatioTruncate(basset.ratio)
+        .setDecimals(massetDecimals);
+
+      const overweight = Boolean(
+        basset.token.totalSupply.exact.gt(0) &&
+          totalVaultInMasset.exact.gt(maxWeightInMasset.exact),
+      );
+
+      const basketShare = masset.token.totalSupply.exact.eq(0)
+        ? new BigDecimal(0)
+        : (masset.token.totalSupply.exact.gt(0)
+            ? totalVaultInMasset
+            : new BigDecimal(0, massetDecimals)
+          ).divPrecisely(masset.token.totalSupply);
+
+      return [
+        address,
+        {
+          ...basset,
+          basketShare,
+          overweight,
+          balanceInMasset,
+          totalVaultInMasset,
+        },
+      ];
     }),
-    {},
   );
+
+export const recalculateMasset = (masset: MassetState): MassetState => {
+  const bAssets = recalculateBassets(masset);
 
   const bAssetsArr = Object.values(bAssets);
 
@@ -84,17 +116,22 @@ export const recalculateState = (dataState: DataState): DataState => {
     .filter(({ status }) => status === BassetStatus.Blacklisted)
     .map(b => b.address);
 
-  const savingsContract = recalculateSavingsContract(dataState);
+  const savingsContracts = recalculateSavingsContracts(masset);
 
   return {
-    ...dataState,
+    ...masset,
     bAssets,
-    savingsContract,
-    mAsset: {
-      ...dataState.mAsset,
-      allBassetsNormal,
-      blacklistedBassets,
-      overweightBassets,
-    },
+    allBassetsNormal,
+    blacklistedBassets,
+    overweightBassets,
+    savingsContracts,
   };
 };
+
+export const recalculateState = (data: DataState): DataState =>
+  Object.fromEntries(
+    Object.entries(data).map(([symbol, masset]) => [
+      symbol,
+      recalculateMasset(masset),
+    ]),
+  );

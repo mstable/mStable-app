@@ -14,11 +14,14 @@ import {
   useMintToggleBassetEnabled,
 } from './MintProvider';
 import { AmountInput } from '../../forms/AmountInput';
-import { useBassetState } from '../../../context/DataProvider/DataProvider';
 import {
-  useToken,
+  useBassetState,
+  useSelectedMassetState,
+} from '../../../context/DataProvider/DataProvider';
+import {
+  useTokenSubscription,
   useTokenAllowance,
-} from '../../../context/DataProvider/TokensProvider';
+} from '../../../context/TokensProvider';
 import {
   BalanceContainer,
   Container,
@@ -39,17 +42,22 @@ const StyledApproveButton = styled(ApproveButton)`
 `;
 
 export const BassetInput: FC<Props> = ({ address }) => {
-  const { decimals, balance, symbol, overweight, mAssetAddress } =
-    useBassetState(address) || {};
+  const { address: massetAddress } = useSelectedMassetState() ?? {};
+
+  const basset = useBassetState(address);
+  const overweight = basset?.overweight;
+  const { symbol, decimals, balance } = basset?.token ?? {};
+
   const { error, enabled, formValue, reason, amount } =
     useMintBasset(address) || {};
+
   const mode = useMintMode();
   const toggleBassetEnabled = useMintToggleBassetEnabled();
   const setBassetAmount = useMintSetBassetAmount();
   const setBassetMaxAmount = useMintSetBassetMaxAmount();
 
-  useTokenAllowance(address, mAssetAddress);
-  useToken(address);
+  useTokenAllowance(address, massetAddress);
+  useTokenSubscription(address);
 
   const needsUnlock = reason === Reasons.AmountExceedsApprovedAmount;
 
@@ -89,10 +97,10 @@ export const BassetInput: FC<Props> = ({ address }) => {
                 error={error}
                 onChange={handleChangeAmount}
               />
-              {needsUnlock && mAssetAddress && amount ? (
+              {needsUnlock && massetAddress && amount ? (
                 <StyledApproveButton
                   address={address}
-                  spender={mAssetAddress}
+                  spender={massetAddress}
                   amount={amount}
                 />
               ) : null}

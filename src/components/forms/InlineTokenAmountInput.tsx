@@ -2,9 +2,9 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import {
-  useToken,
+  useTokenSubscription,
   useTokenAllowance,
-} from '../../context/DataProvider/TokensProvider';
+} from '../../context/TokensProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { ToggleInput } from './ToggleInput';
 import { AmountInput } from './AmountInput';
@@ -189,7 +189,8 @@ export const InlineTokenAmountInput: FC<Props> = ({
   toggle,
   valid,
 }) => {
-  const { decimals, symbol, balance } = useToken(token.address) || {};
+  const { decimals, symbol, balance } =
+    useTokenSubscription(token.address) || {};
   const allowance = useTokenAllowance(token.address, approval?.spender);
   const enabled = toggle ? toggle.enabled : true;
   return (

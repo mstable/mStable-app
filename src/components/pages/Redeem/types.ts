@@ -1,4 +1,4 @@
-import { DataState } from '../../../context/DataProvider/types';
+import { MassetState } from '../../../context/DataProvider/types';
 import { BigDecimal } from '../../../web3/BigDecimal';
 
 export enum Reasons {
@@ -35,7 +35,7 @@ export enum Actions {
 export type Action =
   | {
       type: Actions.Data;
-      payload?: DataState;
+      payload?: MassetState;
     }
   | {
       type: Actions.SetBassetAmount;
@@ -67,7 +67,7 @@ export interface State {
   amountInMasset?: BigDecimal;
   amountInMassetPlusFee?: BigDecimal;
   bAssets: { [address: string]: BassetOutput };
-  dataState?: DataState;
+  massetState?: MassetState;
   error?: {
     message?: string;
     affectedBassets: string[];
@@ -83,8 +83,8 @@ export interface State {
    * and one with "capped" totalVault and totalSupply in order to
    * make a usable graphic of the basket composition.
    */
-  simulation?: DataState;
-  cappedSimulation?: DataState;
+  simulation?: MassetState;
+  cappedSimulation?: MassetState;
 }
 
 export interface Dispatch {

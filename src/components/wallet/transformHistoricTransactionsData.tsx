@@ -1,11 +1,11 @@
 import { HistoricTransactionsQueryResult } from '../../graphql/protocol';
 import { HistoricTransaction } from './types';
-import { DataState } from '../../context/DataProvider/types';
+import { MassetState, DataState } from '../../context/DataProvider/types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { formatUnix } from './utils';
 import { humanizeList } from '../../web3/strings';
 
-export const transformRawData = (
+export const transformHistoricTransactionsData = (
   data: HistoricTransactionsQueryResult['data'],
   dataState?: DataState,
 ): HistoricTransaction[] => {
@@ -14,20 +14,33 @@ export const transformRawData = (
   }
 
   const { transactions } = data;
-  const { mAsset, bAssets, removedBassets } = dataState as DataState;
+
+  const massetsByAddress: {
+    [address: string]: MassetState;
+  } = Object.fromEntries(
+    Object.values(dataState).map(massetState => [
+      massetState.address,
+      massetState,
+    ]),
+  );
+
   return transactions
     .map(({ hash, id, ...tx }) => {
       const timestamp = parseInt(tx.timestamp, 10);
       const formattedDate = formatUnix(timestamp);
       switch (tx.__typename) {
         case 'RedeemTransaction': {
+          const { bAssets, removedBassets, token } = massetsByAddress[
+            tx.masset.id
+          ];
           const bassetSymbols = tx.bassets.map(
-            basset => (bAssets[basset.id] ?? removedBassets[basset.id])?.symbol,
+            basset =>
+              (bAssets[basset.id] ?? removedBassets[basset.id])?.token.symbol,
           );
-          const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
+          const massetUnits = new BigDecimal(tx.massetUnits, token.decimals);
           return {
             description: `You redeemed ${massetUnits.format()} ${
-              mAsset.symbol
+              token.symbol
             } into ${humanizeList(bassetSymbols)}`,
             hash,
             timestamp,
@@ -36,10 +49,11 @@ export const transformRawData = (
           };
         }
         case 'RedeemMassetTransaction': {
-          const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
+          const { token } = massetsByAddress[tx.masset.id];
+          const massetUnits = new BigDecimal(tx.massetUnits, token.decimals);
           return {
             description: `You redeemed ${massetUnits.format()} ${
-              mAsset.symbol
+              token.symbol
             } proportionally into all assets`,
             hash,
             timestamp,
@@ -48,13 +62,17 @@ export const transformRawData = (
           };
         }
         case 'MintMultiTransaction': {
+          const { bAssets, removedBassets, token } = massetsByAddress[
+            tx.masset.id
+          ];
           const bassetSymbols = tx.bassets.map(
-            basset => (bAssets[basset.id] ?? removedBassets[basset.id])?.symbol,
+            basset =>
+              (bAssets[basset.id] ?? removedBassets[basset.id])?.token.symbol,
           );
-          const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
+          const massetUnits = new BigDecimal(tx.massetUnits, token.decimals);
           return {
             description: `You minted ${massetUnits.simple.toFixed(2)} ${
-              mAsset.symbol
+              token.symbol
             } with ${humanizeList(bassetSymbols)}`,
             hash,
             timestamp,
@@ -63,13 +81,16 @@ export const transformRawData = (
           };
         }
         case 'MintSingleTransaction': {
-          const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
+          const { bAssets, removedBassets, token } = massetsByAddress[
+            tx.masset.id
+          ];
+          const massetUnits = new BigDecimal(tx.massetUnits, token.decimals);
           const bassetSymbol = (
             bAssets[tx.basset.id] ?? removedBassets[tx.basset.id]
-          )?.symbol;
+          )?.token.symbol;
           return {
             description: `You minted ${massetUnits.format()} ${
-              mAsset.symbol
+              token.symbol
             } with ${bassetSymbol}`,
             hash,
             timestamp,
@@ -78,11 +99,15 @@ export const transformRawData = (
           };
         }
         case 'PaidFeeTransaction': {
+          const { bAssets, removedBassets } = massetsByAddress[tx.masset.id];
           const basset = bAssets[tx.basset.id] ?? removedBassets[tx.basset.id];
-          const bassetUnit = new BigDecimal(tx.bassetUnits, basset.decimals);
+          const bassetUnit = new BigDecimal(
+            tx.bassetUnits,
+            basset?.token.decimals,
+          );
           return {
-            description: `You paid ${bassetUnit.format()} ${
-              basset.symbol
+            description: `You paid ${bassetUnit.format()}${
+              basset ? ` ${basset.token.symbol}` : ''
             } in fees`,
             hash,
             timestamp,
@@ -91,10 +116,11 @@ export const transformRawData = (
           };
         }
         case 'SavingsContractDepositTransaction': {
-          const massetUnits = new BigDecimal(tx.amount, mAsset.decimals);
+          const { token } = massetsByAddress[tx.savingsContract.masset.id];
+          const massetUnits = new BigDecimal(tx.amount, token.decimals);
           return {
             description: `You deposited ${massetUnits.format()} ${
-              mAsset.symbol
+              token.symbol
             } into SAVE`,
             hash,
             timestamp,
@@ -103,10 +129,11 @@ export const transformRawData = (
           };
         }
         case 'SavingsContractWithdrawTransaction': {
-          const massetUnits = new BigDecimal(tx.amount, mAsset.decimals);
+          const { token } = massetsByAddress[tx.savingsContract.masset.id];
+          const massetUnits = new BigDecimal(tx.amount, token.decimals);
           return {
             description: `You withdrew ${massetUnits.format()} ${
-              mAsset.symbol
+              token.symbol
             } from SAVE`,
             hash,
             timestamp,
@@ -115,13 +142,16 @@ export const transformRawData = (
           };
         }
         case 'SwapTransaction': {
+          const { bAssets, removedBassets, token } = massetsByAddress[
+            tx.masset.id
+          ];
           const inputBasset = (
             bAssets[tx.inputBasset.id] ?? removedBassets[tx.inputBasset.id]
-          )?.symbol;
+          )?.token.symbol;
           const outputBasset = (
             bAssets[tx.outputBasset.id] ?? removedBassets[tx.outputBasset.id]
-          )?.symbol;
-          const massetUnits = new BigDecimal(tx.massetUnits, mAsset.decimals);
+          )?.token.symbol;
+          const massetUnits = new BigDecimal(tx.massetUnits, token.decimals);
           return {
             description: `You swapped ${massetUnits.format()} ${inputBasset} for ${outputBasset}`,
             hash,

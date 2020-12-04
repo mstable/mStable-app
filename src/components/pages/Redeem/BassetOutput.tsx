@@ -19,9 +19,14 @@ export const BassetOutput: FC<Props> = ({ address }) => {
     bAssets: {
       [address]: { hasError, enabled, formValue, amount },
     },
-    dataState: {
-      bAssets: { [address]: { symbol, overweight } } = {},
-      mAsset: { overweightBassets } = { overweightBassets: [] },
+    massetState: {
+      bAssets: {
+        [address]: {
+          token: { symbol },
+          overweight,
+        },
+      } = {},
+      overweightBassets = [],
     } = {},
   } = useRedeemState();
 
