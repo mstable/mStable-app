@@ -13,20 +13,20 @@ import { SwapProvider, useSwapState } from './SwapProvider';
 import { SwapInput } from './SwapInput';
 import { SwapConfirm } from './SwapConfirm';
 import { Interfaces } from '../../../types';
-import { useSelectedMassetContract } from '../../../context/DataProvider/ContractsProvider';
+import { useSelectedMassetContract } from '../../../web3/hooks';
 import { PageHeader } from '../PageHeader';
 
-const SwapForm: FC<{}> = () => {
+const SwapForm: FC = () => {
   const account = useOwnAccount();
   const {
     valid,
     values: { output, input },
-    dataState,
+    massetState,
   } = useSwapState();
   const setFormManifest = useSetFormManifest();
   const contract = useSelectedMassetContract();
 
-  const { address: mAssetAddress } = dataState?.mAsset || {};
+  const { address: mAssetAddress } = massetState || {};
 
   const isMint = output.token.address && output.token.address === mAssetAddress;
 
@@ -34,6 +34,7 @@ const SwapForm: FC<{}> = () => {
   useEffect(() => {
     if (valid && account && contract) {
       if (isMint) {
+        const body = `${output.amount.simple} ${output.token.symbol} with ${input.token.symbol}`;
         setFormManifest<Interfaces.Masset, 'mint'>({
           iface: contract,
           fn: 'mint',
@@ -41,10 +42,15 @@ const SwapForm: FC<{}> = () => {
             input.token.address as string,
             input.amount.exact as BigNumber,
           ],
+          purpose: {
+            present: `Minting ${body}`,
+            past: `Minted ${body}`,
+          },
         });
         return;
       }
 
+      const body = `${input.amount.simple} ${input.token.symbol} for ${output.token.symbol}`;
       setFormManifest<Interfaces.Masset, 'swap'>({
         iface: contract,
         fn: 'swap',
@@ -54,6 +60,10 @@ const SwapForm: FC<{}> = () => {
           input.amount.exact as BigNumber,
           account,
         ],
+        purpose: {
+          present: `Swapping ${body}`,
+          past: `Swapped ${body}`,
+        },
       });
       return;
     }
@@ -61,11 +71,15 @@ const SwapForm: FC<{}> = () => {
     setFormManifest(null);
   }, [
     account,
-    input.amount.exact,
-    input.token.address,
-    isMint,
     contract,
+    input.amount.exact,
+    input.amount.simple,
+    input.token.address,
+    input.token.symbol,
+    isMint,
+    output.amount.simple,
     output.token.address,
+    output.token.symbol,
     setFormManifest,
     valid,
   ]);
@@ -81,7 +95,7 @@ const SwapForm: FC<{}> = () => {
   );
 };
 
-export const Swap: FC<{}> = () => (
+export const Swap: FC = () => (
   <SwapProvider>
     <FormProvider formId="swap">
       <PageHeader title="Swap" subtitle="Exchange stablecoins with mStable">

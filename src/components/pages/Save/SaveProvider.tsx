@@ -8,7 +8,7 @@ import React, {
   useReducer,
 } from 'react';
 
-import { useDataState } from '../../../context/DataProvider/DataProvider';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { reducer } from './reducer';
 import { Actions, Dispatch, State, TransactionType } from './types';
 
@@ -23,13 +23,13 @@ const initialState: State = {
 const stateCtx = createContext<State>(initialState);
 const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
-export const SaveProvider: FC<{}> = ({ children }) => {
+export const SaveProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const dataState = useDataState();
+  const massetState = useSelectedMassetState();
   useEffect(() => {
-    dispatch({ type: Actions.Data, payload: dataState });
-  }, [dataState]);
+    dispatch({ type: Actions.Data, payload: massetState });
+  }, [massetState]);
 
   const setAmount = useCallback<Dispatch['setAmount']>(
     formValue => {

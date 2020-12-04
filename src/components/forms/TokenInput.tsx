@@ -1,16 +1,16 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
-import { TokenDetailsFragment } from '../../graphql/protocol';
 import { TokenIcon } from '../icons/TokenIcon';
-import { useToken } from '../../context/DataProvider/TokensProvider';
+import { useTokenSubscription } from '../../context/TokensProvider';
 import { FontSize, ViewportWidth } from '../../theme';
+import { Token } from '../../types';
 
 interface Props {
   name: string;
   value: string | null;
-  tokens: TokenDetailsFragment[];
-  onChange?(name: string, token: TokenDetailsFragment | null): void;
+  tokens: Token[];
+  onChange?(name: string, token: Token | null): void;
   error?: string;
   disabled?: boolean;
 }
@@ -27,7 +27,7 @@ const RelativeContainer = styled.div`
   overflow: visible;
 `;
 
-const Token = styled.div`
+const TokenSymbol = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -109,7 +109,7 @@ const Option: FC<TokenOptionProps> = ({
   selected,
   onClick,
 }) => {
-  const token = useToken(address);
+  const token = useTokenSubscription(address);
   const hasBalance = !!token?.balance.simple;
   const handleClick = useCallback(() => {
     onClick?.(address);
@@ -117,10 +117,10 @@ const Option: FC<TokenOptionProps> = ({
   return (
     <OptionContainer onClick={handleClick} selected={selected}>
       <TokenIcon symbol={symbol} />
-      <Token>
+      <TokenSymbol>
         {symbol}
         {hasBalance && <Balance>{token?.balance.format(2, true)}</Balance>}
-      </Token>
+      </TokenSymbol>
     </OptionContainer>
   );
 };
@@ -217,7 +217,7 @@ export const TokenInput: FC<Props> = ({
     };
   }, [handleKeyPress]);
 
-  const token = useToken(value);
+  const token = useTokenSubscription(value);
 
   return (
     <Container

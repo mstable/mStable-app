@@ -5,13 +5,13 @@ import { Action, Actions, Mode, State } from './types';
 import { applyValidation } from './validate';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { SCALE } from '../../../web3/constants';
-import { DataState } from '../../../context/DataProvider/types';
-import { recalculateState } from '../../../context/DataProvider/recalculateState';
+import { MassetState } from '../../../context/DataProvider/types';
+import { recalculateMasset } from '../../../context/DataProvider/recalculateState';
 
 const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.Data:
-      return { ...state, dataState: action.payload };
+      return { ...state, massetState: action.payload };
 
     case Actions.SetBassetAmount: {
       if (state.mode === Mode.RedeemMasset) return state;
@@ -20,7 +20,13 @@ const reduce: Reducer<State, Action> = (state, action) => {
 
       const {
         bAssets: { [address]: bAsset, ...bAssets },
-        dataState: { bAssets: { [address]: { decimals } } = {} } = {},
+        massetState: {
+          bAssets: {
+            [address]: {
+              token: { decimals },
+            },
+          } = {},
+        } = {},
       } = state;
 
       if (!decimals) return state;
@@ -44,7 +50,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
       const formValue = action.payload;
       const amountInMasset = BigDecimal.maybeParse(
         formValue,
-        state.dataState?.mAsset.decimals || 18,
+        state.massetState?.token.decimals || 18,
       );
       return {
         ...state,
@@ -107,11 +113,11 @@ const reduce: Reducer<State, Action> = (state, action) => {
     }
 
     case Actions.SetMassetMaxAmount: {
-      const { dataState, mode } = state;
+      const { massetState, mode } = state;
 
-      if (!dataState || mode !== Mode.RedeemMasset) return state;
+      if (!massetState || mode !== Mode.RedeemMasset) return state;
 
-      const maxAmount = dataState.mAsset.balance;
+      const maxAmount = massetState.token.balance;
 
       return {
         ...state,
@@ -150,13 +156,13 @@ const reduce: Reducer<State, Action> = (state, action) => {
 };
 
 const initialize = (state: State): State => {
-  const { initialized, dataState } = state;
+  const { initialized, massetState } = state;
 
-  if (!initialized && dataState) {
+  if (!initialized && massetState) {
     return {
       ...state,
       initialized: true,
-      bAssets: Object.keys(dataState.bAssets).reduce(
+      bAssets: Object.keys(massetState.bAssets).reduce(
         (_bAssets, address) => ({
           ..._bAssets,
           [address]: { address, enabled: true },
@@ -183,12 +189,12 @@ const resetTouched = (state: State): State => {
 };
 
 const updateFeeAmount = (state: State): State => {
-  const { initialized, dataState, amountInMasset, mode } = state;
-  if (initialized && dataState && amountInMasset) {
+  const { initialized, massetState, amountInMasset, mode } = state;
+  if (initialized && massetState && amountInMasset) {
     if (amountInMasset) {
       if (mode === Mode.RedeemMasset) {
         const feeAmount = amountInMasset.mulTruncate(
-          dataState.mAsset.redemptionFeeRate,
+          massetState.redemptionFeeRate,
         );
 
         const amountInMassetPlusFee = amountInMasset.sub(feeAmount);
@@ -200,8 +206,8 @@ const updateFeeAmount = (state: State): State => {
         };
       }
 
-      if (dataState.mAsset.overweightBassets.length === 0) {
-        const feeAmount = amountInMasset.mulTruncate(dataState.mAsset.feeRate);
+      if (massetState.overweightBassets.length === 0) {
+        const feeAmount = amountInMasset.mulTruncate(massetState.feeRate);
 
         const amountInMassetPlusFee = amountInMasset.sub(feeAmount);
 
@@ -227,9 +233,10 @@ const updateFeeAmount = (state: State): State => {
 };
 
 const updateBassetAmounts = (state: State): State => {
-  if (state.dataState && state.mode === Mode.RedeemMasset) {
+  if (state.massetState && state.mode === Mode.RedeemMasset) {
     const {
-      dataState: { mAsset, bAssets: bAssetsData },
+      massetState: { bAssets: bAssetsData },
+      massetState,
       amountInMasset,
     } = state;
 
@@ -240,13 +247,18 @@ const updateBassetAmounts = (state: State): State => {
 
       const total = enabled.reduce(
         (_total, { totalVaultInMasset }) => _total.add(totalVaultInMasset),
-        new BigDecimal(0, mAsset.decimals),
+        new BigDecimal(0, massetState.token.decimals),
       );
 
       const bAssets = enabled.reduce<State['bAssets']>((_bAssets, bAsset) => {
         if (total.exact.eq(0)) return _bAssets;
 
-        const { address, ratio, totalVaultInMasset, decimals } = bAsset;
+        const {
+          address,
+          ratio,
+          totalVaultInMasset,
+          token: { decimals },
+        } = bAsset;
 
         const percentage = totalVaultInMasset.divPrecisely(total);
         const scaledAmount = percentage.mulTruncate(amountInMasset.exact);
@@ -256,7 +268,7 @@ const updateBassetAmounts = (state: State): State => {
         // e.g. (1e8 * (1000e15-1e15)) / 1e18 = (1e8 * (999e15)) / 1e18 = 9.99e7
         // e.g. (1e8 * (1e18-0)) / 1e18 = 1e8
         const amountMinusFee = amount.mulTruncate(
-          SCALE.sub(mAsset.redemptionFeeRate),
+          SCALE.sub(massetState.redemptionFeeRate),
         );
 
         return {
@@ -296,18 +308,18 @@ const updateBassetAmounts = (state: State): State => {
 };
 
 const updateMassetAmount = (state: State): State => {
-  const { dataState, mode, bAssets } = state;
+  const { massetState, mode, bAssets } = state;
 
-  if (dataState && mode !== Mode.RedeemMasset) {
+  if (massetState && mode !== Mode.RedeemMasset) {
     const amountInMasset = Object.values(bAssets).reduce<
       State['amountInMasset']
     >((prev, { enabled, amount, address }) => {
       if (enabled && amount) {
         const scaledBassetAmount = amount.mulRatioTruncate(
-          dataState.bAssets[address].ratio,
+          massetState.bAssets[address].ratio,
         );
 
-        return (prev || new BigDecimal(0, dataState.mAsset.decimals)).add(
+        return (prev ?? new BigDecimal(0, massetState.token.decimals)).add(
           scaledBassetAmount,
         );
       }
@@ -342,11 +354,11 @@ const unsetDisabledBassetAmounts = (state: State): State => ({
 const simulateRedemption = ({ capped }: { capped?: boolean } = {}) => ({
   amountInMasset: _amountInMasset,
   bAssets,
-  dataState: {
-    mAsset: { totalSupply, balance: mAssetBalance, ...mAsset },
+  massetState: {
+    token: { totalSupply, balance: mAssetBalance, ...token },
   },
-  dataState,
-}: State & { dataState: DataState }): DataState => {
+  massetState,
+}: State & { massetState: MassetState }): MassetState => {
   let amountInMasset = _amountInMasset;
 
   // If simulating with capped values, the redemption amount should be
@@ -360,19 +372,22 @@ const simulateRedemption = ({ capped }: { capped?: boolean } = {}) => ({
   }
 
   if (!amountInMasset) {
-    return dataState;
+    return massetState;
   }
 
   return {
-    ...dataState,
-    mAsset: {
-      ...mAsset,
+    ...massetState,
+    token: {
+      ...token,
       totalSupply: totalSupply.sub(amountInMasset),
       balance: mAssetBalance.sub(amountInMasset),
     },
     bAssets: Object.values(bAssets).reduce(
       (_bAssets, { address, amount: _amount }) => {
-        const { balance, totalVault } = dataState.bAssets[address];
+        const {
+          token: { balance },
+          totalVault,
+        } = massetState.bAssets[address];
 
         let amount = _amount;
 
@@ -386,31 +401,33 @@ const simulateRedemption = ({ capped }: { capped?: boolean } = {}) => ({
         return {
           ..._bAssets,
           [address]: {
-            ...dataState.bAssets[address],
+            ...massetState.bAssets[address],
             balance: amount ? balance.add(amount) : balance,
             totalVault: amount ? totalVault.sub(amount) : totalVault,
           },
         };
       },
-      dataState.bAssets,
+      massetState.bAssets,
     ),
   };
 };
 
-const runSimulation = pipeline(simulateRedemption(), recalculateState);
+const runSimulation = pipeline(simulateRedemption(), recalculateMasset);
 
 const runCappedSimulation = pipeline(
   simulateRedemption({ capped: true }),
-  recalculateState,
+  recalculateMasset,
 );
 
 const simulate = (state: State): State => {
-  const { initialized, dataState } = state;
+  const { initialized, massetState } = state;
 
-  if (initialized && dataState) {
-    const simulation = runSimulation(state as State & { dataState: DataState });
+  if (initialized && massetState) {
+    const simulation = runSimulation(
+      state as State & { massetState: MassetState },
+    );
     const cappedSimulation = runCappedSimulation(
-      state as State & { dataState: DataState },
+      state as State & { massetState: MassetState },
     );
 
     return {

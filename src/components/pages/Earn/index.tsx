@@ -3,7 +3,10 @@ import styled from 'styled-components';
 import useToggle from 'react-use/lib/useToggle';
 import createStateContext from 'react-use/lib/createStateContext';
 
-import { useStakingRewardsContracts } from '../../../context/earn/EarnDataProvider';
+import {
+  EarnDataProvider,
+  useStakingRewardsContracts,
+} from '../../../context/earn/EarnDataProvider';
 import { Slider } from '../../core/Slider';
 import { Token } from '../../core/Token';
 import { H3, P } from '../../core/Typography';
@@ -16,6 +19,7 @@ import { PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
 import { MerkleDropClaims } from './MerkleDropClaims';
+import { CurveProvider } from '../../../context/earn/CurveProvider';
 
 const [useSwipeDisabled, SwipeDisabledProvider] = createStateContext(false);
 
@@ -363,7 +367,7 @@ const EarnSlider: FC<{
   );
 };
 
-export const Earn: FC<{}> = () => {
+const EarnContent: FC = () => {
   const viewedEarnOnboarding = !!LocalStorage.get('viewedEarnOnboarding');
   const [onboardingVisible, toggleOnboardingVisible] = useToggle(
     !viewedEarnOnboarding,
@@ -398,3 +402,11 @@ export const Earn: FC<{}> = () => {
     </Container>
   );
 };
+
+export const Earn: FC = () => (
+  <CurveProvider>
+    <EarnDataProvider>
+      <EarnContent />
+    </EarnDataProvider>
+  </CurveProvider>
+);

@@ -3,7 +3,7 @@ import { BassetState } from '../../../context/DataProvider/types';
 import { humanizeList } from '../../../web3/strings';
 
 const getBassetSymbols = (bAssets: BassetState[]): string =>
-  humanizeList(bAssets.map(b => b.symbol));
+  humanizeList(bAssets.map(b => b.token.symbol));
 
 export const getReasonMessage = (
   reason: Reasons | undefined,
@@ -38,7 +38,7 @@ export const getReasonMessage = (
 
     case Reasons.CannotRedeemMoreAssetsThanAreInTheVault:
       return `Cannot redeem more assets than are in the vault (${affectedBassets.map(
-        b => `${b.symbol}: ${b.totalVaultInMasset.format()}`,
+        b => `${b.token.symbol}: ${b.totalVaultInMasset.format()}`,
       )})`;
 
     case Reasons.FetchingData:

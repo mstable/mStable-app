@@ -5,7 +5,7 @@ import {
   StateValidator,
   ValidationResult,
 } from './types';
-import { DataState } from '../../../context/DataProvider/types';
+import { MassetState } from '../../../context/DataProvider/types';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { getReasonMessage } from './getReasonMessage';
 
@@ -13,15 +13,15 @@ import { getReasonMessage } from './getReasonMessage';
  * Validate redemption outputs state (not applicable for `redeemMasset`)
  */
 const redeemOutputValidator: StateValidator = state => {
-  const { simulation, dataState } = state as State & {
-    simulation: DataState;
-    dataState: DataState;
+  const { simulation, massetState } = state as State & {
+    simulation: MassetState;
+    massetState: MassetState;
     amount: BigDecimal;
   };
 
   const newOverweightBassets = Object.values(simulation.bAssets).filter(
     ({ address, overweight }) =>
-      overweight && !dataState.bAssets[address].overweight,
+      overweight && !massetState.bAssets[address].overweight,
   );
 
   if (newOverweightBassets.length > 0) {
@@ -39,8 +39,8 @@ const redeemOutputValidator: StateValidator = state => {
  * Validate `redeemSingle` and `redeemMulti` state
  */
 const redeemSingleOrMultiValidator: StateValidator = state => {
-  const { bAssets, dataState } = state as State & {
-    dataState: DataState;
+  const { bAssets, massetState } = state as State & {
+    massetState: MassetState;
   };
   const enabledBassets = Object.values(bAssets).filter(b => b.enabled);
 
@@ -48,7 +48,7 @@ const redeemSingleOrMultiValidator: StateValidator = state => {
     return [false, Reasons.NoAssetSelected];
   }
 
-  const currentOverweightBassets = Object.values(dataState.bAssets)
+  const currentOverweightBassets = Object.values(massetState.bAssets)
     .filter(b => b.overweight)
     .map(b => b.address);
 
@@ -87,7 +87,7 @@ const redeemSingleOrMultiValidator: StateValidator = state => {
   }
 
   const vaultBalancesExceeded = enabledBassets.filter(({ address, amount }) =>
-    amount?.exact.gt(dataState.bAssets[address].totalVault.exact),
+    amount?.exact.gt(massetState.bAssets[address].totalVault.exact),
   );
 
   if (vaultBalancesExceeded.length > 0) {
@@ -102,11 +102,11 @@ const redeemSingleOrMultiValidator: StateValidator = state => {
 };
 
 const amountValidator: StateValidator = state => {
-  const { dataState, amountInMasset, bAssets, mode } = state;
+  const { massetState, amountInMasset, bAssets, mode } = state;
   const isRedeemMasset = mode === Mode.RedeemMasset;
   const enabled = Object.values(bAssets).filter(b => b.enabled);
 
-  if (!dataState?.mAsset.balance) {
+  if (!massetState?.token.balance) {
     return [false, Reasons.FetchingData];
   }
 
@@ -118,7 +118,7 @@ const amountValidator: StateValidator = state => {
     return [false, Reasons.AmountMustBeSet, affectedBassets];
   }
 
-  if (amountInMasset.exact.gt(dataState.mAsset.balance.exact)) {
+  if (amountInMasset.exact.gt(massetState.token.balance.exact)) {
     return [false, Reasons.AmountExceedsBalance];
   }
 
@@ -149,16 +149,16 @@ const amountValidator: StateValidator = state => {
  * Validate `redeemMasset` state
  */
 const redeemMassetValidator: StateValidator = state => {
-  const { dataState } = state as State & {
+  const { massetState } = state as State & {
     amountInMasset: BigDecimal;
-    dataState: DataState;
+    massetState: MassetState;
   };
 
   const {
-    mAsset: { decimals },
-  } = dataState;
+    token: { decimals },
+  } = massetState;
 
-  const totalBassetVault = Object.values(dataState.bAssets).reduce(
+  const totalBassetVault = Object.values(massetState.bAssets).reduce(
     (_totalBassetVault, { totalVaultInMasset }) =>
       _totalBassetVault.add(totalVaultInMasset),
     new BigDecimal(0, decimals),
@@ -180,13 +180,11 @@ const basketValidator: StateValidator = ({ simulation, mode }) => {
   }
 
   const {
-    mAsset: {
-      allBassetsNormal,
-      blacklistedBassets,
-      failed,
-      overweightBassets,
-      undergoingRecol,
-    },
+    allBassetsNormal,
+    blacklistedBassets,
+    failed,
+    overweightBassets,
+    undergoingRecol,
   } = simulation;
 
   if (blacklistedBassets.length > 0) {
@@ -240,7 +238,7 @@ const getValidationResult = (state: State): ValidationResult => {
 };
 
 export const applyValidation = (state: State): State => {
-  const { dataState } = state as State & { dataState: DataState };
+  const { massetState } = state as State & { massetState: MassetState };
 
   const [valid, reason, affectedBassets = []] = getValidationResult(state);
 
@@ -250,7 +248,7 @@ export const applyValidation = (state: State): State => {
         affectedBassets,
         message: getReasonMessage(
           reason,
-          affectedBassets.map(b => dataState.bAssets[b]),
+          affectedBassets.map(b => massetState.bAssets[b]),
         ),
       };
 

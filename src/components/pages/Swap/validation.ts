@@ -1,27 +1,27 @@
 import { State, StateValidator, Reasons } from './types';
 import { EXP_SCALE, RATIO_SCALE } from '../../../web3/constants';
-import { BassetState, DataState } from '../../../context/DataProvider/types';
+import { BassetState, MassetState } from '../../../context/DataProvider/types';
 import { getReasonMessage } from './getReasonMessage';
 
 // TODO later: refactor this validation to use the current state interface
-const getBassetsArr = (dataState?: DataState): BassetState[] =>
-  Object.keys(dataState?.bAssets || {})
+const getBassetsArr = (massetState?: MassetState): BassetState[] =>
+  Object.keys(massetState?.bAssets || {})
     .sort()
-    .map(address => (dataState as DataState).bAssets[address]);
+    .map(address => (massetState as MassetState).bAssets[address]);
 
 const formValidator: StateValidator = ({
   needsUnlock,
   touched,
   values: { input, output },
-  dataState,
+  massetState,
 }) => {
-  const bAssets = getBassetsArr(dataState);
+  const bAssets = getBassetsArr(massetState);
 
   if (!touched) {
     return [true, {}];
   }
 
-  if (!dataState) {
+  if (!massetState) {
     return [false, { input: Reasons.FetchingData }];
   }
 
@@ -57,8 +57,11 @@ const formValidator: StateValidator = ({
     return [false, { input: Reasons.TransferMustBeApproved }];
   }
 
-  const inputToken = bAssets.find(b => b.address === input.token.address);
-  if (input.amount.exact && inputToken?.balance.exact.lt(input.amount.exact)) {
+  const inputAsset = bAssets.find(b => b.address === input.token.address);
+  if (
+    input.amount.exact &&
+    inputAsset?.token.balance.exact.lt(input.amount.exact)
+  ) {
     return [false, { input: Reasons.AmountExceedsBalance }];
   }
 
@@ -68,10 +71,10 @@ const formValidator: StateValidator = ({
 const swapValidator: StateValidator = ({
   touched,
   values: { input, output },
-  dataState,
+  massetState,
 }) => {
-  const bAssets = getBassetsArr(dataState);
-  const totalVault = dataState?.mAsset.totalSupply.exact;
+  const bAssets = getBassetsArr(massetState);
+  const totalVault = massetState?.token.totalSupply.exact;
 
   let applySwapFee = true;
 
@@ -159,11 +162,9 @@ const swapValidator: StateValidator = ({
 const mintSingleValidator: StateValidator = state => {
   const {
     values: { input },
-    dataState,
+    massetState,
   } = state;
-  const mAsset = dataState?.mAsset;
-
-  const bAssetData = dataState?.bAssets[input.token.address as string];
+  const bAssetData = massetState?.bAssets[input.token.address as string];
 
   if (
     !(
@@ -171,8 +172,8 @@ const mintSingleValidator: StateValidator = state => {
       input.token.decimals &&
       bAssetData &&
       bAssetData.status &&
-      mAsset?.decimals &&
-      mAsset.totalSupply
+      massetState?.token.decimals &&
+      massetState.token.totalSupply
     )
   ) {
     return [false, { input: Reasons.FetchingData }];
@@ -195,7 +196,7 @@ const mintSingleValidator: StateValidator = state => {
     .add(mintAmountInMasset);
 
   // What is the max weight of this bAsset in the basket?
-  const maxWeightInUnits = mAsset.totalSupply.exact
+  const maxWeightInUnits = massetState.token.totalSupply.exact
     .add(mintAmountInMasset)
     .mul(bAssetData.maxWeight)
     .div(EXP_SCALE);
@@ -211,18 +212,17 @@ export const applyValidation = (state: State): State => {
   const {
     touched,
     values: { input, output },
-    dataState,
+    massetState,
   } = state;
 
-  const mAsset = dataState?.mAsset;
-  const mAssetAddress = mAsset?.address;
+  const massetAddress = massetState?.address;
 
   const [
     formValid,
     { input: formInputError, output: formOutputError },
   ] = formValidator(state);
 
-  const isMint = output.token.address === mAssetAddress;
+  const isMint = output.token.address === massetAddress;
 
   // FIXME bug: applySwapFee is set here, but needs to be set before the
   // action is processed; in other words, this is doing more than validation,
@@ -232,16 +232,16 @@ export const applyValidation = (state: State): State => {
     { input: txInputError, output: txOutputError, applySwapFee },
   ] = isMint ? mintSingleValidator(state) : swapValidator(state);
 
-  const inputAsset = dataState?.bAssets[input.token.address as string];
+  const inputAsset = massetState?.bAssets[input.token.address as string];
   const outputAsset = isMint
-    ? dataState?.mAsset
-    : dataState?.bAssets[output.token.address as string];
+    ? massetState
+    : massetState?.bAssets[output.token.address as string];
 
   const needsUnlock = !!(
     input.token.address &&
     input.amount.exact &&
-    mAssetAddress &&
-    inputAsset?.allowances[mAssetAddress]?.exact.lt(input.amount.exact)
+    massetAddress &&
+    inputAsset?.token.allowances[massetAddress]?.exact.lt(input.amount.exact)
   );
 
   const inputError = getReasonMessage(
