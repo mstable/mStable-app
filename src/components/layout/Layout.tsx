@@ -12,8 +12,8 @@ import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
-import { centredLayout } from './css';
-import { Color, ViewportWidth } from '../../theme';
+import { centredLayout, gradientBackground } from './css';
+import { Color } from '../../theme';
 
 const Main = styled.main`
   max-width: 100%;
@@ -21,22 +21,8 @@ const Main = styled.main`
   padding: 20px;
 `;
 
-const BackgroundWrapper = styled.div`
-  background: linear-gradient(
-    rgba(248, 248, 248, 1) 4rem,
-    transparent 36rem,
-    transparent
-  );
-  padding: 2rem 1rem;
-  border-radius: 2rem;
-
-  @media (min-width: ${ViewportWidth.s}) {
-    padding: 2rem 2.5rem;
-  }
-
-  @media (min-width: ${ViewportWidth.xl}) {
-    padding: 2.5rem 4rem;
-  }
+const BackgroundContainer = styled.div`
+  ${gradientBackground}
 `;
 
 const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
@@ -134,7 +120,7 @@ const StickyHeader = styled.div`
   position: sticky;
   top: 0;
   width: 100%;
-  z-index: 100;
+  z-index: 2;
 `;
 
 const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
@@ -199,7 +185,7 @@ export const Layout: FC<{}> = ({ children }) => {
           ) : (
             <Centred>
               <Main>
-                <BackgroundWrapper>{children}</BackgroundWrapper>
+                <BackgroundContainer>{children}</BackgroundContainer>
               </Main>
             </Centred>
           )}

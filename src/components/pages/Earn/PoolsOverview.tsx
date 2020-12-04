@@ -32,6 +32,7 @@ const ApyNote = styled.div`
 
 const TableGroup = styled.div`
   border-top: 1px ${Color.blackTransparenter} solid;
+  padding-top: 1rem;
   margin-bottom: 64px;
 `;
 
