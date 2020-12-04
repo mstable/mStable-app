@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { QueryHookOptions } from '@apollo/client';
-import { useAllErc20TokensQuery as useAllErc20TokensProtocolQuery } from '../graphql/protocol';
-import { useAllErc20TokensQuery as useAllErc20TokensEcosystemQuery } from '../graphql/ecosystem';
+import { useAllTokensQuery as useAllTokensProtocolQuery } from '../graphql/protocol';
+import { useAllErc20TokensQuery as useAllTokensEcosystemQuery } from '../graphql/ecosystem';
 import { useTokensDispatch } from '../context/DataProvider/TokensProvider';
 
 const options = {
@@ -14,8 +14,8 @@ const options = {
 export const TokenFetcher = (): null => {
   const { setFetched } = useTokensDispatch();
 
-  const protocolQuery = useAllErc20TokensProtocolQuery(options);
-  const ecosystemQuery = useAllErc20TokensEcosystemQuery(options);
+  const protocolQuery = useAllTokensProtocolQuery(options);
+  const ecosystemQuery = useAllTokensEcosystemQuery(options);
 
   const protocolFetched = protocolQuery.data?.tokens || [];
   const ecosystemFetched = ecosystemQuery.data?.tokens || [];
