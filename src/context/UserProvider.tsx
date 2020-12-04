@@ -4,24 +4,21 @@ import useIdle from 'react-use/lib/useIdle';
 import { OnboardProvider, useWalletAddress } from './OnboardProvider';
 
 interface State {
-  address: string | undefined;
-  masqueradedAccount: string | undefined;
+  address?: string;
+  masqueradedAccount?: string;
   idle: boolean;
 }
 
-interface Dispatch {
-  masquerade(account?: string): void;
-}
+type Masquerade = (account?: string) => void;
 
-const dispatchCtx = createContext<Dispatch>({} as never);
+const dispatchCtx = createContext<Masquerade>({} as never);
 const stateCtx = createContext<State>({
   idle: false,
   address: undefined,
   masqueradedAccount: undefined,
 });
 
-export const useMasquerade = (): Dispatch['masquerade'] =>
-  useContext(dispatchCtx).masquerade;
+export const useMasquerade = (): Masquerade => useContext(dispatchCtx);
 
 export const useUserState = (): State => useContext(stateCtx);
 
@@ -39,7 +36,7 @@ export const useOwnAccount = (): State['address'] => useUserState().address;
 export const useIsMasquerading = (): boolean =>
   Boolean(useUserState().masqueradedAccount);
 
-const AccountProvider: FC<{}> = ({ children }) => {
+const AccountProvider: FC = ({ children }) => {
   const address = useWalletAddress();
   const idle = useIdle();
   const [masqueradedAccount, masquerade] = useState<
@@ -50,19 +47,19 @@ const AccountProvider: FC<{}> = ({ children }) => {
     () => ({
       address,
       idle,
-      masqueradedAccount,
+      masqueradedAccount: masqueradedAccount?.toLowerCase(),
     }),
     [address, idle, masqueradedAccount],
   );
 
   return (
-    <dispatchCtx.Provider value={useMemo(() => ({ masquerade }), [masquerade])}>
+    <dispatchCtx.Provider value={masquerade}>
       <stateCtx.Provider value={state}>{children}</stateCtx.Provider>
     </dispatchCtx.Provider>
   );
 };
 
-export const UserProvider: FC<{}> = ({ children }) => (
+export const UserProvider: FC = ({ children }) => (
   <OnboardProvider>
     <AccountProvider>{children}</AccountProvider>
   </OnboardProvider>
