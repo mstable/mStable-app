@@ -13,7 +13,7 @@ import useInterval from 'react-use/lib/useInterval';
 import { StakingRewards } from '../../../typechain/StakingRewards.d';
 import { SCALE } from '../../../web3/constants';
 import { CURVE_ADDRESSES } from '../../../context/earn/CurveProvider';
-import { useTokens } from '../../../context/DataProvider/TokensProvider';
+import { useTokensState } from '../../../context/TokensProvider';
 import { StakingRewardsFactory } from '../../../typechain/StakingRewardsFactory';
 import { SubscribedToken } from '../../../types';
 import {
@@ -217,7 +217,7 @@ const useRewardsEarnedInterval = (): RewardsEarned => {
   return value;
 };
 
-const RewardsEarnedProvider: FC<{}> = ({ children }) => {
+const RewardsEarnedProvider: FC = ({ children }) => {
   const rewardsEarned = useRewardsEarnedInterval();
   return (
     <rewardsEarnedCtx.Provider value={rewardsEarned}>
@@ -234,7 +234,7 @@ export const StakingRewardsContractProvider: FC<Props> = ({
 
   const stakingRewardsContract = useStakingRewardsContract(address);
 
-  const tokens = useTokens();
+  const { tokens } = useTokensState();
 
   useEffect(() => {
     dispatch({

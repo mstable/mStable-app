@@ -4,7 +4,7 @@ import { MaxUint256 } from 'ethers/constants';
 import styled from 'styled-components';
 
 import { useFormId } from './TransactionForm/FormProvider';
-import { useErc20Contract } from '../../context/DataProvider/ContractsProvider';
+import { useErc20Contract } from '../../web3/hooks';
 import {
   useHasPendingApproval,
   useSendTransaction,
@@ -13,7 +13,10 @@ import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { Interfaces, SendTxManifest } from '../../types';
 import { Tooltip } from '../core/ReactTooltip';
-import { useTokenAllowance } from '../../context/DataProvider/TokensProvider';
+import {
+  useTokenSubscription,
+  useTokenAllowance,
+} from '../../context/TokensProvider';
 
 interface Props {
   address: string;
@@ -63,6 +66,7 @@ export const ApproveButton: FC<Props> = ({
   const tokenContract = useErc20Contract(address);
   const formId = useFormId();
   const pending = useHasPendingApproval(address, spender);
+  const token = useTokenSubscription(address);
   const allowance = useTokenAllowance(address, spender);
 
   const [approveMode, setApproveMode] = useState<ApproveMode>();
@@ -95,11 +99,15 @@ export const ApproveButton: FC<Props> = ({
         fn: 'approve',
         formId,
         iface: tokenContract,
+        purpose: {
+          present: `Approve transfer${token ? ` of ${token.symbol}` : ''}`,
+          past: `Approved transfer${token ? ` of ${token.symbol}` : ''}`,
+        },
       };
 
       sendTransaction(manifest);
     },
-    [amount, tokenContract, spender, formId, sendTransaction],
+    [amount, tokenContract, spender, formId, sendTransaction, token],
   );
 
   return (

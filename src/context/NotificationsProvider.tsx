@@ -198,7 +198,9 @@ export const useNotificationsContext = (): [State, Dispatch] =>
 export const useNotificationsState = (): State => useNotificationsContext()[0];
 
 export const useUnreadNotifications = (): Notification[] =>
-  useNotificationsState().filter(n => !n.read && n.title !== 'Connected');
+  useNotificationsState().filter(
+    n => !n.read && n.type !== NotificationType.Info,
+  );
 
 export const useNotificationsDispatch = (): Dispatch =>
   useNotificationsContext()[1];

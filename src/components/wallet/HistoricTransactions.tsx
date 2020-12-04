@@ -1,12 +1,12 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useHistoricTransactionsQuery } from '../../graphql/protocol';
-import { transformRawData } from './transformRawData';
+import { transformHistoricTransactionsData } from './transformHistoricTransactionsData';
+import { useDataState } from '../../context/DataProvider/DataProvider';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { List, ListItem } from '../core/List';
 import { P } from '../core/Typography';
 import { HistoricTransaction } from './types';
-import { useDataState } from '../../context/DataProvider/DataProvider';
 
 const TxContainer = styled.div<{}>`
   display: flex;
@@ -36,7 +36,7 @@ export const HistoricTransactions: FC<{ account: string }> = ({ account }) => {
   const historicTxsData = historicTxsQuery.data;
   const dataState = useDataState();
   const transformedData = useMemo(
-    () => transformRawData(historicTxsData, dataState),
+    () => transformHistoricTransactionsData(historicTxsData, dataState),
     [historicTxsData, dataState],
   );
   return (

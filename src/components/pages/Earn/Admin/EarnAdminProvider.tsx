@@ -11,7 +11,7 @@ import React, {
 import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { useMetaToken } from '../../../../context/DataProvider/TokensProvider';
+import { useMetaToken } from '../../../../context/TokensProvider';
 import { SubscribedToken } from '../../../../types';
 import {
   RewardsDistributor,

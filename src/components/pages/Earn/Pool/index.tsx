@@ -7,6 +7,8 @@ import { useMatchStakingRewardsAddressFromUrl } from '../../../../context/earn/u
 import { StakingRewardsContractProvider } from '../StakingRewardsContractProvider';
 import { PoolContent } from './PoolContent';
 import { useMasquerade } from '../../../../context/UserProvider';
+import { CurveProvider } from '../../../../context/earn/CurveProvider';
+import { EarnDataProvider } from '../../../../context/earn/EarnDataProvider';
 
 const Container = styled.div`
   width: 100%;
@@ -17,7 +19,7 @@ const Container = styled.div`
   flex: 1;
 `;
 
-export const PoolPage: FC = () => {
+const PoolPageContent: FC = () => {
   const { userAddress, slugOrAddress } = useParams<{
     slugOrAddress?: string;
     userAddress?: string;
@@ -53,3 +55,11 @@ export const PoolPage: FC = () => {
     <Skeleton height={225} />
   );
 };
+
+export const PoolPage: FC = () => (
+  <CurveProvider>
+    <EarnDataProvider>
+      <PoolPageContent />
+    </EarnDataProvider>
+  </CurveProvider>
+);

@@ -86,6 +86,10 @@ const Form: FC<{}> = () => {
         args: [],
         iface: contract,
         fn: 'claimReward',
+        purpose: {
+          present: 'Claiming rewards',
+          past: 'Claimed rewards',
+        },
       };
       setFormManifest(manifest);
     } else {

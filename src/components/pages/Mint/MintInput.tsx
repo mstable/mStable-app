@@ -16,50 +16,54 @@ const Header = styled.div`
   margin-bottom: 16px;
 `;
 
-export const MintInput: FC<{}> = () => {
+export const MintInput: FC = () => {
   const {
     mintAmount,
     bAssets,
     initialized,
-    dataState,
+    massetState,
     simulation,
   } = useMintState();
-  const mAsset = dataState?.mAsset;
-  const simulatedMassetBalance = simulation?.mAsset.balance.simple || 0;
+  const simulatedMassetBalance = simulation?.token.balance.simple || 0;
 
   const lineItems = useMemo(
-    () => [
-      {
-        id: 'balance',
-        label: 'Current balance',
-        countUp: {
-          end: mAsset?.balance ? mAsset.balance.simple : 0,
-        },
-        symbol: mAsset?.symbol,
-      },
-      {
-        id: 'mintAmount',
-        label: 'Mint amount',
-        countUp: {
-          end: mintAmount.simple || 0,
-          prefix: '+ ',
-          highlight: !!mintAmount.simple,
-          highlightColor: Color.green,
-        },
-        symbol: mAsset?.symbol,
-      },
-      {
-        id: 'newBalance',
-        label: 'New balance',
-        highlight: true,
-        countUp: {
-          end: simulatedMassetBalance,
-          highlight: true,
-        },
-        symbol: mAsset?.symbol,
-      },
-    ],
-    [mintAmount, mAsset, simulatedMassetBalance],
+    () =>
+      massetState
+        ? [
+            {
+              id: 'balance',
+              label: 'Current balance',
+              countUp: {
+                end: massetState.token.balance
+                  ? massetState.token.balance.simple
+                  : 0,
+              },
+              symbol: massetState.token.symbol,
+            },
+            {
+              id: 'mintAmount',
+              label: 'Mint amount',
+              countUp: {
+                end: mintAmount.simple || 0,
+                prefix: '+ ',
+                highlight: !!mintAmount.simple,
+                highlightColor: Color.green,
+              },
+              symbol: massetState.token.symbol,
+            },
+            {
+              id: 'newBalance',
+              label: 'New balance',
+              highlight: true,
+              countUp: {
+                end: simulatedMassetBalance,
+                highlight: true,
+              },
+              symbol: massetState.token.symbol,
+            },
+          ]
+        : [],
+    [mintAmount, massetState, simulatedMassetBalance],
   );
 
   return (
@@ -77,8 +81,8 @@ export const MintInput: FC<{}> = () => {
       </FormRow>
       <FormRow>
         <H3>Receive mUSD</H3>
-        {mAsset?.symbol ? (
-          <LineItems symbol={mAsset?.symbol} data={lineItems} />
+        {massetState ? (
+          <LineItems symbol={massetState.token.symbol} data={lineItems} />
         ) : (
           <Skeleton />
         )}

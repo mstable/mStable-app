@@ -1,15 +1,15 @@
 import { Reducer } from 'react';
 import { pipe, pipeline } from 'ts-pipe-compose';
 
-import { DataState } from '../../../context/DataProvider/types';
-import { recalculateState } from '../../../context/DataProvider/recalculateState';
+import { MassetState } from '../../../context/DataProvider/types';
+import { recalculateMasset } from '../../../context/DataProvider/recalculateState';
 import { SCALE } from '../../../web3/constants';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { validate } from './validate';
 import { Action, Actions, Mode, State } from './types';
 
 const getMaxMintAmount = (state: State): BigDecimal | undefined => {
-  if (!state.dataState) return undefined;
+  if (!state.massetState) return undefined;
 
   const enabledBassets = Object.values(state.bAssets).filter(
     ({ enabled }) => enabled,
@@ -20,12 +20,12 @@ const getMaxMintAmount = (state: State): BigDecimal | undefined => {
   const [{ address }] = enabledBassets;
   const {
     balanceInMasset,
-    decimals: bAssetDecimals,
+    token: { decimals: bAssetDecimals },
     maxWeight,
     maxWeightInMasset,
     ratio,
     totalVaultInMasset,
-  } = state.dataState.bAssets[address];
+  } = state.massetState.bAssets[address];
 
   // Determining max possible mint without pushing bAsset over max weight uses below formula
   // M = ((t * maxW) - c)/(1-maxW)
@@ -46,31 +46,31 @@ const getMaxMintAmount = (state: State): BigDecimal | undefined => {
   return clampedMax.divRatioPrecisely(ratio).setDecimals(bAssetDecimals);
 };
 
-const updateBalances = (dataState: DataState, state: State): DataState =>
-  Object.values(dataState.bAssets).reduce((_dataState, bAssetData) => {
+const updateBalances = (massetState: MassetState, state: State): MassetState =>
+  Object.values(massetState.bAssets).reduce((_massetState, bAssetData) => {
     const { address } = bAssetData;
-    const { mAsset, bAssets } = _dataState;
+    const { bAssets } = _massetState;
     const bAsset = state.bAssets[address];
 
-    if (!(bAsset && bAsset.enabled && bAsset.amount)) return _dataState;
+    if (!(bAsset && bAsset.enabled && bAsset.amount)) return _massetState;
 
     const { amount } = bAsset;
 
     // Update mAsset totalSupply and balance
     const mAssetInc = amount
       .mulRatioTruncate(bAssetData.ratio)
-      .setDecimals(mAsset.decimals);
-    const mAssetTotalSupply = mAsset.totalSupply.add(mAssetInc);
-    const mAssetBalance = mAsset.balance.add(mAssetInc);
+      .setDecimals(_massetState.token.decimals);
+    const mAssetTotalSupply = _massetState.token.totalSupply.add(mAssetInc);
+    const mAssetBalance = _massetState.token.balance.add(mAssetInc);
 
     // Update bAsset balance and totalVault
-    const balance = bAssetData.balance.sub(amount);
+    const balance = bAssetData.token.balance.sub(amount);
     const totalVault = bAssetData.totalVault.add(amount);
 
     return {
-      ..._dataState,
-      mAsset: {
-        ...mAsset,
+      ..._massetState,
+      token: {
+        ..._massetState.token,
         totalSupply: mAssetTotalSupply,
         balance: mAssetBalance,
       },
@@ -78,33 +78,36 @@ const updateBalances = (dataState: DataState, state: State): DataState =>
         ...bAssets,
         [address]: {
           ...bAssetData,
-          balance,
           totalVault,
+          token: {
+            ...bAssetData.token,
+            balance,
+          },
         },
       },
     };
-  }, dataState);
+  }, massetState);
 
 export const simulate = (state: State): State => ({
   ...state,
-  simulation: state.dataState
-    ? pipe<DataState, DataState>(
-        updateBalances(state.dataState, state),
-        recalculateState,
+  simulation: state.massetState
+    ? pipe<MassetState, MassetState>(
+        updateBalances(state.massetState, state),
+        recalculateMasset,
       )
     : undefined,
 });
 
 const enableFirstBasset = (state: State): State => {
-  const { dataState, toggleTouched } = state;
-  if (!dataState || toggleTouched) return state;
+  const { massetState, toggleTouched } = state;
+  if (!massetState || toggleTouched) return state;
 
   const bAssetsArr = Object.values(state.bAssets);
 
   if (bAssetsArr.find(b => b.enabled)) return state;
 
   const [first] = bAssetsArr
-    .map(b => dataState.bAssets[b.address])
+    .map(b => massetState.bAssets[b.address])
     .filter(b => !b.overweight && b.balanceInMasset.simple)
     .sort((a, b) => b.balanceInMasset.simple - a.balanceInMasset.simple);
 
@@ -121,14 +124,14 @@ const enableFirstBasset = (state: State): State => {
 };
 
 const initialize = (state: State): State =>
-  !state.initialized && !!state.dataState
+  !state.initialized && !!state.massetState
     ? {
         ...state,
         initialized: true,
-        bAssets: Object.values(state.dataState.bAssets).reduce<
+        bAssets: Object.values(state.massetState.bAssets).reduce<
           State['bAssets']
         >(
-          (_bAssets, { address, decimals }) => ({
+          (_bAssets, { address, token: { decimals } }) => ({
             ..._bAssets,
             [address]: {
               address,
@@ -151,7 +154,7 @@ const resetTouched = (state: State): State =>
     : state;
 
 const updateMintAmount = (state: State): State =>
-  state.dataState
+  state.massetState
     ? {
         ...state,
         mintAmount: Object.values(state.bAssets).reduce(
@@ -159,11 +162,11 @@ const updateMintAmount = (state: State): State =>
             enabled && amount
               ? _mintAmount.add(
                   amount.mulRatioTruncate(
-                    (state.dataState as DataState).bAssets[address].ratio,
+                    (state.massetState as MassetState).bAssets[address].ratio,
                   ),
                 )
               : _mintAmount,
-          new BigDecimal(0, state.dataState.mAsset.decimals),
+          new BigDecimal(0, state.massetState.token.decimals),
         ),
       }
     : state;
@@ -171,7 +174,7 @@ const updateMintAmount = (state: State): State =>
 const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.Data:
-      return { ...state, dataState: action.payload };
+      return { ...state, massetState: action.payload };
 
     case Actions.SetBassetAmount: {
       const { formValue, address } = action.payload;

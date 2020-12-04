@@ -1,5 +1,5 @@
 import { BigDecimal } from '../../../web3/BigDecimal';
-import { DataState } from '../../../context/DataProvider/types';
+import { MassetState } from '../../../context/DataProvider/types';
 
 export enum Reasons {
   AmountExceedsApprovedAmount,
@@ -23,7 +23,7 @@ export enum Actions {
 }
 
 export type Action =
-  | { type: Actions.Data; payload?: DataState }
+  | { type: Actions.Data; payload?: MassetState }
   | {
       type: Actions.SetBassetAmount;
       payload: { formValue: string | null; address: string };
@@ -71,8 +71,8 @@ export interface State {
   amountTouched: boolean;
   toggleTouched: boolean;
   initialized: boolean;
-  dataState?: DataState;
-  simulation?: DataState;
+  massetState?: MassetState;
+  simulation?: MassetState;
 }
 
 export interface Dispatch {

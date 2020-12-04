@@ -33,7 +33,7 @@ const ExitLink = styled.span`
 `;
 
 const tokenAddresses = [
-  process.env.REACT_APP_MUSD_ADDRESS as string,
+  CURVE_ADDRESSES.MUSD_TOKEN,
   ...CURVE_ADDRESSES['3POOL_COINS'],
 ];
 
@@ -99,7 +99,7 @@ const Confirm: FC = () => {
 };
 
 const CURVE_ALL_COINS = [
-  process.env.REACT_APP_MUSD_ADDRESS as string,
+  CURVE_ADDRESSES.MUSD_TOKEN,
   ...CURVE_ADDRESSES['3POOL_COINS'],
 ];
 
@@ -131,6 +131,10 @@ const Form: FC = () => {
         args: [amounts, minLPTokensToMint],
         iface: curveContracts.musdDeposit,
         fn: 'add_liquidity',
+        purpose: {
+          present: 'Adding liquidity',
+          past: 'Added liquidity',
+        },
       };
       setFormManifest(manifest);
     } else {

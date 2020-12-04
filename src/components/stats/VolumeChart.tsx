@@ -16,6 +16,7 @@ import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
 import { getKeyTimestamp, useBlockTimesForDates } from '../../web3/hooks';
 import { periodFormatMapping, toK } from './utils';
 import { RechartsContainer } from './RechartsContainer';
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 
 export enum TransactionType {
   MassetMint = 'MASSET_MINT',
@@ -123,18 +124,18 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
   number
 >)[] => {
   const dateFilter = useDateFilter();
+  const massetState = useSelectedMassetState();
+  const massetAddress = massetState?.address ?? '';
 
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
 
   const metricsDoc = useMemo<DocumentNode>(() => {
-    const massetId = process.env.REACT_APP_MUSD_ADDRESS as string;
-
-    const current = `t${nowUnix}: masset(id: "${massetId}") { ...VolumeMetricsFields }`;
+    const current = `t${nowUnix}: masset(id: "${massetAddress}") { ...VolumeMetricsFields }`;
 
     const blockMetrics = blockTimes
       .map(
         ({ timestamp, number }) =>
-          `t${timestamp}: masset(id: "${massetId}", block: { number: ${number} }) { ...VolumeMetricsFields }`,
+          `t${timestamp}: masset(id: "${massetAddress}", block: { number: ${number} }) { ...VolumeMetricsFields }`,
       )
       .join('\n');
 
@@ -169,7 +170,7 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
         ${blockMetrics}
       }
     `;
-  }, [blockTimes]);
+  }, [blockTimes, massetAddress]);
 
   const query = useQuery<MetricsQueryResult>(metricsDoc, {
     fetchPolicy: 'no-cache',

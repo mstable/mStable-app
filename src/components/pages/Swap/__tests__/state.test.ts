@@ -5,6 +5,8 @@ import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { Actions, Fields } from '../types';
 import { initialState, reducer } from '../reducer';
 import { BigDecimal } from '../../../../web3/BigDecimal';
+import { MassetState } from '../../../../context/DataProvider/types';
+import { bigNumberify } from 'ethers/utils';
 
 type Ctx = [
   ReducerState<typeof reducer>,
@@ -66,36 +68,56 @@ const TUSD = {
 
 const feeRate = '400000000000000';
 
-const dataState = {
+const dataState: MassetState = {
+  ...mUSD,
+  removedBassets: {},
+  allBassetsNormal: true,
+  blacklistedBassets: [],
+  overweightBassets: [],
+  failed: false,
+  undergoingRecol: false,
+  savingsContracts: {},
+  collateralisationRatio: bigNumberify('0'),
+  redemptionFeeRate: bigNumberify('0'),
+  token: {
+    ...mUSD,
+    totalSupply: new BigDecimal(1000, 18),
+    balance: new BigDecimal(0, 18),
+    allowances: {},
+  },
+  feeRate: bigNumberify(feeRate),
   bAssets: {
     [DAI.address]: {
       ...DAI,
-      totalSupply: new BigDecimal(1000, 10),
       totalVault: new BigDecimal(100, 10),
-      balance: new BigDecimal(10, 10),
-      allowances: { [mUSD.address]: new BigDecimal(1000, 10) }
+      token: {
+        ...DAI,
+        totalSupply: new BigDecimal(1000, 10),
+        balance: new BigDecimal(10, 10),
+        allowances: { [mUSD.address]: new BigDecimal(1000, 10) },
+      },
     },
     [USDC.address]: {
       ...USDC,
-      totalSupply: new BigDecimal(1000, 6),
       totalVault: new BigDecimal(100, 6),
-      balance: new BigDecimal(10, 6),
-      allowances: { [mUSD.address]: new BigDecimal(1000, 6) }
+      token: {
+        ...USDC,
+        totalSupply: new BigDecimal(1000, 6),
+        balance: new BigDecimal(10, 6),
+        allowances: { [mUSD.address]: new BigDecimal(1000, 6) },
+      },
     },
     [TUSD.address]: {
       ...TUSD,
-      totalSupply: new BigDecimal(1000, 18),
       totalVault: new BigDecimal(100, 18),
-      balance: new BigDecimal(10, 18),
-      allowances: { [mUSD.address]: new BigDecimal(1000, 18) }
+      token: {
+        ...TUSD,
+        totalSupply: new BigDecimal(1000, 18),
+        balance: new BigDecimal(10, 18),
+        allowances: { [mUSD.address]: new BigDecimal(1000, 18) },
+      },
     },
   } as any,
-  mAsset: {
-    ...mUSD,
-    totalSupply: new BigDecimal(1000, 18),
-    basket: {} as any,
-    feeRate,
-  },
 };
 
 describe('Swap form state', () => {
@@ -146,7 +168,7 @@ describe('Swap form state', () => {
       });
 
       expect(state()).toMatchObject({
-        dataState,
+        massetState: dataState,
       });
     });
   });

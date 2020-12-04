@@ -1,6 +1,6 @@
-/* eslint-disable no-console */
 import React, { FC } from 'react';
 import styled from 'styled-components';
+
 import { Button } from '../core/Button';
 import { H3 } from '../core/Typography';
 import { Address } from '../core/Address';
@@ -86,7 +86,7 @@ const Connected: FC<{ walletLabel: string; account: string }> = ({
   );
 };
 
-export const Wallet: FC<{}> = () => {
+export const Wallet: FC = () => {
   const address = useWalletAddress();
   const connected = useConnected();
   const wallet = useWallet();
@@ -105,7 +105,6 @@ export const Wallet: FC<{}> = () => {
           }
         />
         <FlexRow>
-          {/* FIXME problem when first connecting; updates on unmounted components */}
           {connected && address && wallet && (
             <Connected walletLabel={wallet.name as string} account={address} />
           )}

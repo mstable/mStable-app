@@ -100,13 +100,15 @@ export interface SendTxManifest<
   gasLimit?: BigNumber;
   formId?: string;
   onSent?(): void;
-  onFinalized?(): void;
+  onFinalize?(): void;
+  purpose: Purpose;
 }
 
 export interface Token {
   address: string;
   decimals: number;
   symbol: string;
+  totalSupply: BigDecimal;
   price?: BigDecimal;
 }
 

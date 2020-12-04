@@ -118,21 +118,30 @@ const ExitForm: FC = () => {
   const setFormManifest = useSetFormManifest();
 
   const {
+    stakingRewardsContract: { title } = { title: 'gauge' },
     exit: { amount, valid },
   } = useStakingRewardsContractState();
 
   useEffect(() => {
     if (valid && amount && musdGauge) {
-      const manifest: SendTxManifest<Interfaces.CurveGauge, 'withdraw(uint256)'> = {
+      const body = `stake of ${amount.format()} from ${title}`;
+      const manifest: SendTxManifest<
+        Interfaces.CurveGauge,
+        'withdraw(uint256)'
+      > = {
         args: [amount.exact],
         iface: musdGauge,
         fn: 'withdraw(uint256)',
+        purpose: {
+          present: `Withdrawing ${body}`,
+          past: `Withdrew ${body}`,
+        },
       };
       setFormManifest(manifest);
     } else {
       setFormManifest(null);
     }
-  }, [setFormManifest, valid, amount, musdGauge]);
+  }, [setFormManifest, valid, amount, musdGauge, title]);
 
   return (
     <TransactionForm

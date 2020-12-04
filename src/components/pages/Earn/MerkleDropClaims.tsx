@@ -71,19 +71,26 @@ const MerkleDropClaimForm: FC<{ merkleDrop: MerkleDrop }> = ({
       const balances = unclaimedTranches.map(t => t.allocation);
       const proofs = unclaimedTranches.map(t => t.proof);
 
+      const purpose = {
+        present: 'Claiming rewards',
+        past: 'Claimed rewards',
+      };
+
       if (tranches.length > 1) {
         setFormManifest<Interfaces.MerkleDrop, 'claimWeeks'>({
           args: [account, tranches, balances, proofs as never],
           fn: 'claimWeeks',
           iface: contract,
-          onFinalized: refresh,
+          onFinalize: refresh,
+          purpose,
         });
       } else {
         setFormManifest<Interfaces.MerkleDrop, 'claimWeek'>({
           args: [account, tranches[0], balances[0], proofs[0]],
           fn: 'claimWeek',
           iface: contract,
-          onFinalized: refresh,
+          onFinalize: refresh,
+          purpose,
         });
       }
     }
