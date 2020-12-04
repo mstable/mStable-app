@@ -11,13 +11,15 @@ import { BigNumber as FractionalBigNumber } from 'bignumber.js';
 import { toK } from '../components/stats/utils';
 import { RATIO_SCALE, SCALE } from './constants';
 
+const DEFAULT_DECIMALS = 18;
+
 export class BigDecimal {
   /**
    * Parse a BigDecimal from the given amount string (e.g. "12.32") and decimals
    * @param amountStr
    * @param decimals
    */
-  static parse(amountStr: string, decimals: number): BigDecimal {
+  static parse(amountStr: string, decimals = DEFAULT_DECIMALS): BigDecimal {
     // Sanitize the input and limit it to the given decimals
     const [int, fraction = '0'] = amountStr.split('.');
     const sanitizedAmount = `${int}.${fraction.slice(0, decimals)}`;
@@ -42,7 +44,7 @@ export class BigDecimal {
    */
   static maybeParse(
     amountStr: string | null | undefined,
-    decimals: number,
+    decimals = DEFAULT_DECIMALS,
   ): BigDecimal | undefined {
     if (!amountStr || !decimals) {
       return undefined;
@@ -71,7 +73,7 @@ export class BigDecimal {
 
   exact: BigNumber;
 
-  constructor(num: BigNumberish, decimals: number) {
+  constructor(num: BigNumberish, decimals = DEFAULT_DECIMALS) {
     this.exact = bigNumberify(num);
     this.decimals = decimals;
   }
