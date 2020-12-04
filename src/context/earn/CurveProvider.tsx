@@ -22,7 +22,7 @@ import { StableSwap } from '../../typechain/StableSwap.d';
 import { TokenMinter } from '../../typechain/TokenMinter.d';
 import { CurveDeposit } from '../../typechain/CurveDeposit.d';
 import { useSignerOrInfuraProvider } from '../OnboardProvider';
-import { useBlockNumber } from '../DataProvider/BlockProvider';
+import { useBlockNumber } from '../BlockProvider';
 import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { CHAIN_ID } from '../../web3/constants';
@@ -124,11 +124,17 @@ const CurveContractsProvider: FC = ({ children }) => {
           CURVE_ADDRESSES.MUSD_DEPOSIT,
           provider,
         ),
-        musdGauge: MusdGaugeFactory.connect(CURVE_ADDRESSES.MUSD_GAUGE, provider),
-        musdSwap: StableSwapFactory.connect(CURVE_ADDRESSES.MUSD_SWAP, provider),
+        musdGauge: MusdGaugeFactory.connect(
+          CURVE_ADDRESSES.MUSD_GAUGE,
+          provider,
+        ),
+        musdSwap: StableSwapFactory.connect(
+          CURVE_ADDRESSES.MUSD_SWAP,
+          provider,
+        ),
       };
     }
-    return {}
+    return {};
   }, [provider]);
 
   return (
