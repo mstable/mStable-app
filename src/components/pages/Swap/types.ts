@@ -1,5 +1,5 @@
 import { Token, TokenQuantity } from '../../../types';
-import { DataState } from '../../../context/DataProvider/types';
+import { MassetState } from '../../../context/DataProvider/types';
 
 export enum Fields {
   Input = 'input',
@@ -29,7 +29,7 @@ export type Action =
     }
   | {
       type: Actions.Data;
-      payload?: DataState;
+      payload?: MassetState;
     };
 
 export interface State {
@@ -39,7 +39,7 @@ export interface State {
     feeAmountSimple: string | null;
   };
   applySwapFee: boolean;
-  dataState?: DataState;
+  massetState?: MassetState;
   touched: boolean;
   needsUnlock: boolean;
   inputError?: string;
@@ -48,7 +48,10 @@ export interface State {
 }
 
 export interface Dispatch {
-  setToken(field: Fields, token: NonNullable<Token> | null): void;
+  setToken(
+    field: Fields,
+    token: Pick<Token, 'address' | 'decimals' | 'symbol'> | null,
+  ): void;
   setInputQuantity(formValue: string): void;
   setOutputQuantity(formValue: string): void;
 }

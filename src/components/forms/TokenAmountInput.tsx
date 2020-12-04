@@ -1,19 +1,17 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import {
-  TokenDetailsFragment,
-  useErc20TokensQuery,
-} from '../../graphql/protocol';
+import { Token } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { AmountInput } from './AmountInput';
 import { TokenInput } from './TokenInput';
 import { ApproveButton } from './ApproveButton';
 import {
-  useToken,
+  useTokenSubscription,
   useTokenAllowance,
-} from '../../context/DataProvider/TokensProvider';
+  useTokens,
+} from '../../context/TokensProvider';
 
 interface Props {
   name: string;
@@ -32,7 +30,7 @@ interface Props {
     highlight?: boolean;
   }[];
   onChangeAmount?(formValue: string | null): void;
-  onChangeToken?(name: string, token: TokenDetailsFragment): void;
+  onChangeToken?(name: string, token: Token): void;
   onSetMax?(): void;
   spender?: string;
   approveAmount?: BigDecimal;
@@ -114,12 +112,8 @@ export const TokenAmountInput: FC<Props> = ({
   approveAmount,
   items = [],
 }) => {
-  const { data: tokensData } = useErc20TokensQuery({
-    variables: { addresses: tokenAddresses },
-    skip: tokenAddresses.length === 0,
-  });
-
-  const token = useToken(tokenValue);
+  const tokens = useTokens(tokenAddresses);
+  const token = useTokenSubscription(tokenValue);
   useTokenAllowance(tokenValue, spender);
 
   return (
@@ -141,7 +135,7 @@ export const TokenAmountInput: FC<Props> = ({
             name={name}
             disabled={tokenDisabled}
             value={tokenValue}
-            tokens={tokensData?.tokens || []}
+            tokens={tokens}
             onChange={onChangeToken}
             error={error}
           />

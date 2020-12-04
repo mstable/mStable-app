@@ -16,9 +16,9 @@ import { Props as DefaultTooltipContentProps } from 'recharts/types/component/De
 // @ts-ignore
 import DefaultTooltipContent from 'recharts/lib/component/DefaultTooltipContent';
 
-import { useDataState } from '../../context/DataProvider/DataProvider';
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 import { TokenIconSvg } from '../icons/TokenIcon';
-import { DataState } from '../../context/DataProvider/types';
+import { MassetState } from '../../context/DataProvider/types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Color } from '../../theme';
 import { toK } from './utils';
@@ -127,14 +127,22 @@ const Container = styled(RechartsContainer)`
   padding: 16px 0;
 `;
 
-export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
-  const dataState = useDataState();
-  const bAssets = simulation?.bAssets || dataState?.bAssets || {};
+export const BasketStats: FC<{ simulation?: MassetState }> = ({
+  simulation,
+}) => {
+  const masset = useSelectedMassetState();
+  const bAssets = simulation?.bAssets ?? masset?.bAssets ?? {};
 
   const data: Datum[] = useMemo(
     () =>
       Object.values(bAssets).map(
-        ({ basketShare, maxWeight, symbol, overweight, totalVault }) => {
+        ({
+          basketShare,
+          maxWeight,
+          token: { symbol },
+          overweight,
+          totalVault,
+        }) => {
           const basketShareAsPercentage = basketShare.toPercent();
           const maxWeightAsPercentage = new BigDecimal(
             maxWeight,
@@ -177,7 +185,10 @@ export const BasketStats: FC<{ simulation?: DataState }> = ({ simulation }) => {
           >
             <defs>
               {Object.values(bAssets).map(b => (
-                <Hatch key={b.symbol} symbol={b.symbol as TokenSymbol} />
+                <Hatch
+                  key={b.token.symbol}
+                  symbol={b.token.symbol as TokenSymbol}
+                />
               ))}
             </defs>
             <Tooltip

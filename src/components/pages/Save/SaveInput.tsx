@@ -20,25 +20,24 @@ const TransactionTypeRow = styled(FormRow)`
   }
 `;
 
-export const SaveInput: FC<{}> = () => {
+export const SaveInput: FC = () => {
   const {
     error,
     amount,
     transactionType,
     formValue,
     needsUnlock,
-    dataState,
+    massetState,
   } = useSaveState();
 
   const { toggleTransactionType, setAmount, setMaxAmount } = useSaveDispatch();
 
-  const mAsset = dataState?.mAsset;
-  const mAssetAddress = mAsset?.address || null;
-  const savingsContractAddress = dataState?.savingsContract.address;
+  const massetAddress = massetState?.address || null;
+  const savingsContractAddress = massetState?.savingsContracts.v1?.address;
 
   const tokenAddresses = useMemo<string[]>(
-    () => (mAssetAddress ? [mAssetAddress] : []),
-    [mAssetAddress],
+    () => (massetAddress ? [massetAddress] : []),
+    [massetAddress],
   );
 
   const handleChangeAmount = useCallback<
@@ -70,7 +69,7 @@ export const SaveInput: FC<{}> = () => {
         </H3>
         <TokenAmountInput
           name="input"
-          tokenValue={mAsset?.address || null}
+          tokenValue={massetAddress}
           amountValue={formValue}
           onChangeAmount={handleChangeAmount}
           onSetMax={setMaxAmount}

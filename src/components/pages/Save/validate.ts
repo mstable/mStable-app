@@ -1,16 +1,14 @@
 import { State, Reasons, TransactionType } from './types';
 
 const validateSave = ({
-  dataState,
+  massetState,
   amount,
   amountInCredits,
   transactionType,
 }: State): [false, Reasons] | [true] => {
-  if (!dataState) {
+  if (!(massetState && massetState.savingsContracts.v1)) {
     return [false, Reasons.FetchingData];
   }
-
-  const { mAsset, savingsContract } = dataState;
 
   if (
     !amount ||
@@ -24,25 +22,29 @@ const validateSave = ({
   }
 
   if (transactionType === TransactionType.Deposit) {
-    if (amount.exact.gt(mAsset.balance.exact)) {
+    if (amount.exact.gt(massetState.token.balance.exact)) {
       return [false, Reasons.DepositAmountMustNotExceedTokenBalance];
     }
 
-    if (savingsContract.mAssetAllowance.exact.lt(amount.exact)) {
+    if (
+      massetState.savingsContracts.v1.mAssetAllowance.exact.lt(amount.exact)
+    ) {
       return [false, Reasons.MUSDMustBeApproved];
     }
   }
 
   if (transactionType === TransactionType.Withdraw) {
     if (
-      !savingsContract.savingsBalance.credits ||
-      !savingsContract.latestExchangeRate
+      !massetState.savingsContracts.v1.savingsBalance.credits ||
+      !massetState.savingsContracts.v1.latestExchangeRate
     ) {
       return [false, Reasons.FetchingData];
     }
 
     if (
-      amountInCredits?.exact.gt(savingsContract.savingsBalance.credits.exact)
+      amountInCredits?.exact.gt(
+        massetState.savingsContracts.v1.savingsBalance.credits.exact,
+      )
     ) {
       return [false, Reasons.WithdrawAmountMustNotExceedSavingsBalance];
     }

@@ -16,6 +16,7 @@ import { Color } from '../../theme';
 import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
 import { periodFormatMapping, toK } from './utils';
 import { RechartsContainer } from './RechartsContainer';
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 
 interface AggregateMetricsQueryResult {
   [timestamp: string]: {
@@ -60,18 +61,18 @@ const useAggregateMetrics = (): {
   totalSavings: number;
 }[] => {
   const dateFilter = useDateFilter();
+  const massetState = useSelectedMassetState();
+  const massetAddress = massetState?.address ?? '';
 
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
 
   const metricsDoc = useMemo<DocumentNode>(() => {
-    const massetId = process.env.REACT_APP_MUSD_ADDRESS as string;
-
-    const current = `t${nowUnix}: masset(id: "${massetId}") { ...AggregateMetricsFields }`;
+    const current = `t${nowUnix}: masset(id: "${massetAddress}") { ...AggregateMetricsFields }`;
 
     const blockMetrics = blockTimes
       .map(
         ({ timestamp, number }) =>
-          `t${timestamp}: masset(id: "${massetId}", block: { number: ${number} }) { ...AggregateMetricsFields }`,
+          `t${timestamp}: masset(id: "${massetAddress}", block: { number: ${number} }) { ...AggregateMetricsFields }`,
       )
       .join('\n');
 
@@ -91,7 +92,7 @@ const useAggregateMetrics = (): {
         ${blockMetrics}
       }
     `;
-  }, [blockTimes]);
+  }, [blockTimes, massetAddress]);
 
   const query = useQuery<AggregateMetricsQueryResult>(metricsDoc, {
     fetchPolicy: 'no-cache',

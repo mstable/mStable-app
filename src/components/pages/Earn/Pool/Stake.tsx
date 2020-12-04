@@ -32,7 +32,7 @@ const ExitLink = styled.span`
   cursor: pointer;
 `;
 
-const Input: FC<{}> = () => {
+const Input: FC = () => {
   const {
     stake: { amount, formValue, error, needsUnlock },
     stakingRewardsContract,
@@ -86,7 +86,7 @@ const Input: FC<{}> = () => {
   );
 };
 
-const Confirm: FC<{}> = () => {
+const Confirm: FC = () => {
   const {
     stake: { amount },
   } = useStakingRewardsContractState();
@@ -101,10 +101,10 @@ const Confirm: FC<{}> = () => {
   ) : null;
 };
 
-const Form: FC<{}> = () => {
+const Form: FC = () => {
   const {
     stake: { amount, valid },
-    stakingRewardsContract: { expired = false } = {},
+    stakingRewardsContract: { expired = false, title } = {},
   } = useStakingRewardsContractState();
   const { setActiveTab } = useStakingRewardContractDispatch();
   const contract = useCurrentStakingRewardsContractCtx();
@@ -113,6 +113,7 @@ const Form: FC<{}> = () => {
 
   useEffect(() => {
     if (valid && amount && contract) {
+      const body = `${amount.simple} in ${title}`;
       const manifest: SendTxManifest<
         Interfaces.StakingRewards,
         'stake(uint256)'
@@ -120,12 +121,16 @@ const Form: FC<{}> = () => {
         args: [amount.exact],
         iface: contract,
         fn: 'stake(uint256)',
+        purpose: {
+          present: `Staking ${body}`,
+          past: `Staked ${body}`,
+        },
       };
       setFormManifest(manifest);
     } else {
       setFormManifest(null);
     }
-  }, [setFormManifest, valid, amount, contract]);
+  }, [setFormManifest, valid, amount, contract, title]);
 
   return expired ? (
     <div>
@@ -154,7 +159,7 @@ const Form: FC<{}> = () => {
   );
 };
 
-export const Stake: FC<{}> = () => (
+export const Stake: FC = () => (
   <FormProvider formId="stake">
     <Form />
   </FormProvider>

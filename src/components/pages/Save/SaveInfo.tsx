@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { H3 } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
-import { useSavingsBalance } from '../../../context/DataProvider/DataProvider';
+import { useV1SavingsBalance } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
 import { SaveVersion } from '../../../types';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
@@ -81,6 +81,9 @@ const StyledWarningBadge = styled(WarningBadge)`
   right: -0.625em;
   top: 0;
 `;
+
+// TODO
+const useSavingsBalance = (): any => undefined;
 
 export const SaveInfo: FC<Props> = ({ version, onMigrateClick }) => {
   const savingsBalance = useSavingsBalance();

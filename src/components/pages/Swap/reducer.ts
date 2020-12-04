@@ -61,7 +61,7 @@ const calculateSwapValues = (
 
   const {
     applySwapFee,
-    dataState,
+    massetState,
     values: {
       [field]: { token: prevToken, formValue: prevFormValue },
       [otherField]: { token: prevOtherToken, formValue: prevOtherFormValue },
@@ -69,13 +69,13 @@ const calculateSwapValues = (
     },
   } = state;
 
-  const { address: mAssetAddress, feeRate } = dataState?.mAsset || {};
+  const { address: massetAddress, feeRate } = massetState || {};
 
   const outputAddress = state.values[Fields.Output].token.address;
-  const prevIsMint = outputAddress && outputAddress === mAssetAddress;
+  const prevIsMint = outputAddress && outputAddress === massetAddress;
 
   // If the data isn't there, changes can't be made
-  if (!(feeRate && mAssetAddress)) {
+  if (!(feeRate && massetAddress)) {
     return state.values;
   }
 
@@ -125,23 +125,23 @@ const calculateSwapValues = (
     // Unsetting this field
     const isUnsetting = address === null;
 
-    // Setting this field from a bAsset to a mAsset
+    // Setting this field from a basset to a masset
     const isMint = isInputField
-      ? prevOtherToken.address === mAssetAddress
-      : address === mAssetAddress;
+      ? prevOtherToken.address === massetAddress
+      : address === massetAddress;
 
     // Setting this field to the other token
     const isInvert = address === prevOtherToken.address;
 
-    // It it not possible to use mAssets as input (redeeming)
-    if (isInputField && address === mAssetAddress) {
+    // It it not possible to use massets as input (redeeming)
+    if (isInputField && address === massetAddress) {
       return state.values;
     }
 
     const token = isInvert ? prevOtherToken : { address, decimals, symbol };
     const otherToken = isInvert
       ? // If setting the token to the other token, and it was a mint,
-        // unset the other token (because the mAsset can't be used for input).
+        // unset the other token (because the masset can't be used for input).
         prevIsMint
         ? { address: null, decimals: null, symbol: null }
         : prevToken
@@ -212,7 +212,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
       });
 
     case Actions.Data:
-      return applyValidation({ ...state, dataState: action.payload });
+      return applyValidation({ ...state, massetState: action.payload });
 
     default:
       throw new Error('Unhandled action type');

@@ -27,7 +27,7 @@ export const getReasonMessage = (
       return 'Amount must be set';
 
     case Reasons.AssetsMustRemainBelowMaxWeight:
-      return `${affectedAsset?.symbol ||
+      return `${affectedAsset?.token.symbol ||
         'Asset'} must remain below its maximum weight; this limit helps to ensure diversification and reduce risk. Try using another asset.`;
 
     case Reasons.CannotRedeemMoreAssetsThanAreInTheVault:
@@ -35,7 +35,7 @@ export const getReasonMessage = (
         affectedAsset &&
         (affectedAsset as BassetState | undefined)?.totalVaultInMasset
           ? ` (${
-              affectedAsset.symbol
+              affectedAsset.token.symbol
             }: ${(affectedAsset as BassetState).totalVaultInMasset.format()})`
           : ''
       }`;

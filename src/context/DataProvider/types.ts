@@ -1,36 +1,7 @@
 import { BigNumber } from 'ethers/utils';
 
 import { BigDecimal } from '../../web3/BigDecimal';
-import {
-  CreditBalancesQueryResult,
-  LatestExchangeRateQueryResult,
-  MassetQueryResult,
-  SavingsContractQueryResult,
-} from '../../graphql/protocol';
-import { Tokens } from './TokensProvider';
-import { Allowances } from '../../types';
-
-export interface RawData {
-  creditBalance?: NonNullable<
-    NonNullable<CreditBalancesQueryResult['data']>['account']
-  >['creditBalance'];
-  latestExchangeRate?: NonNullable<
-    LatestExchangeRateQueryResult['data']
-  >['exchangeRates'][0];
-  mAsset: NonNullable<NonNullable<MassetQueryResult['data']>['masset']>;
-  savingsContract: NonNullable<
-    SavingsContractQueryResult['data']
-  >['savingsContracts'][0];
-  tokens: Tokens;
-}
-
-export type PartialRawData = {
-  creditBalance: RawData['creditBalance'];
-  latestExchangeRate: RawData['latestExchangeRate'];
-  mAsset?: RawData['mAsset'];
-  savingsContract?: RawData['savingsContract'];
-  tokens: RawData['tokens'];
-};
+import { SubscribedToken } from '../../types';
 
 export enum BassetStatus {
   Default = 'Default',
@@ -45,67 +16,66 @@ export enum BassetStatus {
 
 export interface BassetState {
   address: string;
-  allowances: Allowances;
-  balance: BigDecimal;
   balanceInMasset: BigDecimal;
-  decimals: number;
   basketShare: BigDecimal;
   isTransferFeeCharged: boolean;
-  mAssetAddress: string;
   maxWeight: BigNumber;
   maxWeightInMasset: BigDecimal;
   overweight: boolean;
   ratio: BigNumber;
   status: BassetStatus;
-  symbol: string;
-  totalSupply: BigDecimal;
   totalVault: BigDecimal;
   totalVaultInMasset: BigDecimal;
+  token: SubscribedToken;
 }
 
 export interface MassetState {
   address: string;
-  allowances: Allowances;
   allBassetsNormal: boolean;
-  balance: BigDecimal;
+  bAssets: { [address: string]: BassetState };
+  removedBassets: { [address: string]: SubscribedToken };
+  blacklistedBassets: string[];
   collateralisationRatio: BigNumber;
-  decimals: number;
   failed: boolean;
   feeRate: BigNumber;
-  redemptionFeeRate: BigNumber;
-  blacklistedBassets: string[];
   overweightBassets: string[];
-  symbol: string;
-  totalSupply: BigDecimal;
+  redemptionFeeRate: BigNumber;
+  token: SubscribedToken;
   undergoingRecol: boolean;
+  savingsContracts: {
+    v1?: Extract<SavingsContractState, { version: 1 }>;
+    v2?: Extract<SavingsContractState, { version: 2 }>;
+  };
 }
 
-export interface SavingsContractState {
+export type SavingsContractState = {
   address: string;
+  massetAddress: string;
   automationEnabled: boolean;
-  creditBalance?: BigDecimal;
   latestExchangeRate?: {
     timestamp: number;
     rate: BigDecimal;
   };
-  mAssetAllowance: BigDecimal;
-  // savingsRate: BigDecimal;
-  totalCredits: BigDecimal;
   totalSavings: BigDecimal;
-  savingsBalance: {
-    balance?: BigDecimal;
-    credits?: BigDecimal;
-  };
   dailyAPY: number;
-}
+} & (
+  | {
+      version: 1;
+      creditBalance?: BigDecimal;
+      totalCredits: BigDecimal;
+      mAssetAllowance: BigDecimal;
+      savingsBalance: {
+        balance?: BigDecimal;
+        credits?: BigDecimal;
+      };
+    }
+  | {
+      version: 2;
+      token?: SubscribedToken;
+    }
+);
 
 export interface DataState {
-  mAsset: MassetState;
-  savingsContract: SavingsContractState;
-  bAssets: {
-    [address: string]: BassetState;
-  };
-  removedBassets: {
-    [address: string]: { decimals: number; symbol: string; address: string };
-  };
+  mUSD?: MassetState;
+  mBTC?: MassetState;
 }

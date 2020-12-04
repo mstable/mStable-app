@@ -2,17 +2,7 @@ import { LazyQueryHookOptions, QueryTuple } from '@apollo/react-hooks';
 import { QueryResult } from '@apollo/react-common';
 import { useEffect } from 'react';
 
-import {
-  CreditBalancesQueryResult,
-  MassetQueryResult,
-  SavingsContractQueryResult,
-  useCreditBalancesLazyQuery,
-  useMassetLazyQuery,
-  useSavingsContractLazyQuery,
-} from '../../graphql/protocol';
-import { useAccount } from '../UserProvider';
-import { useBlockNumber } from './BlockProvider';
-import { useSelectedMasset } from '../MassetsProvider';
+import { useBlockNumber } from '../BlockProvider';
 
 export const useBlockPollingSubscription = <TData, TVariables>(
   lazyQuery: (
@@ -58,36 +48,4 @@ export const useBlockPollingSubscription = <TData, TVariables>(
   }, [skip, blockNumber, run]);
 
   return query as never;
-};
-
-export const useMassetSubscription = (): MassetQueryResult => {
-  const { address } = useSelectedMasset();
-  return useBlockPollingSubscription(useMassetLazyQuery, {
-    variables: {
-      id: address,
-    },
-  });
-};
-
-export const useMassetSavingsSubscription = ():
-  | SavingsContractQueryResult
-  | undefined => {
-  const { savingsContract } = useSelectedMasset();
-  return useBlockPollingSubscription(
-    useSavingsContractLazyQuery,
-    {
-      variables: { id: savingsContract?.address as string },
-    },
-    !savingsContract,
-  );
-};
-
-export const useCreditBalancesSubscription = (): CreditBalancesQueryResult => {
-  const account = useAccount();
-
-  return useBlockPollingSubscription(
-    useCreditBalancesLazyQuery,
-    { variables: { account: account ? account.toLowerCase() : '' } },
-    !account,
-  );
 };

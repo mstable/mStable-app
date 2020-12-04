@@ -1,171 +1,220 @@
 import { bigNumberify } from 'ethers/utils';
 
 import { BigDecimal } from '../../web3/BigDecimal';
-import { BassetState, BassetStatus, DataState, RawData } from './types';
+import { MassetName, SubscribedToken } from '../../types';
+import {
+  MassetsQueryResult,
+  TokenDetailsFragment,
+} from '../../graphql/protocol';
+import {
+  BassetStatus,
+  DataState,
+  MassetState,
+  SavingsContractState,
+} from './types';
+import { Tokens } from '../TokensProvider';
 
-type TransformFn<T extends keyof DataState> = (
-  rawData: RawData,
-  dataState: DataState,
-) => DataState[T];
-
-type TransformPipelineItem<T extends keyof DataState> = [T, TransformFn<T>];
-
-const getMassetState: TransformFn<'mAsset'> = ({
-  mAsset: {
-    basket: { collateralisationRatio, failed, undergoingRecol },
-    feeRate,
-    redemptionFeeRate,
-    token: { totalSupply, address, decimals, symbol },
-  },
-  tokens,
-}) => {
-  const { allowances, balance } = tokens[address] ?? {
-    balance: new BigDecimal(0, decimals),
-    allowances: {},
-  };
-  return {
-    address,
-    balance,
-    allowances,
-    collateralisationRatio: bigNumberify(collateralisationRatio),
-    decimals,
-    failed,
-    feeRate: bigNumberify(feeRate),
-    redemptionFeeRate: bigNumberify(redemptionFeeRate || '0'),
-    symbol,
-    totalSupply: BigDecimal.fromMetric(totalSupply),
-    undergoingRecol,
-
-    // Initial values
-    allBassetsNormal: false,
-    blacklistedBassets: [],
-    overweightBassets: [],
-  };
-};
-
-const getSavingsContract: TransformFn<'savingsContract'> = (
-  {
-    creditBalance,
-    latestExchangeRate,
-    savingsContract: savingsContractData,
-    tokens,
-  },
-  { mAsset: { address: mAssetAddress, decimals } },
-) => ({
-  address: savingsContractData.id,
-  automationEnabled: savingsContractData.automationEnabled,
-  creditBalance: creditBalance
-    ? new BigDecimal(creditBalance.amount, decimals)
-    : undefined,
-  latestExchangeRate: latestExchangeRate
-    ? {
-        rate: BigDecimal.parse(latestExchangeRate.rate, decimals),
-        timestamp: latestExchangeRate.timestamp,
-      }
-    : undefined,
-  mAssetAllowance:
-    tokens[mAssetAddress]?.allowances?.[savingsContractData.id] ??
-    new BigDecimal(0, decimals),
-  // savingsRate: BigDecimal.fromMetric(savingsContractData.savingsRate),
-  totalCredits: BigDecimal.fromMetric(savingsContractData.totalCredits),
-  totalSavings: BigDecimal.fromMetric(savingsContractData.totalSavings),
-  savingsBalance: {},
-  dailyAPY: parseFloat(savingsContractData.dailyAPY),
-});
-
-const getBassetsState: TransformFn<'bAssets'> = (
-  {
-    mAsset: {
-      basket: { bassets },
-    },
-    tokens,
-  },
-  { mAsset },
-) =>
-  bassets
-    // TODO use this field once subgraph is deployed
-    // .filter(b => !b.removed)
-    .filter(b => b.id !== '0x6b175474e89094c44da98b954eedeac495271d0f')
-    .reduce(
-      (
-        _bAssets,
+const transformBassets = (
+  bassets: NonNullable<
+    MassetsQueryResult['data']
+  >['massets'][number]['basket']['bassets'],
+  massetDecimals: number,
+  tokens: Tokens,
+): MassetState['bAssets'] => {
+  return Object.fromEntries(
+    bassets.map(
+      ({
+        ratio,
+        status,
+        maxWeight,
+        vaultBalance,
+        isTransferFeeCharged,
+        token: { address, totalSupply, decimals, symbol },
+      }) => [
+        address,
         {
-          isTransferFeeCharged,
-          maxWeight,
-          ratio,
-          status,
-          token: { address, decimals, symbol, totalSupply },
-          vaultBalance,
-        },
-      ) => {
-        const { balance, allowances } = tokens[address] ?? {
-          balance: new BigDecimal(0, decimals),
-          allowances: {},
-        };
-        const bAsset: BassetState = {
           address,
-          allowances,
-          balance,
-          decimals,
           isTransferFeeCharged,
-          mAssetAddress: mAsset.address,
           maxWeight: bigNumberify(maxWeight),
           ratio: bigNumberify(ratio),
           status: status as BassetStatus,
-          symbol,
-          totalSupply: BigDecimal.fromMetric(totalSupply),
           totalVault: BigDecimal.fromMetric(vaultBalance),
+          token: {
+            address,
+            totalSupply: BigDecimal.fromMetric(totalSupply),
+            decimals,
+            symbol,
+            balance: new BigDecimal(0, decimals),
+            allowances: {},
+            ...tokens[address],
+          },
 
           // Initial values
-          balanceInMasset: new BigDecimal(0, mAsset.decimals),
-          basketShare: new BigDecimal(0, mAsset.decimals),
-          maxWeightInMasset: new BigDecimal(0, mAsset.decimals),
+          balanceInMasset: new BigDecimal(0, massetDecimals),
+          basketShare: new BigDecimal(0, massetDecimals),
+          maxWeightInMasset: new BigDecimal(0, massetDecimals),
           overweight: false,
-          totalVaultInMasset: new BigDecimal(0, mAsset.decimals),
-        };
+          totalVaultInMasset: new BigDecimal(0, massetDecimals),
+        },
+      ],
+    ),
+  );
+};
 
-        return {
-          ..._bAssets,
-          [address]: bAsset,
-        };
-      },
-      {},
-    );
+const transformSavingsContractV1 = (
+  savingsContract: NonNullable<
+    MassetsQueryResult['data']
+  >['massets'][number]['savingsContractsV1'][number],
+  massetDecimals: number,
+  massetAddress: string,
+  tokens: Tokens,
+): Extract<SavingsContractState, { version: 1 }> => {
+  const {
+    id,
+    automationEnabled,
+    version,
+    dailyAPY,
+    totalCredits,
+    totalSavings,
+    creditBalances,
+    latestExchangeRate,
+  } = savingsContract;
+  const creditBalance = creditBalances?.[0];
 
-const getRemovedBassets: TransformFn<'removedBassets'> = ({
-  mAsset: {
-    basket: { bassets },
-  },
-}) =>
-  bassets
-    // TODO use this field once subgraph is deployed
-    // .filter(b => b.removed)
-    .filter(b => b.id === '0x6b175474e89094c44da98b954eedeac495271d0f')
-    .reduce((prev, { token: { address, decimals, symbol } }) => {
-      const bAsset: DataState['removedBassets'][string] = {
-        address,
-        decimals,
-        symbol,
-      };
+  return {
+    address: id,
+    massetAddress,
+    automationEnabled,
+    creditBalance: creditBalance
+      ? new BigDecimal(creditBalance.amount)
+      : undefined,
+    latestExchangeRate: latestExchangeRate
+      ? {
+          rate: BigDecimal.parse(latestExchangeRate.rate),
+          timestamp: latestExchangeRate.timestamp,
+        }
+      : undefined,
+    mAssetAllowance:
+      tokens[massetAddress]?.allowances?.[id] ?? new BigDecimal(0),
+    totalCredits: BigDecimal.fromMetric(
+      totalCredits as NonNullable<typeof totalCredits>,
+    ),
+    totalSavings: BigDecimal.fromMetric(totalSavings),
+    savingsBalance: {},
+    dailyAPY: parseFloat(dailyAPY),
+    version: version as 1,
+  };
+};
 
-      return {
-        ...prev,
-        [address]: bAsset,
-      };
-    }, {});
+const transformSavingsContractV2 = (
+  savingsContract: NonNullable<
+    MassetsQueryResult['data']
+  >['massets'][number]['savingsContractsV2'][number],
+  massetAddress: string,
+  tokens: Tokens,
+): Extract<SavingsContractState, { version: 2 }> => {
+  const {
+    automationEnabled,
+    version,
+    id,
+    totalSavings,
+    dailyAPY,
+    latestExchangeRate,
+  } = savingsContract;
 
-const pipelineItems: TransformPipelineItem<keyof DataState>[] = [
-  ['mAsset', getMassetState],
-  ['bAssets', getBassetsState],
-  ['removedBassets', getRemovedBassets],
-  ['savingsContract', getSavingsContract],
-];
+  return {
+    address: id,
+    massetAddress,
+    automationEnabled,
+    latestExchangeRate: latestExchangeRate
+      ? {
+          rate: BigDecimal.parse(latestExchangeRate.rate),
+          timestamp: latestExchangeRate.timestamp,
+        }
+      : undefined,
+    totalSavings: BigDecimal.fromMetric(totalSavings),
+    dailyAPY: parseFloat(dailyAPY),
+    token: tokens[id],
+    version: version as 2,
+  };
+};
 
-export const transformRawData = (rawData: RawData): DataState =>
-  pipelineItems.reduce(
-    (_dataState, [key, transform]) => ({
-      ..._dataState,
-      [key]: transform(rawData, _dataState as DataState),
-    }),
-    {} as Partial<DataState>,
-  ) as DataState;
+const transformTokenData = (
+  { address, totalSupply, symbol, decimals }: TokenDetailsFragment,
+  tokens: Tokens,
+): SubscribedToken => ({
+  address,
+  totalSupply: BigDecimal.fromMetric(totalSupply),
+  decimals,
+  symbol,
+  balance: new BigDecimal(0, decimals),
+  allowances: {},
+  ...tokens[address],
+});
+
+const transformMassetData = (
+  {
+    feeRate,
+    redemptionFeeRate,
+    token: { decimals, address },
+    token,
+    basket: {
+      bassets: _bassets,
+      collateralisationRatio,
+      failed,
+      removedBassets,
+      undergoingRecol,
+    },
+    savingsContractsV1: [savingsContractV1],
+    savingsContractsV2: [savingsContractV2],
+  }: NonNullable<MassetsQueryResult['data']>['massets'][number],
+  tokens: Tokens,
+): MassetState => {
+  const bAssets = transformBassets(_bassets, decimals, tokens);
+
+  return {
+    address,
+    failed,
+    undergoingRecol,
+    token: transformTokenData(token, tokens),
+    bAssets,
+    removedBassets: Object.fromEntries(
+      removedBassets.map(b => [
+        b.token.address,
+        transformTokenData(b.token, tokens),
+      ]),
+    ),
+    collateralisationRatio: bigNumberify(collateralisationRatio),
+    feeRate: bigNumberify(feeRate),
+    redemptionFeeRate: bigNumberify(redemptionFeeRate),
+    savingsContracts: {
+      v1: savingsContractV1
+        ? transformSavingsContractV1(
+            savingsContractV1,
+            decimals,
+            address,
+            tokens,
+          )
+        : undefined,
+      v2: savingsContractV2
+        ? transformSavingsContractV2(savingsContractV2, address, tokens)
+        : undefined,
+    },
+    // Initial values
+    blacklistedBassets: [],
+    overweightBassets: [],
+    allBassetsNormal: true,
+  };
+};
+
+export const transformRawData = ([data, tokens]: [
+  MassetsQueryResult['data'],
+  Tokens,
+]): DataState => {
+  return Object.fromEntries(
+    (data?.massets ?? []).map(masset => [
+      masset.token.symbol as MassetName,
+      transformMassetData(masset, tokens),
+    ]),
+  );
+};

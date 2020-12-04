@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
 
-import { useSelectedMassetContract } from '../../../context/DataProvider/ContractsProvider';
+import { useSelectedMassetContract } from '../../../web3/hooks';
 import { useOwnAccount } from '../../../context/UserProvider';
 import { Interfaces } from '../../../types';
 import {
@@ -15,20 +15,34 @@ import { RedeemProvider, useRedeemState } from './RedeemProvider';
 import { Mode } from './types';
 import { BigDecimal } from '../../../web3/BigDecimal';
 
-const RedeemForm: FC<{}> = () => {
+const RedeemForm: FC = () => {
   const account = useOwnAccount();
   const contract = useSelectedMassetContract();
   const setFormManifest = useSetFormManifest();
-  const { amountInMasset, valid, mode, bAssets } = useRedeemState();
+  const {
+    amountInMasset,
+    valid,
+    mode,
+    bAssets,
+    massetState,
+  } = useRedeemState();
   const enabled = Object.values(bAssets).filter(b => b.enabled);
+  const massetSymbol = massetState?.token.symbol;
 
   useEffect(() => {
     if (valid && account && contract && amountInMasset) {
+      const body = `${amountInMasset.format()} ${massetSymbol}`;
+      const purpose = {
+        present: `Redeeming ${body}`,
+        past: `Redeemed ${body}`,
+      };
+
       if (mode === Mode.RedeemMasset) {
         setFormManifest<Interfaces.Masset, 'redeemMasset'>({
           iface: contract,
           args: [amountInMasset.exact, account],
           fn: 'redeemMasset',
+          purpose,
         });
         return;
       }
@@ -40,6 +54,7 @@ const RedeemForm: FC<{}> = () => {
           iface: contract,
           args: [addresses, amounts, account],
           fn: 'redeemMulti',
+          purpose,
         });
         return;
       }
@@ -50,6 +65,7 @@ const RedeemForm: FC<{}> = () => {
           iface: contract,
           args: [address, amount.exact],
           fn: 'redeem',
+          purpose,
         });
         return;
       }
@@ -58,10 +74,11 @@ const RedeemForm: FC<{}> = () => {
     setFormManifest(null);
   }, [
     account,
-    enabled,
-    contract,
-    mode,
     amountInMasset,
+    contract,
+    enabled,
+    massetSymbol,
+    mode,
     setFormManifest,
     valid,
   ]);
@@ -77,7 +94,7 @@ const RedeemForm: FC<{}> = () => {
   );
 };
 
-export const Redeem: FC<{}> = () => (
+export const Redeem: FC = () => (
   <RedeemProvider>
     <FormProvider formId="redeem">
       <PageHeader
