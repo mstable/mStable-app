@@ -1028,6 +1028,8 @@ enum SavingsContract_orderBy {
   exchangeRates
   depositTransactions
   withdrawTransactions
+  version
+  token
 }
 input SavingsContract_filter {
   id: ID
@@ -1190,6 +1192,28 @@ input SavingsContract_filter {
   exchangeRate24hAgo_not_starts_with: String
   exchangeRate24hAgo_ends_with: String
   exchangeRate24hAgo_not_ends_with: String
+  version: Int
+  version_not: Int
+  version_gt: Int
+  version_lt: Int
+  version_gte: Int
+  version_lte: Int
+  version_in: [Int!]
+  version_not_in: [Int!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_not_contains: String
+  token_starts_with: String
+  token_not_starts_with: String
+  token_ends_with: String
+  token_not_ends_with: String
 }
 type SavingsContract {
   """Address of the SavingsContract"""
@@ -1198,8 +1222,11 @@ type SavingsContract {
   masset: Masset!
   """The amount of underlying savings in the contract"""
   totalSavings: Metric!
-  """Total number of savings credits issued"""
-  totalCredits: Metric!
+  """
+  Total number of savings credits issued (v1 only)
+  @deprecated
+  """
+  totalCredits: Metric
   """The total number of deposits made"""
   totalDeposits: Counter!
   """The total number of withdrawals made"""
@@ -1235,6 +1262,16 @@ type SavingsContract {
   depositTransactions(skip: Int = 0, first: Int = 100, orderBy: SavingsContractDepositTransaction_orderBy, orderDirection: OrderDirection, where: SavingsContractDepositTransaction_filter): [SavingsContractDepositTransaction!]!
   """All withdraw transactions sent with this Savings Contract."""
   withdrawTransactions(skip: Int = 0, first: Int = 100, orderBy: SavingsContractWithdrawTransaction_orderBy, orderDirection: OrderDirection, where: SavingsContractWithdrawTransaction_filter): [SavingsContractWithdrawTransaction!]!
+  """
+  Version of the savings contract (starting from 1). This value will never change for each entity,
+  and can be used to determine the features of the contract.
+  """
+  version: Int!
+  """
+  This field is not present in v1 savings contracts; starting from v2, savings contracts
+  are ERC20-compatible tokens.
+  """
+  token: Token
 }
 type ExchangeRate {
   id: ID!
@@ -1302,7 +1339,10 @@ input CreditBalance_filter {
   savingsContract_ends_with: String
   savingsContract_not_ends_with: String
 }
-"""A credit balance for a given savings contract"""
+"""
+A credit balance for a given savings contract (Save v1 only)
+@deprecated
+"""
 type CreditBalance {
   id: ID!
   """Account"""
@@ -1312,11 +1352,14 @@ type CreditBalance {
   """Savings contract"""
   savingsContract: SavingsContract!
 }
-"""An Ethereum account that has interacted with parts of mStable"""
+"""
+An Ethereum account that has interacted with Save v1
+@deprecated
+"""
 type Account {
   """Address of the account"""
   id: ID!
-  """CreditBalance of the account"""
+  """Credit balance of the account (Save v1 only)"""
   creditBalance: CreditBalance
 }
 enum ExchangeRate_orderBy {
