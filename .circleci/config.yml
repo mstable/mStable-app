@@ -97,10 +97,14 @@ workflows:
 
   Kovan:
     jobs:
+      - Approve build:
+          type: approval
       - Build:
           context:
             - mstable-shared
             - mstable-kovan
+          requires:
+            - Approve build
       - Approve deploy:
           type: approval
       - Deploy:
