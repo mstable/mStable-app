@@ -11,7 +11,7 @@ import { Button } from '../../core/Button';
 import { ExternalLink } from '../../core/ExternalLink';
 import { Color, FontSize, ViewportWidth } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
-import { centredLayout } from '../../layout/css';
+import { centredLayout, gradientBackground } from '../../layout/css';
 import { PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
@@ -307,11 +307,10 @@ const SliderContainer = styled.div`
   > * {
     flex: 1;
   }
+  margin-top: 20px;
 `;
 
 const PageHeaderContainer = styled.div`
-  margin-bottom: 16px;
-
   @media (min-width: ${ViewportWidth.m}) {
     display: flex;
     justify-content: space-between;
@@ -324,8 +323,8 @@ const PageHeaderContainer = styled.div`
 `;
 
 const Content = styled.div`
-  padding: 40px 20px;
   flex: 1;
+  padding: 20px;
 
   > * {
     flex: 1;
@@ -341,6 +340,10 @@ const Container = styled.div`
   flex: 1;
   width: 100%;
   height: 100%;
+`;
+
+const BackgroundContainer = styled.div`
+  ${gradientBackground}
 `;
 
 const EarnSlider: FC<{
@@ -376,7 +379,7 @@ export const Earn: FC<{}> = () => {
         </SwipeDisabledProvider>
       ) : (
         <Content>
-          <div>
+          <BackgroundContainer>
             <PageHeaderContainer>
               <PageHeader
                 title="Earn"
@@ -389,7 +392,7 @@ export const Earn: FC<{}> = () => {
               <MerkleDropClaims />
             </PageHeaderContainer>
             <PoolsOverview />
-          </div>
+          </BackgroundContainer>
         </Content>
       )}
     </Container>

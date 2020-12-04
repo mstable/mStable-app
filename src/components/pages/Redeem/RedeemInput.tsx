@@ -41,7 +41,7 @@ const CurveProtip = styled(Protip)`
   font-family: System, monospace;
   border: 6px double white;
   box-shadow: 0 0 0 3px #3465a4, 1em 1em 3px 0 rgba(0, 0, 0, 0.5);
-
+  margin-top: 1rem;
   margin-bottom: 32px;
 
   > :last-child {

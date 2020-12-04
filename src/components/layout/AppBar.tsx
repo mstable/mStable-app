@@ -12,7 +12,7 @@ import {
   useToggleWallet,
 } from '../../context/AppProvider';
 import { Color, ViewportWidth } from '../../theme';
-import { ReactComponent as LogoSvg } from '../icons/mstable.svg';
+import { ReactComponent as LogoSvg } from '../icons/mstable-icon.svg';
 import { UnstyledButton } from '../core/Button';
 import { centredLayout } from './css';
 import { TransactionStatus } from '../../types';
@@ -74,29 +74,18 @@ const CountBadge: FC<{ count: number; error: boolean }> = ({
   </CountBadgeIcon>
 );
 
-const Logo = styled.div<{ full: boolean; inverted?: boolean }>`
-  overflow: hidden;
-  flex-shrink: 0;
-  width: ${({ full }) => (full ? 100 : 25)}px; // 'mSTABLE' or 'm'
-  height: 100%;
-
+const Logo = styled.div<{ inverted?: boolean }>`
   a {
     border-bottom: 0;
   }
 
   svg {
-    // Gentle nudge to visual centre
-    top: 8px;
-    position: relative;
-    width: 100px;
+    width: 20px;
+    height: 24px;
 
     path,
     rect {
       fill: ${({ theme, inverted }) => (inverted ? theme.color.white : 'auto')};
-    }
-
-    #stable {
-      display: ${({ full }) => (full ? 'block' : 'none')};
     }
   }
 `;
@@ -160,11 +149,11 @@ const WalletButtonBtn = styled(AccountButton)`
 const Buttons = styled.div`
   display: flex;
   justify-content: space-evenly;
-  align-items: flex-end;
-  height: 100%;
   align-items: center;
+  height: 100%;
 
   > * {
+    font-size: 16px;
     margin-right: 6px;
     &:last-child {
       margin-right: 0;
@@ -186,7 +175,7 @@ const Top = styled.div`
 `;
 
 const Inner = styled.div`
-  padding: 0 16px;
+  padding: 0 20px;
   height: 100%;
 
   ${centredLayout}
@@ -374,7 +363,7 @@ export const AppBar: FC = () => {
     <Container inverted={accountOpen}>
       <Inner>
         <Top>
-          <Logo inverted={accountOpen} full={home}>
+          <Logo inverted={accountOpen}>
             <Link to="/" title="Home" onClick={closeAccount}>
               <LogoSvg />
             </Link>
