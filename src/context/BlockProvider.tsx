@@ -1,7 +1,7 @@
 import React, { createContext, FC, useContext, useRef, useEffect } from 'react';
 
-import { useIsIdle } from '../UserProvider';
-import { useProvider } from '../OnboardProvider';
+import { useIsIdle } from './UserProvider';
+import { useProvider } from './OnboardProvider';
 
 export type MaybeBlockNumber = number | undefined;
 

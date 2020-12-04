@@ -89,14 +89,13 @@ const getStakingRewardsContractsMap = (
 
         const stakingToken = {
           ...data.stakingToken,
-          totalSupply: BigDecimal.fromMetric(
-            data.stakingToken.totalSupply,
-          ),
+          totalSupply: BigDecimal.fromMetric(data.stakingToken.totalSupply),
           price: tokenPrices[data.stakingToken.address],
         };
 
         const rewardsToken = {
           ...data.rewardsToken,
+          totalSupply: BigDecimal.fromMetric(data.rewardsToken.totalSupply),
           price: tokenPrices[data.rewardsToken.address],
         };
 
@@ -217,6 +216,9 @@ const getStakingRewardsContractsMap = (
                 platformRewards: {
                   platformToken: {
                     ...platformToken,
+                    totalSupply: BigDecimal.maybeFromMetric(
+                      platformToken.totalSupply,
+                    ) as BigDecimal,
                     price: tokenPrices[platformToken.address],
                   },
                   platformRewardPerTokenStoredNow: new BigNumber(
