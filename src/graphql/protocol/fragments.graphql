@@ -8,33 +8,18 @@ fragment TokenDetails on Token {
   }
 }
 
-fragment MassetAll on Masset {
+fragment SavingsContractAll on SavingsContract {
   id
-  token {
-    ...TokenDetails
+  totalSavings {
+    ...MetricFields
   }
-  feeRate
-  redemptionFeeRate
-  basket {
-    failed
-    collateralisationRatio
-    undergoingRecol
-    bassets {
-      id
-      # TODO enable this field
-      # removed
-      vaultBalance {
-        ...MetricFields
-      }
-      isTransferFeeCharged
-      ratio
-      status
-      maxWeight
-      token {
-        ...TokenDetails
-      }
-    }
+  latestExchangeRate {
+    rate
+    timestamp
   }
+  dailyAPY
+  automationEnabled
+  version
 }
 
 fragment TransactionFields on Transaction {
