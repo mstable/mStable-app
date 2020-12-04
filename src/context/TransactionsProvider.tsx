@@ -15,7 +15,6 @@ import { BigNumber } from 'ethers/utils';
 
 import {
   HistoricTransaction,
-  Purpose,
   SendTxManifest,
   Transaction,
   TransactionStatus,
@@ -27,12 +26,7 @@ import {
 } from './NotificationsProvider';
 import { TransactionOverrides } from '../typechain/index.d';
 import { getTransactionStatus } from '../web3/transactions';
-import { DataState } from './DataProvider/types';
-import { useDataState } from './DataProvider/DataProvider';
 import { getEtherscanLink } from '../web3/strings';
-import { BigDecimal } from '../web3/BigDecimal';
-import { useStakingRewardsContracts } from './earn/EarnDataProvider';
-import { StakingRewardsContractsMap } from './earn/types';
 import { calculateGasMargin } from '../web3/hooks';
 
 enum Actions {
@@ -231,234 +225,6 @@ const initialState: State = {
   latestStatus: {},
 };
 
-const getTxPurpose = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  { args, fn, iface }: SendTxManifest<any, any>,
-  stakingRewardsContracts: StakingRewardsContractsMap,
-  dataState?: DataState,
-): Purpose => {
-  if (!dataState)
-    return {
-      present: null,
-      past: null,
-    };
-
-  const stakingRewardsContract = stakingRewardsContracts[iface.address];
-  if (stakingRewardsContract) {
-    const { title, rewardsToken, platformRewards } = stakingRewardsContract;
-    switch (fn) {
-      case 'exit': {
-        return {
-          past: `Exited ${title}`,
-          present: `Exiting ${title}`,
-        };
-      }
-      case 'withdraw': {
-        return {
-          past: `Withdrew stake from ${title}`,
-          present: `Withdrawing stake from ${title}`,
-        };
-      }
-      case 'claimReward': {
-        const rewardsTokens = `${rewardsToken.symbol}
-            ${
-              platformRewards
-                ? ` and ${platformRewards.platformToken.symbol}`
-                : ''
-            }`;
-        return {
-          past: `Claimed ${rewardsTokens} from ${title}`,
-          present: `Claiming ${rewardsTokens} from ${title}`,
-        };
-      }
-      case 'stake(uint256)': {
-        return {
-          past: `Staked in ${title}`,
-          present: `Staking in ${title}`,
-        };
-      }
-      case 'approve': {
-        return {
-          present: `Approving ${title}`,
-          past: `Approved ${title}`,
-        };
-      }
-      default:
-        return {
-          present: null,
-          past: null,
-        };
-    }
-  }
-
-  const { bAssets, mAsset } = dataState;
-
-  switch (fn) {
-    case 'claimWeeks': {
-      const [, tranches] = args as [string, string[], string[], string[][]];
-      const body = `rewards for week${
-        tranches.length > 1 ? 's' : ''
-      } ${tranches.join(', ')}`;
-
-      return {
-        present: `Claiming ${body}`,
-        past: `Claimed ${body}`,
-      };
-    }
-    case 'claimWeek': {
-      const [, tranche] = args as [string, string, string, string[]];
-      const body = `rewards for week ${tranche}`;
-
-      return {
-        present: `Claiming ${body}`,
-        past: `Claimed ${body}`,
-      };
-    }
-    case 'mint': {
-      const [bAssetAddress, bAssetQ] = args as [string, BigNumber];
-
-      const bAsset = bAssets[bAssetAddress];
-      if (!bAsset)
-        return {
-          present: null,
-          past: null,
-        };
-
-      const amount = new BigDecimal(bAssetQ, bAsset.decimals);
-
-      const body = `${amount.format()} ${mAsset.symbol} with ${bAsset.symbol}`;
-      return {
-        present: `Minting ${body}`,
-        past: `Minted ${body}`,
-      };
-    }
-    case 'mintMulti': {
-      return {
-        present: `Minting mUSD`,
-        past: `Minted mUSD`,
-      };
-    }
-    case 'swap': {
-      const [input, output, inputQuantity] = args as [
-        string,
-        string,
-        BigNumber,
-      ];
-
-      const inputBasset = bAssets[input];
-      const outputBasset = bAssets[output];
-
-      if (!inputBasset || !outputBasset)
-        return {
-          present: null,
-          past: null,
-        };
-
-      const amount = new BigDecimal(inputQuantity, inputBasset.decimals);
-
-      const body = `${amount.format()} ${inputBasset.symbol} for ${
-        outputBasset.symbol
-      }`;
-      return {
-        present: `Swapping ${body}`,
-        past: `Swapped ${body}`,
-      };
-    }
-    case 'redeem': {
-      if (iface.address === dataState.savingsContract.address) {
-        const body = `${mAsset.symbol} savings`;
-        return {
-          present: `Withdrawing ${body}`,
-          past: `Withdrew ${body}`,
-        };
-      }
-      const [bAssetAddress, bAssetQ] = args as [string, BigNumber];
-
-      const bAsset = bAssets[bAssetAddress];
-      if (!bAsset)
-        return {
-          present: null,
-          past: null,
-        };
-
-      const amount = new BigDecimal(bAssetQ, bAsset.decimals);
-
-      const body = `${amount.format()} ${mAsset.symbol} into ${bAsset.symbol}`;
-      return {
-        present: `Redeeming ${body}`,
-        past: `Redeemed ${body}`,
-      };
-    }
-    case 'redeemMasset': {
-      const [mAssetQ] = args as [BigNumber, string];
-
-      const amount = new BigDecimal(mAssetQ, mAsset.decimals);
-      const body = `${amount.format()} ${mAsset.symbol}`;
-      return {
-        present: `Redeeming ${body}`,
-        past: `Redeemed ${body}`,
-      };
-    }
-    case 'redeemMulti': {
-      const [addresses, amounts] = args as [string[], BigNumber[]];
-
-      // Scale the amounts to mAsset units and add them up
-      const totalMassetAmount = addresses.reduce((prev, current, index) => {
-        const { decimals, ratio } = bAssets[current];
-
-        const mAssetAmount = new BigDecimal(
-          amounts[index],
-          decimals,
-        ).mulRatioTruncate(ratio);
-
-        return prev.add(mAssetAmount);
-      }, new BigDecimal(0, mAsset.decimals));
-
-      const body = `${totalMassetAmount.format()} ${mAsset.symbol}`;
-      return {
-        present: `Redeeming ${body}`,
-        past: `Redeemed ${body}`,
-      };
-    }
-    case 'approve': {
-      if (args[0] === dataState.savingsContract.address) {
-        const body = `the mUSD SAVE Contract to transfer ${mAsset.symbol}`;
-        return {
-          present: `Approving ${body}`,
-          past: `Approved ${body}`,
-        };
-      }
-
-      const bAsset = bAssets[iface.address];
-      if (!bAsset)
-        return {
-          past: null,
-          present: null,
-        };
-
-      const body = `${mAsset.symbol} to transfer ${bAsset.symbol}`;
-      return {
-        present: `Approving ${body}`,
-        past: `Approved ${body}`,
-      };
-    }
-    case 'depositSavings': {
-      const [quantity] = args as [BigNumber];
-      const amount = new BigDecimal(quantity, mAsset.decimals);
-      const body = `${amount.format()} ${mAsset.symbol}`;
-      return {
-        present: `Depositing ${body}`,
-        past: `Deposited ${body}`,
-      };
-    }
-    default:
-      return {
-        past: null,
-        present: null,
-      };
-  }
-};
-
 const getEtherscanLinkForHash = (
   hash: string,
 ): { href: string; title: string } => ({
@@ -469,13 +235,11 @@ const getEtherscanLinkForHash = (
 /**
  * Provider for sending transactions and tracking their progress.
  */
-export const TransactionsProvider: FC<{}> = ({ children }) => {
+export const TransactionsProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(transactionsCtxReducer, initialState);
   const addSuccessNotification = useAddSuccessNotification();
   const addInfoNotification = useAddInfoNotification();
   const addErrorNotification = useAddErrorNotification();
-  const dataState = useDataState();
-  const stakingRewardsContracts = useStakingRewardsContracts();
 
   const fetchGasPrices = useCallback<Dispatch['fetchGasPrices']>(async () => {
     try {
@@ -521,23 +285,18 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
   }, 5 * 60 * 1000);
 
   const addPending = useCallback<Dispatch['addPending']>(
-    (manifest, pendingTx) => {
-      const purpose = getTxPurpose(
-        manifest,
-        stakingRewardsContracts,
-        dataState,
-      );
+    ({ formId, fn, args, purpose, onFinalize }, pendingTx) => {
       dispatch({
         type: Actions.AddPending,
         payload: {
           ...pendingTx,
-          ...(manifest.formId ? { formId: manifest.formId } : null),
-          fn: manifest.fn,
-          args: manifest.args,
+          formId,
+          fn,
+          args,
           timestamp: Date.now(),
           purpose,
           status: null,
-          onFinalize: manifest.onFinalized,
+          onFinalize,
         },
       });
 
@@ -547,7 +306,7 @@ export const TransactionsProvider: FC<{}> = ({ children }) => {
         getEtherscanLinkForHash(pendingTx.hash),
       );
     },
-    [dispatch, dataState, stakingRewardsContracts, addInfoNotification],
+    [dispatch, addInfoNotification],
   );
 
   const check = useCallback<Dispatch['check']>(
@@ -643,14 +402,6 @@ export const useOrderedCurrentTransactions = (
       ? transactions.filter(t => t.formId === formId)
       : transactions;
   }, [current, formId]);
-};
-
-export const useOrderedHistoricTransactions = (): HistoricTransaction[] => {
-  const { historic } = useTransactionsState();
-  return useMemo(
-    () => Object.values(historic).sort((a, b) => b.blockNumber - a.blockNumber),
-    [historic],
-  );
 };
 
 export const usePendingTxState = (): {

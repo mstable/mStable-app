@@ -9,6 +9,7 @@ import {
 import { MerkleDrop, MerkleDropsMap } from './types';
 import { MerkleTree } from '../../web3/MerkleTree';
 import { BigDecimal } from '../../web3/BigDecimal';
+import { SubscribedToken } from '../../types';
 
 interface JsonReport {
   [account: string]: string;
@@ -148,7 +149,7 @@ export const useMerkleDrops = (
 
                 const merkleDrop: MerkleDrop = {
                   address,
-                  token,
+                  token: (token as unknown) as SubscribedToken,
                   unclaimedTranches,
                   totalUnclaimed,
                 };

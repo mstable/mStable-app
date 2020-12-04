@@ -3,6 +3,14 @@ import { useMemo } from 'react';
 import { BigNumber } from 'ethers/utils';
 import { useQuery, gql, DocumentNode } from '@apollo/client';
 
+import { useSigner } from '../context/OnboardProvider';
+import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
+import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
+import { MassetFactory } from '../typechain/MassetFactory';
+import { SavingsContractFactory } from '../typechain/SavingsContractFactory';
+import { SavingsContract } from '../typechain/SavingsContract.d';
+import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
+import { Masset } from '../typechain/Masset.d';
 import { truncateAddress } from './strings';
 
 interface BlockTime {
@@ -58,12 +66,11 @@ const nowUnix = getUnixTime(Date.now());
 
 export const useDailyApysDocument = (blockTimes: BlockTime[]): DocumentNode =>
   useMemo(() => {
-    const id = process.env.REACT_APP_MUSD_SAVINGS_ADDRESS;
-    const currentApy = `t${nowUnix}: savingsContract(id: "${id}") { ...F }`;
+    const currentApy = `t${nowUnix}: savingsContracts(where: { version: 1 }) { ...F }`;
     const blockApys = blockTimes
       .map(
         ({ timestamp, number }) => `
-              t${timestamp}: savingsContract(id: "${id}", block: { number: ${number} }) {
+              t${timestamp}: savingsContracts(where: { version: 1 }, block: { number: ${number} }) {
                 ...F
               }`,
       )
@@ -90,14 +97,18 @@ export const useDailyApysForBlockTimes = (
 
   const apysQuery = useQuery<{
     [timestamp: string]: {
-      dailyAPY: string;
-      utilisationRate: { simple: string };
+      savingsContracts: [
+        {
+          dailyAPY: string;
+          utilisationRate: { simple: string };
+        },
+      ];
     };
   }>(apysDoc, { fetchPolicy: 'cache-first', nextFetchPolicy: 'cache-only' });
 
   return Object.entries(apysQuery.data || {})
-    .filter(([, value]) => !!value?.dailyAPY)
-    .map(([key, { dailyAPY, utilisationRate }]) => ({
+    .filter(([, value]) => !!value?.savingsContracts?.[0]?.dailyAPY)
+    .map(([key, { savingsContracts: [{ dailyAPY, utilisationRate }] }]) => ({
       timestamp: getKeyTimestamp(key),
       dailyAPY: parseFloat(parseFloat(dailyAPY).toFixed(2)),
       utilisationRate: parseFloat(
@@ -135,4 +146,43 @@ export const calculateGasMargin = (value: BigNumber): BigNumber => {
   const GAS_MARGIN = new BigNumber(1000);
   const offset = value.mul(GAS_MARGIN).div(new BigNumber(10000));
   return value.add(offset);
+};
+
+export const useErc20Contract = (
+  address?: string | null,
+): Erc20Detailed | undefined => {
+  const signer = useSigner();
+  return useMemo(
+    () =>
+      signer && address
+        ? Erc20DetailedFactory.connect(address, signer)
+        : undefined,
+    [address, signer],
+  );
+};
+
+export const useSelectedMassetContract = (): Masset | undefined => {
+  const massetState = useSelectedMassetState();
+  const signer = useSigner();
+  return useMemo(
+    () =>
+      signer && massetState?.address
+        ? MassetFactory.connect(massetState.address, signer)
+        : undefined,
+    [massetState, signer],
+  );
+};
+export const useSelectedSaveV1Contract = (): SavingsContract | undefined => {
+  const massetState = useSelectedMassetState();
+  const signer = useSigner();
+  return useMemo(
+    () =>
+      signer && massetState?.savingsContracts.v1?.address
+        ? SavingsContractFactory.connect(
+            massetState.savingsContracts.v1.address,
+            signer,
+          )
+        : undefined,
+    [massetState, signer],
+  );
 };

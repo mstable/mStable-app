@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { QueryHookOptions } from '@apollo/client';
 import { useAllTokensQuery as useAllTokensProtocolQuery } from '../graphql/protocol';
 import { useAllErc20TokensQuery as useAllTokensEcosystemQuery } from '../graphql/ecosystem';
-import { useTokensDispatch } from '../context/DataProvider/TokensProvider';
+import { useTokensDispatch } from '../context/TokensProvider';
 
 const options = {
   fetchPolicy: 'network-only',
