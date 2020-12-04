@@ -1,7 +1,7 @@
 import React, { FC, createContext, useContext, useMemo } from 'react';
 
 import { SubscribedToken } from '../../types';
-import { useToken } from '../DataProvider/TokensProvider';
+import { useTokenSubscription } from '../TokensProvider';
 import { useRawEarnData } from './useRawEarnData';
 import { useSyncedEarnData } from './useSyncedEarnData';
 import { transformEarnData } from './transformEarnData';
@@ -52,7 +52,7 @@ export const useTokenWithPrice = (
   address?: string,
 ): SubscribedToken | undefined => {
   const tokenPricesMap = useTokenPrices();
-  const token = useToken(address);
+  const token = useTokenSubscription(address);
   let price = address ? tokenPricesMap[address] : undefined;
 
   // Map mock tokens to real tokens

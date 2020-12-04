@@ -10,10 +10,10 @@ import React, {
   useRef,
 } from 'react';
 
-import { Erc20TokensQueryResult } from '../../graphql/protocol';
-import { Allowances, SubscribedToken } from '../../types';
-import { BigDecimal } from '../../web3/BigDecimal';
-import { CURVE_ADDRESSES } from '../earn/CurveProvider';
+import { AllTokensQueryResult } from '../graphql/protocol';
+import { Allowances, SubscribedToken } from '../types';
+import { BigDecimal } from '../web3/BigDecimal';
+import { CURVE_ADDRESSES } from './earn/CurveProvider';
 
 interface State {
   tokens: {
@@ -31,7 +31,7 @@ interface State {
 
 export type Tokens = State['tokens'];
 
-type Fetched = NonNullable<Erc20TokensQueryResult['data']>['tokens'];
+type Fetched = NonNullable<AllTokensQueryResult['data']>['tokens'];
 
 interface Dispatch {
   setFetched(fetched: Fetched): void;
@@ -95,6 +95,7 @@ const initialState: State = {
       decimals: 18,
       balance: new BigDecimal(0, 18),
       allowances: {},
+      totalSupply: new BigDecimal(0, 18),
     },
   },
   subscriptions: {},
@@ -110,7 +111,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return {
         ...state,
         tokens: fetched.reduce(
-          (_tokens, { address, decimals, symbol }) => ({
+          (_tokens, { address, decimals, symbol, totalSupply }) => ({
             ..._tokens,
             [address]: {
               address,
@@ -118,6 +119,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
               symbol,
               balance: new BigDecimal(0, decimals),
               allowances: {},
+              totalSupply: BigDecimal.fromMetric(totalSupply),
               ..._tokens[address],
             },
           }),
@@ -396,9 +398,18 @@ export const TokensProvider: FC<{}> = ({ children }) => {
 
 export const useTokensState = (): State => useContext(stateCtx);
 
-export const useTokens = (): Tokens => useTokensState().tokens;
-
 export const useTokensDispatch = (): Dispatch => useContext(dispatchCtx);
+
+export const useTokens = (tokenAddresses: string[]): SubscribedToken[] => {
+  const state = useTokensState();
+  return useMemo(
+    () =>
+      tokenAddresses
+        .map(address => state.tokens[address])
+        .filter(Boolean) as SubscribedToken[],
+    [state.tokens, tokenAddresses],
+  );
+};
 
 export const useTokenSubscriptionsSerialized = (): string => {
   const { subscriptions } = useTokensState();
@@ -470,10 +481,11 @@ export const useAllowanceSubscriptionsSerialized = (): string => {
   );
 };
 
-export const useToken = (
+export const useTokenSubscription = (
   address: string | null | undefined,
 ): SubscribedToken | undefined => {
-  const id = useMemo(() => Math.random().toString(), []);
+  const idRef = useRef(Math.random().toString());
+  const id = idRef.current;
 
   const state = useTokensState();
   const { subscribeBalance, unsubscribeBalance } = useTokensDispatch();
@@ -490,7 +502,9 @@ export const useToken = (
 };
 
 export const useMetaToken = (): SubscribedToken | undefined =>
-  useToken((process.env.REACT_APP_MTA_ADDRESS as string).toLowerCase());
+  useTokenSubscription(
+    (process.env.REACT_APP_MTA_ADDRESS as string).toLowerCase(),
+  );
 
 export const useTokenAllowance = (
   address: string | undefined | null,

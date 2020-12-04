@@ -188,15 +188,19 @@ const useTokenPrices = (
 };
 
 const normalizeUniswapToken = (
-  { address, symbol, decimals }: RawPairData['token0'],
+  { address, symbol, decimals: _decimals }: RawPairData['token0'],
   reserve: RawPairData['reserve0'],
-): NormalizedPool['tokens'][number] => ({
-  address,
-  decimals: parseInt(decimals, 10),
-  symbol,
-  liquidity: BigDecimal.parse(reserve, parseInt(decimals, 10)),
-  ratio: 50, // All Uniswap pairs are 50/50
-});
+): NormalizedPool['tokens'][number] => {
+  const decimals = parseInt(_decimals, 10);
+  return {
+    address,
+    decimals,
+    symbol,
+    liquidity: BigDecimal.parse(reserve, decimals),
+    ratio: 50, // All Uniswap pairs are 50/50
+    totalSupply: new BigDecimal(0, decimals),
+  };
+};
 
 const normalizeUniswapPool = ({
   address,
@@ -237,13 +241,14 @@ const normalizeCurvePools = (
       totalSupply: supply?.value ? new BigDecimal(supply.value, 18) : undefined,
       tokens: [
         {
-          address: process.env.REACT_APP_MUSD_ADDRESS as string,
+          address: CURVE_ADDRESSES.MUSD_TOKEN,
           symbol: 'mUSD',
           decimals: 18,
           liquidity: balances?.[0]?.value
             ? new BigDecimal(balances[0].value, 18)
             : undefined,
           price: BigDecimal.maybeParse(prices?.['0-2']?.[0]?.value, 18),
+          totalSupply: new BigDecimal(0, 18),
         },
         {
           address: CURVE_ADDRESSES['3POOL_TOKEN'],
@@ -253,6 +258,7 @@ const normalizeCurvePools = (
             ? new BigDecimal(balances[1].value, 18)
             : undefined,
           price: BigDecimal.maybeParse(prices?.['0-2']?.[1]?.value, 18),
+          totalSupply: new BigDecimal(0, 18),
         },
       ],
       onlyStablecoins: true,
@@ -278,6 +284,7 @@ const normalizeBalancerPool = ({
         ratio: Math.floor(
           (parseFloat(denormWeight) / parseFloat(totalWeight)) * 100,
         ),
+        totalSupply: new BigDecimal(0, decimals),
       }),
     ) ?? [];
   return {

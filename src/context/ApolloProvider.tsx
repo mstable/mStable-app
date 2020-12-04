@@ -16,7 +16,7 @@ import { persistCache } from 'apollo-cache-persist';
 import Skeleton from 'react-loading-skeleton';
 import useThrottleFn from 'react-use/lib/useThrottleFn';
 
-import { useAddErrorNotification } from '../NotificationsProvider';
+import { useAddErrorNotification } from './NotificationsProvider';
 
 const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
 
