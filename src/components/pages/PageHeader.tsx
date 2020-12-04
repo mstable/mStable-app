@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { H2, P } from '../core/Typography';
 import { FontSize } from '../../theme';
-import { ReactComponent as MUSDBadge } from '../icons/badges/musd.svg';
+import { ReactComponent as MUSDBadge } from '../icons/tokens/mUSD.svg';
 
 enum Masset {
   MUSD = 'MUSD',
