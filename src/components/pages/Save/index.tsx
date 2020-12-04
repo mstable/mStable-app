@@ -80,7 +80,7 @@ const APYStats = styled.div`
   margin-top: 2rem;
   text-align: center;
 
-  @media (min-width: ${({ theme }) => theme.viewportWidth.xs}) {
+  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
     margin: 0;
     text-align: right;
     justify-content: flex-end;
@@ -100,6 +100,15 @@ const InfoCountUp = styled(CountUp)`
 const InfoMsg = styled.div`
   padding-top: 4px;
   font-size: 12px;
+  max-width: 25ch;
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
+    max-width: 20ch;
+  }
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+    max-width: inherit;
+  }
 
   a {
     color: ${({ theme }) => theme.color.greyTransparent};
@@ -113,22 +122,17 @@ export const Save: FC<{}> = () => {
   const apyForPastWeek = useAverageApyForPastWeek();
   const versionNumber = activeVersion === CURRENT ? 2 : 1;
 
-  const getVersion = (selection: ToggleSaveSelection): SaveVersion =>
-    selection === 'primary' ? CURRENT : DEPRECATED;
-
-  const getSelection = (version: SaveVersion): ToggleSaveSelection =>
-    version === CURRENT ? 'primary' : 'secondary';
-
   const handleVersionToggle = useCallback(
-    (selection: ToggleSaveSelection) => setActiveVersion(getVersion(selection)),
+    (selection: ToggleSaveSelection) =>
+      setActiveVersion(selection === 'primary' ? CURRENT : DEPRECATED),
     [],
   );
 
-  const handleMigrateClick = async (): Promise<void> => {
+  const handleMigrateClick = useCallback(async () => {
     // await transaction trigger for withdraw.
     // switch state and allow user to select deposit w/ new balance
     setActiveVersion(CURRENT);
-  };
+  }, []);
 
   const isCurrent = activeVersion === CURRENT;
 
@@ -142,7 +146,7 @@ export const Save: FC<{}> = () => {
           <ToggleContainer>
             <ToggleSave
               onClick={handleVersionToggle}
-              selection={getSelection(activeVersion)}
+              selection={activeVersion === CURRENT ? 'primary' : 'secondary'}
             />
           </ToggleContainer>
           <APYStats>
@@ -156,7 +160,7 @@ export const Save: FC<{}> = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Average daily APY
+                    Average daily APY over the last 7 days
                   </a>
                 </InfoMsg>
               </>
