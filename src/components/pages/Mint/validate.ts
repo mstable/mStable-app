@@ -11,9 +11,9 @@ import { getReasonMessage } from './getReasonMessage';
 
 const amountValidator = (
   bAsset: BassetInput,
-  dataState: NonNullable<State['dataState']>,
+  massetState: NonNullable<State['massetState']>,
 ): ValidationResult => {
-  const bAssetData = dataState.bAssets[bAsset.address];
+  const bAssetData = massetState.bAssets[bAsset.address];
 
   if (
     [
@@ -33,16 +33,16 @@ const amountValidator = (
     return [false, Reasons.AmountMustBeGreaterThanZero];
   }
 
-  if (bAsset.amount.exact.gt(bAssetData.balance.exact)) {
+  if (bAsset.amount.exact.gt(bAssetData.token.balance.exact)) {
     return [false, Reasons.AmountExceedsBalance];
   }
 
-  if (!bAssetData.allowances[dataState.mAsset.address]?.exact) {
+  if (!bAssetData.token.allowances[massetState.address]?.exact) {
     return [false, Reasons.FetchingData];
   }
 
   if (
-    bAssetData.allowances[dataState.mAsset.address].exact.lt(
+    bAssetData.token.allowances[massetState.address].exact.lt(
       bAsset.amount.exact,
     )
   ) {
@@ -53,15 +53,15 @@ const amountValidator = (
 };
 
 const mintSingleValidator: StateValidator = state => {
-  const { bAssets, simulation, dataState } = state;
+  const { bAssets, simulation, massetState } = state;
 
-  if (!dataState || !simulation) return [false, Reasons.FetchingData];
+  if (!massetState || !simulation) return [false, Reasons.FetchingData];
 
   const [enabled] = Object.values(bAssets).filter(b => b.enabled);
 
   if (!enabled) return [false, Reasons.NoAssetSelected];
 
-  const [amountValid, amountReason] = amountValidator(enabled, dataState);
+  const [amountValid, amountReason] = amountValidator(enabled, massetState);
   if (!amountValid) {
     return [
       amountValid,
@@ -86,9 +86,9 @@ const mintSingleValidator: StateValidator = state => {
 };
 
 const mintMultiValidator: StateValidator = state => {
-  const { bAssets, simulation, dataState } = state;
+  const { bAssets, simulation, massetState } = state;
 
-  if (!simulation || !dataState) return [false, Reasons.FetchingData];
+  if (!simulation || !massetState) return [false, Reasons.FetchingData];
 
   const enabled = Object.values(bAssets).filter(b => b.enabled);
 
@@ -101,7 +101,7 @@ const mintMultiValidator: StateValidator = state => {
     .map<ValidationResult>(bAsset => {
       if (!bAsset.enabled) return [true];
 
-      const amountValidation = amountValidator(bAsset, dataState);
+      const amountValidation = amountValidator(bAsset, massetState);
       if (!amountValidation[0]) return amountValidation;
 
       const { totalVaultInMasset, maxWeightInMasset } = simulation.bAssets[
@@ -151,11 +151,11 @@ const basketValidator: StateValidator = state => {
     return [false, Reasons.FetchingData];
   }
 
-  if (simulation.mAsset.failed) {
+  if (simulation.failed) {
     return [false, Reasons.BasketFailed];
   }
 
-  if (simulation.mAsset.undergoingRecol) {
+  if (simulation.undergoingRecol) {
     return [false, Reasons.BasketUndergoingRecollateralisation];
   }
 
@@ -174,12 +174,12 @@ const getValidationResult = (state: State): ValidationResult => {
 };
 
 export const validate = (state: State): State => {
-  const { bAssets, dataState } = state;
+  const { bAssets, massetState } = state;
 
   const [valid, reason, affectedBassets = {}] = getValidationResult(state);
 
-  const affectedBassetsData = dataState
-    ? Object.keys(affectedBassets).map(b => dataState.bAssets[b])
+  const affectedBassetsData = massetState
+    ? Object.keys(affectedBassets).map(b => massetState.bAssets[b])
     : undefined;
 
   const error = valid

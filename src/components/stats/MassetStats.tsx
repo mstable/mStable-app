@@ -1,9 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 
-import { useMassetTotalSupply } from '../../context/DataProvider/DataProvider';
-import { useSelectedMasset } from '../../context/MassetsProvider';
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 import { H3, H2 } from '../core/Typography';
 import { CountUp } from '../core/CountUp';
 import { BasketStats } from './BasketStats';
@@ -32,28 +30,23 @@ const StatsRow = styled.div`
   }
 `;
 
-export const MassetStats: FC<{}> = () => {
-  const { name } = useSelectedMasset();
-  const totalSupply = useMassetTotalSupply();
-  return (
+export const MassetStats: FC = () => {
+  const masset = useSelectedMassetState();
+  return masset ? (
     <StatsContainer>
       <H2>Basket Stats</H2>
       <StatsRow>
         <StatsGraphic>
-          <H3 borderTop>{name} basket share</H3>
+          <H3 borderTop>{masset.token.symbol} basket share</H3>
           <BasketStats />
         </StatsGraphic>
         <StatsGraphicNull />
         <StatsGraphic>
-          <H3 borderTop>Total {name} supply</H3>
-          {totalSupply ? (
-            <CountUp end={totalSupply.simple} decimals={2} />
-          ) : (
-            <Skeleton />
-          )}
+          <H3 borderTop>Total {masset.token.symbol} supply</H3>
+          <CountUp end={masset.token.totalSupply.simple} />
         </StatsGraphic>
       </StatsRow>
       <AnalyticsLink />
     </StatsContainer>
-  );
+  ) : null;
 };

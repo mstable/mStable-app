@@ -10,7 +10,7 @@ import { Fields } from './types';
 import { useSwapDispatch, useSwapState } from './SwapProvider';
 import { BigDecimal } from '../../../web3/BigDecimal';
 
-export const SwapInput: FC<{}> = () => {
+export const SwapInput: FC = () => {
   const {
     values: {
       input,
@@ -23,22 +23,20 @@ export const SwapInput: FC<{}> = () => {
     outputError,
     needsUnlock,
     touched,
-    dataState,
+    massetState,
   } = useSwapState();
   const { setToken, setInputQuantity, setOutputQuantity } = useSwapDispatch();
 
-  const { mAsset, bAssets = {} } = dataState || {};
-  const mAssetAddress = mAsset?.address;
-  const feeRate = mAsset?.feeRate;
+  const { address: massetAddress, feeRate, bAssets = {} } = massetState || {};
 
   const [inputAddresses, outputAddresses] = useMemo<
     [string[], string[]]
   >(() => {
-    if (!(bAssets && mAssetAddress)) return [[], []];
+    if (!(bAssets && massetAddress)) return [[], []];
 
-    const bAssetAddresses = Object.keys(bAssets).sort();
-    return [bAssetAddresses, [mAssetAddress, ...bAssetAddresses]];
-  }, [bAssets, mAssetAddress]);
+    const bassetAddresses = Object.keys(bAssets).sort();
+    return [bassetAddresses, [massetAddress, ...bassetAddresses]];
+  }, [bAssets, massetAddress]);
 
   const outputItems = useMemo(
     () =>
@@ -69,17 +67,17 @@ export const SwapInput: FC<{}> = () => {
 
     const inputBasset = bAssets[inputAddress];
     const outputBasset = bAssets[outputAddress];
-    const isMint = outputAddress === mAssetAddress;
+    const isMint = outputAddress === massetAddress;
 
     if (isMint) {
-      if (inputBasset?.balance && mAsset) {
-        const ratioedInputBalance = inputBasset.balance.exact
+      if (inputBasset?.token.balance && massetState) {
+        const ratioedInputBalance = inputBasset.token.balance.exact
           .mul(inputBasset.ratio)
           .div(RATIO_SCALE);
         // Determining max possible mint without pushing bAsset over max weight uses below formula
         // M = ((t * maxW) - c)/(1-maxW)
         // num = ((t * maxW) - c)
-        const num1 = mAsset.totalSupply.exact
+        const num1 = massetState.token.totalSupply.exact
           .mul(inputBasset.maxWeight)
           .div(SCALE);
         const num2 = inputBasset.totalVault.exact
@@ -98,11 +96,11 @@ export const SwapInput: FC<{}> = () => {
       return;
     }
 
-    if (mAsset?.totalSupply && outputBasset) {
-      const ratioedInputBalance = inputBasset.balance.exact
+    if (massetState?.token.totalSupply && outputBasset && inputBasset) {
+      const ratioedInputBalance = inputBasset?.token.balance.exact
         .mul(inputBasset.ratio)
         .div(RATIO_SCALE);
-      const inputVaultBalance = inputBasset.totalVault.exact
+      const inputVaultBalance = inputBasset?.totalVault.exact
         .mul(inputBasset.ratio)
         .div(RATIO_SCALE);
 
@@ -110,7 +108,7 @@ export const SwapInput: FC<{}> = () => {
         .mul(outputBasset.ratio)
         .div(RATIO_SCALE);
 
-      const inputMaxWeight = mAsset.totalSupply.exact
+      const inputMaxWeight = massetState.token.totalSupply.exact
         .mul(inputBasset.maxWeight)
         .div(SCALE);
 
@@ -133,8 +131,8 @@ export const SwapInput: FC<{}> = () => {
     inputAddress,
     outputAddress,
     bAssets,
-    mAssetAddress,
-    mAsset,
+    massetAddress,
+    massetState,
     setInputQuantity,
   ]);
 
@@ -144,8 +142,8 @@ export const SwapInput: FC<{}> = () => {
       if (first) {
         setToken(Fields.Input, {
           address: first.address,
-          decimals: first.decimals,
-          symbol: first.symbol,
+          decimals: first.token.decimals,
+          symbol: first.token.symbol,
         });
       }
     }
@@ -178,7 +176,7 @@ export const SwapInput: FC<{}> = () => {
           }
           needsUnlock={needsUnlock}
           error={inputError}
-          spender={mAssetAddress}
+          spender={massetAddress}
         />
       </FormRow>
       <FormRow>

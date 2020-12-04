@@ -52,10 +52,17 @@ const ClaimMTA: FC = () => {
 
   useEffect(() => {
     if (valid && musdGauge) {
-      const manifest: SendTxManifest<Interfaces.CurveGauge, 'claim_rewards()'> = {
+      const manifest: SendTxManifest<
+        Interfaces.CurveGauge,
+        'claim_rewards()'
+      > = {
         args: [],
         iface: musdGauge,
         fn: 'claim_rewards()',
+        purpose: {
+          present: 'Claiming MTA rewards',
+          past: 'Claimed MTA rewards',
+        },
       };
       setFormManifest(manifest);
     } else {
@@ -86,6 +93,10 @@ const ClaimCRV: FC = () => {
         args: [CURVE_ADDRESSES.MUSD_GAUGE],
         iface: tokenMinter,
         fn: 'mint',
+        purpose: {
+          present: 'Claiming CRV rewards',
+          past: 'Claimed CRV rewards',
+        },
       };
       setFormManifest(manifest);
     } else {

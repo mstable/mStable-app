@@ -5,21 +5,20 @@ import { P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { formatExactAmount } from '../../../web3/amounts';
 
-export const RedeemConfirm: FC<{}> = () => {
+export const RedeemConfirm: FC = () => {
   const {
     valid,
     amountInMasset,
     feeAmount,
-    dataState,
+    massetState,
     mode,
   } = useRedeemState();
-  const mAsset = dataState?.mAsset;
 
-  return valid && amountInMasset && mAsset ? (
+  return valid && amountInMasset && massetState ? (
     <>
       <P size={1}>
         You are redeeming <CountUp end={amountInMasset.simple} />{' '}
-        {mAsset.symbol}.
+        {massetState.token.symbol}.
       </P>
       <P size={1}>
         {feeAmount?.exact.gt(0) ? (
@@ -27,13 +26,20 @@ export const RedeemConfirm: FC<{}> = () => {
             <>
               There is a redemption fee of{' '}
               <CountUp end={feeAmount.simple} decimals={6} /> mUSD (
-              {formatExactAmount(mAsset.redemptionFeeRate, 16, '%', true, 3)})
+              {formatExactAmount(
+                massetState.redemptionFeeRate,
+                16,
+                '%',
+                true,
+                3,
+              )}
+              )
             </>
           ) : (
             <>
               There is a swap fee of{' '}
               <CountUp end={feeAmount.simple} decimals={6} /> mUSD (
-              {formatExactAmount(mAsset.feeRate, 16, '%', true, 3)})
+              {formatExactAmount(massetState.feeRate, 16, '%', true, 3)})
             </>
           )
         ) : (

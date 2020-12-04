@@ -4,14 +4,14 @@ import { CountUp } from '../../core/CountUp';
 import { useSwapState } from './SwapProvider';
 import { formatExactAmount } from '../../../web3/amounts';
 
-export const SwapConfirm: FC<{}> = () => {
+export const SwapConfirm: FC = () => {
   const {
     values: { input, output, feeAmountSimple },
     valid,
-    dataState,
+    massetState,
   } = useSwapState();
 
-  const { feeRate } = dataState?.mAsset || {};
+  const { feeRate } = massetState || {};
 
   return valid && input.amount.simple && output.amount.simple ? (
     <>

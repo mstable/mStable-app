@@ -7,18 +7,19 @@ import React, {
   useContext,
   useEffect,
 } from 'react';
-import { useDataState } from '../../../context/DataProvider/DataProvider';
+
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { Actions, Dispatch, Fields, State } from './types';
 import { reducer, initialState } from './reducer';
 
 const stateCtx = createContext<State>(initialState);
 const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
-export const SwapProvider: FC<{}> = ({ children }) => {
+export const SwapProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const setInputQuantity = useCallback<Dispatch['setInputQuantity']>(
-    (formValue) => {
+    formValue => {
       dispatch({
         type: Actions.SetQuantity,
         payload: { formValue, field: Fields.Input },
@@ -28,7 +29,7 @@ export const SwapProvider: FC<{}> = ({ children }) => {
   );
 
   const setOutputQuantity = useCallback<Dispatch['setOutputQuantity']>(
-    (formValue) => {
+    formValue => {
       dispatch({
         type: Actions.SetQuantity,
         payload: { formValue, field: Fields.Output },
@@ -50,22 +51,21 @@ export const SwapProvider: FC<{}> = ({ children }) => {
     [dispatch],
   );
 
-  const dataState = useDataState();
+  const massetState = useSelectedMassetState();
   useEffect(() => {
     dispatch({
       type: Actions.Data,
-      payload: dataState,
+      payload: massetState,
     });
-  }, [dispatch, dataState]);
+  }, [dispatch, massetState]);
 
   return (
     <stateCtx.Provider value={state}>
       <dispatchCtx.Provider
-        value={useMemo(() => ({ setInputQuantity, setOutputQuantity, setToken }), [
-          setInputQuantity,
-          setOutputQuantity,
-          setToken,
-        ])}
+        value={useMemo(
+          () => ({ setInputQuantity, setOutputQuantity, setToken }),
+          [setInputQuantity, setOutputQuantity, setToken],
+        )}
       >
         {children}
       </dispatchCtx.Provider>

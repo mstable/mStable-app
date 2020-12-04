@@ -3,7 +3,7 @@ import { BassetState } from '../../../context/DataProvider/types';
 import { humanizeList } from '../../../web3/strings';
 
 const getBassetSymbols = (bAssets: BassetState[]): string =>
-  humanizeList(bAssets.map(b => b.symbol));
+  humanizeList(bAssets.map(b => b.token.symbol));
 
 export const getReasonMessage = (
   reason: Reasons | undefined,

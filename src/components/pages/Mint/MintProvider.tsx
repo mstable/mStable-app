@@ -8,7 +8,7 @@ import React, {
   useReducer,
 } from 'react';
 
-import { useDataState } from '../../../context/DataProvider/DataProvider';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { Actions, Dispatch, Mode, State } from './types';
 import { reducer } from './reducer';
@@ -26,13 +26,13 @@ const initialState: State = {
 const stateCtx = createContext<State>(initialState);
 const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
-export const MintProvider: FC<{}> = ({ children }) => {
+export const MintProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const dataState = useDataState();
+  const massetState = useSelectedMassetState();
   useEffect(() => {
-    dispatch({ type: Actions.Data, payload: dataState });
-  }, [dataState]);
+    dispatch({ type: Actions.Data, payload: massetState });
+  }, [massetState]);
 
   const setBassetAmount = useCallback<Dispatch['setBassetAmount']>(
     (address, formValue) => {

@@ -1,20 +1,15 @@
-import React, {
-  FC,
-  useContext,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
-import styled, { ThemeContext, DefaultTheme } from 'styled-components';
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
+import React, { FC, useMemo } from 'react';
+import styled from 'styled-components';
+import Skeleton from 'react-loading-skeleton';
 
 import { useDataState } from '../../context/DataProvider/DataProvider';
-import { useMetaToken } from '../../context/DataProvider/TokensProvider';
+import { useTokenSubscription } from '../../context/TokensProvider';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { CountUp } from '../core/CountUp';
 import { mapSizeToFontSize, Size } from '../../theme';
 import { TokenIcon as TokenIconBase } from '../icons/TokenIcon';
 import { List, ListItem } from '../core/List';
+import { MassetState } from '../../context/DataProvider/types';
 
 const Symbol = styled.div`
   display: flex;
@@ -36,111 +31,101 @@ const TokenIcon = styled(TokenIconBase)<{ outline?: boolean }>`
     outline ? `border: 1px white solid; border-radius: 100%` : ''}
 `;
 
-const BalanceSkeleton: FC<{ themeContext: DefaultTheme }> = ({
-  themeContext: theme,
-}) => (
-  <SkeletonTheme
-    color={theme.color.blueTransparent}
-    highlightColor={theme.color.blue}
-  >
-    <Skeleton width={200} height={30} />
-  </SkeletonTheme>
-);
+const TokenBalance: FC<{ address: string; size?: Size }> = ({
+  address,
+  size = Size.m,
+}) => {
+  const token = useTokenSubscription(address);
+  return token ? (
+    <Balance size={size} end={token.balance.simple} />
+  ) : (
+    <Skeleton />
+  );
+};
 
 /**
  * Component to track and display the balances of tokens for the currently
  * selected mAsset, the mAsset itself, and MTA.
  */
-export const Balances: FC<{}> = () => {
-  const [loading, setLoading] = useState(true);
+export const Balances: FC = () => {
+  const dataState = useDataState();
 
-  const { mAsset, savingsContract, bAssets } = useDataState() || {};
-  const metaToken = useMetaToken();
-
-  const otherTokens = useMemo(() => (bAssets ? Object.values(bAssets) : []), [
-    bAssets,
-  ]);
-
-  const themeContext = useContext(ThemeContext);
-
-  // Use a layout effect to prevent CountUp from running if the component
-  // is quickly unmounted (e.g. on login)
-  useLayoutEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    return (): void => {
-      clearTimeout(timeout);
-    };
-  }, [loading, setLoading]);
+  const massetTokens = useMemo(
+    () =>
+      Object.values(dataState).map(
+        ({
+          token: masset,
+          bAssets,
+          savingsContracts: { v1, v2 },
+        }: MassetState) => ({
+          masset,
+          bassets: Object.values(bAssets).map(b => b.token),
+          savingsContractV1: v1
+            ? {
+                name: `${masset.symbol} Save v1`,
+                symbol: masset.symbol,
+                address: v1.address,
+                decimals: masset.decimals,
+                savingsBalance: v1.savingsBalance,
+              }
+            : undefined,
+          savingsContractV2: v2 && v2.token ? v2.token : undefined,
+        }),
+      ),
+    [dataState],
+  );
 
   return (
     <List inverted>
-      <ListItem size={Size.l} key="mUsdBalance">
-        {!mAsset ? (
-          <Skeleton height={49} />
-        ) : (
+      {massetTokens.map(
+        ({ masset, bassets, savingsContractV1, savingsContractV2 }) => (
           <>
-            <Symbol>
-              <TokenIcon symbol={mAsset.symbol} outline />
-              <span>{mAsset.symbol}</span>
-              <EtherscanLink data={mAsset.address} />
-            </Symbol>
-            {!mAsset.balance ? (
-              <BalanceSkeleton themeContext={themeContext} />
-            ) : (
-              <Balance size={Size.l} end={mAsset.balance.simple} />
+            <ListItem size={Size.l} key={masset.address}>
+              <Symbol>
+                <TokenIcon symbol={masset.symbol} outline />
+                <span>{masset.symbol}</span>
+                <EtherscanLink data={masset.address} />
+              </Symbol>
+              <TokenBalance address={masset.address} size={Size.l} />
+            </ListItem>
+            {savingsContractV1 && (
+              <ListItem key={savingsContractV1.address}>
+                <Symbol>
+                  <TokenIcon symbol={savingsContractV1.symbol} outline />
+                  <span>{savingsContractV1.name}</span>
+                </Symbol>
+                {savingsContractV1.savingsBalance.balance ? (
+                  <Balance
+                    size={Size.l}
+                    end={savingsContractV1.savingsBalance.balance.simple}
+                  />
+                ) : (
+                  <Skeleton />
+                )}
+              </ListItem>
             )}
-          </>
-        )}
-      </ListItem>
-      <ListItem size={Size.l} key="mta">
-        {metaToken ? (
-          <>
-            <Symbol>
-              <TokenIcon symbol={metaToken.symbol} outline />
-              <span>{metaToken.symbol}</span>
-              <EtherscanLink data={metaToken.address} />
-            </Symbol>
-            {!metaToken.balance ? (
-              <BalanceSkeleton themeContext={themeContext} />
-            ) : (
-              <Balance size={Size.l} end={metaToken.balance.simple} />
+            {savingsContractV2 && (
+              <ListItem key={savingsContractV2.address}>
+                <Symbol>
+                  <TokenIcon symbol={savingsContractV2.symbol} outline />
+                  <span>{savingsContractV2.symbol}</span>
+                </Symbol>
+                <TokenBalance address={masset.address} size={Size.l} />
+              </ListItem>
             )}
+            {bassets.map(({ address, symbol }) => (
+              <ListItem key={address}>
+                <Symbol>
+                  <TokenIcon symbol={symbol} />
+                  <span>{symbol}</span>
+                  <EtherscanLink data={address} />
+                </Symbol>
+                <TokenBalance address={address} />
+              </ListItem>
+            ))}
           </>
-        ) : null}
-      </ListItem>
-
-      <ListItem key="savingsBalance">
-        <>
-          <Symbol>
-            <TokenIcon symbol="mUSD" outline />
-            <span>mUSD Savings</span>
-          </Symbol>
-          {loading || !savingsContract?.savingsBalance.balance?.simple ? (
-            <BalanceSkeleton themeContext={themeContext} />
-          ) : (
-            <Balance
-              size={Size.l}
-              end={savingsContract.savingsBalance.balance.simple}
-            />
-          )}
-        </>
-      </ListItem>
-      {otherTokens.map(({ address, symbol, balance }) => (
-        <ListItem key={address}>
-          <Symbol>
-            <TokenIcon symbol={symbol} outline={symbol === 'mUSD'} />
-            <span>{symbol}</span>
-            <EtherscanLink data={address} />
-          </Symbol>
-          {balance ? (
-            <Balance end={balance.simple} />
-          ) : (
-            <BalanceSkeleton themeContext={themeContext} />
-          )}
-        </ListItem>
-      ))}
+        ),
+      )}
     </List>
   );
 };

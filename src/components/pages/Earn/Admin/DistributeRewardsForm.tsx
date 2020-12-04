@@ -3,7 +3,7 @@ import Skeleton from 'react-loading-skeleton';
 import { BigNumber } from 'ethers/utils';
 import styled from 'styled-components';
 
-import { useTokenAllowance } from '../../../../context/DataProvider/TokensProvider';
+import { useTokenAllowance } from '../../../../context/TokensProvider';
 import { useOwnAccount } from '../../../../context/UserProvider';
 import {
   FormProvider,
@@ -72,6 +72,10 @@ const Confirm: FC<{}> = () => {
         args,
         iface,
         fn: 'distributeRewards',
+        purpose: {
+          present: 'Distributing rewards',
+          past: 'Distributed rewards',
+        },
       };
       setFormManifest(manifest);
     } else {

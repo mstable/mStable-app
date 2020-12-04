@@ -1,5 +1,5 @@
 import { BigDecimal } from '../../../web3/BigDecimal';
-import { Tokens } from '../../../context/DataProvider/TokensProvider';
+import { Tokens } from '../../../context/TokensProvider';
 import { StakingRewardsContract } from '../../../context/earn/types';
 import { AccentColors, Token } from '../../../types';
 
