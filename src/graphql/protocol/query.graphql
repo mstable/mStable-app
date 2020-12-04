@@ -1,34 +1,58 @@
 # import './fragments.graphql'
 
-query CoreTokens @api(name: protocol) {
-  mUSD: tokens(where: { symbol: "mUSD" }) {
-    ...TokenDetails
-  }
-  #    mta: tokens(where: { symbol: "MTA" }) {
-  #        ...TokenDetails
-  #    }
-  #    mGLD: tokens(where: { symbol: "mGLD" }) {
-  #        ...TokenDetails
-  #    }
-  mUSDSavings: savingsContracts(first: 1) {
+query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
+  massets {
     id
+    token {
+      ...TokenDetails
+    }
+    feeRate
+    redemptionFeeRate
+    basket {
+      failed
+      collateralisationRatio
+      undergoingRecol
+      bassets: bassets(where: { removed: false }) {
+        id
+        vaultBalance {
+          ...MetricFields
+        }
+        isTransferFeeCharged
+        ratio
+        status
+        maxWeight
+        token {
+          ...TokenDetails
+        }
+      }
+      removedBassets: bassets(where: { removed: true }) {
+        id
+        token {
+          ...TokenDetails
+        }
+      }
+    }
+    savingsContractsV1: savingsContracts(where: { version: 1 }) {
+      ...SavingsContractAll
+      totalCredits {
+        ...MetricFields
+      }
+      creditBalances(where: { account: $account }) @include(if: $hasAccount) {
+        amount
+      }
+    }
+    savingsContractsV2: savingsContracts(where: { version: 2 }) {
+      ...SavingsContractAll
+      token {
+        ...TokenDetails
+      }
+    }
   }
 }
 
-query Masset($id: ID!) @api(name: protocol) {
-  masset(id: $id) {
-    ...MassetAll
-  }
-}
-
-query Erc20Tokens($addresses: [Bytes!]!) @api(name: protocol) {
-  tokens(where: { address_in: $addresses }) {
-    ...TokenDetails
-  }
-}
-
-query AllErc20Tokens @api(name: protocol) {
-  savingsContracts {
+query AllTokens @api(name: protocol) {
+  # @deprecated
+  savingsContracts(where: { version: 1 }) {
     address: id
     id
   }
@@ -37,142 +61,9 @@ query AllErc20Tokens @api(name: protocol) {
   }
 }
 
-fragment ER on ExchangeRate {
-  rate
-  timestamp
-}
-
-query LastExchangeRateBeforeTimestamp($timestamp: Int!) @api(name: protocol) {
-  exchangeRates(
-    where: { timestamp_lt: $timestamp }
-    orderDirection: desc
-    orderBy: timestamp
-    first: 1
-  ) {
-    ...ER
-  }
-}
-
-query WeeklyExchangeRates(
-  $day0: Int!
-  $day1: Int!
-  $day2: Int!
-  $day3: Int!
-  $day4: Int!
-  $day5: Int!
-  $day6: Int!
-) @api(name: protocol) {
-  day0: exchangeRates(
-    where: { timestamp_lt: $day0 }
-    orderDirection: desc
-    orderBy: timestamp
-    first: 1
-  ) {
-    ...ER
-  }
-  day1: exchangeRates(
-    where: { timestamp_lt: $day1 }
-    orderDirection: desc
-    orderBy: timestamp
-    first: 1
-  ) {
-    ...ER
-  }
-  day2: exchangeRates(
-    where: { timestamp_lt: $day2 }
-    orderDirection: desc
-    orderBy: timestamp
-    first: 1
-  ) {
-    ...ER
-  }
-  day3: exchangeRates(
-    where: { timestamp_lt: $day3 }
-    orderDirection: desc
-    orderBy: timestamp
-    first: 1
-  ) {
-    ...ER
-  }
-  day4: exchangeRates(
-    where: { timestamp_lt: $day4 }
-    orderDirection: desc
-    orderBy: timestamp
-    first: 1
-  ) {
-    ...ER
-  }
-  day5: exchangeRates(
-    where: { timestamp_lt: $day5 }
-    orderDirection: desc
-    orderBy: timestamp
-    first: 1
-  ) {
-    ...ER
-  }
-  day6: exchangeRates(
-    where: { timestamp_lt: $day6 }
-    orderDirection: desc
-    orderBy: timestamp
-    first: 1
-  ) {
-    ...ER
-  }
-}
-
-query SavingsContract($id: ID!) @api(name: protocol) {
-  savingsContracts(where: { id: $id }) {
-    id
-    totalSavings {
-      ...MetricFields
-    }
-    totalCredits {
-      ...MetricFields
-    }
-    exchangeRates {
-      id
-    }
-    dailyAPY
-    automationEnabled
-  }
-}
-
 query Token($id: ID!) @api(name: protocol) {
   token(id: $id) {
     ...TokenDetails
-  }
-}
-
-query CreditBalances($account: ID!) @api(name: protocol) {
-  account(id: $account) {
-    creditBalance {
-      amount
-    }
-  }
-}
-
-query LatestExchangeRate @api(name: protocol) {
-  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
-    ...ER
-  }
-}
-
-query ScriptVaultBalances($block: Block_height) @api(name: protocol) {
-  bassets(block: $block) {
-    id
-    token {
-      symbol
-      decimals
-    }
-    vaultBalance {
-      ...MetricFields
-    }
-  }
-}
-
-query ScriptFees($limit: Int!, $offset: Int!) @api(name: protocol) {
-  paidFeeTransactions(first: $limit, skip: $offset) {
-    massetUnits
   }
 }
 
@@ -236,12 +127,18 @@ query HistoricTransactions($account: Bytes) @api(name: protocol) {
       amount
       savingsContract {
         id
+        masset {
+          id
+        }
       }
     }
     ... on SavingsContractWithdrawTransaction {
       amount
       savingsContract {
         id
+        masset {
+          id
+        }
       }
     }
     ... on SwapTransaction {
