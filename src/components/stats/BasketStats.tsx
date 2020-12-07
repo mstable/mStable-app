@@ -27,13 +27,22 @@ import { RechartsContainer } from './RechartsContainer';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TooltipProps = DefaultTooltipContentProps<any, any>;
 
-type TokenSymbol = 'mUSD' | 'sUSD' | 'DAI' | 'USDT' | 'TUSD' | 'USDC' | 'BUSD';
+type TokenSymbol =
+  | 'mUSD'
+  | 'sUSD'
+  | 'SUSD'
+  | 'DAI'
+  | 'USDT'
+  | 'TUSD'
+  | 'USDC'
+  | 'BUSD';
 
 type TokenColours = Record<TokenSymbol, string>;
 
 const TOKEN_COLOURS: TokenColours = {
   mUSD: '#000',
   sUSD: '#1e1a31',
+  SUSD: '#1e1a31',
   BUSD: '#ebb532',
   DAI: '#EEB345',
   USDT: '#26A17B',
@@ -44,6 +53,7 @@ const TOKEN_COLOURS: TokenColours = {
 const OVERWEIGHT_TOKEN_COLOURS: TokenColours = {
   mUSD: '#000',
   sUSD: '#0d0b15',
+  SUSD: '#0d0b15',
   BUSD: '#634f14',
   DAI: '#725621',
   USDT: '#155844',
@@ -54,6 +64,7 @@ const OVERWEIGHT_TOKEN_COLOURS: TokenColours = {
 const TOKEN_HATCH_COLOURS: TokenColours = {
   mUSD: '#000',
   sUSD: '#9489bf',
+  SUSD: '#9489bf',
   BUSD: '#ffd375',
   DAI: '#e0c184',
   USDT: '#7dc6af',
@@ -112,7 +123,17 @@ TooltipProps & { active: boolean }) => {
             payload: { vaultBalance: string };
           }).payload.vaultBalance,
         },
-        ...(payload as NonNullable<typeof payload>),
+        {
+          dataKey: 'maxWeightAsPercentage',
+          name: 'Max weight',
+          value: ((payload as NonNullable<typeof payload>)[0] as {
+            payload: { maxWeightAsPercentage: string };
+          }).payload.maxWeightAsPercentage,
+          unit: '%',
+        },
+        ...(payload as NonNullable<typeof payload>).filter(
+          p => p.dataKey !== 'remainderMaxWeight',
+        ),
       ]}
     />
   );
@@ -131,7 +152,8 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
   simulation,
 }) => {
   const masset = useSelectedMassetState();
-  const bAssets = simulation?.bAssets ?? masset?.bAssets ?? {};
+  const bAssets: MassetState['bAssets'] =
+    simulation?.bAssets ?? masset?.bAssets ?? {};
 
   const data: Datum[] = useMemo(
     () =>
