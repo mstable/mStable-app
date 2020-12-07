@@ -44,6 +44,20 @@ const Card = styled.div`
     inset: 1px;
     z-index: -1;
     border-radius: 1.5rem;
+    animation: GradientShift 5s ease alternate infinite;
+    background-size: 300% 300%;
+  }
+
+  @keyframes GradientShift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
 
   h2 {
