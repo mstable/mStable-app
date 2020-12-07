@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { Fragment, FC, useMemo } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
@@ -79,7 +79,7 @@ export const Balances: FC = () => {
     <List inverted>
       {massetTokens.map(
         ({ masset, bassets, savingsContractV1, savingsContractV2 }) => (
-          <>
+          <Fragment key={masset.address}>
             <ListItem size={Size.l} key={masset.address}>
               <Symbol>
                 <TokenIcon symbol={masset.symbol} outline />
@@ -123,7 +123,7 @@ export const Balances: FC = () => {
                 <TokenBalance address={address} />
               </ListItem>
             ))}
-          </>
+          </Fragment>
         ),
       )}
     </List>
