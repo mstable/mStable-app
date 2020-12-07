@@ -1,6 +1,10 @@
 version: 2.1
 
 executors:
+  node:
+    docker:
+      - image: circleci/node:14.9.0
+    resource_class: medium+
   gcp:
     docker:
       - image: alsco77/node-gcp-dockerfile:njs12
@@ -15,7 +19,7 @@ executors:
 
 jobs:
   Build:
-    executor: gcp
+    executor: node
     steps:
       - checkout
       - restore_cache:
