@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import React, { FC } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+
 import {
   AccountItems,
   StatusWarnings,
@@ -97,20 +98,17 @@ const Logo = styled.div<{ inverted?: boolean }>`
 `;
 
 const AccountButton = styled(UnstyledButton)<{ active: boolean }>`
+  align-items: center;
+  border-radius: 1rem;
   cursor: pointer;
-  font-size: 12px;
+  display: flex;
   font-weight: bold;
-  height: 24px;
+  height: 2rem;
+  justify-content: space-between;
   line-height: 100%;
-  padding: 0 8px;
+  padding: 0.25rem 0.8rem;
   text-transform: uppercase;
   transition: all 0.3s ease;
-  border-bottom: 4px transparent solid;
-  border-bottom-color: ${({ active }) =>
-    active ? Color.white : 'transparent'};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 
   > * {
     margin-right: 4px;
@@ -123,14 +121,13 @@ const AccountButton = styled(UnstyledButton)<{ active: boolean }>`
     margin-top: -1px;
   }
 
-  &:hover {
-    border-bottom-color: ${({ active }) =>
-      active ? Color.white : Color.blackTransparent};
-  }
-`;
+  background: ${({ active }) =>
+    active ? Color.whiteTransparent : 'transparent'};
 
-const TruncatedAddress = styled.span`
-  text-transform: none;
+  &:hover {
+    background: ${({ active }) =>
+      active ? Color.whiteTransparent : Color.blackTransparent};
+  }
 `;
 
 const WalletButtonBtn = styled(AccountButton)`
@@ -151,6 +148,11 @@ const WalletButtonBtn = styled(AccountButton)`
   }
 `;
 
+const TruncatedAddress = styled.span`
+  font-family: 'DM Mono', monospace;
+  text-transform: none;
+`;
+
 const Balance = styled.div`
   border: 1px solid ${({ theme }) => theme.color.blackTransparent};
   padding: 0.33rem 0.75rem;
@@ -159,16 +161,11 @@ const Balance = styled.div`
   font-size: 0.875rem;
   margin-left: 2rem;
   margin-top: -2px;
-  display: none;
 
   span {
     ${({ theme }) => theme.mixins.numeric};
     font-weight: normal;
     margin-right: 0.5rem;
-  }
-
-  @media (min-width: ${ViewportWidth.s}) {
-    display: block;
   }
 `;
 
@@ -177,20 +174,7 @@ const Buttons = styled.div`
   justify-content: space-evenly;
   align-items: center;
   height: 100%;
-
-  > * {
-    font-size: 16px;
-    margin-right: 6px;
-    &:last-child {
-      margin-right: 0;
-    }
-  }
-
-  @media (min-width: ${ViewportWidth.s}) {
-    > * {
-      margin-right: 16px;
-    }
-  }
+  gap: 0.5rem;
 `;
 
 const Top = styled.div`
@@ -215,7 +199,7 @@ const Container = styled.div<{ inverted: boolean }>`
   padding-top: 2px;
   border-bottom: 1px solid ${Color.blackTransparenter};
 
-  ${AccountButton} {
+  ${AccountButton}, ${Balance} {
     color: ${({ inverted }) => (inverted ? Color.white : Color.offBlack)};
   }
 `;
@@ -266,7 +250,7 @@ const StatusWarningsRowContainer = styled.div`
   }
 `;
 
-const StatusWarningsRow: FC<{}> = () => {
+const StatusWarningsRow: FC = () => {
   const warnings = useAppStatusWarnings();
 
   return (
@@ -280,7 +264,7 @@ const StatusWarningsRow: FC<{}> = () => {
   );
 };
 
-const NotificationsButton: FC<{}> = () => {
+const NotificationsButton: FC = () => {
   const accountItem = useAccountItem();
   const toggleNotifications = useToggleNotifications();
   const unread = useUnreadNotifications();
@@ -291,7 +275,6 @@ const NotificationsButton: FC<{}> = () => {
       onClick={toggleNotifications}
       active={accountItem === AccountItems.Notifications}
     >
-      <span>Notifications</span>
       <CountBadge count={unread.length} error={hasUnreadErrors} />
     </AccountButton>
   );
@@ -329,7 +312,7 @@ const PendingTxContainer = styled.div<{
   }
 `;
 
-const WalletButton: FC<{}> = () => {
+const WalletButton: FC = () => {
   const accountItem = useAccountItem();
   const toggleWallet = useToggleWallet();
   const connected = useConnected();
