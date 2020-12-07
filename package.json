@@ -58,6 +58,8 @@
   "scripts": {
     "build": "NODE_OPTIONS=--max_old_space_size=4096 REACT_APP_VERSION=$npm_package_version react-scripts build",
     "build:ipfs": "cp .env.example.mainnet .env && yarn && yarn run codegen && yarn run build",
+    "build:ipfs:kovan": "cp .env.example.kovan .env && yarn && yarn run codegen && yarn run build",
+    "build:ipfs:ropsten": "cp .env.example.ropsten .env && yarn && yarn run codegen && yarn run build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml -r dotenv/config",
     "codegen:typechain": "cp ./lib/abis/*.json ./node_modules/@mstable/protocol/build/contracts && yarn typechain --target ethers-v4 --outDir src/typechain './node_modules/@mstable/protocol/build/contracts/*.json'",
