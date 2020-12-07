@@ -1,5 +1,6 @@
 import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
+import { ViewportWidth } from '../../../theme';
 import { SaveMigrationStep } from '../../../types';
 import { H2, P } from '../../core/Typography';
 import { Step } from './SaveMigrationStep';
@@ -14,13 +15,17 @@ const MIGRATION_STEPS = [WITHDRAW, APPROVE, DEPOSIT];
 
 const Card = styled.div`
   margin-top: 2.5rem;
-  padding: 1.5rem 3.5rem;
+  padding: 1.5rem;
   border-radius: 1.5rem;
   position: relative;
   background: white;
   display: flex;
   align-items: center;
   flex-direction: column;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    padding: 1.5rem 3.5rem;
+  }
 
   &:before {
     position: absolute;
@@ -48,6 +53,7 @@ const Card = styled.div`
   h2 {
     font-size: 1.5rem;
     font-weight: 600;
+    line-height: 2rem;
   }
 
   p {
@@ -65,7 +71,7 @@ const Inner = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 30rem;
+  max-width: 32rem;
 `;
 
 const StepContainer = styled.div`
@@ -79,9 +85,16 @@ const StepContainer = styled.div`
     top: 0;
     bottom: 0;
     background: ${({ theme }) => theme.color.lightGrey};
-    left: 1.75rem;
     content: '';
     z-index: -1;
+    left: 1rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    &:before {
+      left: 1.75rem;
+      width: 0.25rem;
+    }
   }
 `;
 

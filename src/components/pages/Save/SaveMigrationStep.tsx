@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { ViewportWidth } from '../../../theme';
 import { SaveMigrationStep } from '../../../types';
 import { ActivitySpinner } from '../../core/ActivitySpinner';
 import { BubbleButton as Button } from '../../core/Button';
@@ -23,7 +24,7 @@ const MIGRATION_TITLES = new Map<SaveMigrationStep, string>([
 const Container = styled.div<{ active?: boolean; complete?: boolean }>`
   width: 100%;
   border-radius: 0.75rem;
-  height: 5rem;
+  height: 4.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -35,9 +36,14 @@ const Container = styled.div<{ active?: boolean; complete?: boolean }>`
       : `none`};
   background: ${({ theme, active, complete }) =>
     complete || active ? theme.color.white : theme.color.lightGrey};
-  padding: 0 1.75rem;
+  padding: 0 0.5rem;
   font-weight: 600;
   transition: 0.25s linear background;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    padding: 0 1.75rem;
+    height: 5rem;
+  }
 
   span {
     opacity: ${({ active, complete }) => (active || complete ? 1 : 0.5)};
@@ -50,14 +56,21 @@ const Container = styled.div<{ active?: boolean; complete?: boolean }>`
 
 const SplitContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 
   > ${Container}:not(:last-child) {
-    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
   }
 
   &:not(:last-child) {
     margin-bottom: 1rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    > ${Container}:not(:last-child) {
+      flex-direction: row;
+      margin-right: 0.5rem;
+    }
   }
 `;
 
