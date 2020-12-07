@@ -24,7 +24,7 @@ export const getReasonMessage = (
 
     case Reasons.MustBeBelowMaxWeighting: {
       const plural = affectedBassets.length > 1;
-      return `The balance${plural ? 's' : ''} of ${getBassetSymbols(
+      return `The vault balance${plural ? 's' : ''} of ${getBassetSymbols(
         affectedBassets,
       )} cannot be pushed past ${
         plural ? 'their' : 'its'
