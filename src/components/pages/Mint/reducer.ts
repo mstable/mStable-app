@@ -46,31 +46,33 @@ const getMaxMintAmount = (state: State): BigDecimal | undefined => {
   return clampedMax.divRatioPrecisely(ratio).setDecimals(bAssetDecimals);
 };
 
-const updateBalances = (massetState: MassetState, state: State): MassetState =>
-  Object.values(massetState.bAssets).reduce((_massetState, bAssetData) => {
+const updateBalances = (
+  state: State & { massetState: MassetState },
+): MassetState =>
+  Object.values(state.massetState.bAssets).reduce((prev, bAssetData) => {
     const { address } = bAssetData;
-    const { bAssets } = _massetState;
+    const { bAssets } = prev;
     const bAsset = state.bAssets[address];
 
-    if (!(bAsset && bAsset.enabled && bAsset.amount)) return _massetState;
+    if (!(bAsset && bAsset.enabled && bAsset.amount)) return prev;
 
     const { amount } = bAsset;
 
     // Update mAsset totalSupply and balance
     const mAssetInc = amount
       .mulRatioTruncate(bAssetData.ratio)
-      .setDecimals(_massetState.token.decimals);
-    const mAssetTotalSupply = _massetState.token.totalSupply.add(mAssetInc);
-    const mAssetBalance = _massetState.token.balance.add(mAssetInc);
+      .setDecimals(prev.token.decimals);
+    const mAssetTotalSupply = prev.token.totalSupply.add(mAssetInc);
+    const mAssetBalance = prev.token.balance.add(mAssetInc);
 
     // Update bAsset balance and totalVault
     const balance = bAssetData.token.balance.sub(amount);
     const totalVault = bAssetData.totalVault.add(amount);
 
     return {
-      ..._massetState,
+      ...prev,
       token: {
-        ..._massetState.token,
+        ...prev.token,
         totalSupply: mAssetTotalSupply,
         balance: mAssetBalance,
       },
@@ -86,13 +88,13 @@ const updateBalances = (massetState: MassetState, state: State): MassetState =>
         },
       },
     };
-  }, massetState);
+  }, state.massetState);
 
 export const simulate = (state: State): State => ({
   ...state,
   simulation: state.massetState
     ? pipe<MassetState, MassetState>(
-        updateBalances(state.massetState, state),
+        updateBalances(state as State & { massetState: MassetState }),
         recalculateMasset,
       )
     : undefined,
