@@ -66,7 +66,7 @@ export const ActivitySpinner: FC<Props> = ({
   success,
   pending,
   className,
-  size = 50,
+  size = 20,
 }) => (
   <Container className={className} size={size}>
     <Spinner
@@ -76,7 +76,7 @@ export const ActivitySpinner: FC<Props> = ({
       success={success}
       size={size}
     >
-      <circle cx={size / 2} cy={size / 2} r={size / 4} />
+      <circle cx={size / 2} cy={size / 2} r={(size / 2) * 0.8} />
     </Spinner>
   </Container>
 );
