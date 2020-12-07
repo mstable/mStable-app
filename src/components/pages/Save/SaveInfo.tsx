@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { H3 } from '../../core/Typography';
@@ -7,9 +7,8 @@ import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
-import { Button } from '../../core/Button';
 import { useSelectedMasset } from '../../../context/SelectedMassetProvider';
-import { CURRENT_SAVE_VERSION, useActiveSaveVersion } from './SaveProvider';
+import { useActiveSaveVersion } from './SaveProvider';
 import { SaveMigration } from './SaveMigration';
 
 const CreditBalance = styled.div`
