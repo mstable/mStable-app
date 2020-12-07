@@ -5,10 +5,10 @@ import { ActivitySpinner } from '../../core/ActivitySpinner';
 import { BubbleButton as Button } from '../../core/Button';
 
 interface Props {
-  pending?: boolean;
+  pendingIndex?: number;
   active: boolean;
   complete: boolean;
-  onClick: (step: SaveMigrationStep) => void;
+  onClick: (step: SaveMigrationStep, index: number) => void;
   step: SaveMigrationStep;
 }
 
@@ -39,10 +39,6 @@ const Container = styled.div<{ active?: boolean; complete?: boolean }>`
   font-weight: 600;
   transition: 0.25s linear background;
 
-  &:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-
   span {
     opacity: ${({ active, complete }) => (active || complete ? 1 : 0.5)};
   }
@@ -52,14 +48,40 @@ const Container = styled.div<{ active?: boolean; complete?: boolean }>`
   }
 `;
 
+const SplitContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+
+  > ${Container}:not(:last-child) {
+    margin-right: 0.5rem;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+`;
+
 export const Step: FC<Props> = props => {
-  const { active, pending, complete, step, onClick } = props;
+  const { active, pendingIndex, complete, step, onClick } = props;
+
+  const buttonTitles = step === APPROVE && active ? ['Exact', '∞'] : ['Submit'];
+
   return (
-    <Container active={active} complete={complete}>
-      <span>{MIGRATION_TITLES.get(step)} </span>
-      <Button highlighted={active || pending} onClick={() => onClick(step)}>
-        {pending ? <ActivitySpinner success pending={pending} /> : `Submit`}
-      </Button>
-    </Container>
+    <SplitContainer>
+      {buttonTitles?.map((buttonTitle, i) => {
+        const isPending = pendingIndex === i;
+        return (
+          <Container active={active} complete={complete}>
+            <span>{MIGRATION_TITLES.get(step)} </span>
+            <Button
+              highlighted={active || pendingIndex !== undefined}
+              onClick={() => onClick(step, i)}
+            >
+              {isPending ? <ActivitySpinner success pending /> : buttonTitle}
+            </Button>
+          </Container>
+        );
+      })}
+    </SplitContainer>
   );
 };

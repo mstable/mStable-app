@@ -86,8 +86,10 @@ const StepContainer = styled.div`
 `;
 
 export const SaveMigration: FC<Props> = ({ onSuccessfulMigrate }) => {
-  const [isPending, setPending] = useState(false);
   const [activeStep, setActiveStep] = useState(WITHDRAW);
+  const [pendingIndex, setPendingIndex] = useState<number | undefined>(
+    undefined,
+  );
 
   const increaseStepIndex = useCallback(() => setActiveStep(activeStep + 1), [
     activeStep,
@@ -110,12 +112,14 @@ export const SaveMigration: FC<Props> = ({ onSuccessfulMigrate }) => {
     }
   };
 
-  const handleStepSubmit = (step: SaveMigrationStep): void => {
-    setPending(true);
+  const handleStepSubmit = (step: SaveMigrationStep, index: number): void => {
+    // 0 = exact
+    // 1 = inf
+    setPendingIndex(index);
     setTimeout(() => {
       mapStepToAction(step);
       increaseStepIndex();
-      setPending(false);
+      setPendingIndex(undefined);
     }, 2500);
   };
 
@@ -135,20 +139,16 @@ export const SaveMigration: FC<Props> = ({ onSuccessfulMigrate }) => {
         )}
         <StepContainer>
           {!stepsCompleted &&
-            MIGRATION_STEPS.map(step => {
-              const isActive = activeStep === step;
-              const isComplete = activeStep > step;
-              return (
-                <Step
-                  key={`step-${step}`}
-                  active={isActive}
-                  complete={isComplete}
-                  pending={isPending}
-                  step={step}
-                  onClick={handleStepSubmit}
-                />
-              );
-            })}
+            MIGRATION_STEPS.map(step => (
+              <Step
+                key={`step-${step}`}
+                active={activeStep === step}
+                complete={activeStep > step}
+                pendingIndex={pendingIndex}
+                step={step}
+                onClick={handleStepSubmit}
+              />
+            ))}
         </StepContainer>
       </Inner>
     </Card>
