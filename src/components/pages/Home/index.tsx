@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { ReactComponent as MstableIcon } from '../../icons/mstable_horizontal.svg';
-import { ReactComponent as MusdIcon } from '../../icons/musd_logo.svg';
-import { ReactComponent as BtcIcon } from '../../icons/btc_logo.svg';
-import { useHandleMassetClick } from '../../../context/MassetsProvider';
+import { useHandleMassetClick } from '../../../context/SelectedMassetProvider';
+import { ReactComponent as LogoSvg } from '../../icons/mstable-icon.svg';
 import { UnstyledButton } from '../../core/Button';
+import { ViewportWidth } from '../../../theme';
+import { TokenIcon } from '../../icons/TokenIcon';
 
 const Container = styled.div`
   display: flex;
@@ -50,7 +50,7 @@ const Musd = styled(UnstyledButton)`
   border-radius: 32px;
   cursor: pointer;
   span {
-    font-family: Poppins;
+    font-family: Poppins, sans-serif;
     font-style: normal;
     font-weight: bold;
     font-size: 32px;
@@ -68,21 +68,28 @@ const Mbtc = styled(Musd)`
 `;
 
 export const Home: FC = () => {
-  // FIXME
   const handleMassetClick = useHandleMassetClick();
   return (
     <Container>
-      <MstableIcon />
+      <LogoSvg />
       <MassetsContainer>
-        <Musd onClick={() => handleMassetClick('mUSD')}>
+        <Musd
+          onClick={() => {
+            handleMassetClick('mUSD');
+          }}
+        >
           <IconContainer>
-            <MusdIcon />
+            <TokenIcon symbol="mUSD" />
           </IconContainer>
           <span>mUSD</span>
         </Musd>
-        <Mbtc onClick={() => handleMassetClick('mBTC')}>
+        <Mbtc
+          onClick={() => {
+            handleMassetClick('mBTC');
+          }}
+        >
           <IconContainer>
-            <BtcIcon />
+            <TokenIcon symbol="mBTC" />
           </IconContainer>
           <span>mBTC</span>
         </Mbtc>

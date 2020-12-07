@@ -1,8 +1,12 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+
+import {
+  getMassetRoute,
+  useSelectedMasset,
+} from '../../../context/SelectedMassetProvider';
 import { Color, FontSize } from '../../../theme';
-import { useSelectedMasset } from '../../../context/MassetsProvider';
 
 const Container = styled.div`
   padding: 4px 8px;
@@ -22,10 +26,10 @@ const Container = styled.div`
 type Section = 'volumes' | 'totals' | 'basket' | 'save';
 
 export const AnalyticsLink: FC<{ section?: Section }> = () => {
-  const selectedMasset = useSelectedMasset();
+  const massetName = useSelectedMasset();
   return (
     <Container>
-      <Link to={`/${selectedMasset.name.toLowerCase()}/analytics`}>
+      <Link to={getMassetRoute(massetName, 'analytics')}>
         <span role="img" aria-label="chart">
           📊
         </span>{' '}

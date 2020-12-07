@@ -24,6 +24,7 @@ import { SaveConfirm } from './SaveConfirm';
 import { TransactionType } from './types';
 import { PageHeader } from '../PageHeader';
 import { ToggleSave } from './ToggleSave';
+import { useSelectedMasset } from '../../../context/SelectedMassetProvider';
 
 const SaveMigration: FC = () => <p>migrate me!</p>;
 
@@ -137,7 +138,9 @@ const InfoMsg = styled.div`
     border: none;
   }
 `;
+
 const SaveContent: FC = () => {
+  const massetName = useSelectedMasset();
   const [activeVersion] = useActiveSaveVersion();
   const apyForPastWeek = useAverageApyForPastWeek();
 
@@ -145,7 +148,7 @@ const SaveContent: FC = () => {
     <>
       <PageHeader
         title={`Save V${activeVersion.version}`}
-        subtitle="Earn interest on your deposited mUSD"
+        subtitle={`Earn interest on your deposited ${massetName}`}
       >
         <ToggleContainer>
           <ToggleSave />

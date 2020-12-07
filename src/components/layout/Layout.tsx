@@ -10,7 +10,7 @@ import { Account } from './Account';
 import { useAccountOpen } from '../../context/AppProvider';
 import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
-import { AppBar } from './AppBar';
+import { AppBar } from './AppBar/AppBar';
 import { NotificationToasts } from './NotificationToasts';
 import { centredLayout, gradientBackground } from './css';
 import { Color } from '../../theme';
@@ -159,10 +159,7 @@ const PageContainer = styled.div<{ accountOpen: boolean }>`
   }
 `;
 
-/**
- * App layout component.
- */
-export const Layout: FC<{}> = ({ children }) => {
+export const Layout: FC = ({ children }) => {
   const accountOpen = useAccountOpen();
   const idle = useIsIdle();
   const { pathname } = useLocation();

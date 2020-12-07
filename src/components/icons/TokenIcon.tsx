@@ -2,6 +2,7 @@ import React, { FC, SVGProps } from 'react';
 import styled from 'styled-components';
 import mUSDTransparent from './tokens/mUSD-transparent.svg';
 import MUSD, { ReactComponent as MusdSvg } from './tokens/mUSD.svg';
+import MBTC, { ReactComponent as MbtcSvg } from './tokens/mBTC.svg';
 import TUSD, { ReactComponent as TusdSvg } from './tokens/TUSD.svg';
 import USDT, { ReactComponent as UsdtSvg } from './tokens/USDT.svg';
 import USDC, { ReactComponent as UsdcSvg } from './tokens/USDC.svg';
@@ -31,6 +32,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   ETH,
   WETH: ETH,
   MUSD,
+  MBTC,
   TUSD,
   USDT,
   USDC,
@@ -52,6 +54,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   ETH: EtherSvg as SvgComponent,
   WETH: EtherSvg as SvgComponent,
   MUSD: MusdSvg as SvgComponent,
+  MBTC: MbtcSvg as SvgComponent,
   TUSD: TusdSvg as SvgComponent,
   USDT: UsdtSvg as SvgComponent,
   USDC: UsdcSvg as SvgComponent,

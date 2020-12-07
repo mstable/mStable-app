@@ -1,9 +1,13 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
+
 import { useCloseAccount } from '../../context/AppProvider';
+import {
+  getMassetRoute,
+  useSelectedMasset,
+} from '../../context/SelectedMassetProvider';
 import { FontSize, ViewportWidth } from '../../theme';
-import { useSelectedMasset } from '../../context/MassetsProvider';
 
 interface NavItem {
   title: string;
@@ -73,10 +77,11 @@ const navItems: NavItem[] = [
 /**
  * Placeholder component for app navigation.
  */
-export const Navigation: FC<{}> = () => {
+export const Navigation: FC = () => {
   const collapseWallet = useCloseAccount();
   const selectedMasset = useSelectedMasset();
   const { pathname } = useLocation();
+
   const items: (NavItem & { active: boolean })[] = useMemo(
     () =>
       navItems.map(item => ({
@@ -84,13 +89,13 @@ export const Navigation: FC<{}> = () => {
         path:
           item.path === '/earn' || item.path === '/faq'
             ? item.path
-            : `/${selectedMasset?.name.toLocaleLowerCase()}${item.path}`,
+            : getMassetRoute(selectedMasset, item.path),
+
+        // FIXME use react router components
         active: !!(item.path === '/earn'
           ? item?.path && pathname.startsWith(item.path)
           : item?.path &&
-            pathname.startsWith(
-              `/${selectedMasset?.name.toLocaleLowerCase()}${item.path}`,
-            )),
+            pathname.startsWith(getMassetRoute(selectedMasset, item.path))),
       })),
     [pathname, selectedMasset],
   );
