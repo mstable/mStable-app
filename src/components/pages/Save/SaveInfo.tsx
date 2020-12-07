@@ -1,16 +1,15 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 
 import { H3 } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
-import { useV1SavingsBalance } from '../../../context/DataProvider/DataProvider';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
-import { SaveVersion } from '../../../types';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
 import { Button } from '../../core/Button';
-
-const { CURRENT } = SaveVersion;
+import { useSelectedMasset } from '../../../context/SelectedMassetProvider';
+import { CURRENT_SAVE_VERSION, useActiveSaveVersion } from './SaveProvider';
 
 const CreditBalance = styled.div`
   display: flex;
@@ -39,7 +38,6 @@ const CreditBalance = styled.div`
 `;
 
 const WarningMsg = styled.div`
-  padding-top: 4px;
   font-size: 12px;
   background: #ffeaea;
   color: #de1717;
@@ -69,11 +67,6 @@ const BalanceInfoRow = styled(InfoRow)`
   }
 `;
 
-interface Props {
-  version: SaveVersion;
-  onMigrateClick: () => void;
-}
-
 const StyledWarningBadge = styled(WarningBadge)`
   width: 1.5rem;
   height: 1.5rem;
@@ -82,34 +75,42 @@ const StyledWarningBadge = styled(WarningBadge)`
   top: 0;
 `;
 
-// TODO
-const useSavingsBalance = (): any => undefined;
+export const SaveInfo: FC = () => {
+  const [activeVersion, setActiveVersion] = useActiveSaveVersion();
 
-export const SaveInfo: FC<Props> = ({ version, onMigrateClick }) => {
-  const savingsBalance = useSavingsBalance();
-  const isCurrentVersion = version === CURRENT;
+  const massetName = useSelectedMasset();
+  const massetState = useSelectedMassetState();
+
+  const savingsBalance =
+    massetState?.savingsContracts[`v${activeVersion.version}` as 'v1' | 'v2']
+      ?.savingsBalance;
+
+  const handleMigrateClick = useCallback(() => {
+    // TODO send a tx, start the assistant
+    setActiveVersion(CURRENT_SAVE_VERSION);
+  }, [setActiveVersion]);
 
   return (
     <>
       <BalanceInfoRow>
         <H3>
-          Your <b>mUSD</b> savings balance
+          Your <b>{massetName}</b> savings balance
         </H3>
         <CreditBalance>
           <MUSDIconTransparent />
           <CountUp end={savingsBalance?.balance?.simple || 0} decimals={7} />
-          {!isCurrentVersion && <StyledWarningBadge />}
+          {!activeVersion.isCurrent && <StyledWarningBadge />}
         </CreditBalance>
-        {isCurrentVersion ? (
+        {activeVersion.isCurrent ? (
           <AnalyticsLink section="save" />
         ) : (
           <>
             <WarningMsg>
-              Migrate your <b>mUSD</b> to continue earning interest on your
-              balance.
+              Migrate your <b>{massetName}</b> to continue earning interest on
+              your balance.
             </WarningMsg>
             {/* (to be removed) */}
-            <Button onClick={onMigrateClick}>Migrate!</Button>
+            <Button onClick={handleMigrateClick}>Migrate!</Button>
           </>
         )}
       </BalanceInfoRow>
