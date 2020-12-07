@@ -135,11 +135,20 @@ const InfoMsg = styled.div`
   a {
     color: ${({ theme }) => theme.color.greyTransparent};
     border: none;
+    text-decoration: underline;
   }
 `;
 const SaveContent: FC = () => {
   const [activeVersion] = useActiveSaveVersion();
   const apyForPastWeek = useAverageApyForPastWeek();
+
+  const handleVersionToggle = useCallback(
+    (selection: ToggleSaveSelection) =>
+      setActiveVersion(selection === 'primary' ? CURRENT : DEPRECATED),
+    [],
+  );
+
+  const isCurrent = activeVersion === CURRENT;
 
   return (
     <>
@@ -171,7 +180,7 @@ const SaveContent: FC = () => {
         </APYStats>
       </PageHeader>
       <SaveInfo />
-      {activeVersion.isCurrent ? <SaveForm /> : <SaveMigration />}
+      {isCurrent && <SaveForm />}
     </>
   );
 };

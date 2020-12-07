@@ -10,6 +10,7 @@ import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
 import { Button } from '../../core/Button';
 import { useSelectedMasset } from '../../../context/SelectedMassetProvider';
 import { CURRENT_SAVE_VERSION, useActiveSaveVersion } from './SaveProvider';
+import { SaveMigration } from './SaveMigration';
 
 const CreditBalance = styled.div`
   display: flex;
@@ -85,11 +86,6 @@ export const SaveInfo: FC = () => {
     massetState?.savingsContracts[`v${activeVersion.version}` as 'v1' | 'v2']
       ?.savingsBalance;
 
-  const handleMigrateClick = useCallback(() => {
-    // TODO send a tx, start the assistant
-    setActiveVersion(CURRENT_SAVE_VERSION);
-  }, [setActiveVersion]);
-
   return (
     <>
       <BalanceInfoRow>
@@ -108,9 +104,8 @@ export const SaveInfo: FC = () => {
             <WarningMsg>
               Migrate your <b>{massetName}</b> to continue earning interest on
               your balance.
-            </WarningMsg>
-            {/* (to be removed) */}
-            <Button onClick={handleMigrateClick}>Migrate!</Button>
+            </WarningMsg>            
+            <SaveMigration />
           </>
         )}
       </BalanceInfoRow>
