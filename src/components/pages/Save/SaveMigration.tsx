@@ -5,10 +5,6 @@ import { SaveMigrationStep } from '../../../types';
 import { H2, P } from '../../core/Typography';
 import { Step } from './SaveMigrationStep';
 
-interface Props {
-  onSuccessfulMigrate: () => void;
-}
-
 const { WITHDRAW, APPROVE, DEPOSIT } = SaveMigrationStep;
 
 const MIGRATION_STEPS = [WITHDRAW, APPROVE, DEPOSIT];
@@ -98,7 +94,7 @@ const StepContainer = styled.div`
   }
 `;
 
-export const SaveMigration: FC<Props> = ({ onSuccessfulMigrate }) => {
+export const SaveMigration: FC = () => {
   const [activeStep, setActiveStep] = useState(WITHDRAW);
   const [pendingIndex, setPendingIndex] = useState<number | undefined>(
     undefined,
@@ -118,7 +114,6 @@ export const SaveMigration: FC<Props> = ({ onSuccessfulMigrate }) => {
         break;
       case DEPOSIT:
         // call deposit and wait
-        onSuccessfulMigrate();
         break;
       default:
         break;

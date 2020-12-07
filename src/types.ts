@@ -160,3 +160,9 @@ export interface AccentColors {
   base: string;
   text: string;
 }
+
+export enum SaveMigrationStep {
+  WITHDRAW = 0,
+  APPROVE = 1,
+  DEPOSIT = 2,
+}

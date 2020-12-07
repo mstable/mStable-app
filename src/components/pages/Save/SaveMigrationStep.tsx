@@ -67,8 +67,9 @@ const SplitContainer = styled.div`
   }
 
   @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+
     > ${Container}:not(:last-child) {
-      flex-direction: row;
       margin-right: 0.5rem;
     }
   }

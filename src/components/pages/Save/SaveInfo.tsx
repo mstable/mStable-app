@@ -77,8 +77,7 @@ const StyledWarningBadge = styled(WarningBadge)`
 `;
 
 export const SaveInfo: FC = () => {
-  const [activeVersion, setActiveVersion] = useActiveSaveVersion();
-
+  const [activeVersion] = useActiveSaveVersion();
   const massetName = useSelectedMasset();
   const massetState = useSelectedMassetState();
 
@@ -104,7 +103,7 @@ export const SaveInfo: FC = () => {
             <WarningMsg>
               Migrate your <b>{massetName}</b> to continue earning interest on
               your balance.
-            </WarningMsg>            
+            </WarningMsg>
             <SaveMigration />
           </>
         )}

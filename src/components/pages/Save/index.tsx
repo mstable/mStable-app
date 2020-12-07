@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 import CountUp from 'react-countup';
@@ -24,8 +24,6 @@ import { SaveConfirm } from './SaveConfirm';
 import { TransactionType } from './types';
 import { PageHeader } from '../PageHeader';
 import { ToggleSave } from './ToggleSave';
-
-const SaveMigration: FC = () => <p>migrate me!</p>;
 
 const SaveForm: FC = () => {
   const {
@@ -142,14 +140,6 @@ const SaveContent: FC = () => {
   const [activeVersion] = useActiveSaveVersion();
   const apyForPastWeek = useAverageApyForPastWeek();
 
-  const handleVersionToggle = useCallback(
-    (selection: ToggleSaveSelection) =>
-      setActiveVersion(selection === 'primary' ? CURRENT : DEPRECATED),
-    [],
-  );
-
-  const isCurrent = activeVersion === CURRENT;
-
   return (
     <>
       <PageHeader
@@ -180,7 +170,7 @@ const SaveContent: FC = () => {
         </APYStats>
       </PageHeader>
       <SaveInfo />
-      {isCurrent && <SaveForm />}
+      {activeVersion?.isCurrent && <SaveForm />}
     </>
   );
 };
