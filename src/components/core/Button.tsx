@@ -32,7 +32,6 @@ export const BubbleButton = styled(UnstyledButton)<{
   transition: 0.5s linear text-decoration;
 
   :hover {
-    text-decoration: underline;
     color: ${({ theme, highlighted }) =>
       highlighted ? theme.color.white : theme.color.black};
   }
