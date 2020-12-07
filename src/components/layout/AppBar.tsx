@@ -29,6 +29,8 @@ import {
   useWalletAddress,
   useWallet,
 } from '../../context/OnboardProvider';
+import { useTokenSubscription } from '../../context/TokensProvider';
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 import { ReactComponent as BraveIcon } from '../icons/wallets/brave.svg';
 import { ReactComponent as MetaMaskIcon } from '../icons/wallets/metamask.svg';
 import { ReactComponent as FortmaticIcon } from '../icons/wallets/fortmatic.svg';
@@ -38,8 +40,6 @@ import { ReactComponent as WalletConnectIcon } from '../icons/wallets/walletconn
 import { ReactComponent as CoinbaseIcon } from '../icons/wallets/coinbase.svg';
 import { ReactComponent as MeetOneIcon } from '../icons/wallets/meetone.svg';
 import { Idle } from '../icons/Idle';
-import { useToken } from '../../context/DataProvider/TokensProvider';
-import { useMassetData } from '../../context/DataProvider/DataProvider';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -380,11 +380,11 @@ const WalletButton: FC<{}> = () => {
 };
 
 export const AppBar: FC = () => {
-  const massetData = useMassetData();
   const { pathname } = useLocation();
   const accountOpen = useAccountOpen();
   const closeAccount = useCloseAccount();
-  const token = useToken(massetData?.address || null);
+  const massetState = useSelectedMassetState();
+  const massetToken = useTokenSubscription(massetState?.address);
 
   const home = pathname === '/';
 
@@ -396,10 +396,10 @@ export const AppBar: FC = () => {
             <Link to="/" title="Home" onClick={closeAccount}>
               <LogoSvg />
             </Link>
-            {token && (
+            {massetToken && (
               <Balance>
-                <span>{token.balance.format(2, true)}</span>
-                {`${token.symbol}`}
+                <span>{massetToken.balance.format()}</span>
+                {`${massetToken.symbol}`}
               </Balance>
             )}
           </Logo>
