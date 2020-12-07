@@ -135,6 +135,7 @@ const transformSavingsContractV2 = (
     totalSavings: BigDecimal.fromMetric(totalSavings),
     dailyAPY: parseFloat(dailyAPY),
     token: tokens[id],
+    savingsBalance: {},
     version: version as 2,
   };
 };
