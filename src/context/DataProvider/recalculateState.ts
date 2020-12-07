@@ -27,22 +27,17 @@ const recalculateSavingsContractV1 = (
 };
 const recalculateSavingsContractV2 = (
   v2: Extract<SavingsContractState, { version: 2 }>,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  token: MassetState['token'],
 ): Extract<SavingsContractState, { version: 2 }> => {
-  // const { latestExchangeRate } = v2;
+  const { latestExchangeRate, token } = v2;
 
-  // TODO
-  // const balance = v2.token?.balance;
-  //
-  // if (latestExchangeRate) {
-  //   const balance = creditBalance.mulTruncate(latestExchangeRate.rate.exact);
-  //   return {
-  //     ...v2,
-  //     savingsBalance: { balance, credits: creditBalance },
-  //   };
-  // }
+  if (token && latestExchangeRate) {
+    const { balance } = token;
+    const credits = balance.mulTruncate(latestExchangeRate.rate.exact);
+    return {
+      ...v2,
+      savingsBalance: { balance, credits },
+    };
+  }
 
   return v2;
 };
@@ -52,7 +47,7 @@ const recalculateSavingsContracts = ({
   savingsContracts: { v1, v2 },
 }: MassetState): MassetState['savingsContracts'] => ({
   v1: v1 ? recalculateSavingsContractV1(v1, token) : undefined,
-  v2: v2 ? recalculateSavingsContractV2(v2, token) : undefined,
+  v2: v2 ? recalculateSavingsContractV2(v2) : undefined,
 });
 
 const recalculateBassets = (masset: MassetState): MassetState['bAssets'] =>
@@ -93,6 +88,7 @@ const recalculateBassets = (masset: MassetState): MassetState['bAssets'] =>
           basketShare,
           overweight,
           balanceInMasset,
+          maxWeightInMasset,
           totalVaultInMasset,
         },
       ];

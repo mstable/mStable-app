@@ -72,6 +72,10 @@ export type SavingsContractState = {
   | {
       version: 2;
       token?: SubscribedToken;
+      savingsBalance: {
+        balance?: BigDecimal;
+        credits?: BigDecimal;
+      };
     }
 );
 
