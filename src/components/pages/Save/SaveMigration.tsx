@@ -1,19 +1,16 @@
 import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { ActivitySpinner } from '../../core/ActivitySpinner';
-import { BubbleButton as Button } from '../../core/Button';
+import { SaveMigrationStep } from '../../../types';
 import { H2, P } from '../../core/Typography';
+import { Step } from './SaveMigrationStep';
 
-enum SaveMigrationStep {
-  WITHDRAW = 0,
-  APPROVE = 1,
-  DEPOSIT = 2,
+interface Props {
+  onSuccessfulMigrate: () => void;
 }
 
 const { WITHDRAW, APPROVE, DEPOSIT } = SaveMigrationStep;
 
 const MIGRATION_STEPS = [WITHDRAW, APPROVE, DEPOSIT];
-const MIGRATION_TITLES = ['Withdraw', 'Approve', 'Deposit'];
 
 const Card = styled.div`
   margin-top: 2.5rem;
@@ -88,42 +85,6 @@ const StepContainer = styled.div`
   }
 `;
 
-const Step = styled.div<{ active?: boolean; complete?: boolean }>`
-  width: 100%;
-  border-radius: 0.75rem;
-  height: 5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: ${({ theme, active, complete }) =>
-    complete
-      ? `4px solid ${theme.color.greenTransparent}`
-      : active
-      ? `4px solid ${theme.color.blueTransparent}`
-      : `none`};
-  background: ${({ theme, active, complete }) =>
-    complete || active ? theme.color.white : theme.color.lightGrey};
-  padding: 0 1.75rem;
-  font-weight: 600;
-  transition: 0.25s linear background;
-
-  &:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-
-  span {
-    opacity: ${({ active, complete }) => (active || complete ? 1 : 0.5)};
-  }
-
-  ${Button} {
-    display: ${({ active }) => !active && `none`};
-  }
-`;
-
-interface Props {
-  onSuccessfulMigrate: () => void;
-}
-
 export const SaveMigration: FC<Props> = ({ onSuccessfulMigrate }) => {
   const [isPending, setPending] = useState(false);
   const [activeStep, setActiveStep] = useState(WITHDRAW);
@@ -149,13 +110,13 @@ export const SaveMigration: FC<Props> = ({ onSuccessfulMigrate }) => {
     }
   };
 
-  const handleSubmission = (step: SaveMigrationStep): void => {
+  const handleStepSubmit = (step: SaveMigrationStep): void => {
     setPending(true);
     setTimeout(() => {
       mapStepToAction(step);
       increaseStepIndex();
       setPending(false);
-    }, 500);
+    }, 2500);
   };
 
   const stepsCompleted = activeStep === MIGRATION_STEPS.length;
@@ -182,19 +143,10 @@ export const SaveMigration: FC<Props> = ({ onSuccessfulMigrate }) => {
                   key={`step-${step}`}
                   active={isActive}
                   complete={isComplete}
-                >
-                  <span>{MIGRATION_TITLES[step]} </span>
-                  <Button
-                    highlighted={isActive || isPending}
-                    onClick={() => handleSubmission(step)}
-                  >
-                    {isPending ? (
-                      <ActivitySpinner size={20} success pending={isPending} />
-                    ) : (
-                      `Submit`
-                    )}
-                  </Button>
-                </Step>
+                  pending={isPending}
+                  step={step}
+                  onClick={handleStepSubmit}
+                />
               );
             })}
         </StepContainer>
