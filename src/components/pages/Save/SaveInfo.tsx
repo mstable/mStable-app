@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { H3 } from '../../core/Typography';
@@ -7,9 +7,9 @@ import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
-import { Button } from '../../core/Button';
 import { useSelectedMasset } from '../../../context/SelectedMassetProvider';
-import { CURRENT_SAVE_VERSION, useActiveSaveVersion } from './SaveProvider';
+import { useActiveSaveVersion } from './SaveProvider';
+import { SaveMigration } from './SaveMigration';
 
 const CreditBalance = styled.div`
   display: flex;
@@ -76,19 +76,13 @@ const StyledWarningBadge = styled(WarningBadge)`
 `;
 
 export const SaveInfo: FC = () => {
-  const [activeVersion, setActiveVersion] = useActiveSaveVersion();
-
+  const [activeVersion] = useActiveSaveVersion();
   const massetName = useSelectedMasset();
   const massetState = useSelectedMassetState();
 
   const savingsBalance =
     massetState?.savingsContracts[`v${activeVersion.version}` as 'v1' | 'v2']
       ?.savingsBalance;
-
-  const handleMigrateClick = useCallback(() => {
-    // TODO send a tx, start the assistant
-    setActiveVersion(CURRENT_SAVE_VERSION);
-  }, [setActiveVersion]);
 
   return (
     <>
@@ -109,8 +103,7 @@ export const SaveInfo: FC = () => {
               Migrate your <b>{massetName}</b> to continue earning interest on
               your balance.
             </WarningMsg>
-            {/* (to be removed) */}
-            <Button onClick={handleMigrateClick}>Migrate!</Button>
+            <SaveMigration />
           </>
         )}
       </BalanceInfoRow>

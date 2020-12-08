@@ -25,8 +25,6 @@ import { TransactionType } from './types';
 import { PageHeader } from '../PageHeader';
 import { ToggleSave } from './ToggleSave';
 
-const SaveMigration: FC = () => <p>migrate me!</p>;
-
 const SaveForm: FC = () => {
   const {
     amount,
@@ -135,6 +133,10 @@ const InfoMsg = styled.div`
   a {
     color: ${({ theme }) => theme.color.greyTransparent};
     border: none;
+
+    :hover {
+      color: ${({ theme }) => theme.color.gold};
+    }
   }
 `;
 const SaveContent: FC = () => {
@@ -171,7 +173,7 @@ const SaveContent: FC = () => {
         </APYStats>
       </PageHeader>
       <SaveInfo />
-      {activeVersion.isCurrent ? <SaveForm /> : <SaveMigration />}
+      {activeVersion.isCurrent && <SaveForm />}
     </>
   );
 };

@@ -6,13 +6,14 @@ interface Props {
   error?: boolean;
   success?: boolean;
   pending?: boolean;
+  size?: number;
 }
 
 const Spinner = styled.svg<Props>`
   animation: ${({ pending }) =>
     pending ? 'rotate 2s linear infinite' : 'none'};
-  width: 50px;
-  height: 50px;
+  width: ${({ size }) => (size ? `${size}px` : `50px`)};
+  height: ${({ size }) => (size ? `${size}px` : `50px`)};
 
   circle {
     stroke: ${({ theme, error, success, pending }) =>
@@ -23,7 +24,7 @@ const Spinner = styled.svg<Props>`
         : pending
         ? theme.color.blue
         : theme.color.greyTransparent};
-    stroke-width: 8px;
+    stroke-width: ${({ size }) => (size ? `${(size * 8) / 50}px` : `8px`)};
     stroke-linecap: round;
     fill: none;
     animation: ${({ pending }) =>
@@ -53,22 +54,29 @@ const Spinner = styled.svg<Props>`
   }
 `;
 
-const Container = styled.div`
+const Container = styled.div<Props>`
   svg {
-    width: 100%;
-    height: auto;
+    height: ${({ size }) => `${size}px`};
+    width: ${({ size }) => `${size}px`};
   }
 `;
 
-export const ActivitySpinner: FC<Props> = ({ error, success, pending, className }) => (
-  <Container className={className}>
+export const ActivitySpinner: FC<Props> = ({
+  error,
+  success,
+  pending,
+  className,
+  size = 20,
+}) => (
+  <Container className={className} size={size}>
     <Spinner
-      viewBox="0 0 50 50"
+      viewBox={`0 0 ${size} ${size}`}
       error={error}
       pending={pending}
       success={success}
+      size={size}
     >
-      <circle cx="25" cy="25" r="20" />
+      <circle cx={size / 2} cy={size / 2} r={(size / 2) * 0.8} />
     </Spinner>
   </Container>
 );
