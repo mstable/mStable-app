@@ -30,8 +30,9 @@ const Container = styled.div`
 
 export const Message: FC = () => {
   // pull into context?
-  const title =
-    'SAVE V2 has launched!</b> You’ll need to migrate your balance to continue earning interest.';
+  const title = 'SAVE V2 has launched!';
+  const subtitle =
+    'You’ll need to migrate your balance to continue earning interest.';
   const emoji = '🎉';
   const url = '#';
   //
@@ -42,6 +43,7 @@ export const Message: FC = () => {
           {emoji}
         </span>
         <b>{title}</b>
+        {` ${subtitle} `}
         {url && <a href={url}>Learn more</a>}
       </p>
     </Container>
