@@ -8,7 +8,7 @@ export const useRawEarnData = ({
   block24hAgo,
 }: SyncedEarnData): RawEarnData => {
   const account = useAccount();
-  const block = block24hAgo ? { number: block24hAgo.blockNumber } : undefined;
+  const block = { number: block24hAgo?.blockNumber ?? 0 };
 
   const stakingRewardsContractsSub = useBlockPollingSubscription(
     useStakingRewardsContractsLazyQuery,
