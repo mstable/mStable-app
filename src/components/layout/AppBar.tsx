@@ -302,14 +302,14 @@ const PendingTxContainer = styled.div<{
   font-size: 11px;
   text-align: center;
   line-height: 17px;
+`;
 
-  > div {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
+const SpinnerState = styled.div`
+  position: absolute;
+  top: 2px;
+  bottom: 0;
+  left: 2px;
+  right: 0;
 `;
 
 const WalletButton: FC = () => {
@@ -348,7 +348,7 @@ const WalletButton: FC = () => {
       )}
       <PendingTxContainer pending={pending} error={error} success={success}>
         <ActivitySpinner pending={pending} error={error} success={success} />
-        <div>
+        <SpinnerState>
           {success && account
             ? '✓'
             : error
@@ -356,7 +356,7 @@ const WalletButton: FC = () => {
             : pendingCount === 0
             ? null
             : pendingCount}
-        </div>
+        </SpinnerState>
       </PendingTxContainer>
     </WalletButtonBtn>
   );

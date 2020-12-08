@@ -31,6 +31,10 @@ export const BubbleButton = styled(UnstyledButton)<{
   cursor: pointer;
   transition: 0.5s linear text-decoration;
 
+  svg circle {
+    stroke: white;
+  }
+
   :hover {
     color: ${({ theme, highlighted }) =>
       highlighted ? theme.color.white : theme.color.black};
