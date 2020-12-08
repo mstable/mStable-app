@@ -173,7 +173,7 @@ const SaveContent: FC = () => {
         </APYStats>
       </PageHeader>
       <SaveInfo />
-      {activeVersion?.isCurrent && <SaveForm />}
+      {activeVersion.isCurrent && <SaveForm />}
     </>
   );
 };
