@@ -304,7 +304,7 @@ const useRawPlatformPools = (
   rawStakingRewardsContracts: RawStakingRewardsContracts,
   block24hAgo?: BlockTimestamp,
 ): RawPlatformPools => {
-  const block = block24hAgo ? { number: block24hAgo.blockNumber } : undefined;
+  const block = { number: block24hAgo?.blockNumber ?? 0 };
   const includeHistoric = !!block;
 
   const ids = (rawStakingRewardsContracts?.current || []).map(
@@ -459,7 +459,11 @@ export const useSyncedEarnData = (): SyncedEarnData => {
   const block24hAgo = useBlockTimestamp24hAgo();
 
   const stakingRewardsContractsQuery = useStakingRewardsContractsQuery({
-    variables: { account: account ?? null, includeHistoric: false },
+    variables: {
+      account: account ?? null,
+      includeHistoric: false,
+      block: { number: 0 },
+    },
     fetchPolicy: 'cache-and-network',
   });
 

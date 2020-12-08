@@ -25,7 +25,7 @@ const useRawData = (): [MassetsQueryResult['data'], Tokens] => {
 
   const account = useAccount();
   const subscription = useBlockPollingSubscription(useMassetsLazyQuery, {
-    variables: { account: account as string, hasAccount: !!account },
+    variables: { account: account ?? '', hasAccount: !!account },
   });
 
   return [subscription.data, tokens];
@@ -62,3 +62,13 @@ export const useV1SavingsBalance = ():
 
 export const useBassetState = (address: string): BassetState | undefined =>
   useSelectedMassetState()?.bAssets[address];
+
+export const useSelectedSaveV1Address = (): string | undefined => {
+  const massetState = useSelectedMassetState();
+  return massetState?.savingsContracts?.v1?.address;
+};
+
+export const useSelectedSaveV2Address = (): string | undefined => {
+  const massetState = useSelectedMassetState();
+  return massetState?.savingsContracts?.v2?.address;
+};
