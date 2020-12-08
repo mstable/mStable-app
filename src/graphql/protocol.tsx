@@ -3136,7 +3136,7 @@ export enum Transaction_OrderBy {
   Sender = 'sender'
 }
 
-export type TokenDetailsFragment = (
+export type TokenAllFragment = (
   Pick<Token, 'id' | 'address' | 'decimals' | 'symbol'>
   & { totalSupply: MetricFieldsFragment }
 );
@@ -3174,20 +3174,20 @@ export type MassetsQueryVariables = {
 
 export type MassetsQuery = { massets: Array<(
     Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
-    & { token: TokenDetailsFragment, basket: (
+    & { token: TokenAllFragment, basket: (
       Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
       & { bassets: Array<(
         Pick<Basset, 'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
-        & { vaultBalance: MetricFieldsFragment, token: TokenDetailsFragment }
+        & { vaultBalance: MetricFieldsFragment, token: TokenAllFragment }
       )>, removedBassets: Array<(
         Pick<Basset, 'id'>
-        & { token: TokenDetailsFragment }
+        & { token: TokenAllFragment }
       )> }
     ), savingsContractsV1: Array<(
       { totalCredits?: Maybe<MetricFieldsFragment>, creditBalances: Array<Pick<CreditBalance, 'amount'>> }
       & SavingsContractAllFragment
     )>, savingsContractsV2: Array<(
-      { token?: Maybe<TokenDetailsFragment> }
+      { token?: Maybe<TokenAllFragment> }
       & SavingsContractAllFragment
     )> }
   )> };
@@ -3198,14 +3198,14 @@ export type AllTokensQueryVariables = {};
 export type AllTokensQuery = { savingsContracts: Array<(
     Pick<SavingsContract, 'id'>
     & { address: SavingsContract['id'] }
-  )>, tokens: Array<TokenDetailsFragment> };
+  )>, tokens: Array<TokenAllFragment> };
 
 export type TokenQueryVariables = {
   id: Scalars['ID'];
 };
 
 
-export type TokenQuery = { token?: Maybe<TokenDetailsFragment> };
+export type TokenQuery = { token?: Maybe<TokenAllFragment> };
 
 export type HistoricTransactionsQueryVariables = {
   account?: Maybe<Scalars['Bytes']>;
@@ -3259,8 +3259,8 @@ export const MetricFieldsFragmentDoc = gql`
   simple
 }
     `;
-export const TokenDetailsFragmentDoc = gql`
-    fragment TokenDetails on Token {
+export const TokenAllFragmentDoc = gql`
+    fragment TokenAll on Token {
   id
   address
   decimals
@@ -3299,7 +3299,7 @@ export const MassetsDocument = gql`
   massets {
     id
     token {
-      ...TokenDetails
+      ...TokenAll
     }
     feeRate
     redemptionFeeRate
@@ -3317,13 +3317,13 @@ export const MassetsDocument = gql`
         status
         maxWeight
         token {
-          ...TokenDetails
+          ...TokenAll
         }
       }
       removedBassets: bassets(where: {removed: true}) {
         id
         token {
-          ...TokenDetails
+          ...TokenAll
         }
       }
     }
@@ -3339,12 +3339,12 @@ export const MassetsDocument = gql`
     savingsContractsV2: savingsContracts(where: {version: 2}) {
       ...SavingsContractAll
       token {
-        ...TokenDetails
+        ...TokenAll
       }
     }
   }
 }
-    ${TokenDetailsFragmentDoc}
+    ${TokenAllFragmentDoc}
 ${MetricFieldsFragmentDoc}
 ${SavingsContractAllFragmentDoc}`;
 
@@ -3381,10 +3381,10 @@ export const AllTokensDocument = gql`
     id
   }
   tokens {
-    ...TokenDetails
+    ...TokenAll
   }
 }
-    ${TokenDetailsFragmentDoc}`;
+    ${TokenAllFragmentDoc}`;
 
 /**
  * __useAllTokensQuery__
@@ -3413,10 +3413,10 @@ export type AllTokensQueryResult = ApolloReactCommon.QueryResult<AllTokensQuery,
 export const TokenDocument = gql`
     query Token($id: ID!) @api(name: protocol) {
   token(id: $id) {
-    ...TokenDetails
+    ...TokenAll
   }
 }
-    ${TokenDetailsFragmentDoc}`;
+    ${TokenAllFragmentDoc}`;
 
 /**
  * __useTokenQuery__

@@ -4,7 +4,7 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
   massets {
     id
     token {
-      ...TokenDetails
+      ...TokenAll
     }
     feeRate
     redemptionFeeRate
@@ -22,13 +22,13 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
         status
         maxWeight
         token {
-          ...TokenDetails
+          ...TokenAll
         }
       }
       removedBassets: bassets(where: { removed: true }) {
         id
         token {
-          ...TokenDetails
+          ...TokenAll
         }
       }
     }
@@ -44,7 +44,7 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
     savingsContractsV2: savingsContracts(where: { version: 2 }) {
       ...SavingsContractAll
       token {
-        ...TokenDetails
+        ...TokenAll
       }
     }
   }
@@ -57,13 +57,13 @@ query AllTokens @api(name: protocol) {
     id
   }
   tokens {
-    ...TokenDetails
+    ...TokenAll
   }
 }
 
 query Token($id: ID!) @api(name: protocol) {
   token(id: $id) {
-    ...TokenDetails
+    ...TokenAll
   }
 }
 
