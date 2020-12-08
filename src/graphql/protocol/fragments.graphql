@@ -1,4 +1,4 @@
-fragment TokenDetails on Token {
+fragment TokenAll on Token {
   id
   address
   decimals

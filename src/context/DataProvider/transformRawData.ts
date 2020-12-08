@@ -2,10 +2,7 @@ import { bigNumberify } from 'ethers/utils';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { MassetName, SubscribedToken } from '../../types';
-import {
-  MassetsQueryResult,
-  TokenDetailsFragment,
-} from '../../graphql/protocol';
+import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol';
 import {
   BassetStatus,
   DataState,
@@ -141,7 +138,7 @@ const transformSavingsContractV2 = (
 };
 
 const transformTokenData = (
-  { address, totalSupply, symbol, decimals }: TokenDetailsFragment,
+  { address, totalSupply, symbol, decimals }: TokenAllFragment,
   tokens: Tokens,
 ): SubscribedToken => ({
   address,
