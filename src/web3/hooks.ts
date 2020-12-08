@@ -4,7 +4,10 @@ import { BigNumber } from 'ethers/utils';
 import { useQuery, gql, DocumentNode } from '@apollo/client';
 
 import { useSigner } from '../context/OnboardProvider';
-import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
+import {
+  useSelectedMassetState,
+  useSelectedSaveV1Address,
+} from '../context/DataProvider/DataProvider';
 import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import { MassetFactory } from '../typechain/MassetFactory';
 import { SavingsContractFactory } from '../typechain/SavingsContractFactory';
@@ -64,20 +67,24 @@ export const useBlockTimesForDates = (dates: Date[]): BlockTime[] => {
 
 const nowUnix = getUnixTime(Date.now());
 
-export const useDailyApysDocument = (blockTimes: BlockTime[]): DocumentNode =>
+export const useDailyApysDocument = (
+  savingsContractAddress: string | undefined,
+  blockTimes: BlockTime[],
+): DocumentNode =>
   useMemo(() => {
-    const currentApy = `t${nowUnix}: savingsContracts(where: { version: 1 }) { ...F }`;
+    const withId = `where: { id: "${savingsContractAddress}" }`;
+    const currentApy = `t${nowUnix}: savingsContracts(${withId}) { ...DailySaveAPY }`;
     const blockApys = blockTimes
       .map(
         ({ timestamp, number }) => `
-              t${timestamp}: savingsContracts(where: { version: 1 }, block: { number: ${number} }) {
-                ...F
+              t${timestamp}: savingsContracts(${withId}, block: { number: ${number} }) {
+                ...DailySaveAPY
               }`,
       )
       .join('\n');
 
     return gql`
-      fragment F on SavingsContract {
+      fragment DailySaveAPY on SavingsContract {
         dailyAPY
         utilisationRate {
           simple
@@ -88,27 +95,26 @@ export const useDailyApysDocument = (blockTimes: BlockTime[]): DocumentNode =>
         ${blockApys}
       }
     `;
-  }, [blockTimes]);
+  }, [savingsContractAddress, blockTimes]);
 
 export const useDailyApysForBlockTimes = (
+  savingsContractAddress: string | undefined,
   blockTimes: BlockTime[],
 ): { timestamp: number; dailyAPY: number; utilisationRate: number }[] => {
-  const apysDoc = useDailyApysDocument(blockTimes);
+  const apysDoc = useDailyApysDocument(savingsContractAddress, blockTimes);
 
   const apysQuery = useQuery<{
-    [timestamp: string]: {
-      savingsContracts: [
-        {
-          dailyAPY: string;
-          utilisationRate: { simple: string };
-        },
-      ];
-    };
+    [timestamp: string]: [
+      {
+        dailyAPY: string;
+        utilisationRate: { simple: string };
+      },
+    ];
   }>(apysDoc, { fetchPolicy: 'cache-first', nextFetchPolicy: 'cache-only' });
 
   return Object.entries(apysQuery.data || {})
-    .filter(([, value]) => !!value?.savingsContracts?.[0]?.dailyAPY)
-    .map(([key, { savingsContracts: [{ dailyAPY, utilisationRate }] }]) => ({
+    .filter(([, value]) => !!value?.[0]?.dailyAPY)
+    .map(([key, [{ dailyAPY, utilisationRate }]]) => ({
       timestamp: getKeyTimestamp(key),
       dailyAPY: parseFloat(parseFloat(dailyAPY).toFixed(2)),
       utilisationRate: parseFloat(
@@ -127,8 +133,14 @@ export const timestampsForWeek = eachDayOfInterval({
   .concat(now);
 
 export const useAverageApyForPastWeek = (): number | undefined => {
+  // TODO support v1/v2
+  const savingsContractAddress = useSelectedSaveV1Address();
+
   const blockTimes = useBlockTimesForDates(timestampsForWeek);
-  const dailyApys = useDailyApysForBlockTimes(blockTimes);
+  const dailyApys = useDailyApysForBlockTimes(
+    savingsContractAddress,
+    blockTimes,
+  );
   return useMemo(() => {
     if (dailyApys.length < 2) {
       // Not enough data to sample an average
@@ -172,6 +184,7 @@ export const useSelectedMassetContract = (): Masset | undefined => {
     [massetState, signer],
   );
 };
+
 export const useSelectedSaveV1Contract = (): SavingsContract | undefined => {
   const massetState = useSelectedMassetState();
   const signer = useSigner();
