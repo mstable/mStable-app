@@ -62,7 +62,7 @@
     "build:ipfs:ropsten": "cp .env.example.ropsten .env && yarn && yarn run codegen && yarn run build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml -r dotenv/config",
-    "codegen:typechain": "cp ./lib/abis/*.json ./node_modules/@mstable/protocol/build/contracts && yarn typechain --target ethers-v4 --outDir src/typechain './node_modules/@mstable/protocol/build/contracts/*.json'",
+    "codegen:typechain": "cp ./node_modules/@mstable/protocol/build/contracts/*.json ./lib/abis/combined && cp ./lib/abis/overrides/*.json ./lib/abis/combined && yarn typechain --target ethers-v4 --outDir src/typechain './lib/abis/combined/*.json'",
     "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "provision": "sh ./scripts/provision.sh",
