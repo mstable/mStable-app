@@ -133,7 +133,10 @@ const InfoMsg = styled.div`
   a {
     color: ${({ theme }) => theme.color.greyTransparent};
     border: none;
-    text-decoration: underline;
+
+    :hover {
+      color: ${({ theme }) => theme.color.gold};
+    }
   }
 `;
 const SaveContent: FC = () => {

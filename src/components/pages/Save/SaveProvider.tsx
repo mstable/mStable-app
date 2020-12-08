@@ -35,7 +35,7 @@ export const SAVE_VERSIONS: SaveVersion[] = [
 ];
 
 export const CURRENT_SAVE_VERSION = SAVE_VERSIONS.find(
-  v => v.isCurrent,
+  v => v?.isCurrent,
 ) as SaveVersion;
 
 // Could be moved higher up if necessary

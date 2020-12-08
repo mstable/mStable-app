@@ -162,7 +162,7 @@ export interface AccentColors {
 }
 
 export enum SaveMigrationStep {
-  WITHDRAW = 0,
-  APPROVE = 1,
-  DEPOSIT = 2,
+  WITHDRAW,
+  APPROVE,
+  DEPOSIT
 }
