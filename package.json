@@ -65,7 +65,6 @@
     "codegen:typechain": "cp ./lib/abis/*.json ./node_modules/@mstable/protocol/build/contracts && yarn typechain --target ethers-v4 --outDir src/typechain './node_modules/@mstable/protocol/build/contracts/*.json'",
     "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
-    "provision": "sh ./scripts/provision.sh",
     "start": "react-scripts start",
     "test:ropsten": "env-cmd -f .env.example.ropsten react-scripts test",
     "test": "react-scripts test",

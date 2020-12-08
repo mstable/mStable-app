@@ -1,6 +1,0 @@
-[submodule "lib/mStable-subgraph"]
-	path = lib/mStable-subgraph
-	url = https://github.com/mstable/mStable-subgraph.git
-[submodule "lib/graph-node"]
-	path = lib/graph-node
-	url = https://github.com/graphprotocol/graph-node.git
