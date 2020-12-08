@@ -15,6 +15,7 @@ import { NotificationToasts } from './NotificationToasts';
 import { centredLayout, gradientBackground } from './css';
 import { Color } from '../../theme';
 import { Message } from './Message';
+import { useMessageDispatch } from '../../context/MessageProvider';
 
 const Main = styled.main`
   max-width: 100%;
@@ -167,13 +168,18 @@ export const Layout: FC<{}> = ({ children }) => {
   const accountOpen = useAccountOpen();
   const idle = useIsIdle();
   const { pathname } = useLocation();
+  const { setVisible: setMessageVisible } = useMessageDispatch();
   const home = pathname === '/';
   const earn = pathname === '/earn';
+  const save = pathname === '/save';
 
   useLayoutEffect(() => {
     // Scroll to the top when the account view is toggled
     window.scrollTo({ top: 0 });
-  }, [accountOpen]);
+
+    // Toggle message
+    setMessageVisible(save);
+  }, [accountOpen, setMessageVisible, save]);
 
   return (
     <>

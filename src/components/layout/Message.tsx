@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { useMessageState } from '../../context/MessageProvider';
 
 const Container = styled.div`
   display: flex;
@@ -29,23 +30,18 @@ const Container = styled.div`
 `;
 
 export const Message: FC = () => {
-  // pull into context?
-  const title = 'SAVE V2 has launched!';
-  const subtitle =
-    'You’ll need to migrate your balance to continue earning interest.';
-  const emoji = '🎉';
-  const url = '#';
-  //
-  return (
+  const { isVisible, message } = useMessageState();
+
+  return isVisible ? (
     <Container>
       <p>
         <span role="img" aria-label="emoji">
-          {emoji}
+          {message?.emoji}
         </span>
-        <b>{title}</b>
-        {` ${subtitle} `}
-        {url && <a href={url}>Learn more</a>}
+        <b>{message?.title}</b>
+        {` ${message?.subtitle} `}
+        {message?.url && <a href={message.url}>Learn more</a>}
       </p>
     </Container>
-  );
+  ) : null;
 };
