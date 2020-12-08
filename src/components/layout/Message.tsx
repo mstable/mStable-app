@@ -29,14 +29,20 @@ const Container = styled.div`
 `;
 
 export const Message: FC = () => {
+  // pull into context?
+  const title =
+    'SAVE V2 has launched!</b> You’ll need to migrate your balance to continue earning interest.';
+  const emoji = '🎉';
+  const url = '#';
+  //
   return (
     <Container>
       <p>
-        <span role="img" aria-label="party emoji">
-          🎉
+        <span role="img" aria-label="emoji">
+          {emoji}
         </span>
-        <b>SAVE V2 has launched!</b> You’ll need to migrate your balance to
-        continue earning interest. <a href="#">Learn more</a>.
+        <b>{title}</b>
+        {url && <a href={url}>Learn more</a>}
       </p>
     </Container>
   );
