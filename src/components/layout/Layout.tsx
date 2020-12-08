@@ -14,6 +14,7 @@ import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
 import { centredLayout, gradientBackground } from './css';
 import { Color } from '../../theme';
+import { Message } from './Message';
 
 const Main = styled.main`
   max-width: 100%;
@@ -185,6 +186,7 @@ export const Layout: FC<{}> = ({ children }) => {
           ) : (
             <Centred>
               <Main>
+                <Message />
                 <BackgroundContainer>{children}</BackgroundContainer>
               </Main>
             </Centred>
