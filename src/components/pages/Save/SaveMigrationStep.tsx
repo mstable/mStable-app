@@ -85,7 +85,7 @@ export const Step: FC<Props> = props => {
       {buttonTitles?.map((buttonTitle, i) => {
         const isPending = pendingIndex === i;
         return (
-          <Container active={active} complete={complete}>
+          <Container active={active} complete={complete} key={buttonTitle}>
             <span>{MIGRATION_TITLES.get(step)} </span>
             <Button
               highlighted={active || pendingIndex !== undefined}
