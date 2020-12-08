@@ -10,6 +10,7 @@ import {
 import Skeleton from 'react-loading-skeleton';
 import { format } from 'date-fns';
 
+import { useSelectedSaveV1Address } from '../../context/DataProvider/DataProvider';
 import {
   useDailyApysForBlockTimes,
   useBlockTimesForDates,
@@ -48,7 +49,13 @@ const DailyApysChart: FC = () => {
   const { DailyApy, UtilisationRate } = useMetrics<MetricTypes>();
 
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
-  const dailyApys = useDailyApysForBlockTimes(blockTimes);
+
+  // TODO support v1/v2
+  const savingsContractAddress = useSelectedSaveV1Address();
+  const dailyApys = useDailyApysForBlockTimes(
+    savingsContractAddress,
+    blockTimes,
+  );
 
   return (
     <RechartsContainer>

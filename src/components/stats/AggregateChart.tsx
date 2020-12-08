@@ -100,7 +100,7 @@ const useAggregateMetrics = (): {
 
   return useMemo(() => {
     const filtered = Object.entries(query.data ?? {})
-      .filter(([, value]) => !!value.totalSupply)
+      .filter(([, value]) => !!value?.totalSupply)
       .map(([key, value]) => [getKeyTimestamp(key), value]) as [
       number,
       AggregateMetricsQueryResult[string],
