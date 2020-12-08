@@ -14,6 +14,7 @@ import { configureScope } from '@sentry/react';
 import { CHAIN_ID } from '../web3/constants';
 import { useAddErrorNotification } from './NotificationsProvider';
 import { useWalletAddress, useConnected, useWallet } from './OnboardProvider';
+import { Message } from '../types';
 
 export enum AccountItems {
   Notifications,
@@ -25,6 +26,8 @@ enum Actions {
   SetOnline,
   SetAccountItem,
   ToggleAccount,
+  SetMessageVisible,
+  SetMessage,
 }
 
 export enum StatusWarnings {
@@ -37,19 +40,25 @@ interface State {
   supportedChain: boolean;
   accountItem: AccountItems | null;
   online: boolean;
+  messageVisible: boolean;
+  message: Message;
 }
 
 type Action =
   | { type: Actions.SetAccountItem; payload: AccountItems | null }
   | { type: Actions.ToggleAccount; payload: AccountItems }
   | { type: Actions.SupportedChainSelected; payload: boolean }
-  | { type: Actions.SetOnline; payload: boolean };
+  | { type: Actions.SetOnline; payload: boolean }
+  | { type: Actions.SetMessage; payload: Message }
+  | { type: Actions.SetMessageVisible; payload: boolean };
 
 interface Dispatch {
   closeAccount(): void;
   openWalletRedirect(redirect: string): void;
   toggleNotifications(): void;
   toggleWallet(): void;
+  setMessageVisible(isVisible: boolean): void;
+  setMessage(message: Message): void;
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
@@ -73,6 +82,10 @@ const reducer: Reducer<State, Action> = (state, action) => {
       };
     case Actions.SetOnline:
       return { ...state, online: action.payload };
+    case Actions.SetMessage:
+      return { ...state, message: action.payload };
+    case Actions.SetMessageVisible:
+      return { ...state, messageVisible: action.payload };
     default:
       return state;
   }
@@ -83,6 +96,14 @@ const initialState: State = {
   supportedChain: true,
   accountItem: null,
   online: true,
+  message: {
+    title: 'SAVE V2 has launched!',
+    subtitle:
+      'You’ll need to migrate your balance to continue earning interest.',
+    emoji: '🎉',
+    url: '#',
+  },
+  messageVisible: false,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -99,6 +120,26 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const wallet = useWallet();
   const connected = useConnected();
   const status = connected ? 'connected' : 'connecting';
+
+  const setMessageVisible = useCallback<Dispatch['setMessageVisible']>(
+    isVisible => {
+      dispatch({
+        type: Actions.SetMessageVisible,
+        payload: isVisible,
+      });
+    },
+    [dispatch],
+  );
+
+  const setMessage = useCallback<Dispatch['setMessage']>(
+    message => {
+      dispatch({
+        type: Actions.SetMessage,
+        payload: message,
+      });
+    },
+    [dispatch],
+  );
 
   const closeAccount = useCallback<Dispatch['closeAccount']>(() => {
     dispatch({ type: Actions.SetAccountItem, payload: null });
@@ -205,6 +246,8 @@ export const AppProvider: FC<{}> = ({ children }) => {
             openWalletRedirect,
             toggleNotifications,
             toggleWallet,
+            setMessageVisible,
+            setMessage,
           },
         ],
         [
@@ -213,6 +256,8 @@ export const AppProvider: FC<{}> = ({ children }) => {
           openWalletRedirect,
           toggleNotifications,
           toggleWallet,
+          setMessageVisible,
+          setMessage,
         ],
       )}
     >
@@ -257,3 +302,6 @@ export const useOpenWalletRedirect = (): Dispatch['openWalletRedirect'] =>
 
 export const useToggleNotifications = (): Dispatch['toggleNotifications'] =>
   useAppDispatch().toggleNotifications;
+
+export const useSetMessageVisible = (): Dispatch['setMessageVisible'] =>
+  useAppDispatch().setMessageVisible;

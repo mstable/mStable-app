@@ -7,7 +7,10 @@ import { ReactTooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Account } from './Account';
-import { useAccountOpen } from '../../context/AppProvider';
+import {
+  useAccountOpen,
+  useSetMessageVisible,
+} from '../../context/AppProvider';
 import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
@@ -15,7 +18,6 @@ import { NotificationToasts } from './NotificationToasts';
 import { centredLayout, gradientBackground } from './css';
 import { Color } from '../../theme';
 import { Message } from './Message';
-import { useMessageDispatch } from '../../context/MessageProvider';
 
 const Main = styled.main`
   max-width: 100%;
@@ -165,10 +167,10 @@ const PageContainer = styled.div<{ accountOpen: boolean }>`
  * App layout component.
  */
 export const Layout: FC<{}> = ({ children }) => {
+  const setMessageVisible = useSetMessageVisible();
   const accountOpen = useAccountOpen();
   const idle = useIsIdle();
   const { pathname } = useLocation();
-  const { setVisible: setMessageVisible } = useMessageDispatch();
   const home = pathname === '/';
   const earn = pathname === '/earn';
   const save = pathname === '/save';

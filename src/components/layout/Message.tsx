@@ -1,15 +1,15 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { useMessageState } from '../../context/MessageProvider';
+import { useAppState } from '../../context/AppProvider';
 
 const Container = styled.div`
   display: flex;
-  height: 3.75rem;
   background: rgba(248, 248, 248, 1);
   margin-bottom: 1rem;
   border-radius: 2rem;
   align-items: center;
-  padding: 0 1.5rem;
+  padding: 1rem 1.5rem;
+  line-height: 1.5rem;
 
   a {
     border: none;
@@ -25,19 +25,19 @@ const Container = styled.div`
   span[role='img'] {
     font-size: 1.5rem;
     vertical-align: middle;
-    margin-right: 0.5rem;
+    margin-right: 1rem;
   }
 `;
 
 export const Message: FC = () => {
-  const { isVisible, message } = useMessageState();
+  const { messageVisible, message } = useAppState();
 
-  return isVisible ? (
+  return messageVisible ? (
     <Container>
+      <span role="img" aria-label="emoji">
+        {message?.emoji}
+      </span>
       <p>
-        <span role="img" aria-label="emoji">
-          {message?.emoji}
-        </span>
         <b>{message?.title}</b>
         {` ${message?.subtitle} `}
         {message?.url && <a href={message.url}>Learn more</a>}

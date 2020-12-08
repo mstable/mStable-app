@@ -10,7 +10,6 @@ import { TokensProvider } from './TokensProvider';
 import { BlockProvider } from './BlockProvider';
 import { DataProvider } from './DataProvider/DataProvider';
 import { ApolloProvider } from './ApolloProvider';
-import { MessageProvider } from './MessageProvider';
 
 export const Providers: FC = ({ children }) => (
   <NotificationsProvider>
@@ -19,15 +18,13 @@ export const Providers: FC = ({ children }) => (
         <BlockProvider>
           <TransactionsProvider>
             <SelectedMassetProvider>
-              <MessageProvider>
-                <TokensProvider>
-                  <DataProvider>
-                    <AppProvider>
-                      <ThemeProvider>{children}</ThemeProvider>
-                    </AppProvider>
-                  </DataProvider>
-                </TokensProvider>
-              </MessageProvider>
+              <TokensProvider>
+                <DataProvider>
+                  <AppProvider>
+                    <ThemeProvider>{children}</ThemeProvider>
+                  </AppProvider>
+                </DataProvider>
+              </TokensProvider>
             </SelectedMassetProvider>
           </TransactionsProvider>
         </BlockProvider>
