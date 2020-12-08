@@ -178,7 +178,7 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
 
   return useMemo(() => {
     const filtered = Object.entries(query.data ?? {})
-      .filter(([, value]) => !!value.cumulativeMinted)
+      .filter(([, value]) => !!value?.cumulativeMinted)
       .map(([key, value]) => [getKeyTimestamp(key), value]) as [
       number,
       MetricsQueryResult[string],
