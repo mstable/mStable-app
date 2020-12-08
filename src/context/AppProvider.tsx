@@ -305,3 +305,6 @@ export const useToggleNotifications = (): Dispatch['toggleNotifications'] =>
 
 export const useSetMessageVisible = (): Dispatch['setMessageVisible'] =>
   useAppDispatch().setMessageVisible;
+
+export const useSetMessage = (): Dispatch['setMessage'] =>
+  useAppDispatch().setMessage;
