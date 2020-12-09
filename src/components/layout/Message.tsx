@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAppState } from '../../context/AppProvider';
 
@@ -31,6 +32,7 @@ const Container = styled.div`
 
 export const Message: FC = () => {
   const { messageVisible, message } = useAppState();
+  const url = message?.externalUrl ?? message?.internalUrl;
 
   return messageVisible ? (
     <Container>
@@ -40,7 +42,12 @@ export const Message: FC = () => {
       <p>
         <b>{message?.title}</b>
         {` ${message?.subtitle} `}
-        {message?.url && <a href={message.url}>Learn more</a>}
+        {url &&
+          (message?.externalUrl ? (
+            <a href={url}>Learn more</a>
+          ) : (
+            <Link to={url}>Learn more</Link>
+          ))}
       </p>
     </Container>
   ) : null;

@@ -101,7 +101,6 @@ const initialState: State = {
     subtitle:
       'You’ll need to migrate your balance to continue earning interest.',
     emoji: '🎉',
-    url: '#',
   },
   messageVisible: false,
 };

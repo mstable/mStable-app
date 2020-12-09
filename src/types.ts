@@ -171,5 +171,6 @@ export interface Message {
   title: string;
   subtitle: string;
   emoji: string;
-  url?: string;
+  internalUrl?: string;
+  externalUrl?: string;
 }
