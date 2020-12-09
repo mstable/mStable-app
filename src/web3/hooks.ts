@@ -199,3 +199,18 @@ export const useSelectedSaveV1Contract = (): SavingsContract | undefined => {
     [massetState, signer],
   );
 };
+
+export const useSelectedSaveV2Contract = (): SavingsContract | undefined => {
+  const massetState = useSelectedMassetState();
+  const signer = useSigner();
+  return useMemo(
+    () =>
+      signer && massetState?.savingsContracts.v2?.address
+        ? SavingsContractFactory.connect(
+            massetState.savingsContracts.v2.address,
+            signer,
+          )
+        : undefined,
+    [massetState, signer],
+  );
+};
