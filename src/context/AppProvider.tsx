@@ -97,10 +97,9 @@ const initialState: State = {
   accountItem: null,
   online: true,
   message: {
-    title: 'SAVE V2 has launched!',
-    subtitle:
-      'You’ll need to migrate your balance to continue earning interest.',
-    emoji: '🎉',
+    title: 'SAVE V2 is launching soon! ',
+    subtitle: 'This will require you to migrate your existing funds.',
+    emoji: '⚠️',
   },
   messageVisible: false,
 };
