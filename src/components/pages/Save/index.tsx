@@ -6,6 +6,7 @@ import CountUp from 'react-countup';
 import {
   useAverageApyForPastWeek,
   useSelectedSaveV1Contract,
+  useSelectedSaveV2Contract,
 } from '../../../web3/hooks';
 import {
   FormProvider,
@@ -24,6 +25,7 @@ import { SaveConfirm } from './SaveConfirm';
 import { TransactionType } from './types';
 import { PageHeader } from '../PageHeader';
 import { ToggleSave } from './ToggleSave';
+import { useWalletAddress } from '../../../context/OnboardProvider';
 
 const SaveForm: FC = () => {
   const {
@@ -36,15 +38,48 @@ const SaveForm: FC = () => {
   const massetSymbol = massetState?.token.symbol;
 
   const setFormManifest = useSetFormManifest();
-  const savingsContract = useSelectedSaveV1Contract();
-
+  const savingsContractV1 = useSelectedSaveV1Contract();
+  const savingsContractV2 = useSelectedSaveV2Contract();
+  const version = useActiveSaveVersion();
+  const walletAddress = useWalletAddress();
   // Set the form manifest
   useEffect(() => {
-    if (valid && savingsContract && amount) {
+    if (version[0].version === 2 && savingsContractV2) {
+      if (
+        transactionType === TransactionType.Deposit &&
+        amount &&
+        walletAddress
+      ) {
+        const body = `${amount.format()} ${massetSymbol}`;
+        setFormManifest<Interfaces.SavingsContract, 'deposit'>({
+          iface: savingsContractV2,
+          args: [amount.exact, walletAddress],
+          fn: 'deposit',
+          purpose: {
+            present: `Depositing ${body}`,
+            past: `Deposited ${body}`,
+          },
+        });
+        return;
+      }
+      if (transactionType === TransactionType.Withdraw && amountInCredits) {
+        const body = `${massetSymbol} savings`;
+        setFormManifest<Interfaces.SavingsContract, 'redeemUnderlying'>({
+          iface: savingsContractV2,
+          args: [amountInCredits.exact],
+          fn: 'redeemUnderlying',
+          purpose: {
+            present: `Withdrawing ${body}`,
+            past: `Withdrew ${body}`,
+          },
+        });
+        return;
+      }
+    } else if (valid && savingsContractV1 && amount) {
       if (transactionType === TransactionType.Deposit) {
         const body = `${amount.format()} ${massetSymbol}`;
         setFormManifest<Interfaces.SavingsContract, 'depositSavings'>({
-          iface: savingsContract,
+          iface: savingsContractV1,
           args: [amount.exact],
           fn: 'depositSavings',
           purpose: {
@@ -58,7 +93,7 @@ const SaveForm: FC = () => {
       if (transactionType === TransactionType.Withdraw && amountInCredits) {
         const body = `${massetSymbol} savings`;
         setFormManifest<Interfaces.SavingsContract, 'redeem'>({
-          iface: savingsContract,
+          iface: savingsContractV1,
           args: [amountInCredits.exact],
           fn: 'redeem',
           purpose: {
@@ -75,10 +110,13 @@ const SaveForm: FC = () => {
     amountInCredits,
     valid,
     amount,
-    savingsContract,
+    savingsContractV1,
+    savingsContractV2,
     setFormManifest,
     transactionType,
     massetSymbol,
+    version,
+    walletAddress,
   ]);
 
   return (
