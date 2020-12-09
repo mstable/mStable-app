@@ -4,18 +4,21 @@ export interface State {
   state?: {
     withdraw: {
       isCompleted: boolean | undefined;
-      isPending: boolean;
+      isWithdrawPending: boolean;
     };
     approve: {
       isCompleted: boolean | undefined;
-      isPending: boolean;
+      isApprovePending: boolean;
     };
     deposit: {
       isCompleted: boolean | undefined;
-      isPending: boolean;
+      isDepostPending: boolean;
     };
   };
-  withdrawTx?(amount: BigDecimal): void;
-  approveTx?(spender: string, approveAmount: BigDecimal): void;
-  depositTx?(amount: BigDecimal, walletAddress: string): void;
+}
+
+export interface Dispatch {
+  withdrawTx(amount: BigDecimal): void;
+  approveTx(spender: string, approveAmount: BigDecimal): void;
+  depositTx(amount: BigDecimal, walletAddress: string): void;
 }
