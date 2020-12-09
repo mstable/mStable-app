@@ -1,6 +1,6 @@
 import { Reducer } from 'react';
 import { pipeline } from 'ts-pipe-compose';
-import { BigDecimal } from '../../../web3/BigDecimal';
+import { BigDecimal } from '../../../../web3/BigDecimal';
 import { validate } from './validate';
 import { Action, Actions, State, TransactionType } from './types';
 

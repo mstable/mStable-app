@@ -1,11 +1,11 @@
 import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
-import { Color } from '../../../theme';
-import { FormRow } from '../../core/Form';
-import { H3 } from '../../core/Typography';
-import { TokenAmountInput } from '../../forms/TokenAmountInput';
-import { ToggleInput } from '../../forms/ToggleInput';
+import { Color } from '../../../../theme';
+import { FormRow } from '../../../core/Form';
+import { H3 } from '../../../core/Typography';
+import { TokenAmountInput } from '../../../forms/TokenAmountInput';
+import { ToggleInput } from '../../../forms/ToggleInput';
 import { TransactionType } from './types';
 import { useSaveDispatch, useSaveState } from './SaveProvider';
 
