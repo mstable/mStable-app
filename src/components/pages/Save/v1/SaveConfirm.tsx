@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { P } from '../../core/Typography';
-import { CountUp } from '../../core/CountUp';
+import { P } from '../../../core/Typography';
+import { CountUp } from '../../../core/CountUp';
 import { useSaveState } from './SaveProvider';
 import { TransactionType } from './types';
 
