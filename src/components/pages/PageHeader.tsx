@@ -70,7 +70,6 @@ const ChildrenRow = styled.div`
   margin-top: 1rem;
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
-    align-items: flex-start;
     flex-direction: row;
   }
 `;
