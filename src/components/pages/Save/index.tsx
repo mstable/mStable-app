@@ -1,136 +1,19 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 import CountUp from 'react-countup';
 
-import {
-  useAverageApyForPastWeek,
-  useSelectedSaveV1Contract,
-  useSelectedSaveV2Contract,
-} from '../../../web3/hooks';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../forms/TransactionForm/FormProvider';
-import { TransactionForm } from '../../forms/TransactionForm';
-import { Interfaces } from '../../../types';
-import {
-  SaveProvider,
-  useSaveState,
-  useActiveSaveVersion,
-} from './SaveProvider';
-import { SaveInput } from './SaveInput';
-import { SaveInfo } from './SaveInfo';
-import { SaveConfirm } from './SaveConfirm';
-import { TransactionType } from './types';
+import { useAverageApyForPastWeek } from '../../../web3/hooks';
+import { FormProvider } from '../../forms/TransactionForm/FormProvider';
 import { PageHeader } from '../PageHeader';
+import {
+  ActiveSaveVersionProvider,
+  useActiveSaveVersion,
+} from './ActiveSaveVersionProvider';
+import { SaveProvider } from './v1/SaveProvider';
+import { SaveInfo } from './SaveInfo';
+import { SaveForm } from './v1/SaveForm';
 import { ToggleSave } from './ToggleSave';
-import { useWalletAddress } from '../../../context/OnboardProvider';
-
-const SaveForm: FC = () => {
-  const {
-    amount,
-    amountInCredits,
-    transactionType,
-    valid,
-    massetState,
-  } = useSaveState();
-  const massetSymbol = massetState?.token.symbol;
-
-  const setFormManifest = useSetFormManifest();
-  const savingsContractV1 = useSelectedSaveV1Contract();
-  const savingsContractV2 = useSelectedSaveV2Contract();
-  const version = useActiveSaveVersion();
-  const walletAddress = useWalletAddress();
-  // Set the form manifest
-  useEffect(() => {
-    if (version[0].version === 2 && savingsContractV2) {
-      if (
-        transactionType === TransactionType.Deposit &&
-        amount &&
-        walletAddress
-      ) {
-        const body = `${amount.format()} ${massetSymbol}`;
-        setFormManifest<Interfaces.SavingsContract, 'deposit'>({
-          iface: savingsContractV2,
-          args: [amount.exact, walletAddress],
-          fn: 'deposit',
-          purpose: {
-            present: `Depositing ${body}`,
-            past: `Deposited ${body}`,
-          },
-        });
-        return;
-      }
-      if (transactionType === TransactionType.Withdraw && amountInCredits) {
-        const body = `${massetSymbol} savings`;
-        setFormManifest<Interfaces.SavingsContract, 'redeemUnderlying'>({
-          iface: savingsContractV2,
-          args: [amountInCredits.exact],
-          fn: 'redeemUnderlying',
-          purpose: {
-            present: `Withdrawing ${body}`,
-            past: `Withdrew ${body}`,
-          },
-        });
-        return;
-      }
-    } else if (valid && savingsContractV1 && amount) {
-      if (transactionType === TransactionType.Deposit) {
-        const body = `${amount.format()} ${massetSymbol}`;
-        setFormManifest<Interfaces.SavingsContract, 'depositSavings'>({
-          iface: savingsContractV1,
-          args: [amount.exact],
-          fn: 'depositSavings',
-          purpose: {
-            present: `Depositing ${body}`,
-            past: `Deposited ${body}`,
-          },
-        });
-        return;
-      }
-
-      if (transactionType === TransactionType.Withdraw && amountInCredits) {
-        const body = `${massetSymbol} savings`;
-        setFormManifest<Interfaces.SavingsContract, 'redeem'>({
-          iface: savingsContractV1,
-          args: [amountInCredits.exact],
-          fn: 'redeem',
-          purpose: {
-            present: `Withdrawing ${body}`,
-            past: `Withdrew ${body}`,
-          },
-        });
-        return;
-      }
-    }
-
-    setFormManifest(null);
-  }, [
-    amountInCredits,
-    valid,
-    amount,
-    savingsContractV1,
-    savingsContractV2,
-    setFormManifest,
-    transactionType,
-    massetSymbol,
-    version,
-    walletAddress,
-  ]);
-
-  return (
-    <TransactionForm
-      confirm={<SaveConfirm />}
-      confirmLabel={
-        transactionType === TransactionType.Deposit ? 'Deposit' : 'Withdraw'
-      }
-      input={<SaveInput />}
-      transactionsLabel="Save transactions"
-      valid={valid}
-    />
-  );
-};
 
 const APYStats = styled.div`
   display: flex;
@@ -177,12 +60,13 @@ const InfoMsg = styled.div`
     }
   }
 `;
-const SaveContent: FC = () => {
+
+export const Save: FC = () => {
   const [activeVersion] = useActiveSaveVersion();
   const apyForPastWeek = useAverageApyForPastWeek();
 
   return (
-    <>
+    <ActiveSaveVersionProvider>
       <PageHeader
         title={`Save V${activeVersion.version}`}
         subtitle="Earn interest on your deposited mUSD"
@@ -211,15 +95,13 @@ const SaveContent: FC = () => {
         </APYStats>
       </PageHeader>
       <SaveInfo />
-      {activeVersion.isCurrent && <SaveForm />}
-    </>
+      {activeVersion.isCurrent && (
+        <SaveProvider>
+          <FormProvider formId="save">
+            <SaveForm />
+          </FormProvider>
+        </SaveProvider>
+      )}
+    </ActiveSaveVersionProvider>
   );
 };
-
-export const Save: FC = () => (
-  <SaveProvider>
-    <FormProvider formId="save">
-      <SaveContent />
-    </FormProvider>
-  </SaveProvider>
-);

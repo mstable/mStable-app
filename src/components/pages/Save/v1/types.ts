@@ -1,5 +1,5 @@
-import { MassetState } from '../../../context/DataProvider/types';
-import { BigDecimal } from '../../../web3/BigDecimal';
+import { MassetState } from '../../../../context/DataProvider/types';
+import { BigDecimal } from '../../../../web3/BigDecimal';
 
 export enum TransactionType {
   Deposit,

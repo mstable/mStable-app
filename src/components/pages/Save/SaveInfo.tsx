@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
+import { useSelectedMasset } from '../../../context/SelectedMassetProvider';
 import { H3 } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
-import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
-import { useSelectedMasset } from '../../../context/SelectedMassetProvider';
-import { useActiveSaveVersion } from './SaveProvider';
+import { useActiveSaveVersion } from './ActiveSaveVersionProvider';
 import { SaveMigration } from './SaveMigration';
 
 const CreditBalance = styled.div`
