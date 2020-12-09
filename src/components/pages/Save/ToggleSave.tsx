@@ -6,7 +6,7 @@ import {
   CURRENT_SAVE_VERSION,
   SAVE_VERSIONS,
   useActiveSaveVersion,
-} from './SaveProvider';
+} from './ActiveSaveVersionProvider';
 import { useV1SavingsBalance } from '../../../context/DataProvider/DataProvider';
 
 interface Props {

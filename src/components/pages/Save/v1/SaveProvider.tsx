@@ -7,9 +7,8 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import { createStateContext } from 'react-use';
 
-import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { reducer } from './reducer';
 import { Actions, Dispatch, State, TransactionType } from './types';
 
@@ -28,21 +27,6 @@ const initialState: State = {
 
 const stateCtx = createContext<State>(initialState);
 const dispatchCtx = createContext<Dispatch>({} as Dispatch);
-
-export const SAVE_VERSIONS: SaveVersion[] = [
-  { version: 1 },
-  { version: 2, isCurrent: true },
-];
-
-export const CURRENT_SAVE_VERSION = SAVE_VERSIONS.find(
-  v => v.isCurrent,
-) as SaveVersion;
-
-// Could be moved higher up if necessary
-export const [
-  useActiveSaveVersion,
-  ActiveSaveVersionProvider,
-] = createStateContext(CURRENT_SAVE_VERSION);
 
 export const SaveProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -73,18 +57,16 @@ export const SaveProvider: FC = ({ children }) => {
   }, [dispatch]);
 
   return (
-    <ActiveSaveVersionProvider>
-      <stateCtx.Provider value={state}>
-        <dispatchCtx.Provider
-          value={useMemo(
-            () => ({ setAmount, setMaxAmount, toggleTransactionType }),
-            [setMaxAmount, setAmount, toggleTransactionType],
-          )}
-        >
-          {children}
-        </dispatchCtx.Provider>
-      </stateCtx.Provider>
-    </ActiveSaveVersionProvider>
+    <stateCtx.Provider value={state}>
+      <dispatchCtx.Provider
+        value={useMemo(
+          () => ({ setAmount, setMaxAmount, toggleTransactionType }),
+          [setMaxAmount, setAmount, toggleTransactionType],
+        )}
+      >
+        {children}
+      </dispatchCtx.Provider>
+    </stateCtx.Provider>
   );
 };
 
