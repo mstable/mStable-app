@@ -5,7 +5,7 @@ import { MassetName } from '../types';
 
 const [useSelectedMassetCtx, SelectedMassetProvider] = createStateContext<
   MassetName
->('mBTC');
+>('mUSD');
 
 export const useSelectedMasset = (): MassetName => useSelectedMassetCtx()[0];
 
