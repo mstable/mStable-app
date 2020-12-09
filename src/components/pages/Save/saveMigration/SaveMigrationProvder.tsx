@@ -8,9 +8,8 @@ import React, {
 } from 'react';
 import { BigNumber } from 'ethers/utils';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { State } from './types';
+import { State, Dispatch } from './types';
 import { Interfaces } from '../../../../types';
-// import { MassetState } from '../../../../context/DataProvider/types';
 import { useSetFormManifest } from '../../../forms/TransactionForm/FormProvider';
 import {
   useSelectedSaveV1Contract,
@@ -21,13 +20,16 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { SavingsContract } from '../../../../typechain/SavingsContract.d';
 import { Erc20Detailed } from '../../../../typechain/Erc20Detailed.d';
 
-const stateCtx = createContext<State>({} as never);
+const stateCtx = createContext<State>({} as State);
+const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
 export const SaveMigrationProvider: FC = ({ children }) => {
   const selectedMasset = useSelectedMassetState();
   const savingsContractV1 = useSelectedSaveV1Contract();
   const savingsContractV2 = useSelectedSaveV2Contract();
-  const [isPending, setIsPending] = useState(false);
+  const [isWithdrawPending, setIsWithdrawPending] = useState(false);
+  const [isApprovePending, setIsApprovePending] = useState(false);
+  const [isDepositPending, setIsDepositPending] = useState(false);
   const setFormManifest = useSetFormManifest();
   const tokenContract = useErc20Contract(savingsContractV2?.address);
   const state = useMemo(() => {
@@ -35,7 +37,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
       isCompleted: selectedMasset?.savingsContracts.v1?.savingsBalance.balance?.exact.eq(
         0,
       ),
-      isPending,
+      isWithdrawPending,
     };
     const approve = {
       isCompleted: selectedMasset?.savingsContracts.v2?.token?.allowances[
@@ -44,17 +46,17 @@ export const SaveMigrationProvider: FC = ({ children }) => {
         selectedMasset?.savingsContracts.v1?.savingsBalance.balance
           ?.exact as BigNumber,
       ),
-      isPending,
+      isApprovePending,
     };
     const deposit = {
       isCompleted: selectedMasset?.savingsContracts.v2?.savingsBalance?.balance?.exact.eq(
         selectedMasset?.savingsContracts.v1?.savingsBalance.balance
           ?.exact as BigNumber,
       ),
-      isPending,
+      isDepositPending,
     };
-    return { withdraw, approve, deposit };
-  }, [selectedMasset, isPending]);
+    return { withdraw, approve, deposit } as State;
+  }, [selectedMasset, isWithdrawPending, isApprovePending, isDepositPending]);
 
   const withdrawTx = useCallback(
     (amount: BigDecimal) => {
@@ -68,10 +70,10 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           past: `Withdrew ${body}`,
         },
         onSent() {
-          setIsPending(true);
+          setIsWithdrawPending(true);
         },
         onFinalize() {
-          setIsPending(false);
+          setIsWithdrawPending(false);
         },
       });
     },
@@ -96,10 +98,10 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           }`,
         },
         onSent() {
-          setIsPending(true);
+          setIsApprovePending(true);
         },
         onFinalize() {
-          setIsPending(false);
+          setIsApprovePending(false);
         },
       });
     },
@@ -117,10 +119,10 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           past: `Deposited ${body}`,
         },
         onSent() {
-          setIsPending(true);
+          setIsDepositPending(true);
         },
         onFinalize() {
-          setIsPending(false);
+          setIsDepositPending(false);
         },
       });
     },
@@ -128,15 +130,16 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   );
 
   return (
-    <stateCtx.Provider
-      value={useMemo(() => ({ state, withdrawTx, approveTx, depositTx }), [
-        state,
-        withdrawTx,
-        approveTx,
-        depositTx,
-      ])}
-    >
-      {children}
+    <stateCtx.Provider value={state}>
+      <dispatchCtx.Provider
+        value={useMemo(() => ({ withdrawTx, approveTx, depositTx }), [
+          withdrawTx,
+          approveTx,
+          depositTx,
+        ])}
+      >
+        {children}
+      </dispatchCtx.Provider>
     </stateCtx.Provider>
   );
 };
@@ -144,11 +147,11 @@ export const SaveMigrationProvider: FC = ({ children }) => {
 export const useMigrationState = (): State['state'] =>
   useContext(stateCtx).state;
 
-export const useWithdrawTx = (): State['withdrawTx'] =>
-  useContext(stateCtx).withdrawTx;
+export const useWithdrawTx = (): Dispatch['withdrawTx'] =>
+  useContext(dispatchCtx).withdrawTx;
 
-export const useApproveTx = (): State['approveTx'] =>
-  useContext(stateCtx).approveTx;
+export const useApproveTx = (): Dispatch['approveTx'] =>
+  useContext(dispatchCtx).approveTx;
 
-export const useDepositTx = (): State['depositTx'] =>
-  useContext(stateCtx).depositTx;
+export const useDepositTx = (): Dispatch['depositTx'] =>
+  useContext(dispatchCtx).depositTx;
