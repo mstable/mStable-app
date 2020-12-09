@@ -1,33 +1,20 @@
-import React, { FC, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import React, { FC, useCallback, useEffect, useRef } from 'react';
 
-import { BubbleButton } from '../../core/Button';
 import {
   CURRENT_SAVE_VERSION,
   SAVE_VERSIONS,
   useActiveSaveVersion,
 } from './ActiveSaveVersionProvider';
 import { useV1SavingsBalance } from '../../../context/DataProvider/DataProvider';
+import { Toggle } from '../../core/Toggle';
 
-interface Props {
-  className?: string;
-  disabled?: boolean;
-}
-
-const Container = styled.div`
-  padding: 0;
-  border-radius: 1.5rem;
-  background: #eee;
-
-  button:nth-last-child(1) {
-    margin-left: -0.5rem;
-  }
-`;
-
-export const ToggleSave: FC<Props> = ({ className }) => {
+export const ToggleSave: FC = () => {
   const setSaveVersion = useRef(false);
   const [activeVersion, setActiveVersion] = useActiveSaveVersion();
   const v1Balance = useV1SavingsBalance();
+
+  // const v1Contract = useSelectedSaveV1Contract();
+  // const v2Contract = useSelectedSaveV2Contract();
 
   useEffect(() => {
     // Set the save version to v1 (once only) if there is a v1 balance
@@ -39,28 +26,25 @@ export const ToggleSave: FC<Props> = ({ className }) => {
     }
   }, [setActiveVersion, v1Balance]);
 
+  const handleOnClick = useCallback(
+    (i: number) =>
+      setActiveVersion(i === 0 ? CURRENT_SAVE_VERSION : SAVE_VERSIONS[0]),
+    [setActiveVersion],
+  );
+
+  const titles = ((): string[] | undefined => {
+    // if (v2Contract === undefined && v1Contract === undefined) return undefined;
+    // if (v2Contract !== undefined) {
+    //   return ['V2', 'V1 (Deprecated)'];
+    // }
+    return ['V1'];
+  })();
+
   return (
-    <Container className={className}>
-      <BubbleButton
-        onClick={() => {
-          setActiveVersion(CURRENT_SAVE_VERSION);
-        }}
-        type="button"
-        highlighted={activeVersion.isCurrent}
-        scale={0.9}
-      >
-        V2
-      </BubbleButton>
-      <BubbleButton
-        onClick={() => {
-          setActiveVersion(SAVE_VERSIONS[0]);
-        }}
-        type="button"
-        highlighted={!activeVersion.isCurrent}
-        scale={0.9}
-      >
-        V1 (Deprecated)
-      </BubbleButton>
-    </Container>
+    <Toggle
+      onClick={handleOnClick}
+      titles={titles}
+      activeIndex={activeVersion.isCurrent ? 0 : 1}
+    />
   );
 };
