@@ -2,10 +2,7 @@ import { bigNumberify } from 'ethers/utils';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { MassetName, SubscribedToken } from '../../types';
-import {
-  MassetsQueryResult,
-  TokenDetailsFragment,
-} from '../../graphql/protocol';
+import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol';
 import {
   BassetStatus,
   DataState,
@@ -30,33 +27,35 @@ const transformBassets = (
         vaultBalance,
         isTransferFeeCharged,
         token: { address, totalSupply, decimals, symbol },
-      }) => [
-        address,
-        {
+      }) => {
+        return [
           address,
-          isTransferFeeCharged,
-          maxWeight: bigNumberify(maxWeight),
-          ratio: bigNumberify(ratio),
-          status: status as BassetStatus,
-          totalVault: BigDecimal.fromMetric(vaultBalance),
-          token: {
+          {
             address,
-            totalSupply: BigDecimal.fromMetric(totalSupply),
-            decimals,
-            symbol,
-            balance: new BigDecimal(0, decimals),
-            allowances: {},
-            ...tokens[address],
-          },
+            isTransferFeeCharged,
+            maxWeight: bigNumberify(maxWeight),
+            ratio: bigNumberify(ratio),
+            status: status as BassetStatus,
+            totalVault: BigDecimal.fromMetric(vaultBalance),
+            token: {
+              balance: new BigDecimal(0, decimals),
+              allowances: {},
+              ...tokens[address],
+              totalSupply: BigDecimal.fromMetric(totalSupply),
+              address,
+              decimals,
+              symbol,
+            },
 
-          // Initial values
-          balanceInMasset: new BigDecimal(0, massetDecimals),
-          basketShare: new BigDecimal(0, massetDecimals),
-          maxWeightInMasset: new BigDecimal(0, massetDecimals),
-          overweight: false,
-          totalVaultInMasset: new BigDecimal(0, massetDecimals),
-        },
-      ],
+            // Initial values
+            balanceInMasset: new BigDecimal(0, massetDecimals),
+            basketShare: new BigDecimal(0, massetDecimals),
+            maxWeightInMasset: new BigDecimal(0, massetDecimals),
+            overweight: false,
+            totalVaultInMasset: new BigDecimal(0, massetDecimals),
+          },
+        ];
+      },
     ),
   );
 };
@@ -141,16 +140,16 @@ const transformSavingsContractV2 = (
 };
 
 const transformTokenData = (
-  { address, totalSupply, symbol, decimals }: TokenDetailsFragment,
+  { address, totalSupply, symbol, decimals }: TokenAllFragment,
   tokens: Tokens,
 ): SubscribedToken => ({
-  address,
-  totalSupply: BigDecimal.fromMetric(totalSupply),
-  decimals,
-  symbol,
   balance: new BigDecimal(0, decimals),
   allowances: {},
   ...tokens[address],
+  totalSupply: BigDecimal.fromMetric(totalSupply),
+  address,
+  decimals,
+  symbol,
 });
 
 const transformMassetData = (
