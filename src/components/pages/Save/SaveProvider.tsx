@@ -46,8 +46,8 @@ export const [
 
 export const SaveProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
   const massetState = useSelectedMassetState();
+
   useEffect(() => {
     dispatch({ type: Actions.Data, payload: massetState });
   }, [massetState]);

@@ -166,3 +166,11 @@ export enum SaveMigrationStep {
   APPROVE,
   DEPOSIT,
 }
+
+export interface Message {
+  title: string;
+  subtitle: string;
+  emoji: string;
+  internalUrl?: string;
+  externalUrl?: string;
+}
