@@ -8,8 +8,14 @@ import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
-import { useActiveSaveVersion } from './ActiveSaveVersionProvider';
+import {
+  DEFAULT_SAVE_VERSION,
+  SaveVersion,
+  useActiveSaveVersionState,
+} from './ActiveSaveVersionProvider';
 import { SaveMigration } from './SaveMigration';
+
+const { V1 } = SaveVersion;
 
 const CreditBalance = styled.div`
   display: flex;
@@ -76,37 +82,39 @@ const StyledWarningBadge = styled(WarningBadge)`
 `;
 
 export const SaveInfo: FC = () => {
-  const [activeVersion] = useActiveSaveVersion();
+  const { versions, activeVersion } = useActiveSaveVersionState();
   const massetName = useSelectedMasset();
   const massetState = useSelectedMassetState();
 
+  const isV1Deprecated = versions.length > 1;
+  const isV1ActiveAndCurrent = isV1Deprecated && activeVersion === V1;
+
   const savingsBalance =
-    massetState?.savingsContracts[`v${activeVersion.version}` as 'v1' | 'v2']
-      ?.savingsBalance;
+    massetState?.savingsContracts[
+      `v${activeVersion ?? DEFAULT_SAVE_VERSION}` as 'v1' | 'v2'
+    ]?.savingsBalance;
 
   return (
-    <>
-      <BalanceInfoRow>
-        <H3>
-          Your <b>{massetName}</b> savings balance
-        </H3>
-        <CreditBalance>
-          <MUSDIconTransparent />
-          <CountUp end={savingsBalance?.balance?.simple || 0} decimals={7} />
-          {!activeVersion.isCurrent && <StyledWarningBadge />}
-        </CreditBalance>
-        {activeVersion.isCurrent ? (
-          <AnalyticsLink section="save" />
-        ) : (
-          <>
-            <WarningMsg>
-              Migrate your <b>{massetName}</b> to continue earning interest on
-              your balance.
-            </WarningMsg>
-            <SaveMigration />
-          </>
-        )}
-      </BalanceInfoRow>
-    </>
+    <BalanceInfoRow>
+      <H3>
+        Your <b>{massetName}</b> savings balance
+      </H3>
+      <CreditBalance>
+        <MUSDIconTransparent />
+        <CountUp end={savingsBalance?.balance?.simple || 0} decimals={7} />
+        {isV1ActiveAndCurrent && <StyledWarningBadge />}
+      </CreditBalance>
+      {isV1ActiveAndCurrent ? (
+        <>
+          <WarningMsg>
+            Migrate your <b>{massetName}</b> to continue earning interest on
+            your balance.
+          </WarningMsg>
+          <SaveMigration />
+        </>
+      ) : (
+        <AnalyticsLink section="save" />
+      )}
+    </BalanceInfoRow>
   );
 };
