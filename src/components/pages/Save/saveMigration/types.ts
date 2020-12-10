@@ -1,20 +1,17 @@
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
+export interface StepProps {
+  title: string;
+  buttonTitle?: string;
+  key: string;
+  isCompleted: boolean;
+  isPending: boolean;
+  isActive: boolean;
+  onClick(): void;
+}
+
 export interface State {
-  state?: {
-    withdraw: {
-      isCompleted: boolean | undefined;
-      isWithdrawPending: boolean;
-    };
-    approve: {
-      isCompleted: boolean | undefined;
-      isApprovePending: boolean;
-    };
-    deposit: {
-      isCompleted: boolean | undefined;
-      isDepostPending: boolean;
-    };
-  };
+  steps: StepProps[];
 }
 
 export interface Dispatch {
