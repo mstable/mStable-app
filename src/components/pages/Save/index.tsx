@@ -15,6 +15,7 @@ import { SaveProvider } from './v1/SaveProvider';
 import { SaveInfo } from './SaveInfo';
 import { SaveForm } from './v1/SaveForm';
 import { ToggleSave } from './ToggleSave';
+import { SaveMigrationProvider } from './saveMigration/SaveMigrationProvder';
 
 const { V1, V2 } = SaveVersion;
 
@@ -100,21 +101,19 @@ const SaveContent: FC = () => {
         </APYStats>
       </PageHeader>
       <SaveInfo />
-      {showForm && (
-        <SaveProvider>
-          <FormProvider formId="save">
-            <SaveForm />
-          </FormProvider>
-        </SaveProvider>
-      )}
+      {showForm && <SaveForm />}
     </>
   );
 };
 
-export const Save: FC = () => {
-  return (
-    <ActiveSaveVersionProvider>
-      <SaveContent />
-    </ActiveSaveVersionProvider>
-  );
-};
+export const Save: FC = () => (
+  <ActiveSaveVersionProvider>
+    <SaveProvider>
+      <SaveMigrationProvider>
+        <FormProvider formId="save">
+          <SaveContent />
+        </FormProvider>
+      </SaveMigrationProvider>
+    </SaveProvider>
+  </ActiveSaveVersionProvider>
+);
