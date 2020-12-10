@@ -27,12 +27,12 @@ export const SaveForm: FC = () => {
   const setFormManifest = useSetFormManifest();
   const savingsContractV1 = useSelectedSaveV1Contract();
   const savingsContractV2 = useSelectedSaveV2Contract();
-  const [activeVersion] = useActiveSaveVersion();
+  const activeVersion = useActiveSaveVersion();
   const walletAddress = useWalletAddress();
 
   // Set the form manifest
   useEffect(() => {
-    if (activeVersion.version === 2 && savingsContractV2) {
+    if (activeVersion === 2 && savingsContractV2) {
       if (
         transactionType === TransactionType.Deposit &&
         amount &&
@@ -104,7 +104,7 @@ export const SaveForm: FC = () => {
     transactionType,
     massetSymbol,
     walletAddress,
-    activeVersion.version,
+    activeVersion,
   ]);
 
   return (
