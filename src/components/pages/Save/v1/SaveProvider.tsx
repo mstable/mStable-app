@@ -12,11 +12,6 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { reducer } from './reducer';
 import { Actions, Dispatch, State, TransactionType } from './types';
 
-export interface SaveVersion {
-  version: number;
-  isCurrent?: boolean;
-}
-
 const initialState: State = {
   formValue: null,
   initialized: false,

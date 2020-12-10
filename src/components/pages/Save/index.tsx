@@ -8,12 +8,15 @@ import { FormProvider } from '../../forms/TransactionForm/FormProvider';
 import { PageHeader } from '../PageHeader';
 import {
   ActiveSaveVersionProvider,
-  useActiveSaveVersion,
+  SaveVersion,
+  useActiveSaveVersionState,
 } from './ActiveSaveVersionProvider';
 import { SaveProvider } from './v1/SaveProvider';
 import { SaveInfo } from './SaveInfo';
 import { SaveForm } from './v1/SaveForm';
 import { ToggleSave } from './ToggleSave';
+
+const { V1, V2 } = SaveVersion;
 
 const APYStats = styled.div`
   display: flex;
@@ -61,16 +64,18 @@ const InfoMsg = styled.div`
   }
 `;
 
-export const Save: FC = () => {
-  const [activeVersion] = useActiveSaveVersion();
+const SaveContent: FC = () => {
+  const { versions, activeVersion } = useActiveSaveVersionState();
   const apyForPastWeek = useAverageApyForPastWeek();
 
+  const isV1Deprecated = versions.length > 1;
+  const showForm =
+    (isV1Deprecated && activeVersion === V2) ||
+    (!isV1Deprecated && activeVersion === V1);
+
   return (
-    <ActiveSaveVersionProvider>
-      <PageHeader
-        title={`Save V${activeVersion.version}`}
-        subtitle="Earn interest on your deposited mUSD"
-      >
+    <>
+      <PageHeader title="Save" subtitle="Earn interest on your deposited mUSD">
         <ToggleContainer>
           <ToggleSave />
         </ToggleContainer>
@@ -95,13 +100,21 @@ export const Save: FC = () => {
         </APYStats>
       </PageHeader>
       <SaveInfo />
-      {activeVersion.isCurrent && (
+      {showForm && (
         <SaveProvider>
           <FormProvider formId="save">
             <SaveForm />
           </FormProvider>
         </SaveProvider>
       )}
+    </>
+  );
+};
+
+export const Save: FC = () => {
+  return (
+    <ActiveSaveVersionProvider>
+      <SaveContent />
     </ActiveSaveVersionProvider>
   );
 };

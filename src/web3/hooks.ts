@@ -7,6 +7,7 @@ import { useSigner } from '../context/OnboardProvider';
 import {
   useSelectedMassetState,
   useSelectedSaveV1Address,
+  useSelectedSaveV2Address,
 } from '../context/DataProvider/DataProvider';
 import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import { MassetFactory } from '../typechain/MassetFactory';
@@ -15,6 +16,7 @@ import { SavingsContract } from '../typechain/SavingsContract.d';
 import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
 import { Masset } from '../typechain/Masset.d';
 import { truncateAddress } from './strings';
+import { useActiveSaveVersion } from '../components/pages/Save/ActiveSaveVersionProvider';
 
 interface BlockTime {
   timestamp: number;
@@ -133,12 +135,15 @@ export const timestampsForWeek = eachDayOfInterval({
   .concat(now);
 
 export const useAverageApyForPastWeek = (): number | undefined => {
-  // TODO support v1/v2
-  const savingsContractAddress = useSelectedSaveV1Address();
+  const activeVersion = useActiveSaveVersion();
+  const savingsV1ContractAddress = useSelectedSaveV1Address();
+  const savingsV2ContractAddress = useSelectedSaveV2Address();
+  
+  const currentContractAddress = activeVersion === 1 ? savingsV1ContractAddress : savingsV2ContractAddress;
 
   const blockTimes = useBlockTimesForDates(timestampsForWeek);
   const dailyApys = useDailyApysForBlockTimes(
-    savingsContractAddress,
+    currentContractAddress,
     blockTimes,
   );
   return useMemo(() => {
