@@ -33,6 +33,7 @@ export const ToggleSave: FC = () => {
     // v2 contract not present, set versions to [v1]
     if (v2Contract === undefined) {
       setSaveVersions([V1]);
+      return;
     }
 
     // v2 contract present, set to [v2, v1]
@@ -41,7 +42,6 @@ export const ToggleSave: FC = () => {
     // priortise ordering based on balance
     if (v1Balance?.balance) {
       if (v1Balance.balance.exact.gt(0)) {
-        setSaveVersions([V2, V1]);
         setActiveVersion(V1);
       }
     }

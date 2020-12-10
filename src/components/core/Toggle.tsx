@@ -17,7 +17,7 @@ const Container = styled.div`
   border-radius: 1.5rem;
   background: #eee;
 
-  button:nth-last-child(1) {
+  button:not(:first-child) {
     margin-left: -0.5rem;
   }
 `;
