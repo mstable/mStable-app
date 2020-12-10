@@ -6,13 +6,10 @@ export interface StepProps {
   key: string;
   isCompleted: boolean;
   isPending: boolean;
-  isActive: boolean;
   onClick(): void;
 }
 
-export interface State {
-  steps: StepProps[];
-}
+export type State = StepProps[];
 
 export interface Dispatch {
   withdrawTx(amount: BigDecimal): void;

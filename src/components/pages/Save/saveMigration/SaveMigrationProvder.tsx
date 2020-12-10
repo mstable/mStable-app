@@ -32,9 +32,6 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const [isWithdrawPending, setIsWithdrawPending] = useState(false);
   const [isApprovePending, setIsApprovePending] = useState(false);
   const [isDepositPending, setIsDepositPending] = useState(false);
-  const [isWithdrawActive, setIsWithdrawActive] = useState(true);
-  const [isApproveActive, setIsApproveActive] = useState(false);
-  const [isDepositActive, setIsDepositActive] = useState(false);
   const tokenContract = useErc20Contract(savingsContractV2?.address);
   const setFormManifest = useSetFormManifest();
 
@@ -53,9 +50,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           setIsWithdrawPending(true);
         },
         onFinalize() {
-          setIsWithdrawActive(false);
           setIsWithdrawPending(false);
-          setIsApproveActive(true);
         },
       });
     },
@@ -83,9 +78,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           setIsApprovePending(true);
         },
         onFinalize() {
-          setIsApproveActive(false);
           setIsApprovePending(false);
-          setIsDepositActive(true);
         },
       });
     },
@@ -106,7 +99,6 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           setIsDepositPending(true);
         },
         onFinalize() {
-          setIsDepositActive(false);
           setIsDepositPending(false);
         },
       });
@@ -114,7 +106,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
     [setFormManifest, savingsContractV2],
   );
   const state = useMemo(() => {
-    const steps = [
+    return [
       {
         title: 'withdraw',
         buttonTitle: 'Submit',
@@ -123,7 +115,6 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           0,
         ),
         isPending: isWithdrawPending,
-        isActive: isWithdrawActive,
         onClick: () =>
           withdrawTx(
             selectedMasset?.savingsContracts.v1?.savingsBalance
@@ -141,7 +132,6 @@ export const SaveMigrationProvider: FC = ({ children }) => {
             ?.exact as BigNumber,
         ),
         isPending: isApprovePending,
-        isActive: isApproveActive,
         onClick: () =>
           approveTx(
             selectedMasset?.savingsContracts.v2?.address as string,
@@ -157,7 +147,6 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           0,
         ),
         isPending: isDepositPending,
-        isActive: isDepositActive,
         onClick: () =>
           depositTx(
             selectedMasset?.savingsContracts.v1?.savingsBalance
@@ -166,16 +155,12 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           ),
       },
     ] as StepProps[];
-    return { steps };
   }, [
     selectedMasset,
     isWithdrawPending,
     isApprovePending,
     isDepositPending,
     walletAddress,
-    isApproveActive,
-    isDepositActive,
-    isWithdrawActive,
     approveTx,
     depositTx,
     withdrawTx,
@@ -195,8 +180,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   );
 };
 
-export const useMigrationSteps = (): State['steps'] =>
-  useContext(stateCtx).steps;
+export const useMigrationSteps = (): State => useContext(stateCtx);
 
 export const useWithdrawTx = (): Dispatch['withdrawTx'] =>
   useContext(dispatchCtx).withdrawTx;
