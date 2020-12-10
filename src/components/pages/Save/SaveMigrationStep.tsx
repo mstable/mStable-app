@@ -1,25 +1,9 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { ViewportWidth } from '../../../theme';
-import { SaveMigrationStep } from '../../../types';
 import { ActivitySpinner } from '../../core/ActivitySpinner';
 import { BubbleButton as Button } from '../../core/Button';
-
-interface Props {
-  pendingIndex?: number;
-  active: boolean;
-  complete: boolean;
-  onClick: (step: SaveMigrationStep, index: number) => void;
-  step: SaveMigrationStep;
-}
-
-const { WITHDRAW, APPROVE, DEPOSIT } = SaveMigrationStep;
-
-const MIGRATION_TITLES = new Map<SaveMigrationStep, string>([
-  [WITHDRAW, 'Withdraw'],
-  [APPROVE, 'Approve'],
-  [DEPOSIT, 'Deposit'],
-]);
+import { StepProps } from './saveMigration/types';
 
 const Container = styled.div<{ active?: boolean; complete?: boolean }>`
   width: 100%;
@@ -75,27 +59,24 @@ const SplitContainer = styled.div`
   }
 `;
 
-export const Step: FC<Props> = props => {
-  const { active, pendingIndex, complete, step, onClick } = props;
-
-  const buttonTitles = step === APPROVE && active ? ['Exact', '∞'] : ['Submit'];
-
+export const Step: FC<StepProps> = props => {
+  const {
+    isCompleted,
+    buttonTitle,
+    title,
+    isPending,
+    isActive,
+    onClick,
+  } = props;
+  const active = true;
   return (
     <SplitContainer>
-      {buttonTitles?.map((buttonTitle, i) => {
-        const isPending = pendingIndex === i;
-        return (
-          <Container active={active} complete={complete} key={buttonTitle}>
-            <span>{MIGRATION_TITLES.get(step)} </span>
-            <Button
-              highlighted={active || pendingIndex !== undefined}
-              onClick={() => onClick(step, i)}
-            >
-              {isPending ? <ActivitySpinner success pending /> : buttonTitle}
-            </Button>
-          </Container>
-        );
-      })}
+      <Container active={isActive} complete={isCompleted} key={buttonTitle}>
+        <span>{title} </span>
+        <Button highlighted={active} onClick={onClick}>
+          {isPending ? <ActivitySpinner success pending /> : buttonTitle}
+        </Button>
+      </Container>
     </SplitContainer>
   );
 };
