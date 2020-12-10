@@ -59,7 +59,7 @@ const SplitContainer = styled.div`
   }
 `;
 
-export const Step: FC<StepProps> = props => {
+export const Step: FC<StepProps & { isActive: boolean }> = props => {
   const {
     isCompleted,
     buttonTitle,
@@ -68,12 +68,11 @@ export const Step: FC<StepProps> = props => {
     isActive,
     onClick,
   } = props;
-  const active = true;
   return (
     <SplitContainer>
       <Container active={isActive} complete={isCompleted} key={buttonTitle}>
         <span>{title} </span>
-        <Button highlighted={active} onClick={onClick}>
+        <Button highlighted={isActive} onClick={onClick}>
           {isPending ? <ActivitySpinner success pending /> : buttonTitle}
         </Button>
       </Container>

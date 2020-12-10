@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Step } from '../pages/Save/SaveMigrationStep';
 import { StepProps } from '../pages/Save/saveMigration/types';
 
-
 export interface Props {
   steps: StepProps[];
 }
@@ -41,23 +40,15 @@ export const Steps: FC<Props> = ({ steps }) => {
       {!stepsCompleted &&
         activeStep &&
         steps.map(
-          ({
-            key,
-            isCompleted,
-            buttonTitle,
-            title,
-            isPending,
-            isActive,
-            onClick,
-          }) => (
+          ({ key, isCompleted, buttonTitle, title, isPending, onClick }) => (
             <Step
-              key={`step-${key}`}
+              key={key}
               isCompleted={isCompleted}
               isPending={isPending}
               buttonTitle={buttonTitle}
               title={title}
               onClick={onClick}
-              isActive={isActive}
+              isActive={activeStep.key === key}
             />
           ),
         )}
