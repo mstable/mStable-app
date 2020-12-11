@@ -109,11 +109,11 @@ const SaveContent: FC = () => {
 export const Save: FC = () => (
   <ActiveSaveVersionProvider>
     <SaveProvider>
-      <SaveMigrationProvider>
-        <FormProvider formId="save">
+      <FormProvider formId="save">
+        <SaveMigrationProvider>
           <SaveContent />
-        </FormProvider>
-      </SaveMigrationProvider>
+        </SaveMigrationProvider>
+      </FormProvider>
     </SaveProvider>
   </ActiveSaveVersionProvider>
 );
