@@ -12,6 +12,7 @@ import { recalculateState } from './recalculateState';
 import { transformRawData } from './transformRawData';
 import { useBlockPollingSubscription } from './subscriptions';
 import { useAccount } from '../UserProvider';
+import { useBlockNumber } from '../BlockProvider';
 import {
   MassetsQueryResult,
   useMassetsLazyQuery,
@@ -21,6 +22,7 @@ import { useSelectedMassetName } from '../SelectedMassetNameProvider';
 const dataStateCtx = createContext<DataState>({});
 
 const useRawData = (): [MassetsQueryResult['data'], Tokens] => {
+  const blockNumber = useBlockNumber();
   const { tokens } = useTokensState();
 
   const account = useAccount();
@@ -28,25 +30,15 @@ const useRawData = (): [MassetsQueryResult['data'], Tokens] => {
     variables: { account: account ?? '', hasAccount: !!account },
   });
 
-  return [subscription.data, tokens];
-};
-
-export const DataProvider: FC = ({ children }) => {
-  const data = useRawData();
-
-  const dataState = useMemo<DataState>(
-    () =>
-      pipe<typeof data, DataState, DataState>(
-        data,
-        transformRawData,
-        recalculateState,
-      ),
-    [data],
-  );
-
-  return (
-    <dataStateCtx.Provider value={dataState}>{children}</dataStateCtx.Provider>
-  );
+  // Intentionally limit updates.
+  // Given that the blockNumber and the subscription's loading state are what
+  // drive updates to both the tokens state and the DataState, use these
+  // as the deps to prevent creating new objects with the same underlying data.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => [subscription.data, tokens], [
+    blockNumber,
+    subscription.loading,
+  ]);
 };
 
 export const useDataState = (): DataState => useContext(dataStateCtx);
@@ -71,4 +63,22 @@ export const useSelectedSaveV1Address = (): string | undefined => {
 export const useSelectedSaveV2Address = (): string | undefined => {
   const massetState = useSelectedMassetState();
   return massetState?.savingsContracts?.v2?.address;
+};
+
+export const DataProvider: FC = ({ children }) => {
+  const data = useRawData();
+
+  const dataState = useMemo<DataState>(
+    () =>
+      pipe<typeof data, DataState, DataState>(
+        data,
+        transformRawData,
+        recalculateState,
+      ),
+    [data],
+  );
+
+  return (
+    <dataStateCtx.Provider value={dataState}>{children}</dataStateCtx.Provider>
+  );
 };
