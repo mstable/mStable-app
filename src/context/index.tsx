@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { UserProvider } from './UserProvider';
 import { AppProvider } from './AppProvider';
-import { SelectedMassetProvider } from './SelectedMassetProvider';
+import { SelectedMassetNameProvider } from './SelectedMassetNameProvider';
 import { NotificationsProvider } from './NotificationsProvider';
 import { TransactionsProvider } from './TransactionsProvider';
 import { ThemeProvider } from './ThemeProvider';
@@ -17,7 +17,7 @@ export const Providers: FC = ({ children }) => (
       <UserProvider>
         <BlockProvider>
           <TransactionsProvider>
-            <SelectedMassetProvider>
+            <SelectedMassetNameProvider>
               <TokensProvider>
                 <DataProvider>
                   <AppProvider>
@@ -25,7 +25,7 @@ export const Providers: FC = ({ children }) => (
                   </AppProvider>
                 </DataProvider>
               </TokensProvider>
-            </SelectedMassetProvider>
+            </SelectedMassetNameProvider>
           </TransactionsProvider>
         </BlockProvider>
       </UserProvider>
