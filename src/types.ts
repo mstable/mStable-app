@@ -1,17 +1,18 @@
 import { FC } from 'react';
-import { TransactionResponse, Log } from 'ethers/providers';
-import { BigNumber, LogDescription } from 'ethers/utils';
+import { TransactionResponse } from 'ethers/providers';
+import { BigNumber } from 'ethers/utils';
+
 import { Ierc20 } from './typechain/Ierc20.d';
 import { ISavingsContract } from './typechain/ISavingsContract.d';
 import { IMasset } from './typechain/IMasset.d';
+import { MusdGauge } from './typechain/MusdGauge.d';
 import { StakingRewards as IStakingRewards } from './typechain/StakingRewards.d';
 import { StakingRewardsWithPlatformToken as IStakingRewardsWithPlatformToken } from './typechain/StakingRewardsWithPlatformToken.d';
-import { BigDecimal } from './web3/BigDecimal';
 import { RewardsDistributor as IRewardsDistributor } from './typechain/RewardsDistributor.d';
 import { MerkleDrop as IMerkleDrop } from './typechain/MerkleDrop.d';
-import { MusdGauge } from './typechain/MusdGauge.d';
 import { TokenMinter as ICurveTokenMinter } from './typechain/TokenMinter.d';
 import { CurveDeposit as ICurveDeposit } from './typechain/CurveDeposit.d';
+import { BigDecimal } from './web3/BigDecimal';
 
 export type MassetName = 'mUSD' | 'mBTC';
 
@@ -31,17 +32,6 @@ export interface Transaction {
 export interface Purpose {
   present: string | null;
   past: string | null;
-}
-
-export type LogWithTransactionHash = Omit<Log, 'transactionHash'> &
-  Required<Pick<Log, 'transactionHash'>>;
-
-export interface HistoricTransaction {
-  hash: string;
-  contractAddress: string;
-  blockNumber: number;
-  status: number;
-  logs: LogDescription[];
 }
 
 export enum TransactionStatus {
