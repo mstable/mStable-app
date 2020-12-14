@@ -11,6 +11,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): UniswapFactory
   uniswapFactories(
     skip: Int = 0
@@ -24,6 +26,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [UniswapFactory!]!
   token(
     id: ID!
@@ -33,6 +37,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Token
   tokens(
     skip: Int = 0
@@ -46,6 +52,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Token!]!
   pair(
     id: ID!
@@ -55,6 +63,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Pair
   pairs(
     skip: Int = 0
@@ -68,6 +78,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Pair!]!
   user(
     id: ID!
@@ -77,6 +89,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): User
   users(
     skip: Int = 0
@@ -90,6 +104,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [User!]!
   liquidityPosition(
     id: ID!
@@ -99,6 +115,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): LiquidityPosition
   liquidityPositions(
     skip: Int = 0
@@ -112,6 +130,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [LiquidityPosition!]!
   liquidityPositionSnapshot(
     id: ID!
@@ -121,6 +141,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): LiquidityPositionSnapshot
   liquidityPositionSnapshots(
     skip: Int = 0
@@ -134,6 +156,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [LiquidityPositionSnapshot!]!
   transaction(
     id: ID!
@@ -143,6 +167,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Transaction
   transactions(
     skip: Int = 0
@@ -156,6 +182,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Transaction!]!
   mint(
     id: ID!
@@ -165,6 +193,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Mint
   mints(
     skip: Int = 0
@@ -178,6 +208,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Mint!]!
   burn(
     id: ID!
@@ -187,6 +219,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Burn
   burns(
     skip: Int = 0
@@ -200,6 +234,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Burn!]!
   swap(
     id: ID!
@@ -209,6 +245,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Swap
   swaps(
     skip: Int = 0
@@ -222,6 +260,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Swap!]!
   bundle(
     id: ID!
@@ -231,6 +271,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Bundle
   bundles(
     skip: Int = 0
@@ -244,6 +286,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Bundle!]!
   uniswapDayData(
     id: ID!
@@ -253,6 +297,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): UniswapDayData
   uniswapDayDatas(
     skip: Int = 0
@@ -266,6 +312,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [UniswapDayData!]!
   pairHourData(
     id: ID!
@@ -275,6 +323,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): PairHourData
   pairHourDatas(
     skip: Int = 0
@@ -288,6 +338,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [PairHourData!]!
   pairDayData(
     id: ID!
@@ -297,6 +349,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): PairDayData
   pairDayDatas(
     skip: Int = 0
@@ -310,6 +364,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [PairDayData!]!
   tokenDayData(
     id: ID!
@@ -319,6 +375,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): TokenDayData
   tokenDayDatas(
     skip: Int = 0
@@ -332,6 +390,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenDayData!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
@@ -341,6 +401,12 @@ input Block_height {
   number: Int
 }
 scalar Bytes
+enum _SubgraphErrorPolicy_ {
+  """Data will be returned even if the subgraph has indexing errors"""
+  allow
+  """If the subgraph has indexing errors, data will be omitted. The default."""
+  deny
+}
 type UniswapFactory {
   id: ID!
   pairCount: Int!
@@ -445,21 +511,26 @@ type Token {
   txCount: BigInt!
   totalLiquidity: BigDecimal!
   derivedETH: BigDecimal
+  tokenDayData(skip: Int = 0, first: Int = 100, orderBy: TokenDayData_orderBy, orderDirection: OrderDirection, where: TokenDayData_filter): [TokenDayData!]!
+  pairDayDataBase(skip: Int = 0, first: Int = 100, orderBy: PairDayData_orderBy, orderDirection: OrderDirection, where: PairDayData_filter): [PairDayData!]!
+  pairDayDataQuote(skip: Int = 0, first: Int = 100, orderBy: PairDayData_orderBy, orderDirection: OrderDirection, where: PairDayData_filter): [PairDayData!]!
+  pairBase(skip: Int = 0, first: Int = 100, orderBy: Pair_orderBy, orderDirection: OrderDirection, where: Pair_filter): [Pair!]!
+  pairQuote(skip: Int = 0, first: Int = 100, orderBy: Pair_orderBy, orderDirection: OrderDirection, where: Pair_filter): [Pair!]!
 }
-enum Token_orderBy {
+enum TokenDayData_orderBy {
   id
-  symbol
-  name
-  decimals
-  totalSupply
-  tradeVolume
-  tradeVolumeUSD
-  untrackedVolumeUSD
-  txCount
-  totalLiquidity
-  derivedETH
+  date
+  token
+  dailyVolumeToken
+  dailyVolumeETH
+  dailyVolumeUSD
+  dailyTxns
+  totalLiquidityToken
+  totalLiquidityETH
+  totalLiquidityUSD
+  priceUSD
 }
-input Token_filter {
+input TokenDayData_filter {
   id: ID
   id_not: ID
   id_gt: ID
@@ -468,119 +539,251 @@ input Token_filter {
   id_lte: ID
   id_in: [ID!]
   id_not_in: [ID!]
-  symbol: String
-  symbol_not: String
-  symbol_gt: String
-  symbol_lt: String
-  symbol_gte: String
-  symbol_lte: String
-  symbol_in: [String!]
-  symbol_not_in: [String!]
-  symbol_contains: String
-  symbol_not_contains: String
-  symbol_starts_with: String
-  symbol_not_starts_with: String
-  symbol_ends_with: String
-  symbol_not_ends_with: String
-  name: String
-  name_not: String
-  name_gt: String
-  name_lt: String
-  name_gte: String
-  name_lte: String
-  name_in: [String!]
-  name_not_in: [String!]
-  name_contains: String
-  name_not_contains: String
-  name_starts_with: String
-  name_not_starts_with: String
-  name_ends_with: String
-  name_not_ends_with: String
-  decimals: BigInt
-  decimals_not: BigInt
-  decimals_gt: BigInt
-  decimals_lt: BigInt
-  decimals_gte: BigInt
-  decimals_lte: BigInt
-  decimals_in: [BigInt!]
-  decimals_not_in: [BigInt!]
-  totalSupply: BigInt
-  totalSupply_not: BigInt
-  totalSupply_gt: BigInt
-  totalSupply_lt: BigInt
-  totalSupply_gte: BigInt
-  totalSupply_lte: BigInt
-  totalSupply_in: [BigInt!]
-  totalSupply_not_in: [BigInt!]
-  tradeVolume: BigDecimal
-  tradeVolume_not: BigDecimal
-  tradeVolume_gt: BigDecimal
-  tradeVolume_lt: BigDecimal
-  tradeVolume_gte: BigDecimal
-  tradeVolume_lte: BigDecimal
-  tradeVolume_in: [BigDecimal!]
-  tradeVolume_not_in: [BigDecimal!]
-  tradeVolumeUSD: BigDecimal
-  tradeVolumeUSD_not: BigDecimal
-  tradeVolumeUSD_gt: BigDecimal
-  tradeVolumeUSD_lt: BigDecimal
-  tradeVolumeUSD_gte: BigDecimal
-  tradeVolumeUSD_lte: BigDecimal
-  tradeVolumeUSD_in: [BigDecimal!]
-  tradeVolumeUSD_not_in: [BigDecimal!]
-  untrackedVolumeUSD: BigDecimal
-  untrackedVolumeUSD_not: BigDecimal
-  untrackedVolumeUSD_gt: BigDecimal
-  untrackedVolumeUSD_lt: BigDecimal
-  untrackedVolumeUSD_gte: BigDecimal
-  untrackedVolumeUSD_lte: BigDecimal
-  untrackedVolumeUSD_in: [BigDecimal!]
-  untrackedVolumeUSD_not_in: [BigDecimal!]
-  txCount: BigInt
-  txCount_not: BigInt
-  txCount_gt: BigInt
-  txCount_lt: BigInt
-  txCount_gte: BigInt
-  txCount_lte: BigInt
-  txCount_in: [BigInt!]
-  txCount_not_in: [BigInt!]
-  totalLiquidity: BigDecimal
-  totalLiquidity_not: BigDecimal
-  totalLiquidity_gt: BigDecimal
-  totalLiquidity_lt: BigDecimal
-  totalLiquidity_gte: BigDecimal
-  totalLiquidity_lte: BigDecimal
-  totalLiquidity_in: [BigDecimal!]
-  totalLiquidity_not_in: [BigDecimal!]
-  derivedETH: BigDecimal
-  derivedETH_not: BigDecimal
-  derivedETH_gt: BigDecimal
-  derivedETH_lt: BigDecimal
-  derivedETH_gte: BigDecimal
-  derivedETH_lte: BigDecimal
-  derivedETH_in: [BigDecimal!]
-  derivedETH_not_in: [BigDecimal!]
+  date: Int
+  date_not: Int
+  date_gt: Int
+  date_lt: Int
+  date_gte: Int
+  date_lte: Int
+  date_in: [Int!]
+  date_not_in: [Int!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_not_contains: String
+  token_starts_with: String
+  token_not_starts_with: String
+  token_ends_with: String
+  token_not_ends_with: String
+  dailyVolumeToken: BigDecimal
+  dailyVolumeToken_not: BigDecimal
+  dailyVolumeToken_gt: BigDecimal
+  dailyVolumeToken_lt: BigDecimal
+  dailyVolumeToken_gte: BigDecimal
+  dailyVolumeToken_lte: BigDecimal
+  dailyVolumeToken_in: [BigDecimal!]
+  dailyVolumeToken_not_in: [BigDecimal!]
+  dailyVolumeETH: BigDecimal
+  dailyVolumeETH_not: BigDecimal
+  dailyVolumeETH_gt: BigDecimal
+  dailyVolumeETH_lt: BigDecimal
+  dailyVolumeETH_gte: BigDecimal
+  dailyVolumeETH_lte: BigDecimal
+  dailyVolumeETH_in: [BigDecimal!]
+  dailyVolumeETH_not_in: [BigDecimal!]
+  dailyVolumeUSD: BigDecimal
+  dailyVolumeUSD_not: BigDecimal
+  dailyVolumeUSD_gt: BigDecimal
+  dailyVolumeUSD_lt: BigDecimal
+  dailyVolumeUSD_gte: BigDecimal
+  dailyVolumeUSD_lte: BigDecimal
+  dailyVolumeUSD_in: [BigDecimal!]
+  dailyVolumeUSD_not_in: [BigDecimal!]
+  dailyTxns: BigInt
+  dailyTxns_not: BigInt
+  dailyTxns_gt: BigInt
+  dailyTxns_lt: BigInt
+  dailyTxns_gte: BigInt
+  dailyTxns_lte: BigInt
+  dailyTxns_in: [BigInt!]
+  dailyTxns_not_in: [BigInt!]
+  totalLiquidityToken: BigDecimal
+  totalLiquidityToken_not: BigDecimal
+  totalLiquidityToken_gt: BigDecimal
+  totalLiquidityToken_lt: BigDecimal
+  totalLiquidityToken_gte: BigDecimal
+  totalLiquidityToken_lte: BigDecimal
+  totalLiquidityToken_in: [BigDecimal!]
+  totalLiquidityToken_not_in: [BigDecimal!]
+  totalLiquidityETH: BigDecimal
+  totalLiquidityETH_not: BigDecimal
+  totalLiquidityETH_gt: BigDecimal
+  totalLiquidityETH_lt: BigDecimal
+  totalLiquidityETH_gte: BigDecimal
+  totalLiquidityETH_lte: BigDecimal
+  totalLiquidityETH_in: [BigDecimal!]
+  totalLiquidityETH_not_in: [BigDecimal!]
+  totalLiquidityUSD: BigDecimal
+  totalLiquidityUSD_not: BigDecimal
+  totalLiquidityUSD_gt: BigDecimal
+  totalLiquidityUSD_lt: BigDecimal
+  totalLiquidityUSD_gte: BigDecimal
+  totalLiquidityUSD_lte: BigDecimal
+  totalLiquidityUSD_in: [BigDecimal!]
+  totalLiquidityUSD_not_in: [BigDecimal!]
+  priceUSD: BigDecimal
+  priceUSD_not: BigDecimal
+  priceUSD_gt: BigDecimal
+  priceUSD_lt: BigDecimal
+  priceUSD_gte: BigDecimal
+  priceUSD_lte: BigDecimal
+  priceUSD_in: [BigDecimal!]
+  priceUSD_not_in: [BigDecimal!]
 }
-type Pair {
+type TokenDayData {
   id: ID!
+  date: Int!
+  token: Token!
+  dailyVolumeToken: BigDecimal!
+  dailyVolumeETH: BigDecimal!
+  dailyVolumeUSD: BigDecimal!
+  dailyTxns: BigInt!
+  totalLiquidityToken: BigDecimal!
+  totalLiquidityETH: BigDecimal!
+  totalLiquidityUSD: BigDecimal!
+  priceUSD: BigDecimal!
+}
+enum PairDayData_orderBy {
+  id
+  date
+  pairAddress
+  token0
+  token1
+  reserve0
+  reserve1
+  totalSupply
+  reserveUSD
+  dailyVolumeToken0
+  dailyVolumeToken1
+  dailyVolumeUSD
+  dailyTxns
+}
+input PairDayData_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  date: Int
+  date_not: Int
+  date_gt: Int
+  date_lt: Int
+  date_gte: Int
+  date_lte: Int
+  date_in: [Int!]
+  date_not_in: [Int!]
+  pairAddress: Bytes
+  pairAddress_not: Bytes
+  pairAddress_in: [Bytes!]
+  pairAddress_not_in: [Bytes!]
+  pairAddress_contains: Bytes
+  pairAddress_not_contains: Bytes
+  token0: String
+  token0_not: String
+  token0_gt: String
+  token0_lt: String
+  token0_gte: String
+  token0_lte: String
+  token0_in: [String!]
+  token0_not_in: [String!]
+  token0_contains: String
+  token0_not_contains: String
+  token0_starts_with: String
+  token0_not_starts_with: String
+  token0_ends_with: String
+  token0_not_ends_with: String
+  token1: String
+  token1_not: String
+  token1_gt: String
+  token1_lt: String
+  token1_gte: String
+  token1_lte: String
+  token1_in: [String!]
+  token1_not_in: [String!]
+  token1_contains: String
+  token1_not_contains: String
+  token1_starts_with: String
+  token1_not_starts_with: String
+  token1_ends_with: String
+  token1_not_ends_with: String
+  reserve0: BigDecimal
+  reserve0_not: BigDecimal
+  reserve0_gt: BigDecimal
+  reserve0_lt: BigDecimal
+  reserve0_gte: BigDecimal
+  reserve0_lte: BigDecimal
+  reserve0_in: [BigDecimal!]
+  reserve0_not_in: [BigDecimal!]
+  reserve1: BigDecimal
+  reserve1_not: BigDecimal
+  reserve1_gt: BigDecimal
+  reserve1_lt: BigDecimal
+  reserve1_gte: BigDecimal
+  reserve1_lte: BigDecimal
+  reserve1_in: [BigDecimal!]
+  reserve1_not_in: [BigDecimal!]
+  totalSupply: BigDecimal
+  totalSupply_not: BigDecimal
+  totalSupply_gt: BigDecimal
+  totalSupply_lt: BigDecimal
+  totalSupply_gte: BigDecimal
+  totalSupply_lte: BigDecimal
+  totalSupply_in: [BigDecimal!]
+  totalSupply_not_in: [BigDecimal!]
+  reserveUSD: BigDecimal
+  reserveUSD_not: BigDecimal
+  reserveUSD_gt: BigDecimal
+  reserveUSD_lt: BigDecimal
+  reserveUSD_gte: BigDecimal
+  reserveUSD_lte: BigDecimal
+  reserveUSD_in: [BigDecimal!]
+  reserveUSD_not_in: [BigDecimal!]
+  dailyVolumeToken0: BigDecimal
+  dailyVolumeToken0_not: BigDecimal
+  dailyVolumeToken0_gt: BigDecimal
+  dailyVolumeToken0_lt: BigDecimal
+  dailyVolumeToken0_gte: BigDecimal
+  dailyVolumeToken0_lte: BigDecimal
+  dailyVolumeToken0_in: [BigDecimal!]
+  dailyVolumeToken0_not_in: [BigDecimal!]
+  dailyVolumeToken1: BigDecimal
+  dailyVolumeToken1_not: BigDecimal
+  dailyVolumeToken1_gt: BigDecimal
+  dailyVolumeToken1_lt: BigDecimal
+  dailyVolumeToken1_gte: BigDecimal
+  dailyVolumeToken1_lte: BigDecimal
+  dailyVolumeToken1_in: [BigDecimal!]
+  dailyVolumeToken1_not_in: [BigDecimal!]
+  dailyVolumeUSD: BigDecimal
+  dailyVolumeUSD_not: BigDecimal
+  dailyVolumeUSD_gt: BigDecimal
+  dailyVolumeUSD_lt: BigDecimal
+  dailyVolumeUSD_gte: BigDecimal
+  dailyVolumeUSD_lte: BigDecimal
+  dailyVolumeUSD_in: [BigDecimal!]
+  dailyVolumeUSD_not_in: [BigDecimal!]
+  dailyTxns: BigInt
+  dailyTxns_not: BigInt
+  dailyTxns_gt: BigInt
+  dailyTxns_lt: BigInt
+  dailyTxns_gte: BigInt
+  dailyTxns_lte: BigInt
+  dailyTxns_in: [BigInt!]
+  dailyTxns_not_in: [BigInt!]
+}
+type PairDayData {
+  id: ID!
+  date: Int!
+  pairAddress: Bytes!
   token0: Token!
   token1: Token!
   reserve0: BigDecimal!
   reserve1: BigDecimal!
   totalSupply: BigDecimal!
-  reserveETH: BigDecimal!
   reserveUSD: BigDecimal!
-  trackedReserveETH: BigDecimal!
-  token0Price: BigDecimal!
-  token1Price: BigDecimal!
-  volumeToken0: BigDecimal!
-  volumeToken1: BigDecimal!
-  volumeUSD: BigDecimal!
-  untrackedVolumeUSD: BigDecimal!
-  txCount: BigInt!
-  createdAtTimestamp: BigInt!
-  createdAtBlockNumber: BigInt!
-  liquidityProviderCount: BigInt!
+  dailyVolumeToken0: BigDecimal!
+  dailyVolumeToken1: BigDecimal!
+  dailyVolumeUSD: BigDecimal!
+  dailyTxns: BigInt!
 }
 enum Pair_orderBy {
   id
@@ -602,6 +805,12 @@ enum Pair_orderBy {
   createdAtTimestamp
   createdAtBlockNumber
   liquidityProviderCount
+  pairHourData
+  liquidityPositions
+  liquidityPositionSnapshots
+  mints
+  burns
+  swaps
 }
 input Pair_filter {
   id: ID
@@ -769,10 +978,144 @@ input Pair_filter {
   liquidityProviderCount_in: [BigInt!]
   liquidityProviderCount_not_in: [BigInt!]
 }
-type User {
+type Pair {
   id: ID!
-  liquidityPositions(skip: Int = 0, first: Int = 100, orderBy: LiquidityPosition_orderBy, orderDirection: OrderDirection, where: LiquidityPosition_filter): [LiquidityPosition!]
-  usdSwapped: BigDecimal!
+  token0: Token!
+  token1: Token!
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+  totalSupply: BigDecimal!
+  reserveETH: BigDecimal!
+  reserveUSD: BigDecimal!
+  trackedReserveETH: BigDecimal!
+  token0Price: BigDecimal!
+  token1Price: BigDecimal!
+  volumeToken0: BigDecimal!
+  volumeToken1: BigDecimal!
+  volumeUSD: BigDecimal!
+  untrackedVolumeUSD: BigDecimal!
+  txCount: BigInt!
+  createdAtTimestamp: BigInt!
+  createdAtBlockNumber: BigInt!
+  liquidityProviderCount: BigInt!
+  pairHourData(skip: Int = 0, first: Int = 100, orderBy: PairHourData_orderBy, orderDirection: OrderDirection, where: PairHourData_filter): [PairHourData!]!
+  liquidityPositions(skip: Int = 0, first: Int = 100, orderBy: LiquidityPosition_orderBy, orderDirection: OrderDirection, where: LiquidityPosition_filter): [LiquidityPosition!]!
+  liquidityPositionSnapshots(skip: Int = 0, first: Int = 100, orderBy: LiquidityPositionSnapshot_orderBy, orderDirection: OrderDirection, where: LiquidityPositionSnapshot_filter): [LiquidityPositionSnapshot!]!
+  mints(skip: Int = 0, first: Int = 100, orderBy: Mint_orderBy, orderDirection: OrderDirection, where: Mint_filter): [Mint!]!
+  burns(skip: Int = 0, first: Int = 100, orderBy: Burn_orderBy, orderDirection: OrderDirection, where: Burn_filter): [Burn!]!
+  swaps(skip: Int = 0, first: Int = 100, orderBy: Swap_orderBy, orderDirection: OrderDirection, where: Swap_filter): [Swap!]!
+}
+enum PairHourData_orderBy {
+  id
+  hourStartUnix
+  pair
+  reserve0
+  reserve1
+  reserveUSD
+  hourlyVolumeToken0
+  hourlyVolumeToken1
+  hourlyVolumeUSD
+  hourlyTxns
+}
+input PairHourData_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  hourStartUnix: Int
+  hourStartUnix_not: Int
+  hourStartUnix_gt: Int
+  hourStartUnix_lt: Int
+  hourStartUnix_gte: Int
+  hourStartUnix_lte: Int
+  hourStartUnix_in: [Int!]
+  hourStartUnix_not_in: [Int!]
+  pair: String
+  pair_not: String
+  pair_gt: String
+  pair_lt: String
+  pair_gte: String
+  pair_lte: String
+  pair_in: [String!]
+  pair_not_in: [String!]
+  pair_contains: String
+  pair_not_contains: String
+  pair_starts_with: String
+  pair_not_starts_with: String
+  pair_ends_with: String
+  pair_not_ends_with: String
+  reserve0: BigDecimal
+  reserve0_not: BigDecimal
+  reserve0_gt: BigDecimal
+  reserve0_lt: BigDecimal
+  reserve0_gte: BigDecimal
+  reserve0_lte: BigDecimal
+  reserve0_in: [BigDecimal!]
+  reserve0_not_in: [BigDecimal!]
+  reserve1: BigDecimal
+  reserve1_not: BigDecimal
+  reserve1_gt: BigDecimal
+  reserve1_lt: BigDecimal
+  reserve1_gte: BigDecimal
+  reserve1_lte: BigDecimal
+  reserve1_in: [BigDecimal!]
+  reserve1_not_in: [BigDecimal!]
+  reserveUSD: BigDecimal
+  reserveUSD_not: BigDecimal
+  reserveUSD_gt: BigDecimal
+  reserveUSD_lt: BigDecimal
+  reserveUSD_gte: BigDecimal
+  reserveUSD_lte: BigDecimal
+  reserveUSD_in: [BigDecimal!]
+  reserveUSD_not_in: [BigDecimal!]
+  hourlyVolumeToken0: BigDecimal
+  hourlyVolumeToken0_not: BigDecimal
+  hourlyVolumeToken0_gt: BigDecimal
+  hourlyVolumeToken0_lt: BigDecimal
+  hourlyVolumeToken0_gte: BigDecimal
+  hourlyVolumeToken0_lte: BigDecimal
+  hourlyVolumeToken0_in: [BigDecimal!]
+  hourlyVolumeToken0_not_in: [BigDecimal!]
+  hourlyVolumeToken1: BigDecimal
+  hourlyVolumeToken1_not: BigDecimal
+  hourlyVolumeToken1_gt: BigDecimal
+  hourlyVolumeToken1_lt: BigDecimal
+  hourlyVolumeToken1_gte: BigDecimal
+  hourlyVolumeToken1_lte: BigDecimal
+  hourlyVolumeToken1_in: [BigDecimal!]
+  hourlyVolumeToken1_not_in: [BigDecimal!]
+  hourlyVolumeUSD: BigDecimal
+  hourlyVolumeUSD_not: BigDecimal
+  hourlyVolumeUSD_gt: BigDecimal
+  hourlyVolumeUSD_lt: BigDecimal
+  hourlyVolumeUSD_gte: BigDecimal
+  hourlyVolumeUSD_lte: BigDecimal
+  hourlyVolumeUSD_in: [BigDecimal!]
+  hourlyVolumeUSD_not_in: [BigDecimal!]
+  hourlyTxns: BigInt
+  hourlyTxns_not: BigInt
+  hourlyTxns_gt: BigInt
+  hourlyTxns_lt: BigInt
+  hourlyTxns_gte: BigInt
+  hourlyTxns_lte: BigInt
+  hourlyTxns_in: [BigInt!]
+  hourlyTxns_not_in: [BigInt!]
+}
+type PairHourData {
+  id: ID!
+  hourStartUnix: Int!
+  pair: Pair!
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+  reserveUSD: BigDecimal!
+  hourlyVolumeToken0: BigDecimal!
+  hourlyVolumeToken1: BigDecimal!
+  hourlyVolumeUSD: BigDecimal!
+  hourlyTxns: BigInt!
 }
 enum LiquidityPosition_orderBy {
   id
@@ -832,43 +1175,10 @@ type LiquidityPosition {
   pair: Pair!
   liquidityTokenBalance: BigDecimal!
 }
-enum User_orderBy {
-  id
-  liquidityPositions
-  usdSwapped
-}
-input User_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  usdSwapped: BigDecimal
-  usdSwapped_not: BigDecimal
-  usdSwapped_gt: BigDecimal
-  usdSwapped_lt: BigDecimal
-  usdSwapped_gte: BigDecimal
-  usdSwapped_lte: BigDecimal
-  usdSwapped_in: [BigDecimal!]
-  usdSwapped_not_in: [BigDecimal!]
-}
-type LiquidityPositionSnapshot {
+type User {
   id: ID!
-  liquidityPosition: LiquidityPosition!
-  timestamp: Int!
-  block: Int!
-  user: User!
-  pair: Pair!
-  token0PriceUSD: BigDecimal!
-  token1PriceUSD: BigDecimal!
-  reserve0: BigDecimal!
-  reserve1: BigDecimal!
-  reserveUSD: BigDecimal!
-  liquidityTokenTotalSupply: BigDecimal!
-  liquidityTokenBalance: BigDecimal!
+  liquidityPositions(skip: Int = 0, first: Int = 100, orderBy: LiquidityPosition_orderBy, orderDirection: OrderDirection, where: LiquidityPosition_filter): [LiquidityPosition!]
+  usdSwapped: BigDecimal!
 }
 enum LiquidityPositionSnapshot_orderBy {
   id
@@ -1009,13 +1319,20 @@ input LiquidityPositionSnapshot_filter {
   liquidityTokenBalance_in: [BigDecimal!]
   liquidityTokenBalance_not_in: [BigDecimal!]
 }
-type Transaction {
+type LiquidityPositionSnapshot {
   id: ID!
-  blockNumber: BigInt!
-  timestamp: BigInt!
-  mints(skip: Int = 0, first: Int = 100, orderBy: Mint_orderBy, orderDirection: OrderDirection, where: Mint_filter): [Mint]!
-  burns(skip: Int = 0, first: Int = 100, orderBy: Burn_orderBy, orderDirection: OrderDirection, where: Burn_filter): [Burn]!
-  swaps(skip: Int = 0, first: Int = 100, orderBy: Swap_orderBy, orderDirection: OrderDirection, where: Swap_filter): [Swap]!
+  liquidityPosition: LiquidityPosition!
+  timestamp: Int!
+  block: Int!
+  user: User!
+  pair: Pair!
+  token0PriceUSD: BigDecimal!
+  token1PriceUSD: BigDecimal!
+  reserve0: BigDecimal!
+  reserve1: BigDecimal!
+  reserveUSD: BigDecimal!
+  liquidityTokenTotalSupply: BigDecimal!
+  liquidityTokenBalance: BigDecimal!
 }
 enum Mint_orderBy {
   id
@@ -1158,6 +1475,14 @@ type Mint {
   amountUSD: BigDecimal
   feeTo: Bytes
   feeLiquidity: BigDecimal
+}
+type Transaction {
+  id: ID!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  mints(skip: Int = 0, first: Int = 100, orderBy: Mint_orderBy, orderDirection: OrderDirection, where: Mint_filter): [Mint]!
+  burns(skip: Int = 0, first: Int = 100, orderBy: Burn_orderBy, orderDirection: OrderDirection, where: Burn_filter): [Burn]!
+  swaps(skip: Int = 0, first: Int = 100, orderBy: Swap_orderBy, orderDirection: OrderDirection, where: Swap_filter): [Swap]!
 }
 enum Burn_orderBy {
   id
@@ -1313,6 +1638,7 @@ enum Swap_orderBy {
   timestamp
   pair
   sender
+  from
   amount0In
   amount1In
   amount0Out
@@ -1372,6 +1698,12 @@ input Swap_filter {
   sender_not_in: [Bytes!]
   sender_contains: Bytes
   sender_not_contains: Bytes
+  from: Bytes
+  from_not: Bytes
+  from_in: [Bytes!]
+  from_not_in: [Bytes!]
+  from_contains: Bytes
+  from_not_contains: Bytes
   amount0In: BigDecimal
   amount0In_not: BigDecimal
   amount0In_gt: BigDecimal
@@ -1433,6 +1765,7 @@ type Swap {
   timestamp: BigInt!
   pair: Pair!
   sender: Bytes!
+  from: Bytes!
   amount0In: BigDecimal!
   amount1In: BigDecimal!
   amount0Out: BigDecimal!
@@ -1440,6 +1773,149 @@ type Swap {
   to: Bytes!
   logIndex: BigInt
   amountUSD: BigDecimal!
+}
+enum Token_orderBy {
+  id
+  symbol
+  name
+  decimals
+  totalSupply
+  tradeVolume
+  tradeVolumeUSD
+  untrackedVolumeUSD
+  txCount
+  totalLiquidity
+  derivedETH
+  tokenDayData
+  pairDayDataBase
+  pairDayDataQuote
+  pairBase
+  pairQuote
+}
+input Token_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  symbol: String
+  symbol_not: String
+  symbol_gt: String
+  symbol_lt: String
+  symbol_gte: String
+  symbol_lte: String
+  symbol_in: [String!]
+  symbol_not_in: [String!]
+  symbol_contains: String
+  symbol_not_contains: String
+  symbol_starts_with: String
+  symbol_not_starts_with: String
+  symbol_ends_with: String
+  symbol_not_ends_with: String
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  decimals: BigInt
+  decimals_not: BigInt
+  decimals_gt: BigInt
+  decimals_lt: BigInt
+  decimals_gte: BigInt
+  decimals_lte: BigInt
+  decimals_in: [BigInt!]
+  decimals_not_in: [BigInt!]
+  totalSupply: BigInt
+  totalSupply_not: BigInt
+  totalSupply_gt: BigInt
+  totalSupply_lt: BigInt
+  totalSupply_gte: BigInt
+  totalSupply_lte: BigInt
+  totalSupply_in: [BigInt!]
+  totalSupply_not_in: [BigInt!]
+  tradeVolume: BigDecimal
+  tradeVolume_not: BigDecimal
+  tradeVolume_gt: BigDecimal
+  tradeVolume_lt: BigDecimal
+  tradeVolume_gte: BigDecimal
+  tradeVolume_lte: BigDecimal
+  tradeVolume_in: [BigDecimal!]
+  tradeVolume_not_in: [BigDecimal!]
+  tradeVolumeUSD: BigDecimal
+  tradeVolumeUSD_not: BigDecimal
+  tradeVolumeUSD_gt: BigDecimal
+  tradeVolumeUSD_lt: BigDecimal
+  tradeVolumeUSD_gte: BigDecimal
+  tradeVolumeUSD_lte: BigDecimal
+  tradeVolumeUSD_in: [BigDecimal!]
+  tradeVolumeUSD_not_in: [BigDecimal!]
+  untrackedVolumeUSD: BigDecimal
+  untrackedVolumeUSD_not: BigDecimal
+  untrackedVolumeUSD_gt: BigDecimal
+  untrackedVolumeUSD_lt: BigDecimal
+  untrackedVolumeUSD_gte: BigDecimal
+  untrackedVolumeUSD_lte: BigDecimal
+  untrackedVolumeUSD_in: [BigDecimal!]
+  untrackedVolumeUSD_not_in: [BigDecimal!]
+  txCount: BigInt
+  txCount_not: BigInt
+  txCount_gt: BigInt
+  txCount_lt: BigInt
+  txCount_gte: BigInt
+  txCount_lte: BigInt
+  txCount_in: [BigInt!]
+  txCount_not_in: [BigInt!]
+  totalLiquidity: BigDecimal
+  totalLiquidity_not: BigDecimal
+  totalLiquidity_gt: BigDecimal
+  totalLiquidity_lt: BigDecimal
+  totalLiquidity_gte: BigDecimal
+  totalLiquidity_lte: BigDecimal
+  totalLiquidity_in: [BigDecimal!]
+  totalLiquidity_not_in: [BigDecimal!]
+  derivedETH: BigDecimal
+  derivedETH_not: BigDecimal
+  derivedETH_gt: BigDecimal
+  derivedETH_lt: BigDecimal
+  derivedETH_gte: BigDecimal
+  derivedETH_lte: BigDecimal
+  derivedETH_in: [BigDecimal!]
+  derivedETH_not_in: [BigDecimal!]
+}
+enum User_orderBy {
+  id
+  liquidityPositions
+  usdSwapped
+}
+input User_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  usdSwapped: BigDecimal
+  usdSwapped_not: BigDecimal
+  usdSwapped_gt: BigDecimal
+  usdSwapped_lt: BigDecimal
+  usdSwapped_gte: BigDecimal
+  usdSwapped_lte: BigDecimal
+  usdSwapped_in: [BigDecimal!]
+  usdSwapped_not_in: [BigDecimal!]
 }
 enum Transaction_orderBy {
   id
@@ -1619,386 +2095,6 @@ input UniswapDayData_filter {
   txCount_in: [BigInt!]
   txCount_not_in: [BigInt!]
 }
-type PairHourData {
-  id: ID!
-  hourStartUnix: Int!
-  pair: Pair!
-  reserve0: BigDecimal!
-  reserve1: BigDecimal!
-  reserveUSD: BigDecimal!
-  hourlyVolumeToken0: BigDecimal!
-  hourlyVolumeToken1: BigDecimal!
-  hourlyVolumeUSD: BigDecimal!
-  hourlyTxns: BigInt!
-}
-enum PairHourData_orderBy {
-  id
-  hourStartUnix
-  pair
-  reserve0
-  reserve1
-  reserveUSD
-  hourlyVolumeToken0
-  hourlyVolumeToken1
-  hourlyVolumeUSD
-  hourlyTxns
-}
-input PairHourData_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  hourStartUnix: Int
-  hourStartUnix_not: Int
-  hourStartUnix_gt: Int
-  hourStartUnix_lt: Int
-  hourStartUnix_gte: Int
-  hourStartUnix_lte: Int
-  hourStartUnix_in: [Int!]
-  hourStartUnix_not_in: [Int!]
-  pair: String
-  pair_not: String
-  pair_gt: String
-  pair_lt: String
-  pair_gte: String
-  pair_lte: String
-  pair_in: [String!]
-  pair_not_in: [String!]
-  pair_contains: String
-  pair_not_contains: String
-  pair_starts_with: String
-  pair_not_starts_with: String
-  pair_ends_with: String
-  pair_not_ends_with: String
-  reserve0: BigDecimal
-  reserve0_not: BigDecimal
-  reserve0_gt: BigDecimal
-  reserve0_lt: BigDecimal
-  reserve0_gte: BigDecimal
-  reserve0_lte: BigDecimal
-  reserve0_in: [BigDecimal!]
-  reserve0_not_in: [BigDecimal!]
-  reserve1: BigDecimal
-  reserve1_not: BigDecimal
-  reserve1_gt: BigDecimal
-  reserve1_lt: BigDecimal
-  reserve1_gte: BigDecimal
-  reserve1_lte: BigDecimal
-  reserve1_in: [BigDecimal!]
-  reserve1_not_in: [BigDecimal!]
-  reserveUSD: BigDecimal
-  reserveUSD_not: BigDecimal
-  reserveUSD_gt: BigDecimal
-  reserveUSD_lt: BigDecimal
-  reserveUSD_gte: BigDecimal
-  reserveUSD_lte: BigDecimal
-  reserveUSD_in: [BigDecimal!]
-  reserveUSD_not_in: [BigDecimal!]
-  hourlyVolumeToken0: BigDecimal
-  hourlyVolumeToken0_not: BigDecimal
-  hourlyVolumeToken0_gt: BigDecimal
-  hourlyVolumeToken0_lt: BigDecimal
-  hourlyVolumeToken0_gte: BigDecimal
-  hourlyVolumeToken0_lte: BigDecimal
-  hourlyVolumeToken0_in: [BigDecimal!]
-  hourlyVolumeToken0_not_in: [BigDecimal!]
-  hourlyVolumeToken1: BigDecimal
-  hourlyVolumeToken1_not: BigDecimal
-  hourlyVolumeToken1_gt: BigDecimal
-  hourlyVolumeToken1_lt: BigDecimal
-  hourlyVolumeToken1_gte: BigDecimal
-  hourlyVolumeToken1_lte: BigDecimal
-  hourlyVolumeToken1_in: [BigDecimal!]
-  hourlyVolumeToken1_not_in: [BigDecimal!]
-  hourlyVolumeUSD: BigDecimal
-  hourlyVolumeUSD_not: BigDecimal
-  hourlyVolumeUSD_gt: BigDecimal
-  hourlyVolumeUSD_lt: BigDecimal
-  hourlyVolumeUSD_gte: BigDecimal
-  hourlyVolumeUSD_lte: BigDecimal
-  hourlyVolumeUSD_in: [BigDecimal!]
-  hourlyVolumeUSD_not_in: [BigDecimal!]
-  hourlyTxns: BigInt
-  hourlyTxns_not: BigInt
-  hourlyTxns_gt: BigInt
-  hourlyTxns_lt: BigInt
-  hourlyTxns_gte: BigInt
-  hourlyTxns_lte: BigInt
-  hourlyTxns_in: [BigInt!]
-  hourlyTxns_not_in: [BigInt!]
-}
-type PairDayData {
-  id: ID!
-  date: Int!
-  pairAddress: Bytes!
-  token0: Token!
-  token1: Token!
-  reserve0: BigDecimal!
-  reserve1: BigDecimal!
-  totalSupply: BigDecimal!
-  reserveUSD: BigDecimal!
-  dailyVolumeToken0: BigDecimal!
-  dailyVolumeToken1: BigDecimal!
-  dailyVolumeUSD: BigDecimal!
-  dailyTxns: BigInt!
-}
-enum PairDayData_orderBy {
-  id
-  date
-  pairAddress
-  token0
-  token1
-  reserve0
-  reserve1
-  totalSupply
-  reserveUSD
-  dailyVolumeToken0
-  dailyVolumeToken1
-  dailyVolumeUSD
-  dailyTxns
-}
-input PairDayData_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  date: Int
-  date_not: Int
-  date_gt: Int
-  date_lt: Int
-  date_gte: Int
-  date_lte: Int
-  date_in: [Int!]
-  date_not_in: [Int!]
-  pairAddress: Bytes
-  pairAddress_not: Bytes
-  pairAddress_in: [Bytes!]
-  pairAddress_not_in: [Bytes!]
-  pairAddress_contains: Bytes
-  pairAddress_not_contains: Bytes
-  token0: String
-  token0_not: String
-  token0_gt: String
-  token0_lt: String
-  token0_gte: String
-  token0_lte: String
-  token0_in: [String!]
-  token0_not_in: [String!]
-  token0_contains: String
-  token0_not_contains: String
-  token0_starts_with: String
-  token0_not_starts_with: String
-  token0_ends_with: String
-  token0_not_ends_with: String
-  token1: String
-  token1_not: String
-  token1_gt: String
-  token1_lt: String
-  token1_gte: String
-  token1_lte: String
-  token1_in: [String!]
-  token1_not_in: [String!]
-  token1_contains: String
-  token1_not_contains: String
-  token1_starts_with: String
-  token1_not_starts_with: String
-  token1_ends_with: String
-  token1_not_ends_with: String
-  reserve0: BigDecimal
-  reserve0_not: BigDecimal
-  reserve0_gt: BigDecimal
-  reserve0_lt: BigDecimal
-  reserve0_gte: BigDecimal
-  reserve0_lte: BigDecimal
-  reserve0_in: [BigDecimal!]
-  reserve0_not_in: [BigDecimal!]
-  reserve1: BigDecimal
-  reserve1_not: BigDecimal
-  reserve1_gt: BigDecimal
-  reserve1_lt: BigDecimal
-  reserve1_gte: BigDecimal
-  reserve1_lte: BigDecimal
-  reserve1_in: [BigDecimal!]
-  reserve1_not_in: [BigDecimal!]
-  totalSupply: BigDecimal
-  totalSupply_not: BigDecimal
-  totalSupply_gt: BigDecimal
-  totalSupply_lt: BigDecimal
-  totalSupply_gte: BigDecimal
-  totalSupply_lte: BigDecimal
-  totalSupply_in: [BigDecimal!]
-  totalSupply_not_in: [BigDecimal!]
-  reserveUSD: BigDecimal
-  reserveUSD_not: BigDecimal
-  reserveUSD_gt: BigDecimal
-  reserveUSD_lt: BigDecimal
-  reserveUSD_gte: BigDecimal
-  reserveUSD_lte: BigDecimal
-  reserveUSD_in: [BigDecimal!]
-  reserveUSD_not_in: [BigDecimal!]
-  dailyVolumeToken0: BigDecimal
-  dailyVolumeToken0_not: BigDecimal
-  dailyVolumeToken0_gt: BigDecimal
-  dailyVolumeToken0_lt: BigDecimal
-  dailyVolumeToken0_gte: BigDecimal
-  dailyVolumeToken0_lte: BigDecimal
-  dailyVolumeToken0_in: [BigDecimal!]
-  dailyVolumeToken0_not_in: [BigDecimal!]
-  dailyVolumeToken1: BigDecimal
-  dailyVolumeToken1_not: BigDecimal
-  dailyVolumeToken1_gt: BigDecimal
-  dailyVolumeToken1_lt: BigDecimal
-  dailyVolumeToken1_gte: BigDecimal
-  dailyVolumeToken1_lte: BigDecimal
-  dailyVolumeToken1_in: [BigDecimal!]
-  dailyVolumeToken1_not_in: [BigDecimal!]
-  dailyVolumeUSD: BigDecimal
-  dailyVolumeUSD_not: BigDecimal
-  dailyVolumeUSD_gt: BigDecimal
-  dailyVolumeUSD_lt: BigDecimal
-  dailyVolumeUSD_gte: BigDecimal
-  dailyVolumeUSD_lte: BigDecimal
-  dailyVolumeUSD_in: [BigDecimal!]
-  dailyVolumeUSD_not_in: [BigDecimal!]
-  dailyTxns: BigInt
-  dailyTxns_not: BigInt
-  dailyTxns_gt: BigInt
-  dailyTxns_lt: BigInt
-  dailyTxns_gte: BigInt
-  dailyTxns_lte: BigInt
-  dailyTxns_in: [BigInt!]
-  dailyTxns_not_in: [BigInt!]
-}
-type TokenDayData {
-  id: ID!
-  date: Int!
-  token: Token!
-  dailyVolumeToken: BigDecimal!
-  dailyVolumeETH: BigDecimal!
-  dailyVolumeUSD: BigDecimal!
-  dailyTxns: BigInt!
-  totalLiquidityToken: BigDecimal!
-  totalLiquidityETH: BigDecimal!
-  totalLiquidityUSD: BigDecimal!
-  priceUSD: BigDecimal!
-}
-enum TokenDayData_orderBy {
-  id
-  date
-  token
-  dailyVolumeToken
-  dailyVolumeETH
-  dailyVolumeUSD
-  dailyTxns
-  totalLiquidityToken
-  totalLiquidityETH
-  totalLiquidityUSD
-  priceUSD
-}
-input TokenDayData_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  date: Int
-  date_not: Int
-  date_gt: Int
-  date_lt: Int
-  date_gte: Int
-  date_lte: Int
-  date_in: [Int!]
-  date_not_in: [Int!]
-  token: String
-  token_not: String
-  token_gt: String
-  token_lt: String
-  token_gte: String
-  token_lte: String
-  token_in: [String!]
-  token_not_in: [String!]
-  token_contains: String
-  token_not_contains: String
-  token_starts_with: String
-  token_not_starts_with: String
-  token_ends_with: String
-  token_not_ends_with: String
-  dailyVolumeToken: BigDecimal
-  dailyVolumeToken_not: BigDecimal
-  dailyVolumeToken_gt: BigDecimal
-  dailyVolumeToken_lt: BigDecimal
-  dailyVolumeToken_gte: BigDecimal
-  dailyVolumeToken_lte: BigDecimal
-  dailyVolumeToken_in: [BigDecimal!]
-  dailyVolumeToken_not_in: [BigDecimal!]
-  dailyVolumeETH: BigDecimal
-  dailyVolumeETH_not: BigDecimal
-  dailyVolumeETH_gt: BigDecimal
-  dailyVolumeETH_lt: BigDecimal
-  dailyVolumeETH_gte: BigDecimal
-  dailyVolumeETH_lte: BigDecimal
-  dailyVolumeETH_in: [BigDecimal!]
-  dailyVolumeETH_not_in: [BigDecimal!]
-  dailyVolumeUSD: BigDecimal
-  dailyVolumeUSD_not: BigDecimal
-  dailyVolumeUSD_gt: BigDecimal
-  dailyVolumeUSD_lt: BigDecimal
-  dailyVolumeUSD_gte: BigDecimal
-  dailyVolumeUSD_lte: BigDecimal
-  dailyVolumeUSD_in: [BigDecimal!]
-  dailyVolumeUSD_not_in: [BigDecimal!]
-  dailyTxns: BigInt
-  dailyTxns_not: BigInt
-  dailyTxns_gt: BigInt
-  dailyTxns_lt: BigInt
-  dailyTxns_gte: BigInt
-  dailyTxns_lte: BigInt
-  dailyTxns_in: [BigInt!]
-  dailyTxns_not_in: [BigInt!]
-  totalLiquidityToken: BigDecimal
-  totalLiquidityToken_not: BigDecimal
-  totalLiquidityToken_gt: BigDecimal
-  totalLiquidityToken_lt: BigDecimal
-  totalLiquidityToken_gte: BigDecimal
-  totalLiquidityToken_lte: BigDecimal
-  totalLiquidityToken_in: [BigDecimal!]
-  totalLiquidityToken_not_in: [BigDecimal!]
-  totalLiquidityETH: BigDecimal
-  totalLiquidityETH_not: BigDecimal
-  totalLiquidityETH_gt: BigDecimal
-  totalLiquidityETH_lt: BigDecimal
-  totalLiquidityETH_gte: BigDecimal
-  totalLiquidityETH_lte: BigDecimal
-  totalLiquidityETH_in: [BigDecimal!]
-  totalLiquidityETH_not_in: [BigDecimal!]
-  totalLiquidityUSD: BigDecimal
-  totalLiquidityUSD_not: BigDecimal
-  totalLiquidityUSD_gt: BigDecimal
-  totalLiquidityUSD_lt: BigDecimal
-  totalLiquidityUSD_gte: BigDecimal
-  totalLiquidityUSD_lte: BigDecimal
-  totalLiquidityUSD_in: [BigDecimal!]
-  totalLiquidityUSD_not_in: [BigDecimal!]
-  priceUSD: BigDecimal
-  priceUSD_not: BigDecimal
-  priceUSD_gt: BigDecimal
-  priceUSD_lt: BigDecimal
-  priceUSD_gte: BigDecimal
-  priceUSD_lte: BigDecimal
-  priceUSD_in: [BigDecimal!]
-  priceUSD_not_in: [BigDecimal!]
-}
 """The type for the top-level _meta field"""
 type _Meta_ {
   """
@@ -2010,6 +2106,8 @@ type _Meta_ {
   block: _Block_!
   """The deployment ID"""
   deployment: String!
+  """If `true`, the subgraph encountered indexing errors at some past block"""
+  hasIndexingErrors: Boolean!
 }
 type _Block_ {
   """The hash of the block"""
@@ -2026,6 +2124,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): UniswapFactory
   uniswapFactories(
     skip: Int = 0
@@ -2039,6 +2139,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [UniswapFactory!]!
   token(
     id: ID!
@@ -2048,6 +2150,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Token
   tokens(
     skip: Int = 0
@@ -2061,6 +2165,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Token!]!
   pair(
     id: ID!
@@ -2070,6 +2176,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Pair
   pairs(
     skip: Int = 0
@@ -2083,6 +2191,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Pair!]!
   user(
     id: ID!
@@ -2092,6 +2202,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): User
   users(
     skip: Int = 0
@@ -2105,6 +2217,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [User!]!
   liquidityPosition(
     id: ID!
@@ -2114,6 +2228,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): LiquidityPosition
   liquidityPositions(
     skip: Int = 0
@@ -2127,6 +2243,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [LiquidityPosition!]!
   liquidityPositionSnapshot(
     id: ID!
@@ -2136,6 +2254,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): LiquidityPositionSnapshot
   liquidityPositionSnapshots(
     skip: Int = 0
@@ -2149,6 +2269,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [LiquidityPositionSnapshot!]!
   transaction(
     id: ID!
@@ -2158,6 +2280,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Transaction
   transactions(
     skip: Int = 0
@@ -2171,6 +2295,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Transaction!]!
   mint(
     id: ID!
@@ -2180,6 +2306,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Mint
   mints(
     skip: Int = 0
@@ -2193,6 +2321,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Mint!]!
   burn(
     id: ID!
@@ -2202,6 +2332,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Burn
   burns(
     skip: Int = 0
@@ -2215,6 +2347,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Burn!]!
   swap(
     id: ID!
@@ -2224,6 +2358,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Swap
   swaps(
     skip: Int = 0
@@ -2237,6 +2373,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Swap!]!
   bundle(
     id: ID!
@@ -2246,6 +2384,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Bundle
   bundles(
     skip: Int = 0
@@ -2259,6 +2399,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Bundle!]!
   uniswapDayData(
     id: ID!
@@ -2268,6 +2410,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): UniswapDayData
   uniswapDayDatas(
     skip: Int = 0
@@ -2281,6 +2425,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [UniswapDayData!]!
   pairHourData(
     id: ID!
@@ -2290,6 +2436,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): PairHourData
   pairHourDatas(
     skip: Int = 0
@@ -2303,6 +2451,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [PairHourData!]!
   pairDayData(
     id: ID!
@@ -2312,6 +2462,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): PairDayData
   pairDayDatas(
     skip: Int = 0
@@ -2325,6 +2477,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [PairDayData!]!
   tokenDayData(
     id: ID!
@@ -2334,6 +2488,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): TokenDayData
   tokenDayDatas(
     skip: Int = 0
@@ -2347,6 +2503,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TokenDayData!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
