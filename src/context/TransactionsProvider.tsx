@@ -13,12 +13,7 @@ import useEffectOnce from 'react-use/lib/useEffectOnce';
 import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
 
-import {
-  HistoricTransaction,
-  SendTxManifest,
-  Transaction,
-  TransactionStatus,
-} from '../types';
+import { SendTxManifest, Transaction, TransactionStatus } from '../types';
 import {
   useAddErrorNotification,
   useAddInfoNotification,
@@ -60,7 +55,6 @@ interface EthPrice {
 interface State {
   current: Record<TransactionHash, Transaction>;
   latestStatus: { status?: TransactionStatus; blockNumber?: number };
-  historic: Record<TransactionHash, HistoricTransaction>;
   gasPriceInfo?: GasPriceInfo;
   ethPrice?: number;
 }
@@ -184,7 +178,6 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
       return {
         gasPriceInfo: state.gasPriceInfo,
         ethPrice: state.ethPrice,
-        historic: {},
         current: {},
         latestStatus: {},
       };
@@ -220,7 +213,6 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
 const context = createContext<[State, Dispatch]>(null as any);
 
 const initialState: State = {
-  historic: {},
   current: {},
   latestStatus: {},
 };
