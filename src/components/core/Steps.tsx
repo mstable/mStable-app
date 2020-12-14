@@ -1,16 +1,20 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { Step } from '../pages/Save/SaveMigrationStep';
-import { StepProps } from '../pages/Save/saveMigration/types';
+
+import { StepProps, Step } from './Step';
 
 export interface Props {
   steps: StepProps[];
+  pending: boolean;
 }
 
-const StepContainer = styled.div`
+const Container = styled.div`
   position: relative;
   z-index: 0;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 
   &:before {
     position: absolute;
@@ -32,26 +36,19 @@ const StepContainer = styled.div`
 `;
 
 export const Steps: FC<Props> = ({ steps }) => {
-  const stepsCompleted = steps.every(step => step.isCompleted);
   const activeStep =
-    steps.filter(step => !step.isCompleted)?.[0] ?? steps[steps.length - 1];
+    steps.filter(step => !step.complete)?.[0] ?? steps[steps.length - 1];
+
   return (
-    <StepContainer>
-      {!stepsCompleted &&
-        activeStep &&
-        steps.map(
-          ({ key, isCompleted, buttonTitle, title, isPending, onClick }) => (
-            <Step
-              key={key}
-              isCompleted={isCompleted}
-              isPending={isPending}
-              buttonTitle={buttonTitle}
-              title={title}
-              onClick={onClick}
-              isActive={activeStep.key === key}
-            />
-          ),
-        )}
-    </StepContainer>
+    <Container>
+      {steps.map(({ options, complete, key }) => (
+        <Step
+          key={key}
+          active={activeStep.key === key}
+          complete={complete}
+          options={options}
+        />
+      ))}
+    </Container>
   );
 };

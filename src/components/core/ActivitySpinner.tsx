@@ -55,6 +55,8 @@ const Spinner = styled.svg<Props>`
 `;
 
 const Container = styled.div<Props>`
+  display: flex;
+  align-items: center;
   svg {
     height: ${({ size }) => `${size}px`};
     width: ${({ size }) => `${size}px`};
@@ -76,7 +78,9 @@ export const ActivitySpinner: FC<Props> = ({
       success={success}
       size={size}
     >
-      <circle cx={size / 2} cy={size / 2} r={(size / 2) * 0.8} />
+      {(pending || success || error) && (
+        <circle cx={size / 2} cy={size / 2} r={(size / 2) * 0.8} />
+      )}
     </Spinner>
   </Container>
 );

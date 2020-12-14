@@ -17,6 +17,7 @@ export const UnstyledButton = styled.button`
 export const BubbleButton = styled(UnstyledButton)<{
   highlighted?: boolean;
   scale?: number;
+  disabled?: boolean;
 }>`
   font-size: ${({ scale }) => (scale ? `${scale}rem` : `1rem`)};
   padding: 0.75em 1.5em;
@@ -28,14 +29,16 @@ export const BubbleButton = styled(UnstyledButton)<{
   z-index: ${({ highlighted }) => (highlighted ? 1 : 0)};
   font-weight: 600;
   position: relative;
-  cursor: pointer;
-  transition: 0.5s linear text-decoration;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  transition: 0.5s linear all;
 
   svg circle {
-    stroke: white;
+    stroke: rgba(255, 255, 255, 0.4);
   }
 
   :hover {
+    background: ${({ theme, highlighted }) =>
+      highlighted ? theme.color.gold : `#eee`};
     color: ${({ theme, highlighted }) =>
       highlighted ? theme.color.white : theme.color.black};
   }

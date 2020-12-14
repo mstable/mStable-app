@@ -7,17 +7,14 @@ import { ReactTooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Account } from './Account';
-import {
-  useAccountOpen,
-  useSetMessageVisible,
-} from '../../context/AppProvider';
+import { useAccountOpen } from '../../context/AppProvider';
 import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
 import { centredLayout, gradientBackground } from './css';
 import { Color } from '../../theme';
-import { Message } from './Message';
+import { BannerMessage } from './BannerMessage';
 
 const Main = styled.main`
   max-width: 100%;
@@ -166,22 +163,17 @@ const PageContainer = styled.div<{ accountOpen: boolean }>`
 /**
  * App layout component.
  */
-export const Layout: FC<{}> = ({ children }) => {
-  const setMessageVisible = useSetMessageVisible();
+export const Layout: FC = ({ children }) => {
   const accountOpen = useAccountOpen();
   const idle = useIsIdle();
   const { pathname } = useLocation();
   const home = pathname === '/';
   const earn = pathname === '/earn';
-  const save = pathname === '/save';
 
   useLayoutEffect(() => {
     // Scroll to the top when the account view is toggled
     window.scrollTo({ top: 0 });
-
-    // Toggle message
-    setMessageVisible(save);
-  }, [accountOpen, setMessageVisible, save]);
+  }, [accountOpen]);
 
   return (
     <>
@@ -194,7 +186,7 @@ export const Layout: FC<{}> = ({ children }) => {
           ) : (
             <Centred>
               <Main>
-                <Message />
+                <BannerMessage />
                 <BackgroundContainer>{children}</BackgroundContainer>
               </Main>
             </Centred>

@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useAppState } from '../../context/AppProvider';
+
+import { useBannerMessage } from '../../context/AppProvider';
 
 const Container = styled.div`
   display: flex;
@@ -30,23 +31,22 @@ const Container = styled.div`
   }
 `;
 
-export const Message: FC = () => {
-  const { messageVisible, message } = useAppState();
-  const url = message?.externalUrl ?? message?.internalUrl;
+export const BannerMessage: FC = () => {
+  const bannerMessage = useBannerMessage();
 
-  return messageVisible ? (
+  return bannerMessage?.visible ? (
     <Container>
       <span role="img" aria-label="emoji">
-        {message?.emoji}
+        {bannerMessage.emoji}
       </span>
       <p>
-        <b>{message?.title}</b>
-        {` ${message?.subtitle} `}
-        {url &&
-          (message?.externalUrl ? (
-            <a href={url}>Learn more</a>
+        <b>{bannerMessage.title}</b>
+        {bannerMessage.subtitle && ` ${bannerMessage.subtitle} `}
+        {bannerMessage.url &&
+          (bannerMessage.url.startsWith('http') ? (
+            <a href={bannerMessage.url}>Learn more</a>
           ) : (
-            <Link to={url}>Learn more</Link>
+            <Link to={bannerMessage.url}>Learn more</Link>
           ))}
       </p>
     </Container>

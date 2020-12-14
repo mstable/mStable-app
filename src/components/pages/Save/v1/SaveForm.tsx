@@ -8,7 +8,7 @@ import {
 } from '../../../../web3/hooks';
 import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
-import { useActiveSaveVersion } from '../ActiveSaveVersionProvider';
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
 import { TransactionType } from './types';
 import { useSaveState } from './SaveProvider';
 import { SaveConfirm } from './SaveConfirm';
@@ -27,12 +27,12 @@ export const SaveForm: FC = () => {
   const setFormManifest = useSetFormManifest();
   const savingsContractV1 = useSelectedSaveV1Contract();
   const savingsContractV2 = useSelectedSaveV2Contract();
-  const activeVersion = useActiveSaveVersion();
+  const [selectedSaveVersion] = useSelectedSaveVersion();
   const walletAddress = useWalletAddress();
 
   // Set the form manifest
   useEffect(() => {
-    if (activeVersion === 2 && savingsContractV2) {
+    if (selectedSaveVersion === 2 && savingsContractV2) {
       if (
         transactionType === TransactionType.Deposit &&
         amount &&
@@ -104,7 +104,7 @@ export const SaveForm: FC = () => {
     transactionType,
     massetSymbol,
     walletAddress,
-    activeVersion,
+    selectedSaveVersion,
   ]);
 
   return (

@@ -8,13 +8,10 @@ import { MUSDIconTransparent } from '../../icons/TokenIcon';
 import { AnalyticsLink } from '../Analytics/AnalyticsLink';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
 import {
-  DEFAULT_SAVE_VERSION,
   SaveVersion,
-  useActiveSaveVersionState,
-} from './ActiveSaveVersionProvider';
+  useSelectedSavingsContractState,
+} from '../../../context/SelectedSaveVersionProvider';
 import { SaveMigration } from './SaveMigration';
-
-const { V1 } = SaveVersion;
 
 const CreditBalance = styled.div`
   display: flex;
@@ -51,7 +48,6 @@ const WarningMsg = styled.div`
 `;
 
 const InfoRow = styled.div`
-  text-align: center;
   width: 100%;
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
@@ -81,17 +77,12 @@ const StyledWarningBadge = styled(WarningBadge)`
 `;
 
 export const SaveInfo: FC = () => {
-  const { versions, activeVersion } = useActiveSaveVersionState();
-  const massetName = useSelectedMasset();
-  const massetState = useSelectedMassetState();
+  const massetName = useSelectedMassetName();
+  const savingsContractState = useSelectedSavingsContractState();
 
-  const isV1Deprecated = versions.length > 1;
-  const isV1ActiveAndCurrent = isV1Deprecated && activeVersion === V1;
-
-  const savingsBalance =
-    massetState?.savingsContracts[
-      `v${activeVersion ?? DEFAULT_SAVE_VERSION}` as 'v1' | 'v2'
-    ]?.savingsBalance;
+  const isV1SelectedAndDeprecated =
+    savingsContractState?.version === SaveVersion.V1 &&
+    !savingsContractState.current;
 
   return (
     <BalanceInfoRow>
@@ -100,10 +91,13 @@ export const SaveInfo: FC = () => {
       </H3>
       <CreditBalance>
         <MUSDIconTransparent />
-        <CountUp end={savingsBalance?.balance?.simple || 0} decimals={7} />
-        {isV1ActiveAndCurrent && <StyledWarningBadge />}
+        <CountUp
+          end={savingsContractState?.savingsBalance?.balance?.simple || 0}
+          decimals={7}
+        />
+        {isV1SelectedAndDeprecated && <StyledWarningBadge />}
       </CreditBalance>
-      {isV1ActiveAndCurrent ? (
+      {isV1SelectedAndDeprecated ? (
         <>
           <WarningMsg>
             Migrate your <b>{massetName}</b> to continue earning interest on

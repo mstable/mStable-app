@@ -23,7 +23,7 @@ const updateNeedsUnlock = (state: State): State =>
         needsUnlock:
           state.transactionType === TransactionType.Deposit &&
           state.amount?.exact.gt(
-            state.massetState.savingsContracts.v1.mAssetAllowance.exact,
+            state.massetState.savingsContracts.v1.massetAllowance.exact,
           ),
       }
     : state;
