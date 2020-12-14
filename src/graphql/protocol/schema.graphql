@@ -11,6 +11,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Token
   tokens(
     skip: Int = 0
@@ -24,6 +26,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Token!]!
   metric(
     id: ID!
@@ -33,6 +37,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Metric
   metrics(
     skip: Int = 0
@@ -46,6 +52,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Metric!]!
   counter(
     id: ID!
@@ -55,6 +63,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Counter
   counters(
     skip: Int = 0
@@ -68,6 +78,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Counter!]!
   basset(
     id: ID!
@@ -77,6 +89,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Basset
   bassets(
     skip: Int = 0
@@ -90,6 +104,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Basset!]!
   basket(
     id: ID!
@@ -99,6 +115,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Basket
   baskets(
     skip: Int = 0
@@ -112,6 +130,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Basket!]!
   masset(
     id: ID!
@@ -121,6 +141,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Masset
   massets(
     skip: Int = 0
@@ -134,6 +156,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Masset!]!
   account(
     id: ID!
@@ -143,6 +167,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Account
   accounts(
     skip: Int = 0
@@ -156,6 +182,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Account!]!
   creditBalance(
     id: ID!
@@ -165,6 +193,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): CreditBalance
   creditBalances(
     skip: Int = 0
@@ -178,7 +208,35 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [CreditBalance!]!
+  savingsManager(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): SavingsManager
+  savingsManagers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: SavingsManager_orderBy
+    orderDirection: OrderDirection
+    where: SavingsManager_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [SavingsManager!]!
   savingsContract(
     id: ID!
     """
@@ -187,6 +245,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SavingsContract
   savingsContracts(
     skip: Int = 0
@@ -200,6 +260,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SavingsContract!]!
   exchangeRate(
     id: ID!
@@ -209,6 +271,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): ExchangeRate
   exchangeRates(
     skip: Int = 0
@@ -222,6 +286,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ExchangeRate!]!
   swapTransaction(
     id: ID!
@@ -231,6 +297,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SwapTransaction
   swapTransactions(
     skip: Int = 0
@@ -244,6 +312,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SwapTransaction!]!
   paidFeeTransaction(
     id: ID!
@@ -253,6 +323,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): PaidFeeTransaction
   paidFeeTransactions(
     skip: Int = 0
@@ -266,6 +338,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [PaidFeeTransaction!]!
   mintSingleTransaction(
     id: ID!
@@ -275,6 +349,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MintSingleTransaction
   mintSingleTransactions(
     skip: Int = 0
@@ -288,6 +364,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MintSingleTransaction!]!
   mintMultiTransaction(
     id: ID!
@@ -297,6 +375,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MintMultiTransaction
   mintMultiTransactions(
     skip: Int = 0
@@ -310,6 +390,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MintMultiTransaction!]!
   redeemTransaction(
     id: ID!
@@ -319,6 +401,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): RedeemTransaction
   redeemTransactions(
     skip: Int = 0
@@ -332,6 +416,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [RedeemTransaction!]!
   redeemMassetTransaction(
     id: ID!
@@ -341,6 +427,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): RedeemMassetTransaction
   redeemMassetTransactions(
     skip: Int = 0
@@ -354,6 +442,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [RedeemMassetTransaction!]!
   savingsContractDepositTransaction(
     id: ID!
@@ -363,6 +453,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SavingsContractDepositTransaction
   savingsContractDepositTransactions(
     skip: Int = 0
@@ -376,6 +468,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SavingsContractDepositTransaction!]!
   savingsContractWithdrawTransaction(
     id: ID!
@@ -385,6 +479,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SavingsContractWithdrawTransaction
   savingsContractWithdrawTransactions(
     skip: Int = 0
@@ -398,6 +494,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SavingsContractWithdrawTransaction!]!
   transaction(
     id: ID!
@@ -407,6 +505,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Transaction
   transactions(
     skip: Int = 0
@@ -420,6 +520,8 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Transaction!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
@@ -429,6 +531,12 @@ input Block_height {
   number: Int
 }
 scalar Bytes
+enum _SubgraphErrorPolicy_ {
+  """Data will be returned even if the subgraph has indexing errors"""
+  allow
+  """If the subgraph has indexing errors, data will be omitted. The default."""
+  deny
+}
 """An ERC20-compatible token"""
 type Token {
   id: ID!
@@ -993,9 +1101,17 @@ type Masset {
   cumulativeRedeemedMasset: Metric!
   """Cumulative amount of fees paid (e.g. for swaps and redemptions) for this Masset"""
   cumulativeFeesPaid: Metric!
+  """The cumulative interest collected from platforms"""
+  cumulativeInterestCollected: Metric!
+  """The cumulative interest distributed to savers"""
+  cumulativeInterestDistributed: Metric!
+  """The cumulative amount deposited by liquidators"""
+  cumulativeLiquidatorDeposited: Metric!
   """The underlying Token for this Masset"""
   token: Token!
-  """All savings Contracts for this Masset"""
+  """Current SavingsContract for this Masset (i.e. added/updated via SavingsManager and receiving interest)"""
+  currentSavingsContract: SavingsContract
+  """All Savings Contracts for this Masset"""
   savingsContracts(skip: Int = 0, first: Int = 100, orderBy: SavingsContract_orderBy, orderDirection: OrderDirection, where: SavingsContract_filter): [SavingsContract!]!
   """All swap transactions sent with this Masset"""
   swapTransactions(skip: Int = 0, first: Int = 100, orderBy: SwapTransaction_orderBy, orderDirection: OrderDirection, where: SwapTransaction_filter): [SwapTransaction!]!
@@ -1010,214 +1126,11 @@ type Masset {
   """All redemption transactions sent with this Masset (excluding proportional redemptions)"""
   redeemTransactions(skip: Int = 0, first: Int = 100, orderBy: RedeemTransaction_orderBy, orderDirection: OrderDirection, where: RedeemTransaction_filter): [RedeemTransaction!]!
 }
-enum SavingsContract_orderBy {
-  id
-  masset
-  totalSavings
-  totalCredits
-  totalDeposits
-  totalWithdrawals
-  cumulativeDeposited
-  cumulativeWithdrawn
-  dailyAPY
-  utilisationRate
-  automationEnabled
-  latestExchangeRate
-  exchangeRate24hAgo
-  creditBalances
-  exchangeRates
-  depositTransactions
-  withdrawTransactions
-  version
-  token
-}
-input SavingsContract_filter {
-  id: ID
-  id_not: ID
-  id_gt: ID
-  id_lt: ID
-  id_gte: ID
-  id_lte: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  masset: String
-  masset_not: String
-  masset_gt: String
-  masset_lt: String
-  masset_gte: String
-  masset_lte: String
-  masset_in: [String!]
-  masset_not_in: [String!]
-  masset_contains: String
-  masset_not_contains: String
-  masset_starts_with: String
-  masset_not_starts_with: String
-  masset_ends_with: String
-  masset_not_ends_with: String
-  totalSavings: String
-  totalSavings_not: String
-  totalSavings_gt: String
-  totalSavings_lt: String
-  totalSavings_gte: String
-  totalSavings_lte: String
-  totalSavings_in: [String!]
-  totalSavings_not_in: [String!]
-  totalSavings_contains: String
-  totalSavings_not_contains: String
-  totalSavings_starts_with: String
-  totalSavings_not_starts_with: String
-  totalSavings_ends_with: String
-  totalSavings_not_ends_with: String
-  totalCredits: String
-  totalCredits_not: String
-  totalCredits_gt: String
-  totalCredits_lt: String
-  totalCredits_gte: String
-  totalCredits_lte: String
-  totalCredits_in: [String!]
-  totalCredits_not_in: [String!]
-  totalCredits_contains: String
-  totalCredits_not_contains: String
-  totalCredits_starts_with: String
-  totalCredits_not_starts_with: String
-  totalCredits_ends_with: String
-  totalCredits_not_ends_with: String
-  totalDeposits: String
-  totalDeposits_not: String
-  totalDeposits_gt: String
-  totalDeposits_lt: String
-  totalDeposits_gte: String
-  totalDeposits_lte: String
-  totalDeposits_in: [String!]
-  totalDeposits_not_in: [String!]
-  totalDeposits_contains: String
-  totalDeposits_not_contains: String
-  totalDeposits_starts_with: String
-  totalDeposits_not_starts_with: String
-  totalDeposits_ends_with: String
-  totalDeposits_not_ends_with: String
-  totalWithdrawals: String
-  totalWithdrawals_not: String
-  totalWithdrawals_gt: String
-  totalWithdrawals_lt: String
-  totalWithdrawals_gte: String
-  totalWithdrawals_lte: String
-  totalWithdrawals_in: [String!]
-  totalWithdrawals_not_in: [String!]
-  totalWithdrawals_contains: String
-  totalWithdrawals_not_contains: String
-  totalWithdrawals_starts_with: String
-  totalWithdrawals_not_starts_with: String
-  totalWithdrawals_ends_with: String
-  totalWithdrawals_not_ends_with: String
-  cumulativeDeposited: String
-  cumulativeDeposited_not: String
-  cumulativeDeposited_gt: String
-  cumulativeDeposited_lt: String
-  cumulativeDeposited_gte: String
-  cumulativeDeposited_lte: String
-  cumulativeDeposited_in: [String!]
-  cumulativeDeposited_not_in: [String!]
-  cumulativeDeposited_contains: String
-  cumulativeDeposited_not_contains: String
-  cumulativeDeposited_starts_with: String
-  cumulativeDeposited_not_starts_with: String
-  cumulativeDeposited_ends_with: String
-  cumulativeDeposited_not_ends_with: String
-  cumulativeWithdrawn: String
-  cumulativeWithdrawn_not: String
-  cumulativeWithdrawn_gt: String
-  cumulativeWithdrawn_lt: String
-  cumulativeWithdrawn_gte: String
-  cumulativeWithdrawn_lte: String
-  cumulativeWithdrawn_in: [String!]
-  cumulativeWithdrawn_not_in: [String!]
-  cumulativeWithdrawn_contains: String
-  cumulativeWithdrawn_not_contains: String
-  cumulativeWithdrawn_starts_with: String
-  cumulativeWithdrawn_not_starts_with: String
-  cumulativeWithdrawn_ends_with: String
-  cumulativeWithdrawn_not_ends_with: String
-  dailyAPY: BigDecimal
-  dailyAPY_not: BigDecimal
-  dailyAPY_gt: BigDecimal
-  dailyAPY_lt: BigDecimal
-  dailyAPY_gte: BigDecimal
-  dailyAPY_lte: BigDecimal
-  dailyAPY_in: [BigDecimal!]
-  dailyAPY_not_in: [BigDecimal!]
-  utilisationRate: String
-  utilisationRate_not: String
-  utilisationRate_gt: String
-  utilisationRate_lt: String
-  utilisationRate_gte: String
-  utilisationRate_lte: String
-  utilisationRate_in: [String!]
-  utilisationRate_not_in: [String!]
-  utilisationRate_contains: String
-  utilisationRate_not_contains: String
-  utilisationRate_starts_with: String
-  utilisationRate_not_starts_with: String
-  utilisationRate_ends_with: String
-  utilisationRate_not_ends_with: String
-  automationEnabled: Boolean
-  automationEnabled_not: Boolean
-  automationEnabled_in: [Boolean!]
-  automationEnabled_not_in: [Boolean!]
-  latestExchangeRate: String
-  latestExchangeRate_not: String
-  latestExchangeRate_gt: String
-  latestExchangeRate_lt: String
-  latestExchangeRate_gte: String
-  latestExchangeRate_lte: String
-  latestExchangeRate_in: [String!]
-  latestExchangeRate_not_in: [String!]
-  latestExchangeRate_contains: String
-  latestExchangeRate_not_contains: String
-  latestExchangeRate_starts_with: String
-  latestExchangeRate_not_starts_with: String
-  latestExchangeRate_ends_with: String
-  latestExchangeRate_not_ends_with: String
-  exchangeRate24hAgo: String
-  exchangeRate24hAgo_not: String
-  exchangeRate24hAgo_gt: String
-  exchangeRate24hAgo_lt: String
-  exchangeRate24hAgo_gte: String
-  exchangeRate24hAgo_lte: String
-  exchangeRate24hAgo_in: [String!]
-  exchangeRate24hAgo_not_in: [String!]
-  exchangeRate24hAgo_contains: String
-  exchangeRate24hAgo_not_contains: String
-  exchangeRate24hAgo_starts_with: String
-  exchangeRate24hAgo_not_starts_with: String
-  exchangeRate24hAgo_ends_with: String
-  exchangeRate24hAgo_not_ends_with: String
-  version: Int
-  version_not: Int
-  version_gt: Int
-  version_lt: Int
-  version_gte: Int
-  version_lte: Int
-  version_in: [Int!]
-  version_not_in: [Int!]
-  token: String
-  token_not: String
-  token_gt: String
-  token_lt: String
-  token_gte: String
-  token_lte: String
-  token_in: [String!]
-  token_not_in: [String!]
-  token_contains: String
-  token_not_contains: String
-  token_starts_with: String
-  token_not_starts_with: String
-  token_ends_with: String
-  token_not_ends_with: String
-}
 type SavingsContract {
   """Address of the SavingsContract"""
   id: ID!
+  """Flag for whether the SavingsContract is "active" (i.e. added via the SavingsManager)"""
+  active: Boolean!
   """The Masset using this SavingsContract"""
   masset: Masset!
   """The amount of underlying savings in the contract"""
@@ -1594,6 +1507,216 @@ type SavingsContractWithdrawTransaction implements Transaction {
   savingsContract: SavingsContract!
   """The amount withdrawn."""
   amount: BigInt!
+}
+enum SavingsContract_orderBy {
+  id
+  active
+  masset
+  totalSavings
+  totalCredits
+  totalDeposits
+  totalWithdrawals
+  cumulativeDeposited
+  cumulativeWithdrawn
+  dailyAPY
+  utilisationRate
+  automationEnabled
+  latestExchangeRate
+  exchangeRate24hAgo
+  creditBalances
+  exchangeRates
+  depositTransactions
+  withdrawTransactions
+  version
+  token
+}
+input SavingsContract_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  active: Boolean
+  active_not: Boolean
+  active_in: [Boolean!]
+  active_not_in: [Boolean!]
+  masset: String
+  masset_not: String
+  masset_gt: String
+  masset_lt: String
+  masset_gte: String
+  masset_lte: String
+  masset_in: [String!]
+  masset_not_in: [String!]
+  masset_contains: String
+  masset_not_contains: String
+  masset_starts_with: String
+  masset_not_starts_with: String
+  masset_ends_with: String
+  masset_not_ends_with: String
+  totalSavings: String
+  totalSavings_not: String
+  totalSavings_gt: String
+  totalSavings_lt: String
+  totalSavings_gte: String
+  totalSavings_lte: String
+  totalSavings_in: [String!]
+  totalSavings_not_in: [String!]
+  totalSavings_contains: String
+  totalSavings_not_contains: String
+  totalSavings_starts_with: String
+  totalSavings_not_starts_with: String
+  totalSavings_ends_with: String
+  totalSavings_not_ends_with: String
+  totalCredits: String
+  totalCredits_not: String
+  totalCredits_gt: String
+  totalCredits_lt: String
+  totalCredits_gte: String
+  totalCredits_lte: String
+  totalCredits_in: [String!]
+  totalCredits_not_in: [String!]
+  totalCredits_contains: String
+  totalCredits_not_contains: String
+  totalCredits_starts_with: String
+  totalCredits_not_starts_with: String
+  totalCredits_ends_with: String
+  totalCredits_not_ends_with: String
+  totalDeposits: String
+  totalDeposits_not: String
+  totalDeposits_gt: String
+  totalDeposits_lt: String
+  totalDeposits_gte: String
+  totalDeposits_lte: String
+  totalDeposits_in: [String!]
+  totalDeposits_not_in: [String!]
+  totalDeposits_contains: String
+  totalDeposits_not_contains: String
+  totalDeposits_starts_with: String
+  totalDeposits_not_starts_with: String
+  totalDeposits_ends_with: String
+  totalDeposits_not_ends_with: String
+  totalWithdrawals: String
+  totalWithdrawals_not: String
+  totalWithdrawals_gt: String
+  totalWithdrawals_lt: String
+  totalWithdrawals_gte: String
+  totalWithdrawals_lte: String
+  totalWithdrawals_in: [String!]
+  totalWithdrawals_not_in: [String!]
+  totalWithdrawals_contains: String
+  totalWithdrawals_not_contains: String
+  totalWithdrawals_starts_with: String
+  totalWithdrawals_not_starts_with: String
+  totalWithdrawals_ends_with: String
+  totalWithdrawals_not_ends_with: String
+  cumulativeDeposited: String
+  cumulativeDeposited_not: String
+  cumulativeDeposited_gt: String
+  cumulativeDeposited_lt: String
+  cumulativeDeposited_gte: String
+  cumulativeDeposited_lte: String
+  cumulativeDeposited_in: [String!]
+  cumulativeDeposited_not_in: [String!]
+  cumulativeDeposited_contains: String
+  cumulativeDeposited_not_contains: String
+  cumulativeDeposited_starts_with: String
+  cumulativeDeposited_not_starts_with: String
+  cumulativeDeposited_ends_with: String
+  cumulativeDeposited_not_ends_with: String
+  cumulativeWithdrawn: String
+  cumulativeWithdrawn_not: String
+  cumulativeWithdrawn_gt: String
+  cumulativeWithdrawn_lt: String
+  cumulativeWithdrawn_gte: String
+  cumulativeWithdrawn_lte: String
+  cumulativeWithdrawn_in: [String!]
+  cumulativeWithdrawn_not_in: [String!]
+  cumulativeWithdrawn_contains: String
+  cumulativeWithdrawn_not_contains: String
+  cumulativeWithdrawn_starts_with: String
+  cumulativeWithdrawn_not_starts_with: String
+  cumulativeWithdrawn_ends_with: String
+  cumulativeWithdrawn_not_ends_with: String
+  dailyAPY: BigDecimal
+  dailyAPY_not: BigDecimal
+  dailyAPY_gt: BigDecimal
+  dailyAPY_lt: BigDecimal
+  dailyAPY_gte: BigDecimal
+  dailyAPY_lte: BigDecimal
+  dailyAPY_in: [BigDecimal!]
+  dailyAPY_not_in: [BigDecimal!]
+  utilisationRate: String
+  utilisationRate_not: String
+  utilisationRate_gt: String
+  utilisationRate_lt: String
+  utilisationRate_gte: String
+  utilisationRate_lte: String
+  utilisationRate_in: [String!]
+  utilisationRate_not_in: [String!]
+  utilisationRate_contains: String
+  utilisationRate_not_contains: String
+  utilisationRate_starts_with: String
+  utilisationRate_not_starts_with: String
+  utilisationRate_ends_with: String
+  utilisationRate_not_ends_with: String
+  automationEnabled: Boolean
+  automationEnabled_not: Boolean
+  automationEnabled_in: [Boolean!]
+  automationEnabled_not_in: [Boolean!]
+  latestExchangeRate: String
+  latestExchangeRate_not: String
+  latestExchangeRate_gt: String
+  latestExchangeRate_lt: String
+  latestExchangeRate_gte: String
+  latestExchangeRate_lte: String
+  latestExchangeRate_in: [String!]
+  latestExchangeRate_not_in: [String!]
+  latestExchangeRate_contains: String
+  latestExchangeRate_not_contains: String
+  latestExchangeRate_starts_with: String
+  latestExchangeRate_not_starts_with: String
+  latestExchangeRate_ends_with: String
+  latestExchangeRate_not_ends_with: String
+  exchangeRate24hAgo: String
+  exchangeRate24hAgo_not: String
+  exchangeRate24hAgo_gt: String
+  exchangeRate24hAgo_lt: String
+  exchangeRate24hAgo_gte: String
+  exchangeRate24hAgo_lte: String
+  exchangeRate24hAgo_in: [String!]
+  exchangeRate24hAgo_not_in: [String!]
+  exchangeRate24hAgo_contains: String
+  exchangeRate24hAgo_not_contains: String
+  exchangeRate24hAgo_starts_with: String
+  exchangeRate24hAgo_not_starts_with: String
+  exchangeRate24hAgo_ends_with: String
+  exchangeRate24hAgo_not_ends_with: String
+  version: Int
+  version_not: Int
+  version_gt: Int
+  version_lt: Int
+  version_gte: Int
+  version_lte: Int
+  version_in: [Int!]
+  version_not_in: [Int!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_not_contains: String
+  token_starts_with: String
+  token_not_starts_with: String
+  token_ends_with: String
+  token_not_ends_with: String
 }
 enum SwapTransaction_orderBy {
   id
@@ -2297,7 +2420,11 @@ enum Masset_orderBy {
   cumulativeRedeemed
   cumulativeRedeemedMasset
   cumulativeFeesPaid
+  cumulativeInterestCollected
+  cumulativeInterestDistributed
+  cumulativeLiquidatorDeposited
   token
+  currentSavingsContract
   savingsContracts
   swapTransactions
   paidFeeTransactions
@@ -2491,6 +2618,48 @@ input Masset_filter {
   cumulativeFeesPaid_not_starts_with: String
   cumulativeFeesPaid_ends_with: String
   cumulativeFeesPaid_not_ends_with: String
+  cumulativeInterestCollected: String
+  cumulativeInterestCollected_not: String
+  cumulativeInterestCollected_gt: String
+  cumulativeInterestCollected_lt: String
+  cumulativeInterestCollected_gte: String
+  cumulativeInterestCollected_lte: String
+  cumulativeInterestCollected_in: [String!]
+  cumulativeInterestCollected_not_in: [String!]
+  cumulativeInterestCollected_contains: String
+  cumulativeInterestCollected_not_contains: String
+  cumulativeInterestCollected_starts_with: String
+  cumulativeInterestCollected_not_starts_with: String
+  cumulativeInterestCollected_ends_with: String
+  cumulativeInterestCollected_not_ends_with: String
+  cumulativeInterestDistributed: String
+  cumulativeInterestDistributed_not: String
+  cumulativeInterestDistributed_gt: String
+  cumulativeInterestDistributed_lt: String
+  cumulativeInterestDistributed_gte: String
+  cumulativeInterestDistributed_lte: String
+  cumulativeInterestDistributed_in: [String!]
+  cumulativeInterestDistributed_not_in: [String!]
+  cumulativeInterestDistributed_contains: String
+  cumulativeInterestDistributed_not_contains: String
+  cumulativeInterestDistributed_starts_with: String
+  cumulativeInterestDistributed_not_starts_with: String
+  cumulativeInterestDistributed_ends_with: String
+  cumulativeInterestDistributed_not_ends_with: String
+  cumulativeLiquidatorDeposited: String
+  cumulativeLiquidatorDeposited_not: String
+  cumulativeLiquidatorDeposited_gt: String
+  cumulativeLiquidatorDeposited_lt: String
+  cumulativeLiquidatorDeposited_gte: String
+  cumulativeLiquidatorDeposited_lte: String
+  cumulativeLiquidatorDeposited_in: [String!]
+  cumulativeLiquidatorDeposited_not_in: [String!]
+  cumulativeLiquidatorDeposited_contains: String
+  cumulativeLiquidatorDeposited_not_contains: String
+  cumulativeLiquidatorDeposited_starts_with: String
+  cumulativeLiquidatorDeposited_not_starts_with: String
+  cumulativeLiquidatorDeposited_ends_with: String
+  cumulativeLiquidatorDeposited_not_ends_with: String
   token: String
   token_not: String
   token_gt: String
@@ -2505,6 +2674,20 @@ input Masset_filter {
   token_not_starts_with: String
   token_ends_with: String
   token_not_ends_with: String
+  currentSavingsContract: String
+  currentSavingsContract_not: String
+  currentSavingsContract_gt: String
+  currentSavingsContract_lt: String
+  currentSavingsContract_gte: String
+  currentSavingsContract_lte: String
+  currentSavingsContract_in: [String!]
+  currentSavingsContract_not_in: [String!]
+  currentSavingsContract_contains: String
+  currentSavingsContract_not_contains: String
+  currentSavingsContract_starts_with: String
+  currentSavingsContract_not_starts_with: String
+  currentSavingsContract_ends_with: String
+  currentSavingsContract_not_ends_with: String
 }
 enum Account_orderBy {
   id
@@ -2533,6 +2716,58 @@ input Account_filter {
   creditBalance_not_starts_with: String
   creditBalance_ends_with: String
   creditBalance_not_ends_with: String
+}
+type SavingsManager {
+  """
+  Singleton ID of the SavingsManager == "SavingsManager""
+  """
+  id: ID!
+  """Address of the SavingsManager"""
+  address: Bytes!
+  """Amount of collected interest that will be sent to Savings Contract (100%)"""
+  savingsRate: Metric!
+  """Flag for whether yield/liquidator streams are frozen"""
+  streamsFrozen: Boolean!
+}
+enum SavingsManager_orderBy {
+  id
+  address
+  savingsRate
+  streamsFrozen
+}
+input SavingsManager_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  address: Bytes
+  address_not: Bytes
+  address_in: [Bytes!]
+  address_not_in: [Bytes!]
+  address_contains: Bytes
+  address_not_contains: Bytes
+  savingsRate: String
+  savingsRate_not: String
+  savingsRate_gt: String
+  savingsRate_lt: String
+  savingsRate_gte: String
+  savingsRate_lte: String
+  savingsRate_in: [String!]
+  savingsRate_not_in: [String!]
+  savingsRate_contains: String
+  savingsRate_not_contains: String
+  savingsRate_starts_with: String
+  savingsRate_not_starts_with: String
+  savingsRate_ends_with: String
+  savingsRate_not_ends_with: String
+  streamsFrozen: Boolean
+  streamsFrozen_not: Boolean
+  streamsFrozen_in: [Boolean!]
+  streamsFrozen_not_in: [Boolean!]
 }
 enum Transaction_orderBy {
   id
@@ -2590,6 +2825,8 @@ type _Meta_ {
   block: _Block_!
   """The deployment ID"""
   deployment: String!
+  """If `true`, the subgraph encountered indexing errors at some past block"""
+  hasIndexingErrors: Boolean!
 }
 type _Block_ {
   """The hash of the block"""
@@ -2606,6 +2843,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Token
   tokens(
     skip: Int = 0
@@ -2619,6 +2858,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Token!]!
   metric(
     id: ID!
@@ -2628,6 +2869,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Metric
   metrics(
     skip: Int = 0
@@ -2641,6 +2884,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Metric!]!
   counter(
     id: ID!
@@ -2650,6 +2895,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Counter
   counters(
     skip: Int = 0
@@ -2663,6 +2910,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Counter!]!
   basset(
     id: ID!
@@ -2672,6 +2921,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Basset
   bassets(
     skip: Int = 0
@@ -2685,6 +2936,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Basset!]!
   basket(
     id: ID!
@@ -2694,6 +2947,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Basket
   baskets(
     skip: Int = 0
@@ -2707,6 +2962,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Basket!]!
   masset(
     id: ID!
@@ -2716,6 +2973,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Masset
   massets(
     skip: Int = 0
@@ -2729,6 +2988,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Masset!]!
   account(
     id: ID!
@@ -2738,6 +2999,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Account
   accounts(
     skip: Int = 0
@@ -2751,6 +3014,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Account!]!
   creditBalance(
     id: ID!
@@ -2760,6 +3025,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): CreditBalance
   creditBalances(
     skip: Int = 0
@@ -2773,7 +3040,35 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [CreditBalance!]!
+  savingsManager(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): SavingsManager
+  savingsManagers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: SavingsManager_orderBy
+    orderDirection: OrderDirection
+    where: SavingsManager_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [SavingsManager!]!
   savingsContract(
     id: ID!
     """
@@ -2782,6 +3077,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SavingsContract
   savingsContracts(
     skip: Int = 0
@@ -2795,6 +3092,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SavingsContract!]!
   exchangeRate(
     id: ID!
@@ -2804,6 +3103,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): ExchangeRate
   exchangeRates(
     skip: Int = 0
@@ -2817,6 +3118,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ExchangeRate!]!
   swapTransaction(
     id: ID!
@@ -2826,6 +3129,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SwapTransaction
   swapTransactions(
     skip: Int = 0
@@ -2839,6 +3144,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SwapTransaction!]!
   paidFeeTransaction(
     id: ID!
@@ -2848,6 +3155,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): PaidFeeTransaction
   paidFeeTransactions(
     skip: Int = 0
@@ -2861,6 +3170,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [PaidFeeTransaction!]!
   mintSingleTransaction(
     id: ID!
@@ -2870,6 +3181,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MintSingleTransaction
   mintSingleTransactions(
     skip: Int = 0
@@ -2883,6 +3196,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MintSingleTransaction!]!
   mintMultiTransaction(
     id: ID!
@@ -2892,6 +3207,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MintMultiTransaction
   mintMultiTransactions(
     skip: Int = 0
@@ -2905,6 +3222,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MintMultiTransaction!]!
   redeemTransaction(
     id: ID!
@@ -2914,6 +3233,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): RedeemTransaction
   redeemTransactions(
     skip: Int = 0
@@ -2927,6 +3248,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [RedeemTransaction!]!
   redeemMassetTransaction(
     id: ID!
@@ -2936,6 +3259,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): RedeemMassetTransaction
   redeemMassetTransactions(
     skip: Int = 0
@@ -2949,6 +3274,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [RedeemMassetTransaction!]!
   savingsContractDepositTransaction(
     id: ID!
@@ -2958,6 +3285,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SavingsContractDepositTransaction
   savingsContractDepositTransactions(
     skip: Int = 0
@@ -2971,6 +3300,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SavingsContractDepositTransaction!]!
   savingsContractWithdrawTransaction(
     id: ID!
@@ -2980,6 +3311,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SavingsContractWithdrawTransaction
   savingsContractWithdrawTransactions(
     skip: Int = 0
@@ -2993,6 +3326,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SavingsContractWithdrawTransaction!]!
   transaction(
     id: ID!
@@ -3002,6 +3337,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Transaction
   transactions(
     skip: Int = 0
@@ -3015,6 +3352,8 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
+    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
+    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Transaction!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
