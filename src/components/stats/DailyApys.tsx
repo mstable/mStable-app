@@ -9,8 +9,6 @@ import {
 } from 'recharts';
 import Skeleton from 'react-loading-skeleton';
 import { format } from 'date-fns';
-
-import { useSaveV1Address } from '../../context/DataProvider/DataProvider';
 import {
   useDailyApysForBlockTimes,
   useBlockTimesForDates,
@@ -19,6 +17,7 @@ import { Color } from '../../theme';
 import { percentageFormat, periodFormatMapping } from './utils';
 import { DateRange, Metrics, useDateFilter, useMetrics } from './Metrics';
 import { RechartsContainer } from './RechartsContainer';
+import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider';
 
 enum MetricTypes {
   DailyApy = 'DailyApy',
@@ -47,13 +46,11 @@ const formatApy = (percentage: number): string =>
 const DailyApysChart: FC = () => {
   const dateFilter = useDateFilter();
   const { DailyApy, UtilisationRate } = useMetrics<MetricTypes>();
-
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
 
-  // TODO support v1/v2
-  const savingsContractAddress = useSaveV1Address();
+  const savingsContractState = useSelectedSavingsContractState();
   const dailyApys = useDailyApysForBlockTimes(
-    savingsContractAddress,
+    savingsContractState?.address,
     blockTimes,
   );
 

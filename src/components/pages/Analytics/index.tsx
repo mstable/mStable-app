@@ -11,6 +11,8 @@ import { AggregateChart } from '../../stats/AggregateChart';
 import { PageHeader } from '../PageHeader';
 import { Size } from '../../../theme';
 import { DailyApys } from '../../stats/DailyApys';
+import { ToggleSave } from '../Save/ToggleSave';
+import { useSelectedSavingsContractState } from '../../../context/SelectedSaveVersionProvider';
 
 const Section = styled.section`
   padding-bottom: 32px;
@@ -32,8 +34,11 @@ const TotalSupply: FC = () => {
 };
 
 const TotalSavings: FC = () => {
-  const massetState = useSelectedMassetState();
-  const totalSavings = massetState?.savingsContracts?.v1?.totalSavings;
+  const savingsContractState = useSelectedSavingsContractState();
+  const totalSavings = savingsContractState?.totalSavings;
+  // // eslint-disable-next-line no-console
+  // console.log('totalSavings', totalSavings);
+  // const totalSavings = massetState?.savingsContracts?.v1?.totalSavings;
   return (
     <div>
       <H3 borderTop>Total savings</H3>
@@ -74,6 +79,13 @@ const ThirdPartySources = styled.ul`
   }
 `;
 
+const ToggleContainer = styled.div<{ borderTop?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  ${({ theme, borderTop }) => (borderTop ? theme.mixins.borderTop : '')}
+`;
+
 export const Analytics: FC = () => {
   useLayoutEffect(() => {
     window.scrollTo({ top: 0 });
@@ -86,7 +98,10 @@ export const Analytics: FC = () => {
         subtitle="Explore activity across mStable"
       />
       <Section id="save">
-        <H2 borderTop>SAVE</H2>
+        <ToggleContainer borderTop>
+          <H2>SAVE</H2>
+          <ToggleSave />
+        </ToggleContainer>
         <DailyApys />
       </Section>
       <Section id="volumes">
