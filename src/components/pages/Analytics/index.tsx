@@ -80,6 +80,8 @@ const ToggleContainer = styled.div<{ borderTop?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
   ${({ theme, borderTop }) => (borderTop ? theme.mixins.borderTop : '')}
   > :first-child {
     padding-bottom: 0;

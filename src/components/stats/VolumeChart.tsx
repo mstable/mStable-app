@@ -196,14 +196,14 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
             savingsContracts,
           } = values;
 
-          const collectiveDeposited = savingsContracts.reduce(
-            (prev, { cumulativeDeposited }) =>
-              prev + parseFloat(cumulativeDeposited.simple),
+          let collectiveDeposited = savingsContracts.reduce(
+            (_prev, { cumulativeDeposited }) =>
+              _prev + parseFloat(cumulativeDeposited.simple),
             0,
           );
-          const collectiveWithdrawn = savingsContracts.reduce(
-            (prev, { cumulativeWithdrawn }) =>
-              prev + parseFloat(cumulativeWithdrawn.simple),
+          let collectiveWithdrawn = savingsContracts.reduce(
+            (_prev, { cumulativeWithdrawn }) =>
+              _prev + parseFloat(cumulativeWithdrawn.simple),
             0,
           );
           let minted = parseFloat(cumulativeMinted.simple);
@@ -218,14 +218,16 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
             // TODO too repetitive; shouldn't be doing this anyway;
             // the daily values should be on the subgraph
             minted -= parseFloat(prev.cumulativeMinted.simple);
-            // I commented these out, do we need them? :thinking:
-
-            // deposited -= parseFloat(
-            //   prev.savingsContracts[0].cumulativeDeposited.simple,
-            // );
-            // withdrawn -= parseFloat(
-            //   prev.savingsContracts[0].cumulativeWithdrawn.simple,
-            // );
+            collectiveDeposited -= prev.savingsContracts.reduce(
+              (_prev, { cumulativeDeposited }) =>
+                _prev + parseFloat(cumulativeDeposited.simple),
+              0,
+            );
+            collectiveWithdrawn -= prev.savingsContracts.reduce(
+              (_prev, { cumulativeWithdrawn }) =>
+                _prev + parseFloat(cumulativeWithdrawn.simple),
+              0,
+            );
             swapped -= parseFloat(prev.cumulativeSwapped.simple);
             redeemed -=
               parseFloat(prev.cumulativeRedeemed.simple) +
