@@ -16,7 +16,7 @@ import { Color } from '../../theme';
 import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
 import { periodFormatMapping, toK } from './utils';
 import { RechartsContainer } from './RechartsContainer';
-import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
+import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider';
 
 interface AggregateMetricsQueryResult {
   [timestamp: string]: {
@@ -61,14 +61,14 @@ const useAggregateMetrics = (): {
   totalSavings: number;
 }[] => {
   const dateFilter = useDateFilter();
-  const massetState = useSelectedMassetState();
-  const massetAddress = massetState?.address ?? '';
+  const savingsContractState = useSelectedSavingsContractState();
+  const version = savingsContractState?.version;
+  const massetAddress = savingsContractState?.massetAddress;
 
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
 
   const metricsDoc = useMemo<DocumentNode>(() => {
     const current = `t${nowUnix}: masset(id: "${massetAddress}") { ...AggregateMetricsFields }`;
-
     const blockMetrics = blockTimes
       .map(
         ({ timestamp, number }) =>
@@ -81,13 +81,13 @@ const useAggregateMetrics = (): {
         totalSupply {
           simple
         }
-        savingsContracts {
+        savingsContracts(where: {version: $version, id_not: "0x478e379d5f3e2f949a94f1ccfb7217fb35916615"}) {
           totalSavings {
             simple
           }
         }
       }
-      query AggregateMetrics @api(name: protocol) {
+      query AggregateMetrics($version: Int!) @api(name: protocol) {
         ${current}
         ${blockMetrics}
       }
@@ -96,6 +96,7 @@ const useAggregateMetrics = (): {
 
   const query = useQuery<AggregateMetricsQueryResult>(metricsDoc, {
     fetchPolicy: 'no-cache',
+    variables: { version },
   });
 
   return useMemo(() => {
@@ -105,24 +106,17 @@ const useAggregateMetrics = (): {
       number,
       AggregateMetricsQueryResult[string],
     ][];
-
     return filtered
       .sort(([a], [b]) => (a > b ? 1 : -1))
-      .map(
-        ([
+      .map(([timestamp, { totalSupply, savingsContracts }]) => {
+        return {
           timestamp,
-          {
-            totalSupply,
-            savingsContracts: [{ totalSavings }],
-          },
-        ]) => {
-          return {
-            timestamp,
-            totalSupply: parseFloat(totalSupply.simple),
-            totalSavings: parseFloat(totalSavings.simple),
-          };
-        },
-      );
+          totalSupply: parseFloat(totalSupply.simple),
+          totalSavings: parseFloat(
+            savingsContracts[0] ? savingsContracts[0].totalSavings.simple : '0',
+          ),
+        };
+      });
   }, [query.data]);
 };
 
@@ -130,7 +124,6 @@ const Chart: FC = () => {
   const data = useAggregateMetrics();
   const dateFilter = useDateFilter();
   const { metrics } = useMetricsState();
-
   return (
     <RechartsContainer>
       {data && data.length ? (
