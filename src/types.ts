@@ -89,9 +89,11 @@ export interface SendTxManifest<
   gasPrice?: number;
   gasLimit?: BigNumber;
   formId?: string;
-  onSent?(): void;
-  onFinalize?(): void;
   purpose: Purpose;
+  onStart?(): void;
+  onSent?(): void;
+  onError?(): void;
+  onFinalize?(): void;
 }
 
 export interface Token {

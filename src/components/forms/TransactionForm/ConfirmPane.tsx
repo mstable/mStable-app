@@ -1,4 +1,5 @@
 import React, { FC, useCallback } from 'react';
+
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { SubmitButton } from '../../core/Form';
 import { H3 } from '../../core/Typography';
@@ -32,7 +33,12 @@ export const ConfirmPane: FC<Props> = ({
   const handleSend = useCallback(() => {
     if (valid && manifest) {
       submitStart();
-      sendTransaction({ ...manifest, formId, onSent: submitEnd });
+      sendTransaction({
+        ...manifest,
+        formId,
+        onSent: submitEnd,
+        onError: submitEnd,
+      });
     }
   }, [formId, manifest, sendTransaction, submitEnd, submitStart, valid]);
 
