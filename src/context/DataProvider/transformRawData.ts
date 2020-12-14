@@ -64,43 +64,44 @@ const transformSavingsContractV1 = (
   savingsContract: NonNullable<
     MassetsQueryResult['data']
   >['massets'][number]['savingsContractsV1'][number],
-  massetDecimals: number,
-  massetAddress: string,
   tokens: Tokens,
+  massetAddress: string,
+  current: boolean,
 ): Extract<SavingsContractState, { version: 1 }> => {
   const {
-    id,
-    automationEnabled,
-    version,
+    active,
+    creditBalances,
     dailyAPY,
+    id,
+    latestExchangeRate,
     totalCredits,
     totalSavings,
-    creditBalances,
-    latestExchangeRate,
+    version,
   } = savingsContract;
   const creditBalance = creditBalances?.[0];
 
   return {
+    active,
+    current,
     address: id,
-    massetAddress,
-    automationEnabled,
     creditBalance: creditBalance
       ? new BigDecimal(creditBalance.amount)
       : undefined,
+    dailyAPY: parseFloat(dailyAPY),
     latestExchangeRate: latestExchangeRate
       ? {
           rate: BigDecimal.parse(latestExchangeRate.rate),
           timestamp: latestExchangeRate.timestamp,
         }
       : undefined,
-    mAssetAllowance:
+    massetAddress,
+    massetAllowance:
       tokens[massetAddress]?.allowances?.[id] ?? new BigDecimal(0),
+    savingsBalance: {},
     totalCredits: BigDecimal.fromMetric(
       totalCredits as NonNullable<typeof totalCredits>,
     ),
     totalSavings: BigDecimal.fromMetric(totalSavings),
-    savingsBalance: {},
-    dailyAPY: parseFloat(dailyAPY),
     version: version as 1,
   };
 };
@@ -109,32 +110,34 @@ const transformSavingsContractV2 = (
   savingsContract: NonNullable<
     MassetsQueryResult['data']
   >['massets'][number]['savingsContractsV2'][number],
-  massetAddress: string,
   tokens: Tokens,
+  massetAddress: string,
+  current: boolean,
 ): Extract<SavingsContractState, { version: 2 }> => {
   const {
-    automationEnabled,
-    version,
-    id,
-    totalSavings,
+    active,
     dailyAPY,
+    id,
     latestExchangeRate,
+    totalSavings,
+    version,
   } = savingsContract;
 
   return {
+    active,
+    current,
     address: id,
-    massetAddress,
-    automationEnabled,
+    dailyAPY: parseFloat(dailyAPY),
     latestExchangeRate: latestExchangeRate
       ? {
           rate: BigDecimal.parse(latestExchangeRate.rate),
           timestamp: latestExchangeRate.timestamp,
         }
       : undefined,
-    totalSavings: BigDecimal.fromMetric(totalSavings),
-    dailyAPY: parseFloat(dailyAPY),
-    token: tokens[id],
+    massetAddress,
     savingsBalance: {},
+    token: tokens[id],
+    totalSavings: BigDecimal.fromMetric(totalSavings),
     version: version as 2,
   };
 };
@@ -154,6 +157,7 @@ const transformTokenData = (
 
 const transformMassetData = (
   {
+    currentSavingsContract,
     feeRate,
     redemptionFeeRate,
     token: { decimals, address },
@@ -191,13 +195,18 @@ const transformMassetData = (
       v1: savingsContractV1
         ? transformSavingsContractV1(
             savingsContractV1,
-            decimals,
-            address,
             tokens,
+            address,
+            savingsContractV1.id === currentSavingsContract?.id,
           )
         : undefined,
       v2: savingsContractV2
-        ? transformSavingsContractV2(savingsContractV2, address, tokens)
+        ? transformSavingsContractV2(
+            savingsContractV2,
+            tokens,
+            address,
+            savingsContractV2.id === currentSavingsContract?.id,
+          )
         : undefined,
     },
     // Initial values

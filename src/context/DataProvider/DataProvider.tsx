@@ -55,12 +55,12 @@ export const useV1SavingsBalance = ():
 export const useBassetState = (address: string): BassetState | undefined =>
   useSelectedMassetState()?.bAssets[address];
 
-export const useSelectedSaveV1Address = (): string | undefined => {
+export const useSaveV1Address = (): string | undefined => {
   const massetState = useSelectedMassetState();
   return massetState?.savingsContracts?.v1?.address;
 };
 
-export const useSelectedSaveV2Address = (): string | undefined => {
+export const useSaveV2Address = (): string | undefined => {
   const massetState = useSelectedMassetState();
   return massetState?.savingsContracts?.v2?.address;
 };

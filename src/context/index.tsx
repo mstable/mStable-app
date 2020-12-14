@@ -10,6 +10,7 @@ import { TokensProvider } from './TokensProvider';
 import { BlockProvider } from './BlockProvider';
 import { DataProvider } from './DataProvider/DataProvider';
 import { ApolloProvider } from './ApolloProvider';
+import { SelectedSaveVersionProvider } from './SelectedSaveVersionProvider';
 
 export const Providers: FC = ({ children }) => (
   <NotificationsProvider>
@@ -21,7 +22,9 @@ export const Providers: FC = ({ children }) => (
               <TokensProvider>
                 <DataProvider>
                   <AppProvider>
-                    <ThemeProvider>{children}</ThemeProvider>
+                    <SelectedSaveVersionProvider>
+                      <ThemeProvider>{children}</ThemeProvider>
+                    </SelectedSaveVersionProvider>
                   </AppProvider>
                 </DataProvider>
               </TokensProvider>

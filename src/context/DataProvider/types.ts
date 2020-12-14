@@ -49,33 +49,30 @@ export interface MassetState {
 }
 
 export type SavingsContractState = {
+  active: boolean;
+  current: boolean;
   address: string;
   massetAddress: string;
-  automationEnabled: boolean;
   latestExchangeRate?: {
     timestamp: number;
     rate: BigDecimal;
   };
   totalSavings: BigDecimal;
   dailyAPY: number;
+  savingsBalance: {
+    balance?: BigDecimal;
+    credits?: BigDecimal;
+  };
 } & (
   | {
       version: 1;
       creditBalance?: BigDecimal;
       totalCredits: BigDecimal;
-      mAssetAllowance: BigDecimal;
-      savingsBalance: {
-        balance?: BigDecimal;
-        credits?: BigDecimal;
-      };
+      massetAllowance: BigDecimal;
     }
   | {
       version: 2;
       token?: SubscribedToken;
-      savingsBalance: {
-        balance?: BigDecimal;
-        credits?: BigDecimal;
-      };
     }
 );
 

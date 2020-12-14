@@ -499,6 +499,7 @@ export const useSendTransaction =
 
     return useCallback(
       manifest => {
+        manifest.onStart?.();
         sendTransaction(manifest)
           .then(response => {
             const { hash } = response;
@@ -510,13 +511,12 @@ export const useSendTransaction =
               hash,
               response: { ...response, to: response.to?.toLowerCase() },
             });
-          })
-          .catch(error => {
-            const message = parseTxError(error);
-            addErrorNotification(message);
-          })
-          .finally(() => {
             manifest.onSent?.();
+          })
+          .catch(_error => {
+            const message = parseTxError(_error);
+            addErrorNotification(message);
+            manifest.onError?.();
           });
       },
       [addPending, addErrorNotification],

@@ -4,20 +4,14 @@ import styled from 'styled-components';
 import CountUp from 'react-countup';
 
 import { useAverageApyForPastWeek } from '../../../web3/hooks';
-import { FormProvider } from '../../forms/TransactionForm/FormProvider';
 import { PageHeader } from '../PageHeader';
-import {
-  ActiveSaveVersionProvider,
-  SaveVersion,
-  useActiveSaveVersionState,
-} from './ActiveSaveVersionProvider';
-import { SaveProvider } from './v1/SaveProvider';
-import { SaveInfo } from './SaveInfo';
-import { SaveForm } from './v1/SaveForm';
-import { ToggleSave } from './ToggleSave';
-import { SaveMigrationProvider } from './saveMigration/SaveMigrationProvder';
 
-const { V1, V2 } = SaveVersion;
+import { SaveProvider } from './v1/SaveProvider';
+import { SaveForm } from './v1/SaveForm';
+import { SaveInfo } from './SaveInfo';
+import { ToggleSave } from './ToggleSave';
+import { useSelectedSavingsContractState } from '../../../context/SelectedSaveVersionProvider';
+import { FormProvider } from '../../forms/TransactionForm/FormProvider';
 
 const APYStats = styled.div`
   display: flex;
@@ -30,10 +24,6 @@ const APYStats = styled.div`
     text-align: right;
     justify-content: flex-end;
   }
-`;
-
-const ToggleContainer = styled.div`
-  display: flex;
 `;
 
 const InfoCountUp = styled(CountUp)`
@@ -66,20 +56,15 @@ const InfoMsg = styled.div`
 `;
 
 const SaveContent: FC = () => {
-  const { versions, activeVersion } = useActiveSaveVersionState();
   const apyForPastWeek = useAverageApyForPastWeek();
-
-  const isV1Deprecated = versions.length > 1;
-  const showForm =
-    (isV1Deprecated && activeVersion === V2) ||
-    (!isV1Deprecated && activeVersion === V1);
+  const savingsContractState = useSelectedSavingsContractState();
+  const isV1SelectedAndDeprecated =
+    savingsContractState?.version === 1 && !savingsContractState.current;
 
   return (
     <>
       <PageHeader title="Save" subtitle="Earn interest on your deposited mUSD">
-        <ToggleContainer>
-          <ToggleSave />
-        </ToggleContainer>
+        <ToggleSave />
         <APYStats>
           {apyForPastWeek ? (
             <>
@@ -101,19 +86,17 @@ const SaveContent: FC = () => {
         </APYStats>
       </PageHeader>
       <SaveInfo />
-      {showForm && <SaveForm />}
+      {!isV1SelectedAndDeprecated && (
+        <FormProvider formId="save">
+          <SaveForm />
+        </FormProvider>
+      )}
     </>
   );
 };
 
 export const Save: FC = () => (
-  <ActiveSaveVersionProvider>
-    <SaveProvider>
-      <FormProvider formId="save">
-        <SaveMigrationProvider>
-          <SaveContent />
-        </SaveMigrationProvider>
-      </FormProvider>
-    </SaveProvider>
-  </ActiveSaveVersionProvider>
+  <SaveProvider>
+    <SaveContent />
+  </SaveProvider>
 );
