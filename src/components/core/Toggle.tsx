@@ -1,15 +1,12 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-
 import Skeleton from 'react-loading-skeleton';
+
 import { BubbleButton } from './Button';
 
 interface Props {
   className?: string;
-  disabled?: boolean;
-  activeIndex?: number;
-  titles?: string[];
-  onClick: (index: number) => void;
+  options: { title: string; onClick(): void; active: boolean }[];
 }
 
 const Container = styled.div`
@@ -22,21 +19,20 @@ const Container = styled.div`
   }
 `;
 
-export const Toggle: FC<Props> = props => {
-  const { className, titles, activeIndex, onClick } = props;
-  const isLoading = titles === undefined;
+export const Toggle: FC<Props> = ({ className, options }) => {
+  const isLoading = options.length === 0;
 
   return (
     <Container className={className}>
       {isLoading ? (
         <Skeleton height={42} width={128} />
       ) : (
-        titles?.map((title, i) => (
+        options.map(({ title, active, onClick }) => (
           <BubbleButton
-            key={`btn-${title}`}
-            onClick={() => onClick(i)}
+            key={title}
+            onClick={onClick}
             type="button"
-            highlighted={activeIndex === i}
+            highlighted={active}
             scale={0.9}
           >
             {title}

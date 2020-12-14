@@ -12,6 +12,7 @@ import React, {
 import useThrottleFn from 'react-use/lib/useThrottleFn';
 import { BigNumber } from 'ethers/utils';
 import { ethers } from 'ethers';
+
 import { SendTxManifest } from '../../../types';
 import { calculateGasMargin } from '../../../web3/hooks';
 
@@ -26,8 +27,7 @@ interface State<TState> {
   formId: string;
   manifest?: SendTxManifest<never, never>;
   submitting: boolean;
-  gasPriceValue?: number;
-  gasPriceType?: GasPriceType;
+  gasPrice: { value?: number; type: GasPriceType };
 }
 
 interface Dispatch<TState> {
@@ -36,8 +36,7 @@ interface Dispatch<TState> {
   ): void;
   submitStart(): void;
   submitEnd(): void;
-  setGasPrice(gasPrice: number): void;
-  setGasPriceType(gasPriceType: GasPriceType): void;
+  setGasPrice(gasPrice: { type?: GasPriceType; value?: number }): void;
 }
 
 enum Actions {
@@ -45,7 +44,6 @@ enum Actions {
   SubmitEnd,
   SubmitStart,
   SetGasPrice,
-  SetGasPriceType,
   SetGasLimit,
 }
 
@@ -62,11 +60,7 @@ type Action<TState> =
     }
   | {
       type: Actions.SetGasPrice;
-      payload: number;
-    }
-  | {
-      type: Actions.SetGasPriceType;
-      payload: GasPriceType;
+      payload: { type?: GasPriceType; value?: number };
     }
   | {
       type: Actions.SetGasLimit;
@@ -86,7 +80,7 @@ const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
           ...state,
           manifest: {
             ...manifest,
-            gasPrice: state.gasPriceValue,
+            gasPrice: state.gasPrice.value,
           },
         };
       }
@@ -100,26 +94,21 @@ const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
     case Actions.SubmitStart:
       return { ...state, submitting: true };
     case Actions.SetGasPrice: {
-      if (state.manifest) {
-        return {
-          ...state,
-          gasPriceValue: action.payload,
-          manifest: {
-            ...state.manifest,
-            gasPrice: action.payload,
-          },
-        };
-      }
+      const gasPrice = {
+        ...state.gasPrice,
+        ...action.payload,
+      };
       return {
         ...state,
-        gasPriceValue: action.payload,
+        gasPrice,
+        manifest: state.manifest
+          ? {
+              ...state.manifest,
+              gasPrice: gasPrice.value,
+            }
+          : undefined,
       };
     }
-    case Actions.SetGasPriceType:
-      return {
-        ...state,
-        gasPriceType: action.payload,
-      };
     case Actions.SetGasLimit: {
       if (state.manifest) {
         return {
@@ -141,7 +130,7 @@ export const FormProvider: FC<{ formId: string }> = ({ children, formId }) => {
   const [state, dispatch] = useReducer(reducer, {
     submitting: false,
     formId,
-    gasPriceType: GasPriceType.Standard,
+    gasPrice: { type: GasPriceType.Standard },
   });
 
   const { args, fn, iface } = state.manifest || {};
@@ -185,49 +174,36 @@ export const FormProvider: FC<{ formId: string }> = ({ children, formId }) => {
   }, [dispatch]);
 
   const setGasPrice = useCallback<Dispatch<never>['setGasPrice']>(
-    gasPrice => {
+    payload => {
       dispatch({
         type: Actions.SetGasPrice,
-        payload: gasPrice,
-      });
-    },
-    [dispatch],
-  );
-
-  const setGasPriceType = useCallback<Dispatch<never>['setGasPriceType']>(
-    gasPriceType => {
-      dispatch({
-        type: Actions.SetGasPriceType,
-        payload: gasPriceType,
+        payload,
       });
     },
     [dispatch],
   );
 
   return (
-    <stateCtx.Provider value={state}>
-      <dispatchCtx.Provider
-        value={useMemo(
-          () => ({
-            setManifest,
-            submitEnd,
-            submitStart,
-            setGasPrice,
-            setGasPriceType,
-          }),
-          [setManifest, submitEnd, submitStart, setGasPrice, setGasPriceType],
-        )}
-      >
-        {children}
-      </dispatchCtx.Provider>
-    </stateCtx.Provider>
+    <dispatchCtx.Provider
+      value={useMemo(
+        () => ({
+          setManifest,
+          submitEnd,
+          submitStart,
+          setGasPrice,
+        }),
+        [setManifest, submitEnd, submitStart, setGasPrice],
+      )}
+    >
+      <stateCtx.Provider value={state}>{children}</stateCtx.Provider>
+    </dispatchCtx.Provider>
   );
 };
 
-const useStateCtx = <TState extends unknown>(): State<TState> =>
+export const useStateCtx = <TState extends unknown>(): State<TState> =>
   useContext(stateCtx) as State<TState>;
 
-const useDispatchCtx = <TState extends unknown>(): Dispatch<TState> =>
+export const useDispatchCtx = <TState extends unknown>(): Dispatch<TState> =>
   useContext(dispatchCtx) as Dispatch<TState>;
 
 export const useManifest = (): State<never>['manifest'] =>
@@ -236,11 +212,8 @@ export const useManifest = (): State<never>['manifest'] =>
 export const useFormSubmitting = (): State<never>['submitting'] =>
   useStateCtx().submitting;
 
-export const useCurrentGasPrice = (): State<never>['gasPriceValue'] =>
-  useStateCtx().gasPriceValue;
-
-export const useCurrentGasPriceType = (): State<never>['gasPriceType'] =>
-  useStateCtx().gasPriceType;
+export const useCurrentGasPrice = (): State<never>['gasPrice'] =>
+  useStateCtx().gasPrice;
 
 export const useFormId = (): State<never>['formId'] => useStateCtx().formId;
 
@@ -255,6 +228,3 @@ export const useSubmitEnd = (): Dispatch<never>['submitEnd'] =>
 
 export const useSetGasPrice = (): Dispatch<never>['setGasPrice'] =>
   useDispatchCtx().setGasPrice;
-
-export const useSetGasPriceType = (): Dispatch<never>['setGasPriceType'] =>
-  useDispatchCtx().setGasPriceType;

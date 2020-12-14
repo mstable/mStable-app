@@ -152,17 +152,3 @@ export interface AccentColors {
   base: string;
   text: string;
 }
-
-export enum SaveMigrationStep {
-  WITHDRAW,
-  APPROVE,
-  DEPOSIT,
-}
-
-export interface Message {
-  title: string;
-  subtitle: string;
-  emoji: string;
-  internalUrl?: string;
-  externalUrl?: string;
-}

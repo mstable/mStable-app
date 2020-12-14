@@ -27,7 +27,7 @@ const validateSave = ({
     }
 
     if (
-      massetState.savingsContracts.v1.mAssetAllowance.exact.lt(amount.exact)
+      massetState.savingsContracts.v1.massetAllowance.exact.lt(amount.exact)
     ) {
       return [false, Reasons.MUSDMustBeApproved];
     }

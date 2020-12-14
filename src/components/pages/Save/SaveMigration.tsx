@@ -1,9 +1,34 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+
 import { ViewportWidth } from '../../../theme';
 import { H2, P } from '../../core/Typography';
-import { useMigrationSteps } from './saveMigration/SaveMigrationProvder';
+import {
+  SaveMigrationProvider,
+  useMigrationSteps,
+} from './SaveMigrationProvider';
 import { Steps } from '../../core/Steps';
+import { useV1SavingsBalance } from '../../../context/DataProvider/DataProvider';
+import { GasPriceSelector } from '../../forms/TransactionForm/GasPriceSelector';
+import {
+  FormProvider,
+  useFormSubmitting,
+} from '../../forms/TransactionForm/FormProvider';
+
+const StepsAndGasPrices = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+`;
+
+const Inner = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  max-width: 36rem;
+`;
 
 const Card = styled.div`
   margin-top: 2.5rem;
@@ -73,32 +98,39 @@ const Card = styled.div`
   }
 `;
 
-const Inner = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 32rem;
-`;
-
-export const SaveMigration: FC = () => {
+const SaveMigrationContent: FC = () => {
   const steps = useMigrationSteps();
+  const savingsBalance = useV1SavingsBalance();
+  const submitting = useFormSubmitting();
 
-  const stepsCompleted = steps.every(step => step.isCompleted);
+  const stepsComplete = steps.length && steps.every(step => step.complete);
 
   return (
     <Card>
       <Inner>
         <H2>
-          {!stepsCompleted ? `Migration Assistant` : `Migration Complete! 🎉`}
+          {!stepsComplete ? `Migration Assistant` : `Migration Complete! 🎉`}
         </H2>
-        {!stepsCompleted && (
+        {!stepsComplete && (
           <P>
             To continue earning interest, please follow these steps to migrate
-            your <b>Save V1</b> balance of <span>$230.00</span>.
+            your <b>Save V1</b> balance of{' '}
+            <span>{savingsBalance?.balance?.format() ?? '0.00'}</span>.
           </P>
         )}
-        <Steps steps={steps} />
+        <StepsAndGasPrices>
+          {steps.length && <Steps steps={steps} pending={submitting} />}
+          {!stepsComplete && <GasPriceSelector valid />}
+        </StepsAndGasPrices>
       </Inner>
     </Card>
   );
 };
+
+export const SaveMigration: FC = () => (
+  <FormProvider formId="migration">
+    <SaveMigrationProvider>
+      <SaveMigrationContent />
+    </SaveMigrationProvider>
+  </FormProvider>
+);
