@@ -18,8 +18,8 @@ fragment SavingsContractAll on SavingsContract {
     timestamp
   }
   dailyAPY
-  automationEnabled
   version
+  active
 }
 
 fragment TransactionFields on Transaction {
