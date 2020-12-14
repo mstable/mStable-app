@@ -81,6 +81,7 @@ const useAggregateMetrics = (): {
         totalSupply {
           simple
         }
+        #first deposited version of save-v2
         savingsContracts(where: {version: $version, id_not: "0x478e379d5f3e2f949a94f1ccfb7217fb35916615"}) {
           totalSavings {
             simple
