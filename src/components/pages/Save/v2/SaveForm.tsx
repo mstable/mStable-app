@@ -1,9 +1,10 @@
 import React, { FC, useEffect } from 'react';
 
+import { useWalletAddress } from '../../../../context/OnboardProvider';
 import { useSetFormManifest } from '../../../forms/TransactionForm/FormProvider';
-import { TransactionForm } from '../../../forms/TransactionForm';
-import { useSelectedSaveV1Contract } from '../../../../web3/hooks';
+import { useSelectedSaveV2Contract } from '../../../../web3/hooks';
 import { Interfaces } from '../../../../types';
+import { TransactionForm } from '../../../forms/TransactionForm';
 import { TransactionType } from './types';
 import { useSaveState } from './SaveProvider';
 import { SaveConfirm } from './SaveConfirm';
@@ -20,17 +21,17 @@ export const SaveForm: FC = () => {
   const massetSymbol = massetState?.token.symbol;
 
   const setFormManifest = useSetFormManifest();
-  const savingsContract = useSelectedSaveV1Contract();
+  const savingsContract = useSelectedSaveV2Contract();
+  const walletAddress = useWalletAddress();
 
-  // Set the form manifest
   useEffect(() => {
-    if (valid && savingsContract && amount) {
-      if (transactionType === TransactionType.Deposit) {
+    if (savingsContract && valid && walletAddress) {
+      if (transactionType === TransactionType.Deposit && amount) {
         const body = `${amount.format()} ${massetSymbol}`;
-        setFormManifest<Interfaces.SavingsContract, 'depositSavings'>({
+        setFormManifest<Interfaces.SavingsContract, 'deposit'>({
           iface: savingsContract,
-          args: [amount.exact],
-          fn: 'depositSavings',
+          args: [amount.exact, walletAddress],
+          fn: 'deposit',
           purpose: {
             present: `Depositing ${body}`,
             past: `Deposited ${body}`,
@@ -38,13 +39,12 @@ export const SaveForm: FC = () => {
         });
         return;
       }
-
       if (transactionType === TransactionType.Withdraw && amountInCredits) {
         const body = `${massetSymbol} savings`;
-        setFormManifest<Interfaces.SavingsContract, 'redeem'>({
+        setFormManifest<Interfaces.SavingsContract, 'redeemUnderlying'>({
           iface: savingsContract,
           args: [amountInCredits.exact],
-          fn: 'redeem',
+          fn: 'redeemUnderlying',
           purpose: {
             present: `Withdrawing ${body}`,
             past: `Withdrew ${body}`,
@@ -63,6 +63,7 @@ export const SaveForm: FC = () => {
     setFormManifest,
     transactionType,
     massetSymbol,
+    walletAddress,
   ]);
 
   return (

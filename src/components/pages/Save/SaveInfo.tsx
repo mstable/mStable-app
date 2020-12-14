@@ -77,7 +77,7 @@ const StyledWarningBadge = styled(WarningBadge)`
 `;
 
 export const SaveInfo: FC = () => {
-  const massetName = useSelectedMassetName();
+  const selectedMassetName = useSelectedMassetName();
   const savingsContractState = useSelectedSavingsContractState();
 
   const isV1SelectedAndDeprecated =
@@ -87,7 +87,7 @@ export const SaveInfo: FC = () => {
   return (
     <BalanceInfoRow>
       <H3>
-        Your <b>{massetName}</b> savings balance
+        Your <b>{selectedMassetName}</b> savings balance
       </H3>
       <CreditBalance>
         <MUSDIconTransparent />
@@ -100,8 +100,8 @@ export const SaveInfo: FC = () => {
       {isV1SelectedAndDeprecated ? (
         <>
           <WarningMsg>
-            Migrate your <b>{massetName}</b> to continue earning interest on
-            your balance.
+            Migrate your <b>{selectedMassetName}</b> to continue earning
+            interest on your balance.
           </WarningMsg>
           <SaveMigration />
         </>
