@@ -8,13 +8,19 @@ import React, {
   Reducer,
   useEffect,
 } from 'react';
-import { useHistory } from 'react-router-dom';
 import { configureScope } from '@sentry/react';
 
 import { CHAIN_ID } from '../web3/constants';
 import { useAddErrorNotification } from './NotificationsProvider';
 import { useWalletAddress, useConnected, useWallet } from './OnboardProvider';
-import { Message } from '../types';
+
+export interface BannerMessage {
+  title: string;
+  subtitle?: string;
+  emoji: string;
+  url?: string;
+  visible: boolean;
+}
 
 export enum AccountItems {
   Notifications,
@@ -26,8 +32,7 @@ enum Actions {
   SetOnline,
   SetAccountItem,
   ToggleAccount,
-  SetMessageVisible,
-  SetMessage,
+  SetBannerMessage,
 }
 
 export enum StatusWarnings {
@@ -40,8 +45,7 @@ interface State {
   supportedChain: boolean;
   accountItem: AccountItems | null;
   online: boolean;
-  messageVisible: boolean;
-  message: Message;
+  bannerMessage?: BannerMessage;
 }
 
 type Action =
@@ -49,16 +53,13 @@ type Action =
   | { type: Actions.ToggleAccount; payload: AccountItems }
   | { type: Actions.SupportedChainSelected; payload: boolean }
   | { type: Actions.SetOnline; payload: boolean }
-  | { type: Actions.SetMessage; payload: Message }
-  | { type: Actions.SetMessageVisible; payload: boolean };
+  | { type: Actions.SetBannerMessage; payload?: BannerMessage };
 
 interface Dispatch {
   closeAccount(): void;
-  openWalletRedirect(redirect: string): void;
   toggleNotifications(): void;
   toggleWallet(): void;
-  setMessageVisible(isVisible: boolean): void;
-  setMessage(message: Message): void;
+  setBannerMessage(message?: BannerMessage): void;
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
@@ -82,10 +83,8 @@ const reducer: Reducer<State, Action> = (state, action) => {
       };
     case Actions.SetOnline:
       return { ...state, online: action.payload };
-    case Actions.SetMessage:
-      return { ...state, message: action.payload };
-    case Actions.SetMessageVisible:
-      return { ...state, messageVisible: action.payload };
+    case Actions.SetBannerMessage:
+      return { ...state, bannerMessage: action.payload };
     default:
       return state;
   }
@@ -96,12 +95,6 @@ const initialState: State = {
   supportedChain: true,
   accountItem: null,
   online: true,
-  message: {
-    title: 'SAVE V2 is launching soon! ',
-    subtitle: 'This will require you to migrate your existing funds.',
-    emoji: '⚠️',
-  },
-  messageVisible: false,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -110,8 +103,7 @@ const context = createContext<[State, Dispatch]>([initialState, {}] as any);
 /**
  * Provider for global App state and interactions.
  */
-export const AppProvider: FC<{}> = ({ children }) => {
-  const history = useHistory();
+export const AppProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const addErrorNotification = useAddErrorNotification();
   const address = useWalletAddress();
@@ -119,20 +111,10 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const connected = useConnected();
   const status = connected ? 'connected' : 'connecting';
 
-  const setMessageVisible = useCallback<Dispatch['setMessageVisible']>(
-    isVisible => {
-      dispatch({
-        type: Actions.SetMessageVisible,
-        payload: isVisible,
-      });
-    },
-    [dispatch],
-  );
-
-  const setMessage = useCallback<Dispatch['setMessage']>(
+  const setBannerMessage = useCallback<Dispatch['setBannerMessage']>(
     message => {
       dispatch({
-        type: Actions.SetMessage,
+        type: Actions.SetBannerMessage,
         payload: message,
       });
     },
@@ -155,14 +137,6 @@ export const AppProvider: FC<{}> = ({ children }) => {
   const toggleWallet = useCallback<Dispatch['toggleWallet']>(() => {
     dispatch({ type: Actions.ToggleAccount, payload: AccountItems.Wallet });
   }, [dispatch]);
-
-  const openWalletRedirect = useCallback<Dispatch['openWalletRedirect']>(
-    path => {
-      history.push(path);
-      dispatch({ type: Actions.SetAccountItem, payload: AccountItems.Wallet });
-    },
-    [history],
-  );
 
   const connectionListener = useCallback(() => {
     dispatch({
@@ -241,21 +215,17 @@ export const AppProvider: FC<{}> = ({ children }) => {
           state,
           {
             closeAccount,
-            openWalletRedirect,
+            setBannerMessage,
             toggleNotifications,
             toggleWallet,
-            setMessageVisible,
-            setMessage,
           },
         ],
         [
           state,
           closeAccount,
-          openWalletRedirect,
+          setBannerMessage,
           toggleNotifications,
           toggleWallet,
-          setMessageVisible,
-          setMessage,
         ],
       )}
     >
@@ -295,14 +265,11 @@ export const useAppStatusWarnings = (): StatusWarnings[] => {
 export const useToggleWallet = (): Dispatch['toggleWallet'] =>
   useAppDispatch().toggleWallet;
 
-export const useOpenWalletRedirect = (): Dispatch['openWalletRedirect'] =>
-  useAppDispatch().openWalletRedirect;
-
 export const useToggleNotifications = (): Dispatch['toggleNotifications'] =>
   useAppDispatch().toggleNotifications;
 
-export const useSetMessageVisible = (): Dispatch['setMessageVisible'] =>
-  useAppDispatch().setMessageVisible;
+export const useBannerMessage = (): State['bannerMessage'] =>
+  useAppState().bannerMessage;
 
-export const useSetMessage = (): Dispatch['setMessage'] =>
-  useAppDispatch().setMessage;
+export const useSetBannerMessage = (): Dispatch['setBannerMessage'] =>
+  useAppDispatch().setBannerMessage;

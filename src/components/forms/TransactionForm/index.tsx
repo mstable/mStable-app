@@ -1,9 +1,10 @@
 import React, { FC, ReactNode } from 'react';
 import styled from 'styled-components';
+
 import { InputPane } from './InputPane';
 import { ConfirmPane } from './ConfirmPane';
 import { TransactionsPane } from './TransactionsPane';
-import { GasPrice } from './GasPrice';
+import { GasPriceSelector } from './GasPriceSelector';
 
 interface Props {
   className?: string;
@@ -39,7 +40,7 @@ export const TransactionForm: FC<Props> = ({
     </ConfirmPane>
     {!compact && (
       <div>
-        <GasPrice valid={valid} />
+        <GasPriceSelector valid={valid} />
         <TransactionsPane transactionsLabel={transactionsLabel} />
       </div>
     )}

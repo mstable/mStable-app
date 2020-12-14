@@ -6,8 +6,8 @@ import { useQuery, gql, DocumentNode } from '@apollo/client';
 import { useSigner } from '../context/OnboardProvider';
 import {
   useSelectedMassetState,
-  useSelectedSaveV1Address,
-  useSelectedSaveV2Address,
+  useSaveV1Address,
+  useSaveV2Address,
 } from '../context/DataProvider/DataProvider';
 import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import { MassetFactory } from '../typechain/MassetFactory';
@@ -16,7 +16,7 @@ import { SavingsContract } from '../typechain/SavingsContract.d';
 import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
 import { Masset } from '../typechain/Masset.d';
 import { truncateAddress } from './strings';
-import { useActiveSaveVersion } from '../components/pages/Save/ActiveSaveVersionProvider';
+import { useSelectedSaveVersion } from '../context/SelectedSaveVersionProvider';
 
 interface BlockTime {
   timestamp: number;
@@ -135,15 +135,18 @@ export const timestampsForWeek = eachDayOfInterval({
   .concat(now);
 
 export const useAverageApyForPastWeek = (): number | undefined => {
-  const activeVersion = useActiveSaveVersion();
-  const savingsV1ContractAddress = useSelectedSaveV1Address();
-  const savingsV2ContractAddress = useSelectedSaveV2Address();
-  
-  const currentContractAddress = activeVersion === 1 ? savingsV1ContractAddress : savingsV2ContractAddress;
+  const [selectedSaveVersion] = useSelectedSaveVersion();
+  const savingsV1ContractAddress = useSaveV1Address();
+  const savingsV2ContractAddress = useSaveV2Address();
+
+  const selectedSavingsContractAddress =
+    selectedSaveVersion === 1
+      ? savingsV1ContractAddress
+      : savingsV2ContractAddress;
 
   const blockTimes = useBlockTimesForDates(timestampsForWeek);
   const dailyApys = useDailyApysForBlockTimes(
-    currentContractAddress,
+    selectedSavingsContractAddress,
     blockTimes,
   );
   return useMemo(() => {
