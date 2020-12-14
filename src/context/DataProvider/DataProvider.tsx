@@ -16,7 +16,7 @@ import {
   MassetsQueryResult,
   useMassetsLazyQuery,
 } from '../../graphql/protocol';
-import { useSelectedMasset } from '../SelectedMassetProvider';
+import { useSelectedMassetName } from '../SelectedMassetNameProvider';
 
 const dataStateCtx = createContext<DataState>({});
 
@@ -52,7 +52,7 @@ export const DataProvider: FC = ({ children }) => {
 export const useDataState = (): DataState => useContext(dataStateCtx);
 
 export const useSelectedMassetState = (): MassetState | undefined => {
-  const masset = useSelectedMasset();
+  const masset = useSelectedMassetName();
   return useDataState()[masset];
 };
 
