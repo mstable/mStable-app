@@ -1,8 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
-import { useSelectedMasset } from '../../../context/SelectedMassetProvider';
+import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
 import { H3 } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
