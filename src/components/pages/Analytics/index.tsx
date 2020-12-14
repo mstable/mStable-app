@@ -36,9 +36,6 @@ const TotalSupply: FC = () => {
 const TotalSavings: FC = () => {
   const savingsContractState = useSelectedSavingsContractState();
   const totalSavings = savingsContractState?.totalSavings;
-  // // eslint-disable-next-line no-console
-  // console.log('totalSavings', totalSavings);
-  // const totalSavings = massetState?.savingsContracts?.v1?.totalSavings;
   return (
     <div>
       <H3 borderTop>Total savings</H3>
@@ -84,6 +81,10 @@ const ToggleContainer = styled.div<{ borderTop?: boolean }>`
   align-items: center;
   justify-content: space-between;
   ${({ theme, borderTop }) => (borderTop ? theme.mixins.borderTop : '')}
+  > :first-child {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
 `;
 
 export const Analytics: FC = () => {

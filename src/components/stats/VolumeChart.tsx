@@ -183,7 +183,6 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
       number,
       MetricsQueryResult[string],
     ][];
-
     return (
       filtered
         .sort(([a], [b]) => (a > b ? 1 : -1))
@@ -194,12 +193,20 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
             cumulativeRedeemed,
             cumulativeRedeemedMasset,
             cumulativeFeesPaid,
-            savingsContracts: [{ cumulativeDeposited, cumulativeWithdrawn }],
+            savingsContracts,
           } = values;
 
+          const collectiveDeposited = savingsContracts.reduce(
+            (prev, { cumulativeDeposited }) =>
+              prev + parseFloat(cumulativeDeposited.simple),
+            0,
+          );
+          const collectiveWithdrawn = savingsContracts.reduce(
+            (prev, { cumulativeWithdrawn }) =>
+              prev + parseFloat(cumulativeWithdrawn.simple),
+            0,
+          );
           let minted = parseFloat(cumulativeMinted.simple);
-          let deposited = parseFloat(cumulativeDeposited.simple);
-          let withdrawn = parseFloat(cumulativeWithdrawn.simple);
           let swapped = parseFloat(cumulativeSwapped.simple);
           let redeemed =
             parseFloat(cumulativeRedeemed.simple) +
@@ -211,12 +218,14 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
             // TODO too repetitive; shouldn't be doing this anyway;
             // the daily values should be on the subgraph
             minted -= parseFloat(prev.cumulativeMinted.simple);
-            deposited -= parseFloat(
-              prev.savingsContracts[0].cumulativeDeposited.simple,
-            );
-            withdrawn -= parseFloat(
-              prev.savingsContracts[0].cumulativeWithdrawn.simple,
-            );
+            // I commented these out, do we need them? :thinking:
+
+            // deposited -= parseFloat(
+            //   prev.savingsContracts[0].cumulativeDeposited.simple,
+            // );
+            // withdrawn -= parseFloat(
+            //   prev.savingsContracts[0].cumulativeWithdrawn.simple,
+            // );
             swapped -= parseFloat(prev.cumulativeSwapped.simple);
             redeemed -=
               parseFloat(prev.cumulativeRedeemed.simple) +
@@ -227,8 +236,8 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
           return {
             timestamp,
             [TransactionType.MassetMint]: minted,
-            [TransactionType.SavingsContractDeposit]: deposited,
-            [TransactionType.SavingsContractWithdraw]: withdrawn,
+            [TransactionType.SavingsContractDeposit]: collectiveDeposited,
+            [TransactionType.SavingsContractWithdraw]: collectiveWithdrawn,
             [TransactionType.MassetSwap]: swapped,
             [TransactionType.MassetRedeem]: redeemed,
             [TransactionType.MassetPaidFee]: fees,
