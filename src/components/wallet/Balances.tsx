@@ -74,7 +74,6 @@ export const Balances: FC = () => {
       ),
     [dataState],
   );
-
   return (
     <List inverted>
       {massetTokens.map(
@@ -110,7 +109,14 @@ export const Balances: FC = () => {
                   <TokenIcon symbol={savingsContractV2.symbol} outline />
                   <span>{savingsContractV2.symbol}</span>
                 </Symbol>
-                <TokenBalance address={masset.address} size={Size.l} />
+                {savingsContractV2.balance ? (
+                  <Balance
+                    size={Size.l}
+                    end={savingsContractV2.balance.simple}
+                  />
+                ) : (
+                  <Skeleton />
+                )}
               </ListItem>
             )}
             {bassets.map(({ address, symbol }) => (
