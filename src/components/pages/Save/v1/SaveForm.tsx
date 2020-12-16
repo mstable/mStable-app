@@ -27,10 +27,10 @@ export const SaveForm: FC = () => {
     if (valid && savingsContract && amount) {
       if (transactionType === TransactionType.Deposit) {
         const body = `${amount.format()} ${massetSymbol}`;
-        setFormManifest<Interfaces.SavingsContract, 'depositSavings'>({
+        setFormManifest<Interfaces.SavingsContract, 'depositSavings(uint256)'>({
           iface: savingsContract,
           args: [amount.exact],
-          fn: 'depositSavings',
+          fn: 'depositSavings(uint256)',
           purpose: {
             present: `Depositing ${body}`,
             past: `Deposited ${body}`,
