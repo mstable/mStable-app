@@ -9,6 +9,7 @@ import { TransactionType } from './types';
 import { useSaveState } from './SaveProvider';
 import { SaveConfirm } from './SaveConfirm';
 import { SaveInput } from './SaveInput';
+import { useSelectedSavingsContractState } from '../../../../context/SelectedSaveVersionProvider';
 
 export const SaveForm: FC = () => {
   const {
@@ -23,15 +24,37 @@ export const SaveForm: FC = () => {
   const setFormManifest = useSetFormManifest();
   const savingsContract = useSelectedSaveV2Contract();
   const walletAddress = useWalletAddress();
+  const savingsContractState = useSelectedSavingsContractState();
 
   useEffect(() => {
     if (savingsContract && valid && walletAddress) {
-      if (transactionType === TransactionType.Deposit && amount) {
+      if (
+        savingsContractState?.version === 2 &&
+        !savingsContractState.current &&
+        transactionType === TransactionType.Deposit &&
+        amount
+      ) {
         const body = `${amount.format()} ${massetSymbol}`;
-        setFormManifest<Interfaces.SavingsContract, 'deposit'>({
+        setFormManifest<Interfaces.SavingsContract, 'preDeposit'>({
           iface: savingsContract,
           args: [amount.exact, walletAddress],
-          fn: 'deposit',
+          fn: 'preDeposit',
+          purpose: {
+            present: `Pre depositing ${body}`,
+            past: `Pre deposited ${body}`,
+          },
+        });
+        return;
+      }
+      if (transactionType === TransactionType.Deposit && amount) {
+        const body = `${amount.format()} ${massetSymbol}`;
+        setFormManifest<
+          Interfaces.SavingsContract,
+          'depositSavings(uint256,address)'
+        >({
+          iface: savingsContract,
+          args: [amount.exact, walletAddress],
+          fn: 'depositSavings(uint256,address)',
           purpose: {
             present: `Depositing ${body}`,
             past: `Deposited ${body}`,
@@ -64,13 +87,18 @@ export const SaveForm: FC = () => {
     transactionType,
     massetSymbol,
     walletAddress,
+    savingsContractState,
   ]);
 
   return (
     <TransactionForm
       confirm={<SaveConfirm />}
       confirmLabel={
-        transactionType === TransactionType.Deposit ? 'Deposit' : 'Withdraw'
+        savingsContractState?.version === 2 && !savingsContractState.current
+          ? 'Pre deposit'
+          : transactionType === TransactionType.Deposit
+          ? 'Deposit'
+          : 'Withdraw'
       }
       input={<SaveInput />}
       transactionsLabel="Save transactions"
