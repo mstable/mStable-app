@@ -17,6 +17,7 @@ import MTA, { ReactComponent as MtaSvg } from './tokens/MTA.svg';
 import Uniswap, { ReactComponent as UniswapSvg } from './tokens/Uniswap.svg';
 import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
 import ETH, { ReactComponent as EtherSvg } from './tokens/Ether.svg';
+import IMUSD, { ReactComponent as ImusdSvg } from './tokens/imUSD.svg';
 
 interface Props {
   className?: string;
@@ -46,7 +47,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   BPT: Balancer,
   'MK-MTA': MTA,
   'MK-BAL': Balancer,
-  IMUSD: MUSD,
+  IMUSD,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -68,7 +69,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   BPT: BalancerSvg as SvgComponent,
   'MK-MTA': MtaSvg as SvgComponent,
   'MK-BAL': BalancerSvg as SvgComponent,
-  IMUSD: MusdSvg as SvgComponent,
+  IMUSD: ImusdSvg as SvgComponent,
 };
 
 const Image = styled.img`
