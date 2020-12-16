@@ -28,6 +28,7 @@ import {
 import { StepProps } from '../../core/Step';
 import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { useTokenAllowance } from '../../../context/TokensProvider';
+import { useSelectedSavingsContractState } from '../../../context/SelectedSaveVersionProvider';
 
 const stepsCtx = createContext<StepProps[]>([]);
 
@@ -48,6 +49,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const savingsContractV1 = useSelectedSaveV1Contract();
   const savingsContractV2 = useSelectedSaveV2Contract();
   const massetContract = useSelectedMassetContract();
+  const savingsContractState = useSelectedSavingsContractState();
   useTokenAllowance(massetState?.address, v2Address);
 
   const startTx = useCallback(() => {
@@ -181,16 +183,33 @@ export const SaveMigrationProvider: FC = ({ children }) => {
 
       case 'deposit': {
         if (!v1SavingsBalance?.balance) return;
-
-        manifest = {
-          iface: savingsContractV2 as SavingsContract,
-          args: [v1SavingsBalance.balance.exact, walletAddress as string],
-          fn: 'deposit',
-          purpose: {
-            present: `Depositing ${v1SavingsBalance.balance.format()}`,
-            past: `Deposited ${v1SavingsBalance.balance.format()}`,
-          },
-        } as SendTxManifest<Interfaces.SavingsContract, 'deposit'>;
+        if (
+          savingsContractState?.version === 2 &&
+          !savingsContractState.current
+        ) {
+          manifest = {
+            iface: savingsContractV2 as SavingsContract,
+            args: [v1SavingsBalance.balance.exact, walletAddress as string],
+            fn: 'preDeposit',
+            purpose: {
+              present: `Pre depositing ${v1SavingsBalance.balance.format()}`,
+              past: `Pre deposited ${v1SavingsBalance.balance.format()}`,
+            },
+          } as SendTxManifest<Interfaces.SavingsContract, 'preDeposit'>;
+        } else {
+          manifest = {
+            iface: savingsContractV2 as SavingsContract,
+            args: [v1SavingsBalance.balance.exact, walletAddress as string],
+            fn: 'depositSavings(uint256,address)',
+            purpose: {
+              present: `Depositing ${v1SavingsBalance.balance.format()}`,
+              past: `Deposited ${v1SavingsBalance.balance.format()}`,
+            },
+          } as SendTxManifest<
+            Interfaces.SavingsContract,
+            'depositSavings(uint256,address)'
+          >;
+        }
         break;
       }
 
@@ -210,6 +229,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
     v1SavingsBalance,
     v2Address,
     walletAddress,
+    savingsContractState,
   ]);
 
   return <stepsCtx.Provider value={steps}>{children}</stepsCtx.Provider>;
