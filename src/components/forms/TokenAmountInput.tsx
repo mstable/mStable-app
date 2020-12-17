@@ -34,6 +34,7 @@ interface Props {
   onSetMax?(): void;
   spender?: string;
   approveAmount?: BigDecimal;
+  showBalance?: boolean;
 }
 
 const Error = styled.div`
@@ -111,6 +112,7 @@ export const TokenAmountInput: FC<Props> = ({
   onSetMax,
   approveAmount,
   items = [],
+  showBalance = true,
 }) => {
   const tokens = useTokens(tokenAddresses);
   const token = useTokenSubscription(tokenValue);
@@ -149,26 +151,28 @@ export const TokenAmountInput: FC<Props> = ({
         ) : null}
       </InputsRow>
       <div>
-        <Items>
-          <Item key="balance">
-            <ItemLabel>Balance</ItemLabel>
-            <div>
-              {token
-                ? token.balance.format(
-                    exactDecimals ? token.decimals : 2,
-                    true,
-                    token.symbol,
-                  )
-                : '—'}
-            </div>
-          </Item>
-          {items.map(({ label, value, highlight }) => (
-            <Item key={label} highlight={highlight}>
-              <ItemLabel>{label}</ItemLabel>
-              <div>{value || '—'}</div>
+        {showBalance && (
+          <Items>
+            <Item key="balance">
+              <ItemLabel>Balance</ItemLabel>
+              <div>
+                {token
+                  ? token.balance.format(
+                      exactDecimals ? token.decimals : 2,
+                      true,
+                      token.symbol,
+                    )
+                  : '—'}
+              </div>
             </Item>
-          ))}
-        </Items>
+            {items.map(({ label, value, highlight }) => (
+              <Item key={label} highlight={highlight}>
+                <ItemLabel>{label}</ItemLabel>
+                <div>{value || '—'}</div>
+              </Item>
+            ))}
+          </Items>
+        )}
         <Error>
           {error && errorLabel ? <ErrorLabel>{errorLabel}</ErrorLabel> : null}
           <div>{error}</div>
