@@ -4,7 +4,10 @@ import { Fields } from '../../../../types';
 import { MultiStepButton } from '../../../core/MultiStepButton';
 import { AssetInputBox } from './AssetInputBox';
 
-const Container = styled.div``;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
 
 const Inputs = styled.div`
   display: flex;
@@ -15,6 +18,11 @@ const Inputs = styled.div`
   }
 `;
 
+const CTA = styled(MultiStepButton)`
+  margin-top: 0.75rem;
+  width: calc(50% - 1.5rem);
+`;
+
 export const AssetExchange: FC = () => {
   return (
     <Container>
@@ -22,7 +30,7 @@ export const AssetExchange: FC = () => {
         <AssetInputBox title="Deposit" fieldType={Fields.Input} />
         <AssetInputBox title="Receive" fieldType={Fields.Output} />
       </Inputs>
-      <MultiStepButton />
+      <CTA />
     </Container>
   );
 };

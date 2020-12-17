@@ -12,7 +12,6 @@ enum MultiStepState {
 const { DEFAULT, APPROVE, ACTION } = MultiStepState;
 
 const Container = styled.div`
-  width: 350px;
   height: 4rem;
   display: flex;
   align-items: center;
@@ -37,14 +36,14 @@ const Button = styled(BubbleButton)`
 
 const CloseButton = styled(UnstyledButton)`
   background: #eee;
-  width: 2rem;
-  height: 2rem;
+  width: 2.25rem;
+  height: 2.25rem;
   margin-left: 1rem;
   text-align: center;
-  border-radius: 1rem;
+  border-radius: 1.125rem;
 `;
 
-export const MultiStepButton: FC = () => {
+export const MultiStepButton: FC<{ className?: string }> = ({ className }) => {
   const [step, setStep] = useState<MultiStepState>(DEFAULT);
 
   const changeState = useCallback(
@@ -53,7 +52,7 @@ export const MultiStepButton: FC = () => {
   );
 
   return (
-    <Container>
+    <Container className={className}>
       {step === DEFAULT && (
         <Button onClick={() => changeState(APPROVE)}>Deposit</Button>
       )}
