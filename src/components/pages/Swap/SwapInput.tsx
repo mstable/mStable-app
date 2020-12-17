@@ -6,9 +6,9 @@ import { formatExactAmount } from '../../../web3/amounts';
 import { FormRow } from '../../core/Form';
 import { H3 } from '../../core/Typography';
 import { TokenAmountInput } from '../../forms/TokenAmountInput';
-import { Fields } from './types';
 import { useSwapDispatch, useSwapState } from './SwapProvider';
 import { BigDecimal } from '../../../web3/BigDecimal';
+import { Fields } from '../../../types';
 
 export const SwapInput: FC = () => {
   const {

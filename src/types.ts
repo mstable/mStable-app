@@ -150,3 +150,8 @@ export interface AccentColors {
   base: string;
   text: string;
 }
+
+export enum Fields {
+  Input = 'input',
+  Output = 'output',
+}
