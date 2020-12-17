@@ -6,6 +6,11 @@ export enum TransactionType {
   Withdraw,
 }
 
+export enum SaveMode {
+  Deposit,
+  Withdraw,
+}
+
 export enum Reasons {
   AmountMustBeGreaterThanZero = 'Amount must be greater than zero',
   AmountMustBeSet = 'Amount must be set',
@@ -21,6 +26,7 @@ export enum Actions {
   SetAmount,
   SetMaxAmount,
   ToggleTransactionType,
+  SetModeType,
 }
 
 export interface State {
@@ -35,6 +41,7 @@ export interface State {
   simulated?: MassetState;
   massetState?: MassetState;
   needsUnlock?: boolean;
+  mode: SaveMode;
 }
 
 export type Action =
@@ -49,10 +56,12 @@ export type Action =
       };
     }
   | { type: Actions.SetMaxAmount }
-  | { type: Actions.ToggleTransactionType };
+  | { type: Actions.ToggleTransactionType }
+  | { type: Actions.SetModeType; payload: SaveMode };
 
 export interface Dispatch {
   setAmount(formValue: string | null, isCreditAmount?: boolean): void;
   setMaxAmount(): void;
   toggleTransactionType(): void;
+  setModeType(modeType: SaveMode): void;
 }
