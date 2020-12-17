@@ -41,7 +41,7 @@ const Body = styled.div`
 
 export const AssetInputBox: FC<Props> = ({ title, fieldType }) => {
   const {
-    exchange: { input, output, feeAmountSimple },
+    exchange: { input, output }, // feeAmountSimple
     // inputError,
     // outputError,
     needsUnlock,

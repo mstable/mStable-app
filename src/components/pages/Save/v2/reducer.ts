@@ -4,8 +4,6 @@ import { pipeline } from 'ts-pipe-compose';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { validate } from './validate';
 import { Action, Actions, ExchangePair, FieldPayload, State, TransactionType } from './types';
-import { initialTokenQuantityField } from '../../Swap/reducer';
-import { Fields } from '../../../../types';
 import { parseAmount } from '../../../../web3/amounts';
 
 const initialize = (state: State): State =>

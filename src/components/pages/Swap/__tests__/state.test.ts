@@ -3,10 +3,11 @@
 import { Dispatch, ReducerAction, ReducerState, useReducer } from 'react';
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
 import { bigNumberify } from 'ethers/utils';
-import { Actions, Fields } from '../types';
+import { Actions } from '../types';
 import { initialState, reducer } from '../reducer';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { MassetState } from '../../../../context/DataProvider/types';
+import { Fields } from '../../../../types';
 
 type Ctx = [
   ReducerState<typeof reducer>,
