@@ -14,6 +14,7 @@ import { AllTokensQueryResult } from '../graphql/protocol';
 import { Allowances, SubscribedToken } from '../types';
 import { BigDecimal } from '../web3/BigDecimal';
 import { CURVE_ADDRESSES } from './earn/CurveProvider';
+import { ADDRESSES } from '../web3/constants';
 
 interface State {
   tokens: {
@@ -502,9 +503,7 @@ export const useTokenSubscription = (
 };
 
 export const useMetaToken = (): SubscribedToken | undefined =>
-  useTokenSubscription(
-    (process.env.REACT_APP_MTA_ADDRESS as string).toLowerCase(),
-  );
+  useTokenSubscription(ADDRESSES.MTA.toLowerCase());
 
 export const useTokenAllowance = (
   address: string | undefined | null,
