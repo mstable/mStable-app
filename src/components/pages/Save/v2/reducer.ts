@@ -117,6 +117,14 @@ const reduce: Reducer<State, Action> = (state, action) => {
       };
     }
 
+    case Actions.SetModeType: {
+      const mode = action.payload;
+      return {
+        ...state,
+        mode,
+      };
+    }
+
     default:
       throw new Error('Unhandled action type');
   }

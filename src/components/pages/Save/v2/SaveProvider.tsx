@@ -10,7 +10,7 @@ import React, {
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { reducer } from './reducer';
-import { Actions, Dispatch, State, TransactionType } from './types';
+import { Actions, Dispatch, State, TransactionType, SaveMode } from './types';
 
 const initialState: State = {
   formValue: null,
@@ -18,6 +18,7 @@ const initialState: State = {
   touched: false,
   transactionType: TransactionType.Deposit,
   valid: false,
+  mode: SaveMode.Deposit,
 };
 
 const stateCtx = createContext<State>(initialState);
@@ -51,12 +52,27 @@ export const SaveProvider: FC = ({ children }) => {
     dispatch({ type: Actions.ToggleTransactionType });
   }, [dispatch]);
 
+  const setModeType = useCallback<Dispatch['setModeType']>(
+    modeType => {
+      dispatch({
+        type: Actions.SetModeType,
+        payload: modeType,
+      });
+    },
+    [dispatch],
+  );
+
   return (
     <stateCtx.Provider value={state}>
       <dispatchCtx.Provider
         value={useMemo(
-          () => ({ setAmount, setMaxAmount, toggleTransactionType }),
-          [setMaxAmount, setAmount, toggleTransactionType],
+          () => ({
+            setAmount,
+            setMaxAmount,
+            toggleTransactionType,
+            setModeType,
+          }),
+          [setMaxAmount, setAmount, toggleTransactionType, setModeType],
         )}
       >
         {children}
