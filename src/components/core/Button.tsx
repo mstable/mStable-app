@@ -30,6 +30,7 @@ export const BubbleButton = styled(UnstyledButton)<{
   font-weight: 600;
   position: relative;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   transition: 0.5s linear all;
 
   svg circle {
