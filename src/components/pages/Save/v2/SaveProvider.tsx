@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import { initialTokenQuantityField } from '../../Swap/reducer';
 import { reducer } from './reducer';
 import { Actions, Dispatch, State, TransactionType, SaveMode } from './types';
 
@@ -19,6 +20,11 @@ const initialState: State = {
   transactionType: TransactionType.Deposit,
   valid: false,
   mode: SaveMode.Deposit,
+  exchange: {
+    input: initialTokenQuantityField,
+    output: initialTokenQuantityField,
+    feeAmountSimple: null,
+  },
 };
 
 const stateCtx = createContext<State>(initialState);
@@ -46,6 +52,19 @@ export const SaveProvider: FC = ({ children }) => {
     dispatch({ type: Actions.SetMaxAmount });
   }, [dispatch]);
 
+  const setToken = useCallback<Dispatch['setToken']>(
+    (field, payload) => {
+      dispatch({
+        type: Actions.SetToken,
+        payload: {
+          field,
+          ...(payload ?? { address: null, symbol: null, decimals: null }),
+        },
+      });
+    },
+    [dispatch],
+  );
+
   const toggleTransactionType = useCallback<
     Dispatch['toggleTransactionType']
   >(() => {
@@ -71,8 +90,9 @@ export const SaveProvider: FC = ({ children }) => {
             setMaxAmount,
             toggleTransactionType,
             setModeType,
+            setToken,
           }),
-          [setMaxAmount, setAmount, toggleTransactionType, setModeType],
+          [setMaxAmount, setToken, setAmount, toggleTransactionType, setModeType],
         )}
       >
         {children}

@@ -3,7 +3,10 @@ import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { validate } from './validate';
-import { Action, Actions, State, TransactionType } from './types';
+import { Action, Actions, ExchangePair, FieldPayload, State, TransactionType } from './types';
+import { initialTokenQuantityField } from '../../Swap/reducer';
+import { Fields } from '../../../../types';
+import { parseAmount } from '../../../../web3/amounts';
 
 const initialize = (state: State): State =>
   !state.initialized && state.massetState
@@ -30,6 +33,24 @@ const simulate = (state: State): State =>
             : simulateWithdrawal(state),
       }
     : state;
+    
+const calcAssetConversionRate = (state: State, payload: FieldPayload): ExchangePair => {
+  const { address, decimals, symbol, field } = payload;
+  
+  // mocked for now
+  const token = {address, decimals, symbol }
+  const formValue = "100";
+  const amount = parseAmount(formValue, token.decimals);
+  
+  return {
+    ...state.exchange,
+    [field]: {
+      formValue,
+      amount,
+      token,
+    },
+  }
+}
 
 const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -63,6 +84,13 @@ const reduce: Reducer<State, Action> = (state, action) => {
         touched: !!formValue,
       };
     }
+    
+    case Actions.SetToken:
+      return {
+        ...state,
+        exchange: calcAssetConversionRate(state, action.payload)
+      };
+
 
     case Actions.SetMaxAmount: {
       const { transactionType, massetState } = state;

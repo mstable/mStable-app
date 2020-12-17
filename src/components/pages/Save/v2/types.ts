@@ -1,4 +1,5 @@
 import { MassetState } from '../../../../context/DataProvider/types';
+import { Fields, Token, TokenQuantity } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 export enum TransactionType {
@@ -9,6 +10,21 @@ export enum TransactionType {
 export enum SaveMode {
   Deposit,
   Withdraw,
+}
+
+export type FieldPayload = {
+  field: Fields;
+} & 
+{
+  address: string | null;
+  decimals: number | null;
+  symbol: string | null;
+};
+
+export type ExchangePair = {
+    input: TokenQuantity;
+    output: TokenQuantity;
+    feeAmountSimple: string | null;
 }
 
 export enum Reasons {
@@ -27,6 +43,7 @@ export enum Actions {
   SetMaxAmount,
   ToggleTransactionType,
   SetModeType,
+  SetToken,
 }
 
 export interface State {
@@ -42,6 +59,7 @@ export interface State {
   massetState?: MassetState;
   needsUnlock?: boolean;
   mode: SaveMode;
+  exchange: ExchangePair;
 }
 
 export type Action =
@@ -56,6 +74,10 @@ export type Action =
       };
     }
   | { type: Actions.SetMaxAmount }
+  | { 
+      type: Actions.SetToken; 
+      payload: FieldPayload;  
+    }
   | { type: Actions.ToggleTransactionType }
   | { type: Actions.SetModeType; payload: SaveMode };
 
@@ -64,4 +86,8 @@ export interface Dispatch {
   setMaxAmount(): void;
   toggleTransactionType(): void;
   setModeType(modeType: SaveMode): void;
+  setToken(
+    field: Fields,
+    token: Pick<Token, 'address' | 'decimals' | 'symbol'> | null,
+  ): void;
 }
