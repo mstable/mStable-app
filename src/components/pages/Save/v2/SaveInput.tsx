@@ -1,24 +1,10 @@
 import React, { ComponentProps, FC, useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 
-import { Color } from '../../../../theme';
 import { FormRow } from '../../../core/Form';
 import { H3 } from '../../../core/Typography';
 import { TokenAmountInput } from '../../../forms/TokenAmountInput';
-import { ToggleInput } from '../../../forms/ToggleInput';
 import { TransactionType } from './types';
 import { useSaveDispatch, useSaveState } from './SaveProvider';
-
-const TransactionTypeRow = styled(FormRow)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: ${({ theme }) => `${theme.spacing.l} 0`};
-
-  > * {
-    padding: 0 8px;
-  }
-`;
 
 export const SaveInput: FC = () => {
   const {
@@ -30,7 +16,7 @@ export const SaveInput: FC = () => {
     massetState,
   } = useSaveState();
 
-  const { toggleTransactionType, setAmount, setMaxAmount } = useSaveDispatch();
+  const { setAmount, setMaxAmount } = useSaveDispatch();
 
   const massetAddress = massetState?.address || null;
   const savingsContractAddress = massetState?.savingsContracts.v2?.address;
@@ -51,16 +37,6 @@ export const SaveInput: FC = () => {
 
   return (
     <>
-      <TransactionTypeRow>
-        <div>Deposit</div>
-        <ToggleInput
-          onClick={toggleTransactionType}
-          checked={transactionType === TransactionType.Withdraw}
-          enabledColor={Color.blue}
-          disabledColor={Color.green}
-        />
-        <div>Withdraw</div>
-      </TransactionTypeRow>
       <FormRow>
         <H3>
           {transactionType === TransactionType.Deposit
