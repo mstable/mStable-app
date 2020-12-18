@@ -11,16 +11,23 @@ const { Input, Output } = Fields;
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+
+    @media (min-width: ${ViewportWidth.xl}) {
+      flex-direction: row;
+    }
+  }
 `;
 
-const Inputs = styled.div`
-  display: flex;
+const Exchange = styled.div`
   flex-direction: column;
-  justify-content: space-between;
+`;
 
-  @media (min-width: ${ViewportWidth.xl}) {
-    flex-direction: row;
-  }
+const Details = styled.div`
+  flex-direction: column-reverse;
 `;
 
 const InputBox = styled(AssetInputBox)`
@@ -67,7 +74,21 @@ const CTA = styled(MultiStepButton)`
   margin-top: 0.75rem;
 
   @media (min-width: ${ViewportWidth.xl}) {
-    width: 45%;
+    flex-basis: calc(45% + 0.5rem);
+  }
+`;
+
+const Info = styled.div`
+  display: flex;
+  justify-content: space-between;
+  height: fit-content;
+  padding: 0.75rem;
+  border: 1px solid #eee;
+  border-radius: 0.75rem;
+  margin-top: 0.75rem;
+
+  @media (min-width: ${ViewportWidth.xl}) {
+    flex-basis: calc(45% + 0.5rem);
   }
 `;
 
@@ -84,7 +105,7 @@ export const AssetExchange: FC = () => {
 
   return (
     <Container>
-      <Inputs>
+      <Exchange>
         <InputBox fieldType={inputOrder[0]} />
         <ArrowContainer>
           <Arrow onClick={reverseInputOrder}>
@@ -92,8 +113,14 @@ export const AssetExchange: FC = () => {
           </Arrow>
         </ArrowContainer>
         <InputBox fieldType={inputOrder[1]} />
-      </Inputs>
-      <CTA />
+      </Exchange>
+      <Details>
+        <CTA />
+        <Info>
+          <p>Slippage Tolerance</p>
+          <span>3.00%</span>
+        </Info>
+      </Details>
     </Container>
   );
 };

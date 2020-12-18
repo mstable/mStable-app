@@ -1,9 +1,10 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { TabsContainer, TabBtn } from '../../../core/Tabs';
-import { SaveProvider, useSaveState, useSaveDispatch } from './SaveProvider';
+import Skeleton from 'react-loading-skeleton';
 import { SaveMode } from './types';
+import { useSaveState, useSaveDispatch } from './SaveProvider';
+import { TabsContainer, TabBtn } from '../../../core/Tabs';
 import { Deposit } from './Deposit';
 import { Withdraw } from './Withdraw';
 
@@ -15,6 +16,11 @@ const MODE_TYPES = {
     label: 'Withdraw',
   },
 };
+
+const Container = styled.div`
+  border-radius: 0 0 2px 2px;
+  text-align: left;
+`;
 
 const TabButton: FC<{ tabMode: SaveMode }> = ({ tabMode }) => {
   const { mode } = useSaveState();
@@ -32,13 +38,7 @@ const TabButton: FC<{ tabMode: SaveMode }> = ({ tabMode }) => {
   );
 };
 
-const Container = styled.div`
-  border-radius: 0 0 2px 2px;
-  padding: 16px 0 32px 0;
-  text-align: left;
-`;
-
-const SaveContent: FC = () => {
+export const SaveModeSelector: FC = () => {
   const { mode } = useSaveState();
   return (
     <Container>
@@ -46,15 +46,15 @@ const SaveContent: FC = () => {
         <TabButton tabMode={SaveMode.Deposit} />
         <TabButton tabMode={SaveMode.Withdraw} />
       </TabsContainer>
-      {mode === SaveMode.Deposit ? <Deposit /> : <Withdraw />}
+      <div>
+        {mode === SaveMode.Deposit ? (
+          <Deposit />
+        ) : mode === SaveMode.Withdraw ? (
+          <Withdraw />
+        ) : (
+          <Skeleton />
+        )}
+      </div>
     </Container>
-  );
-};
-
-export const Save: FC = () => {
-  return (
-    <SaveProvider>
-      <SaveContent />
-    </SaveProvider>
   );
 };
