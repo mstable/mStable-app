@@ -4,6 +4,8 @@ import Skeleton from 'react-loading-skeleton';
 import { SaveMode } from './types';
 import { useSaveState, useSaveDispatch } from './SaveProvider';
 import { TabsContainer, TabBtn } from '../../../core/Tabs';
+import { Boost } from './Boost';
+import { BoostCalculator } from './BoostCalculator';
 
 const MODE_TYPES = {
   [SaveMode.Deposit]: {
@@ -46,7 +48,10 @@ export const SaveModeSelector: FC = () => {
       </TabsContainer>
       <div>
         {mode === SaveMode.Deposit ? (
-          <p>Deposit</p>
+          <>
+            <Boost />
+            <BoostCalculator />
+          </>
         ) : mode === SaveMode.Withdraw ? (
           <p>Withdraw</p>
         ) : (
