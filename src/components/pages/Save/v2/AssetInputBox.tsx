@@ -7,6 +7,8 @@ import { useSaveDispatch, useSaveState } from './SaveProvider';
 
 interface Props {
   fieldType: Fields;
+  title: string;
+  showExchangeRate?: boolean;
 }
 
 const { Input } = Fields;
@@ -38,7 +40,11 @@ const Body = styled.div`
   padding: 0.75rem;
 `;
 
-export const AssetInputBox: FC<Props> = ({ fieldType }) => {
+export const AssetInputBox: FC<Props> = ({
+  fieldType,
+  showExchangeRate = false,
+  title,
+}) => {
   const {
     exchange: { input, output }, // feeAmountSimple
     // inputError,
@@ -50,7 +56,6 @@ export const AssetInputBox: FC<Props> = ({ fieldType }) => {
 
   const { address: massetAddress, bAssets = {} } = massetState || {};
   const field = fieldType === Input ? input : output;
-  const title = fieldType === Input ? 'Deposit' : 'Receive';
 
   // useEffect(() => {
   //   if (!(bAssets && massetState)) return;
@@ -88,7 +93,7 @@ export const AssetInputBox: FC<Props> = ({ fieldType }) => {
     <Container>
       <Header>
         <h3>{title}</h3>
-        <p>{field.token.symbol}</p>
+        {showExchangeRate && <p>1 mUSD = 10 imUSD</p>}
       </Header>
       <Body>
         <TokenAmountInput

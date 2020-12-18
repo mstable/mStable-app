@@ -1,10 +1,12 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { ViewportWidth } from '../../../../theme';
 import { Fields } from '../../../../types';
 import { BubbleButton } from '../../../core/Button';
 import { MultiStepButton } from '../../../core/MultiStepButton';
+import { useSaveState } from './SaveProvider';
 import { AssetInputBox } from './AssetInputBox';
+import { SaveMode } from './types';
 
 const { Input, Output } = Fields;
 
@@ -93,26 +95,25 @@ const Info = styled.div`
 `;
 
 export const AssetExchange: FC = () => {
-  const [inputOrder, setInputOrder] = useState([Input, Output]);
+  const { mode } = useSaveState();
 
-  const reverseInputOrder = useCallback(
-    () =>
-      setInputOrder(
-        inputOrder[0] === Input ? [Output, Input] : [Input, Output],
-      ),
-    [inputOrder],
-  );
+  const titles = useMemo(() => {
+    if (mode === SaveMode.Withdraw) {
+      return ['Withdraw', 'X'];
+    }
+    return ['Deposit', 'Receive'];
+  }, [mode]);
 
   return (
     <Container>
       <Exchange>
-        <InputBox fieldType={inputOrder[0]} />
+        <InputBox title={titles[0]} fieldType={Input} />
         <ArrowContainer>
-          <Arrow onClick={reverseInputOrder}>
+          <Arrow onClick={() => {}}>
             <span>↓</span>
           </Arrow>
         </ArrowContainer>
-        <InputBox fieldType={inputOrder[1]} />
+        <InputBox title={titles[1]} fieldType={Output} showExchangeRate />
       </Exchange>
       <Details>
         <CTA />
