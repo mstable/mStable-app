@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { Fields } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
