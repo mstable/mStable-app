@@ -16,7 +16,10 @@ interface Props {
   disabled?: boolean;
 }
 
-const Input = styled.input<{ error: string | void; disabled?: boolean }>`
+export const Input = styled.input<{
+  error?: string | void;
+  disabled?: boolean;
+}>`
   appearance: none;
   background: ${({ theme, error, disabled }) =>
     error
