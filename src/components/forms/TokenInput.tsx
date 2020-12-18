@@ -43,7 +43,7 @@ const Balance = styled.div`
 const OptionsContainer = styled.div<{ open: boolean }>`
   display: ${({ open }) => (open ? 'block' : 'none')};
   position: absolute;
-  z-index: 1;
+  z-index: 2;
 
   // Offset parent border, even with box-sizing: border-box
   top: -1px;

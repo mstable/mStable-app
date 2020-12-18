@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { Fields } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -6,7 +6,6 @@ import { TokenAmountInput } from '../../../forms/TokenAmountInput';
 import { useSaveDispatch, useSaveState } from './SaveProvider';
 
 interface Props {
-  title: string;
   fieldType: Fields;
 }
 
@@ -39,7 +38,7 @@ const Body = styled.div`
   padding: 0.75rem;
 `;
 
-export const AssetInputBox: FC<Props> = ({ title, fieldType }) => {
+export const AssetInputBox: FC<Props> = ({ fieldType }) => {
   const {
     exchange: { input, output }, // feeAmountSimple
     // inputError,
@@ -51,15 +50,27 @@ export const AssetInputBox: FC<Props> = ({ title, fieldType }) => {
 
   const { address: massetAddress, bAssets = {} } = massetState || {};
   const field = fieldType === Input ? input : output;
+  const title = fieldType === Input ? 'Deposit' : 'Receive';
+
+  // useEffect(() => {
+  //   if (!(bAssets && massetState)) return;
+
+  //   // const token = fieldType === Input ? massetState.token : bAssets[''];
+
+  //   // how to get imusd
+  //   setToken(fieldType, {
+  //     address: massetState.token.address,
+  //     decimals: massetState.token.decimals,
+  //     symbol: massetState.token.symbol,
+  //   });
+  // }, [setToken, bAssets, field.token, fieldType, massetState]);
 
   const tokenAddresses = useMemo<string[]>(() => {
     if (!(bAssets && massetAddress)) return [];
 
-    const bassetAddresses = Object.keys(bAssets).sort();
-    return fieldType === Input
-      ? bassetAddresses
-      : [massetAddress, ...bassetAddresses];
-  }, [bAssets, fieldType, massetAddress]);
+    // where is mapping defined?
+    return [massetAddress, '0x5b7f01dAe6BCE656c9cA4175Eb3E406ADC6c7957'];
+  }, [bAssets, massetAddress]);
 
   const approveAmount = useMemo(
     () =>

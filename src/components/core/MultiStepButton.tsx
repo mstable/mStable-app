@@ -41,6 +41,8 @@ const CloseButton = styled(UnstyledButton)`
   margin-left: 1rem;
   text-align: center;
   border-radius: 1.125rem;
+  flex: none;
+  cursor: pointer;
 `;
 
 export const MultiStepButton: FC<{ className?: string }> = ({ className }) => {
