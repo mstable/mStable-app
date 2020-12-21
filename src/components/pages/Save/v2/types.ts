@@ -21,10 +21,10 @@ export type FieldPayload = {
   symbol: string | null;
 };
 
-export type ExchangePair = {
-    input: TokenQuantity;
-    output: TokenQuantity;
-    feeAmountSimple: string | null;
+export type ExchangeState = {
+  input: TokenQuantity;
+  output: TokenQuantity;
+  feeAmountSimple: string | null;
 }
 
 export enum Reasons {
@@ -44,6 +44,7 @@ export enum Actions {
   ToggleTransactionType,
   SetModeType,
   SetToken,
+  SetTokenPair
 }
 
 export interface State {
@@ -59,7 +60,7 @@ export interface State {
   massetState?: MassetState;
   needsUnlock?: boolean;
   mode: SaveMode;
-  exchange: ExchangePair;
+  exchange: ExchangeState;
 }
 
 export type Action =
@@ -78,6 +79,10 @@ export type Action =
       type: Actions.SetToken; 
       payload: FieldPayload;  
     }
+  | { 
+    type: Actions.SetTokenPair; 
+    payload: FieldPayload[];  
+  }
   | { type: Actions.ToggleTransactionType }
   | { type: Actions.SetModeType; payload: SaveMode };
 
@@ -89,5 +94,11 @@ export interface Dispatch {
   setToken(
     field: Fields,
     token: Pick<Token, 'address' | 'decimals' | 'symbol'> | null,
+  ): void;
+  setTokenPair(
+    tokens: {
+      field: Fields,
+      token: Pick<Token, 'address' | 'decimals' | 'symbol'> | null
+    }[]
   ): void;
 }

@@ -3,8 +3,9 @@ import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { validate } from './validate';
-import { Action, Actions, ExchangePair, FieldPayload, State, TransactionType } from './types';
+import { Action, Actions, FieldPayload, State, TransactionType } from './types';
 import { parseAmount } from '../../../../web3/amounts';
+import { TokenQuantity } from '../../../../types';
 
 const initialize = (state: State): State =>
   !state.initialized && state.massetState
@@ -32,22 +33,29 @@ const simulate = (state: State): State =>
       }
     : state;
     
-const calcAssetConversionRate = (state: State, payload: FieldPayload): ExchangePair => {
+const updateToken = (payload: FieldPayload): {[field: string]: TokenQuantity } => {
   const { address, decimals, symbol, field } = payload;
   
-  // mocked for now
+  // calculate exchange rate here.
   const token = {address, decimals, symbol }
   const formValue = "100";
   const amount = parseAmount(formValue, token.decimals);
   
   return {
-    ...state.exchange,
     [field]: {
       formValue,
       amount,
       token,
     },
   }
+}
+    
+const updateTokenPair = (payload: FieldPayload[]): {[field: string]: TokenQuantity } => {
+  const exchange = payload.map(p => updateToken(p));
+  return exchange.reduce((prev, current) => ({
+    ...prev,
+    ...current
+    }));;
 }
 
 const reduce: Reducer<State, Action> = (state, action) => {
@@ -86,9 +94,20 @@ const reduce: Reducer<State, Action> = (state, action) => {
     case Actions.SetToken:
       return {
         ...state,
-        exchange: calcAssetConversionRate(state, action.payload)
+        exchange: {
+          ...state.exchange,
+          ...updateToken(action.payload)
+        }
       };
-
+      
+    case Actions.SetTokenPair:
+      return {
+        ...state,
+        exchange: {
+          ...state.exchange,
+          ...updateTokenPair(action.payload)
+        }
+      };
 
     case Actions.SetMaxAmount: {
       const { transactionType, massetState } = state;

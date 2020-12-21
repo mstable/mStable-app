@@ -52,6 +52,19 @@ export const SaveProvider: FC = ({ children }) => {
     dispatch({ type: Actions.SetMaxAmount });
   }, [dispatch]);
 
+  const setTokenPair = useCallback<Dispatch['setTokenPair']>(
+    tokenPairs => {
+      dispatch({
+        type: Actions.SetTokenPair,
+        payload: tokenPairs.map(t => ({
+          field: t.field,
+          ...(t.token ?? { address: null, symbol: null, decimals: null }),
+        })),
+      });
+    },
+    [dispatch],
+  );
+
   const setToken = useCallback<Dispatch['setToken']>(
     (field, payload) => {
       dispatch({
@@ -91,8 +104,16 @@ export const SaveProvider: FC = ({ children }) => {
             toggleTransactionType,
             setModeType,
             setToken,
+            setTokenPair,
           }),
-          [setMaxAmount, setToken, setAmount, toggleTransactionType, setModeType],
+          [
+            setMaxAmount,
+            setToken,
+            setTokenPair,
+            setAmount,
+            toggleTransactionType,
+            setModeType,
+          ],
         )}
       >
         {children}
