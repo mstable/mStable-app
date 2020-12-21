@@ -1,8 +1,9 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
+
 import { Fields } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { TokenAmountInput } from '../../../forms/TokenAmountInput';
+import { AssetTokenInput } from './AssetTokenInput';
 import { useSaveDispatch, useSaveState } from './SaveProvider';
 
 interface Props {
@@ -49,41 +50,39 @@ export const AssetInputBox: FC<Props> = ({
     exchange: { input, output }, // feeAmountSimple
     // inputError,
     // outputError,
-    needsUnlock,
+    // needsUnlock,
     massetState,
   } = useSaveState();
   const { setToken } = useSaveDispatch();
 
+  // const savingsContractV2 = useSelectedSaveV2Contract();
+
   const { address: massetAddress, bAssets = {} } = massetState || {};
   const field = fieldType === Input ? input : output;
-
-  // useEffect(() => {
-  //   if (!(bAssets && massetState)) return;
-
-  //   // const token = fieldType === Input ? massetState.token : bAssets[''];
-
-  //   // how to get imusd
-  //   setToken(fieldType, {
-  //     address: massetState.token.address,
-  //     decimals: massetState.token.decimals,
-  //     symbol: massetState.token.symbol,
-  //   });
-  // }, [setToken, bAssets, field.token, fieldType, massetState]);
 
   const tokenAddresses = useMemo<string[]>(() => {
     if (!(bAssets && massetAddress)) return [];
 
+    const imusd = massetState?.savingsContracts.v2?.token?.address;
     // where is mapping defined?
-    return [massetAddress, '0x5b7f01dAe6BCE656c9cA4175Eb3E406ADC6c7957'];
-  }, [bAssets, massetAddress]);
+    return [
+      massetAddress,
+      imusd ?? '0x5b7f01dAe6BCE656c9cA4175Eb3E406ADC6c7957',
+    ];
+  }, [bAssets, massetAddress, massetState]);
 
-  const approveAmount = useMemo(
-    () =>
-      field.amount.exact && field.token.decimals
-        ? new BigDecimal(field.amount.exact, field.token.decimals)
-        : undefined,
-    [field.amount, field.token.decimals],
-  );
+  // const approveAmount = useMemo(
+  //   () =>
+  //     field?.amount.exact && field?.token.decimals
+  //       ? new BigDecimal(field.amount.exact, field.token.decimals)
+  //       : undefined,
+  //   [field],
+  // );
+
+  const handleChange = (formValue: string | null): void => {
+    // update amount
+    // console.log(formValue);
+  };
 
   const handleSetMax = (): void => {
     // switch on fieldType
@@ -96,7 +95,25 @@ export const AssetInputBox: FC<Props> = ({
         {showExchangeRate && <p>1 mUSD = 10 imUSD</p>}
       </Header>
       <Body>
-        <TokenAmountInput
+        <AssetTokenInput
+          name={fieldType}
+          amount={{
+            value: new BigDecimal(10),
+            formValue: field?.formValue,
+            disabled: false, // mode !== Mode.RedeemMasset,
+            handleChange, // setMassetAmount
+            handleSetMax, // handleSetMax
+          }}
+          token={{
+            address: field?.token.address ?? undefined,
+            addresses: tokenAddresses,
+            disabled: false,
+            handleChange: setToken,
+          }}
+          error={undefined}
+          valid
+        />
+        {/* <TokenAmountInput
           amountValue={field.formValue}
           approveAmount={approveAmount}
           tokenAddresses={tokenAddresses}
@@ -109,7 +126,7 @@ export const AssetInputBox: FC<Props> = ({
           error={undefined} // inputError
           spender={massetAddress}
           showBalance={false}
-        />
+        /> */}
       </Body>
     </Container>
   );

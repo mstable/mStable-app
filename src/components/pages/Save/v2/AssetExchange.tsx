@@ -1,10 +1,11 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
+
 import { ViewportWidth } from '../../../../theme';
 import { Fields } from '../../../../types';
 import { BubbleButton } from '../../../core/Button';
 import { MultiStepButton } from '../../../core/MultiStepButton';
-import { useSaveState } from './SaveProvider';
+import { useSaveDispatch, useSaveState } from './SaveProvider';
 import { AssetInputBox } from './AssetInputBox';
 import { SaveMode } from './types';
 
@@ -95,8 +96,29 @@ const Info = styled.div`
 `;
 
 export const AssetExchange: FC = () => {
-  const { mode } = useSaveState();
+  const { mode, massetState } = useSaveState();
+  const { setTokenPair } = useSaveDispatch();
 
+  const musd = massetState?.token;
+  const imusd = massetState?.savingsContracts.v2?.token;
+
+  // Set default token swap.
+  useEffect(() => {
+    if (!(musd && imusd)) return;
+
+    setTokenPair([
+      {
+        field: Fields.Input,
+        token: musd,
+      },
+      {
+        field: Fields.Output,
+        token: imusd ?? null,
+      },
+    ]);
+  }, [setTokenPair, imusd, musd]);
+
+  // TODO: needs changing.
   const titles = useMemo(() => {
     if (mode === SaveMode.Withdraw) {
       return ['Withdraw', 'X'];
