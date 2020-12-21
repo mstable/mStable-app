@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { Token } from '../../types';
+import { Fields, Token } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { AmountInput } from './AmountInput';
@@ -30,7 +30,7 @@ interface Props {
     highlight?: boolean;
   }[];
   onChangeAmount?(formValue: string | null): void;
-  onChangeToken?(name: string, token: Token): void;
+  onChangeToken?(name: Fields, token: Token): void;
   onSetMax?(): void;
   spender?: string;
   approveAmount?: BigDecimal;
