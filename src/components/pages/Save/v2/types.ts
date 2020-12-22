@@ -1,5 +1,5 @@
 import { MassetState } from '../../../../context/DataProvider/types';
-import { Fields, Token, TokenQuantity } from '../../../../types';
+import { Fields, Token, TokenQuantityV2 } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 export enum TransactionType {
@@ -22,9 +22,10 @@ export type FieldPayload = {
 };
 
 export type ExchangeState = {
-  input: TokenQuantity;
-  output: TokenQuantity;
+  input: TokenQuantityV2;
+  output: TokenQuantityV2;
   feeAmountSimple: string | null;
+  rate?: BigDecimal;
 }
 
 export enum Reasons {
@@ -49,10 +50,12 @@ export enum Actions {
 
 export interface State {
   error?: string;
+  // can be removed?
   transactionType: TransactionType;
   amount?: BigDecimal;
   amountInCredits?: BigDecimal;
   formValue: string | null;
+  //
   touched: boolean;
   valid: boolean;
   initialized: boolean;

@@ -9,15 +9,27 @@ import React, {
 } from 'react';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { initialTokenQuantityField } from '../../Swap/reducer';
+import { TokenQuantityV2 } from '../../../../types';
 import { reducer } from './reducer';
-import { Actions, Dispatch, State, TransactionType, SaveMode } from './types';
+import { Actions, Dispatch, State, SaveMode, TransactionType } from './types';
+
+const initialTokenQuantityField: TokenQuantityV2 = {
+  formValue: null,
+  amount: null,
+  token: {
+    address: null,
+    decimals: null,
+    symbol: null,
+  },
+};
 
 const initialState: State = {
+  // to remove?
   formValue: null,
+  transactionType: TransactionType.Deposit,
+  //
   initialized: false,
   touched: false,
-  transactionType: TransactionType.Deposit,
   valid: false,
   mode: SaveMode.Deposit,
   exchange: {

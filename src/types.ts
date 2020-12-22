@@ -127,6 +127,16 @@ export interface TokenQuantity {
   };
 }
 
+export interface TokenQuantityV2 {
+  formValue: string | null;
+  amount: BigDecimal | null;
+  token: {
+    address: string | null;
+    decimals: number | null;
+    symbol: string | null;
+  };
+}
+
 export interface Connector {
   id: string;
   subType?: string;

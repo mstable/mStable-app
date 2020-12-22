@@ -33,14 +33,21 @@ const simulate = (state: State): State =>
       }
     : state;
     
-const updateToken = (payload: FieldPayload): {[field: string]: TokenQuantity } => {
+const getExchangeRate = (state: State): BigDecimal | undefined => {
+  const { massetState } = state;
+  if (!massetState) return undefined;
+  
+  // for now return musd exchange.
+  return massetState.savingsContracts.v2?.latestExchangeRate?.rate
+}
+
+const updateToken = (state: State, payload: FieldPayload): {[field: string]: TokenQuantity } => {
   const { address, decimals, symbol, field } = payload;
   
-  // calculate exchange rate here.
-  const token = {address, decimals, symbol }
-  const formValue = "100";
+  const token = {address, decimals, symbol };
+  const formValue = null;
   const amount = parseAmount(formValue, token.decimals);
-  
+    
   return {
     [field]: {
       formValue,
@@ -50,8 +57,8 @@ const updateToken = (payload: FieldPayload): {[field: string]: TokenQuantity } =
   }
 }
     
-const updateTokenPair = (payload: FieldPayload[]): {[field: string]: TokenQuantity } => {
-  const exchange = payload.map(p => updateToken(p));
+const updateTokenPair = (state: State, payload: FieldPayload[]): {[field: string]: TokenQuantity } => {
+  const exchange = payload.map(p => updateToken(state, p));
   return exchange.reduce((prev, current) => ({
     ...prev,
     ...current
@@ -63,32 +70,38 @@ const reduce: Reducer<State, Action> = (state, action) => {
     case Actions.Data:
       return { ...state, massetState: action.payload };
 
+    // input change only for now.
     case Actions.SetAmount: {
-      const { massetState, transactionType } = state;
-      const isWithdraw = transactionType === TransactionType.Withdraw;
+      const { exchange, massetState } = state;
+      const { formValue } = action.payload;
+      const { decimals } = exchange.input.token;
 
       if (!massetState) return state;
 
-      const { formValue } = action.payload;
-
-      const { decimals } = massetState.token;
-      const exchangeRate =
-        massetState.savingsContracts.v2?.latestExchangeRate?.rate;
-
-      const maybeAmount = BigDecimal.maybeParse(formValue, decimals);
-
-      const amountInCredits =
-        isWithdraw && maybeAmount && exchangeRate
+      // will only work with musd - imusd, not other assets.
+      const exchangeRate = exchange.rate;
+      const maybeAmount = BigDecimal.maybeParse(formValue, decimals ?? 18);
+      
+      const amountInCredits = (maybeAmount && exchangeRate)
           ? maybeAmount.divPrecisely(exchangeRate).add(new BigDecimal(1, 0))
           : undefined;
-
+      
       return {
         ...state,
-        amountInCredits,
-        amount: maybeAmount,
-        formValue,
-        touched: !!formValue,
-      };
+        exchange: {
+          ...state.exchange,
+          input: {
+            ...state.exchange.input,
+            formValue,
+            amount: maybeAmount ?? null,
+          },
+          output: {
+            ...state.exchange.output,
+            formValue: amountInCredits?.format(2) ?? null,
+            amount: amountInCredits ?? null,
+          }
+        }
+      }
     }
     
     case Actions.SetToken:
@@ -96,7 +109,8 @@ const reduce: Reducer<State, Action> = (state, action) => {
         ...state,
         exchange: {
           ...state.exchange,
-          ...updateToken(action.payload)
+          ...updateToken(state, action.payload),
+          rate: getExchangeRate(state),
         }
       };
       
@@ -105,7 +119,8 @@ const reduce: Reducer<State, Action> = (state, action) => {
         ...state,
         exchange: {
           ...state.exchange,
-          ...updateTokenPair(action.payload)
+          ...updateTokenPair(state, action.payload),
+          rate: getExchangeRate(state),
         }
       };
 

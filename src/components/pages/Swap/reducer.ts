@@ -6,7 +6,7 @@ import { EXP_SCALE } from '../../../web3/constants';
 import { Action, Actions, State } from './types';
 import { applyValidation } from './validation';
 
-export const initialTokenQuantityField: TokenQuantity = {
+const initialTokenQuantityField: TokenQuantity = {
   formValue: null,
   amount: {
     simple: null,

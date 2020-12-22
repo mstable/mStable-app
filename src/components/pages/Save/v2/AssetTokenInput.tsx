@@ -1,16 +1,12 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import {
-  useTokenAllowance,
-  useTokens,
-} from '../../../../context/TokensProvider';
+import { useTokens } from '../../../../context/TokensProvider';
 import { FontSize, ViewportWidth } from '../../../../theme';
 import { Fields, Token } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Button } from '../../../core/Button';
 import { AmountInput } from '../../../forms/AmountInput';
-import { ApproveButton } from '../../../forms/ApproveButton';
 import { TokenInput } from '../../../forms/TokenInput';
 
 interface Props {
@@ -160,7 +156,7 @@ const Container = styled.div<{
 
 export const AssetTokenInput: FC<Props> = ({
   amount,
-  approval,
+  // approval,
   token,
   error,
   overweight,
@@ -169,9 +165,9 @@ export const AssetTokenInput: FC<Props> = ({
   name,
 }) => {
   const subscribedTokens = useTokens(token.addresses ?? []);
-  const defaultToken = subscribedTokens[0];
+  // const defaultToken = subscribedTokens[0];
 
-  const allowance = useTokenAllowance(defaultToken?.address, approval?.spender);
+  // const allowance = useTokenAllowance(defaultToken?.address, approval?.spender);
   const enabled = toggle ? toggle.enabled : true;
   return (
     <Container enabled={enabled} overweight={overweight} valid={valid}>
@@ -190,7 +186,7 @@ export const AssetTokenInput: FC<Props> = ({
                 Max
               </Button>
             ) : null}
-            {approval &&
+            {/* {approval &&
             allowance &&
             amount.value?.exact.gt(allowance.exact) ? (
               <ApproveButton
@@ -198,7 +194,7 @@ export const AssetTokenInput: FC<Props> = ({
                 spender={approval.spender}
                 amount={amount.value}
               />
-            ) : null}
+            ) : null} */}
           </Input>
         </InputContainer>
         <TokenContainer>
