@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
 
@@ -132,7 +131,6 @@ export interface Connector {
   id: string;
   subType?: string;
   label: string;
-  icon?: FC;
 }
 
 export enum Platforms {

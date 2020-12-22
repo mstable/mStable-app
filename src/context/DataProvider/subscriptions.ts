@@ -26,7 +26,7 @@ export const useBlockPollingSubscription = <TData, TVariables>(
 
   // Long poll (15s interval) if the block number isn't available.
   useEffect(() => {
-    let interval: number;
+    let interval: NodeJS.Timeout;
 
     if (!skip && !hasBlock) {
       run();
