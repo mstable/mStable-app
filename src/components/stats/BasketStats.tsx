@@ -152,6 +152,7 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
   simulation,
 }) => {
   const masset = useSelectedMassetState();
+  // eslint-disable-next-line
   const bAssets: MassetState['bAssets'] =
     simulation?.bAssets ?? masset?.bAssets ?? {};
 
