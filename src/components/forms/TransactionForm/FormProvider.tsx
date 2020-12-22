@@ -13,7 +13,7 @@ import useThrottleFn from 'react-use/lib/useThrottleFn';
 import { BigNumber } from 'ethers/utils';
 import { ethers } from 'ethers';
 
-import { SendTxManifest } from '../../../types';
+import { Instances, Interfaces, SendTxManifest } from '../../../types';
 import { calculateGasMargin } from '../../../web3/hooks';
 
 export enum GasPriceType {
@@ -23,15 +23,18 @@ export enum GasPriceType {
   Custom,
 }
 
-interface State<TState> {
+interface State {
   formId: string;
   manifest?: SendTxManifest<never, never>;
   submitting: boolean;
   gasPrice: { value?: number; type: GasPriceType };
 }
 
-interface Dispatch<TState> {
-  setManifest<TIface extends any, TFn extends any>(
+interface Dispatch {
+  setManifest<
+    TIface extends Interfaces,
+    TFn extends keyof Instances[TIface]['functions']
+  >(
     manifest: SendTxManifest<TIface, TFn> | null,
   ): void;
   submitStart(): void;
@@ -47,7 +50,7 @@ enum Actions {
   SetGasLimit,
 }
 
-type Action<TState> =
+type Action =
   | {
       type: Actions.SetManifest;
       payload: SendTxManifest<never, never> | null;
@@ -67,11 +70,11 @@ type Action<TState> =
       payload?: BigNumber;
     };
 
-const stateCtx = createContext<State<any>>({} as any);
+const stateCtx = createContext<State>({} as any);
 
-const dispatchCtx = createContext<Dispatch<never>>({} as Dispatch<never>);
+const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
-const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
+const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.SetManifest: {
       const manifest = action.payload || undefined;
@@ -158,22 +161,22 @@ export const FormProvider: FC<{ formId: string }> = ({ children, formId }) => {
     [args, fn, iface],
   );
 
-  const setManifest = useCallback<Dispatch<never>['setManifest']>(
+  const setManifest = useCallback<Dispatch['setManifest']>(
     manifest => {
       dispatch({ type: Actions.SetManifest, payload: manifest as any });
     },
     [dispatch],
   );
 
-  const submitStart = useCallback<Dispatch<never>['submitStart']>(() => {
+  const submitStart = useCallback<Dispatch['submitStart']>(() => {
     dispatch({ type: Actions.SubmitStart });
   }, [dispatch]);
 
-  const submitEnd = useCallback<Dispatch<never>['submitEnd']>(() => {
+  const submitEnd = useCallback<Dispatch['submitEnd']>(() => {
     dispatch({ type: Actions.SubmitEnd });
   }, [dispatch]);
 
-  const setGasPrice = useCallback<Dispatch<never>['setGasPrice']>(
+  const setGasPrice = useCallback<Dispatch['setGasPrice']>(
     payload => {
       dispatch({
         type: Actions.SetGasPrice,
@@ -200,31 +203,29 @@ export const FormProvider: FC<{ formId: string }> = ({ children, formId }) => {
   );
 };
 
-export const useStateCtx = <TState extends unknown>(): State<TState> =>
-  useContext(stateCtx) as State<TState>;
+export const useStateCtx = (): State => useContext(stateCtx) as State;
 
-export const useDispatchCtx = <TState extends unknown>(): Dispatch<TState> =>
-  useContext(dispatchCtx) as Dispatch<TState>;
+export const useDispatchCtx = (): Dispatch =>
+  useContext(dispatchCtx) as Dispatch;
 
-export const useManifest = (): State<never>['manifest'] =>
-  useStateCtx().manifest;
+export const useManifest = (): State['manifest'] => useStateCtx().manifest;
 
-export const useFormSubmitting = (): State<never>['submitting'] =>
+export const useFormSubmitting = (): State['submitting'] =>
   useStateCtx().submitting;
 
-export const useCurrentGasPrice = (): State<never>['gasPrice'] =>
+export const useCurrentGasPrice = (): State['gasPrice'] =>
   useStateCtx().gasPrice;
 
-export const useFormId = (): State<never>['formId'] => useStateCtx().formId;
+export const useFormId = (): State['formId'] => useStateCtx().formId;
 
-export const useSetFormManifest = (): Dispatch<never>['setManifest'] =>
+export const useSetFormManifest = (): Dispatch['setManifest'] =>
   useDispatchCtx().setManifest;
 
-export const useSubmitStart = (): Dispatch<never>['submitStart'] =>
+export const useSubmitStart = (): Dispatch['submitStart'] =>
   useDispatchCtx().submitStart;
 
-export const useSubmitEnd = (): Dispatch<never>['submitEnd'] =>
+export const useSubmitEnd = (): Dispatch['submitEnd'] =>
   useDispatchCtx().submitEnd;
 
-export const useSetGasPrice = (): Dispatch<never>['setGasPrice'] =>
+export const useSetGasPrice = (): Dispatch['setGasPrice'] =>
   useDispatchCtx().setGasPrice;
