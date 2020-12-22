@@ -1,8 +1,8 @@
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { ViewportWidth } from '../../../../theme';
-import { Fields, SubscribedToken, TokenQuantity } from '../../../../types';
+import { Fields } from '../../../../types';
 import { BubbleButton } from '../../../core/Button';
 import { MultiStepButton } from '../../../core/MultiStepButton';
 import { useSaveDispatch, useSaveState } from './SaveProvider';
