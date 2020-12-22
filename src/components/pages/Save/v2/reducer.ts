@@ -3,19 +3,49 @@ import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { validate } from './validate';
-import { Action, Actions, FieldPayload, State, TransactionType } from './types';
+import { Action, Actions, FieldPayload, SaveMode, State, TransactionType } from './types';
 import { parseAmount } from '../../../../web3/amounts';
 import { TokenQuantity } from '../../../../types';
 
-const initialize = (state: State): State =>
-  !state.initialized && state.massetState
-    ? {
-        ...state,
-        initialized: true,
-        amount: new BigDecimal(0, state.massetState.token.decimals),
-        amountInCredits: new BigDecimal(0, state.massetState.token.decimals),
+const initialize = (state: State): State =>{
+  const { initialized, massetState } = state;
+  
+  if (!initialized && massetState) {
+    const defaultInputToken = massetState.token;
+    const defaultOutputToken = massetState.savingsContracts.v2?.token
+    
+    if (!defaultOutputToken) return state;
+    
+    return {
+      ...state,
+      initialized: true,
+      amount: new BigDecimal(0, defaultInputToken.decimals),
+      amountInCredits: new BigDecimal(0, defaultInputToken.decimals),
+      exchange: {
+        input: {
+          formValue: state.exchange.input.formValue,
+          amount: null,
+          token: {
+            address: defaultInputToken.address,
+            decimals: defaultInputToken.decimals,
+            symbol: defaultInputToken.symbol,
+          },
+        },
+        output: {
+          formValue: null,
+          amount: null,
+          token: {
+            address: defaultOutputToken?.address ?? null,
+            decimals: defaultOutputToken?.decimals ?? null,
+            symbol: defaultOutputToken?.symbol ?? null,
+          },
+        },
+        feeAmountSimple: null
       }
-    : state;
+    }    
+  } 
+  return state;
+}
 
 const simulateDeposit = (state: State): State['simulated'] => state.simulated;
 
@@ -74,16 +104,15 @@ const reduce: Reducer<State, Action> = (state, action) => {
     case Actions.SetAmount: {
       const { exchange, massetState } = state;
       const { formValue } = action.payload;
-      const { decimals } = exchange.input.token;
 
       if (!massetState) return state;
 
       // will only work with musd - imusd, not other assets.
       const exchangeRate = exchange.rate;
-      const maybeAmount = BigDecimal.maybeParse(formValue, decimals ?? 18);
+      const maybeAmount = BigDecimal.maybeParse(formValue, exchange.input.token?.decimals);
       
       const amountInCredits = (maybeAmount && exchangeRate)
-          ? maybeAmount.divPrecisely(exchangeRate).add(new BigDecimal(1, 0))
+          ? maybeAmount.mulTruncate(exchangeRate.exact)
           : undefined;
       
       return {
@@ -176,12 +205,24 @@ const reduce: Reducer<State, Action> = (state, action) => {
         touched: false,
       };
     }
-
+    
     case Actions.SetModeType: {
       const mode = action.payload;
+      // disable switching until initialised
+      if (!state.initialized) return state;
+      // reject if same tab clicked
+      if (mode === state.mode) return state;
+      
+      const {input, output} = state.exchange;
       return {
         ...state,
         mode,
+        // switch exchange assets
+        exchange: {
+          ...state.exchange,
+          input: output,
+          output: input,
+        }
       };
     }
 

@@ -102,37 +102,6 @@ export const AssetExchange: FC = () => {
   const musd = massetState?.token;
   const imusd = massetState?.savingsContracts.v2?.token;
 
-  const selectedExchangePair = useMemo(() => {
-    // wait until both are available.
-    if (!(musd && imusd)) return [];
-
-    if (mode === SaveMode.Deposit) {
-      return [
-        { field: Fields.Input, token: musd },
-        { field: Fields.Output, token: imusd },
-      ];
-    }
-    return [
-      { field: Fields.Input, token: imusd },
-      { field: Fields.Output, token: musd },
-    ];
-  }, [imusd, musd, mode]);
-
-  // Set initial token swap params once only.
-  useEffect(() => {
-    const { input, output } = exchange;
-    if (input.token?.address && output.token?.address) return;
-    if (!selectedExchangePair.length) return;
-
-    setTokenPair(selectedExchangePair);
-  }, [selectedExchangePair, exchange, setTokenPair]);
-
-  // update on mode change
-  useEffect(() => {
-    if (!selectedExchangePair.length) return;
-    setTokenPair(selectedExchangePair);
-  }, [selectedExchangePair, mode, setTokenPair]);
-
   return (
     <Container>
       <Exchange>

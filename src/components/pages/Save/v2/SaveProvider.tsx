@@ -13,14 +13,9 @@ import { TokenQuantityV2 } from '../../../../types';
 import { reducer } from './reducer';
 import { Actions, Dispatch, State, SaveMode, TransactionType } from './types';
 
-const initialTokenQuantityField: TokenQuantityV2 = {
+export const initialTokenQuantityFieldV2: TokenQuantityV2 = {
   formValue: null,
   amount: null,
-  token: {
-    address: null,
-    decimals: null,
-    symbol: null,
-  },
 };
 
 const initialState: State = {
@@ -33,8 +28,8 @@ const initialState: State = {
   valid: false,
   mode: SaveMode.Deposit,
   exchange: {
-    input: initialTokenQuantityField,
-    output: initialTokenQuantityField,
+    input: initialTokenQuantityFieldV2,
+    output: initialTokenQuantityFieldV2,
     feeAmountSimple: null,
   },
 };

@@ -104,7 +104,7 @@ export const AssetInputBox: FC<Props> = ({
             handleSetMax, // handleSetMax
           }}
           token={{
-            address: field?.token.address ?? undefined,
+            address: field?.token?.address,
             addresses: tokenAddresses,
             disabled: true,
             handleChange: setToken,
