@@ -133,24 +133,16 @@ export const AssetExchange: FC = () => {
     setTokenPair(selectedExchangePair);
   }, [selectedExchangePair, mode, setTokenPair]);
 
-  // TODO: needs changing.
-  const titles = useMemo(() => {
-    if (mode === SaveMode.Withdraw) {
-      return ['Withdraw', 'X'];
-    }
-    return ['Deposit', 'Receive'];
-  }, [mode]);
-
   return (
     <Container>
       <Exchange>
-        <InputBox title={titles[0]} fieldType={Input} />
+        <InputBox title="Deposit" fieldType={Input} />
         <ArrowContainer>
           <Arrow onClick={() => {}}>
             <span>↓</span>
           </Arrow>
         </ArrowContainer>
-        <InputBox title={titles[1]} fieldType={Output} showExchangeRate />
+        <InputBox title="Receive" fieldType={Output} showExchangeRate />
       </Exchange>
       <Details>
         <CTA />
