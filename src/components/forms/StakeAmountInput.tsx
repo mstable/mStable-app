@@ -8,6 +8,8 @@ import {
 } from '../pages/Earn/StakingRewardsContractProvider';
 import { Tooltip } from '../core/ReactTooltip';
 
+// TODO use props
+// eslint-disable-next-line
 interface Props {
   name: string;
   error?: string;

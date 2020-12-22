@@ -25,16 +25,17 @@ export interface StorageV3 extends VersionedStorage<3, StorageV2> {
   walletName?: string;
 }
 
-export type AllStorage = StorageV0 & StorageV1 & StorageV2 & StorageV3;
-
-export type Storage = Extract<AllStorage, { version: typeof STORAGE_VERSION }>;
+export type AllStorage = { version: number } & Omit<StorageV0, 'version'> &
+  Omit<StorageV1, 'version'> &
+  Omit<StorageV2, 'version'> &
+  Omit<StorageV3, 'version'>;
 
 const getStorageKey = (key: string): string => `${STORAGE_PREFIX}.${key}`;
 
 export const LocalStorage = {
   // It might not be possible to write to localStorage, e.g. in Incognito mode;
   // ignore any get/set/clear errors.
-  set<S extends Storage, T extends keyof S>(key: T, value: S[T]): void {
+  set<S extends AllStorage, T extends keyof S>(key: T, value: S[T]): void {
     const storageKey = getStorageKey(key as string);
     const json = JSON.stringify(value);
     try {
