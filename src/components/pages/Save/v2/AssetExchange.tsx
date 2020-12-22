@@ -1,8 +1,8 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { ViewportWidth } from '../../../../theme';
-import { Fields } from '../../../../types';
+import { Fields, SubscribedToken, TokenQuantity } from '../../../../types';
 import { BubbleButton } from '../../../core/Button';
 import { MultiStepButton } from '../../../core/MultiStepButton';
 import { useSaveDispatch, useSaveState } from './SaveProvider';
@@ -96,27 +96,42 @@ const Info = styled.div`
 `;
 
 export const AssetExchange: FC = () => {
-  const { mode, massetState } = useSaveState();
+  const { mode, massetState, exchange } = useSaveState();
   const { setTokenPair } = useSaveDispatch();
 
   const musd = massetState?.token;
   const imusd = massetState?.savingsContracts.v2?.token;
 
-  // Set default token swap.
-  useEffect(() => {
-    if (!(musd && imusd)) return;
+  const selectedExchangePair = useMemo(() => {
+    // wait until both are available.
+    if (!(musd && imusd)) return [];
 
-    setTokenPair([
-      {
-        field: Fields.Input,
-        token: musd,
-      },
-      {
-        field: Fields.Output,
-        token: imusd ?? null,
-      },
-    ]);
-  }, [setTokenPair, imusd, musd]);
+    if (mode === SaveMode.Deposit) {
+      return [
+        { field: Fields.Input, token: musd },
+        { field: Fields.Output, token: imusd },
+      ];
+    }
+    return [
+      { field: Fields.Input, token: imusd },
+      { field: Fields.Output, token: musd },
+    ];
+  }, [imusd, musd, mode]);
+
+  // Set initial token swap params once only.
+  useEffect(() => {
+    const { input, output } = exchange;
+    if (input.token?.address && output.token?.address) return;
+    if (!selectedExchangePair.length) return;
+
+    setTokenPair(selectedExchangePair);
+  }, [selectedExchangePair, exchange, setTokenPair]);
+
+  // update on mode change
+  useEffect(() => {
+    if (!selectedExchangePair.length) return;
+    setTokenPair(selectedExchangePair);
+  }, [selectedExchangePair, mode, setTokenPair]);
 
   // TODO: needs changing.
   const titles = useMemo(() => {

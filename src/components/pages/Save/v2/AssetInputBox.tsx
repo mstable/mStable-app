@@ -61,15 +61,14 @@ export const AssetInputBox: FC<Props> = ({
   const field = fieldType === Input ? input : output;
 
   const tokenAddresses = useMemo<string[]>(() => {
-    if (!(bAssets && massetAddress)) return [];
+    // expand when more assets are needed.
+    if (!(input.token?.address && output.token?.address)) return [];
 
-    const imusd = massetState?.savingsContracts.v2?.token?.address;
-    // where is mapping defined?
-    return [
-      massetAddress,
-      imusd ?? '0x5b7f01dAe6BCE656c9cA4175Eb3E406ADC6c7957',
-    ];
-  }, [bAssets, massetAddress, massetState]);
+    if (fieldType === Input) {
+      return [input.token.address];
+    }
+    return [output.token.address];
+  }, [fieldType, input.token, output.token]);
 
   // const approveAmount = useMemo(
   //   () =>
@@ -79,6 +78,7 @@ export const AssetInputBox: FC<Props> = ({
   //   [field],
   // );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleChange = (formValue: string | null): void => {
     // update amount
     // console.log(formValue);
@@ -107,7 +107,7 @@ export const AssetInputBox: FC<Props> = ({
           token={{
             address: field?.token.address ?? undefined,
             addresses: tokenAddresses,
-            disabled: false,
+            disabled: true,
             handleChange: setToken,
           }}
           error={undefined}

@@ -109,6 +109,7 @@ const Label = styled.div`
   }
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const BalanceContainer = styled.div``;
 
 const Grid = styled.div<{ enabled?: boolean }>`
@@ -203,7 +204,7 @@ export const AssetTokenInput: FC<Props> = ({
         <TokenContainer>
           <TokenInput
             name={name}
-            disabled={false}
+            disabled={token.disabled}
             value={token.address ?? null}
             tokens={subscribedTokens}
             onChange={token.handleChange}
