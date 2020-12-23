@@ -9,6 +9,7 @@ interface Props {
   fieldType: Fields;
   title: string;
   showExchangeRate?: boolean;
+  className?: string;
 }
 
 const { Input } = Fields;
@@ -44,6 +45,7 @@ export const AssetInputBox: FC<Props> = ({
   fieldType,
   showExchangeRate = false,
   title,
+  className,
 }) => {
   const {
     exchange: { input, output, rate: exchangeRate }, // feeAmountSimple
@@ -80,7 +82,9 @@ export const AssetInputBox: FC<Props> = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleChange = (formValue: string | null): void => {
     // update amount
-    setAmount(formValue);
+    if (fieldType === Fields.Input) {
+      setAmount(formValue);
+    }
     // console.log(formValue);
   };
 
@@ -88,8 +92,10 @@ export const AssetInputBox: FC<Props> = ({
     // switch on fieldType
   };
 
+  const isInput = fieldType === Fields.Input;
+
   return (
-    <Container>
+    <Container className={className}>
       <Header>
         <h3>{title}</h3>
         {showExchangeRate && <p>1 mUSD = {formattedExchangeRate} imUSD</p>}
@@ -99,9 +105,9 @@ export const AssetInputBox: FC<Props> = ({
           name={fieldType}
           amount={{
             formValue: field?.formValue,
-            disabled: false, // mode !== Mode.RedeemMasset,
-            handleChange, // setMassetAmount
-            handleSetMax, // handleSetMax
+            disabled: !isInput,
+            handleChange,
+            handleSetMax: isInput ? handleSetMax : undefined,
           }}
           token={{
             address: field?.token?.address,

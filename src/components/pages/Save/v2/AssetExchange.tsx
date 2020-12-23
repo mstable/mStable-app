@@ -1,13 +1,10 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { ViewportWidth } from '../../../../theme';
 import { Fields } from '../../../../types';
-import { BubbleButton } from '../../../core/Button';
 import { MultiStepButton } from '../../../core/MultiStepButton';
-import { useSaveDispatch, useSaveState } from './SaveProvider';
 import { AssetInputBox } from './AssetInputBox';
-import { SaveMode } from './types';
 
 const { Input, Output } = Fields;
 
@@ -31,6 +28,16 @@ const Exchange = styled.div`
 
 const Details = styled.div`
   flex-direction: column-reverse;
+
+  > * {
+    margin-top: 0.75rem;
+  }
+
+  @media (min-width: ${ViewportWidth.xl}) {
+    > * {
+      flex-basis: 45%;
+    }
+  }
 `;
 
 const InputBox = styled(AssetInputBox)`
@@ -49,7 +56,7 @@ const ArrowContainer = styled.div`
   }
 `;
 
-const Arrow = styled(BubbleButton)`
+const Arrow = styled.div`
   width: 3rem;
   height: 3rem;
   border-radius: 1.5rem;
@@ -57,6 +64,7 @@ const Arrow = styled(BubbleButton)`
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid #eee;
 
   @media (min-width: ${ViewportWidth.xl}) {
     span {
@@ -73,14 +81,6 @@ const Arrow = styled(BubbleButton)`
   }
 `;
 
-const CTA = styled(MultiStepButton)`
-  margin-top: 0.75rem;
-
-  @media (min-width: ${ViewportWidth.xl}) {
-    flex-basis: calc(45% + 0.5rem);
-  }
-`;
-
 const Info = styled.div`
   display: flex;
   justify-content: space-between;
@@ -88,11 +88,6 @@ const Info = styled.div`
   padding: 0.75rem;
   border: 1px solid #eee;
   border-radius: 0.75rem;
-  margin-top: 0.75rem;
-
-  @media (min-width: ${ViewportWidth.xl}) {
-    flex-basis: calc(45% + 0.5rem);
-  }
 `;
 
 export const AssetExchange: FC = () => {
@@ -108,7 +103,7 @@ export const AssetExchange: FC = () => {
         <InputBox title="Receive" fieldType={Output} showExchangeRate />
       </Exchange>
       <Details>
-        <CTA />
+        <MultiStepButton />
         <Info>
           <p>Slippage Tolerance</p>
           <span>3.00%</span>
