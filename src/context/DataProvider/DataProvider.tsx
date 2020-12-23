@@ -38,6 +38,7 @@ const useRawData = (): [MassetsQueryResult['data'], Tokens] => {
   return useMemo(() => [subscription.data, tokens], [
     blockNumber,
     subscription.loading,
+    tokens,
   ]);
 };
 
@@ -77,6 +78,10 @@ export const DataProvider: FC = ({ children }) => {
       ),
     [data],
   );
+
+  if (process.env.NODE_ENV === 'development') {
+    (window as { dataState?: DataState }).dataState = dataState;
+  }
 
   return (
     <dataStateCtx.Provider value={dataState}>{children}</dataStateCtx.Provider>

@@ -48,6 +48,30 @@ export interface MassetState {
   };
 }
 
+export interface BoostedSavingsVaultAccountState {
+  lastAction: number;
+  lastClaim: number;
+  rewardCount: number;
+  rewardPerTokenPaid: BigNumber;
+  rewards: BigNumber;
+  rewardEntries: {
+    finish: number;
+    start: number;
+    index: number;
+    rate: BigNumber;
+  }[];
+}
+
+export interface BoostedSavingsVaultState {
+  address: string;
+  rewardPerTokenStored: BigNumber;
+  rewardRate: BigNumber;
+  stakingContract: string;
+  totalStakingRewards: BigDecimal;
+  totalSupply: BigDecimal;
+  account?: BoostedSavingsVaultAccountState;
+}
+
 export type SavingsContractState = {
   active: boolean;
   current: boolean;
@@ -73,6 +97,7 @@ export type SavingsContractState = {
   | {
       version: 2;
       token?: SubscribedToken;
+      boostedSavingsVault?: BoostedSavingsVaultState;
     }
 );
 
