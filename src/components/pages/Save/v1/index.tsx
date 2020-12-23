@@ -5,7 +5,7 @@ import { FormProvider } from '../../../forms/TransactionForm/FormProvider';
 import { SaveForm } from './SaveForm';
 import { SaveProvider } from './SaveProvider';
 
-export const SaveV1: FC = () => {
+export const Save: FC = () => {
   const savingsContractState = useSelectedSavingsContractState();
   const isCurrent = savingsContractState?.current;
   return isCurrent ? (
