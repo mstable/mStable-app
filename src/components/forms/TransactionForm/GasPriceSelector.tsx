@@ -115,7 +115,7 @@ const GasPriceOption = styled.div<{ checked: boolean }>`
   color: rgb(37, 39, 45);
   font-size: 1rem;
   padding: 0.5rem;
-  border: 4px
+  border: 1px
     ${({ theme, checked }) =>
       checked ? theme.color.greenTransparent : theme.color.lightGrey}
     solid;
