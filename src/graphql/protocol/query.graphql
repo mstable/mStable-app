@@ -45,16 +45,45 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
       }
     }
     # TODO remove me: Exclude outdated Ropsten SavingsContract
-    savingsContractsV2: savingsContracts(where: { version: 2, id_not: "0x478e379d5f3e2f949a94f1ccfb7217fb35916615" }) {
+    savingsContractsV2: savingsContracts(
+      where: {
+        version: 2
+        id_not: "0x478e379d5f3e2f949a94f1ccfb7217fb35916615"
+      }
+    ) {
       ...SavingsContractAll
       token {
         ...TokenAll
+      }
+      boostedSavingsVaults {
+        id
+        rewardPerTokenStored
+        rewardRate
+        stakingContract
+        totalStakingRewards
+        totalSupply
+        accounts(where: { account: $account }) @include(if: $hasAccount) {
+          id
+          lastAction
+          lastClaim
+          rewardCount
+          rewardPerTokenPaid
+          rewards
+          rewardEntries(orderBy: index, orderDirection: asc) {
+            id
+            finish
+            index
+            rate
+            start
+          }
+        }
       }
     }
   }
 }
 
-query V1SavingsBalance($id: ID!, $account: String!, $include: Boolean!) @api(name: protocol) {
+query V1SavingsBalance($id: ID!, $account: String!, $include: Boolean!)
+  @api(name: protocol) {
   savingsContract(id: $id) @include(if: $include) {
     creditBalances(where: { account: $account }) {
       amount
@@ -80,7 +109,11 @@ query Token($id: ID!) @api(name: protocol) {
 }
 
 query HistoricTransactions($account: Bytes) @api(name: protocol) {
-  transactions(where: { sender: $account }, orderBy: timestamp, orderDirection: desc) {
+  transactions(
+    where: { sender: $account }
+    orderBy: timestamp
+    orderDirection: desc
+  ) {
     id
     hash
     block

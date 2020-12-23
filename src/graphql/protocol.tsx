@@ -2,6 +2,9 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
       export interface IntrospectionResultData {
         __schema: {
@@ -100,7 +103,10 @@ export enum _SubgraphErrorPolicy_ {
 export type Account = {
   /** Address of the account */
   id: Scalars['ID'];
-  /** Credit balance of the account (Save v1 only) */
+  /**
+   * Credit balance of the account (Save v1 only)
+   * @deprecated
+   */
   creditBalance?: Maybe<CreditBalance>;
 };
 
@@ -480,6 +486,417 @@ export type Block_Height = {
   hash?: Maybe<Scalars['Bytes']>;
   number?: Maybe<Scalars['Int']>;
 };
+
+export type BoostedSavingsVault = {
+  id: Scalars['ID'];
+  savingsContract: SavingsContract;
+  accounts: Array<BoostedSavingsVaultAccount>;
+  rewardEntries: Array<BoostedSavingsVaultRewardEntry>;
+  /** Length of token lockup (in seconds), after rewards are earned */
+  lockupDuration: Scalars['Int'];
+  /** Percentage of earned tokens that are unlocked immediately upon claiming */
+  unlockPercentage: Scalars['BigInt'];
+  /** Rewards period duration (in seconds) */
+  periodDuration: Scalars['Int'];
+  /** Timestamp for current rewards period finish */
+  periodFinish: Scalars['Int'];
+  /** Last time any user took action */
+  lastUpdateTime: Scalars['Int'];
+  /** The staking token, e.g. imUSD */
+  stakingToken: Token;
+  /** The reward per token stored */
+  rewardPerTokenStored: Scalars['BigInt'];
+  /** The reward rate for the rest of the rewards period */
+  rewardRate: Scalars['BigInt'];
+  /** The rewards token, e.g. MTA */
+  rewardsToken: Token;
+  /** Rewards distributor contract address */
+  rewardsDistributor: Scalars['Bytes'];
+  /** Staking rewards contract address */
+  stakingContract: Scalars['Bytes'];
+  /** Total boosted amount */
+  totalSupply: Scalars['BigInt'];
+  /** Total staking rewards (rewardRate * periodDuration) */
+  totalStakingRewards: Scalars['BigInt'];
+};
+
+
+export type BoostedSavingsVaultAccountsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultAccount_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultAccount_Filter>;
+};
+
+
+export type BoostedSavingsVaultRewardEntriesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
+};
+
+export type BoostedSavingsVault_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  savingsContract?: Maybe<Scalars['String']>;
+  savingsContract_not?: Maybe<Scalars['String']>;
+  savingsContract_gt?: Maybe<Scalars['String']>;
+  savingsContract_lt?: Maybe<Scalars['String']>;
+  savingsContract_gte?: Maybe<Scalars['String']>;
+  savingsContract_lte?: Maybe<Scalars['String']>;
+  savingsContract_in?: Maybe<Array<Scalars['String']>>;
+  savingsContract_not_in?: Maybe<Array<Scalars['String']>>;
+  savingsContract_contains?: Maybe<Scalars['String']>;
+  savingsContract_not_contains?: Maybe<Scalars['String']>;
+  savingsContract_starts_with?: Maybe<Scalars['String']>;
+  savingsContract_not_starts_with?: Maybe<Scalars['String']>;
+  savingsContract_ends_with?: Maybe<Scalars['String']>;
+  savingsContract_not_ends_with?: Maybe<Scalars['String']>;
+  lockupDuration?: Maybe<Scalars['Int']>;
+  lockupDuration_not?: Maybe<Scalars['Int']>;
+  lockupDuration_gt?: Maybe<Scalars['Int']>;
+  lockupDuration_lt?: Maybe<Scalars['Int']>;
+  lockupDuration_gte?: Maybe<Scalars['Int']>;
+  lockupDuration_lte?: Maybe<Scalars['Int']>;
+  lockupDuration_in?: Maybe<Array<Scalars['Int']>>;
+  lockupDuration_not_in?: Maybe<Array<Scalars['Int']>>;
+  unlockPercentage?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_not?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_gt?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_lt?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_gte?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_lte?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_in?: Maybe<Array<Scalars['BigInt']>>;
+  unlockPercentage_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  periodDuration?: Maybe<Scalars['Int']>;
+  periodDuration_not?: Maybe<Scalars['Int']>;
+  periodDuration_gt?: Maybe<Scalars['Int']>;
+  periodDuration_lt?: Maybe<Scalars['Int']>;
+  periodDuration_gte?: Maybe<Scalars['Int']>;
+  periodDuration_lte?: Maybe<Scalars['Int']>;
+  periodDuration_in?: Maybe<Array<Scalars['Int']>>;
+  periodDuration_not_in?: Maybe<Array<Scalars['Int']>>;
+  periodFinish?: Maybe<Scalars['Int']>;
+  periodFinish_not?: Maybe<Scalars['Int']>;
+  periodFinish_gt?: Maybe<Scalars['Int']>;
+  periodFinish_lt?: Maybe<Scalars['Int']>;
+  periodFinish_gte?: Maybe<Scalars['Int']>;
+  periodFinish_lte?: Maybe<Scalars['Int']>;
+  periodFinish_in?: Maybe<Array<Scalars['Int']>>;
+  periodFinish_not_in?: Maybe<Array<Scalars['Int']>>;
+  lastUpdateTime?: Maybe<Scalars['Int']>;
+  lastUpdateTime_not?: Maybe<Scalars['Int']>;
+  lastUpdateTime_gt?: Maybe<Scalars['Int']>;
+  lastUpdateTime_lt?: Maybe<Scalars['Int']>;
+  lastUpdateTime_gte?: Maybe<Scalars['Int']>;
+  lastUpdateTime_lte?: Maybe<Scalars['Int']>;
+  lastUpdateTime_in?: Maybe<Array<Scalars['Int']>>;
+  lastUpdateTime_not_in?: Maybe<Array<Scalars['Int']>>;
+  stakingToken?: Maybe<Scalars['String']>;
+  stakingToken_not?: Maybe<Scalars['String']>;
+  stakingToken_gt?: Maybe<Scalars['String']>;
+  stakingToken_lt?: Maybe<Scalars['String']>;
+  stakingToken_gte?: Maybe<Scalars['String']>;
+  stakingToken_lte?: Maybe<Scalars['String']>;
+  stakingToken_in?: Maybe<Array<Scalars['String']>>;
+  stakingToken_not_in?: Maybe<Array<Scalars['String']>>;
+  stakingToken_contains?: Maybe<Scalars['String']>;
+  stakingToken_not_contains?: Maybe<Scalars['String']>;
+  stakingToken_starts_with?: Maybe<Scalars['String']>;
+  stakingToken_not_starts_with?: Maybe<Scalars['String']>;
+  stakingToken_ends_with?: Maybe<Scalars['String']>;
+  stakingToken_not_ends_with?: Maybe<Scalars['String']>;
+  rewardPerTokenStored?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_not?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_gt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_lt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_gte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_lte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardPerTokenStored_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardRate?: Maybe<Scalars['BigInt']>;
+  rewardRate_not?: Maybe<Scalars['BigInt']>;
+  rewardRate_gt?: Maybe<Scalars['BigInt']>;
+  rewardRate_lt?: Maybe<Scalars['BigInt']>;
+  rewardRate_gte?: Maybe<Scalars['BigInt']>;
+  rewardRate_lte?: Maybe<Scalars['BigInt']>;
+  rewardRate_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardsToken?: Maybe<Scalars['String']>;
+  rewardsToken_not?: Maybe<Scalars['String']>;
+  rewardsToken_gt?: Maybe<Scalars['String']>;
+  rewardsToken_lt?: Maybe<Scalars['String']>;
+  rewardsToken_gte?: Maybe<Scalars['String']>;
+  rewardsToken_lte?: Maybe<Scalars['String']>;
+  rewardsToken_in?: Maybe<Array<Scalars['String']>>;
+  rewardsToken_not_in?: Maybe<Array<Scalars['String']>>;
+  rewardsToken_contains?: Maybe<Scalars['String']>;
+  rewardsToken_not_contains?: Maybe<Scalars['String']>;
+  rewardsToken_starts_with?: Maybe<Scalars['String']>;
+  rewardsToken_not_starts_with?: Maybe<Scalars['String']>;
+  rewardsToken_ends_with?: Maybe<Scalars['String']>;
+  rewardsToken_not_ends_with?: Maybe<Scalars['String']>;
+  rewardsDistributor?: Maybe<Scalars['Bytes']>;
+  rewardsDistributor_not?: Maybe<Scalars['Bytes']>;
+  rewardsDistributor_in?: Maybe<Array<Scalars['Bytes']>>;
+  rewardsDistributor_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  rewardsDistributor_contains?: Maybe<Scalars['Bytes']>;
+  rewardsDistributor_not_contains?: Maybe<Scalars['Bytes']>;
+  stakingContract?: Maybe<Scalars['Bytes']>;
+  stakingContract_not?: Maybe<Scalars['Bytes']>;
+  stakingContract_in?: Maybe<Array<Scalars['Bytes']>>;
+  stakingContract_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  stakingContract_contains?: Maybe<Scalars['Bytes']>;
+  stakingContract_not_contains?: Maybe<Scalars['Bytes']>;
+  totalSupply?: Maybe<Scalars['BigInt']>;
+  totalSupply_not?: Maybe<Scalars['BigInt']>;
+  totalSupply_gt?: Maybe<Scalars['BigInt']>;
+  totalSupply_lt?: Maybe<Scalars['BigInt']>;
+  totalSupply_gte?: Maybe<Scalars['BigInt']>;
+  totalSupply_lte?: Maybe<Scalars['BigInt']>;
+  totalSupply_in?: Maybe<Array<Scalars['BigInt']>>;
+  totalSupply_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  totalStakingRewards?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_not?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_gt?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_lt?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_gte?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_lte?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_in?: Maybe<Array<Scalars['BigInt']>>;
+  totalStakingRewards_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum BoostedSavingsVault_OrderBy {
+  Id = 'id',
+  SavingsContract = 'savingsContract',
+  Accounts = 'accounts',
+  RewardEntries = 'rewardEntries',
+  LockupDuration = 'lockupDuration',
+  UnlockPercentage = 'unlockPercentage',
+  PeriodDuration = 'periodDuration',
+  PeriodFinish = 'periodFinish',
+  LastUpdateTime = 'lastUpdateTime',
+  StakingToken = 'stakingToken',
+  RewardPerTokenStored = 'rewardPerTokenStored',
+  RewardRate = 'rewardRate',
+  RewardsToken = 'rewardsToken',
+  RewardsDistributor = 'rewardsDistributor',
+  StakingContract = 'stakingContract',
+  TotalSupply = 'totalSupply',
+  TotalStakingRewards = 'totalStakingRewards'
+}
+
+export type BoostedSavingsVaultAccount = {
+  id: Scalars['ID'];
+  boostedSavingsVault: BoostedSavingsVault;
+  account: Account;
+  rewardPerTokenPaid: Scalars['BigInt'];
+  rewards: Scalars['BigInt'];
+  lastAction: Scalars['Int'];
+  lastClaim: Scalars['Int'];
+  rewardCount: Scalars['Int'];
+  rewardEntries: Array<BoostedSavingsVaultRewardEntry>;
+};
+
+
+export type BoostedSavingsVaultAccountRewardEntriesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
+};
+
+export type BoostedSavingsVaultAccount_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  boostedSavingsVault?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_not_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_ends_with?: Maybe<Scalars['String']>;
+  account?: Maybe<Scalars['String']>;
+  account_not?: Maybe<Scalars['String']>;
+  account_gt?: Maybe<Scalars['String']>;
+  account_lt?: Maybe<Scalars['String']>;
+  account_gte?: Maybe<Scalars['String']>;
+  account_lte?: Maybe<Scalars['String']>;
+  account_in?: Maybe<Array<Scalars['String']>>;
+  account_not_in?: Maybe<Array<Scalars['String']>>;
+  account_contains?: Maybe<Scalars['String']>;
+  account_not_contains?: Maybe<Scalars['String']>;
+  account_starts_with?: Maybe<Scalars['String']>;
+  account_not_starts_with?: Maybe<Scalars['String']>;
+  account_ends_with?: Maybe<Scalars['String']>;
+  account_not_ends_with?: Maybe<Scalars['String']>;
+  rewardPerTokenPaid?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_not?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_gt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_lt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_gte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_lte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardPerTokenPaid_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewards?: Maybe<Scalars['BigInt']>;
+  rewards_not?: Maybe<Scalars['BigInt']>;
+  rewards_gt?: Maybe<Scalars['BigInt']>;
+  rewards_lt?: Maybe<Scalars['BigInt']>;
+  rewards_gte?: Maybe<Scalars['BigInt']>;
+  rewards_lte?: Maybe<Scalars['BigInt']>;
+  rewards_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewards_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  lastAction?: Maybe<Scalars['Int']>;
+  lastAction_not?: Maybe<Scalars['Int']>;
+  lastAction_gt?: Maybe<Scalars['Int']>;
+  lastAction_lt?: Maybe<Scalars['Int']>;
+  lastAction_gte?: Maybe<Scalars['Int']>;
+  lastAction_lte?: Maybe<Scalars['Int']>;
+  lastAction_in?: Maybe<Array<Scalars['Int']>>;
+  lastAction_not_in?: Maybe<Array<Scalars['Int']>>;
+  lastClaim?: Maybe<Scalars['Int']>;
+  lastClaim_not?: Maybe<Scalars['Int']>;
+  lastClaim_gt?: Maybe<Scalars['Int']>;
+  lastClaim_lt?: Maybe<Scalars['Int']>;
+  lastClaim_gte?: Maybe<Scalars['Int']>;
+  lastClaim_lte?: Maybe<Scalars['Int']>;
+  lastClaim_in?: Maybe<Array<Scalars['Int']>>;
+  lastClaim_not_in?: Maybe<Array<Scalars['Int']>>;
+  rewardCount?: Maybe<Scalars['Int']>;
+  rewardCount_not?: Maybe<Scalars['Int']>;
+  rewardCount_gt?: Maybe<Scalars['Int']>;
+  rewardCount_lt?: Maybe<Scalars['Int']>;
+  rewardCount_gte?: Maybe<Scalars['Int']>;
+  rewardCount_lte?: Maybe<Scalars['Int']>;
+  rewardCount_in?: Maybe<Array<Scalars['Int']>>;
+  rewardCount_not_in?: Maybe<Array<Scalars['Int']>>;
+};
+
+export enum BoostedSavingsVaultAccount_OrderBy {
+  Id = 'id',
+  BoostedSavingsVault = 'boostedSavingsVault',
+  Account = 'account',
+  RewardPerTokenPaid = 'rewardPerTokenPaid',
+  Rewards = 'rewards',
+  LastAction = 'lastAction',
+  LastClaim = 'lastClaim',
+  RewardCount = 'rewardCount',
+  RewardEntries = 'rewardEntries'
+}
+
+export type BoostedSavingsVaultRewardEntry = {
+  id: Scalars['ID'];
+  account: BoostedSavingsVaultAccount;
+  boostedSavingsVault: BoostedSavingsVault;
+  index: Scalars['Int'];
+  start: Scalars['Int'];
+  finish: Scalars['Int'];
+  rate: Scalars['BigInt'];
+};
+
+export type BoostedSavingsVaultRewardEntry_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  account?: Maybe<Scalars['String']>;
+  account_not?: Maybe<Scalars['String']>;
+  account_gt?: Maybe<Scalars['String']>;
+  account_lt?: Maybe<Scalars['String']>;
+  account_gte?: Maybe<Scalars['String']>;
+  account_lte?: Maybe<Scalars['String']>;
+  account_in?: Maybe<Array<Scalars['String']>>;
+  account_not_in?: Maybe<Array<Scalars['String']>>;
+  account_contains?: Maybe<Scalars['String']>;
+  account_not_contains?: Maybe<Scalars['String']>;
+  account_starts_with?: Maybe<Scalars['String']>;
+  account_not_starts_with?: Maybe<Scalars['String']>;
+  account_ends_with?: Maybe<Scalars['String']>;
+  account_not_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_not_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_ends_with?: Maybe<Scalars['String']>;
+  index?: Maybe<Scalars['Int']>;
+  index_not?: Maybe<Scalars['Int']>;
+  index_gt?: Maybe<Scalars['Int']>;
+  index_lt?: Maybe<Scalars['Int']>;
+  index_gte?: Maybe<Scalars['Int']>;
+  index_lte?: Maybe<Scalars['Int']>;
+  index_in?: Maybe<Array<Scalars['Int']>>;
+  index_not_in?: Maybe<Array<Scalars['Int']>>;
+  start?: Maybe<Scalars['Int']>;
+  start_not?: Maybe<Scalars['Int']>;
+  start_gt?: Maybe<Scalars['Int']>;
+  start_lt?: Maybe<Scalars['Int']>;
+  start_gte?: Maybe<Scalars['Int']>;
+  start_lte?: Maybe<Scalars['Int']>;
+  start_in?: Maybe<Array<Scalars['Int']>>;
+  start_not_in?: Maybe<Array<Scalars['Int']>>;
+  finish?: Maybe<Scalars['Int']>;
+  finish_not?: Maybe<Scalars['Int']>;
+  finish_gt?: Maybe<Scalars['Int']>;
+  finish_lt?: Maybe<Scalars['Int']>;
+  finish_gte?: Maybe<Scalars['Int']>;
+  finish_lte?: Maybe<Scalars['Int']>;
+  finish_in?: Maybe<Array<Scalars['Int']>>;
+  finish_not_in?: Maybe<Array<Scalars['Int']>>;
+  rate?: Maybe<Scalars['BigInt']>;
+  rate_not?: Maybe<Scalars['BigInt']>;
+  rate_gt?: Maybe<Scalars['BigInt']>;
+  rate_lt?: Maybe<Scalars['BigInt']>;
+  rate_gte?: Maybe<Scalars['BigInt']>;
+  rate_lte?: Maybe<Scalars['BigInt']>;
+  rate_in?: Maybe<Array<Scalars['BigInt']>>;
+  rate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum BoostedSavingsVaultRewardEntry_OrderBy {
+  Id = 'id',
+  Account = 'account',
+  BoostedSavingsVault = 'boostedSavingsVault',
+  Index = 'index',
+  Start = 'start',
+  Finish = 'finish',
+  Rate = 'rate'
+}
 
 
 export type Counter = {
@@ -1495,6 +1912,12 @@ export type Query = {
   savingsManagers: Array<SavingsManager>;
   savingsContract?: Maybe<SavingsContract>;
   savingsContracts: Array<SavingsContract>;
+  boostedSavingsVault?: Maybe<BoostedSavingsVault>;
+  boostedSavingsVaults: Array<BoostedSavingsVault>;
+  boostedSavingsVaultAccount?: Maybe<BoostedSavingsVaultAccount>;
+  boostedSavingsVaultAccounts: Array<BoostedSavingsVaultAccount>;
+  boostedSavingsVaultRewardEntry?: Maybe<BoostedSavingsVaultRewardEntry>;
+  boostedSavingsVaultRewardEntries: Array<BoostedSavingsVaultRewardEntry>;
   exchangeRate?: Maybe<ExchangeRate>;
   exchangeRates: Array<ExchangeRate>;
   swapTransaction?: Maybe<SwapTransaction>;
@@ -1523,7 +1946,6 @@ export type Query = {
 export type QueryTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1534,14 +1956,12 @@ export type QueryTokensArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Token_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1552,14 +1972,12 @@ export type QueryMetricsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Metric_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryCounterArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1570,14 +1988,12 @@ export type QueryCountersArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Counter_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1588,14 +2004,12 @@ export type QueryBassetsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Basset_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1606,14 +2020,12 @@ export type QueryBasketsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Basket_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1624,14 +2036,12 @@ export type QueryMassetsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Masset_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1642,14 +2052,12 @@ export type QueryAccountsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Account_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1660,14 +2068,12 @@ export type QueryCreditBalancesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<CreditBalance_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QuerySavingsManagerArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1678,14 +2084,12 @@ export type QuerySavingsManagersArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsManager_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QuerySavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1696,14 +2100,60 @@ export type QuerySavingsContractsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContract_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryBoostedSavingsVaultArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVault_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVault_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultAccountArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultAccountsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultAccount_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultAccount_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultRewardEntryArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultRewardEntriesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
+  block?: Maybe<Block_Height>;
 };
 
 
 export type QueryExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1714,14 +2164,12 @@ export type QueryExchangeRatesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<ExchangeRate_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QuerySwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1732,14 +2180,12 @@ export type QuerySwapTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SwapTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryPaidFeeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1750,14 +2196,12 @@ export type QueryPaidFeeTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<PaidFeeTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryMintSingleTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1768,14 +2212,12 @@ export type QueryMintSingleTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<MintSingleTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryMintMultiTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1786,14 +2228,12 @@ export type QueryMintMultiTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<MintMultiTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryRedeemTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1804,14 +2244,12 @@ export type QueryRedeemTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<RedeemTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryRedeemMassetTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1822,14 +2260,12 @@ export type QueryRedeemMassetTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<RedeemMassetTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QuerySavingsContractDepositTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1840,14 +2276,12 @@ export type QuerySavingsContractDepositTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContractDepositTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QuerySavingsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1858,14 +2292,12 @@ export type QuerySavingsContractWithdrawTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContractWithdrawTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1876,7 +2308,6 @@ export type QueryTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2138,6 +2569,8 @@ export type SavingsContract = {
   depositTransactions: Array<SavingsContractDepositTransaction>;
   /** All withdraw transactions sent with this Savings Contract. */
   withdrawTransactions: Array<SavingsContractWithdrawTransaction>;
+  /** All Boosted Savings Vaults associated with this Savings Contract. */
+  boostedSavingsVaults: Array<BoostedSavingsVault>;
   /**
    * Version of the savings contract (starting from 1). This value will never change for each entity,
    * and can be used to determine the features of the contract.
@@ -2184,6 +2617,15 @@ export type SavingsContractWithdrawTransactionsArgs = {
   orderBy?: Maybe<SavingsContractWithdrawTransaction_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContractWithdrawTransaction_Filter>;
+};
+
+
+export type SavingsContractBoostedSavingsVaultsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVault_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVault_Filter>;
 };
 
 export type SavingsContract_Filter = {
@@ -2394,6 +2836,7 @@ export enum SavingsContract_OrderBy {
   ExchangeRates = 'exchangeRates',
   DepositTransactions = 'depositTransactions',
   WithdrawTransactions = 'withdrawTransactions',
+  BoostedSavingsVaults = 'boostedSavingsVaults',
   Version = 'version',
   Token = 'token'
 }
@@ -2638,6 +3081,12 @@ export type Subscription = {
   savingsManagers: Array<SavingsManager>;
   savingsContract?: Maybe<SavingsContract>;
   savingsContracts: Array<SavingsContract>;
+  boostedSavingsVault?: Maybe<BoostedSavingsVault>;
+  boostedSavingsVaults: Array<BoostedSavingsVault>;
+  boostedSavingsVaultAccount?: Maybe<BoostedSavingsVaultAccount>;
+  boostedSavingsVaultAccounts: Array<BoostedSavingsVaultAccount>;
+  boostedSavingsVaultRewardEntry?: Maybe<BoostedSavingsVaultRewardEntry>;
+  boostedSavingsVaultRewardEntries: Array<BoostedSavingsVaultRewardEntry>;
   exchangeRate?: Maybe<ExchangeRate>;
   exchangeRates: Array<ExchangeRate>;
   swapTransaction?: Maybe<SwapTransaction>;
@@ -2666,7 +3115,6 @@ export type Subscription = {
 export type SubscriptionTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2677,14 +3125,12 @@ export type SubscriptionTokensArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Token_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2695,14 +3141,12 @@ export type SubscriptionMetricsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Metric_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionCounterArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2713,14 +3157,12 @@ export type SubscriptionCountersArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Counter_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2731,14 +3173,12 @@ export type SubscriptionBassetsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Basset_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2749,14 +3189,12 @@ export type SubscriptionBasketsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Basket_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2767,14 +3205,12 @@ export type SubscriptionMassetsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Masset_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2785,14 +3221,12 @@ export type SubscriptionAccountsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Account_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2803,14 +3237,12 @@ export type SubscriptionCreditBalancesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<CreditBalance_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionSavingsManagerArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2821,14 +3253,12 @@ export type SubscriptionSavingsManagersArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsManager_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionSavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2839,14 +3269,60 @@ export type SubscriptionSavingsContractsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContract_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionBoostedSavingsVaultArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVault_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVault_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultAccountArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultAccountsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultAccount_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultAccount_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultRewardEntryArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultRewardEntriesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
+  block?: Maybe<Block_Height>;
 };
 
 
 export type SubscriptionExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2857,14 +3333,12 @@ export type SubscriptionExchangeRatesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<ExchangeRate_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionSwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2875,14 +3349,12 @@ export type SubscriptionSwapTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SwapTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionPaidFeeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2893,14 +3365,12 @@ export type SubscriptionPaidFeeTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<PaidFeeTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionMintSingleTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2911,14 +3381,12 @@ export type SubscriptionMintSingleTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<MintSingleTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionMintMultiTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2929,14 +3397,12 @@ export type SubscriptionMintMultiTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<MintMultiTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionRedeemTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2947,14 +3413,12 @@ export type SubscriptionRedeemTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<RedeemTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionRedeemMassetTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2965,14 +3429,12 @@ export type SubscriptionRedeemMassetTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<RedeemMassetTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionSavingsContractDepositTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -2983,14 +3445,12 @@ export type SubscriptionSavingsContractDepositTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContractDepositTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionSavingsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -3001,14 +3461,12 @@ export type SubscriptionSavingsContractWithdrawTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContractWithdrawTransaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -3019,7 +3477,6 @@ export type SubscriptionTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -3419,10 +3876,10 @@ export type TransactionFieldsFragment = TransactionFields_SavingsContractDeposit
 
 export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
 
-export type MassetsQueryVariables = {
+export type MassetsQueryVariables = Exact<{
   account: Scalars['String'];
   hasAccount: Scalars['Boolean'];
-};
+}>;
 
 
 export type MassetsQuery = { massets: Array<(
@@ -3440,21 +3897,27 @@ export type MassetsQuery = { massets: Array<(
       { totalCredits?: Maybe<MetricFieldsFragment>, creditBalances: Array<Pick<CreditBalance, 'amount'>> }
       & SavingsContractAllFragment
     )>, savingsContractsV2: Array<(
-      { token?: Maybe<TokenAllFragment> }
+      { token?: Maybe<TokenAllFragment>, boostedSavingsVaults: Array<(
+        Pick<BoostedSavingsVault, 'id' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
+        & { accounts: Array<(
+          Pick<BoostedSavingsVaultAccount, 'id' | 'lastAction' | 'lastClaim' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
+          & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
+        )> }
+      )> }
       & SavingsContractAllFragment
     )> }
   )> };
 
-export type V1SavingsBalanceQueryVariables = {
+export type V1SavingsBalanceQueryVariables = Exact<{
   id: Scalars['ID'];
   account: Scalars['String'];
   include: Scalars['Boolean'];
-};
+}>;
 
 
 export type V1SavingsBalanceQuery = { savingsContract?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
 
-export type AllTokensQueryVariables = {};
+export type AllTokensQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type AllTokensQuery = { savingsContracts: Array<(
@@ -3462,16 +3925,16 @@ export type AllTokensQuery = { savingsContracts: Array<(
     & { address: SavingsContract['id'] }
   )>, tokens: Array<TokenAllFragment> };
 
-export type TokenQueryVariables = {
+export type TokenQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type TokenQuery = { token?: Maybe<TokenAllFragment> };
 
-export type HistoricTransactionsQueryVariables = {
+export type HistoricTransactionsQueryVariables = Exact<{
   account?: Maybe<Scalars['Bytes']>;
-};
+}>;
 
 
 export type HistoricTransactionsQuery = { transactions: Array<(
@@ -3605,6 +4068,29 @@ export const MassetsDocument = gql`
       ...SavingsContractAll
       token {
         ...TokenAll
+      }
+      boostedSavingsVaults {
+        id
+        rewardPerTokenStored
+        rewardRate
+        stakingContract
+        totalStakingRewards
+        totalSupply
+        accounts(where: {account: $account}) @include(if: $hasAccount) {
+          id
+          lastAction
+          lastClaim
+          rewardCount
+          rewardPerTokenPaid
+          rewards
+          rewardEntries(orderBy: index, orderDirection: asc) {
+            id
+            finish
+            index
+            rate
+            start
+          }
+        }
       }
     }
   }
