@@ -5,6 +5,7 @@ import { ViewportWidth } from '../../../../theme';
 import { Fields } from '../../../../types';
 import { MultiStepButton } from '../../../core/MultiStepButton';
 import { AssetInputBox } from './AssetInputBox';
+import { useSaveState } from './SaveProvider';
 
 const { Input, Output } = Fields;
 
@@ -90,7 +91,33 @@ const Info = styled.div`
   border-radius: 0.75rem;
 `;
 
+const Column = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Error = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border-radius: 2rem;
+  margin-bottom: 0.75rem;
+  background: ${({ theme }) => theme.color.redTransparenter};
+
+  p {
+    text-align: center;
+    opacity: 0.75;
+    font-size: 0.875rem;
+    line-height: 1.75em;
+  }
+`;
+
 export const AssetExchange: FC = () => {
+  const { error, exchange } = useSaveState();
+
+  const formattedSlippage = `${exchange.slippage?.format(2)}%`;
+
   return (
     <Container>
       <Exchange>
@@ -103,11 +130,20 @@ export const AssetExchange: FC = () => {
         <InputBox title="Receive" fieldType={Output} showExchangeRate />
       </Exchange>
       <Details>
-        <MultiStepButton />
-        <Info>
-          <p>Slippage Tolerance</p>
-          <span>3.00%</span>
-        </Info>
+        <Column>
+          {error && (
+            <Error>
+              <p>{error}</p>
+            </Error>
+          )}
+          <MultiStepButton />
+        </Column>
+        {exchange.slippage && (
+          <Info>
+            <p>Slippage Tolerance</p>
+            <span>{formattedSlippage}</span>
+          </Info>
+        )}
       </Details>
     </Container>
   );

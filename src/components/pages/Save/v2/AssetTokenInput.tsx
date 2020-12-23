@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { useTokens } from '../../../../context/TokensProvider';
-import { FontSize, ViewportWidth } from '../../../../theme';
+import { ViewportWidth } from '../../../../theme';
 import { Fields, Token } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Button } from '../../../core/Button';
@@ -30,9 +30,6 @@ interface Props {
     enabled: boolean;
     reasonCannotEnable?: string;
     handleToggle(): void;
-  };
-  approval?: {
-    spender: string;
   };
   error?: string;
   valid?: boolean;
@@ -85,12 +82,6 @@ const InputContainer = styled.div`
   @media (min-width: ${ViewportWidth.m}) {
     align-items: inherit;
   }
-`;
-
-const Error = styled.div`
-  padding-top: 8px;
-  font-size: ${FontSize.s};
-  color: ${({ theme }) => theme.color.red};
 `;
 
 const Label = styled.div`
@@ -156,7 +147,6 @@ const Container = styled.div<{
 
 export const AssetTokenInput: FC<Props> = ({
   amount,
-  // approval,
   token,
   error,
   overweight,
@@ -165,10 +155,8 @@ export const AssetTokenInput: FC<Props> = ({
   name,
 }) => {
   const subscribedTokens = useTokens(token.addresses ?? []);
-  // const defaultToken = subscribedTokens[0];
-
-  // const allowance = useTokenAllowance(defaultToken?.address, approval?.spender);
   const enabled = toggle ? toggle.enabled : true;
+
   return (
     <Container enabled={enabled} overweight={overweight} valid={valid}>
       <Grid enabled={enabled}>
@@ -186,15 +174,6 @@ export const AssetTokenInput: FC<Props> = ({
                 Max
               </Button>
             ) : null}
-            {/* {approval &&
-            allowance &&
-            amount.value?.exact.gt(allowance.exact) ? (
-              <ApproveButton
-                address={defaultToken.address}
-                spender={approval.spender}
-                amount={amount.value}
-              />
-            ) : null} */}
           </Input>
         </InputContainer>
         <TokenContainer>
@@ -204,11 +183,9 @@ export const AssetTokenInput: FC<Props> = ({
             value={token.address ?? null}
             tokens={subscribedTokens}
             onChange={token.handleChange}
-            error={error}
           />
         </TokenContainer>
       </Grid>
-      {error ? <Error>{error}</Error> : null}
     </Container>
   );
 };

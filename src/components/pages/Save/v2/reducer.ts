@@ -2,7 +2,6 @@ import { Reducer } from 'react';
 import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { validate } from './validate';
 import { Action, Actions, ExchangeState, State, TokenPayload } from './types';
 import { TokenQuantityV2 } from '../../../../types';
 
@@ -11,8 +10,6 @@ const initialize = (state: State): State =>
     ? {
         ...state,
         initialized: true,
-        // amount: new BigDecimal(0, state.massetState.token.decimals),
-        // amountInCredits: new BigDecimal(0, state.massetState.token.decimals)}
       }
     : state;
 
@@ -20,7 +17,7 @@ const getExchangeRate = (state: State): BigDecimal | undefined => {
   const { massetState } = state;
   if (!massetState) return undefined;
   
-  // for now return musd exchange.
+  // for now, return musd exchange.
   return massetState.savingsContracts.v2?.latestExchangeRate?.rate
 }
     
@@ -189,5 +186,5 @@ export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
   setInitialExchangePair,
-  validate,
+  // validate,
 );

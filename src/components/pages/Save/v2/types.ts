@@ -17,6 +17,7 @@ export type ExchangeState = {
   output: TokenQuantityV2;
   feeAmountSimple: string | null;
   rate?: BigDecimal;
+  slippage?: BigDecimal;
 }
 
 export enum Reasons {
@@ -39,8 +40,8 @@ export enum Actions {
 
 export interface State {
   error?: string;
-  touched: boolean;
   valid: boolean;
+  touched: boolean;
   initialized: boolean;
   simulated?: MassetState;
   massetState?: MassetState;
