@@ -84,7 +84,7 @@
     "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "provision": "sh ./scripts/provision.sh",
-    "start": "react-scripts start",
+    "start": "DISABLE_ESLINT=true react-scripts start",
     "test:ropsten": "env-cmd -f .env.example.ropsten react-scripts test",
     "test": "react-scripts test",
     "script": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/run.ts",
