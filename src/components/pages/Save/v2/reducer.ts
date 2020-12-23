@@ -106,7 +106,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
       return { ...state, massetState: action.payload };
 
     // input change only for now.
-    case Actions.SetAmount: {
+    case Actions.SetInputQuantity: {
       const { exchange, massetState } = state;
       const { formValue } = action.payload;
 
@@ -143,44 +143,6 @@ const reduce: Reducer<State, Action> = (state, action) => {
         ...state,
         exchange: updateExchangeState(state, action.payload)
       };
-      
-    case Actions.SetMaxAmount: {
-      const { transactionType, massetState } = state;
-
-      if (!massetState) return state;
-
-      if (transactionType === TransactionType.Deposit) {
-        const formValue = massetState.token.balance.format(2, false);
-        return {
-          ...state,
-          amount: massetState.token.balance,
-          amountInCredits: undefined,
-          formValue,
-          touched: !!formValue,
-        };
-      }
-
-      const {
-        savingsBalance: { balance, credits },
-      } = massetState.savingsContracts.v2 as NonNullable<
-        typeof massetState['savingsContracts']['v2']
-      >;
-
-      if (balance) {
-        const formValue = balance.format(2, false);
-        const amount = balance;
-
-        return {
-          ...state,
-          amount,
-          amountInCredits: credits,
-          formValue,
-          touched: !!formValue,
-        };
-      }
-
-      return state;
-    }
 
     case Actions.ToggleTransactionType: {
       return {

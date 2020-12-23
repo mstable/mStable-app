@@ -46,19 +46,15 @@ export const SaveProvider: FC = ({ children }) => {
     dispatch({ type: Actions.Data, payload: massetState });
   }, [massetState]);
 
-  const setAmount = useCallback<Dispatch['setAmount']>(
+  const setInputQuantity = useCallback<Dispatch['setInputQuantity']>(
     formValue => {
       dispatch({
-        type: Actions.SetAmount,
+        type: Actions.SetInputQuantity,
         payload: { formValue },
       });
     },
     [dispatch],
   );
-
-  const setMaxAmount = useCallback<Dispatch['setMaxAmount']>(() => {
-    dispatch({ type: Actions.SetMaxAmount });
-  }, [dispatch]);
 
   const setToken = useCallback<Dispatch['setToken']>(
     (field, token) => {
@@ -94,21 +90,12 @@ export const SaveProvider: FC = ({ children }) => {
       <dispatchCtx.Provider
         value={useMemo(
           () => ({
-            setAmount,
-            setMaxAmount,
+            setInputQuantity,
             toggleTransactionType,
             setModeType,
             setToken,
-            // setTokenPair,
           }),
-          [
-            setMaxAmount,
-            setToken,
-            // setTokenPair,
-            setAmount,
-            toggleTransactionType,
-            setModeType,
-          ],
+          [setToken, setInputQuantity, toggleTransactionType, setModeType],
         )}
       >
         {children}

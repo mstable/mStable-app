@@ -53,7 +53,7 @@ export const AssetInputBox: FC<Props> = ({
     // outputError,
     // needsUnlock,
   } = useSaveState();
-  const { setToken, setAmount } = useSaveDispatch();
+  const { setToken, setInputQuantity } = useSaveDispatch();
 
   // const savingsContractV2 = useSelectedSaveV2Contract();
 
@@ -83,13 +83,13 @@ export const AssetInputBox: FC<Props> = ({
   const handleChange = (formValue: string | null): void => {
     // update amount
     if (fieldType === Fields.Input) {
-      setAmount(formValue);
+      setInputQuantity(formValue);
     }
     // console.log(formValue);
   };
 
-  const handleSetMax = (): void => {
-    // switch on fieldType
+  const handleSetMax = () => {
+    //
   };
 
   const isInput = fieldType === Fields.Input;

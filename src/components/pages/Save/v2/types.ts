@@ -36,12 +36,11 @@ export enum Reasons {
 
 export enum Actions {
   Data,
-  SetAmount,
+  SetInputQuantity,
   SetMaxAmount,
   ToggleTransactionType,
   SetModeType,
   SetToken,
-  SetTokenPair
 }
 
 export interface State {
@@ -68,7 +67,7 @@ export type Action =
       payload?: MassetState;
     }
   | {
-      type: Actions.SetAmount;
+      type: Actions.SetInputQuantity;
       payload: {
         formValue: string | null;
       };
@@ -85,8 +84,7 @@ export type Action =
   | { type: Actions.SetModeType; payload: SaveMode };
 
 export interface Dispatch {
-  setAmount(formValue: string | null, isCreditAmount?: boolean): void;
-  setMaxAmount(): void;
+  setInputQuantity(formValue: string | null): void;
   toggleTransactionType(): void;
   setModeType(modeType: SaveMode): void;
   setToken(field: Fields, token: Token | null): void;
