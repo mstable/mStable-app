@@ -56,19 +56,22 @@ export const AssetInputBox: FC<Props> = ({
 
   const isInput = fieldType === Fields.Input;
   const field = isInput ? input : output;
+  const inputToken = input.token;
+  const outputToken = input.token;
+  const tokensAvailable = inputToken?.symbol && outputToken?.symbol;
 
   const formattedExchangeRate = exchangeRate?.format(4);
 
   const tokenAddresses = useMemo<string[]>(() => {
     // TODO - this can probably be changed to compile list from bassets+massets?
-    if (!(input.token?.address && output.token?.address)) return [];
+    if (!(inputToken?.address && outputToken?.address)) return [];
 
     // add more here to create dropdown
     if (fieldType === Input) {
-      return [input.token.address];
+      return [inputToken.address];
     }
-    return [output.token.address];
-  }, [fieldType, input.token, output.token]);
+    return [outputToken.address];
+  }, [fieldType, inputToken, outputToken]);
 
   // const allowance = useTokenAllowance(defaultToken?.address, approval?.spender);
 
@@ -84,7 +87,11 @@ export const AssetInputBox: FC<Props> = ({
     <Container className={className}>
       <Header>
         <h3>{title}</h3>
-        {showExchangeRate && <p>1 mUSD = {formattedExchangeRate} imUSD</p>}
+        {showExchangeRate && tokensAvailable && (
+          <p>
+            {`1 ${input.token?.symbol} = ${formattedExchangeRate} ${output.token?.symbol}`}
+          </p>
+        )}
       </Header>
       <Body>
         <AssetTokenInput

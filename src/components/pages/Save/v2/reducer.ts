@@ -2,8 +2,10 @@ import { Reducer } from 'react';
 import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { Action, Actions, ExchangeState, State, TokenPayload } from './types';
+import { Action, Actions, ExchangeState, SaveMode, State, TokenPayload } from './types';
 import { TokenQuantityV2 } from '../../../../types';
+
+const BIG_NUM_1 = "1000000000000000000";
 
 const initialize = (state: State): State =>
   !state.initialized && state.massetState
@@ -13,12 +15,17 @@ const initialize = (state: State): State =>
       }
     : state;
 
-const getExchangeRate = (state: State): BigDecimal | undefined => {
+const getExchangeRate = (state: State, mode?: SaveMode): BigDecimal | undefined => {
   const { massetState } = state;
   if (!massetState) return undefined;
   
-  // for now, return musd exchange.
-  return massetState.savingsContracts.v2?.latestExchangeRate?.rate
+  const currentMode = mode ?? state.mode;
+  const rate = massetState.savingsContracts.v2?.latestExchangeRate?.rate;
+  
+  if (!rate) return undefined;
+  
+  if (currentMode === SaveMode.Deposit) return rate;
+  return new BigDecimal(BIG_NUM_1).divPrecisely(rate);
 }
     
 const setInitialExchangePair = (state: State): State => {
@@ -173,7 +180,8 @@ const reduce: Reducer<State, Action> = (state, action) => {
           ...state.exchange,
           input: output,
           output: input,
-        }
+          rate: getExchangeRate(state, mode),
+        },
       };
     }
 
