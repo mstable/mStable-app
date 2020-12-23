@@ -5,11 +5,20 @@ import { MassetName, SubscribedToken } from '../../types';
 import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol';
 import {
   BassetStatus,
+  BoostedSavingsVaultState,
   DataState,
   MassetState,
   SavingsContractState,
 } from './types';
 import { Tokens } from '../TokensProvider';
+
+type SavingsContractV1QueryResult = NonNullable<
+  MassetsQueryResult['data']
+>['massets'][number]['savingsContractsV1'][number];
+
+type SavingsContractV2QueryResult = NonNullable<
+  MassetsQueryResult['data']
+>['massets'][number]['savingsContractsV2'][number];
 
 const transformBassets = (
   bassets: NonNullable<
@@ -61,9 +70,7 @@ const transformBassets = (
 };
 
 const transformSavingsContractV1 = (
-  savingsContract: NonNullable<
-    MassetsQueryResult['data']
-  >['massets'][number]['savingsContractsV1'][number],
+  savingsContract: SavingsContractV1QueryResult,
   tokens: Tokens,
   massetAddress: string,
   current: boolean,
@@ -106,10 +113,58 @@ const transformSavingsContractV1 = (
   };
 };
 
+const transformBoostedSavingsVault = ({
+  id: address,
+  totalSupply,
+  accounts,
+  rewardPerTokenStored,
+  rewardRate,
+  stakingContract,
+  totalStakingRewards,
+}: NonNullable<
+  SavingsContractV2QueryResult['boostedSavingsVaults'][number]
+>): BoostedSavingsVaultState => {
+  let account: BoostedSavingsVaultState['account'];
+
+  if (accounts?.[0]) {
+    const [
+      {
+        rewardCount,
+        rewardEntries,
+        rewardPerTokenPaid,
+        rewards,
+        lastAction,
+        lastClaim,
+      },
+    ] = accounts;
+    account = {
+      rewardCount,
+      rewardPerTokenPaid: bigNumberify(rewardPerTokenPaid),
+      rewards: bigNumberify(rewards),
+      rewardEntries: rewardEntries.map(({ rate, finish, index, start }) => ({
+        rate: bigNumberify(rate),
+        finish,
+        index,
+        start,
+      })),
+      lastAction,
+      lastClaim,
+    };
+  }
+
+  return {
+    address,
+    account,
+    rewardRate: bigNumberify(rewardRate),
+    rewardPerTokenStored: bigNumberify(rewardPerTokenStored),
+    stakingContract,
+    totalSupply: new BigDecimal(totalSupply),
+    totalStakingRewards: BigDecimal.parse(totalStakingRewards),
+  };
+};
+
 const transformSavingsContractV2 = (
-  savingsContract: NonNullable<
-    MassetsQueryResult['data']
-  >['massets'][number]['savingsContractsV2'][number],
+  savingsContract: SavingsContractV2QueryResult,
   tokens: Tokens,
   massetAddress: string,
   current: boolean,
@@ -121,6 +176,7 @@ const transformSavingsContractV2 = (
     latestExchangeRate,
     totalSavings,
     version,
+    boostedSavingsVaults,
   } = savingsContract;
 
   return {
@@ -139,6 +195,9 @@ const transformSavingsContractV2 = (
     token: tokens[id],
     totalSavings: BigDecimal.fromMetric(totalSavings),
     version: version as 2,
+    boostedSavingsVault: boostedSavingsVaults[0]
+      ? transformBoostedSavingsVault(boostedSavingsVaults[0])
+      : undefined,
   };
 };
 
