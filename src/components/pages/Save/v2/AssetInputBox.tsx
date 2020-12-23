@@ -53,7 +53,7 @@ export const AssetInputBox: FC<Props> = ({
     // outputError,
     // needsUnlock,
   } = useSaveState();
-  const { setToken, setInputQuantity, setMaxInput } = useSaveDispatch();
+  const { setToken, setInput, setMaxInput } = useSaveDispatch();
 
   const isInput = fieldType === Fields.Input;
   const field = isInput ? input : output;
@@ -64,8 +64,9 @@ export const AssetInputBox: FC<Props> = ({
     // TODO - this can probably be changed to compile list from bassets+massets?
     if (!(input.token?.address && output.token?.address)) return [];
 
+    // add more here to create dropdown
     if (fieldType === Input) {
-      return [input.token.address, output.token.address];
+      return [input.token.address];
     }
     return [output.token.address];
   }, [fieldType, input.token, output.token]);
@@ -90,13 +91,13 @@ export const AssetInputBox: FC<Props> = ({
           amount={{
             formValue: field?.formValue,
             disabled: !isInput,
-            handleChange: isInput ? setInputQuantity : undefined,
+            handleChange: isInput ? setInput : undefined,
             handleSetMax: isInput ? setMaxInput : undefined,
           }}
           token={{
             address: field?.token?.address,
             addresses: tokenAddresses,
-            disabled: false,
+            disabled: !isInput,
             handleChange: setToken,
           }}
           error={undefined}

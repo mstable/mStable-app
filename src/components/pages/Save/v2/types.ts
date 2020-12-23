@@ -2,11 +2,6 @@ import { MassetState } from '../../../../context/DataProvider/types';
 import { Fields, Token, TokenQuantityV2 } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
-export enum TransactionType {
-  Deposit,
-  Withdraw,
-}
-
 export enum SaveMode {
   Deposit,
   Withdraw,
@@ -36,21 +31,14 @@ export enum Reasons {
 
 export enum Actions {
   Data,
-  SetInputQuantity,
+  SetInput,
   SetMaxInput,
-  ToggleTransactionType,
   SetModeType,
   SetToken,
 }
 
 export interface State {
   error?: string;
-  // can be removed?
-  transactionType: TransactionType;
-  amount?: BigDecimal;
-  amountInCredits?: BigDecimal;
-  formValue: string | null;
-  //
   touched: boolean;
   valid: boolean;
   initialized: boolean;
@@ -67,7 +55,7 @@ export type Action =
       payload?: MassetState;
     }
   | {
-      type: Actions.SetInputQuantity;
+      type: Actions.SetInput;
       payload: {
         formValue: string | null;
       };
@@ -80,12 +68,10 @@ export type Action =
         token: Token | null;
       };  
     }
-  | { type: Actions.ToggleTransactionType }
   | { type: Actions.SetModeType; payload: SaveMode };
 
 export interface Dispatch {
-  setInputQuantity(formValue: string | null): void;
-  toggleTransactionType(): void;
+  setInput(formValue: string | null): void;
   setMaxInput(): void;
   setModeType(modeType: SaveMode): void;
   setToken(field: Fields, token: Token | null): void;

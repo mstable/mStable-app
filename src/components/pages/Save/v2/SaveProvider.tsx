@@ -11,7 +11,7 @@ import React, {
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { TokenQuantityV2 } from '../../../../types';
 import { reducer } from './reducer';
-import { Actions, Dispatch, State, SaveMode, TransactionType } from './types';
+import { Actions, Dispatch, State, SaveMode } from './types';
 
 export const initialTokenQuantityFieldV2: TokenQuantityV2 = {
   formValue: null,
@@ -20,10 +20,6 @@ export const initialTokenQuantityFieldV2: TokenQuantityV2 = {
 };
 
 const initialState: State = {
-  // to remove?
-  formValue: null,
-  transactionType: TransactionType.Deposit,
-  //
   initialized: false,
   touched: false,
   valid: false,
@@ -46,10 +42,10 @@ export const SaveProvider: FC = ({ children }) => {
     dispatch({ type: Actions.Data, payload: massetState });
   }, [massetState]);
 
-  const setInputQuantity = useCallback<Dispatch['setInputQuantity']>(
+  const setInput = useCallback<Dispatch['setInput']>(
     formValue => {
       dispatch({
-        type: Actions.SetInputQuantity,
+        type: Actions.SetInput,
         payload: { formValue },
       });
     },
@@ -74,12 +70,6 @@ export const SaveProvider: FC = ({ children }) => {
     [dispatch],
   );
 
-  const toggleTransactionType = useCallback<
-    Dispatch['toggleTransactionType']
-  >(() => {
-    dispatch({ type: Actions.ToggleTransactionType });
-  }, [dispatch]);
-
   const setModeType = useCallback<Dispatch['setModeType']>(
     modeType => {
       dispatch({
@@ -95,19 +85,12 @@ export const SaveProvider: FC = ({ children }) => {
       <dispatchCtx.Provider
         value={useMemo(
           () => ({
-            setInputQuantity,
-            toggleTransactionType,
+            setInput,
             setModeType,
             setToken,
             setMaxInput,
           }),
-          [
-            setToken,
-            setInputQuantity,
-            setMaxInput,
-            toggleTransactionType,
-            setModeType,
-          ],
+          [setToken, setInput, setMaxInput, setModeType],
         )}
       >
         {children}

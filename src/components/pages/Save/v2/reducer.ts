@@ -3,7 +3,7 @@ import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { validate } from './validate';
-import { Action, Actions, ExchangeState, State, TokenPayload, TransactionType } from './types';
+import { Action, Actions, ExchangeState, State, TokenPayload } from './types';
 import { TokenQuantityV2 } from '../../../../types';
 
 const initialize = (state: State): State =>
@@ -11,26 +11,11 @@ const initialize = (state: State): State =>
     ? {
         ...state,
         initialized: true,
-        amount: new BigDecimal(0, state.massetState.token.decimals),
-        amountInCredits: new BigDecimal(0, state.massetState.token.decimals)}
-    : state;
-
-const simulateDeposit = (state: State): State['simulated'] => state.simulated;
-
-const simulateWithdrawal = (state: State): State['simulated'] =>
-  state.simulated;
-
-const simulate = (state: State): State =>
-  state.initialized && state.massetState
-    ? {
-        ...state,
-        simulated:
-          state.transactionType === TransactionType.Deposit
-            ? simulateDeposit(state)
-            : simulateWithdrawal(state),
+        // amount: new BigDecimal(0, state.massetState.token.decimals),
+        // amountInCredits: new BigDecimal(0, state.massetState.token.decimals)}
       }
     : state;
-    
+
 const getExchangeRate = (state: State): BigDecimal | undefined => {
   const { massetState } = state;
   if (!massetState) return undefined;
@@ -121,7 +106,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
       return { ...state, massetState: action.payload };
 
     // input change only for now.
-    case Actions.SetInputQuantity: {
+    case Actions.SetInput: {
       const { exchange, massetState } = state;
       const { formValue } = action.payload;
 
@@ -175,21 +160,6 @@ const reduce: Reducer<State, Action> = (state, action) => {
       }
     }
 
-    case Actions.ToggleTransactionType: {
-      return {
-        ...state,
-        transactionType:
-          state.transactionType === TransactionType.Deposit
-            ? TransactionType.Withdraw
-            : TransactionType.Deposit,
-        // Reset the amounts when toggling type, and remove `touched`
-        amount: undefined,
-        amountInCredits: undefined,
-        formValue: null,
-        touched: false,
-      };
-    }
-    
     case Actions.SetModeType: {
       const mode = action.payload;
       // disable switching until initialised
@@ -219,6 +189,5 @@ export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
   setInitialExchangePair,
-  simulate,
   validate,
 );
