@@ -11,6 +11,7 @@ import {
   SaveVersion,
   useSelectedSavingsContractState,
 } from '../../../context/SelectedSaveVersionProvider';
+import { useTokenSubscription } from '../../../context/TokensProvider';
 import { SaveMigration } from './SaveMigration';
 
 const CreditBalance = styled.div`
@@ -83,6 +84,8 @@ export const SaveInfo: FC = () => {
   const isV1SelectedAndDeprecated =
     savingsContractState?.version === SaveVersion.V1 &&
     !savingsContractState.current;
+
+  useTokenSubscription(savingsContractState?.address);
 
   return (
     <BalanceInfoRow>
