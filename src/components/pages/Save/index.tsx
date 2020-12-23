@@ -6,8 +6,8 @@ import { PageHeader } from '../PageHeader';
 import { SaveInfo } from './SaveInfo';
 import { ToggleSave } from './ToggleSave';
 import { WeeklySaveAPY } from './WeeklySaveAPY';
-import { SaveV1 } from './v1';
-import { SaveV2 } from './v2';
+import { Save as SaveV1 } from './v1';
+import { Save as SaveV2 } from './v2';
 
 export const Save: FC = () => {
   const [selectedSaveVersion] = useSelectedSaveVersion();

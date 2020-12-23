@@ -1,19 +1,19 @@
 import React, { FC, useEffect } from 'react';
 
-import { useWalletAddress } from '../../../../../context/OnboardProvider';
+import { useWalletAddress } from '../../../../context/OnboardProvider';
 import {
   useSetFormManifest,
   FormProvider,
-} from '../../../../forms/TransactionForm/FormProvider';
-import { useSelectedSaveV2Contract } from '../../../../../web3/hooks';
-import { Interfaces } from '../../../../../types';
-import { TransactionForm } from '../../../../forms/TransactionForm';
-import { TransactionType } from '../types';
-import { useSaveState } from '../SaveProvider';
-import { SaveConfirm } from '../SaveConfirm';
-import { SaveInput } from '../SaveInput';
+} from '../../../forms/TransactionForm/FormProvider';
+import { useSelectedSaveV2Contract } from '../../../../web3/hooks';
+import { Interfaces } from '../../../../types';
+import { TransactionForm } from '../../../forms/TransactionForm';
+import { TransactionType } from './types';
+import { useSaveState } from './SaveProvider';
+import { SaveConfirm } from './SaveConfirm';
+import { SaveInput } from './SaveInput';
 
-const WithdrawForm: FC = () => {
+const WithdrawFormContent: FC = () => {
   const {
     amount,
     amountInCredits,
@@ -66,8 +66,8 @@ const WithdrawForm: FC = () => {
   );
 };
 
-export const Withdraw: FC = () => (
+export const WithdrawForm: FC = () => (
   <FormProvider formId="withdraw">
-    <WithdrawForm />
+    <WithdrawFormContent />
   </FormProvider>
 );
