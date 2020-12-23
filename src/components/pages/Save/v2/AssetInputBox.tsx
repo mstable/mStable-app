@@ -64,7 +64,7 @@ export const AssetInputBox: FC<Props> = ({
     if (!(input.token?.address && output.token?.address)) return [];
 
     if (fieldType === Input) {
-      return [input.token.address];
+      return [input.token.address, output.token.address];
     }
     return [output.token.address];
   }, [fieldType, input.token, output.token]);
@@ -106,7 +106,7 @@ export const AssetInputBox: FC<Props> = ({
           token={{
             address: field?.token?.address,
             addresses: tokenAddresses,
-            disabled: true,
+            disabled: false,
             handleChange: setToken,
           }}
           error={undefined}

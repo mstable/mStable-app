@@ -12,14 +12,10 @@ export enum SaveMode {
   Withdraw,
 }
 
-export type FieldPayload = {
-  field: Fields;
-} & 
-{
-  address: string | null;
-  decimals: number | null;
-  symbol: string | null;
-};
+export type TokenPayload = {
+  field: Fields, 
+  token: Token | null
+}
 
 export type ExchangeState = {
   input: TokenQuantityV2;
@@ -80,12 +76,11 @@ export type Action =
   | { type: Actions.SetMaxAmount }
   | { 
       type: Actions.SetToken; 
-      payload: FieldPayload;  
+      payload: {
+        field: Fields;
+        token: Token | null;
+      };  
     }
-  | { 
-    type: Actions.SetTokenPair; 
-    payload: FieldPayload[];  
-  }
   | { type: Actions.ToggleTransactionType }
   | { type: Actions.SetModeType; payload: SaveMode };
 
@@ -94,14 +89,5 @@ export interface Dispatch {
   setMaxAmount(): void;
   toggleTransactionType(): void;
   setModeType(modeType: SaveMode): void;
-  setToken(
-    field: Fields,
-    token: Pick<Token, 'address' | 'decimals' | 'symbol'> | null,
-  ): void;
-  setTokenPair(
-    tokens: {
-      field: Fields,
-      token: Pick<Token, 'address' | 'decimals' | 'symbol'> | null
-    }[]
-  ): void;
+  setToken(field: Fields, token: Token | null): void;
 }

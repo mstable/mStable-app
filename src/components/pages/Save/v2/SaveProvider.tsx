@@ -16,6 +16,7 @@ import { Actions, Dispatch, State, SaveMode, TransactionType } from './types';
 export const initialTokenQuantityFieldV2: TokenQuantityV2 = {
   formValue: null,
   amount: null,
+  token: null,
 };
 
 const initialState: State = {
@@ -59,26 +60,13 @@ export const SaveProvider: FC = ({ children }) => {
     dispatch({ type: Actions.SetMaxAmount });
   }, [dispatch]);
 
-  const setTokenPair = useCallback<Dispatch['setTokenPair']>(
-    tokenPairs => {
-      dispatch({
-        type: Actions.SetTokenPair,
-        payload: tokenPairs.map(t => ({
-          field: t.field,
-          ...(t.token ?? { address: null, symbol: null, decimals: null }),
-        })),
-      });
-    },
-    [dispatch],
-  );
-
   const setToken = useCallback<Dispatch['setToken']>(
-    (field, payload) => {
+    (field, token) => {
       dispatch({
         type: Actions.SetToken,
         payload: {
           field,
-          ...(payload ?? { address: null, symbol: null, decimals: null }),
+          token,
         },
       });
     },
@@ -111,12 +99,12 @@ export const SaveProvider: FC = ({ children }) => {
             toggleTransactionType,
             setModeType,
             setToken,
-            setTokenPair,
+            // setTokenPair,
           }),
           [
             setMaxAmount,
             setToken,
-            setTokenPair,
+            // setTokenPair,
             setAmount,
             toggleTransactionType,
             setModeType,

@@ -96,12 +96,6 @@ const Info = styled.div`
 `;
 
 export const AssetExchange: FC = () => {
-  const { mode, massetState, exchange } = useSaveState();
-  const { setTokenPair } = useSaveDispatch();
-
-  const musd = massetState?.token;
-  const imusd = massetState?.savingsContracts.v2?.token;
-
   return (
     <Container>
       <Exchange>

@@ -3,49 +3,17 @@ import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { validate } from './validate';
-import { Action, Actions, FieldPayload, SaveMode, State, TransactionType } from './types';
-import { parseAmount } from '../../../../web3/amounts';
-import { TokenQuantity } from '../../../../types';
+import { Action, Actions, ExchangeState, State, TokenPayload, TransactionType } from './types';
+import { TokenQuantityV2 } from '../../../../types';
 
-const initialize = (state: State): State =>{
-  const { initialized, massetState } = state;
-  
-  if (!initialized && massetState) {
-    const defaultInputToken = massetState.token;
-    const defaultOutputToken = massetState.savingsContracts.v2?.token
-    
-    if (!defaultOutputToken) return state;
-    
-    return {
-      ...state,
-      initialized: true,
-      amount: new BigDecimal(0, defaultInputToken.decimals),
-      amountInCredits: new BigDecimal(0, defaultInputToken.decimals),
-      exchange: {
-        input: {
-          formValue: state.exchange.input.formValue,
-          amount: null,
-          token: {
-            address: defaultInputToken.address,
-            decimals: defaultInputToken.decimals,
-            symbol: defaultInputToken.symbol,
-          },
-        },
-        output: {
-          formValue: null,
-          amount: null,
-          token: {
-            address: defaultOutputToken?.address ?? null,
-            decimals: defaultOutputToken?.decimals ?? null,
-            symbol: defaultOutputToken?.symbol ?? null,
-          },
-        },
-        feeAmountSimple: null
-      }
-    }    
-  } 
-  return state;
-}
+const initialize = (state: State): State =>
+  !state.initialized && state.massetState
+    ? {
+        ...state,
+        initialized: true,
+        amount: new BigDecimal(0, state.massetState.token.decimals),
+        amountInCredits: new BigDecimal(0, state.massetState.token.decimals)}
+    : state;
 
 const simulateDeposit = (state: State): State['simulated'] => state.simulated;
 
@@ -70,13 +38,50 @@ const getExchangeRate = (state: State): BigDecimal | undefined => {
   // for now return musd exchange.
   return massetState.savingsContracts.v2?.latestExchangeRate?.rate
 }
-
-const updateToken = (state: State, payload: FieldPayload): {[field: string]: TokenQuantity } => {
-  const { address, decimals, symbol, field } = payload;
+    
+const setInitialExchangePair = (state: State): State => {
+  const { massetState, exchange } = state;
   
-  const token = {address, decimals, symbol };
+  if (massetState && !exchange.rate) {
+    const defaultInputToken = massetState.token;
+    const defaultOutputToken = massetState.savingsContracts.v2?.token
+    
+    if (!defaultOutputToken) return state;
+    
+    return {
+      ...state,
+      exchange: {
+        rate: getExchangeRate(state),
+        input: {
+          formValue: state.exchange.input.formValue,
+          amount: null,
+          token: {
+            address: defaultInputToken.address,
+            decimals: defaultInputToken.decimals,
+            symbol: defaultInputToken.symbol,
+          },
+        },
+        output: {
+          formValue: null,
+          amount: null,
+          token: {
+            address: defaultOutputToken.address,
+            decimals: defaultOutputToken.decimals,
+            symbol: defaultOutputToken.symbol,
+          },
+        },
+        feeAmountSimple: null
+      }
+    }
+  }
+  return state;
+};
+
+const updateToken = (payload: TokenPayload): {[field: string]: TokenQuantityV2 } => {
+  const { field, token } = payload;
+  
   const formValue = null;
-  const amount = parseAmount(formValue, token.decimals);
+  const amount = BigDecimal.maybeParse(formValue) ?? null;
     
   return {
     [field]: {
@@ -86,13 +91,13 @@ const updateToken = (state: State, payload: FieldPayload): {[field: string]: Tok
     },
   }
 }
-    
-const updateTokenPair = (state: State, payload: FieldPayload[]): {[field: string]: TokenQuantity } => {
-  const exchange = payload.map(p => updateToken(state, p));
-  return exchange.reduce((prev, current) => ({
-    ...prev,
-    ...current
-    }));;
+
+const updateExchangeState = (state: State, payload: TokenPayload ): ExchangeState => {
+  return  {
+    ...state.exchange,
+    ...updateToken(payload as TokenPayload),
+    rate: getExchangeRate(state),
+  }
 }
 
 const reduce: Reducer<State, Action> = (state, action) => {
@@ -136,23 +141,9 @@ const reduce: Reducer<State, Action> = (state, action) => {
     case Actions.SetToken:
       return {
         ...state,
-        exchange: {
-          ...state.exchange,
-          ...updateToken(state, action.payload),
-          rate: getExchangeRate(state),
-        }
+        exchange: updateExchangeState(state, action.payload)
       };
       
-    case Actions.SetTokenPair:
-      return {
-        ...state,
-        exchange: {
-          ...state.exchange,
-          ...updateTokenPair(state, action.payload),
-          rate: getExchangeRate(state),
-        }
-      };
-
     case Actions.SetMaxAmount: {
       const { transactionType, massetState } = state;
 
@@ -234,6 +225,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
 export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
+  setInitialExchangePair,
   simulate,
   validate,
 );
