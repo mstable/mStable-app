@@ -37,7 +37,7 @@ export enum Reasons {
 export enum Actions {
   Data,
   SetInputQuantity,
-  SetMaxAmount,
+  SetMaxInput,
   ToggleTransactionType,
   SetModeType,
   SetToken,
@@ -72,7 +72,7 @@ export type Action =
         formValue: string | null;
       };
     }
-  | { type: Actions.SetMaxAmount }
+  | { type: Actions.SetMaxInput }
   | { 
       type: Actions.SetToken; 
       payload: {
@@ -86,6 +86,7 @@ export type Action =
 export interface Dispatch {
   setInputQuantity(formValue: string | null): void;
   toggleTransactionType(): void;
+  setMaxInput(): void;
   setModeType(modeType: SaveMode): void;
   setToken(field: Fields, token: Token | null): void;
 }

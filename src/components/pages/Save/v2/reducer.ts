@@ -100,6 +100,21 @@ const updateExchangeState = (state: State, payload: TokenPayload ): ExchangeStat
   }
 }
 
+const calcOutput = (state: State, inputAmount?: BigDecimal): TokenQuantityV2 => {
+  const { exchange } = state;
+  const exchangeRate = exchange.rate;
+  
+  const amount = ((inputAmount && exchangeRate)
+          && inputAmount.mulTruncate(exchangeRate.exact)) ?? null
+  const formValue = amount?.format(2, false) ?? null;
+          
+  return {
+    ...state.exchange.output,
+    amount,
+    formValue,
+  }
+}
+
 const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.Data:
@@ -113,12 +128,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
       if (!massetState) return state;
 
       // will only work with musd - imusd, not other assets.
-      const exchangeRate = exchange.rate;
-      const maybeAmount = BigDecimal.maybeParse(formValue, exchange.input.token?.decimals);
-      
-      const amountInCredits = (maybeAmount && exchangeRate)
-          ? maybeAmount.mulTruncate(exchangeRate.exact)
-          : undefined;
+      const amount = BigDecimal.maybeParse(formValue, exchange.input.token?.decimals);
       
       return {
         ...state,
@@ -126,14 +136,10 @@ const reduce: Reducer<State, Action> = (state, action) => {
           ...state.exchange,
           input: {
             ...state.exchange.input,
+            amount: amount ?? null,
             formValue,
-            amount: maybeAmount ?? null,
           },
-          output: {
-            ...state.exchange.output,
-            formValue: amountInCredits?.format(2) ?? null,
-            amount: amountInCredits ?? null,
-          }
+          output: calcOutput(state, amount),
         }
       }
     }
@@ -143,6 +149,31 @@ const reduce: Reducer<State, Action> = (state, action) => {
         ...state,
         exchange: updateExchangeState(state, action.payload)
       };
+      
+    case Actions.SetMaxInput: {
+      const { exchange, massetState } = state;
+      const inputAddress = exchange.input.token?.address; 
+      if (!inputAddress || !massetState) return state;
+      
+      const { bAssets } = massetState;
+      
+      // TODO - include imUSD in this, current fallback is mUSD
+      const amount = bAssets[inputAddress]?.token?.balance ?? massetState.token?.balance
+      const formValue = amount?.format(2, false);
+      
+      return {
+        ...state,
+        exchange: {
+          ...state.exchange,
+          input: {
+            ...state.exchange.input,
+            amount,
+            formValue
+          },
+          output: calcOutput(state, amount)
+        }
+      }
+    }
 
     case Actions.ToggleTransactionType: {
       return {

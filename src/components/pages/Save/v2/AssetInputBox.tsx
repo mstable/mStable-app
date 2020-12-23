@@ -48,21 +48,20 @@ export const AssetInputBox: FC<Props> = ({
   className,
 }) => {
   const {
-    exchange: { input, output, rate: exchangeRate }, // feeAmountSimple
+    exchange: { input, output, rate: exchangeRate },
     // inputError,
     // outputError,
     // needsUnlock,
   } = useSaveState();
-  const { setToken, setInputQuantity } = useSaveDispatch();
+  const { setToken, setInputQuantity, setMaxInput } = useSaveDispatch();
 
-  // const savingsContractV2 = useSelectedSaveV2Contract();
-
-  const field = fieldType === Input ? input : output;
+  const isInput = fieldType === Fields.Input;
+  const field = isInput ? input : output;
 
   const formattedExchangeRate = exchangeRate?.format(4);
 
   const tokenAddresses = useMemo<string[]>(() => {
-    // expand when more assets are needed.
+    // TODO - this can probably be changed to compile list from bassets+massets?
     if (!(input.token?.address && output.token?.address)) return [];
 
     if (fieldType === Input) {
@@ -79,21 +78,6 @@ export const AssetInputBox: FC<Props> = ({
   //   [field],
   // );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleChange = (formValue: string | null): void => {
-    // update amount
-    if (fieldType === Fields.Input) {
-      setInputQuantity(formValue);
-    }
-    // console.log(formValue);
-  };
-
-  const handleSetMax = () => {
-    //
-  };
-
-  const isInput = fieldType === Fields.Input;
-
   return (
     <Container className={className}>
       <Header>
@@ -106,8 +90,8 @@ export const AssetInputBox: FC<Props> = ({
           amount={{
             formValue: field?.formValue,
             disabled: !isInput,
-            handleChange,
-            handleSetMax: isInput ? handleSetMax : undefined,
+            handleChange: isInput ? setInputQuantity : undefined,
+            handleSetMax: isInput ? setMaxInput : undefined,
           }}
           token={{
             address: field?.token?.address,

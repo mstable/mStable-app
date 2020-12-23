@@ -56,6 +56,11 @@ export const SaveProvider: FC = ({ children }) => {
     [dispatch],
   );
 
+  const setMaxInput = useCallback<Dispatch['setMaxInput']>(
+    () => dispatch({ type: Actions.SetMaxInput }),
+    [dispatch],
+  );
+
   const setToken = useCallback<Dispatch['setToken']>(
     (field, token) => {
       dispatch({
@@ -94,8 +99,15 @@ export const SaveProvider: FC = ({ children }) => {
             toggleTransactionType,
             setModeType,
             setToken,
+            setMaxInput,
           }),
-          [setToken, setInputQuantity, toggleTransactionType, setModeType],
+          [
+            setToken,
+            setInputQuantity,
+            setMaxInput,
+            toggleTransactionType,
+            setModeType,
+          ],
         )}
       >
         {children}
