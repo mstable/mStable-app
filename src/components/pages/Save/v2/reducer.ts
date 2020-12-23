@@ -3,7 +3,7 @@ import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Action, Actions, ExchangeState, SaveMode, State, TokenPayload } from './types';
-import { TokenQuantityV2 } from '../../../../types';
+import { SubscribedToken, TokenQuantityV2 } from '../../../../types';
 import { validate } from './validate';
 
 const BIG_NUM_1 = "1000000000000000000";
@@ -29,6 +29,7 @@ const getExchangeRate = (state: State, mode?: SaveMode): BigDecimal | undefined 
   return new BigDecimal(BIG_NUM_1).divPrecisely(rate);
 }
     
+// TODO - doesn't always set correctly.
 const setInitialExchangePair = (state: State): State => {
   const { massetState, exchange } = state;
   
@@ -147,10 +148,23 @@ const reduce: Reducer<State, Action> = (state, action) => {
       if (!inputAddress || !massetState) return state;
       
       const { bAssets } = massetState;
-      
-      // TODO - include imUSD in this, current fallback is mUSD
-      const amount = bAssets[inputAddress]?.token?.balance ?? massetState.token?.balance
-      const formValue = amount?.format(2, false);
+          
+      // TODO - Extract out? 
+      const getInputToken = (): SubscribedToken | undefined => {
+        if (!bAssets[inputAddress]) {
+          if (inputAddress === massetState.token.address) {
+            return massetState.token;
+          } if (inputAddress === massetState.savingsContracts.v2?.token?.address) {
+            return massetState.savingsContracts.v2?.token;
+          }
+        } else {
+          return bAssets[inputAddress].token
+        }
+      }
+  
+      const inputToken = getInputToken();
+      const amount = inputToken?.balance;
+      const formValue = amount?.format(2, false) ?? null;
       
       return {
         ...state,
@@ -158,7 +172,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
           ...state.exchange,
           input: {
             ...state.exchange.input,
-            amount,
+            amount: amount ?? null,
             formValue
           },
           output: calcOutput(state, amount)

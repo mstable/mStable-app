@@ -1,3 +1,4 @@
+import { SubscribedToken } from '../../../../types';
 import { State, Reasons } from './types';
 
 const validateSave = ({
@@ -19,7 +20,19 @@ const validateSave = ({
   }
   
   // TODO - doesn't handle imusd mapping.
-  const inputToken = bAssets[inputTokenAddress]?.token ?? massetState?.token;
+  const getInputToken = (): SubscribedToken | undefined => {
+    if (!bAssets[inputTokenAddress]) {
+      if (inputTokenAddress === massetState.token.address) {
+        return massetState.token;
+      } if (inputTokenAddress === massetState.savingsContracts.v2?.token?.address) {
+        return massetState.savingsContracts.v2?.token;
+      }
+    } else {
+      return bAssets[inputTokenAddress].token
+    }
+  }
+  
+  const inputToken = getInputToken();
   
   const inputAmount = exchange.input.amount;
   const outputAmount = exchange.output.amount;
