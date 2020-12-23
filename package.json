@@ -83,7 +83,7 @@
     "codegen:typechain": "cp ./node_modules/@mstable/protocol/build/contracts/*.json ./lib/abis/combined && cp ./lib/abis/overrides/*.json ./lib/abis/combined && yarn typechain --target ethers-v4 --outDir src/typechain './lib/abis/combined/*.json'",
     "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
-    "start": "react-scripts start",
+    "start": "DISABLE_ESLINT=true react-scripts start",
     "test:ropsten": "env-cmd -f .env.example.ropsten react-scripts test",
     "test": "react-scripts test",
     "script": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/run.ts",
