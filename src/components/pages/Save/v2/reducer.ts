@@ -157,9 +157,9 @@ const reduce: Reducer<State, Action> = (state, action) => {
           } if (inputAddress === massetState.savingsContracts.v2?.token?.address) {
             return massetState.savingsContracts.v2?.token;
           }
-        } else {
-          return bAssets[inputAddress].token
-        }
+          return undefined;
+        } 
+        return bAssets[inputAddress].token
       }
   
       const inputToken = getInputToken();

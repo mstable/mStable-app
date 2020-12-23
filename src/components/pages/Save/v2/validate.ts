@@ -19,7 +19,7 @@ const validateSave = ({
     return [false, Reasons.FetchingData];
   }
   
-  // TODO - doesn't handle imusd mapping.
+  // TODO - extract out?
   const getInputToken = (): SubscribedToken | undefined => {
     if (!bAssets[inputTokenAddress]) {
       if (inputTokenAddress === massetState.token.address) {
@@ -27,9 +27,9 @@ const validateSave = ({
       } if (inputTokenAddress === massetState.savingsContracts.v2?.token?.address) {
         return massetState.savingsContracts.v2?.token;
       }
-    } else {
-      return bAssets[inputTokenAddress].token
-    }
+      return undefined;
+    } 
+    return bAssets[inputTokenAddress].token
   }
   
   const inputToken = getInputToken();
