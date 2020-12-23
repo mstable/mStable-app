@@ -183,42 +183,37 @@ export const useErc20Contract = (
 
 export const useSelectedMassetContract = (): Masset | undefined => {
   const massetState = useSelectedMassetState();
+  const address = massetState?.address;
   const signer = useSigner();
   return useMemo(
     () =>
-      signer && massetState?.address
-        ? MassetFactory.connect(massetState.address, signer)
-        : undefined,
-    [massetState, signer],
+      signer && address ? MassetFactory.connect(address, signer) : undefined,
+    [address, signer],
   );
 };
 
 export const useSelectedSaveV1Contract = (): SavingsContract | undefined => {
   const massetState = useSelectedMassetState();
+  const address = massetState?.savingsContracts.v1?.address;
   const signer = useSigner();
   return useMemo(
     () =>
-      signer && massetState?.savingsContracts.v1?.address
-        ? SavingsContractFactory.connect(
-            massetState.savingsContracts.v1.address,
-            signer,
-          )
+      signer && address
+        ? SavingsContractFactory.connect(address, signer)
         : undefined,
-    [massetState, signer],
+    [address, signer],
   );
 };
 
 export const useSelectedSaveV2Contract = (): SavingsContract | undefined => {
   const massetState = useSelectedMassetState();
+  const address = massetState?.savingsContracts.v2?.address;
   const signer = useSigner();
   return useMemo(
     () =>
-      signer && massetState?.savingsContracts.v2?.address
-        ? SavingsContractFactory.connect(
-            massetState.savingsContracts.v2.address,
-            signer,
-          )
+      signer && address
+        ? SavingsContractFactory.connect(address, signer)
         : undefined,
-    [massetState, signer],
+    [address, signer],
   );
 };
