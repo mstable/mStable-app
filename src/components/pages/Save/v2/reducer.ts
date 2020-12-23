@@ -4,6 +4,7 @@ import { pipeline } from 'ts-pipe-compose';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Action, Actions, ExchangeState, SaveMode, State, TokenPayload } from './types';
 import { TokenQuantityV2 } from '../../../../types';
+import { validate } from './validate';
 
 const BIG_NUM_1 = "1000000000000000000";
 
@@ -129,7 +130,8 @@ const reduce: Reducer<State, Action> = (state, action) => {
             formValue,
           },
           output: calcOutput(state, amount),
-        }
+        },
+        touched: true,
       }
     }
     
@@ -194,5 +196,5 @@ export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
   setInitialExchangePair,
-  // validate,
+  validate,
 );
