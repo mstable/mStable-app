@@ -89,9 +89,7 @@ const getStakingRewardsContractsMap = (
 
         const stakingToken = {
           ...data.stakingToken,
-          totalSupply: BigDecimal.fromMetric(
-            data.stakingToken.totalSupply,
-          ),
+          totalSupply: BigDecimal.fromMetric(data.stakingToken.totalSupply),
           price: tokenPrices[data.stakingToken.address],
         };
 
@@ -258,11 +256,12 @@ const getStakingRewardsContractsMap = (
           const rewardsTokenPrice = rewardsToken?.price?.simple;
 
           // Prerequisites
-          const hasPrerequisites =
+          const hasPrerequisites = !!(
             block24hAgo &&
             result.rewardPerTokenStored24hAgo &&
             stakingTokenPrice &&
-            rewardsTokenPrice;
+            rewardsTokenPrice
+          );
 
           if (!hasPrerequisites) {
             return undefined;
@@ -286,16 +285,28 @@ const getStakingRewardsContractsMap = (
           // percentage = gains / stakingTokenPrice
           const percentage = gains / stakingTokenPrice;
 
+          console.log({
+            rewardsTokenPrice,
+            deltaR,
+            deltaT,
+            gains,
+            percentage,
+            apy: percentage * ((365 * 24 * 60 * 60) / deltaT),
+          });
+
           // apy = percentage * (seconds in year / deltaT)
           return percentage * ((365 * 24 * 60 * 60) / deltaT);
         })();
 
+        const value =
+          typeof apyValue === 'number'
+            ? new BigDecimal(apyValue.toString(), 18)
+            : undefined;
+
         const withApy = {
           ...result,
           apy: {
-            value: apyValue
-              ? new BigDecimal(apyValue.toString(), 18)
-              : undefined,
+            value,
             waitingForData: !rewardPerTokenStored24hAgo,
             yieldApy:
               isCurve && curveJsonData?.yieldApy?.toString

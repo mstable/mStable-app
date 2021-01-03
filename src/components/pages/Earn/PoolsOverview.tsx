@@ -173,7 +173,7 @@ export const PoolsOverview: FC<{}> = () => {
                   if (expired) {
                     return <>N/A</>;
                   }
-                  return item.apy.value?.exact.gt(0) ? (
+                  return item.apy.value?.exact ? (
                     <div>
                       <MtaApyAmount
                         amount={item.apy.value}
