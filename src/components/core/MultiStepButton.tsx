@@ -63,12 +63,13 @@ export const MultiStepButton: FC<Props> = ({
   );
 
   const handleDeposit = (): void => {
+    if (!valid && needsUnlock) return;
     if (needsUnlock) {
       changeState(APPROVE);
-      return undefined;
+    } else {
+      // TODO: -
+      // handle unlocked state & deposit call
     }
-    // TODO: - handle deposit here
-    return undefined;
   };
 
   return (
