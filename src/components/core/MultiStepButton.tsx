@@ -6,10 +6,15 @@ import { BubbleButton, UnstyledButton } from './Button';
 enum MultiStepState {
   DEFAULT,
   APPROVE,
-  ACTION,
 }
 
-const { DEFAULT, APPROVE, ACTION } = MultiStepState;
+const { APPROVE, DEFAULT } = MultiStepState;
+
+interface Props {
+  className?: string;
+  needsUnlock?: boolean;
+  valid: boolean;
+}
 
 const Container = styled.div`
   height: 4rem;
@@ -45,7 +50,11 @@ const CloseButton = styled(UnstyledButton)`
   cursor: pointer;
 `;
 
-export const MultiStepButton: FC<{ className?: string }> = ({ className }) => {
+export const MultiStepButton: FC<Props> = ({
+  className,
+  valid,
+  needsUnlock,
+}) => {
   const [step, setStep] = useState<MultiStepState>(DEFAULT);
 
   const changeState = useCallback(
@@ -53,10 +62,21 @@ export const MultiStepButton: FC<{ className?: string }> = ({ className }) => {
     [],
   );
 
+  const handleDeposit = (): void => {
+    if (needsUnlock) {
+      changeState(APPROVE);
+      return undefined;
+    }
+    // TODO: - handle deposit here
+    return undefined;
+  };
+
   return (
     <Container className={className}>
       {step === DEFAULT && (
-        <Button onClick={() => changeState(APPROVE)}>Deposit</Button>
+        <Button highlighted={valid} onClick={handleDeposit}>
+          Deposit
+        </Button>
       )}
       {step === APPROVE && (
         <>
@@ -64,7 +84,7 @@ export const MultiStepButton: FC<{ className?: string }> = ({ className }) => {
             <Button
               highlighted
               scale={0.875}
-              onClick={() => changeState(ACTION)}
+              onClick={() => changeState(DEFAULT)}
             >
               <div>Approve</div>
               <div>Exact</div>
@@ -72,7 +92,7 @@ export const MultiStepButton: FC<{ className?: string }> = ({ className }) => {
             <Button
               highlighted
               scale={0.875}
-              onClick={() => changeState(ACTION)}
+              onClick={() => changeState(DEFAULT)}
             >
               <div>Approve</div>
               <div>∞</div>
@@ -80,11 +100,6 @@ export const MultiStepButton: FC<{ className?: string }> = ({ className }) => {
           </ApproveContainer>
           <CloseButton onClick={() => changeState(DEFAULT)}>✕</CloseButton>
         </>
-      )}
-      {step === ACTION && (
-        <Button highlighted onClick={() => changeState(APPROVE)}>
-          Deposit
-        </Button>
       )}
     </Container>
   );

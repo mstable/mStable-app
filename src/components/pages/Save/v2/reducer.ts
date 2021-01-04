@@ -3,8 +3,8 @@ import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Action, Actions, ExchangeState, SaveMode, State, TokenPayload } from './types';
-import { SubscribedToken, TokenQuantityV2 } from '../../../../types';
-import { validate } from './validate';
+import { TokenQuantityV2 } from '../../../../types';
+import { getInputToken, validate } from './validate';
 
 const BIG_NUM_1 = "1000000000000000000";
 
@@ -147,22 +147,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
       const inputAddress = exchange.input.token?.address; 
       if (!inputAddress || !massetState) return state;
       
-      const { bAssets } = massetState;
-          
-      // TODO - Extract out? 
-      const getInputToken = (): SubscribedToken | undefined => {
-        if (!bAssets[inputAddress]) {
-          if (inputAddress === massetState.token.address) {
-            return massetState.token;
-          } if (inputAddress === massetState.savingsContracts.v2?.token?.address) {
-            return massetState.savingsContracts.v2?.token;
-          }
-          return undefined;
-        } 
-        return bAssets[inputAddress].token
-      }
-  
-      const inputToken = getInputToken();
+      const inputToken = getInputToken(state);
       const amount = inputToken?.balance;
       const formValue = amount?.format(2, false) ?? null;
       

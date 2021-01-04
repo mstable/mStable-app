@@ -114,9 +114,10 @@ const Error = styled.div`
 `;
 
 export const AssetExchange: FC = () => {
-  const { error, exchange } = useSaveState();
+  const { error, exchange, valid } = useSaveState();
 
   const formattedSlippage = `${exchange.slippage?.format(2)}%`;
+  const { needsUnlock: inputNeedsUnlock } = exchange.input;
 
   return (
     <Container>
@@ -136,7 +137,7 @@ export const AssetExchange: FC = () => {
               <p>{error}</p>
             </Error>
           )}
-          <MultiStepButton />
+          <MultiStepButton needsUnlock={inputNeedsUnlock} valid={valid} />
         </Column>
         {exchange.slippage && (
           <Info>

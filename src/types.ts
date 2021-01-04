@@ -135,6 +135,7 @@ export interface TokenQuantityV2 {
     decimals?: number;
     symbol?: string;
   } | null;
+  needsUnlock?: boolean;
 }
 
 export interface Connector {

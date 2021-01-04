@@ -45,7 +45,6 @@ export interface State {
   initialized: boolean;
   simulated?: MassetState;
   massetState?: MassetState;
-  needsUnlock?: boolean;
   mode: SaveMode;
   exchange: ExchangeState;
 }

@@ -50,7 +50,6 @@ export const AssetInputBox: FC<Props> = ({
   const {
     exchange: { input, output, rate: exchangeRate },
     error,
-    // needsUnlock,
   } = useSaveState();
   const { setToken, setInput, setMaxInput } = useSaveDispatch();
 
@@ -72,16 +71,6 @@ export const AssetInputBox: FC<Props> = ({
     }
     return [outputToken.address];
   }, [fieldType, inputToken, outputToken]);
-
-  // const allowance = useTokenAllowance(defaultToken?.address, approval?.spender);
-
-  // const approveAmount = useMemo(
-  //   () =>
-  //     field?.amount.exact && field?.token.decimals
-  //       ? new BigDecimal(field.amount.exact, field.token.decimals)
-  //       : undefined,
-  //   [field],
-  // );
 
   return (
     <Container className={className}>
