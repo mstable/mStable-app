@@ -231,6 +231,8 @@ type _Meta_ {
   block: _Block_!
   """The deployment ID"""
   deployment: String!
+  """If `true`, the subgraph encountered indexing errors at some past block"""
+  hasIndexingErrors: Boolean!
 }
 type _Block_ {
   """The hash of the block"""
@@ -265,3 +267,9 @@ type Subscription {
   _meta(block: Block_height): _Meta_
 }
 scalar BigDecimal
+enum _SubgraphErrorPolicy_ {
+  """Data will be returned even if the subgraph has indexing errors"""
+  allow
+  """If the subgraph has indexing errors, data will be omitted. The default."""
+  deny
+}

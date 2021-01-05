@@ -82,7 +82,16 @@ export type _Meta_ = {
   block: _Block_;
   /** The deployment ID */
   deployment: Scalars['String'];
+  /** If `true`, the subgraph encountered indexing errors at some past block */
+  hasIndexingErrors: Scalars['Boolean'];
 };
+
+export enum _SubgraphErrorPolicy_ {
+  /** Data will be returned even if the subgraph has indexing errors */
+  Allow = 'allow',
+  /** If the subgraph has indexing errors, data will be omitted. The default. */
+  Deny = 'deny'
+}
 
 /** An Ethereum account that has interacted with parts of mStable */
 export type Account = {
@@ -208,6 +217,8 @@ export type Basset = {
   maxWeight: Scalars['BigInt'];
   /** Basset to Masset ratio for quantity conversion */
   ratio: Scalars['BigInt'];
+  /** Flag that is set when the bAsset is removed from the basket (and unset when added) */
+  removed: Scalars['Boolean'];
   /** Status of the Basset, e.g. 'Normal' */
   status: Scalars['String'];
   /** An ERC20 can charge transfer fee, e.g. USDT or DGX tokens */
@@ -261,6 +272,10 @@ export type Basset_Filter = {
   ratio_lte?: Maybe<Scalars['BigInt']>;
   ratio_in?: Maybe<Array<Scalars['BigInt']>>;
   ratio_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  removed?: Maybe<Scalars['Boolean']>;
+  removed_not?: Maybe<Scalars['Boolean']>;
+  removed_in?: Maybe<Array<Scalars['Boolean']>>;
+  removed_not_in?: Maybe<Array<Scalars['Boolean']>>;
   status?: Maybe<Scalars['String']>;
   status_not?: Maybe<Scalars['String']>;
   status_gt?: Maybe<Scalars['String']>;
@@ -440,6 +455,7 @@ export enum Basset_OrderBy {
   Basket = 'basket',
   MaxWeight = 'maxWeight',
   Ratio = 'ratio',
+  Removed = 'removed',
   Status = 'status',
   IsTransferFeeCharged = 'isTransferFeeCharged',
   Token = 'token',

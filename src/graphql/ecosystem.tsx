@@ -67,7 +67,16 @@ export type _Meta_ = {
   block: _Block_;
   /** The deployment ID */
   deployment: Scalars['String'];
+  /** If `true`, the subgraph encountered indexing errors at some past block */
+  hasIndexingErrors: Scalars['Boolean'];
 };
+
+export enum _SubgraphErrorPolicy_ {
+  /** Data will be returned even if the subgraph has indexing errors */
+  Allow = 'allow',
+  /** If the subgraph has indexing errors, data will be omitted. The default. */
+  Deny = 'deny'
+}
 
 
 
@@ -1589,7 +1598,7 @@ export type Token = {
   /** Total quantity of tokens minted */
   totalMinted: Metric;
   /** Count of transfer transactions */
-  transfers: Counter;
+  totalTransfers: Counter;
   /** Count of transfer transactions that minted the token */
   totalMints: Counter;
   /** Count of transfer transactions that burned the token */
@@ -1689,20 +1698,20 @@ export type Token_Filter = {
   totalMinted_not_starts_with?: Maybe<Scalars['String']>;
   totalMinted_ends_with?: Maybe<Scalars['String']>;
   totalMinted_not_ends_with?: Maybe<Scalars['String']>;
-  transfers?: Maybe<Scalars['String']>;
-  transfers_not?: Maybe<Scalars['String']>;
-  transfers_gt?: Maybe<Scalars['String']>;
-  transfers_lt?: Maybe<Scalars['String']>;
-  transfers_gte?: Maybe<Scalars['String']>;
-  transfers_lte?: Maybe<Scalars['String']>;
-  transfers_in?: Maybe<Array<Scalars['String']>>;
-  transfers_not_in?: Maybe<Array<Scalars['String']>>;
-  transfers_contains?: Maybe<Scalars['String']>;
-  transfers_not_contains?: Maybe<Scalars['String']>;
-  transfers_starts_with?: Maybe<Scalars['String']>;
-  transfers_not_starts_with?: Maybe<Scalars['String']>;
-  transfers_ends_with?: Maybe<Scalars['String']>;
-  transfers_not_ends_with?: Maybe<Scalars['String']>;
+  totalTransfers?: Maybe<Scalars['String']>;
+  totalTransfers_not?: Maybe<Scalars['String']>;
+  totalTransfers_gt?: Maybe<Scalars['String']>;
+  totalTransfers_lt?: Maybe<Scalars['String']>;
+  totalTransfers_gte?: Maybe<Scalars['String']>;
+  totalTransfers_lte?: Maybe<Scalars['String']>;
+  totalTransfers_in?: Maybe<Array<Scalars['String']>>;
+  totalTransfers_not_in?: Maybe<Array<Scalars['String']>>;
+  totalTransfers_contains?: Maybe<Scalars['String']>;
+  totalTransfers_not_contains?: Maybe<Scalars['String']>;
+  totalTransfers_starts_with?: Maybe<Scalars['String']>;
+  totalTransfers_not_starts_with?: Maybe<Scalars['String']>;
+  totalTransfers_ends_with?: Maybe<Scalars['String']>;
+  totalTransfers_not_ends_with?: Maybe<Scalars['String']>;
   totalMints?: Maybe<Scalars['String']>;
   totalMints_not?: Maybe<Scalars['String']>;
   totalMints_gt?: Maybe<Scalars['String']>;
@@ -1742,7 +1751,7 @@ export enum Token_OrderBy {
   TotalSupply = 'totalSupply',
   TotalBurned = 'totalBurned',
   TotalMinted = 'totalMinted',
-  Transfers = 'transfers',
+  TotalTransfers = 'totalTransfers',
   TotalMints = 'totalMints',
   TotalBurns = 'totalBurns'
 }
@@ -1856,6 +1865,21 @@ export type RewardsDistributorQueryVariables = {};
 
 
 export type RewardsDistributorQuery = { rewardsDistributors: Array<Pick<RewardsDistributor, 'id' | 'fundManagers'>> };
+
+export type ScriptRewardsQueryVariables = {
+  id: Scalars['ID'];
+  end: Scalars['BigInt'];
+  block?: Maybe<Block_Height>;
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+};
+
+
+export type ScriptRewardsQuery = { stakingRewardsContracts: Array<(
+    Pick<StakingRewardsContract, 'lastUpdateTime' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'totalSupply'>
+    & { address: StakingRewardsContract['id'] }
+    & { stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
+  )> };
 
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
@@ -2060,3 +2084,58 @@ export function useRewardsDistributorLazyQuery(baseOptions?: ApolloReactHooks.La
 export type RewardsDistributorQueryHookResult = ReturnType<typeof useRewardsDistributorQuery>;
 export type RewardsDistributorLazyQueryHookResult = ReturnType<typeof useRewardsDistributorLazyQuery>;
 export type RewardsDistributorQueryResult = ApolloReactCommon.QueryResult<RewardsDistributorQuery, RewardsDistributorQueryVariables>;
+export const ScriptRewardsDocument = gql`
+    query ScriptRewards($id: ID!, $end: BigInt!, $block: Block_height, $limit: Int!, $offset: Int!) @api(name: ecosystem) {
+  stakingRewardsContracts(where: {id: $id}, block: $block) {
+    address: id
+    lastUpdateTime
+    periodFinish
+    rewardPerTokenStored
+    rewardRate
+    totalSupply
+    stakingRewards(where: {type: REWARD}, first: $limit, skip: $offset) {
+      amount
+      account
+      amountPerTokenPaid
+    }
+    stakingBalances(first: $limit, skip: $offset) {
+      amount
+      account
+    }
+    claimRewardTransactions(first: $limit, skip: $offset, orderBy: timestamp, orderDirection: asc, where: {timestamp_lt: $end}) {
+      amount
+      sender
+    }
+  }
+}
+    `;
+
+/**
+ * __useScriptRewardsQuery__
+ *
+ * To run a query within a React component, call `useScriptRewardsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useScriptRewardsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useScriptRewardsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *      end: // value for 'end'
+ *      block: // value for 'block'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useScriptRewardsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ScriptRewardsQuery, ScriptRewardsQueryVariables>) {
+        return ApolloReactHooks.useQuery<ScriptRewardsQuery, ScriptRewardsQueryVariables>(ScriptRewardsDocument, baseOptions);
+      }
+export function useScriptRewardsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ScriptRewardsQuery, ScriptRewardsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ScriptRewardsQuery, ScriptRewardsQueryVariables>(ScriptRewardsDocument, baseOptions);
+        }
+export type ScriptRewardsQueryHookResult = ReturnType<typeof useScriptRewardsQuery>;
+export type ScriptRewardsLazyQueryHookResult = ReturnType<typeof useScriptRewardsLazyQuery>;
+export type ScriptRewardsQueryResult = ApolloReactCommon.QueryResult<ScriptRewardsQuery, ScriptRewardsQueryVariables>;

@@ -694,6 +694,8 @@ type Basset {
   maxWeight: BigInt!
   """Basset to Masset ratio for quantity conversion"""
   ratio: BigInt!
+  """Flag that is set when the bAsset is removed from the basket (and unset when added)"""
+  removed: Boolean!
   """Status of the Basset, e.g. 'Normal'"""
   status: String!
   """An ERC20 can charge transfer fee, e.g. USDT or DGX tokens"""
@@ -742,6 +744,7 @@ enum Basset_orderBy {
   basket
   maxWeight
   ratio
+  removed
   status
   isTransferFeeCharged
   token
@@ -781,6 +784,10 @@ input Basset_filter {
   ratio_lte: BigInt
   ratio_in: [BigInt!]
   ratio_not_in: [BigInt!]
+  removed: Boolean
+  removed_not: Boolean
+  removed_in: [Boolean!]
+  removed_not_in: [Boolean!]
   status: String
   status_not: String
   status_gt: String
@@ -2540,6 +2547,8 @@ type _Meta_ {
   block: _Block_!
   """The deployment ID"""
   deployment: String!
+  """If `true`, the subgraph encountered indexing errors at some past block"""
+  hasIndexingErrors: Boolean!
 }
 type _Block_ {
   """The hash of the block"""
@@ -2968,4 +2977,10 @@ type Subscription {
   ): [Transaction!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
+}
+enum _SubgraphErrorPolicy_ {
+  """Data will be returned even if the subgraph has indexing errors"""
+  allow
+  """If the subgraph has indexing errors, data will be omitted. The default."""
+  deny
 }

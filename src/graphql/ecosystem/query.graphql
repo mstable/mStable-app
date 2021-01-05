@@ -1,88 +1,127 @@
 # import './fragments.graphql'
 
 fragment StakingRewardsContractDetails on StakingRewardsContract {
-    address: id
-    id
-    type
-    duration
-    lastUpdateTime
-    periodFinish
-    rewardRate
-    rewardPerTokenStored
-    platformRewardPerTokenStored
-    platformRewardRate
-    totalSupply
-    totalStakingRewards
-    totalPlatformRewards
-    stakingToken {
-        totalSupply {
-            exact
-            decimals
-            simple
-        }
-        ...TokenDetails
+  address: id
+  id
+  type
+  duration
+  lastUpdateTime
+  periodFinish
+  rewardRate
+  rewardPerTokenStored
+  platformRewardPerTokenStored
+  platformRewardRate
+  totalSupply
+  totalStakingRewards
+  totalPlatformRewards
+  stakingToken {
+    totalSupply {
+      exact
+      decimals
+      simple
     }
-    rewardsToken {
-        ...TokenDetails
-    }
-    platformToken {
-        ...TokenDetails
-    }
+    ...TokenDetails
+  }
+  rewardsToken {
+    ...TokenDetails
+  }
+  platformToken {
+    ...TokenDetails
+  }
 }
 
 query AllErc20Tokens @api(name: ecosystem) {
-    tokens {
-        ...TokenDetails
-    }
+  tokens {
+    ...TokenDetails
+  }
 }
 
 query StakingRewardsContract($id: ID!, $account: Bytes) @api(name: ecosystem) {
-    stakingRewardsContract(id: $id) {
-        ...StakingRewardsContractDetails
-        stakingBalances(where: { account: $account }) {
-            amount
-        }
-        stakingRewards: stakingRewards(where: { account: $account, type: REWARD }) {
-            amount
-            amountPerTokenPaid
-        }
+  stakingRewardsContract(id: $id) {
+    ...StakingRewardsContractDetails
+    stakingBalances(where: { account: $account }) {
+      amount
     }
+    stakingRewards: stakingRewards(where: { account: $account, type: REWARD }) {
+      amount
+      amountPerTokenPaid
+    }
+  }
 }
 
 query StakingRewardsContracts(
-    $account: Bytes
-    $includeHistoric: Boolean!
-    $block: Block_height
+  $account: Bytes
+  $includeHistoric: Boolean!
+  $block: Block_height
 ) @api(name: ecosystem) {
-    current: stakingRewardsContracts {
-        ...StakingRewardsContractDetails
-        stakingBalances(where: { account: $account }) {
-            amount
-        }
-        stakingRewards: stakingRewards(where: { account: $account, type: REWARD }) {
-            amount
-            amountPerTokenPaid
-        }
-        platformRewards: stakingRewards(
-            where: { account: $account, type: PLATFORM_REWARD }
-        ) {
-            amount
-            amountPerTokenPaid
-        }
+  current: stakingRewardsContracts {
+    ...StakingRewardsContractDetails
+    stakingBalances(where: { account: $account }) {
+      amount
     }
-    historic: stakingRewardsContracts(block: $block)
+    stakingRewards: stakingRewards(where: { account: $account, type: REWARD }) {
+      amount
+      amountPerTokenPaid
+    }
+    platformRewards: stakingRewards(
+      where: { account: $account, type: PLATFORM_REWARD }
+    ) {
+      amount
+      amountPerTokenPaid
+    }
+  }
+  historic: stakingRewardsContracts(block: $block)
     @include(if: $includeHistoric) {
-        address: id
-        id
-        lastUpdateTime
-        rewardPerTokenStored
-        platformRewardPerTokenStored
-    }
+    address: id
+    id
+    lastUpdateTime
+    rewardPerTokenStored
+    platformRewardPerTokenStored
+  }
 }
 
 query RewardsDistributor @api(name: ecosystem) {
-    rewardsDistributors(first: 1) {
-        id
-        fundManagers
+  rewardsDistributors(first: 1) {
+    id
+    fundManagers
+  }
+}
+
+query ScriptRewards(
+  $id: ID!
+  $end: BigInt!
+  $block: Block_height
+  $limit: Int!
+  $offset: Int!
+) @api(name: ecosystem) {
+  stakingRewardsContracts(where: { id: $id }, block: $block) {
+    address: id
+    lastUpdateTime
+    periodFinish
+    rewardPerTokenStored
+    rewardRate
+    totalSupply
+
+    stakingRewards(where: { type: REWARD }, first: $limit, skip: $offset) {
+      amount
+      account
+      amountPerTokenPaid
     }
+
+    stakingBalances(first: $limit, skip: $offset) {
+      amount
+      account
+    }
+
+    claimRewardTransactions(
+      first: $limit
+      skip: $offset
+      orderBy: timestamp
+      orderDirection: asc
+      where: { timestamp_lt: $end }
+    ) {
+      amount
+      sender
+    }
+  }
 }
