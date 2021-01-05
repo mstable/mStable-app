@@ -20,6 +20,7 @@ const BAL_REWARDS_EXCEPTIONS: string[] = [
 const EXPIRED_POOLS: string[] = [
   '0x25970282aac735cd4c76f30bfb0bf2bc8dad4e70', // MTA/mUSD 80/20
   '0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4', // MTA/mUSD 95/5
+  '0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027', // MTA/mUSD 5/95
 ];
 
 const currentTime = new BigNumber(Math.floor(Date.now() / 1e3));
@@ -284,7 +285,6 @@ const getStakingRewardsContractsMap = (
 
           // percentage = gains / stakingTokenPrice
           const percentage = gains / stakingTokenPrice;
-
           // eslint-disable-next-line no-console
           console.log({
             rewardsTokenPrice,
@@ -294,7 +294,6 @@ const getStakingRewardsContractsMap = (
             percentage,
             apy: percentage * ((365 * 24 * 60 * 60) / deltaT),
           });
-
           // apy = percentage * (seconds in year / deltaT)
           return percentage * ((365 * 24 * 60 * 60) / deltaT);
         })();
