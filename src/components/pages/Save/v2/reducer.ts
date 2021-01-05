@@ -12,6 +12,9 @@ import {
 } from './types';
 import { TokenQuantityV2 } from '../../../../types';
 import { validate } from './validate';
+import { BigNumber } from 'ethers/utils';
+
+export const BIG_NUM_1 = new BigNumber((1e18).toString());
 
 const initialize = (state: State): State =>
   !state.initialized && state.massetState
@@ -30,7 +33,7 @@ const getExchangeRate = (state: State): BigDecimal | undefined => {
   if (!rate) return undefined;
 
   if (mode === SaveMode.Deposit) return rate;
-  return new BigDecimal(1e18).divPrecisely(rate);
+  return new BigDecimal(BIG_NUM_1).divPrecisely(rate);
 };
 
 // TODO - doesn't always set correctly.

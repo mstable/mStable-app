@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import Skeleton from 'react-loading-skeleton';
 import { SaveMode } from './types';
-import { useSaveState, useSaveDispatch } from './SaveProvider';
+import { useSaveState, useSaveDispatch, SaveProvider } from './SaveProvider';
 import { TabsContainer, TabBtn } from '../../../core/Tabs';
 import { Deposit } from './Deposit';
 import { Withdraw } from './Withdraw';
@@ -28,9 +28,7 @@ const TabButton: FC<{ tabMode: SaveMode }> = ({ tabMode }) => {
   return (
     <TabBtn
       type="button"
-      onClick={() => {
-        setModeType(tabMode);
-      }}
+      onClick={() => setModeType(tabMode)}
       active={mode === tabMode}
     >
       {MODE_TYPES[tabMode].label}
@@ -38,8 +36,9 @@ const TabButton: FC<{ tabMode: SaveMode }> = ({ tabMode }) => {
   );
 };
 
-export const SaveModeSelector: FC = () => {
+const SaveForm: FC = () => {
   const { mode } = useSaveState();
+
   return (
     <Container>
       <TabsContainer>
@@ -56,5 +55,13 @@ export const SaveModeSelector: FC = () => {
         )}
       </div>
     </Container>
+  );
+};
+
+export const Save: FC = () => {
+  return (
+    <SaveProvider>
+      <SaveForm />
+    </SaveProvider>
   );
 };
