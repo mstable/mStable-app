@@ -25,12 +25,12 @@ export enum Actions {
 
 export interface State {
   error?: string;
+  valid: boolean;
   transactionType: TransactionType;
   amount?: BigDecimal;
   amountInCredits?: BigDecimal;
   formValue: string | null;
   touched: boolean;
-  valid: boolean;
   initialized: boolean;
   simulated?: MassetState;
   massetState?: MassetState;

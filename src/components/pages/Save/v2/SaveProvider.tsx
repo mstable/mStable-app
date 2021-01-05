@@ -9,16 +9,25 @@ import React, {
 } from 'react';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import { TokenQuantityV2 } from '../../../../types';
 import { reducer } from './reducer';
-import { Actions, Dispatch, State, TransactionType, SaveMode } from './types';
+import { Actions, Dispatch, State, SaveMode } from './types';
+
+export const initialTokenQuantityFieldV2: TokenQuantityV2 = {
+  formValue: null,
+  amount: null,
+};
 
 const initialState: State = {
-  formValue: null,
   initialized: false,
   touched: false,
-  transactionType: TransactionType.Deposit,
   valid: false,
   mode: SaveMode.Deposit,
+  exchange: {
+    input: initialTokenQuantityFieldV2,
+    output: initialTokenQuantityFieldV2,
+    feeAmountSimple: null,
+  },
 };
 
 const stateCtx = createContext<State>(initialState);
@@ -32,25 +41,33 @@ export const SaveProvider: FC = ({ children }) => {
     dispatch({ type: Actions.Data, payload: massetState });
   }, [massetState]);
 
-  const setAmount = useCallback<Dispatch['setAmount']>(
+  const setInput = useCallback<Dispatch['setInput']>(
     formValue => {
       dispatch({
-        type: Actions.SetAmount,
+        type: Actions.SetInput,
         payload: { formValue },
       });
     },
     [dispatch],
   );
 
-  const setMaxAmount = useCallback<Dispatch['setMaxAmount']>(() => {
-    dispatch({ type: Actions.SetMaxAmount });
-  }, [dispatch]);
+  const setMaxInput = useCallback<Dispatch['setMaxInput']>(
+    () => dispatch({ type: Actions.SetMaxInput }),
+    [dispatch],
+  );
 
-  const toggleTransactionType = useCallback<
-    Dispatch['toggleTransactionType']
-  >(() => {
-    dispatch({ type: Actions.ToggleTransactionType });
-  }, [dispatch]);
+  const setToken = useCallback<Dispatch['setToken']>(
+    (field, token) => {
+      dispatch({
+        type: Actions.SetToken,
+        payload: {
+          field,
+          token,
+        },
+      });
+    },
+    [dispatch],
+  );
 
   const setModeType = useCallback<Dispatch['setModeType']>(
     modeType => {
@@ -67,12 +84,12 @@ export const SaveProvider: FC = ({ children }) => {
       <dispatchCtx.Provider
         value={useMemo(
           () => ({
-            setAmount,
-            setMaxAmount,
-            toggleTransactionType,
+            setInput,
             setModeType,
+            setToken,
+            setMaxInput,
           }),
-          [setMaxAmount, setAmount, toggleTransactionType, setModeType],
+          [setToken, setInput, setMaxInput, setModeType],
         )}
       >
         {children}

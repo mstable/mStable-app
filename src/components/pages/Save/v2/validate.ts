@@ -1,54 +1,58 @@
-import { State, Reasons, TransactionType } from './types';
+import { State, Reasons } from './types';
 
-const validateSave = ({
-  massetState,
-  amount,
-  amountInCredits,
-  transactionType,
-}: State): [false, Reasons] | [true] => {
-  if (!(massetState && massetState.savingsContracts.v1)) {
+const validateInputToken = (state: State): boolean => {
+  const { massetState, exchange } = state;
+  const inputToken = exchange.input.token;
+  const inputAmount = exchange.input.amount;
+
+  if (!inputAmount || !massetState || !inputToken) return false;
+
+  const massetAddress = massetState.address;
+  return !inputToken.allowances[massetAddress]?.exact.lt(inputAmount.exact);
+};
+
+const validateSave = (state: State): [false, Reasons] | [true] => {
+  const { massetState, exchange } = state;
+
+  if (!(massetState && massetState.savingsContracts.v2)) {
     return [false, Reasons.FetchingData];
   }
 
-  if (
-    !amount ||
-    (transactionType === TransactionType.Withdraw && !amountInCredits)
-  ) {
+  // All validation logic is on input side for now.
+  // TODO - make validation for output side too.
+
+  const inputTokenAddress = exchange.input.token?.address;
+
+  if (!inputTokenAddress) {
+    return [false, Reasons.FetchingData];
+  }
+
+  const inputToken = exchange.input.token;
+  const inputAmount = exchange.input.amount;
+  const outputAmount = exchange.output.amount;
+
+  if (!inputToken) {
+    return [false, Reasons.FetchingData];
+  }
+
+  if (!inputAmount || !outputAmount) {
     return [false, Reasons.AmountMustBeSet];
   }
 
-  if (amount.exact.lte(0)) {
+  if (inputAmount.exact.lte(0)) {
     return [false, Reasons.AmountMustBeGreaterThanZero];
   }
 
-  if (transactionType === TransactionType.Deposit) {
-    if (amount.exact.gt(massetState.token.balance.exact)) {
-      return [false, Reasons.DepositAmountMustNotExceedTokenBalance];
-    }
-
-    if (
-      massetState.savingsContracts.v1.massetAllowance.exact.lt(amount.exact)
-    ) {
-      return [false, Reasons.MUSDMustBeApproved];
-    }
+  if (inputAmount.exact.gt(inputToken.balance.exact)) {
+    return [false, Reasons.DepositAmountMustNotExceedTokenBalance];
   }
 
-  if (transactionType === TransactionType.Withdraw) {
-    if (
-      !massetState.savingsContracts.v1.savingsBalance.credits ||
-      !massetState.savingsContracts.v1.latestExchangeRate
-    ) {
-      return [false, Reasons.FetchingData];
-    }
+  // TODO - either show on deposit click or don't show error at all
+  // if (!inputToken.allowances[massetAddress]?.exact.lt(inputAmount.exact)) {
+  //   return [false, Reasons.MUSDMustBeApproved];
+  // }
 
-    if (
-      amountInCredits?.exact.gt(
-        massetState.savingsContracts.v1.savingsBalance.credits.exact,
-      )
-    ) {
-      return [false, Reasons.WithdrawAmountMustNotExceedSavingsBalance];
-    }
-  }
+  // TODO - handle imUSD withdrawal balance
 
   return [true];
 };
@@ -61,5 +65,12 @@ export const validate = (state: State): State => {
     ...state,
     error,
     valid,
+    exchange: {
+      ...state.exchange,
+      input: {
+        ...state.exchange.input,
+        needsUnlock: validateInputToken(state),
+      },
+    },
   };
 };

@@ -12,9 +12,6 @@ export const TabBtn = styled(Button)<{ active: boolean }>`
   background: transparent;
   border-radius: 0;
   border: 0;
-  border-top: 1px
-    ${({ active }) => (active ? Color.blueTransparent : Color.blackTransparent)}
-    solid;
   border-bottom: 4px ${({ active }) => (active ? Color.blue : 'transparent')}
     solid;
   color: ${({ active }) => (active ? Color.blue : Color.black)};
