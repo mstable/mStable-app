@@ -1,9 +1,9 @@
 import { BigNumber, BigNumberish, formatUnits } from 'ethers/utils';
 import { Reducer } from 'react';
-import { TokenQuantity } from '../../../types';
+import { Fields, TokenQuantity } from '../../../types';
 import { parseAmount } from '../../../web3/amounts';
 import { EXP_SCALE } from '../../../web3/constants';
-import { Action, Actions, Fields, State } from './types';
+import { Action, Actions, State } from './types';
 import { applyValidation } from './validation';
 
 const initialTokenQuantityField: TokenQuantity = {

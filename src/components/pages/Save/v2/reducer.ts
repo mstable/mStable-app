@@ -2,126 +2,204 @@ import { Reducer } from 'react';
 import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
+import {
+  Action,
+  Actions,
+  ExchangeState,
+  SaveMode,
+  State,
+  TokenPayload,
+} from './types';
+import { TokenQuantityV2 } from '../../../../types';
 import { validate } from './validate';
-import { Action, Actions, State, TransactionType } from './types';
+import { BigNumber } from 'ethers/utils';
+
+export const BIG_NUM_1 = new BigNumber((1e18).toString());
 
 const initialize = (state: State): State =>
   !state.initialized && state.massetState
     ? {
         ...state,
         initialized: true,
-        amount: new BigDecimal(0, state.massetState.token.decimals),
-        amountInCredits: new BigDecimal(0, state.massetState.token.decimals),
       }
     : state;
 
-const simulateDeposit = (state: State): State['simulated'] => state.simulated;
+const getExchangeRate = (state: State): BigDecimal | undefined => {
+  const { massetState, mode } = state;
+  if (!massetState) return undefined;
 
-const simulateWithdrawal = (state: State): State['simulated'] =>
-  state.simulated;
+  const rate = massetState.savingsContracts.v2?.latestExchangeRate?.rate;
 
-const simulate = (state: State): State =>
-  state.initialized && state.massetState
-    ? {
-        ...state,
-        simulated:
-          state.transactionType === TransactionType.Deposit
-            ? simulateDeposit(state)
-            : simulateWithdrawal(state),
-      }
-    : state;
+  if (!rate) return undefined;
+
+  if (mode === SaveMode.Deposit) return rate;
+  return new BigDecimal(BIG_NUM_1).divPrecisely(rate);
+};
+
+// TODO - doesn't always set correctly.
+const setInitialExchangePair = (state: State): State => {
+  const { massetState, exchange } = state;
+
+  if (massetState && !exchange.rate) {
+    const defaultInputToken = massetState.token;
+    const defaultOutputToken = massetState.savingsContracts.v2?.token;
+
+    if (!defaultOutputToken) return state;
+
+    return {
+      ...state,
+      exchange: {
+        rate: getExchangeRate(state),
+        input: {
+          formValue: state.exchange.input.formValue,
+          amount: null,
+          token: defaultInputToken,
+        },
+        output: {
+          formValue: null,
+          amount: null,
+          token: defaultOutputToken,
+        },
+        feeAmountSimple: null,
+      },
+    };
+  }
+  return state;
+};
+
+const updateToken = (
+  payload: TokenPayload,
+): { [field: string]: TokenQuantityV2 } => {
+  const { field, token } = payload;
+
+  const formValue = null;
+  const amount = BigDecimal.maybeParse(formValue) ?? null;
+
+  return {
+    [field]: {
+      formValue,
+      amount,
+      token,
+    },
+  };
+};
+
+const updateExchangeState = (
+  state: State,
+  payload: TokenPayload,
+): ExchangeState => {
+  return {
+    ...state.exchange,
+    ...updateToken(payload),
+    rate: getExchangeRate(state),
+  };
+};
+
+const calcOutput = (
+  state: State,
+  inputAmount?: BigDecimal,
+): TokenQuantityV2 => {
+  const { exchange } = state;
+  const exchangeRate = exchange.rate;
+
+  const amount =
+    (inputAmount &&
+      exchangeRate &&
+      inputAmount.mulTruncate(exchangeRate.exact)) ??
+    null;
+  const formValue = amount?.format(2, false) ?? null;
+
+  return {
+    ...state.exchange.output,
+    amount,
+    formValue,
+  };
+};
 
 const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.Data:
       return { ...state, massetState: action.payload };
 
-    case Actions.SetAmount: {
-      const { massetState, transactionType } = state;
-      const isWithdraw = transactionType === TransactionType.Withdraw;
+    // input change only for now.
+    case Actions.SetInput: {
+      const { exchange, massetState } = state;
+      const { formValue } = action.payload;
 
       if (!massetState) return state;
 
-      const { formValue } = action.payload;
-
-      const { decimals } = massetState.token;
-      const exchangeRate =
-        massetState.savingsContracts.v2?.latestExchangeRate?.rate;
-
-      const maybeAmount = BigDecimal.maybeParse(formValue, decimals);
-
-      const amountInCredits =
-        isWithdraw && maybeAmount && exchangeRate
-          ? maybeAmount.divPrecisely(exchangeRate).add(new BigDecimal(1, 0))
-          : undefined;
+      // will only work with musd - imusd, not other assets.
+      const amount = BigDecimal.maybeParse(
+        formValue,
+        exchange.input.token?.decimals,
+      );
 
       return {
         ...state,
-        amountInCredits,
-        amount: maybeAmount,
-        formValue,
-        touched: !!formValue,
+        exchange: {
+          ...state.exchange,
+          input: {
+            ...state.exchange.input,
+            amount: amount ?? null,
+            formValue,
+          },
+          output: calcOutput(state, amount),
+        },
+        touched: true,
       };
     }
 
-    case Actions.SetMaxAmount: {
-      const { transactionType, massetState } = state;
-
-      if (!massetState) return state;
-
-      if (transactionType === TransactionType.Deposit) {
-        const formValue = massetState.token.balance.format(2, false);
-        return {
-          ...state,
-          amount: massetState.token.balance,
-          amountInCredits: undefined,
-          formValue,
-          touched: !!formValue,
-        };
-      }
-
-      const {
-        savingsBalance: { balance, credits },
-      } = massetState.savingsContracts.v2 as NonNullable<
-        typeof massetState['savingsContracts']['v2']
-      >;
-
-      if (balance) {
-        const formValue = balance.format(2, false);
-        const amount = balance;
-
-        return {
-          ...state,
-          amount,
-          amountInCredits: credits,
-          formValue,
-          touched: !!formValue,
-        };
-      }
-
-      return state;
-    }
-
-    case Actions.ToggleTransactionType: {
+    case Actions.SetToken:
       return {
         ...state,
-        transactionType:
-          state.transactionType === TransactionType.Deposit
-            ? TransactionType.Withdraw
-            : TransactionType.Deposit,
-        // Reset the amounts when toggling type, and remove `touched`
-        amount: undefined,
-        amountInCredits: undefined,
-        formValue: null,
-        touched: false,
+        exchange: updateExchangeState(state, action.payload),
+      };
+
+    case Actions.SetMaxInput: {
+      const { exchange, massetState } = state;
+      const inputAddress = exchange.input.token?.address;
+      if (!inputAddress || !massetState) return state;
+
+      const inputToken = exchange.input.token;
+      const amount = inputToken?.balance;
+      const formValue = amount?.format(2, false) ?? null;
+
+      return {
+        ...state,
+        exchange: {
+          ...state.exchange,
+          input: {
+            ...state.exchange.input,
+            amount: amount ?? null,
+            formValue,
+          },
+          output: calcOutput(state, amount),
+        },
       };
     }
 
     case Actions.SetModeType: {
       const mode = action.payload;
-      return {
+      // disable switching until initialised
+      if (!state.initialized) return state;
+      // reject if same tab clicked
+      if (mode === state.mode) return state;
+
+      const nextState = {
         ...state,
         mode,
+      };
+
+      // switch exchange assets
+      const { input, output } = state.exchange;
+      return {
+        ...nextState,
+        exchange: {
+          ...state.exchange,
+          input: output,
+          output: input,
+          rate: getExchangeRate(nextState),
+        },
       };
     }
 
@@ -133,6 +211,6 @@ const reduce: Reducer<State, Action> = (state, action) => {
 export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
-  simulate,
+  setInitialExchangePair,
   validate,
 );

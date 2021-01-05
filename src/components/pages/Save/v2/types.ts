@@ -1,15 +1,24 @@
 import { MassetState } from '../../../../context/DataProvider/types';
+import { Fields, SubscribedToken, TokenQuantityV2 } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-
-export enum TransactionType {
-  Deposit,
-  Withdraw,
-}
 
 export enum SaveMode {
   Deposit,
   Withdraw,
 }
+
+export type TokenPayload = {
+  field: Fields;
+  token?: SubscribedToken;
+};
+
+export type ExchangeState = {
+  input: TokenQuantityV2;
+  output: TokenQuantityV2;
+  feeAmountSimple: string | null;
+  rate?: BigDecimal;
+  slippage?: BigDecimal;
+};
 
 export enum Reasons {
   AmountMustBeGreaterThanZero = 'Amount must be greater than zero',
@@ -23,25 +32,21 @@ export enum Reasons {
 
 export enum Actions {
   Data,
-  SetAmount,
-  SetMaxAmount,
-  ToggleTransactionType,
+  SetInput,
+  SetMaxInput,
   SetModeType,
+  SetToken,
 }
 
 export interface State {
   error?: string;
-  transactionType: TransactionType;
-  amount?: BigDecimal;
-  amountInCredits?: BigDecimal;
-  formValue: string | null;
-  touched: boolean;
   valid: boolean;
+  touched: boolean;
   initialized: boolean;
   simulated?: MassetState;
   massetState?: MassetState;
-  needsUnlock?: boolean;
   mode: SaveMode;
+  exchange: ExchangeState;
 }
 
 export type Action =
@@ -50,18 +55,24 @@ export type Action =
       payload?: MassetState;
     }
   | {
-      type: Actions.SetAmount;
+      type: Actions.SetInput;
       payload: {
         formValue: string | null;
       };
     }
-  | { type: Actions.SetMaxAmount }
-  | { type: Actions.ToggleTransactionType }
+  | { type: Actions.SetMaxInput }
+  | {
+      type: Actions.SetToken;
+      payload: {
+        field: Fields;
+        token?: SubscribedToken;
+      };
+    }
   | { type: Actions.SetModeType; payload: SaveMode };
 
 export interface Dispatch {
-  setAmount(formValue: string | null, isCreditAmount?: boolean): void;
-  setMaxAmount(): void;
-  toggleTransactionType(): void;
+  setInput(formValue: string | null): void;
+  setMaxInput(): void;
   setModeType(modeType: SaveMode): void;
+  setToken(field: Fields, token?: SubscribedToken): void;
 }

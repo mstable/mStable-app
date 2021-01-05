@@ -127,6 +127,13 @@ export interface TokenQuantity {
   };
 }
 
+export interface TokenQuantityV2 {
+  formValue: string | null;
+  amount: BigDecimal | null;
+  token?: SubscribedToken;
+  needsUnlock?: boolean;
+}
+
 export interface Connector {
   id: string;
   subType?: string;
@@ -149,4 +156,9 @@ export interface AccentColors {
   accent: string;
   base: string;
   text: string;
+}
+
+export enum Fields {
+  Input = 'input',
+  Output = 'output',
 }

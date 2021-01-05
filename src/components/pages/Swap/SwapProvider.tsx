@@ -9,8 +9,9 @@ import React, {
 } from 'react';
 
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
-import { Actions, Dispatch, Fields, State } from './types';
+import { Actions, Dispatch, State } from './types';
 import { reducer, initialState } from './reducer';
+import { Fields } from '../../../types';
 
 const stateCtx = createContext<State>(initialState);
 const dispatchCtx = createContext<Dispatch>({} as Dispatch);
