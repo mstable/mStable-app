@@ -137,7 +137,11 @@ export const AssetExchange: FC = () => {
               <p>{error}</p>
             </Error>
           )}
-          <MultiStepButton needsUnlock={inputNeedsUnlock} valid={valid} />
+          <MultiStepButton
+            title="Deposit"
+            needsUnlock={inputNeedsUnlock}
+            valid={valid}
+          />
         </Column>
         {exchange.slippage && (
           <Info>

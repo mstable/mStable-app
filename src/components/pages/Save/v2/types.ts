@@ -1,5 +1,5 @@
 import { MassetState } from '../../../../context/DataProvider/types';
-import { Fields, Token, TokenQuantityV2 } from '../../../../types';
+import { Fields, SubscribedToken, TokenQuantityV2 } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 export enum SaveMode {
@@ -8,9 +8,9 @@ export enum SaveMode {
 }
 
 export type TokenPayload = {
-  field: Fields, 
-  token: Token | null
-}
+  field: Fields;
+  token?: SubscribedToken;
+};
 
 export type ExchangeState = {
   input: TokenQuantityV2;
@@ -18,7 +18,7 @@ export type ExchangeState = {
   feeAmountSimple: string | null;
   rate?: BigDecimal;
   slippage?: BigDecimal;
-}
+};
 
 export enum Reasons {
   AmountMustBeGreaterThanZero = 'Amount must be greater than zero',
@@ -61,12 +61,12 @@ export type Action =
       };
     }
   | { type: Actions.SetMaxInput }
-  | { 
-      type: Actions.SetToken; 
+  | {
+      type: Actions.SetToken;
       payload: {
         field: Fields;
-        token: Token | null;
-      };  
+        token?: SubscribedToken;
+      };
     }
   | { type: Actions.SetModeType; payload: SaveMode };
 
@@ -74,5 +74,5 @@ export interface Dispatch {
   setInput(formValue: string | null): void;
   setMaxInput(): void;
   setModeType(modeType: SaveMode): void;
-  setToken(field: Fields, token: Token | null): void;
+  setToken(field: Fields, token?: SubscribedToken): void;
 }

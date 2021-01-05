@@ -130,11 +130,7 @@ export interface TokenQuantity {
 export interface TokenQuantityV2 {
   formValue: string | null;
   amount: BigDecimal | null;
-  token: {
-    address?: string;
-    decimals?: number;
-    symbol?: string;
-  } | null;
+  token?: SubscribedToken;
   needsUnlock?: boolean;
 }
 

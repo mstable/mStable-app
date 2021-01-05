@@ -2,11 +2,16 @@ import { Reducer } from 'react';
 import { pipeline } from 'ts-pipe-compose';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { Action, Actions, ExchangeState, SaveMode, State, TokenPayload } from './types';
+import {
+  Action,
+  Actions,
+  ExchangeState,
+  SaveMode,
+  State,
+  TokenPayload,
+} from './types';
 import { TokenQuantityV2 } from '../../../../types';
-import { getInputToken, validate } from './validate';
-
-const BIG_NUM_1 = "1000000000000000000";
+import { validate } from './validate';
 
 const initialize = (state: State): State =>
   !state.initialized && state.massetState
@@ -16,29 +21,28 @@ const initialize = (state: State): State =>
       }
     : state;
 
-const getExchangeRate = (state: State, mode?: SaveMode): BigDecimal | undefined => {
-  const { massetState } = state;
+const getExchangeRate = (state: State): BigDecimal | undefined => {
+  const { massetState, mode } = state;
   if (!massetState) return undefined;
-  
-  const currentMode = mode ?? state.mode;
+
   const rate = massetState.savingsContracts.v2?.latestExchangeRate?.rate;
-  
+
   if (!rate) return undefined;
-  
-  if (currentMode === SaveMode.Deposit) return rate;
-  return new BigDecimal(BIG_NUM_1).divPrecisely(rate);
-}
-    
+
+  if (mode === SaveMode.Deposit) return rate;
+  return new BigDecimal(1e18).divPrecisely(rate);
+};
+
 // TODO - doesn't always set correctly.
 const setInitialExchangePair = (state: State): State => {
   const { massetState, exchange } = state;
-  
+
   if (massetState && !exchange.rate) {
     const defaultInputToken = massetState.token;
-    const defaultOutputToken = massetState.savingsContracts.v2?.token
-    
+    const defaultOutputToken = massetState.savingsContracts.v2?.token;
+
     if (!defaultOutputToken) return state;
-    
+
     return {
       ...state,
       exchange: {
@@ -46,65 +50,68 @@ const setInitialExchangePair = (state: State): State => {
         input: {
           formValue: state.exchange.input.formValue,
           amount: null,
-          token: {
-            address: defaultInputToken.address,
-            decimals: defaultInputToken.decimals,
-            symbol: defaultInputToken.symbol,
-          },
+          token: defaultInputToken,
         },
         output: {
           formValue: null,
           amount: null,
-          token: {
-            address: defaultOutputToken.address,
-            decimals: defaultOutputToken.decimals,
-            symbol: defaultOutputToken.symbol,
-          },
+          token: defaultOutputToken,
         },
-        feeAmountSimple: null
-      }
-    }
+        feeAmountSimple: null,
+      },
+    };
   }
   return state;
 };
 
-const updateToken = (payload: TokenPayload): {[field: string]: TokenQuantityV2 } => {
+const updateToken = (
+  payload: TokenPayload,
+): { [field: string]: TokenQuantityV2 } => {
   const { field, token } = payload;
-  
+
   const formValue = null;
   const amount = BigDecimal.maybeParse(formValue) ?? null;
-    
+
   return {
     [field]: {
       formValue,
       amount,
       token,
     },
-  }
-}
+  };
+};
 
-const updateExchangeState = (state: State, payload: TokenPayload ): ExchangeState => {
-  return  {
+const updateExchangeState = (
+  state: State,
+  payload: TokenPayload,
+): ExchangeState => {
+  return {
     ...state.exchange,
-    ...updateToken(payload as TokenPayload),
+    ...updateToken(payload),
     rate: getExchangeRate(state),
-  }
-}
+  };
+};
 
-const calcOutput = (state: State, inputAmount?: BigDecimal): TokenQuantityV2 => {
+const calcOutput = (
+  state: State,
+  inputAmount?: BigDecimal,
+): TokenQuantityV2 => {
   const { exchange } = state;
   const exchangeRate = exchange.rate;
-  
-  const amount = ((inputAmount && exchangeRate)
-          && inputAmount.mulTruncate(exchangeRate.exact)) ?? null
+
+  const amount =
+    (inputAmount &&
+      exchangeRate &&
+      inputAmount.mulTruncate(exchangeRate.exact)) ??
+    null;
   const formValue = amount?.format(2, false) ?? null;
-          
+
   return {
     ...state.exchange.output,
     amount,
     formValue,
-  }
-}
+  };
+};
 
 const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -119,8 +126,11 @@ const reduce: Reducer<State, Action> = (state, action) => {
       if (!massetState) return state;
 
       // will only work with musd - imusd, not other assets.
-      const amount = BigDecimal.maybeParse(formValue, exchange.input.token?.decimals);
-      
+      const amount = BigDecimal.maybeParse(
+        formValue,
+        exchange.input.token?.decimals,
+      );
+
       return {
         ...state,
         exchange: {
@@ -133,24 +143,24 @@ const reduce: Reducer<State, Action> = (state, action) => {
           output: calcOutput(state, amount),
         },
         touched: true,
-      }
+      };
     }
-    
+
     case Actions.SetToken:
       return {
         ...state,
-        exchange: updateExchangeState(state, action.payload)
+        exchange: updateExchangeState(state, action.payload),
       };
-      
+
     case Actions.SetMaxInput: {
       const { exchange, massetState } = state;
-      const inputAddress = exchange.input.token?.address; 
+      const inputAddress = exchange.input.token?.address;
       if (!inputAddress || !massetState) return state;
-      
-      const inputToken = getInputToken(state);
+
+      const inputToken = exchange.input.token;
       const amount = inputToken?.balance;
       const formValue = amount?.format(2, false) ?? null;
-      
+
       return {
         ...state,
         exchange: {
@@ -158,11 +168,11 @@ const reduce: Reducer<State, Action> = (state, action) => {
           input: {
             ...state.exchange.input,
             amount: amount ?? null,
-            formValue
+            formValue,
           },
-          output: calcOutput(state, amount)
-        }
-      }
+          output: calcOutput(state, amount),
+        },
+      };
     }
 
     case Actions.SetModeType: {
@@ -171,17 +181,21 @@ const reduce: Reducer<State, Action> = (state, action) => {
       if (!state.initialized) return state;
       // reject if same tab clicked
       if (mode === state.mode) return state;
-      
-      const {input, output} = state.exchange;
-      return {
+
+      const nextState = {
         ...state,
         mode,
-        // switch exchange assets
+      };
+
+      // switch exchange assets
+      const { input, output } = state.exchange;
+      return {
+        ...nextState,
         exchange: {
           ...state.exchange,
           input: output,
           output: input,
-          rate: getExchangeRate(state, mode),
+          rate: getExchangeRate(nextState),
         },
       };
     }

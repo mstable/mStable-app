@@ -16,7 +16,6 @@ import { Actions, Dispatch, State, SaveMode } from './types';
 export const initialTokenQuantityFieldV2: TokenQuantityV2 = {
   formValue: null,
   amount: null,
-  token: null,
 };
 
 const initialState: State = {

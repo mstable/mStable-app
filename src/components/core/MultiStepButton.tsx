@@ -14,24 +14,8 @@ interface Props {
   className?: string;
   needsUnlock?: boolean;
   valid: boolean;
+  title: string;
 }
-
-const Container = styled.div`
-  height: 4rem;
-  display: flex;
-  align-items: center;
-`;
-
-const ApproveContainer = styled.div`
-  display: flex;
-  position: relative;
-  width: 100%;
-  justify-content: space-between;
-
-  > * {
-    flex-basis: calc(50% - 0.25rem);
-  }
-`;
 
 const Button = styled(BubbleButton)`
   width: 100%;
@@ -50,56 +34,67 @@ const CloseButton = styled(UnstyledButton)`
   cursor: pointer;
 `;
 
+const ApproveContainer = styled.div`
+  display: flex;
+  position: relative;
+  width: 100%;
+  justify-content: space-between;
+
+  > * {
+    flex-basis: calc(50% - 0.25rem);
+  }
+`;
+
+const Container = styled.div`
+  height: 4rem;
+  display: flex;
+  align-items: center;
+`;
+
+// TODO: - make generic & rename
 export const MultiStepButton: FC<Props> = ({
   className,
   valid,
   needsUnlock,
+  title,
 }) => {
   const [step, setStep] = useState<MultiStepState>(DEFAULT);
 
-  const changeState = useCallback(
-    (newStep: MultiStepState) => setStep(newStep),
-    [],
-  );
+  const handleApprove = useCallback((): void => {
+    // TODO: - add approve tx logic + on callback change state.
+    setStep(DEFAULT);
+  }, []);
 
-  const handleDeposit = (): void => {
+  const handleDeposit = useCallback((): void => {
     if (!valid && needsUnlock) return;
     if (needsUnlock) {
-      changeState(APPROVE);
+      setStep(APPROVE);
     } else {
       // TODO: -
       // handle unlocked state & deposit call
     }
-  };
+  }, [setStep, needsUnlock, valid]);
 
   return (
     <Container className={className}>
       {step === DEFAULT && (
-        <Button highlighted={valid} onClick={handleDeposit}>
-          Deposit
+        <Button highlighted={valid} disabled={!valid} onClick={handleDeposit}>
+          {title}
         </Button>
       )}
       {step === APPROVE && (
         <>
           <ApproveContainer>
-            <Button
-              highlighted
-              scale={0.875}
-              onClick={() => changeState(DEFAULT)}
-            >
+            <Button highlighted scale={0.875} onClick={handleApprove}>
               <div>Approve</div>
               <div>Exact</div>
             </Button>
-            <Button
-              highlighted
-              scale={0.875}
-              onClick={() => changeState(DEFAULT)}
-            >
+            <Button highlighted scale={0.875} onClick={handleApprove}>
               <div>Approve</div>
               <div>∞</div>
             </Button>
           </ApproveContainer>
-          <CloseButton onClick={() => changeState(DEFAULT)}>✕</CloseButton>
+          <CloseButton onClick={() => setStep(DEFAULT)}>✕</CloseButton>
         </>
       )}
     </Container>

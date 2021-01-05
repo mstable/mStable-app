@@ -1,13 +1,14 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { useTokens } from '../../../../context/TokensProvider';
 import { ViewportWidth } from '../../../../theme';
-import { Fields, Token } from '../../../../types';
+import { Fields, SubscribedToken } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Button } from '../../../core/Button';
 import { AmountInput } from '../../../forms/AmountInput';
-import { TokenInput } from '../../../forms/TokenInput';
+import { SubscribedTokenInput } from '../../../forms/SubscribedTokenInput';
+
+// TODO: Might be able to adapt existing InlineTokenInput rather than fork
 
 interface Props {
   name: Fields;
@@ -23,7 +24,7 @@ interface Props {
     address?: string;
     addresses?: string[];
     disabled?: boolean;
-    handleChange?(name: string, token: Token | null): void;
+    handleChange?(name: string, token?: SubscribedToken): void;
   };
   toggle?: {
     canEnable: boolean;
@@ -32,7 +33,6 @@ interface Props {
     handleToggle(): void;
   };
   error?: string;
-  valid?: boolean;
   overweight?: boolean;
 }
 
@@ -134,7 +134,6 @@ const Grid = styled.div<{ enabled?: boolean }>`
 `;
 
 const Container = styled.div<{
-  valid?: boolean;
   overweight?: boolean;
   enabled?: boolean;
 }>`
@@ -143,22 +142,18 @@ const Container = styled.div<{
   margin-bottom: 8px;
 `;
 
-// TODO: Might be able to adapt existing rather than fork
-
 export const AssetTokenInput: FC<Props> = ({
   amount,
   token,
   error,
   overweight,
   toggle,
-  valid,
   name,
 }) => {
-  const subscribedTokens = useTokens(token.addresses ?? []);
   const enabled = toggle ? toggle.enabled : true;
 
   return (
-    <Container enabled={enabled} overweight={overweight} valid={valid}>
+    <Container enabled={enabled} overweight={overweight}>
       <Grid enabled={enabled}>
         <InputContainer onClick={amount.handleClick}>
           <Label>Amount</Label>
@@ -177,11 +172,11 @@ export const AssetTokenInput: FC<Props> = ({
           </Input>
         </InputContainer>
         <TokenContainer>
-          <TokenInput
+          <SubscribedTokenInput
             name={name}
             disabled={token.disabled}
             value={token.address ?? null}
-            tokens={subscribedTokens}
+            tokenAddresses={token.addresses ?? []}
             onChange={token.handleChange}
           />
         </TokenContainer>

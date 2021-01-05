@@ -56,7 +56,7 @@ export const AssetInputBox: FC<Props> = ({
   const isInput = fieldType === Fields.Input;
   const field = isInput ? input : output;
   const inputToken = input.token;
-  const outputToken = input.token;
+  const outputToken = output.token;
   const tokensAvailable = inputToken?.symbol && outputToken?.symbol;
 
   const formattedExchangeRate = exchangeRate?.format(4);
@@ -94,11 +94,10 @@ export const AssetInputBox: FC<Props> = ({
           token={{
             address: field?.token?.address,
             addresses: tokenAddresses,
-            disabled: !isInput,
+            // disabled: !isInput,
             handleChange: setToken,
           }}
           error={isInput ? error : undefined}
-          valid
         />
       </Body>
     </Container>
