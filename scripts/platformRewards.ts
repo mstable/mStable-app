@@ -70,7 +70,7 @@ import { fetchAllData } from './utils/fetchAllData';
 import {
   ScriptRewardsDocument,
   ScriptRewardsQueryResult,
-} from '../src/graphql/legacy';
+} from '../src/graphql/ecosystem';
 import { SCALE } from '../src/web3/constants';
 import {
   BlockTimestampDocument,
@@ -288,7 +288,7 @@ const fetchPools = async (
       shouldFetchMore,
     )) {
       result = data.stakingRewardsContracts.reduce<Pools>((prev, current) => {
-        const { address, lastUpdateTime } = current;
+        const { address, lastUpdateTime, periodFinish } = current;
 
         // Combine the previous and current results
         const stakingRewards = [
@@ -311,23 +311,25 @@ const fetchPools = async (
         const totalTokens = new BigNumber(current.totalSupply);
 
         let rewardPerToken = rewardPerTokenStored;
-        {
-          // If there is no StakingToken liquidity, avoid div(0)
-          if (!totalTokens.eq(0)) {
-            const timeSinceLastUpdate = end.timestamp - lastUpdateTime;
 
-            // New reward units to distribute = rewardRate * timeSinceLastUpdate
-            const rewardUnitsToDistribute = rewardRate.mul(timeSinceLastUpdate);
+        // If there is no StakingToken liquidity, avoid div(0)
+        if (!totalTokens.eq(0)) {
+          const lastTimeRewardApplicable = Math.min(
+            end.timestamp,
+            periodFinish,
+          );
 
-            // New reward units per token = (rewardUnitsToDistribute * 1e18) / totalTokens
-            const unitsToDistributePerToken = rewardUnitsToDistribute
-              .mul(SCALE)
-              .div(totalTokens);
+          // New reward units to distribute = rewardRate * timeSinceLastUpdate
+          const rewardUnitsToDistribute = rewardRate.mul(
+            lastTimeRewardApplicable - lastUpdateTime,
+          );
 
-            rewardPerToken = rewardPerTokenStored.add(
-              unitsToDistributePerToken,
-            );
-          }
+          // New reward units per token = (rewardUnitsToDistribute * 1e18) / totalTokens
+          const unitsToDistributePerToken = rewardUnitsToDistribute
+            .mul(SCALE)
+            .div(totalTokens);
+
+          rewardPerToken = rewardPerTokenStored.add(unitsToDistributePerToken);
         }
 
         const contract: Pool = {
@@ -436,13 +438,18 @@ const subtractPreviousEarnings = (
       const previousEarnings = previous[poolAddress];
 
       const trancheEarnings = Object.fromEntries(
-        Object.entries(currentEarnings).map(([account, amount]) => [
-          account,
-          // Subtract earned amount from previous tranches, if any
-          previousEarnings?.[account]
-            ? amount.sub(previousEarnings[account])
-            : amount,
-        ]),
+        Object.entries(currentEarnings).map(([account, amount]) => {
+          const previousAmount = previousEarnings?.[account];
+
+          // Subtract previous earnings, if any. If there were no earnings,
+          // in the latest tranche, the previous earnings are not relevant.
+          const trancheAmount =
+            previousAmount && amount.gt(0)
+              ? amount.sub(previousAmount)
+              : amount;
+
+          return [account, trancheAmount];
+        }),
       );
 
       return [poolAddress, trancheEarnings];
@@ -462,7 +469,9 @@ const getSharesPerPool = (
 
         const sharePerStaker: AddressBnMap = Object.fromEntries(
           Object.entries(earningsPerStaker).map(([account, amount]) => {
-            const share = amount.mul(SCALE).div(totalEarnedForAllStakers);
+            const share = totalEarnedForAllStakers.gt(0)
+              ? amount.mul(SCALE).div(totalEarnedForAllStakers)
+              : new BigNumber(0);
             return [account, share];
           }),
         );

@@ -51,7 +51,16 @@ export type _Meta_ = {
   block: _Block_;
   /** The deployment ID */
   deployment: Scalars['String'];
+  /** If `true`, the subgraph encountered indexing errors at some past block */
+  hasIndexingErrors: Scalars['Boolean'];
 };
+
+export enum _SubgraphErrorPolicy_ {
+  /** Data will be returned even if the subgraph has indexing errors */
+  Allow = 'allow',
+  /** If the subgraph has indexing errors, data will be omitted. The default. */
+  Deny = 'deny'
+}
 
 
 
@@ -629,6 +638,66 @@ export type Pair = {
   createdAtTimestamp: Scalars['BigInt'];
   createdAtBlockNumber: Scalars['BigInt'];
   liquidityProviderCount: Scalars['BigInt'];
+  pairHourData: Array<PairHourData>;
+  liquidityPositions: Array<LiquidityPosition>;
+  liquidityPositionSnapshots: Array<LiquidityPositionSnapshot>;
+  mints: Array<Mint>;
+  burns: Array<Burn>;
+  swaps: Array<Swap>;
+};
+
+
+export type PairPairHourDataArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<PairHourData_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<PairHourData_Filter>;
+};
+
+
+export type PairLiquidityPositionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<LiquidityPosition_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<LiquidityPosition_Filter>;
+};
+
+
+export type PairLiquidityPositionSnapshotsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<LiquidityPositionSnapshot_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<LiquidityPositionSnapshot_Filter>;
+};
+
+
+export type PairMintsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Mint_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<Mint_Filter>;
+};
+
+
+export type PairBurnsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Burn_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<Burn_Filter>;
+};
+
+
+export type PairSwapsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Swap_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<Swap_Filter>;
 };
 
 export type Pair_Filter = {
@@ -817,7 +886,13 @@ export enum Pair_OrderBy {
   TxCount = 'txCount',
   CreatedAtTimestamp = 'createdAtTimestamp',
   CreatedAtBlockNumber = 'createdAtBlockNumber',
-  LiquidityProviderCount = 'liquidityProviderCount'
+  LiquidityProviderCount = 'liquidityProviderCount',
+  PairHourData = 'pairHourData',
+  LiquidityPositions = 'liquidityPositions',
+  LiquidityPositionSnapshots = 'liquidityPositionSnapshots',
+  Mints = 'mints',
+  Burns = 'burns',
+  Swaps = 'swaps'
 }
 
 export type PairDayData = {
@@ -1650,6 +1725,7 @@ export type Swap = {
   timestamp: Scalars['BigInt'];
   pair: Pair;
   sender: Scalars['Bytes'];
+  from: Scalars['Bytes'];
   amount0In: Scalars['BigDecimal'];
   amount1In: Scalars['BigDecimal'];
   amount0Out: Scalars['BigDecimal'];
@@ -1710,6 +1786,12 @@ export type Swap_Filter = {
   sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
   sender_contains?: Maybe<Scalars['Bytes']>;
   sender_not_contains?: Maybe<Scalars['Bytes']>;
+  from?: Maybe<Scalars['Bytes']>;
+  from_not?: Maybe<Scalars['Bytes']>;
+  from_in?: Maybe<Array<Scalars['Bytes']>>;
+  from_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  from_contains?: Maybe<Scalars['Bytes']>;
+  from_not_contains?: Maybe<Scalars['Bytes']>;
   amount0In?: Maybe<Scalars['BigDecimal']>;
   amount0In_not?: Maybe<Scalars['BigDecimal']>;
   amount0In_gt?: Maybe<Scalars['BigDecimal']>;
@@ -1772,6 +1854,7 @@ export enum Swap_OrderBy {
   Timestamp = 'timestamp',
   Pair = 'pair',
   Sender = 'sender',
+  From = 'from',
   Amount0In = 'amount0In',
   Amount1In = 'amount1In',
   Amount0Out = 'amount0Out',
@@ -1793,6 +1876,56 @@ export type Token = {
   txCount: Scalars['BigInt'];
   totalLiquidity: Scalars['BigDecimal'];
   derivedETH?: Maybe<Scalars['BigDecimal']>;
+  tokenDayData: Array<TokenDayData>;
+  pairDayDataBase: Array<PairDayData>;
+  pairDayDataQuote: Array<PairDayData>;
+  pairBase: Array<Pair>;
+  pairQuote: Array<Pair>;
+};
+
+
+export type TokenTokenDayDataArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<TokenDayData_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<TokenDayData_Filter>;
+};
+
+
+export type TokenPairDayDataBaseArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<PairDayData_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<PairDayData_Filter>;
+};
+
+
+export type TokenPairDayDataQuoteArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<PairDayData_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<PairDayData_Filter>;
+};
+
+
+export type TokenPairBaseArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Pair_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<Pair_Filter>;
+};
+
+
+export type TokenPairQuoteArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Pair_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<Pair_Filter>;
 };
 
 export type Token_Filter = {
@@ -1909,7 +2042,12 @@ export enum Token_OrderBy {
   UntrackedVolumeUsd = 'untrackedVolumeUSD',
   TxCount = 'txCount',
   TotalLiquidity = 'totalLiquidity',
-  DerivedEth = 'derivedETH'
+  DerivedEth = 'derivedETH',
+  TokenDayData = 'tokenDayData',
+  PairDayDataBase = 'pairDayDataBase',
+  PairDayDataQuote = 'pairDayDataQuote',
+  PairBase = 'pairBase',
+  PairQuote = 'pairQuote'
 }
 
 export type TokenDayData = {

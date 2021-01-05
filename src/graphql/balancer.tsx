@@ -51,7 +51,16 @@ export type _Meta_ = {
   block: _Block_;
   /** The deployment ID */
   deployment: Scalars['String'];
+  /** If `true`, the subgraph encountered indexing errors at some past block */
+  hasIndexingErrors: Scalars['Boolean'];
 };
+
+export enum _SubgraphErrorPolicy_ {
+  /** Data will be returned even if the subgraph has indexing errors */
+  Allow = 'allow',
+  /** If the subgraph has indexing errors, data will be omitted. The default. */
+  Deny = 'deny'
+}
 
 export type Balancer = {
   id: Scalars['ID'];
