@@ -285,6 +285,7 @@ const getStakingRewardsContractsMap = (
           // percentage = gains / stakingTokenPrice
           const percentage = gains / stakingTokenPrice;
 
+          // eslint-disable-next-line no-console
           console.log({
             rewardsTokenPrice,
             deltaR,
