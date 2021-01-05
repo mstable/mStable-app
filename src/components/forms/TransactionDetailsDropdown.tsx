@@ -17,9 +17,9 @@ const Details = styled.div<{ active: boolean }>`
   border-top: 1px ${({ theme }) => theme.color.blackTransparent} solid;
   border-bottom: 1px ${({ theme }) => theme.color.blackTransparent} solid;
   display: ${({ active }) => (active ? 'block' : 'none')};
-  
+
   > :last-child {
-    padding-bottom: 0;  
+    padding-bottom: 0;
   }
 `;
 

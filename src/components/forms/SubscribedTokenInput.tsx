@@ -2,15 +2,17 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
 import { TokenIcon } from '../icons/TokenIcon';
-import { useTokenSubscription } from '../../context/TokensProvider';
+import { useTokens, useTokenSubscription } from '../../context/TokensProvider';
 import { FontSize, ViewportWidth } from '../../theme';
-import { Token } from '../../types';
+import { SubscribedToken } from '../../types';
+
+// TODO: - Create base component for SubscribedTokenInput & TokenInput and inherit.
 
 interface Props {
   name: string;
   value: string | null;
-  tokens: Token[];
-  onChange?(name: string, token: Token | null): void;
+  tokenAddresses: string[];
+  onChange?(name: string, token?: SubscribedToken): void;
   error?: string;
   disabled?: boolean;
 }
@@ -161,15 +163,18 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
  * @param onChange Optional callback for change event
  * @param disabled Optional flag to disable the input
  */
-export const TokenInput: FC<Props> = ({
+export const SubscribedTokenInput: FC<Props> = ({
   name,
   value,
-  tokens,
+  tokenAddresses,
   onChange,
   disabled = false,
   error,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
+
+  const subscribedToken = useTokenSubscription(value);
+  const subscribedTokens = useTokens(tokenAddresses);
 
   const handleClickOutside = useCallback(() => {
     setOpen(false);
@@ -183,18 +188,19 @@ export const TokenInput: FC<Props> = ({
 
   const handleUnset = useCallback(() => {
     if (open) {
-      onChange?.(name, null);
+      onChange?.(name, undefined);
     }
   }, [onChange, name, open]);
 
   const handleSelect = useCallback(
     (address: string) => {
-      const selected = tokens.find(t => t.address === address);
+      const selected = subscribedTokens.find(t => t.address === address);
+
       if (selected) {
         onChange?.(name, selected);
       }
     },
-    [onChange, name, tokens],
+    [name, onChange, subscribedTokens],
   );
 
   const handleKeyPress = useCallback(
@@ -217,8 +223,6 @@ export const TokenInput: FC<Props> = ({
     };
   }, [handleKeyPress]);
 
-  const token = useTokenSubscription(value);
-
   return (
     <Container
       onClick={handleClick}
@@ -227,19 +231,22 @@ export const TokenInput: FC<Props> = ({
       disabled={disabled}
     >
       <Selected>
-        {token ? (
-          <Option address={token.address} symbol={token.symbol} />
+        {subscribedToken ? (
+          <Option
+            address={subscribedToken.address}
+            symbol={subscribedToken.symbol}
+          />
         ) : (
           <Placeholder onClick={handleUnset}>{placeholderText}</Placeholder>
         )}
-        {tokens.length > 1 && <DownArrow>▼</DownArrow>}
+        {subscribedTokens.length > 1 && <DownArrow>▼</DownArrow>}
       </Selected>
       <RelativeContainer>
         <OptionsContainer open={open}>
           {value ? (
             <Placeholder onClick={handleUnset}>{placeholderText}</Placeholder>
           ) : null}
-          {tokens.map(({ address, symbol }) => (
+          {subscribedTokens.map(({ address, symbol }) => (
             <div key={address}>
               <Option
                 address={address}

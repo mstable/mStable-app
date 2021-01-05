@@ -1,10 +1,5 @@
-import { Token, TokenQuantity } from '../../../types';
+import { Fields, Token, TokenQuantity } from '../../../types';
 import { MassetState } from '../../../context/DataProvider/types';
-
-export enum Fields {
-  Input = 'input',
-  Output = 'output',
-}
 
 export enum Actions {
   Data,
