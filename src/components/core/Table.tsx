@@ -77,16 +77,16 @@ const DivRow = styled.div<{ link?: boolean; colors?: AccentColors }>`
     :first-child {
       border-left: 1px solid
         ${({ colors }) => colors?.light ?? Color.blackTransparent};
-      border-top-left-radius: 4px;
-      border-bottom-left-radius: 4px;
-      padding-left: 4px;
+      border-top-left-radius: 16px;
+      border-bottom-left-radius: 16px;
+      padding-left: 16px;
     }
     :last-child {
       border-right: 1px solid
         ${({ colors }) => colors?.light ?? Color.blackTransparent};
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 4px;
-      padding-right: 4px;
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+      padding-right: 16px;
     }
   }
 `;
@@ -131,7 +131,7 @@ const Row: FC<{ href?: string; colors?: AccentColors }> = ({
 
 const Container = styled.div`
   display: table;
-  border-spacing: 0 4px;
+  border-spacing: 0 16px;
   width: 100%;
   background: transparent;
 

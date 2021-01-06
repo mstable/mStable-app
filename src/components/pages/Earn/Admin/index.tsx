@@ -12,7 +12,7 @@ export const AdminPage: FC = () => (
     <EarnDataProvider>
       <EarnAdminProvider>
         <div>
-          <H2 borderTop>EARN Admin Dashboard</H2>
+          <H2>EARN Admin Dashboard</H2>
           <div>
             <StakingRewardContractsTable />
             <DistributeRewardsForm />

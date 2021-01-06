@@ -60,7 +60,6 @@ const ButtonCss = css<Props>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   font-weight: bold;
   font-size: 12px;
-  text-transform: uppercase;
   padding: 8px 16px;
 
   ${({ theme }) => theme.mixins.roundedBorder}

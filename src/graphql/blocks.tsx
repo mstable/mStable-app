@@ -2,6 +2,9 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
       export interface IntrospectionResultData {
         __schema: {
@@ -32,6 +35,9 @@ export type Scalars = {
   BigInt: string;
   BigDecimal: string;
 };
+
+
+
 
 export type _Block_ = {
   /** The hash of the block */
@@ -271,7 +277,6 @@ export type Query = {
 export type QueryBlockArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -282,7 +287,6 @@ export type QueryBlocksArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Block_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -301,7 +305,6 @@ export type Subscription = {
 export type SubscriptionBlockArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -312,7 +315,6 @@ export type SubscriptionBlocksArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Block_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -320,17 +322,17 @@ export type Subscription_MetaArgs = {
   block?: Maybe<Block_Height>;
 };
 
-export type BlockTimestampQueryVariables = {
+export type BlockTimestampQueryVariables = Exact<{
   start: Scalars['BigInt'];
   end: Scalars['BigInt'];
-};
+}>;
 
 
 export type BlockTimestampQuery = { blocks: Array<Pick<Block, 'number' | 'timestamp'>> };
 
-export type BlockQueryVariables = {
+export type BlockQueryVariables = Exact<{
   number: Scalars['BigInt'];
-};
+}>;
 
 
 export type BlockQuery = { blocks: Array<Pick<Block, 'number' | 'timestamp'>> };

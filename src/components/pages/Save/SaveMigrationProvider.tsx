@@ -1,45 +1,62 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, {
   createContext,
   FC,
-  useMemo,
-  useContext,
-  useEffect,
   useCallback,
+  useContext,
+  useMemo,
   useState,
 } from 'react';
 import { BigNumber } from 'ethers/utils';
 import { MaxUint256 } from 'ethers/constants';
 
-import { Erc20Detailed } from '../../../typechain/Erc20Detailed.d';
-import { SavingsContract } from '../../../typechain/SavingsContract.d';
 import { useWalletAddress } from '../../../context/OnboardProvider';
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
-import { Interfaces, SendTxManifest } from '../../../types';
-import {
-  useDispatchCtx as useFormDispatch,
-  useFormSubmitting,
-  useManifest,
-} from '../../forms/TransactionForm/FormProvider';
-import {
-  useSelectedSaveV1Contract,
-  useSelectedSaveV2Contract,
-  useSelectedMassetContract,
-} from '../../../web3/hooks';
-import { StepProps } from '../../core/Step';
-import { useSendTransaction } from '../../../context/TransactionsProvider';
 import { useTokenAllowance } from '../../../context/TokensProvider';
 import { useSelectedSavingsContractState } from '../../../context/SelectedSaveVersionProvider';
+import {
+  Transaction,
+  useTransactionsDispatch,
+  useTransactionsState,
+} from '../../../context/TransactionsProvider';
+import {
+  useSelectedMassetContract,
+  useSelectedSaveV1Contract,
+  useSelectedSaveV2Contract,
+} from '../../../web3/hooks';
+import {
+  TransactionManifest,
+  TransactionStatus,
+} from '../../../web3/TransactionManifest';
+import { Interfaces } from '../../../types';
+import { StepProps } from '../../core/Step';
+
+const isTxPending = (
+  transactions: Record<string, Transaction>,
+  id?: string,
+): boolean => {
+  return !!(
+    id &&
+    transactions[id] &&
+    [TransactionStatus.Pending, TransactionStatus.Sent].includes(
+      transactions[id].status,
+    )
+  );
+};
 
 const stepsCtx = createContext<StepProps[]>([]);
 
+const formId = 'saveMigration';
+
 export const SaveMigrationProvider: FC = ({ children }) => {
   const [approveInfinite, setApproveInfinite] = useState<boolean>(true);
+  const [withdrawId, setWithdrawId] = useState<string | undefined>();
+  const [approveId, setApproveId] = useState<string | undefined>();
+  const [depositId, setDepositId] = useState<string | undefined>();
 
-  const sendTransaction = useSendTransaction();
-  const { submitStart, submitEnd, setManifest } = useFormDispatch();
-  const manifest = useManifest();
-  const submitting = useFormSubmitting();
-
+  const { propose } = useTransactionsDispatch();
+  const transactions = useTransactionsState();
   const massetState = useSelectedMassetState();
   const massetSymbol = massetState?.token.symbol;
   const v1SavingsBalance = massetState?.savingsContracts.v1?.savingsBalance;
@@ -52,20 +69,113 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const savingsContractState = useSelectedSavingsContractState();
   useTokenAllowance(massetState?.address, v2Address);
 
-  const startTx = useCallback(() => {
-    if (manifest) {
-      submitStart();
-      sendTransaction({ ...manifest, onSent: submitEnd, onError: submitEnd });
+  const proposeWithdrawTx = useCallback(() => {
+    if (
+      !(
+        v1SavingsBalance?.balance &&
+        v1SavingsBalance.credits &&
+        savingsContractV1
+      )
+    ) {
+      return;
     }
-  }, [sendTransaction, submitStart, submitEnd, manifest]);
 
-  const startApprovalTx = useCallback(
-    (infinite: boolean) => () => {
-      setApproveInfinite(infinite);
-      startTx();
-    },
-    [startTx],
-  );
+    const body = v1SavingsBalance.balance.format();
+    const tx = new TransactionManifest<Interfaces.SavingsContract, 'redeem'>(
+      savingsContractV1,
+      'redeem',
+      [v1SavingsBalance?.credits?.exact as BigNumber],
+      {
+        present: `Withdrawing ${body}`,
+        past: `Withdrew ${body}`,
+      },
+      formId,
+    );
+
+    setWithdrawId(tx.id);
+    propose(tx);
+  }, [propose, savingsContractV1, v1SavingsBalance]);
+
+  const proposeApproveTx = useCallback(() => {
+    if (
+      !(
+        v2Address &&
+        massetSymbol &&
+        v1SavingsBalance?.balance &&
+        massetContract
+      )
+    ) {
+      return;
+    }
+
+    const body = `transfer of ${massetSymbol}`;
+    const tx = new TransactionManifest<Interfaces.ERC20, 'approve'>(
+      massetContract,
+      'approve',
+      [
+        v2Address,
+        approveInfinite
+          ? MaxUint256
+          : (v1SavingsBalance?.balance.exact as BigNumber),
+      ],
+      {
+        present: `Approving ${body}`,
+        past: `Approved ${body}`,
+      },
+      formId,
+    );
+
+    setApproveId(tx.id);
+    propose(tx);
+  }, [
+    approveInfinite,
+    massetContract,
+    massetSymbol,
+    propose,
+    v1SavingsBalance,
+    v2Address,
+  ]);
+
+  const proposeDepositTx = useCallback(() => {
+    if (!v1SavingsBalance?.balance || !savingsContractV2) {
+      return;
+    }
+
+    const tx =
+      savingsContractState?.version === 2 && !savingsContractState.current
+        ? new TransactionManifest<Interfaces.SavingsContract, 'preDeposit'>(
+            savingsContractV2,
+            'preDeposit',
+            [v1SavingsBalance.balance.exact, walletAddress as string],
+            {
+              present: `Pre depositing ${v1SavingsBalance.balance.format()}`,
+              past: `Pre deposited ${v1SavingsBalance.balance.format()}`,
+            },
+            formId,
+          )
+        : new TransactionManifest<
+            Interfaces.SavingsContract,
+            'depositSavings(uint256,address)'
+          >(
+            savingsContractV2,
+            'depositSavings(uint256,address)',
+            [v1SavingsBalance.balance.exact, walletAddress as string],
+            {
+              present: `Depositing ${v1SavingsBalance.balance.format()}`,
+              past: `Deposited ${v1SavingsBalance.balance.format()}`,
+            },
+            formId,
+          );
+
+    setDepositId(tx.id);
+    propose(tx);
+  }, [
+    propose,
+    savingsContractState,
+    savingsContractV2,
+    v1SavingsBalance,
+    walletAddress,
+  ]);
 
   const steps = useMemo<StepProps[]>(() => {
     if (
@@ -84,6 +194,10 @@ export const SaveMigrationProvider: FC = ({ children }) => {
       v1.savingsBalance.balance?.exact as BigNumber,
     );
 
+    const withdrawTxSubmitting = isTxPending(transactions, withdrawId);
+    const depositTxSubmitting = isTxPending(transactions, depositId);
+    const approveTxSubmitting = isTxPending(transactions, approveId);
+
     return [
       {
         key: 'withdraw',
@@ -92,8 +206,8 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           {
             title: 'Withdraw from Save V1',
             key: 'withdraw',
-            onClick: startTx,
-            pending: submitting,
+            onClick: proposeWithdrawTx,
+            pending: withdrawTxSubmitting,
           },
         ],
       },
@@ -105,15 +219,21 @@ export const SaveMigrationProvider: FC = ({ children }) => {
             title: 'Approve',
             key: 'approve-exact',
             buttonTitle: 'Exact',
-            onClick: startApprovalTx(false),
-            pending: submitting && !approveInfinite,
+            onClick: () => {
+              setApproveInfinite(false);
+              proposeApproveTx();
+            },
+            pending: approveTxSubmitting && !approveInfinite,
           },
           {
             title: 'Approve',
             key: 'approve-infinite',
             buttonTitle: 'Infinite',
-            onClick: startApprovalTx(true),
-            pending: submitting && approveInfinite,
+            onClick: () => {
+              setApproveInfinite(true);
+              proposeApproveTx();
+            },
+            pending: approveTxSubmitting && approveInfinite,
           },
         ],
       },
@@ -127,109 +247,22 @@ export const SaveMigrationProvider: FC = ({ children }) => {
           {
             title: 'Deposit to Save V2',
             key: 'deposit',
-            onClick: startTx,
-            pending: submitting,
+            onClick: proposeDepositTx,
+            pending: depositTxSubmitting,
           },
         ],
       },
     ];
-  }, [massetState, startTx, startApprovalTx, submitting, approveInfinite]);
-
-  // First non-completed step
-  const [currentStep] = steps.filter(_step => !_step.complete);
-  const currentStepKey = currentStep?.key;
-
-  useEffect(() => {
-    // eslint-disable-next-line
-    let manifest: SendTxManifest<any, any> | null = null;
-
-    switch (currentStepKey) {
-      case 'withdraw': {
-        if (!(v1SavingsBalance?.balance && v1SavingsBalance.credits)) return;
-
-        const body = v1SavingsBalance.balance.format();
-        manifest = {
-          iface: savingsContractV1 as SavingsContract,
-          args: [v1SavingsBalance?.credits?.exact as BigNumber],
-          fn: 'redeem',
-          purpose: {
-            present: `Withdrawing ${body}`,
-            past: `Withdrew ${body}`,
-          },
-        } as SendTxManifest<Interfaces.SavingsContract, 'redeem'>;
-        break;
-      }
-
-      case 'approve': {
-        if (!(v2Address && massetSymbol && v1SavingsBalance?.balance)) return;
-
-        const body = `transfer of ${massetSymbol}`;
-        manifest = {
-          iface: massetContract as Erc20Detailed,
-          args: [
-            v2Address,
-            approveInfinite
-              ? MaxUint256
-              : (v1SavingsBalance?.balance.exact as BigNumber),
-          ],
-          fn: 'approve',
-          purpose: {
-            present: `Approve ${body}`,
-            past: `Approved ${body}`,
-          },
-        } as SendTxManifest<Interfaces.ERC20, 'approve'>;
-        break;
-      }
-
-      case 'deposit': {
-        if (!v1SavingsBalance?.balance) return;
-        if (
-          savingsContractState?.version === 2 &&
-          !savingsContractState.current
-        ) {
-          manifest = {
-            iface: savingsContractV2 as SavingsContract,
-            args: [v1SavingsBalance.balance.exact, walletAddress as string],
-            fn: 'preDeposit',
-            purpose: {
-              present: `Pre depositing ${v1SavingsBalance.balance.format()}`,
-              past: `Pre deposited ${v1SavingsBalance.balance.format()}`,
-            },
-          } as SendTxManifest<Interfaces.SavingsContract, 'preDeposit'>;
-        } else {
-          manifest = {
-            iface: savingsContractV2 as SavingsContract,
-            args: [v1SavingsBalance.balance.exact, walletAddress as string],
-            fn: 'depositSavings(uint256,address)',
-            purpose: {
-              present: `Depositing ${v1SavingsBalance.balance.format()}`,
-              past: `Deposited ${v1SavingsBalance.balance.format()}`,
-            },
-          } as SendTxManifest<
-            Interfaces.SavingsContract,
-            'depositSavings(uint256,address)'
-          >;
-        }
-        break;
-      }
-
-      default:
-        break;
-    }
-
-    setManifest(manifest);
   }, [
+    approveId,
     approveInfinite,
-    currentStepKey,
-    massetContract,
-    massetSymbol,
-    savingsContractV1,
-    savingsContractV2,
-    setManifest,
-    v1SavingsBalance,
-    v2Address,
-    walletAddress,
-    savingsContractState,
+    depositId,
+    massetState,
+    proposeApproveTx,
+    proposeDepositTx,
+    proposeWithdrawTx,
+    transactions,
+    withdrawId,
   ]);
 
   return <stepsCtx.Provider value={steps}>{children}</stepsCtx.Provider>;

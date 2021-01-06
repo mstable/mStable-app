@@ -12,14 +12,13 @@ import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
-import { centredLayout, gradientBackground } from './css';
+import { gradientBackground } from './css';
 import { Color } from '../../theme';
 import { BannerMessage } from './BannerMessage';
+import { PendingTransactions } from '../wallet/PendingTransactions';
 
 const Main = styled.main`
-  max-width: 100%;
-  flex: 1;
-  padding: 20px;
+  padding: 0 1rem;
 `;
 
 const BackgroundContainer = styled.div`
@@ -29,9 +28,12 @@ const BackgroundContainer = styled.div`
 const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
   ${reset}
   a {
-    color: ${({ theme }) => theme.color.offBlack};
+    color: ${Color.blue};
     text-decoration: none;
-    border-bottom: 1px ${({ theme }) => theme.color.offBlack} solid;
+    transition: color 0.4s ease;
+    &:hover {
+      color: ${Color.gold};
+    }
   }
   b {
     font-weight: 600;
@@ -133,36 +135,26 @@ const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
   </>
 );
 
-const Centred = styled.div`
-  flex: 1;
-  ${centredLayout}
-`;
-
 const Container = styled.div<{ accountOpen?: boolean }>`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  overflow-x: hidden;
 
   // The sticky header won't always be 80px, so this is less than ideal
   min-height: calc(100vh - 80px);
 
   background: ${({ accountOpen }) =>
     accountOpen ? Color.black : 'transparent'};
+
+  grid-template-columns:
+    1fr
+    min(1200px, 100%)
+    1fr;
+
+  > * {
+    grid-column: 2;
+  }
 `;
 
-const PageContainer = styled.div<{ accountOpen: boolean }>`
-  > :first-child {
-    display: ${({ accountOpen }) => (accountOpen ? 'none' : 'flex')};
-  }
-  > :last-child {
-    display: ${({ accountOpen }) => (accountOpen ? 'flex' : 'none')};
-  }
-`;
-
-/**
- * App layout component.
- */
 export const Layout: FC = ({ children }) => {
   const accountOpen = useAccountOpen();
   const idle = useIsIdle();
@@ -179,24 +171,20 @@ export const Layout: FC = ({ children }) => {
     <>
       <Background home={home} accountOpen={accountOpen} />
       <HeaderGroup home={home} />
-      <PageContainer accountOpen={accountOpen}>
-        <Container>
-          {earn ? (
-            <>{children}</>
-          ) : (
-            <Centred>
-              <Main>
-                <BannerMessage />
-                <BackgroundContainer>{children}</BackgroundContainer>
-              </Main>
-            </Centred>
-          )}
-        </Container>
-        <Container accountOpen>
+      <Container>
+        {accountOpen ? (
           <Account />
-        </Container>
-      </PageContainer>
-      <Footer accountOpen={accountOpen} />
+        ) : earn ? (
+          <>{children}</>
+        ) : (
+          <Main>
+            <BannerMessage />
+            <BackgroundContainer>{children}</BackgroundContainer>
+          </Main>
+        )}
+      </Container>
+      <Footer />
+      <PendingTransactions />
       <NotificationToasts />
       <ReactTooltip id="global" />
       <GlobalStyle idle={idle} />

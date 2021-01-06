@@ -1,6 +1,5 @@
 import { subDays, getUnixTime, endOfDay, eachDayOfInterval } from 'date-fns';
 import { useMemo } from 'react';
-import { BigNumber } from 'ethers/utils';
 import { useQuery, gql, DocumentNode } from '@apollo/client';
 
 import { useSigner } from '../context/OnboardProvider';
@@ -15,8 +14,8 @@ import { SavingsContractFactory } from '../typechain/SavingsContractFactory';
 import { SavingsContract } from '../typechain/SavingsContract.d';
 import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
 import { Masset } from '../typechain/Masset.d';
-import { truncateAddress } from './strings';
 import { useSelectedSaveVersion } from '../context/SelectedSaveVersionProvider';
+import { truncateAddress } from '../utils/strings';
 
 interface BlockTime {
   timestamp: number;
@@ -160,12 +159,6 @@ export const useAverageApyForPastWeek = (): number | undefined => {
       dailyApys.length
     );
   }, [dailyApys]);
-};
-
-export const calculateGasMargin = (value: BigNumber): BigNumber => {
-  const GAS_MARGIN = new BigNumber(1000);
-  const offset = value.mul(GAS_MARGIN).div(new BigNumber(10000));
-  return value.add(offset);
 };
 
 export const useErc20Contract = (

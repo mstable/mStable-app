@@ -13,7 +13,7 @@ export const P = styled.p<{ center?: boolean; size?: Size }>`
   ${({ theme }) => theme.mixins.textAlign}
 `;
 
-export const H2 = styled.h2<{ center?: boolean; borderTop?: boolean }>`
+export const H2 = styled.h2<{ center?: boolean }>`
   font-size: ${FontSize.l};
   font-weight: bold;
   line-height: 1.5rem;
@@ -21,16 +21,13 @@ export const H2 = styled.h2<{ center?: boolean; borderTop?: boolean }>`
   padding-bottom: 12px;
 
   ${({ theme }) => theme.mixins.textAlign}
-  ${({ theme, borderTop }) => (borderTop ? theme.mixins.borderTop : '')}
 `;
 
-export const H3 = styled.h3<{ borderTop?: boolean }>`
+export const H3 = styled.h3`
   font-size: ${FontSize.l};
   line-height: 1.5rem;
   padding-bottom: 12px;
-  padding-top: ${({ borderTop }) => (borderTop ? `1rem` : `4px`)};
-
-  ${({ theme, borderTop }) => (borderTop ? theme.mixins.borderTop : '')}
+  padding-top: 4px;
 `;
 
 export const H4 = styled.h4`

@@ -9,11 +9,8 @@ import {
 } from './SaveMigrationProvider';
 import { Steps } from '../../core/Steps';
 import { useV1SavingsBalance } from '../../../context/DataProvider/DataProvider';
-import { GasPriceSelector } from '../../forms/TransactionForm/GasPriceSelector';
-import {
-  FormProvider,
-  useFormSubmitting,
-} from '../../forms/TransactionForm/FormProvider';
+import { useTransactionsState } from '../../../context/TransactionsProvider';
+import { TransactionStatus } from '../../../web3/TransactionManifest';
 
 const StepsAndGasPrices = styled.div`
   display: flex;
@@ -101,7 +98,15 @@ const Card = styled.div`
 const SaveMigrationContent: FC = () => {
   const steps = useMigrationSteps();
   const savingsBalance = useV1SavingsBalance();
-  const submitting = useFormSubmitting();
+  const transactions = useTransactionsState();
+  const submitting = Object.values(transactions)
+    .filter(tx => tx.manifest.formId === 'saveMigration')
+    .some(
+      tx =>
+        tx.status === TransactionStatus.Pending ||
+        tx.status === TransactionStatus.Response ||
+        tx.status === TransactionStatus.Sent,
+    );
 
   const stepsComplete = steps.length && steps.every(step => step.complete);
 
@@ -120,7 +125,6 @@ const SaveMigrationContent: FC = () => {
         )}
         <StepsAndGasPrices>
           {steps.length && <Steps steps={steps} pending={submitting} />}
-          {!stepsComplete && <GasPriceSelector valid />}
         </StepsAndGasPrices>
       </Inner>
     </Card>
@@ -128,9 +132,7 @@ const SaveMigrationContent: FC = () => {
 };
 
 export const SaveMigration: FC = () => (
-  <FormProvider formId="migration">
-    <SaveMigrationProvider>
-      <SaveMigrationContent />
-    </SaveMigrationProvider>
-  </FormProvider>
+  <SaveMigrationProvider>
+    <SaveMigrationContent />
+  </SaveMigrationProvider>
 );

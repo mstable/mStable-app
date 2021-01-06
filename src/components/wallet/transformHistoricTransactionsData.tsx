@@ -2,8 +2,8 @@ import { HistoricTransactionsQueryResult } from '../../graphql/protocol';
 import { HistoricTransaction } from './types';
 import { MassetState, DataState } from '../../context/DataProvider/types';
 import { BigDecimal } from '../../web3/BigDecimal';
-import { formatUnix } from './utils';
-import { humanizeList } from '../../web3/strings';
+import { formatUnix } from '../../utils/time';
+import { humanizeList } from '../../utils/strings';
 
 export const transformHistoricTransactionsData = (
   data: HistoricTransactionsQueryResult['data'],

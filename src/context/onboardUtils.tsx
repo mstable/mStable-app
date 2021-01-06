@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
 import { API, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
 import Onboard from 'bnc-onboard';
-import { CHAIN_ID, rpcUrl } from '../web3/constants';
+import { CHAIN_ID, rpcUrl } from '../constants';
 
 export const WALLETS = [
   { walletName: 'coinbase', preferred: true },

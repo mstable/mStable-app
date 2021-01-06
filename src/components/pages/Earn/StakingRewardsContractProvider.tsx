@@ -11,7 +11,7 @@ import React, {
 import useInterval from 'react-use/lib/useInterval';
 
 import { StakingRewards } from '../../../typechain/StakingRewards.d';
-import { SCALE } from '../../../web3/constants';
+import { SCALE } from '../../../constants';
 import { CURVE_ADDRESSES } from '../../../context/earn/CurveProvider';
 import { useTokensState } from '../../../context/TokensProvider';
 import { StakingRewardsFactory } from '../../../typechain/StakingRewardsFactory';

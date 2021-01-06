@@ -6,7 +6,7 @@ import { TokenIcon } from '../icons/TokenIcon';
 import { mapSizeToFontSize, mapSizeToIconSize, Size } from '../../theme';
 import { ExternalLink } from './ExternalLink';
 import { BigDecimal } from '../../web3/BigDecimal';
-import { getEtherscanLink, truncateAddress } from '../../web3/strings';
+import { getEtherscanLink, truncateAddress } from '../../utils/strings';
 
 interface Props extends AmountProps {
   address?: string;

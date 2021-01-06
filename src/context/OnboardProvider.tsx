@@ -16,7 +16,7 @@ import {
   JsonRpcSigner,
 } from 'ethers/providers';
 import { Signer, providers, ethers } from 'ethers';
-import { CHAIN_ID } from '../web3/constants';
+import { CHAIN_ID } from '../constants';
 import { initOnboard } from './onboardUtils';
 import { LocalStorage } from '../localStorage';
 import {
