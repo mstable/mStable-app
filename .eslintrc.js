@@ -30,6 +30,7 @@ const realConfig = {
     'import/prefer-default-export': 'off',
     'import/no-default-export': 'error',
     'react/prop-types': 'off',
+    'consistent-return': 'off',
     'no-nested-ternary': 'off',
   },
 };
