@@ -25,7 +25,7 @@ import { useSignerOrInfuraProvider } from '../OnboardProvider';
 import { useBlockNumber } from '../BlockProvider';
 import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
-import { CHAIN_ID } from '../../web3/constants';
+import { CHAIN_ID } from '../../constants';
 
 export const CURVE_ADDRESSES = {
   CURVE_V2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',

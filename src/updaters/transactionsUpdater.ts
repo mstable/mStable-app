@@ -1,10 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { Provider, TransactionReceipt } from 'ethers/providers';
 import { Signer } from 'ethers';
-import { useTransactionsContext } from '../context/TransactionsProvider';
+
+import { TransactionStatus } from '../web3/TransactionManifest';
 import { useSignerOrInfuraProvider } from '../context/OnboardProvider';
 import { useBlockNumber } from '../context/BlockProvider';
 import { useAccount } from '../context/UserProvider';
+import {
+  useTransactionsDispatch,
+  useTransactionsState,
+} from '../context/TransactionsProvider';
 
 /**
  * Update the state of affected transactions when the provider or
@@ -16,7 +21,8 @@ export const TransactionsUpdater = (): null => {
   const blockNumber = useBlockNumber();
   const accountRef = useRef<string | undefined>(account);
 
-  const [{ current }, { check, finalize, reset }] = useTransactionsContext();
+  const state = useTransactionsState();
+  const { check, finalize, reset } = useTransactionsDispatch();
 
   /**
    * Reset transactions state on account change
@@ -35,26 +41,27 @@ export const TransactionsUpdater = (): null => {
     (): (() => void) | void => {
       if (provider && blockNumber) {
         let stale = false;
-        Object.keys(current)
+        Object.values(state)
           .filter(
-            hash =>
-              current[hash].status === null &&
-              current[hash].response.blockNumber !== blockNumber,
+            tx =>
+              tx.status === TransactionStatus.Sent &&
+              tx.hash &&
+              tx.blockNumber !== blockNumber,
           )
-          .forEach(hash => {
+          .forEach(tx => {
             (((provider as Signer).provider || provider) as Provider)
-              .getTransactionReceipt(hash)
+              .getTransactionReceipt(tx.hash as string)
               .then((receipt: TransactionReceipt) => {
                 if (!stale) {
                   if (!receipt) {
-                    check(hash, blockNumber);
+                    check(tx.manifest.id, blockNumber);
                   } else {
-                    finalize(hash, receipt, current[hash]);
+                    finalize(tx.manifest, receipt);
                   }
                 }
               })
               .catch(() => {
-                check(hash, blockNumber);
+                check(tx.manifest.id, blockNumber);
               });
           });
 

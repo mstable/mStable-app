@@ -1,4 +1,5 @@
 import React, { FC, ReactComponentElement, useMemo } from 'react';
+
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton/lib';
 import {
@@ -11,7 +12,7 @@ import {
   YAxis,
 } from 'recharts';
 
-import { Props as DefaultTooltipContentProps } from 'recharts/types/component/DefaultTooltipContent.d';
+// import { Props as DefaultTooltipContentProps } from 'recharts/types/component/DefaultTooltipContent.d';
 // eslint-disable-next-line
 // @ts-ignore
 import DefaultTooltipContent from 'recharts/lib/component/DefaultTooltipContent';
@@ -25,7 +26,8 @@ import { toK } from './utils';
 import { RechartsContainer } from './RechartsContainer';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TooltipProps = DefaultTooltipContentProps<any, any>;
+type TooltipProps = any;
+// type TooltipProps = DefaultTooltipContentProps<any, any>;
 
 type TokenSymbol =
   | 'mUSD'
@@ -132,7 +134,7 @@ TooltipProps & { active: boolean }) => {
           unit: '%',
         },
         ...(payload as NonNullable<typeof payload>).filter(
-          p => p.dataKey !== 'remainderMaxWeight',
+          (p: { dataKey: string }) => p.dataKey !== 'remainderMaxWeight',
         ),
       ]}
     />
@@ -271,14 +273,12 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
               }}
             />
             <Bar
-              type="monotone"
               dataKey="basketShareAsPercentage"
               name="Basket share"
               unit="%"
               stackId="a"
             />
             <Bar
-              type="monotone"
               dataKey="remainderMaxWeight"
               name="Max weight"
               unit="%"

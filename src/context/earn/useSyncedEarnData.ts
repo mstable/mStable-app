@@ -19,7 +19,7 @@ import {
   SyncedEarnData,
   TokenPricesMap,
 } from './types';
-import { STABLECOIN_SYMBOLS } from '../../web3/constants';
+import { STABLECOIN_SYMBOLS } from '../../constants';
 import { useMerkleDrops } from './useMerkleDrops';
 import {
   CURVE_ADDRESSES,

@@ -1,21 +1,18 @@
 import { BigNumber } from 'ethers/utils';
 
+interface Connector {
+  id: string;
+  subType?: string;
+  label: string;
+}
+
 export const SCALE = new BigNumber((1e18).toString());
 export const PERCENT_SCALE = new BigNumber((1e16).toString());
 export const RATIO_SCALE = new BigNumber((1e8).toString());
 export const EXP_SCALE = new BigNumber((1e18).toString());
 
-export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
-
 // For now, support one chain ID per deployment; also a `use-wallet` restriction
 export const CHAIN_ID = parseInt(process.env.REACT_APP_CHAIN_ID as string, 10);
-
-export const NETWORK_NAMES = {
-  1: 'Main Ethereum network',
-  3: 'Ropsten (Test network)',
-  42: 'Kovan (Test network)',
-  1337: 'Local network',
-};
 
 interface Addresses {
   MTA: string;
@@ -85,3 +82,29 @@ export const STABLECOIN_SYMBOLS = [
 ];
 
 export const rpcUrl = `${process.env.REACT_APP_RPC_URL}${process.env.REACT_APP_RPC_API_KEY}`;
+
+export const CONNECTORS: Connector[] = [
+  {
+    id: 'injected',
+    subType: 'metamask',
+    label: 'MetaMask',
+  },
+  {
+    id: 'injected',
+    subType: 'brave',
+    label: 'Brave',
+  },
+  {
+    id: 'injected',
+    subType: 'meetOne',
+    label: 'MEET.ONE',
+  },
+  { id: 'fortmatic', label: 'Fortmatic' },
+  { id: 'portis', label: 'Portis' },
+  { id: 'authereum', label: 'Authereum' },
+  { id: 'squarelink', label: 'Squarelink' },
+  { id: 'torus', label: 'Torus' },
+  { id: 'walletconnect', label: 'WalletConnect' },
+  { id: 'walletlink', label: 'WalletLink' },
+  { id: 'frame', label: 'Frame' },
+];

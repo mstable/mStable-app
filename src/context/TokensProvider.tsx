@@ -14,7 +14,7 @@ import { AllTokensQueryResult } from '../graphql/protocol';
 import { Allowances, SubscribedToken } from '../types';
 import { BigDecimal } from '../web3/BigDecimal';
 import { CURVE_ADDRESSES } from './earn/CurveProvider';
-import { ADDRESSES } from '../web3/constants';
+import { ADDRESSES } from '../constants';
 
 interface State {
   tokens: {

@@ -258,7 +258,7 @@ export const Metrics = <T extends string>({
           <ControlsContainer>
             {state.metrics?.length > 0 ? (
               <Control>
-                <H3 borderTop>Metrics</H3>
+                <H3>Metrics</H3>
                 <MetricToggles>
                   {state.metrics.map(({ type, enabled, label, color }) => (
                     <Toggle key={type}>
@@ -278,7 +278,7 @@ export const Metrics = <T extends string>({
               <div />
             )}
             <Control>
-              <H3 borderTop>Range</H3>
+              <H3>Range</H3>
               <TabsContainer>
                 {state.dates.map(({ label, enabled, dateRange }) => (
                   <DateRangeBtn

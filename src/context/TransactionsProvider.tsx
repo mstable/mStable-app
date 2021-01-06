@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, {
   createContext,
   FC,
@@ -7,518 +9,331 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import useInterval from 'react-use/lib/useInterval';
-
-import useEffectOnce from 'react-use/lib/useEffectOnce';
-import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
+import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 
-import { SendTxManifest, Transaction, TransactionStatus } from '../types';
+import {
+  TransactionManifest,
+  TransactionStatus,
+} from '../web3/TransactionManifest';
+import { Instances, Interfaces } from '../types';
 import {
   useAddErrorNotification,
   useAddInfoNotification,
   useAddSuccessNotification,
 } from './NotificationsProvider';
-import { TransactionOverrides } from '../typechain/index.d';
-import { getTransactionStatus } from '../web3/transactions';
-import { getEtherscanLink } from '../web3/strings';
-import { calculateGasMargin } from '../web3/hooks';
+import { getEtherscanLinkForHash } from '../utils/strings';
 
 enum Actions {
-  AddPending,
+  Cancel,
   Check,
+  Error,
   Finalize,
+  Propose,
   Reset,
-  ResetLatestStatus,
-  FetchGasPrices,
-  FetchEthPrice,
+  Response,
+  Send,
 }
 
-type TransactionHash = string;
+export interface Transaction {
+  manifest: TransactionManifest<any, any>;
 
-interface GasPriceInfo {
-  health: boolean;
-  block_number: number;
-  block_time: number;
-  slow: number;
-  standard: number;
-  fast: number;
-  instant: number;
-}
+  status: TransactionStatus;
 
-interface EthPrice {
-  ethereum: {
-    usd: number;
-  };
+  blockNumberChecked?: number;
+
+  blockNumber?: number;
+
+  hash?: string;
+
+  to?: string;
+
+  error?: string;
 }
 
 interface State {
-  current: Record<TransactionHash, Transaction>;
-  latestStatus: { status?: TransactionStatus; blockNumber?: number };
-  gasPriceInfo?: GasPriceInfo;
-  ethPrice?: number;
+  [id: string]: Transaction;
 }
 
 interface Dispatch {
-  /**
-   * Add a single pending transaction
-   */
-  addPending(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    manifest: SendTxManifest<any, any>,
-    pendingTx: { hash: string; response: TransactionResponse },
+  cancel(id: string): void;
+
+  check(id: string, blockNumber: number): void;
+
+  finalize(
+    manifest: TransactionManifest<any, any>,
+    receipt: TransactionReceipt,
   ): void;
 
-  /**
-   * Check that a current transaction is present at a given block number.
-   * @param hash
-   * @param blockNumber
-   */
-  check(hash: string, blockNumber: number): void;
+  propose<
+    TIface extends Interfaces,
+    TFn extends keyof Instances[TIface]['functions']
+  >(
+    manifest: TransactionManifest<TIface, TFn>,
+  ): void;
 
-  /**
-   * Mark a current transaction as finalized with a transaction receipt.
-   * @param hash
-   * @param receipt
-   * @param tx
-   */
-  finalize(hash: string, receipt: TransactionReceipt, tx: Transaction): void;
-
-  /**
-   * Reset the state completely.
-   */
   reset(): void;
 
-  /**
-   * Reset just the `latestStatus.status` field.
-   */
-  resetLatestStatus(): void;
-
-  fetchGasPrices(): void;
-
-  fetchEthPrice(): void;
+  send(
+    manifest: TransactionManifest<never, never>,
+    gasLimit: BigNumber,
+    gasPrice: number,
+  ): void;
 }
 
 type Action =
+  | { type: Actions.Reset }
   | {
-      type: Actions.AddPending;
-      payload: Transaction;
+      type: Actions.Propose;
+      payload: TransactionManifest<never, never>;
     }
-  | {
-      type: Actions.Check;
-      payload: { hash: string; blockNumber: number };
-    }
+  | { type: Actions.Send; payload: { id: string } }
+  | { type: Actions.Check; payload: { id: string; blockNumber: number } }
   | {
       type: Actions.Finalize;
-      payload: {
-        hash: string;
-        receipt: TransactionReceipt;
-        status: TransactionStatus;
-      };
-    }
-  | { type: Actions.Reset }
-  | { type: Actions.ResetLatestStatus }
-  | {
-      type: Actions.FetchGasPrices;
-      payload: { gasPriceInfo: GasPriceInfo };
+      payload: { id: string; receipt: TransactionReceipt };
     }
   | {
-      type: Actions.FetchEthPrice;
-      payload: { ethPrice: EthPrice };
-    };
+      type: Actions.Response;
+      payload: { id: string; response: TransactionResponse };
+    }
+  | { type: Actions.Error; payload: { id: string; error: string } }
+  | { type: Actions.Cancel; payload: { id: string } };
 
 const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case Actions.AddPending: {
+    case Actions.Check: {
+      const { id, blockNumber } = action.payload;
       return {
         ...state,
-        current: {
-          ...state.current,
-          [action.payload.hash]: action.payload,
-        },
-        latestStatus: {
-          ...state.latestStatus,
-          status: TransactionStatus.Pending,
+        [id]: {
+          ...state[id],
+          blockNumberChecked: blockNumber,
         },
       };
     }
-    case Actions.Check: {
-      const { hash, blockNumber } = action.payload;
-      return {
-        ...state,
-        current: {
-          ...state.current,
-          [hash]: {
-            ...state.current[hash],
-            blockNumberChecked: blockNumber,
-          },
-        },
-      } as State;
-    }
+
     case Actions.Finalize: {
       const {
-        hash,
-        receipt: { status: rawStatus, blockNumber },
-        status,
+        id,
+        receipt: { status, blockNumber, transactionHash },
       } = action.payload;
       return {
         ...state,
-        current: {
-          ...state.current,
-          [hash]: {
-            ...state.current[hash],
-            status: rawStatus as number,
-            blockNumberChecked: blockNumber as number,
-          },
+        [id]: {
+          ...state[id],
+          blockNumberChecked: blockNumber,
+          hash: transactionHash,
+          status:
+            status === 1
+              ? TransactionStatus.Confirmed
+              : TransactionStatus.Error,
         },
-        latestStatus: { ...state.latestStatus, status },
       };
     }
+
+    case Actions.Response: {
+      const {
+        id,
+        response: { hash, to, blockNumber },
+      } = action.payload;
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          status: TransactionStatus.Response,
+          hash,
+          to,
+          blockNumber,
+        },
+      };
+    }
+
+    case Actions.Propose: {
+      return {
+        ...state,
+        [action.payload.id]: {
+          status: TransactionStatus.Pending,
+          manifest: action.payload,
+        },
+      };
+    }
+
+    case Actions.Send: {
+      const { id } = action.payload;
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          status: TransactionStatus.Sent,
+        },
+      };
+    }
+
+    case Actions.Cancel: {
+      const { [action.payload.id]: _, ...newState } = state;
+
+      return newState;
+    }
+
+    case Actions.Error: {
+      const { id, error } = action.payload;
+      return {
+        ...state,
+        [id]: {
+          ...state[id],
+          status: TransactionStatus.Error,
+          error,
+        },
+      };
+    }
+
     case Actions.Reset:
-      return {
-        gasPriceInfo: state.gasPriceInfo,
-        ethPrice: state.ethPrice,
-        current: {},
-        latestStatus: {},
-      };
-    case Actions.ResetLatestStatus:
-      return {
-        ...state,
-        latestStatus: {
-          ...state.latestStatus,
-          status: undefined,
-        },
-      };
-    case Actions.FetchGasPrices: {
-      const { gasPriceInfo } = action.payload;
-      return {
-        ...state,
-        gasPriceInfo,
-      };
-    }
-    case Actions.FetchEthPrice: {
-      const { ethPrice } = action.payload;
-      const { usd } = ethPrice.ethereum;
-      return {
-        ...state,
-        ethPrice: usd,
-      };
-    }
+      return {};
+
     default:
       throw new Error('Unhandled action');
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const context = createContext<[State, Dispatch]>(null as any);
+const stateCtx = createContext<State>(null as never);
+const dispatchCtx = createContext<Dispatch>(null as never);
 
-const initialState: State = {
-  current: {},
-  latestStatus: {},
-};
+export const useTransactionsState = (): State => useContext(stateCtx);
 
-const getEtherscanLinkForHash = (
-  hash: string,
-): { href: string; title: string } => ({
-  title: 'View on Etherscan',
-  href: getEtherscanLink(hash, 'transaction'),
-});
+export const useTransactionsDispatch = (): Dispatch => useContext(dispatchCtx);
 
-/**
- * Provider for sending transactions and tracking their progress.
- */
-export const TransactionsProvider: FC = ({ children }) => {
-  const [state, dispatch] = useReducer(transactionsCtxReducer, initialState);
-  const addSuccessNotification = useAddSuccessNotification();
-  const addInfoNotification = useAddInfoNotification();
-  const addErrorNotification = useAddErrorNotification();
-
-  const fetchGasPrices = useCallback<Dispatch['fetchGasPrices']>(async () => {
-    try {
-      const response = await fetch('https://gasprice.poa.network/');
-
-      const gasPriceInfo = (await response.json()) as GasPriceInfo;
-      dispatch({
-        type: Actions.FetchGasPrices,
-        payload: {
-          gasPriceInfo,
-        },
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }, [dispatch]);
-
-  const fetchEthPrice = useCallback<Dispatch['fetchEthPrice']>(async () => {
-    try {
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd',
-      );
-      const ethPrice = await response.json();
-      dispatch({
-        type: Actions.FetchEthPrice,
-        payload: {
-          ethPrice,
-        },
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
-
-  useEffectOnce(() => {
-    fetchGasPrices();
-    fetchEthPrice();
-  });
-
-  useInterval(() => {
-    fetchGasPrices();
-    fetchEthPrice();
-  }, 5 * 60 * 1000);
-
-  const addPending = useCallback<Dispatch['addPending']>(
-    ({ formId, fn, args, purpose, onFinalize }, pendingTx) => {
-      dispatch({
-        type: Actions.AddPending,
-        payload: {
-          ...pendingTx,
-          formId,
-          fn,
-          args,
-          timestamp: Date.now(),
-          purpose,
-          status: null,
-          onFinalize,
-        },
-      });
-
-      addInfoNotification(
-        'Transaction pending',
-        purpose.present,
-        getEtherscanLinkForHash(pendingTx.hash),
-      );
-    },
-    [dispatch, addInfoNotification],
-  );
-
-  const check = useCallback<Dispatch['check']>(
-    (hash, blockNumber) => {
-      dispatch({ type: Actions.Check, payload: { hash, blockNumber } });
-    },
-    [dispatch],
-  );
-
-  const finalize = useCallback<Dispatch['finalize']>(
-    (hash, receipt, tx) => {
-      const status = getTransactionStatus(receipt);
-      const link = getEtherscanLinkForHash(hash);
-
-      if (status === TransactionStatus.Success) {
-        addSuccessNotification('Transaction confirmed', tx.purpose.past, link);
-      } else if (status === TransactionStatus.Error) {
-        addErrorNotification('Transaction failed', tx.purpose.present, link);
-      }
-
-      dispatch({ type: Actions.Finalize, payload: { hash, receipt, status } });
-
-      tx.onFinalize?.();
-    },
-    [dispatch, addSuccessNotification, addErrorNotification],
-  );
-
-  const reset = useCallback(() => {
-    dispatch({ type: Actions.Reset });
-  }, [dispatch]);
-
-  const resetLatestStatus = useCallback(() => {
-    dispatch({ type: Actions.ResetLatestStatus });
-  }, [dispatch]);
-
-  return (
-    <context.Provider
-      value={useMemo(
-        () => [
-          state,
-          {
-            addPending,
-            check,
-            finalize,
-            reset,
-            resetLatestStatus,
-            fetchGasPrices,
-            fetchEthPrice,
-          },
-        ],
-        [
-          state,
-          addPending,
-          check,
-          finalize,
-          reset,
-          resetLatestStatus,
-          fetchGasPrices,
-          fetchEthPrice,
-        ],
-      )}
-    >
-      {children}
-    </context.Provider>
-  );
-};
-
-export const useTransactionsContext = (): [State, Dispatch] =>
-  useContext(context);
-
-export const useTransactionsState = (): State => useTransactionsContext()[0];
-
-export const useTransactionsDispatch = (): Dispatch =>
-  useTransactionsContext()[1];
-
-export const useGasPrices = (): GasPriceInfo | undefined => {
-  return useTransactionsState().gasPriceInfo;
-};
-
-export const useEthPrice = (): number | undefined => {
-  return useTransactionsState().ethPrice;
-};
-
-export const useOrderedCurrentTransactions = (
-  formId?: string,
-): Transaction[] => {
-  const { current } = useTransactionsState();
+export const useOrderedCurrentTransactions = (): Transaction[] => {
+  const state = useTransactionsState();
   return useMemo(() => {
-    const transactions = Object.values(current).sort(
-      (a, b) => b.timestamp - a.timestamp,
+    return Object.values(state).sort(
+      (a, b) => b.manifest.createdAt - a.manifest.createdAt,
     );
-    return formId
-      ? transactions.filter(t => t.formId === formId)
-      : transactions;
-  }, [current, formId]);
-};
-
-export const usePendingTxState = (): {
-  latestStatus?: TransactionStatus;
-  pendingCount: number;
-} => {
-  const {
-    latestStatus: { status },
-    current,
-  } = useTransactionsState();
-  return useMemo(
-    () => ({
-      latestStatus: status,
-      pendingCount: Object.values(current).filter(tx => tx.status === null)
-        .length,
-    }),
-    [status, current],
-  );
+  }, [state]);
 };
 
 export const useHasPendingApproval = (
   address: string,
   spender: string,
 ): boolean => {
-  const { current } = useTransactionsState();
-  return Object.values(current).some(
+  const state = useTransactionsState();
+  return Object.values(state).some(
     tx =>
-      tx.status !== 1 &&
-      tx.fn === 'approve' &&
-      tx.args[0] === spender &&
-      tx.response.to === address,
+      tx.status !== TransactionStatus.Sent &&
+      tx.manifest.fn === 'approve' &&
+      tx.manifest.args[0] === spender &&
+      tx.to === address,
   );
 };
 
-const overrideProps = ['nonce', 'gasLimit', 'gasPrice', 'value', 'chainId'];
+export const TransactionsProvider: FC = ({ children }) => {
+  const [state, dispatch] = useReducer(transactionsCtxReducer, {});
+  const addSuccessNotification = useAddSuccessNotification();
+  const addInfoNotification = useAddInfoNotification();
+  const addErrorNotification = useAddErrorNotification();
 
-const isTransactionOverrides = (arg: unknown): boolean =>
-  arg != null &&
-  typeof arg === 'object' &&
-  overrideProps.some(prop => Object.hasOwnProperty.call(arg, prop));
+  const propose = useCallback<Dispatch['propose']>(
+    tx => {
+      dispatch({
+        type: Actions.Propose,
+        payload: tx,
+      });
+    },
+    [dispatch],
+  );
 
-const addGasSettings = async (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  manifest: SendTxManifest<any, any>,
-): Promise<typeof manifest> => {
-  const { iface, fn, args } = manifest;
-  let { gasPrice, gasLimit } = manifest;
-  const last = args[args.length - 1];
+  const reset = useCallback<Dispatch['reset']>(() => {
+    dispatch({ type: Actions.Reset });
+  }, [dispatch]);
 
-  if (
-    isTransactionOverrides(last) &&
-    !(last as TransactionOverrides).gasLimit
-  ) {
-    // Don't alter the manifest if the gas limit is already set
-    return manifest;
-  }
+  const cancel = useCallback<Dispatch['cancel']>(
+    id => {
+      dispatch({ type: Actions.Cancel, payload: { id } });
+    },
+    [dispatch],
+  );
 
-  // Set the gas limit (with the calculated gas margin)
-  if (!gasLimit) {
-    gasLimit = (await iface.estimate[fn](...args)) as BigNumber;
-    gasLimit = calculateGasMargin(gasLimit);
-  }
+  const finalize = useCallback<Dispatch['finalize']>(
+    (manifest, receipt) => {
+      dispatch({
+        type: Actions.Finalize,
+        payload: { id: manifest.id, receipt },
+      });
 
-  // Also set the gas price, because some providers don't
-  if (!gasPrice) {
-    gasPrice = await iface.provider.getGasPrice();
-  }
+      if (receipt.status === 1) {
+        addSuccessNotification(
+          'Transaction confirmed',
+          manifest.purpose.past,
+          getEtherscanLinkForHash(receipt.transactionHash as string),
+        );
+      } else {
+        addSuccessNotification(
+          'Transaction failed',
+          manifest.purpose.past,
+          getEtherscanLinkForHash(receipt.transactionHash as string),
+        );
+      }
+    },
+    [addSuccessNotification],
+  );
 
-  return {
-    ...manifest,
-    args: [...args, { gasLimit, gasPrice }],
-  };
-};
+  const check = useCallback<Dispatch['check']>((id, blockNumber) => {
+    dispatch({ type: Actions.Check, payload: { id, blockNumber } });
+  }, []);
 
-const sendTransaction = async (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  manifest: SendTxManifest<any, any>,
-): Promise<TransactionResponse> => {
-  const { iface, fn, args } = await addGasSettings(manifest);
-  return iface[fn](...args);
-};
+  const send = useCallback<Dispatch['send']>(
+    (manifest, gasLimit, gasPrice) => {
+      const { id } = manifest;
+      dispatch({ type: Actions.Send, payload: { id } });
 
-const parseTxError = (
-  error: Error & { data?: { message: string } },
-): string => {
-  // MetaMask error messages are in a `data` property
-  const txMessage = error.data?.message || error.message;
+      let hash: string;
 
-  return !txMessage || txMessage.includes('always failing transaction')
-    ? 'Transaction failed - if this problem persists, contact mStable team.'
-    : txMessage;
-};
-
-/**
- * Returns a callback that, given a manifest to send a transaction,
- * will create a promise to send the transaction, and add the response to state.
- */
-export const useSendTransaction =
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (): ((tx: SendTxManifest<any, any>) => void) => {
-    const [, { addPending }] = useTransactionsContext();
-    const addErrorNotification = useAddErrorNotification();
-
-    return useCallback(
-      manifest => {
-        manifest.onStart?.();
-        sendTransaction(manifest)
-          .then(response => {
-            const { hash } = response;
-            if (!hash) {
-              addErrorNotification('Transaction failed to send: missing hash');
-              return;
-            }
-            addPending(manifest, {
-              hash,
-              response: { ...response, to: response.to?.toLowerCase() },
-            });
-            manifest.onSent?.();
-          })
-          .catch(_error => {
-            const message = parseTxError(_error);
-            addErrorNotification(message);
-            manifest.onError?.();
+      manifest
+        .send(gasLimit, gasPrice)
+        .then(response => {
+          dispatch({
+            type: Actions.Response,
+            payload: { id, response },
           });
-      },
-      [addPending, addErrorNotification],
-    );
-  };
+
+          hash = response.hash as string;
+
+          addInfoNotification(
+            'Transaction awaiting confirmation',
+            manifest.purpose.present,
+            getEtherscanLinkForHash(hash),
+          );
+        })
+        .catch(error => {
+          dispatch({
+            type: Actions.Error,
+            payload: { id, error },
+          });
+          addErrorNotification(
+            'Transaction failed',
+            manifest.purpose.present,
+            hash ? getEtherscanLinkForHash(hash) : undefined,
+          );
+        });
+    },
+    [addErrorNotification, addInfoNotification],
+  );
+
+  return (
+    <dispatchCtx.Provider
+      value={useMemo(
+        () => ({
+          cancel,
+          check,
+          finalize,
+          propose,
+          reset,
+          send,
+        }),
+        [reset, cancel, propose, send, finalize, check],
+      )}
+    >
+      <stateCtx.Provider value={state}>{children}</stateCtx.Provider>
+    </dispatchCtx.Provider>
+  );
+};

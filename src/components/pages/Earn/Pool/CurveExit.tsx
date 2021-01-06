@@ -1,13 +1,9 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 import styled from 'styled-components';
-import { Interfaces, SendTxManifest } from '../../../../types';
+import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../../forms/TransactionForm/FormProvider';
 import { CountUp } from '../../../core/CountUp';
 import {
   useCurrentRewardsToken,
@@ -21,6 +17,7 @@ import { StakeAmountInput } from '../../../forms/StakeAmountInput';
 import { useCurveContracts } from '../../../../context/earn/CurveProvider';
 import { Button } from '../../../core/Button';
 import { Tabs } from '../types';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
 
 const Row = styled.div`
   width: 100%;
@@ -36,7 +33,7 @@ const Input: FC = () => {
 
   return (
     <Row>
-      <H3 borderTop>Withdraw stake or exit</H3>
+      <H3>Withdraw stake or exit</H3>
       <StakeAmountInput />
     </Row>
   );
@@ -112,52 +109,46 @@ const ExitFormConfirm: FC = () => {
   );
 };
 
-const ExitForm: FC = () => {
+export const CurveExit: FC = () => {
   const { musdGauge } = useCurveContracts();
-
-  const setFormManifest = useSetFormManifest();
 
   const {
     stakingRewardsContract: { title } = { title: 'gauge' },
     exit: { amount, valid },
   } = useStakingRewardsContractState();
 
-  useEffect(() => {
-    if (valid && amount && musdGauge) {
-      const body = `stake of ${amount.format()} from ${title}`;
-      const manifest: SendTxManifest<
-        Interfaces.CurveGauge,
-        'withdraw(uint256)'
-      > = {
-        args: [amount.exact],
-        iface: musdGauge,
-        fn: 'withdraw(uint256)',
-        purpose: {
-          present: `Withdrawing ${body}`,
-          past: `Withdrew ${body}`,
-        },
-      };
-      setFormManifest(manifest);
-    } else {
-      setFormManifest(null);
-    }
-  }, [setFormManifest, valid, amount, musdGauge, title]);
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<
+      Interfaces.CurveGauge,
+      'withdraw(uint256)'
+    > | void => {
+      if (valid && amount && musdGauge) {
+        const body = `stake of ${amount.format()} from ${title}`;
+        return new TransactionManifest(
+          musdGauge,
+          'withdraw(uint256)',
+          [amount.exact],
+          {
+            present: `Withdrawing ${body}`,
+            past: `Withdrew ${body}`,
+          },
+          formId,
+        );
+      }
+    },
+    [valid, amount, musdGauge, title],
+  );
 
   return (
     <TransactionForm
+      formId="curveExit"
       confirmLabel="Withdraw"
       confirm={<ExitFormConfirm />}
+      createTransaction={createTransaction}
       input={<Input />}
-      transactionsLabel="Transactions"
       valid={valid}
     />
-  );
-};
-
-export const CurveExit: FC = () => {
-  return (
-    <FormProvider formId="exit">
-      <ExitForm />
-    </FormProvider>
   );
 };

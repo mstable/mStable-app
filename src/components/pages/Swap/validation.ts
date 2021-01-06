@@ -1,5 +1,5 @@
 import { State, StateValidator, Reasons } from './types';
-import { EXP_SCALE, RATIO_SCALE } from '../../../web3/constants';
+import { EXP_SCALE, RATIO_SCALE } from '../../../constants';
 import { BassetState, MassetState } from '../../../context/DataProvider/types';
 import { getReasonMessage } from './getReasonMessage';
 

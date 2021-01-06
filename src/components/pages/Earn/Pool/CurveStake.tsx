@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 
@@ -6,12 +6,9 @@ import {
   CURVE_ADDRESSES,
   useCurveContracts,
 } from '../../../../context/earn/CurveProvider';
-import { Interfaces, SendTxManifest } from '../../../../types';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../../forms/TransactionForm/FormProvider';
 import { TokenAmountInput } from '../../../forms/TokenAmountInput';
 import { H3, P } from '../../../core/Typography';
 import {
@@ -59,7 +56,7 @@ const Input: FC = () => {
 
   return (
     <Row>
-      <H3 borderTop>Deposit stake</H3>
+      <H3>Deposit stake</H3>
       <div>
         <TokenAmountInput
           needsUnlock={needsUnlock}
@@ -104,7 +101,7 @@ const Confirm: FC = () => {
   ) : null;
 };
 
-const Form: FC = () => {
+export const CurveStake: FC = () => {
   const {
     stake: { amount, valid },
     stakingRewardsContract: { expired = false, title = 'gauge' } = {},
@@ -112,28 +109,30 @@ const Form: FC = () => {
   const { setActiveTab } = useStakingRewardContractDispatch();
 
   const { musdGauge } = useCurveContracts();
-  const setFormManifest = useSetFormManifest();
 
-  useEffect(() => {
-    if (valid && amount && musdGauge) {
-      const body = `${amount.format()} into ${title}`;
-      const manifest: SendTxManifest<
-        Interfaces.CurveGauge,
-        'deposit(uint256)'
-      > = {
-        args: [amount.exact],
-        iface: musdGauge,
-        fn: 'deposit(uint256)',
-        purpose: {
-          present: `Depositing ${body}`,
-          past: `Deposited ${body}`,
-        },
-      };
-      setFormManifest(manifest);
-    } else {
-      setFormManifest(null);
-    }
-  }, [setFormManifest, valid, amount, musdGauge, title]);
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<
+      Interfaces.CurveGauge,
+      'deposit(uint256)'
+    > | void => {
+      if (valid && amount && musdGauge) {
+        const body = `${amount.format()} into ${title}`;
+        return new TransactionManifest(
+          musdGauge,
+          'deposit(uint256)',
+          [amount.exact],
+          {
+            present: `Depositing ${body}`,
+            past: `Deposited ${body}`,
+          },
+          formId,
+        );
+      }
+    },
+    [valid, amount, musdGauge, title],
+  );
 
   return expired ? (
     <div>
@@ -153,19 +152,12 @@ const Form: FC = () => {
     </div>
   ) : (
     <TransactionForm
+      formId="curveStake"
       confirmLabel="Stake"
       confirm={<Confirm />}
+      createTransaction={createTransaction}
       input={<Input />}
-      transactionsLabel="Stake transactions"
       valid={valid}
     />
-  );
-};
-
-export const CurveStake: FC = () => {
-  return (
-    <FormProvider formId="curveStake">
-      <Form />
-    </FormProvider>
   );
 };

@@ -1,12 +1,9 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import { BigNumber } from 'ethers/utils';
-import { MassetStats } from '../../stats/MassetStats';
 
+import { MassetStats } from '../../stats/MassetStats';
+import { TransactionManifest } from '../../../web3/TransactionManifest';
 import { useOwnAccount } from '../../../context/UserProvider';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
 import { P } from '../../core/Typography';
 import { SwapProvider, useSwapState } from './SwapProvider';
@@ -23,7 +20,6 @@ const SwapForm: FC = () => {
     values: { output, input },
     massetState,
   } = useSwapState();
-  const setFormManifest = useSetFormManifest();
   const contract = useSelectedMassetContract();
 
   const { address: mAssetAddress } = massetState || {};
@@ -31,65 +27,65 @@ const SwapForm: FC = () => {
   const isMint = output.token.address && output.token.address === mAssetAddress;
 
   // Set the form manifest
-  useEffect(() => {
-    if (valid && account && contract) {
-      if (isMint) {
-        const body = `${output.amount.simple} ${output.token.symbol} with ${input.token.symbol}`;
-        setFormManifest<Interfaces.Masset, 'mint'>({
-          iface: contract,
-          fn: 'mint',
-          args: [
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<Interfaces.Masset, 'mint' | 'swap'> | void => {
+      if (valid && account && contract) {
+        if (isMint) {
+          const body = `${output.amount.simple} ${output.token.symbol} with ${input.token.symbol}`;
+          return new TransactionManifest(
+            contract,
+            'mint',
+            [input.token.address as string, input.amount.exact as BigNumber],
+            {
+              present: `Minting ${body}`,
+              past: `Minted ${body}`,
+            },
+            formId,
+          );
+        }
+
+        const body = `${input.amount.simple} ${input.token.symbol} for ${output.token.symbol}`;
+        return new TransactionManifest(
+          contract,
+          'swap',
+          [
             input.token.address as string,
+            output.token.address as string,
             input.amount.exact as BigNumber,
+            account,
           ],
-          purpose: {
-            present: `Minting ${body}`,
-            past: `Minted ${body}`,
+          {
+            present: `Swapping ${body}`,
+            past: `Swapped ${body}`,
           },
-        });
-        return;
+          formId,
+        );
       }
-
-      const body = `${input.amount.simple} ${input.token.symbol} for ${output.token.symbol}`;
-      setFormManifest<Interfaces.Masset, 'swap'>({
-        iface: contract,
-        fn: 'swap',
-        args: [
-          input.token.address as string,
-          output.token.address as string,
-          input.amount.exact as BigNumber,
-          account,
-        ],
-        purpose: {
-          present: `Swapping ${body}`,
-          past: `Swapped ${body}`,
-        },
-      });
-      return;
-    }
-
-    setFormManifest(null);
-  }, [
-    account,
-    contract,
-    input.amount.exact,
-    input.amount.simple,
-    input.token.address,
-    input.token.symbol,
-    isMint,
-    output.amount.simple,
-    output.token.address,
-    output.token.symbol,
-    setFormManifest,
-    valid,
-  ]);
+    },
+    [
+      account,
+      contract,
+      input.amount.exact,
+      input.amount.simple,
+      input.token.address,
+      input.token.symbol,
+      isMint,
+      output.amount.simple,
+      output.token.address,
+      output.token.symbol,
+      valid,
+    ],
+  );
 
   return (
     <TransactionForm
+      formId="swap"
       confirm={<SwapConfirm />}
       confirmLabel="Swap"
+      createTransaction={createTransaction}
       input={<SwapInput />}
-      transactionsLabel="Swap transactions"
       valid={valid}
     />
   );
@@ -97,12 +93,10 @@ const SwapForm: FC = () => {
 
 export const Swap: FC = () => (
   <SwapProvider>
-    <FormProvider formId="swap">
-      <PageHeader title="Swap" subtitle="Exchange stablecoins with mStable">
-        <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
-      </PageHeader>
-      <SwapForm />
-      <MassetStats />
-    </FormProvider>
+    <PageHeader title="Swap" subtitle="Exchange stablecoins with mStable">
+      <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
+    </PageHeader>
+    <SwapForm />
+    <MassetStats />
   </SwapProvider>
 );

@@ -1,23 +1,35 @@
 import styled from 'styled-components';
-import { Button } from './Button';
+import { UnstyledButton } from './Button';
 import { Color, FontSize, ViewportWidth } from '../../theme';
 
 export const TabsContainer = styled.div`
   padding: 16px 0;
   display: flex;
   justify-content: space-evenly;
+
+  > :first-child {
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+  }
+
+  > :last-child {
+    border-top-right-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+  }
 `;
 
-export const TabBtn = styled(Button)<{ active: boolean }>`
-  background: transparent;
-  border-radius: 0;
-  border: 0;
-  border-bottom: 4px ${({ active }) => (active ? Color.blue : 'transparent')}
-    solid;
-  color: ${({ active }) => (active ? Color.blue : Color.black)};
-  font-size: ${FontSize.s};
-  text-transform: uppercase;
-  transition: all 0.2s ease;
+export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
+  cursor: pointer;
+  border: ${({ active, theme }) =>
+    `1px ${
+      active ? theme.color.blueTransparent : theme.color.lightGrey
+    } solid`};
+  background: ${({ active }) =>
+    active ? Color.blueTransparent : 'transparent'};
+  color: ${({ active }) => (active ? Color.blue : Color.grey)};
+  padding: 0.75rem 0.5rem;
+  font-weight: bold;
+  font-size: 1.75rem;
   width: 100%;
 
   @media (min-width: ${ViewportWidth.s}) {

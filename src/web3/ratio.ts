@@ -1,5 +1,5 @@
 import { BigNumber, bigNumberify, BigNumberish } from 'ethers/utils';
-import { RATIO_SCALE } from './constants';
+import { RATIO_SCALE } from '../constants';
 
 export const applyRatioMassetToBasset = (
   input: BigNumberish,

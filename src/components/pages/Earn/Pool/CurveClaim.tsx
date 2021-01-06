@@ -1,19 +1,16 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 
-import { Interfaces, SendTxManifest } from '../../../../types';
-import { TransactionForm } from '../../../forms/TransactionForm';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../../forms/TransactionForm/FormProvider';
-import { useRewardsEarned } from '../StakingRewardsContractProvider';
-import { CountUp } from '../../../core/CountUp';
-import { H3, P } from '../../../core/Typography';
 import {
   CURVE_ADDRESSES,
   useCurveContracts,
 } from '../../../../context/earn/CurveProvider';
+import { Interfaces } from '../../../../types';
+import { TransactionForm } from '../../../forms/TransactionForm';
+import { useRewardsEarned } from '../StakingRewardsContractProvider';
+import { CountUp } from '../../../core/CountUp';
+import { H3, P } from '../../../core/Typography';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
 
 const Row = styled.div`
   width: 100%;
@@ -46,34 +43,35 @@ const Input: FC<{ symbol: 'MTA' | 'CRV' }> = ({ symbol }) => {
 const ClaimMTA: FC = () => {
   const { rewards } = useRewardsEarned();
   const { musdGauge } = useCurveContracts();
-  const setFormManifest = useSetFormManifest();
 
   const valid = !!rewards?.exact.gt(0);
 
-  useEffect(() => {
-    if (valid && musdGauge) {
-      const manifest: SendTxManifest<
-        Interfaces.CurveGauge,
-        'claim_rewards()'
-      > = {
-        args: [],
-        iface: musdGauge,
-        fn: 'claim_rewards()',
-        purpose: {
-          present: 'Claiming MTA rewards',
-          past: 'Claimed MTA rewards',
-        },
-      };
-      setFormManifest(manifest);
-    } else {
-      setFormManifest(null);
-    }
-  }, [setFormManifest, valid, musdGauge]);
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<Interfaces.CurveGauge, 'claim_rewards()'> | void => {
+      if (valid && musdGauge) {
+        return new TransactionManifest(
+          musdGauge,
+          'claim_rewards()',
+          [],
+          {
+            present: 'Claiming MTA rewards',
+            past: 'Claimed MTA rewards',
+          },
+          formId,
+        );
+      }
+    },
+    [valid, musdGauge],
+  );
 
   return (
     <TransactionForm
+      formId="claimMTA"
       compact
       confirmLabel="Claim MTA"
+      createTransaction={createTransaction}
       input={<Input symbol="MTA" />}
       valid={valid}
     />
@@ -83,31 +81,35 @@ const ClaimMTA: FC = () => {
 const ClaimCRV: FC = () => {
   const { platformRewards } = useRewardsEarned();
   const { tokenMinter } = useCurveContracts();
-  const setFormManifest = useSetFormManifest();
 
   const valid = !!platformRewards?.exact.gt(0);
 
-  useEffect(() => {
-    if (valid && tokenMinter) {
-      const manifest: SendTxManifest<Interfaces.CurveTokenMinter, 'mint'> = {
-        args: [CURVE_ADDRESSES.MUSD_GAUGE],
-        iface: tokenMinter,
-        fn: 'mint',
-        purpose: {
-          present: 'Claiming CRV rewards',
-          past: 'Claimed CRV rewards',
-        },
-      };
-      setFormManifest(manifest);
-    } else {
-      setFormManifest(null);
-    }
-  }, [setFormManifest, valid, tokenMinter]);
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<Interfaces.CurveTokenMinter, 'mint'> | void => {
+      if (valid && tokenMinter) {
+        return new TransactionManifest(
+          tokenMinter,
+          'mint',
+          [CURVE_ADDRESSES.MUSD_GAUGE],
+          {
+            present: 'Claiming CRV rewards',
+            past: 'Claimed CRV rewards',
+          },
+          formId,
+        );
+      }
+    },
+    [valid, tokenMinter],
+  );
 
   return (
     <TransactionForm
+      formId="claimCRV"
       compact
       confirmLabel="Claim CRV"
+      createTransaction={createTransaction}
       input={<Input symbol="CRV" />}
       valid={valid}
     />
@@ -134,14 +136,10 @@ const ClaimButtons = styled.div`
 export const CurveClaim: FC = () => {
   return (
     <Row>
-      <H3 borderTop>Claim rewards</H3>
+      <H3>Claim rewards</H3>
       <ClaimButtons>
-        <FormProvider formId="claimMTA">
-          <ClaimMTA />
-        </FormProvider>
-        <FormProvider formId="claimCRV">
-          <ClaimCRV />
-        </FormProvider>
+        <ClaimMTA />
+        <ClaimCRV />
       </ClaimButtons>
       <P>
         You will continue to earn any available rewards with your staked

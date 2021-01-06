@@ -70,7 +70,7 @@ import {
   ScriptRewardsDocument,
   ScriptRewardsQueryResult,
 } from '../src/graphql/ecosystem';
-import { SCALE } from '../src/web3/constants';
+import { SCALE } from '../src/constants';
 import {
   BlockTimestampDocument,
   BlockTimestampQueryResult,

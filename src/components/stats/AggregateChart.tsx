@@ -9,7 +9,7 @@ import {
   YAxis,
 } from 'recharts';
 import { format, getUnixTime } from 'date-fns';
-import Skeleton from 'react-loading-skeleton';
+import Skeleton from 'react-loading-skeleton/lib';
 
 import { getKeyTimestamp, useBlockTimesForDates } from '../../web3/hooks';
 import { Color } from '../../theme';
@@ -183,7 +183,7 @@ const Chart: FC = () => {
               labelFormatter={timestamp =>
                 format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
               }
-              formatter={toK}
+              formatter={toK as never}
               separator=""
               contentStyle={{
                 fontSize: '14px',
