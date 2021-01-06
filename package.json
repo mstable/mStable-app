@@ -89,9 +89,7 @@
     "script": "yarn ts-node --project ./scripts/tsconfig.json ./scripts/run.ts",
     "vault-breakdown": "yarn run script vault-breakdown",
     "platform-rewards": "yarn run script platform-rewards",
-    "merkle-root-hash": "yarn run script merkle-root-hash",
-    "truffle:migrate": "cd ./lib/mStable-subgraph && yarn truffle:migrate",
-    "truffle:script": "cd ./lib/mStable-subgraph && yarn truffle:script"
+    "merkle-root-hash": "yarn run script merkle-root-hash"
   },
   "eslintConfig": {
     "extends": "react-app"
