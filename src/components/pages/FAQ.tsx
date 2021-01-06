@@ -32,9 +32,9 @@ const Container = styled.div`
 
 export const FAQ: FC<{}> = () => (
   <Container>
-    <H2 borderTop>Frequently Asked Questions</H2>
+    <H2>Frequently Asked Questions</H2>
     <div>
-      <H3 borderTop>Getting started</H3>
+      <H3>Getting started</H3>
       <List>
         <ListItem>
           <P>What is mStable?</P>
@@ -110,7 +110,7 @@ export const FAQ: FC<{}> = () => (
       </List>
     </div>
     <div>
-      <H3 borderTop>Mint</H3>
+      <H3>Mint</H3>
       <List>
         <ListItem>
           <P>How do I mint mUSD?</P>
@@ -139,7 +139,7 @@ export const FAQ: FC<{}> = () => (
       </List>
     </div>
     <div>
-      <H3 borderTop>Earn</H3>
+      <H3>Earn</H3>
       <List>
         <ListItem>
           <P>What is EARN?</P>
@@ -297,7 +297,7 @@ export const FAQ: FC<{}> = () => (
       </List>
     </div>
     <div>
-      <H3 borderTop>Save</H3>
+      <H3>Save</H3>
       <List>
         <ListItem>
           <P>How do I earn a yield on my mUSD balance?</P>
@@ -315,7 +315,7 @@ export const FAQ: FC<{}> = () => (
       </List>
     </div>
     <div>
-      <H3 borderTop>Swap</H3>
+      <H3>Swap</H3>
       <List>
         <ListItem>
           <P>How do I use mStable to swap stablecoins?</P>
@@ -338,7 +338,7 @@ export const FAQ: FC<{}> = () => (
       </List>
     </div>
     <div>
-      <H3 borderTop>Redeem</H3>
+      <H3>Redeem</H3>
       <List>
         <ListItem>
           <P>How do I redeem mUSD for an underlying stablecoin?</P>
@@ -361,7 +361,7 @@ export const FAQ: FC<{}> = () => (
       </List>
     </div>
     <div>
-      <H3 borderTop>More</H3>
+      <H3>More</H3>
       <P>Still have questions? Please contact us via:</P>
       <ul>
         <li>

@@ -1,13 +1,9 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 import styled from 'styled-components';
-import { Interfaces, SendTxManifest } from '../../../../types';
+import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../../forms/TransactionForm/FormProvider';
 import { TokenAmountInput } from '../../../forms/TokenAmountInput';
 import { H3, P } from '../../../core/Typography';
 import {
@@ -21,6 +17,7 @@ import { ExternalLink } from '../../../core/ExternalLink';
 import { PLATFORM_METADATA } from '../constants';
 import { Protip } from '../../../core/Protip';
 import { Tabs } from '../types';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
 
 const Row = styled.div`
   width: 100%;
@@ -101,7 +98,7 @@ const Confirm: FC = () => {
   ) : null;
 };
 
-const Form: FC = () => {
+export const Stake: FC = () => {
   const {
     stake: { amount, valid },
     stakingRewardsContract: { expired = false, title } = {},
@@ -109,28 +106,29 @@ const Form: FC = () => {
   const { setActiveTab } = useStakingRewardContractDispatch();
   const contract = useCurrentStakingRewardsContractCtx();
 
-  const setFormManifest = useSetFormManifest();
-
-  useEffect(() => {
-    if (valid && amount && contract) {
-      const body = `${amount.simple} in ${title}`;
-      const manifest: SendTxManifest<
-        Interfaces.StakingRewards,
-        'stake(uint256)'
-      > = {
-        args: [amount.exact],
-        iface: contract,
-        fn: 'stake(uint256)',
-        purpose: {
-          present: `Staking ${body}`,
-          past: `Staked ${body}`,
-        },
-      };
-      setFormManifest(manifest);
-    } else {
-      setFormManifest(null);
-    }
-  }, [setFormManifest, valid, amount, contract, title]);
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<
+      Interfaces.StakingRewards,
+      'stake(uint256)'
+    > | void => {
+      if (valid && amount && contract) {
+        const body = `${amount.simple} in ${title}`;
+        return new TransactionManifest(
+          contract,
+          'stake(uint256)',
+          [amount.exact],
+          {
+            present: `Staking ${body}`,
+            past: `Staked ${body}`,
+          },
+          formId,
+        );
+      }
+    },
+    [valid, amount, contract, title],
+  );
 
   return expired ? (
     <div>
@@ -150,17 +148,12 @@ const Form: FC = () => {
     </div>
   ) : (
     <TransactionForm
+      formId="stake"
       confirmLabel="Stake"
       confirm={<Confirm />}
+      createTransaction={createTransaction}
       input={<Input />}
-      transactionsLabel="Stake transactions"
       valid={valid}
     />
   );
 };
-
-export const Stake: FC = () => (
-  <FormProvider formId="stake">
-    <Form />
-  </FormProvider>
-);

@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { Navigation } from './Navigation';
 import { UnstyledButton } from '../core/Button';
 import { FontSize, ViewportWidth } from '../../theme';
-import { centredLayout } from './css';
 import { useAccountOpen, useCloseAccount } from '../../context/AppProvider';
 
 const CloseAccountContainer = styled.div`
@@ -24,7 +23,7 @@ const CloseAccountBtn = styled(UnstyledButton)`
   }
 `;
 
-const CloseAccount: FC<{}> = () => {
+const CloseAccount: FC = () => {
   const closeAccount = useCloseAccount();
   return (
     <CloseAccountContainer>
@@ -35,30 +34,13 @@ const CloseAccount: FC<{}> = () => {
   );
 };
 
-const Content = styled.div`
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 0 ${({ theme }) => theme.spacing.s};
-  height: auto;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    flex-wrap: initial;
-  }
-
-  ${centredLayout}
-`;
-
 const Container = styled.header<{ accountOpen: boolean; home: boolean }>`
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 100%;
-  min-height: 48px;
-  padding: 40px 0 20px;
-  min-width: ${ViewportWidth.xs};
+  justify-content: center;
   background: ${({ accountOpen, theme }) =>
     accountOpen ? theme.color.black : theme.color.white};
+  margin-bottom: 2rem;
 `;
 
 export const Header: FC<{ home: boolean }> = ({ home }) => {
@@ -66,9 +48,7 @@ export const Header: FC<{ home: boolean }> = ({ home }) => {
 
   return (
     <Container home={home} accountOpen={accountOpen}>
-      <Content>
-        {home ? null : accountOpen ? <CloseAccount /> : <Navigation />}
-      </Content>
+      {home ? null : accountOpen ? <CloseAccount /> : <Navigation />}
     </Container>
   );
 };

@@ -7,7 +7,7 @@ import {
   AreaChart,
   ResponsiveContainer,
 } from 'recharts';
-import Skeleton from 'react-loading-skeleton';
+import Skeleton from 'react-loading-skeleton/lib';
 import { format } from 'date-fns';
 import {
   useDailyApysForBlockTimes,
@@ -89,7 +89,7 @@ const DailyApysChart: FC = () => {
               padding={{ left: 16 }}
               minTickGap={16}
               tickLine
-              tickFormatter={timestamp =>
+              tickFormatter={(timestamp: number) =>
                 timestamp
                   ? format(
                       timestamp * 1000,
@@ -115,7 +115,7 @@ const DailyApysChart: FC = () => {
               labelFormatter={timestamp =>
                 format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
               }
-              formatter={formatApy}
+              formatter={formatApy as never}
               separator=""
               contentStyle={{
                 fontSize: '14px',

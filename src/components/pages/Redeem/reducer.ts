@@ -4,7 +4,7 @@ import { pipeline } from 'ts-pipe-compose';
 import { Action, Actions, Mode, State } from './types';
 import { applyValidation } from './validate';
 import { BigDecimal } from '../../../web3/BigDecimal';
-import { SCALE } from '../../../web3/constants';
+import { SCALE } from '../../../constants';
 import { MassetState } from '../../../context/DataProvider/types';
 import { recalculateMasset } from '../../../context/DataProvider/recalculateState';
 

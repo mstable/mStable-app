@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 
-import { getEtherscanLink, truncateAddress } from '../../web3/strings';
+import { getEtherscanLink, truncateAddress } from '../../utils/strings';
 import { ExternalLink } from './ExternalLink';
 
 const useEtherscanLink = (

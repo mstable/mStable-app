@@ -11,25 +11,28 @@ import { BlockProvider } from './BlockProvider';
 import { DataProvider } from './DataProvider/DataProvider';
 import { ApolloProvider } from './ApolloProvider';
 import { SelectedSaveVersionProvider } from './SelectedSaveVersionProvider';
+import { GasPricesProvider } from './GasPricesProvider';
 
 export const Providers: FC = ({ children }) => (
   <NotificationsProvider>
     <ApolloProvider>
       <UserProvider>
         <BlockProvider>
-          <TransactionsProvider>
-            <SelectedMassetNameProvider>
-              <TokensProvider>
-                <DataProvider>
-                  <AppProvider>
-                    <SelectedSaveVersionProvider>
-                      <ThemeProvider>{children}</ThemeProvider>
-                    </SelectedSaveVersionProvider>
-                  </AppProvider>
-                </DataProvider>
-              </TokensProvider>
-            </SelectedMassetNameProvider>
-          </TransactionsProvider>
+          <GasPricesProvider>
+            <TransactionsProvider>
+              <SelectedMassetNameProvider>
+                <TokensProvider>
+                  <DataProvider>
+                    <AppProvider>
+                      <SelectedSaveVersionProvider>
+                        <ThemeProvider>{children}</ThemeProvider>
+                      </SelectedSaveVersionProvider>
+                    </AppProvider>
+                  </DataProvider>
+                </TokensProvider>
+              </SelectedMassetNameProvider>
+            </TransactionsProvider>
+          </GasPricesProvider>
         </BlockProvider>
       </UserProvider>
     </ApolloProvider>

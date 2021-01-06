@@ -14,7 +14,7 @@ import { Button } from '../../core/Button';
 import { ExternalLink } from '../../core/ExternalLink';
 import { Color, FontSize, ViewportWidth } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
-import { centredLayout, gradientBackground } from '../../layout/css';
+import { gradientBackground } from '../../layout/css';
 import { PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
@@ -327,14 +327,8 @@ const PageHeaderContainer = styled.div`
 `;
 
 const Content = styled.div`
-  flex: 1;
-  padding: 20px;
-
-  > * {
-    flex: 1;
-  }
-
-  ${centredLayout}
+  width: 100%;
+  padding: 0 1rem;
 `;
 
 const Container = styled.div`

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import React, { FC } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import {
   AccountItems,
@@ -9,21 +9,12 @@ import {
   useCloseAccount,
   useAccountItem,
   useAccountOpen,
-  useToggleNotifications,
   useToggleWallet,
 } from '../../context/AppProvider';
 import { Color, ViewportWidth } from '../../theme';
 import { ReactComponent as LogoSvg } from '../icons/mstable-small.svg';
 import { UnstyledButton } from '../core/Button';
-import { centredLayout } from './css';
-import { TransactionStatus } from '../../types';
 import { useTruncatedAddress } from '../../web3/hooks';
-import { usePendingTxState } from '../../context/TransactionsProvider';
-import {
-  NotificationType,
-  useUnreadNotifications,
-} from '../../context/NotificationsProvider';
-import { ActivitySpinner } from '../core/ActivitySpinner';
 import {
   useConnect,
   useConnected,
@@ -54,28 +45,6 @@ const statusWarnings: Record<
     label: 'Not online',
   },
 };
-
-const CountBadgeIcon = styled.div<{ error: boolean; count: number }>`
-  background: ${({ error, count }) =>
-    error ? Color.blue : count === 0 ? Color.greyTransparent : Color.blue};
-  font-weight: bold;
-  font-size: 11px;
-  width: 17px;
-  height: 17px;
-  border-radius: 100%;
-  color: ${Color.white};
-  text-align: center;
-  line-height: 17px;
-`;
-
-const CountBadge: FC<{ count: number; error: boolean }> = ({
-  count,
-  error,
-}) => (
-  <CountBadgeIcon error={error} count={count}>
-    {count}
-  </CountBadgeIcon>
-);
 
 const Logo = styled.div<{ inverted?: boolean }>`
   display: flex;
@@ -115,10 +84,6 @@ const AccountButton = styled(UnstyledButton)<{ active: boolean }>`
     &:last-child {
       margin-right: 0;
     }
-  }
-
-  ${CountBadgeIcon} {
-    margin-top: -1px;
   }
 
   background: ${({ active }) =>
@@ -169,26 +134,13 @@ const Balance = styled.div`
   }
 `;
 
-const Buttons = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  height: 100%;
-  gap: 0.5rem;
-`;
-
-const Top = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-`;
-
 const Inner = styled.div`
-  padding: 0 20px;
+  display: flex;
+  width: 100%;
   height: 100%;
-
-  ${centredLayout}
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
 `;
 
 const Container = styled.div<{ inverted: boolean }>`
@@ -264,54 +216,6 @@ const StatusWarningsRow: FC = () => {
   );
 };
 
-const NotificationsButton: FC = () => {
-  const accountItem = useAccountItem();
-  const toggleNotifications = useToggleNotifications();
-  const unread = useUnreadNotifications();
-  const hasUnreadErrors = unread.some(n => n.type === NotificationType.Error);
-
-  return (
-    <AccountButton
-      onClick={toggleNotifications}
-      active={accountItem === AccountItems.Notifications}
-    >
-      <CountBadge count={unread.length} error={hasUnreadErrors} />
-    </AccountButton>
-  );
-};
-
-const PendingTxContainer = styled.div<{
-  pending: boolean;
-  error: boolean;
-  success: boolean;
-}>`
-  width: 17px;
-  height: 17px;
-  position: relative;
-  margin-top: -1px;
-  transition: color 0.5s ease;
-  color: ${({ error, pending, success, theme }) =>
-    error
-      ? theme.color.red
-      : success
-      ? theme.color.green
-      : pending
-      ? theme.color.blue
-      : theme.color.greyTransparent};
-  font-weight: bold;
-  font-size: 11px;
-  text-align: center;
-  line-height: 17px;
-`;
-
-const SpinnerState = styled.div`
-  position: absolute;
-  top: 2px;
-  bottom: 0;
-  left: 2px;
-  right: 0;
-`;
-
 const WalletButton: FC = () => {
   const accountItem = useAccountItem();
   const toggleWallet = useToggleWallet();
@@ -320,15 +224,6 @@ const WalletButton: FC = () => {
 
   const truncatedAddress = useTruncatedAddress(account);
   const connect = useConnect();
-
-  const { pendingCount, latestStatus } = usePendingTxState();
-  const pending =
-    (!latestStatus && connected && !account) ||
-    latestStatus === TransactionStatus.Pending;
-  const error = latestStatus === TransactionStatus.Error;
-  const success =
-    (!latestStatus && connected && account !== undefined) ||
-    latestStatus === TransactionStatus.Success;
 
   return (
     <WalletButtonBtn
@@ -346,51 +241,31 @@ const WalletButton: FC = () => {
       ) : (
         <span>Connect</span>
       )}
-      <PendingTxContainer pending={pending} error={error} success={success}>
-        <ActivitySpinner pending={pending} error={error} success={success} />
-        <SpinnerState>
-          {success && account
-            ? '✓'
-            : error
-            ? '✗'
-            : pendingCount === 0
-            ? null
-            : pendingCount}
-        </SpinnerState>
-      </PendingTxContainer>
     </WalletButtonBtn>
   );
 };
 
 export const AppBar: FC = () => {
-  const { pathname } = useLocation();
   const accountOpen = useAccountOpen();
   const closeAccount = useCloseAccount();
   const massetState = useSelectedMassetState();
   const massetToken = useTokenSubscription(massetState?.address);
 
-  const home = pathname === '/';
-
   return (
     <Container inverted={accountOpen}>
       <Inner>
-        <Top>
-          <Logo inverted={accountOpen}>
-            <Link to="/" title="Home" onClick={closeAccount}>
-              <LogoSvg />
-            </Link>
-            {massetToken && (
-              <Balance>
-                <span>{massetToken.balance.format()}</span>
-                {`${massetToken.symbol}`}
-              </Balance>
-            )}
-          </Logo>
-          <Buttons>
-            {!home && <NotificationsButton />}
-            <WalletButton />
-          </Buttons>
-        </Top>
+        <Logo inverted={accountOpen}>
+          <Link to="/" title="Home" onClick={closeAccount}>
+            <LogoSvg />
+          </Link>
+          {massetToken && (
+            <Balance>
+              <span>{massetToken.balance.format()}</span>
+              {`${massetToken.symbol}`}
+            </Balance>
+          )}
+        </Logo>
+        <WalletButton />
       </Inner>
       <StatusWarningsRow />
     </Container>

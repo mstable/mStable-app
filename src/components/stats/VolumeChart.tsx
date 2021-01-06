@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import Skeleton from 'react-loading-skeleton';
+import Skeleton from 'react-loading-skeleton/lib';
 import { DocumentNode, gql, useQuery } from '@apollo/client';
 import { format, getUnixTime } from 'date-fns';
 import {
@@ -332,7 +332,7 @@ const Chart: FC = () => {
               labelFormatter={timestamp =>
                 format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
               }
-              formatter={toK}
+              formatter={toK as never}
               separator=""
               contentStyle={{
                 fontSize: '14px',

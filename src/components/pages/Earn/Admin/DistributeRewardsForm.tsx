@@ -1,23 +1,20 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import { BigNumber } from 'ethers/utils';
 import styled from 'styled-components';
 
 import { useTokenAllowance } from '../../../../context/TokensProvider';
 import { useOwnAccount } from '../../../../context/UserProvider';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../../forms/TransactionForm';
 import { ApproveButton } from '../../../forms/ApproveButton';
 import { TokenAmount } from '../../../core/TokenAmount';
 import { NumberFormat } from '../../../core/Amount';
 import { H3, H4 } from '../../../core/Typography';
 import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider';
-import { Interfaces, SendTxManifest } from '../../../../types';
+import { Interfaces } from '../../../../types';
 import { RewardsDistributorFactory } from '../../../../typechain/RewardsDistributorFactory';
 import { BigDecimal } from '../../../../web3/BigDecimal';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { Button } from '../../../core/Button';
 import { useSigner } from '../../../../context/OnboardProvider';
 
@@ -25,70 +22,19 @@ const Row = styled.div`
   margin-bottom: 16px;
 `;
 
-const Confirm: FC<{}> = () => {
+const Confirm: FC = () => {
   const {
-    data: { rewardsToken, rewardsDistributor },
-    useCustomRecipients,
+    data: { rewardsToken },
     totalFunds,
     recipientAmounts,
   } = useEarnAdminState();
-
-  const rewardsDistributorAddress = rewardsDistributor?.id;
-
-  const setFormManifest = useSetFormManifest();
-  const signer = useSigner();
-  const iface = useMemo(
-    () =>
-      signer && rewardsDistributorAddress
-        ? RewardsDistributorFactory.connect(rewardsDistributorAddress, signer)
-        : undefined,
-    [rewardsDistributorAddress, signer],
-  );
-
-  const args = useMemo<[string[], BigNumber[]]>(
-    () =>
-      Object.entries(recipientAmounts)
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .filter(([_, { custom }]) => (useCustomRecipients ? !!custom : !custom))
-        .reduce<[string[], BigNumber[]]>(
-          ([addresses, amounts], [recipient, { amount }]) =>
-            amount?.exact
-              ? [
-                  [...addresses, recipient],
-                  [...amounts, (amount as BigDecimal).exact],
-                ]
-              : [addresses, amounts],
-          [[], []],
-        ),
-    [recipientAmounts, useCustomRecipients],
-  );
-
-  useEffect(() => {
-    if (iface && args.length > 0) {
-      const manifest: SendTxManifest<
-        Interfaces.RewardsDistibutor,
-        'distributeRewards'
-      > = {
-        args,
-        iface,
-        fn: 'distributeRewards',
-        purpose: {
-          present: 'Distributing rewards',
-          past: 'Distributed rewards',
-        },
-      };
-      setFormManifest(manifest);
-    } else {
-      setFormManifest(null);
-    }
-  }, [iface, setFormManifest, args]);
 
   const token = rewardsToken || { decimals: 18, symbol: 'MTA' };
 
   return (
     <>
       <Row>
-        <H3 borderTop>Total amount</H3>
+        <H3>Total amount</H3>
         <TokenAmount
           symbol={token.symbol}
           amount={totalFunds}
@@ -98,7 +44,7 @@ const Confirm: FC<{}> = () => {
         />
       </Row>
       <Row>
-        <H3 borderTop>Breakdown</H3>
+        <H3>Breakdown</H3>
         <code>
           {Object.keys(recipientAmounts)
             .sort()
@@ -121,7 +67,7 @@ const Confirm: FC<{}> = () => {
   );
 };
 
-const Input: FC<{}> = () => {
+const Input: FC = () => {
   const {
     data: { rewardsToken, rewardsDistributor },
     totalFunds,
@@ -133,7 +79,7 @@ const Input: FC<{}> = () => {
       {totalFunds &&
       rewardsToken?.allowances[spender]?.exact.lt(totalFunds.exact) ? (
         <>
-          <H3 borderTop>Approve amount</H3>
+          <H3>Approve amount</H3>
           <p>
             Approve transfer of {totalFunds?.simple} {rewardsToken.symbol}
           </p>
@@ -150,7 +96,7 @@ const Input: FC<{}> = () => {
   );
 };
 
-const CustomRecipients: FC<{}> = () => {
+const CustomRecipients: FC = () => {
   const [recipientValue, setRecipientValue] = useState<string>();
   const { recipientAmounts } = useEarnAdminState();
   const {
@@ -221,7 +167,7 @@ const Inputs: FC<{ reason?: string }> = ({ reason }) => {
     <div>
       {reason ? (
         <Row>
-          <H3 borderTop>Validation</H3>
+          <H3>Validation</H3>
           <div>{reason}</div>
         </Row>
       ) : null}
@@ -232,7 +178,7 @@ const Inputs: FC<{ reason?: string }> = ({ reason }) => {
       </Row>
       {useCustomRecipients ? (
         <Row>
-          <H3 borderTop>Custom recipients/amounts</H3>
+          <H3>Custom recipients/amounts</H3>
           <CustomRecipients />
         </Row>
       ) : null}
@@ -241,37 +187,104 @@ const Inputs: FC<{ reason?: string }> = ({ reason }) => {
   );
 };
 
-export const DistributeRewardsForm: FC<{}> = () => {
+export const DistributeRewardsForm: FC = () => {
   const account = useOwnAccount();
+  const signer = useSigner();
   const {
     data: { rewardsDistributor, rewardsToken },
+    useCustomRecipients,
+    recipientAmounts,
     totalFunds,
   } = useEarnAdminState();
-  const spender = rewardsDistributor?.id;
 
-  const allowance = useTokenAllowance(rewardsToken?.address, spender);
+  const rewardsDistributorAddress = rewardsDistributor?.id;
+
+  const allowance = useTokenAllowance(
+    rewardsToken?.address,
+    rewardsDistributorAddress,
+  );
 
   const reason = useMemo<string | undefined>(() => {
-    if (!account) return 'Not connected';
-    if (!(spender && rewardsDistributor && allowance)) return 'Fetching data';
-    if (!rewardsDistributor?.fundManagers.includes(account.toLowerCase()))
+    if (!account) {
+      return 'Not connected';
+    }
+
+    if (!(rewardsDistributorAddress && rewardsDistributor && allowance)) {
+      return 'Fetching data';
+    }
+
+    if (!rewardsDistributor?.fundManagers.includes(account.toLowerCase())) {
       return 'Not a fund manager';
-    if (!totalFunds?.exact.gt(0)) return 'Funds not allocated';
-    if (allowance.exact.lt(totalFunds?.exact)) return 'Exceeds approved amount';
+    }
+
+    if (!totalFunds?.exact.gt(0)) {
+      return 'Funds not allocated';
+    }
+
+    if (allowance.exact.lt(totalFunds?.exact)) {
+      return 'Exceeds approved amount';
+    }
     return undefined;
-  }, [account, allowance, rewardsDistributor, spender, totalFunds]);
+  }, [
+    account,
+    allowance,
+    rewardsDistributor,
+    rewardsDistributorAddress,
+    totalFunds,
+  ]);
 
   const valid = !reason;
 
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<
+      Interfaces.RewardsDistibutor,
+      'distributeRewards'
+    > | void => {
+      const contract =
+        signer && rewardsDistributorAddress
+          ? RewardsDistributorFactory.connect(rewardsDistributorAddress, signer)
+          : undefined;
+
+      const args: [string[], BigNumber[]] = Object.entries(recipientAmounts)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .filter(([_, { custom }]) => (useCustomRecipients ? !!custom : !custom))
+        .reduce<[string[], BigNumber[]]>(
+          ([addresses, amounts], [recipient, { amount }]) =>
+            amount?.exact
+              ? [
+                  [...addresses, recipient],
+                  [...amounts, (amount as BigDecimal).exact],
+                ]
+              : [addresses, amounts],
+          [[], []],
+        );
+
+      if (contract && args.length > 0) {
+        return new TransactionManifest(
+          contract,
+          'distributeRewards',
+          args,
+          {
+            present: 'Distributing rewards',
+            past: 'Distributed rewards',
+          },
+          formId,
+        );
+      }
+    },
+    [signer, recipientAmounts, rewardsDistributorAddress, useCustomRecipients],
+  );
+
   return (
-    <FormProvider formId="adminStakingRewards">
-      <TransactionForm
-        confirmLabel="Distribute rewards"
-        transactionsLabel="Distribute rewards transactions"
-        input={<Inputs reason={reason} />}
-        confirm={<Confirm />}
-        valid={valid}
-      />
-    </FormProvider>
+    <TransactionForm
+      confirm={<Confirm />}
+      confirmLabel="Distribute rewards"
+      createTransaction={createTransaction}
+      formId="distributeRewards"
+      input={<Inputs reason={reason} />}
+      valid={valid}
+    />
   );
 };

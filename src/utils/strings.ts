@@ -1,4 +1,4 @@
-import { CHAIN_ID } from './constants';
+import { CHAIN_ID } from '../constants';
 
 const ETHERSCAN_PREFIXES = {
   1: '',
@@ -26,6 +26,13 @@ export const getEtherscanLink = (
       return `${prefix}/address/${data}`;
   }
 };
+
+export const getEtherscanLinkForHash = (
+  hash: string,
+): { href: string; title: string } => ({
+  title: 'View on Etherscan',
+  href: getEtherscanLink(hash, 'transaction'),
+});
 
 export const truncateAddress = (address: string): string =>
   `${address.slice(0, 6)}…${address.slice(-4)}`;

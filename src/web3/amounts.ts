@@ -2,9 +2,7 @@ import { BigNumber, parseUnits, formatUnits } from 'ethers/utils';
 import { Amount } from '../types';
 
 /**
- * @dev Formats a simple amount to 2 decimal places
- * @param simpleAmount Simple amount to parse
- * @param symbol Symbol to postfix (if any)
+ * @deprecated
  */
 export const formatSimpleAmount = (
   simpleAmount: number | null,
@@ -23,11 +21,7 @@ export const formatSimpleAmount = (
 };
 
 /**
- * @dev Converts an exact token amount into a simple amount, by dividing by 10**decimals
- * @param exactAmount Exact amount to parse
- * @param decimals Number of decimal places the exact amount has
- * @param symbol Symbol of the token
- * @param commas Add comma separators to separate thousands
+ * @deprecated
  */
 export const formatExactAmount = (
   exactAmount?: BigNumber | string,
@@ -49,9 +43,7 @@ export const formatExactAmount = (
 };
 
 /**
- * @dev Converts a string amount into an object containing both Simple and Exact amounts
- * @param amountStr String amount to parse
- * @param decimals Number of decimal places the exact amount should have
+ * @deprecated
  */
 export const parseAmount = (
   amountStr: string | null,
@@ -72,10 +64,9 @@ export const parseAmount = (
     simple,
   };
 };
+
 /**
- * @dev Converts an exact amount into an object containing both Simple and Exact amounts
- * @param exactAmount Simple amount to parse
- * @param decimals Number of decimal places the exact amount should have
+ * @deprecated
  */
 export const parseExactAmount = (
   exactAmount: BigNumber | null,

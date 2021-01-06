@@ -1,22 +1,22 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { BigNumber } from 'ethers/utils';
-import { MaxUint256 } from 'ethers/constants';
 import styled from 'styled-components';
 
-import { useFormId } from './TransactionForm/FormProvider';
-import { useErc20Contract } from '../../web3/hooks';
+import { MaxUint256 } from 'ethers/constants';
 import {
   useHasPendingApproval,
-  useSendTransaction,
+  useTransactionsDispatch,
 } from '../../context/TransactionsProvider';
-import { BigDecimal } from '../../web3/BigDecimal';
-import { Button } from '../core/Button';
-import { Interfaces, SendTxManifest } from '../../types';
-import { Tooltip } from '../core/ReactTooltip';
 import {
   useTokenSubscription,
   useTokenAllowance,
 } from '../../context/TokensProvider';
+import { useErc20Contract } from '../../web3/hooks';
+import { BigDecimal } from '../../web3/BigDecimal';
+import { TransactionManifest } from '../../web3/TransactionManifest';
+import { Button } from '../core/Button';
+import { Tooltip } from '../core/ReactTooltip';
+import { Interfaces } from '../../types';
 
 interface Props {
   address: string;
@@ -24,6 +24,8 @@ interface Props {
   className?: string;
   spender: string;
 }
+
+const INFINITE = new BigDecimal(MaxUint256, 18);
 
 const StyledButton = styled(Button)`
   line-height: 15px;
@@ -43,8 +45,6 @@ const Container = styled.div`
   }
 `;
 
-const INFINITE = new BigDecimal(MaxUint256, 18);
-
 enum ApproveMode {
   Exact,
   Infinite,
@@ -62,12 +62,12 @@ export const ApproveButton: FC<Props> = ({
   className,
   spender,
 }) => {
-  const sendTransaction = useSendTransaction();
-  const tokenContract = useErc20Contract(address);
-  const formId = useFormId();
+  const contract = useErc20Contract(address);
   const pending = useHasPendingApproval(address, spender);
   const token = useTokenSubscription(address);
+  const tokenSymbol = token?.symbol;
   const allowance = useTokenAllowance(address, spender);
+  const { propose } = useTransactionsDispatch();
 
   const [approveMode, setApproveMode] = useState<ApproveMode>();
 
@@ -85,6 +85,7 @@ export const ApproveButton: FC<Props> = ({
   const handleApprove = useCallback(
     (_approveMode: ApproveMode): void => {
       setApproveMode(_approveMode);
+
       const approveAmount =
         _approveMode === ApproveMode.Infinite
           ? INFINITE
@@ -92,22 +93,23 @@ export const ApproveButton: FC<Props> = ({
           ? new BigDecimal(0, amount.decimals)
           : amount;
 
-      if (!(tokenContract && spender)) return;
+      if (!(contract && spender)) return;
 
-      const manifest: SendTxManifest<Interfaces.ERC20, 'approve'> = {
-        args: [spender, approveAmount.exact as BigNumber],
-        fn: 'approve',
-        formId,
-        iface: tokenContract,
-        purpose: {
-          present: `Approve transfer${token ? ` of ${token.symbol}` : ''}`,
-          past: `Approved transfer${token ? ` of ${token.symbol}` : ''}`,
-        },
-      };
-
-      sendTransaction(manifest);
+      propose<Interfaces.ERC20, 'approve'>(
+        new TransactionManifest(
+          contract,
+          'approve',
+          [spender, approveAmount.exact as BigNumber],
+          {
+            present: `Approve transfer${
+              tokenSymbol ? ` of ${tokenSymbol}` : ''
+            }`,
+            past: `Approved transfer${tokenSymbol ? ` of ${tokenSymbol}` : ''}`,
+          },
+        ),
+      );
     },
-    [amount, tokenContract, spender, formId, sendTransaction, token],
+    [amount, contract, propose, spender, tokenSymbol],
   );
 
   return (

@@ -1,10 +1,12 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { useOrderedCurrentTransactions } from '../../context/TransactionsProvider';
-import { Transaction, TransactionStatus } from '../../types';
-import { getTransactionStatus } from '../../web3/transactions';
-import { EMOJIS } from '../../web3/constants';
+import {
+  Transaction,
+  useOrderedCurrentTransactions,
+} from '../../context/TransactionsProvider';
+import { TransactionStatus } from '../../web3/TransactionManifest';
+import { EMOJIS } from '../../constants';
 import { ActivitySpinner } from '../core/ActivitySpinner';
 import { EtherscanLink } from '../core/EtherscanLink';
 import { List, ListItem } from '../core/List';
@@ -35,24 +37,15 @@ const TxStatusContainer = styled.div`
   width: 16px;
 `;
 
-const getStatusLabel = (status: TransactionStatus): string =>
-  status === TransactionStatus.Success
-    ? 'Confirmed'
-    : status === TransactionStatus.Error
-    ? 'Error'
-    : 'Pending';
-
 const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
-  const status = getTransactionStatus(tx);
-  const label = getStatusLabel(status);
   return (
-    <TxStatusContainer title={label}>
-      {status === TransactionStatus.Pending ? (
+    <TxStatusContainer title={tx.status}>
+      {tx.status === TransactionStatus.Sent ? (
         <ActivitySpinner pending />
-      ) : status === TransactionStatus.Error ? (
+      ) : tx.status === TransactionStatus.Error ? (
         <span>{EMOJIS.error}</span>
       ) : (
-        <span>{EMOJIS[tx.fn as keyof typeof EMOJIS]}</span>
+        <span>{EMOJIS[tx.manifest.fn as keyof typeof EMOJIS]}</span>
       )}
     </TxStatusContainer>
   );
@@ -65,9 +58,11 @@ const PendingTx: FC<{
   return (
     <PendingTxContainer inverted={inverted}>
       <TxStatusIndicator tx={tx} />
-      <EtherscanLink data={tx.hash} type="transaction">
-        {tx.status === 0 ? 'Error: ' : ''}
-        {tx.status === 1 ? tx.purpose.past : tx.purpose.present}
+      <EtherscanLink data={tx.hash as string} type="transaction">
+        {tx.status === TransactionStatus.Error ? 'Error: ' : ''}
+        {tx.status === TransactionStatus.Confirmed
+          ? tx.manifest.purpose.past
+          : tx.manifest.purpose.present}
       </EtherscanLink>
     </PendingTxContainer>
   );
@@ -76,8 +71,8 @@ const PendingTx: FC<{
 /**
  * List of recently-sent transactions.
  */
-export const Transactions: FC<{ formId?: string }> = ({ formId }) => {
-  const pending = useOrderedCurrentTransactions(formId);
+export const Transactions: FC = () => {
+  const pending = useOrderedCurrentTransactions();
 
   return (
     <div>
@@ -87,7 +82,7 @@ export const Transactions: FC<{ formId?: string }> = ({ formId }) => {
         <List>
           {pending.map(tx => (
             <ListItem key={tx.hash}>
-              <PendingTx tx={tx} inverted={!formId} />
+              <PendingTx tx={tx} inverted />
             </ListItem>
           ))}
         </List>

@@ -21,6 +21,7 @@ const Container = styled.div`
   flex: 1;
   width: 100%;
   height: 100%;
+  padding: 0 1rem;
   color: white;
 
   a {
