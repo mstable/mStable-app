@@ -14,12 +14,6 @@ interface Props {
 
 const { Input } = Fields;
 
-const Container = styled.div`
-  padding: 0.75rem;
-  border: 1px solid #eee;
-  border-radius: 0.75rem;
-`;
-
 const Header = styled.div`
   padding: 0.75rem;
   display: flex;
@@ -39,6 +33,12 @@ const Header = styled.div`
 
 const Body = styled.div`
   padding: 0.75rem;
+`;
+
+const Container = styled.div`
+  padding: 0.75rem;
+  border: 1px solid #eee;
+  border-radius: 0.75rem;
 `;
 
 export const AssetInputBox: FC<Props> = ({
