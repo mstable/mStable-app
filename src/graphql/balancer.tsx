@@ -2,6 +2,9 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
       export interface IntrospectionResultData {
         __schema: {
@@ -32,6 +35,9 @@ export type Scalars = {
   BigInt: string;
   BigDecimal: string;
 };
+
+
+
 
 export type _Block_ = {
   /** The hash of the block */
@@ -680,7 +686,6 @@ export type Query = {
 export type QueryBalancerArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -691,14 +696,12 @@ export type QueryBalancersArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Balancer_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryPoolArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -709,14 +712,12 @@ export type QueryPoolsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Pool_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryPoolTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -727,14 +728,12 @@ export type QueryPoolTokensArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<PoolToken_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryPoolShareArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -745,14 +744,12 @@ export type QueryPoolSharesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<PoolShare_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryUserArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -763,14 +760,12 @@ export type QueryUsersArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<User_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QuerySwapArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -781,14 +776,12 @@ export type QuerySwapsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Swap_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -799,14 +792,12 @@ export type QueryTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type QueryTokenPriceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -817,7 +808,6 @@ export type QueryTokenPricesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<TokenPrice_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -850,7 +840,6 @@ export type Subscription = {
 export type SubscriptionBalancerArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -861,14 +850,12 @@ export type SubscriptionBalancersArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Balancer_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionPoolArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -879,14 +866,12 @@ export type SubscriptionPoolsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Pool_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionPoolTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -897,14 +882,12 @@ export type SubscriptionPoolTokensArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<PoolToken_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionPoolShareArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -915,14 +898,12 @@ export type SubscriptionPoolSharesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<PoolShare_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionUserArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -933,14 +914,12 @@ export type SubscriptionUsersArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<User_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionSwapArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -951,14 +930,12 @@ export type SubscriptionSwapsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Swap_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -969,14 +946,12 @@ export type SubscriptionTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
 export type SubscriptionTokenPriceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -987,7 +962,6 @@ export type SubscriptionTokenPricesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<TokenPrice_Filter>;
   block?: Maybe<Block_Height>;
-  subgraphError?: _SubgraphErrorPolicy_;
 };
 
 
@@ -1478,25 +1452,25 @@ export type TokenPriceDetailsFragment = (
   & { address: TokenPrice['id'] }
 );
 
-export type PoolsQueryVariables = {
-  ids: Array<Scalars['ID']>;
+export type PoolsQueryVariables = Exact<{
+  ids: Array<Scalars['ID']> | Scalars['ID'];
   includeHistoric: Scalars['Boolean'];
   block?: Maybe<Block_Height>;
-};
+}>;
 
 
 export type PoolsQuery = { current: Array<PoolDetailsFragment>, historic: Array<PoolDetailsFragment> };
 
-export type TokenPricesQueryVariables = {
-  tokens: Array<Scalars['ID']>;
-};
+export type TokenPricesQueryVariables = Exact<{
+  tokens: Array<Scalars['ID']> | Scalars['ID'];
+}>;
 
 
 export type TokenPricesQuery = { tokenPrices: Array<TokenPriceDetailsFragment> };
 
-export type TokenPriceQueryVariables = {
+export type TokenPriceQueryVariables = Exact<{
   token: Scalars['ID'];
-};
+}>;
 
 
 export type TokenPriceQuery = { tokenPrice?: Maybe<TokenPriceDetailsFragment> };

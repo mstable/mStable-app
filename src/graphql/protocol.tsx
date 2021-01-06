@@ -67,6 +67,9 @@ export type Scalars = {
   BigDecimal: string;
 };
 
+
+
+
 export type _Block_ = {
   /** The hash of the block */
   hash?: Maybe<Scalars['Bytes']>;

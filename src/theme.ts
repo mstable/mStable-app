@@ -1,4 +1,4 @@
-import { DefaultTheme, CSSProp, css } from 'styled-components';
+import { DefaultTheme, css } from 'styled-components';
 
 export enum Color {
   gold = 'rgb(255,179,52)',
@@ -19,8 +19,8 @@ export enum Color {
   blackTransparenter = 'rgba(0,0,0,0.06)',
   offWhite = 'rgb(249,245,242)',
   offBlack = 'rgb(37,39,45)',
-  lightGrey ='rgba(235, 235, 235, 1)',
-  grey ='rgba(121, 121, 121, 1)',
+  lightGrey = 'rgba(235, 235, 235, 1)',
+  grey = 'rgba(121, 121, 121, 1)',
   greyTransparent = 'rgba(127, 127, 127, 0.5)',
 }
 
@@ -57,11 +57,6 @@ export enum ViewportWidth {
   l = '1000px',
   xl = '1400px',
 }
-
-export const forMinWidth = (width: string, _css: CSSProp): CSSProp =>
-  `@media (min-width: ${width}) {
-   ${_css}
-}`;
 
 // eslint-disable-next-line consistent-return
 export const mapSizeToFontSize = (size: Size): string => {
@@ -121,12 +116,6 @@ export const mixins = {
         inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
       solid;
     border-radius: 3px;
-  `,
-  borderTop: css<{ inverted?: boolean }>`
-    border-top: 1px
-      ${({ theme, inverted }) =>
-        inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
-      solid;
   `,
   textAlign: css<{ center?: boolean; right?: boolean }>`
     text-align: ${({ center, right }) =>

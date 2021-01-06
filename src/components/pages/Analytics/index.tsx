@@ -1,6 +1,6 @@
 import React, { FC, useLayoutEffect } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
+import Skeleton from 'react-loading-skeleton/lib';
 
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { BasketStats } from '../../stats/BasketStats';
@@ -23,7 +23,7 @@ const TotalSupply: FC = () => {
   const totalSupply = massetState?.token.totalSupply;
   return (
     <div>
-      <H3 borderTop>Total supply</H3>
+      <H3>Total supply</H3>
       {totalSupply ? (
         <CountUp end={totalSupply.simpleRounded} decimals={2} />
       ) : (
@@ -38,7 +38,7 @@ const TotalSavings: FC = () => {
   const totalSavings = savingsContractState?.totalSavings;
   return (
     <div>
-      <H3 borderTop>Total savings</H3>
+      <H3>Total savings</H3>
       {totalSavings ? (
         <CountUp end={totalSavings.simpleRounded} decimals={2} />
       ) : (
@@ -76,13 +76,13 @@ const ThirdPartySources = styled.ul`
   }
 `;
 
-const ToggleContainer = styled.div<{ borderTop?: boolean }>`
+const ToggleContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
-  ${({ theme, borderTop }) => (borderTop ? theme.mixins.borderTop : '')}
+
   > :first-child {
     padding-bottom: 0;
     padding-top: 0;
@@ -101,19 +101,19 @@ export const Analytics: FC = () => {
         subtitle="Explore activity across mStable"
       />
       <Section id="save">
-        <ToggleContainer borderTop>
+        <ToggleContainer>
           <H2>SAVE</H2>
           <ToggleSave />
         </ToggleContainer>
         <DailyApys />
       </Section>
       <Section id="volumes">
-        <H2 borderTop>Volumes</H2>
+        <H2>Volumes</H2>
         <P size={Size.s}>All values in mUSD</P>
         <VolumeChart />
       </Section>
       <Section id="totals">
-        <H2 borderTop>Totals</H2>
+        <H2>Totals</H2>
         <P size={Size.s}>All values in mUSD</P>
         <NiceBigNumbers>
           <TotalSupply />
@@ -122,13 +122,13 @@ export const Analytics: FC = () => {
         <AggregateChart />
       </Section>
       <Section id="basket">
-        <H2 borderTop>Basket share</H2>
+        <H2>Basket share</H2>
         <BasketStatsContainer>
           <BasketStats />
         </BasketStatsContainer>
       </Section>
       <Section id="third-party">
-        <H2 borderTop>Other sources</H2>
+        <H2>Other sources</H2>
         <P>Learn more by exploring these third-party sources:</P>
         <ThirdPartySources>
           <li>

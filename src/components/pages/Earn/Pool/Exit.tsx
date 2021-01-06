@@ -1,14 +1,11 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import Skeleton from 'react-loading-skeleton';
-
 import styled from 'styled-components';
-import { Interfaces, SendTxManifest } from '../../../../types';
+
+import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../../forms/TransactionForm/FormProvider';
 import { CountUp } from '../../../core/CountUp';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import {
   useCurrentRewardsToken,
   useCurrentStakingToken,
@@ -93,69 +90,55 @@ const ExitFormConfirm: FC = () => {
   );
 };
 
-const StyledTransactionForm = styled(TransactionForm)`
-  h3 {
-    border-top: 0;
-  }
-`;
-
-const ExitForm: FC = () => {
+export const Exit: FC = () => {
   const contract = useCurrentStakingRewardsContractCtx();
-
-  const setFormManifest = useSetFormManifest();
 
   const {
     stakingRewardsContract: { title } = { title: 'pool' },
     exit: { amount, valid, isExiting },
   } = useStakingRewardsContractState();
 
-  useEffect(() => {
-    if (valid && contract && amount) {
-      if (isExiting) {
-        const manifest: SendTxManifest<Interfaces.StakingRewards, 'exit'> = {
-          args: [],
-          iface: contract,
-          fn: 'exit',
-          purpose: {
-            present: `Exiting ${title}`,
-            past: `Exited ${title}`,
-          },
-        };
-        setFormManifest(manifest);
-      } else {
+  const createTransaction = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (formId: string): TransactionManifest<any, any> | void => {
+      if (valid && contract && amount) {
+        if (isExiting) {
+          return new TransactionManifest<Interfaces.StakingRewards, 'exit'>(
+            contract,
+            'exit',
+            [],
+            {
+              present: `Exiting ${title}`,
+              past: `Exited ${title}`,
+            },
+            formId,
+          );
+        }
+
         const body = `stake of ${amount.format()} from ${title}`;
-        const manifest: SendTxManifest<
-          Interfaces.StakingRewards,
-          'withdraw'
-        > = {
-          args: [amount.exact],
-          iface: contract,
-          fn: 'withdraw',
-          purpose: {
+        return new TransactionManifest<Interfaces.StakingRewards, 'withdraw'>(
+          contract,
+          'withdraw',
+          [amount.exact],
+          {
             present: `Withdrawing ${body}`,
             past: `Withdrew ${body}`,
           },
-        };
-        setFormManifest(manifest);
+          formId,
+        );
       }
-    } else {
-      setFormManifest(null);
-    }
-  }, [setFormManifest, valid, contract, amount, isExiting, title]);
+    },
+    [valid, contract, amount, isExiting, title],
+  );
 
   return (
-    <StyledTransactionForm
+    <TransactionForm
+      formId="exit"
       confirmLabel={isExiting ? 'Exit' : 'Withdraw'}
       confirm={<ExitFormConfirm />}
+      createTransaction={createTransaction}
       input={<Input />}
-      transactionsLabel="Transactions"
       valid={valid}
     />
   );
 };
-
-export const Exit: FC = () => (
-  <FormProvider formId="exit">
-    <ExitForm />
-  </FormProvider>
-);

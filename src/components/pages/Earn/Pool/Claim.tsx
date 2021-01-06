@@ -1,12 +1,7 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 
-import { Interfaces, SendTxManifest } from '../../../../types';
-import { TransactionForm } from '../../../forms/TransactionForm';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../../forms/TransactionForm/FormProvider';
+import { Interfaces } from '../../../../types';
 import {
   useRewardsEarned,
   useCurrentRewardsToken,
@@ -14,13 +9,15 @@ import {
 } from '../StakingRewardsContractProvider';
 import { CountUp } from '../../../core/CountUp';
 import { H3, P } from '../../../core/Typography';
+import { TransactionForm } from '../../../forms/TransactionForm';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
 
 const Row = styled.div`
   width: 100%;
   padding-bottom: 16px;
 `;
 
-const Input: FC<{}> = () => {
+const Input: FC = () => {
   const { rewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
 
@@ -46,7 +43,7 @@ const Input: FC<{}> = () => {
   );
 };
 
-const Confirm: FC<{}> = () => {
+const Confirm: FC = () => {
   const { rewards } = useRewardsEarned();
   const rewardsToken = useCurrentRewardsToken();
 
@@ -68,48 +65,41 @@ const Confirm: FC<{}> = () => {
   ) : null;
 };
 
-const Form: FC<{}> = () => {
+export const Claim: FC = () => {
   const { rewards } = useRewardsEarned();
 
   const contract = useCurrentStakingRewardsContractCtx();
 
-  const setFormManifest = useSetFormManifest();
-
   const valid = !!rewards?.exact.gt(0);
 
-  useEffect(() => {
-    if (valid && contract) {
-      const manifest: SendTxManifest<
-        Interfaces.StakingRewards,
-        'claimReward'
-      > = {
-        args: [],
-        iface: contract,
-        fn: 'claimReward',
-        purpose: {
-          present: 'Claiming rewards',
-          past: 'Claimed rewards',
-        },
-      };
-      setFormManifest(manifest);
-    } else {
-      setFormManifest(null);
-    }
-  }, [setFormManifest, valid, contract]);
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<Interfaces.StakingRewards, 'claimReward'> | void => {
+      if (valid && contract) {
+        return new TransactionManifest(
+          contract,
+          'claimReward',
+          [],
+          {
+            present: 'Claiming rewards',
+            past: 'Claimed rewards',
+          },
+          formId,
+        );
+      }
+    },
+    [valid, contract],
+  );
 
   return (
     <TransactionForm
+      formId="claim"
       confirmLabel="Claim"
       input={<Input />}
       confirm={<Confirm />}
-      transactionsLabel="Claim transactions"
       valid={valid}
+      createTransaction={createTransaction}
     />
   );
 };
-
-export const Claim: FC<{}> = () => (
-  <FormProvider formId="claim">
-    <Form />
-  </FormProvider>
-);

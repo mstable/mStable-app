@@ -1,6 +1,6 @@
 /* eslint-disable no-empty */
 
-import { CONNECTORS } from './web3/connectors';
+import { CONNECTORS } from './constants';
 
 const STORAGE_PREFIX = '__mStable-app__';
 const STORAGE_VERSION = 3;

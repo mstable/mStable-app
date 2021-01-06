@@ -3711,3 +3711,6 @@ enum _SubgraphErrorPolicy_ {
   """If the subgraph has indexing errors, data will be omitted. The default."""
   deny
 }
+directive @entity on OBJECT
+directive @derivedFrom(field: String) on FIELD_DEFINITION
+directive @subgraphId(id: String) on OBJECT

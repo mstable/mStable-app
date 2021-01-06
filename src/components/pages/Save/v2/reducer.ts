@@ -1,6 +1,7 @@
 import { Reducer } from 'react';
 import { pipeline } from 'ts-pipe-compose';
 
+import { BigNumber } from 'ethers/utils';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import {
   Action,
@@ -12,7 +13,6 @@ import {
 } from './types';
 import { TokenQuantityV2 } from '../../../../types';
 import { validate } from './validate';
-import { BigNumber } from 'ethers/utils';
 
 export const BIG_NUM_1 = new BigNumber((1e18).toString());
 

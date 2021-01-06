@@ -2,7 +2,7 @@ import { BigNumber, BigNumberish, formatUnits } from 'ethers/utils';
 import { Reducer } from 'react';
 import { Fields, TokenQuantity } from '../../../types';
 import { parseAmount } from '../../../web3/amounts';
-import { EXP_SCALE } from '../../../web3/constants';
+import { EXP_SCALE } from '../../../constants';
 import { Action, Actions, State } from './types';
 import { applyValidation } from './validation';
 

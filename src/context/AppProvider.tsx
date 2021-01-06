@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { configureScope } from '@sentry/react';
 
-import { CHAIN_ID } from '../web3/constants';
+import { CHAIN_ID } from '../constants';
 import { useAddErrorNotification } from './NotificationsProvider';
 import { useWalletAddress, useConnected, useWallet } from './OnboardProvider';
 

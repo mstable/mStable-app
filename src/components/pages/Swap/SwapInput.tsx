@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
 import { BigNumber, formatUnits } from 'ethers/utils';
 
-import { RATIO_SCALE, SCALE } from '../../../web3/constants';
+import { RATIO_SCALE, SCALE } from '../../../constants';
 import { formatExactAmount } from '../../../web3/amounts';
 import { FormRow } from '../../core/Form';
 import { H3 } from '../../core/Typography';

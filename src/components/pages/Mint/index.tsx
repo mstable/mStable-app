@@ -1,18 +1,15 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import { BigNumber } from 'ethers/utils';
 
 import { useSelectedMassetContract } from '../../../web3/hooks';
 import { useOwnAccount } from '../../../context/UserProvider';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../forms/TransactionForm/FormProvider';
 import { TransactionForm } from '../../forms/TransactionForm';
 import { Interfaces } from '../../../types';
 import { MintProvider, useMintState } from './MintProvider';
 import { MintInput } from './MintInput';
 import { MassetStats } from '../../stats/MassetStats';
 import { PageHeader } from '../PageHeader';
+import { TransactionManifest } from '../../../web3/TransactionManifest';
 
 const MintForm: FC = () => {
   const account = useOwnAccount();
@@ -23,65 +20,58 @@ const MintForm: FC = () => {
     mintAmount,
     massetState,
   } = useMintState();
-  const setFormManifest = useSetFormManifest();
   const contract = useSelectedMassetContract();
   const massetSymbol = massetState?.token.symbol;
 
-  // Set the form manifest
-  useEffect(() => {
-    if (!error && contract && mintAmount.exact && account) {
-      const enabled = Object.values(bAssets).filter(b => b.enabled);
-      const body = `${mintAmount.format()} ${massetSymbol}`;
-      const purpose = {
-        present: `Minting ${body}`,
-        past: `Minted ${body}`,
-      };
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<Interfaces.Masset, 'mint' | 'mintMulti'> | void => {
+      if (!error && contract && mintAmount.exact && account) {
+        const enabled = Object.values(bAssets).filter(b => b.enabled);
+        const body = `${mintAmount.format()} ${massetSymbol}`;
+        const purpose = {
+          present: `Minting ${body}`,
+          past: `Minted ${body}`,
+        };
 
-      // Mint single for one asset
-      if (enabled.length === 1 && enabled[0].amount?.exact) {
-        setFormManifest<Interfaces.Masset, 'mint'>({
-          iface: contract,
-          args: [enabled[0].address, enabled[0].amount.exact.toString()],
-          fn: 'mint',
+        // Mint single for one asset
+        if (enabled.length === 1 && enabled[0].amount?.exact) {
+          return new TransactionManifest(
+            contract,
+            'mint',
+            [enabled[0].address, enabled[0].amount.exact.toString()],
+            purpose,
+            formId,
+          );
+        }
+
+        // Mint multi for more than one asset
+        return new TransactionManifest(
+          contract,
+          'mintMulti',
+          enabled.reduce(
+            ([_addresses, _amounts, _receipient], b) => [
+              [..._addresses, b.address],
+              [..._amounts, b.amount?.exact as BigNumber],
+              _receipient,
+            ],
+            [[] as string[], [] as BigNumber[], account],
+          ),
           purpose,
-        });
-        return;
+          formId,
+        );
       }
-
-      // Mint multi for more than one asset
-      setFormManifest<Interfaces.Masset, 'mintMulti'>({
-        iface: contract,
-        args: enabled.reduce(
-          ([_addresses, _amounts, _receipient], b) => [
-            [..._addresses, b.address],
-            [..._amounts, b.amount?.exact as BigNumber],
-            _receipient,
-          ],
-          [[] as string[], [] as BigNumber[], account],
-        ),
-        fn: 'mintMulti',
-        purpose,
-      });
-      return;
-    }
-
-    setFormManifest(null);
-  }, [
-    account,
-    bAssets,
-    contract,
-    error,
-    massetSymbol,
-    mintAmount,
-    mintAmount.exact,
-    setFormManifest,
-  ]);
+    },
+    [account, bAssets, contract, error, massetSymbol, mintAmount],
+  );
 
   return (
     <TransactionForm
+      formId="mint"
       confirmLabel="Mint"
+      createTransaction={createTransaction}
       input={<MintInput />}
-      transactionsLabel="Mint transactions"
       valid={amountTouched && !error}
     />
   );
@@ -89,10 +79,8 @@ const MintForm: FC = () => {
 
 export const Mint: FC = () => (
   <MintProvider>
-    <FormProvider formId="mint">
-      <PageHeader title="Mint" subtitle="Convert stablecoins into mUSD" />
-      <MintForm />
-      <MassetStats />
-    </FormProvider>
+    <PageHeader title="Mint" subtitle="Convert stablecoins into mUSD" />
+    <MintForm />
+    <MassetStats />
   </MintProvider>
 );

@@ -9,7 +9,7 @@ import {
 import { BigNumber as FractionalBigNumber } from 'bignumber.js';
 
 import { toK } from '../components/stats/utils';
-import { RATIO_SCALE, SCALE } from './constants';
+import { RATIO_SCALE, SCALE } from '../constants';
 
 const DEFAULT_DECIMALS = 18;
 

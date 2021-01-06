@@ -1,6 +1,6 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 
-import { useSetFormManifest } from '../../../forms/TransactionForm/FormProvider';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { TransactionForm } from '../../../forms/TransactionForm';
 import { useSelectedSaveV1Contract } from '../../../../web3/hooks';
 import { Interfaces } from '../../../../types';
@@ -19,60 +19,58 @@ export const SaveForm: FC = () => {
   } = useSaveState();
   const massetSymbol = massetState?.token.symbol;
 
-  const setFormManifest = useSetFormManifest();
-  const savingsContract = useSelectedSaveV1Contract();
+  const contract = useSelectedSaveV1Contract();
 
   // Set the form manifest
-  useEffect(() => {
-    if (valid && savingsContract && amount) {
-      if (transactionType === TransactionType.Deposit) {
-        const body = `${amount.format()} ${massetSymbol}`;
-        setFormManifest<Interfaces.SavingsContract, 'depositSavings(uint256)'>({
-          iface: savingsContract,
-          args: [amount.exact],
-          fn: 'depositSavings(uint256)',
-          purpose: {
-            present: `Depositing ${body}`,
-            past: `Deposited ${body}`,
-          },
-        });
-        return;
-      }
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<
+      Interfaces.SavingsContract,
+      'depositSavings(uint256)' | 'redeem'
+    > | void => {
+      if (valid && contract && amount) {
+        if (transactionType === TransactionType.Deposit) {
+          const body = `${amount.format()} ${massetSymbol}`;
+          return new TransactionManifest(
+            contract,
+            'depositSavings(uint256)',
+            [amount.exact],
+            {
+              present: `Depositing ${body}`,
+              past: `Deposited ${body}`,
+            },
+            formId,
+          );
+        }
 
-      if (transactionType === TransactionType.Withdraw && amountInCredits) {
-        const body = `${massetSymbol} savings`;
-        setFormManifest<Interfaces.SavingsContract, 'redeem'>({
-          iface: savingsContract,
-          args: [amountInCredits.exact],
-          fn: 'redeem',
-          purpose: {
-            present: `Withdrawing ${body}`,
-            past: `Withdrew ${body}`,
-          },
-        });
-        return;
+        if (transactionType === TransactionType.Withdraw && amountInCredits) {
+          const body = `${massetSymbol} savings`;
+          return new TransactionManifest(
+            contract,
+            'redeem',
+            [amountInCredits.exact],
+            {
+              present: `Withdrawing ${body}`,
+              past: `Withdrew ${body}`,
+            },
+            formId,
+          );
+        }
       }
-    }
-
-    setFormManifest(null);
-  }, [
-    amountInCredits,
-    valid,
-    amount,
-    savingsContract,
-    setFormManifest,
-    transactionType,
-    massetSymbol,
-  ]);
+    },
+    [amountInCredits, valid, amount, contract, transactionType, massetSymbol],
+  );
 
   return (
     <TransactionForm
+      formId="save"
       confirm={<SaveConfirm />}
       confirmLabel={
         transactionType === TransactionType.Deposit ? 'Deposit' : 'Withdraw'
       }
+      createTransaction={createTransaction}
       input={<SaveInput />}
-      transactionsLabel="Save transactions"
       valid={valid}
     />
   );

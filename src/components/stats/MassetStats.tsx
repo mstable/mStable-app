@@ -37,12 +37,12 @@ export const MassetStats: FC = () => {
       <H2>Basket Stats</H2>
       <StatsRow>
         <StatsGraphic>
-          <H3 borderTop>{masset.token.symbol} basket share</H3>
+          <H3>{masset.token.symbol} basket share</H3>
           <BasketStats />
         </StatsGraphic>
         <StatsGraphicNull />
         <StatsGraphic>
-          <H3 borderTop>Total {masset.token.symbol} supply</H3>
+          <H3>Total {masset.token.symbol} supply</H3>
           <CountUp end={masset.token.totalSupply.simple} />
         </StatsGraphic>
       </StatsRow>

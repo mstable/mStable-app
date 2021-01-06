@@ -1,24 +1,25 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { useAccount } from '../../../context/UserProvider';
 import { MerkleDrop } from '../../../context/earn/types';
 import { useMerkleDrops } from '../../../context/earn/EarnDataProvider';
+import { useSigner } from '../../../context/OnboardProvider';
+import { useTransactionsState } from '../../../context/TransactionsProvider';
 import { BigDecimal } from '../../../web3/BigDecimal';
-import { humanizeList } from '../../../web3/strings';
-import { Interfaces } from '../../../types';
-import { MerkleDropFactory } from '../../../typechain/MerkleDropFactory';
 import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../forms/TransactionForm/FormProvider';
-import { TransactionForm } from '../../forms/TransactionForm';
+  TransactionManifest,
+  TransactionStatus,
+} from '../../../web3/TransactionManifest';
+import { humanizeList } from '../../../utils/strings';
+import { MerkleDropFactory } from '../../../typechain/MerkleDropFactory';
 import { Amount, NumberFormat } from '../../core/Amount';
 import { H3, P } from '../../core/Typography';
 import { Tooltip } from '../../core/ReactTooltip';
 import { Protip } from '../../core/Protip';
 import { Size } from '../../../theme';
-import { useSigner } from '../../../context/OnboardProvider';
+import { Interfaces } from '../../../types';
+import { TransactionForm } from '../../forms/TransactionForm';
 
 const Container = styled.div`
   min-width: 260px;
@@ -52,52 +53,72 @@ const MerkleDropConfirmLabel: FC<{
 const MerkleDropClaimForm: FC<{ merkleDrop: MerkleDrop }> = ({
   merkleDrop,
 }) => {
+  const [txId, setTxId] = useState<string | undefined>();
+  const transactions = useTransactionsState();
   const account = useAccount();
   const signer = useSigner();
-  const setFormManifest = useSetFormManifest();
   const {
     totalUnclaimed,
     address,
     unclaimedTranches,
     token: { symbol, decimals },
   } = merkleDrop;
+
   const { refresh } = useMerkleDrops();
 
-  useEffect(() => {
-    if (account && unclaimedTranches && signer) {
-      const contract = MerkleDropFactory.connect(address, signer);
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<
+      Interfaces.MerkleDrop,
+      'claimWeeks' | 'claimWeek'
+    > | void => {
+      if (account && unclaimedTranches && signer) {
+        const contract = MerkleDropFactory.connect(address, signer);
 
-      const tranches = unclaimedTranches.map(t => t.trancheNumber);
-      const balances = unclaimedTranches.map(t => t.allocation);
-      const proofs = unclaimedTranches.map(t => t.proof);
+        const tranches = unclaimedTranches.map(t => t.trancheNumber);
+        const balances = unclaimedTranches.map(t => t.allocation);
+        const proofs = unclaimedTranches.map(t => t.proof);
 
-      const purpose = {
-        present: 'Claiming rewards',
-        past: 'Claimed rewards',
-      };
+        const purpose = {
+          present: 'Claiming rewards',
+          past: 'Claimed rewards',
+        };
 
-      if (tranches.length > 1) {
-        setFormManifest<Interfaces.MerkleDrop, 'claimWeeks'>({
-          args: [account, tranches, balances, proofs as never],
-          fn: 'claimWeeks',
-          iface: contract,
-          onFinalize: refresh,
-          purpose,
-        });
-      } else {
-        setFormManifest<Interfaces.MerkleDrop, 'claimWeek'>({
-          args: [account, tranches[0], balances[0], proofs[0]],
-          fn: 'claimWeek',
-          iface: contract,
-          onFinalize: refresh,
-          purpose,
-        });
+        const tx =
+          tranches.length > 1
+            ? new TransactionManifest<Interfaces.MerkleDrop, 'claimWeeks'>(
+                contract,
+                'claimWeeks',
+                [account, tranches, balances, proofs as never],
+                purpose,
+                formId,
+              )
+            : new TransactionManifest<Interfaces.MerkleDrop, 'claimWeek'>(
+                contract,
+                'claimWeek',
+                [account, tranches[0], balances[0], proofs[0]],
+                purpose,
+                formId,
+              );
+
+        setTxId(tx.id);
+        return tx;
       }
+    },
+    [account, address, signer, unclaimedTranches],
+  );
+
+  const transaction = txId ? transactions[txId] : undefined;
+  useEffect(() => {
+    if (transaction?.status === TransactionStatus.Confirmed) {
+      refresh();
     }
-  }, [account, address, refresh, setFormManifest, signer, unclaimedTranches]);
+  }, [refresh, transaction]);
 
   return (
     <TransactionForm
+      formId="merkleClaim"
       compact
       confirmLabel={
         <MerkleDropConfirmLabel
@@ -107,12 +128,13 @@ const MerkleDropClaimForm: FC<{ merkleDrop: MerkleDrop }> = ({
           tranches={unclaimedTranches.map(t => t.trancheNumber.toString())}
         />
       }
+      createTransaction={createTransaction}
       valid={unclaimedTranches.length > 0}
     />
   );
 };
 
-export const MerkleDropClaims: FC<{}> = () => {
+export const MerkleDropClaims: FC = () => {
   const account = useAccount();
   const { merkleDrops } = useMerkleDrops();
 
@@ -132,9 +154,10 @@ export const MerkleDropClaims: FC<{}> = () => {
       {hasUnclaimedAmounts ? (
         <div>
           {Object.values(merkleDrops).map(merkleDrop => (
-            <FormProvider formId={merkleDrop.address} key={merkleDrop.address}>
-              <MerkleDropClaimForm merkleDrop={merkleDrop} />
-            </FormProvider>
+            <MerkleDropClaimForm
+              merkleDrop={merkleDrop}
+              key={merkleDrop.address}
+            />
           ))}
         </div>
       ) : account ? (

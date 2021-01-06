@@ -3,7 +3,7 @@ import { pipe, pipeline } from 'ts-pipe-compose';
 
 import { MassetState } from '../../../context/DataProvider/types';
 import { recalculateMasset } from '../../../context/DataProvider/recalculateState';
-import { SCALE } from '../../../web3/constants';
+import { SCALE } from '../../../constants';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { validate } from './validate';
 import { Action, Actions, Mode, State } from './types';

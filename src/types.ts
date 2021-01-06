@@ -1,7 +1,5 @@
-import { TransactionResponse } from 'ethers/providers';
 import { BigNumber } from 'ethers/utils';
 
-import { Ierc20 } from './typechain/Ierc20.d';
 import { ISavingsContract } from './typechain/ISavingsContract.d';
 import { IMasset } from './typechain/IMasset.d';
 import { MusdGauge } from './typechain/MusdGauge.d';
@@ -12,31 +10,13 @@ import { MerkleDrop as IMerkleDrop } from './typechain/MerkleDrop.d';
 import { TokenMinter as ICurveTokenMinter } from './typechain/TokenMinter.d';
 import { CurveDeposit as ICurveDeposit } from './typechain/CurveDeposit.d';
 import { BigDecimal } from './web3/BigDecimal';
+import { Erc20Detailed } from './typechain/Erc20Detailed';
 
 export type MassetName = 'mUSD' | 'mBTC';
 
-export interface Transaction {
-  formId?: string;
-  hash: string;
-  response: TransactionResponse;
-  blockNumberChecked?: number;
-  fn: string;
-  status: number | null;
-  timestamp: number;
-  args: unknown[];
-  purpose: Purpose;
-  onFinalize?(): void;
-}
-
 export interface Purpose {
-  present: string | null;
-  past: string | null;
-}
-
-export enum TransactionStatus {
-  Success,
-  Error,
-  Pending,
+  present: string;
+  past: string;
 }
 
 export enum Interfaces {
@@ -54,7 +34,7 @@ export enum Interfaces {
 
 export interface Instances {
   [Interfaces.Masset]: IMasset;
-  [Interfaces.ERC20]: Ierc20;
+  [Interfaces.ERC20]: Erc20Detailed;
   [Interfaces.SavingsContract]: ISavingsContract;
   [Interfaces.StakingRewards]: IStakingRewards;
   [Interfaces.StakingRewardsWithPlatformToken]: IStakingRewardsWithPlatformToken;
@@ -63,36 +43,6 @@ export interface Instances {
   [Interfaces.CurveGauge]: MusdGauge;
   [Interfaces.CurveTokenMinter]: ICurveTokenMinter;
   [Interfaces.CurveDeposit]: ICurveDeposit;
-}
-
-/**
- * Manifest for sending a transaction.
- *
- * @param iface: The contract interface, e.g. an instance of `Ierc20`
- * @param fn: Name of the function on the contract interface.
- * @param args: Array of arguments for the function.
- */
-export interface SendTxManifest<
-  TIface extends Interfaces,
-  TFn extends keyof Instances[TIface]['functions']
-> {
-  iface: Instances[TIface];
-  fn: Extract<keyof Instances[TIface]['functions'], TFn> & string;
-  args: Parameters<
-    Extract<
-      Instances[TIface]['functions'][TFn],
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (...args: any[]) => any
-    >
-  >;
-  gasPrice?: number;
-  gasLimit?: BigNumber;
-  formId?: string;
-  purpose: Purpose;
-  onStart?(): void;
-  onSent?(): void;
-  onError?(): void;
-  onFinalize?(): void;
 }
 
 export interface Token {

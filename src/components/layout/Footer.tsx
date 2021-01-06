@@ -6,18 +6,13 @@ import { isAddress } from 'web3-utils';
 
 import { useCloseAccount } from '../../context/AppProvider';
 import { useIsMasquerading, useMasquerade } from '../../context/UserProvider';
-import { DAPP_VERSION } from '../../web3/constants';
+import { DAPP_VERSION } from '../../constants';
 import { ViewportWidth } from '../../theme';
 import Medium from '../icons/social/medium.svg';
 import Github from '../icons/social/github.svg';
 import Discord from '../icons/social/discord.svg';
 import Twitter from '../icons/social/twitter.svg';
 import Email from '../icons/social/email.svg';
-import { centredLayout } from './css';
-
-interface Props {
-  accountOpen: boolean;
-}
 
 const Links = styled.ul`
   align-items: center;
@@ -25,8 +20,8 @@ const Links = styled.ul`
 
   li {
     display: inline-block;
-    margin-right: 8px;
-    margin-bottom: 8px;
+    margin-right: 0.75rem;
+    margin-bottom: 0.75rem;
   }
 `;
 
@@ -43,7 +38,7 @@ const SocialIcons = styled(Links)`
 `;
 
 const Version = styled.div`
-  font-size: 10px;
+  font-size: 0.6rem;
 
   span {
     font-weight: bold;
@@ -93,7 +88,7 @@ const Masquerade: FC<{}> = () => {
 };
 
 const Inner = styled.div`
-  padding: ${({ theme }) => `${theme.spacing.s} ${theme.spacing.l}`};
+  padding: 1rem;
 
   > div {
     width: 100%;
@@ -106,30 +101,18 @@ const Inner = styled.div`
       align-items: center;
     }
   }
-
-  ${centredLayout};
 `;
 
-const Container = styled.footer<Props>`
-  display: flex;
-  justify-content: center;
-  color: ${({ theme, accountOpen }) =>
-    accountOpen ? theme.color.white : theme.color.offBlack};
+const Container = styled.div`
+  display: grid;
+  overflow-x: hidden;
+  grid-template-columns:
+    1fr
+    min(1200px, 100%)
+    1fr;
 
-  ${Inner} {
-    border-top: ${({ theme, accountOpen }) =>
-      `1px 
-      ${
-        accountOpen
-          ? theme.color.whiteTransparent
-          : theme.color.blackTransparent
-      }
-      solid`};
-  }
-
-  a {
-    color: ${({ theme, accountOpen }) =>
-      accountOpen ? theme.color.white : theme.color.offBlack};
+  > * {
+    grid-column: 2;
   }
 `;
 
@@ -150,10 +133,10 @@ const socialIcons = [
   { title: 'Email', icon: Email, href: 'mailto:info@mstable.org' },
 ];
 
-export const Footer: FC<Props> = ({ accountOpen }) => {
+export const Footer: FC = () => {
   const collapseWallet = useCloseAccount();
   return (
-    <Container accountOpen={accountOpen}>
+    <Container>
       <Inner>
         <div>
           <div>

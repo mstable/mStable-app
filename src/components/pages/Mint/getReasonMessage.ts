@@ -1,6 +1,6 @@
 import { Reasons } from './types';
 import { BassetState } from '../../../context/DataProvider/types';
-import { humanizeList } from '../../../web3/strings';
+import { humanizeList } from '../../../utils/strings';
 
 const getBassetSymbols = (bAssets: BassetState[]): string =>
   humanizeList(bAssets.map(b => b.token.symbol));

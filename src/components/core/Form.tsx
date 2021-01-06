@@ -58,7 +58,6 @@ export const Form: FC<Props> = ({ children, onSubmit, error, submitting }) => {
 export const FormRow = styled.div`
   width: 100%;
   padding: 1rem 0;
-  ${({ theme }) => theme.mixins.borderTop};
 `;
 
 export const SubmitButton = styled(Button)`
@@ -72,10 +71,10 @@ export const SubmitButton = styled(Button)`
   margin-bottom: ${({ theme }) => theme.spacing.m};
   padding-top: 16px;
   padding-bottom: 16px;
-  text-transform: uppercase;
   box-shadow: ${({ theme, disabled }) =>
       disabled ? theme.color.blackTransparenter : theme.color.greenTransparent}
     0 10px 20px;
+  border-radius: 16px;
   transition: background-color 0.4s ease;
   font-size: ${FontSize.l};
 

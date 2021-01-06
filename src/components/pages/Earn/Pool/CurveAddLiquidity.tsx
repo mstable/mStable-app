@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 
@@ -6,12 +6,9 @@ import {
   CURVE_ADDRESSES,
   useCurveContracts,
 } from '../../../../context/earn/CurveProvider';
-import { Interfaces, SendTxManifest } from '../../../../types';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
-import {
-  FormProvider,
-  useSetFormManifest,
-} from '../../../forms/TransactionForm/FormProvider';
 import { TokenAmountInput } from '../../../forms/TokenAmountInput';
 import { H3, P } from '../../../core/Typography';
 import {
@@ -54,7 +51,7 @@ const Input: FC = () => {
 
   return (
     <Row>
-      <H3 borderTop>Add liquidity</H3>
+      <H3>Add liquidity</H3>
       <div>
         <TokenAmountInput
           needsUnlock={needsUnlock}
@@ -103,7 +100,7 @@ const CURVE_ALL_COINS = [
   ...CURVE_ADDRESSES['3POOL_COINS'],
 ];
 
-const Form: FC = () => {
+export const CurveAddLiquidity: FC = () => {
   const {
     addLiquidity: { amount, valid, token },
     stakingRewardsContract: { expired = false } = {},
@@ -112,35 +109,34 @@ const Form: FC = () => {
   const { setActiveTab } = useStakingRewardContractDispatch();
 
   const curveContracts = useCurveContracts();
-  const setFormManifest = useSetFormManifest();
 
-  useEffect(() => {
-    if (valid && amount && curveContracts.musdDeposit) {
-      const index = CURVE_ALL_COINS.findIndex(address => address === token);
-      const amounts = [0, 0, 0, 0].map((_, _index) =>
-        _index === index ? amount.exact : 0,
-      );
+  const createTransaction = useCallback(
+    (
+      formId: string,
+    ): TransactionManifest<Interfaces.CurveDeposit, 'add_liquidity'> | void => {
+      if (valid && amount && curveContracts.musdDeposit) {
+        const index = CURVE_ALL_COINS.findIndex(address => address === token);
+        const amounts = [0, 0, 0, 0].map((_, _index) =>
+          _index === index ? amount.exact : 0,
+        );
 
-      // 99% of amount (i.e. 1% slippage)
-      const minLPTokensToMint = amount.exact.sub(amount.exact.div(10));
+        // 99% of amount (i.e. 1% slippage)
+        const minLPTokensToMint = amount.exact.sub(amount.exact.div(10));
 
-      const manifest: SendTxManifest<
-        Interfaces.CurveDeposit,
-        'add_liquidity'
-      > = {
-        args: [amounts, minLPTokensToMint],
-        iface: curveContracts.musdDeposit,
-        fn: 'add_liquidity',
-        purpose: {
-          present: 'Adding liquidity',
-          past: 'Added liquidity',
-        },
-      };
-      setFormManifest(manifest);
-    } else {
-      setFormManifest(null);
-    }
-  }, [setFormManifest, valid, amount, curveContracts.musdDeposit, token]);
+        return new TransactionManifest(
+          curveContracts.musdDeposit,
+          'add_liquidity',
+          [amounts, minLPTokensToMint],
+          {
+            present: 'Adding liquidity',
+            past: 'Added liquidity',
+          },
+          formId,
+        );
+      }
+    },
+    [valid, amount, curveContracts.musdDeposit, token],
+  );
 
   return expired ? (
     <div>
@@ -160,18 +156,12 @@ const Form: FC = () => {
     </div>
   ) : (
     <TransactionForm
+      formId="curveLP"
       confirmLabel="Add liquidity"
       confirm={<Confirm />}
+      createTransaction={createTransaction}
       input={<Input />}
       valid={valid}
     />
-  );
-};
-
-export const CurveAddLiquidity: FC = () => {
-  return (
-    <FormProvider formId="curveLP">
-      <Form />
-    </FormProvider>
   );
 };
