@@ -10,15 +10,14 @@ interface Props {
   headerContent?: ReactNode;
 }
 
-const Title = styled.div`
-  font-size: 1.2rem;
-  font-weight: bold;
+const Title = styled.h3`
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: ${({ theme }) => theme.color.black};
 `;
 
 const Body = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   gap: 2rem;
 
   > * {
@@ -33,12 +32,14 @@ const HeaderContent = styled.div`
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-bottom: 1rem;
   gap: 1rem;
-  padding: 1rem 0;
+  height: 2rem;
+  overflow: hidden;
 `;
 
 const Container = styled.div<Pick<Props, 'border'>>`
-  padding: ${({ border }) => (border ? '1rem' : '1rem 0')};
+  padding: ${({ border }) => (border ? '1rem' : '0')};
   border: ${({ border }) => (border ? '1px #eee solid' : 0)};
 `;
 
