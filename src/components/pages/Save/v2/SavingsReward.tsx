@@ -1,10 +1,11 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 import { BubbleButton as Button } from '../../../core/Button';
 import { Tooltip } from '../../../core/ReactTooltip';
+import { Widget } from '../../../core/Widget';
 
 type SavingValues = {
   [key in 'claimable' | 'vesting' | 'wallet']: BigDecimal;
@@ -31,7 +32,7 @@ const Line = styled.div`
 const RowContainer = styled.div`
   display: flex;
   align-items: center;
-  margin: 0.75rem 0;
+  margin-bottom: 0.75rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -44,31 +45,11 @@ const Stats = styled.div``;
 
 const Body = styled.div`
   display: flex;
+  padding-bottom: 1rem;
 
   > div {
     flex-basis: 50%;
   }
-`;
-
-const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-
-  h3 {
-    font-weight: 600;
-    font-size: 1.25rem;
-    color: ${({ theme }) => theme.color.black};
-  }
-
-  p {
-    font-size: 0.875rem;
-    color: ${({ theme }) => theme.color.grey};
-  }
-`;
-
-const Container = styled.div`
-  background: #ccc;
 `;
 
 const simulateValues = (values: SavingValues): SavingValues => {
@@ -90,7 +71,7 @@ const Row: FC<{
     <RowContainer>
       <span>{title}</span>
       {tip && <Tooltip tip={tip} />}
-      {!!value ? (
+      {value ? (
         <>
           <Line />
           <span>{formattedValue}</span>
@@ -118,9 +99,9 @@ export const SavingsReward: FC = () => {
       vesting: new BigDecimal((3e18).toString()),
       wallet: new BigDecimal((3e18).toString()),
     };
-  }, []);
+  }, [loading]);
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     if (values === undefined) return;
 
     const newValues = simulateValues(values);
@@ -128,10 +109,7 @@ export const SavingsReward: FC = () => {
   };
 
   return (
-    <Container>
-      <Header>
-        <h3>Savings Rewards</h3>
-      </Header>
+    <Widget title="Savings Rewards">
       <Body>
         <Stats>
           <Row
@@ -152,6 +130,6 @@ export const SavingsReward: FC = () => {
           </Button>
         </ButtonContainer>
       </Body>
-    </Container>
+    </Widget>
   );
 };
