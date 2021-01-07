@@ -139,7 +139,6 @@ const Container = styled.div<{
 }>`
   background: ${({ theme, overweight }) =>
     overweight ? theme.color.blackTransparenter : theme.color.white};
-  margin-bottom: 8px;
 `;
 
 export const AssetTokenInput: FC<Props> = ({
