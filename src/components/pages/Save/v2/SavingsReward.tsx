@@ -182,13 +182,13 @@ export const SavingsReward: FC = () => {
         <Stats>
           <Row
             title="Claimable"
-            tip="Tooltip title"
+            tip="Earned + Unlocked tokens"
             preview={simulatedValues?.claimable}
             value={values?.claimable}
           />
           <Row
             title="Vesting"
-            tip="Tooltip title"
+            tip="These tokens will unlock over time"
             preview={simulatedValues?.vesting}
             value={values?.vesting}
           />
