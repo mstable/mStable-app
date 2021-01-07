@@ -39,8 +39,11 @@ const Header = styled.div`
 `;
 
 const Container = styled.div<Pick<Props, 'border'>>`
-  padding: ${({ border }) => (border ? '1rem' : '0')};
-  border: ${({ border }) => (border ? '1px #eee solid' : 0)};
+  ${({ border }) => ({
+    padding: border ? '1.25rem' : '0',
+    border: border ? '1px #eee solid' : 0,
+    borderRadius: border ? '0.75rem' : 'none',
+  })}
 `;
 
 export const Widget: FC<Props> = ({
