@@ -38,10 +38,11 @@ export const BubbleButton = styled(UnstyledButton)<{
   }
 
   :hover {
-    background: ${({ theme, highlighted }) =>
-      highlighted ? theme.color.gold : `#eee`};
-    color: ${({ theme, highlighted }) =>
-      highlighted ? theme.color.white : theme.color.black};
+    ${({ disabled, theme, highlighted }) =>
+      !disabled && {
+        background: `${highlighted ? theme.color.gold : `#eee`}`,
+        color: `${highlighted ? theme.color.white : theme.color.black}`,
+      }}
   }
 `;
 
