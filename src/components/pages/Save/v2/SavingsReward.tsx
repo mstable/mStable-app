@@ -1,6 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
+import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 import { BubbleButton as Button } from '../../../core/Button';
@@ -21,6 +22,10 @@ const SkeleWrapper = styled.div`
   }
 `;
 
+const PreviewText = styled.span`
+  color: ${({ theme }) => theme.color.green};
+`;
+
 const Line = styled.div`
   background: #eee;
   height: 2px;
@@ -32,12 +37,30 @@ const Line = styled.div`
 const RowContainer = styled.div`
   display: flex;
   align-items: center;
+
+  span {
+    ${({ theme }) => theme.mixins.numeric}
+  }
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  margin-top: 1rem;
+
+  > button {
+    flex: 1;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    margin: 0;
+    justify-content: flex-end;
+
+    > button {
+      flex: initial;
+    }
+  }
 `;
 
 const Stats = styled.div`
@@ -46,11 +69,28 @@ const Stats = styled.div`
   }
 `;
 
-const Body = styled.div`
+const Body = styled.div<{ isPreview?: boolean }>`
   display: flex;
+  flex-direction: column;
 
-  > div {
-    flex-basis: 50%;
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+
+    > div:first-child {
+      flex-basis: 65%;
+    }
+    > div:last-child {
+      flex-basis: 35%;
+    }
+  }
+
+  @media (min-width: ${ViewportWidth.l}) {
+    > div:first-child {
+      flex-basis: ${({ isPreview }) => (isPreview ? `70%` : `50%`)};
+    }
+    > div:last-child {
+      flex-basis: ${({ isPreview }) => (isPreview ? `30%` : `50%`)};
+    }
   }
 `;
 
@@ -67,16 +107,23 @@ const Row: FC<{
   title: string;
   tip?: string;
   value?: BigDecimal;
-}> = ({ title, tip, value }) => {
-  const formattedValue = value?.format(4);
+  preview?: BigDecimal;
+}> = ({ title, tip, value, preview }) => {
+  const formattedValue = value?.format(!!preview ? 2 : 4);
+  const formattedPreview = preview?.format(2);
   return (
     <RowContainer>
-      <span>{title}</span>
+      {title}
       {tip && <Tooltip tip={tip} />}
       {value ? (
         <>
           <Line />
           <span>{formattedValue}</span>
+          {!!formattedPreview && (
+            <span>
+              &nbsp;→ <PreviewText>{`${formattedPreview}`}</PreviewText>
+            </span>
+          )}
         </>
       ) : (
         <SkeleWrapper>
@@ -112,15 +159,25 @@ export const SavingsReward: FC = () => {
 
   return (
     <Widget title="Savings Rewards">
-      <Body>
+      <Body isPreview={!!simulatedValues}>
         <Stats>
           <Row
             title="Claimable"
             tip="Tooltip title"
+            preview={simulatedValues?.claimable}
             value={values?.claimable}
           />
-          <Row title="Vesting" tip="Tooltip title" value={values?.vesting} />
-          <Row title="Wallet" value={values?.wallet} />
+          <Row
+            title="Vesting"
+            tip="Tooltip title"
+            preview={simulatedValues?.vesting}
+            value={values?.vesting}
+          />
+          <Row
+            title="Wallet"
+            preview={simulatedValues?.wallet}
+            value={values?.wallet}
+          />
         </Stats>
         <ButtonContainer>
           <Button
@@ -128,7 +185,7 @@ export const SavingsReward: FC = () => {
             disabled={loading}
             highlighted={!!simulatedValues}
           >
-            {simulatedValues ? `Claim` : `Claim Preview`}
+            {simulatedValues ? `Claim` : `Preview Claim`}
           </Button>
         </ButtonContainer>
       </Body>
