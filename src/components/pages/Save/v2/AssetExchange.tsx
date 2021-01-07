@@ -17,7 +17,7 @@ const Container = styled.div`
     display: flex;
     justify-content: space-between;
 
-    @media (min-width: ${ViewportWidth.xl}) {
+    @media (min-width: ${ViewportWidth.l}) {
       flex-direction: row;
     }
   }
@@ -34,45 +34,43 @@ const Details = styled.div`
     margin-top: 0.75rem;
   }
 
-  @media (min-width: ${ViewportWidth.xl}) {
+  @media (min-width: ${ViewportWidth.l}) {
     > * {
-      flex-basis: 45%;
+      flex-basis: 47.5%;
     }
   }
 `;
 
 const InputBox = styled(AssetInputBox)`
-  flex-basis: 45%;
+  flex-basis: 47.5%;
 `;
 
 const ArrowContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-basis: 10%;
+  flex: 1;
   margin: 0.5rem 0;
 
-  @media (min-width: ${ViewportWidth.xl}) {
+  @media (min-width: ${ViewportWidth.l}) {
     margin: 0;
   }
 `;
 
 const Arrow = styled.div`
-  width: 3rem;
-  height: 3rem;
   border-radius: 1.5rem;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #eee;
 
-  @media (min-width: ${ViewportWidth.xl}) {
+  @media (min-width: ${ViewportWidth.l}) {
     span {
       visibility: hidden;
     }
     span:before {
       content: '→';
+      font-size: 1.25rem;
       visibility: visible;
       left: 0;
       right: 0;

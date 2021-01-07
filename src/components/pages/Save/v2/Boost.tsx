@@ -17,6 +17,7 @@ import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { AssetTokenInput } from './AssetTokenInput';
 import { Fields } from '../../../../types';
+import { SavingsReward } from './SavingsReward';
 
 const MAX_BOOST = 1.5;
 const MIN_BOOST = 0.5;
@@ -271,22 +272,27 @@ const BoostBar: FC = () => {
   );
 };
 
-const Rewards: FC = () => (
-  <Widget title="Savings Rewards">TODO add rewards</Widget>
-);
-
 const Container = styled.div`
   display: flex;
   gap: 2rem;
   justify-content: space-between;
   flex-direction: column;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    flex-direction: row;
-  }
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+  margin: 1rem 0;
 
   > * {
     flex: 1;
+  }
+
+  @media (min-width: ${ViewportWidth.l}) {
+    flex-direction: row;
+    align-items: space-between;
+
+    > * {
+      flex: 0;
+      flex-basis: 47.5%;
+    }
   }
 `;
 
@@ -295,7 +301,7 @@ const BoostContent: FC = () => {
   return (
     <Container>
       {showCalculator ? <Calculator /> : <BoostBar />}
-      <Rewards />
+      <SavingsReward />
     </Container>
   );
 };
