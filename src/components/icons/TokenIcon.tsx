@@ -18,6 +18,7 @@ import Uniswap, { ReactComponent as UniswapSvg } from './tokens/Uniswap.svg';
 import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
 import ETH, { ReactComponent as EtherSvg } from './tokens/Ether.svg';
 import IMUSD, { ReactComponent as ImusdSvg } from './tokens/imUSD.svg';
+import VMTA, { ReactComponent as VmtaSvg } from './tokens/vMTA.svg';
 
 interface Props {
   className?: string;
@@ -48,6 +49,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   'MK-MTA': MTA,
   'MK-BAL': Balancer,
   IMUSD,
+  VMTA,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -70,6 +72,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   'MK-MTA': MtaSvg as SvgComponent,
   'MK-BAL': BalancerSvg as SvgComponent,
   IMUSD: ImusdSvg as SvgComponent,
+  VMTA: VmtaSvg as SvgComponent,
 };
 
 const Image = styled.img`
