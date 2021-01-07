@@ -1,33 +1,43 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import { useInterval } from 'react-use';
+import Skeleton from 'react-loading-skeleton/lib';
 
+import { ADDRESSES } from '../../../../constants';
+import { useSaveV2Address } from '../../../../context/DataProvider/DataProvider';
+import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { createToggleContext } from '../../../../hooks/createToggleContext';
+import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
-import { Input } from '../../../forms/AmountInput';
+import { DifferentialCountup } from '../../../core/CountUp';
 import { ProgressBar } from '../../../core/ProgressBar';
 import { Button, UnstyledButton } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
-import { CountUp } from '../../../core/CountUp';
+import { ViewportWidth } from '../../../../theme';
+import { BigDecimal } from '../../../../web3/BigDecimal';
+import { AssetTokenInput } from './AssetTokenInput';
+import { Fields } from '../../../../types';
 
-const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
-  false,
-);
+const MAX_BOOST = 1.5;
+const MIN_BOOST = 0.5;
+const COEFFICIENT = 3.2;
+const SAVE_EXPONENT = 0.875;
 
-const StyledCountup = styled(CountUp)``;
+const BoostCountup = styled(DifferentialCountup)``;
 
 const StyledButton = styled(UnstyledButton)`
   display: flex;
+  width: 100%;
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1.5rem;
-  margin-bottom: 0.5rem;
   background: #eee;
   color: rgba(121, 121, 121, 1);
   border-radius: 1.5rem;
   font-size: 0.9rem;
   white-space: nowrap;
+  cursor: pointer;
+  transition: 0.2s ease;
 
   svg {
     width: 1.5rem;
@@ -60,106 +70,194 @@ const BoostBarRange = styled.div`
   align-items: center;
   color: grey;
   padding: 0.5rem 0;
-
   ${({ theme }) => theme.mixins.numeric}
-`;
-
-const CalculatorBoost = styled.div`
-  background: #eee;
-  border-radius: 1rem;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 1rem;
-
-  ${StyledCountup} {
-    font-size: 1.5rem;
-  }
 `;
 
 const CalculatorInputs = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 2rem;
+  flex-direction: column;
+`;
 
-  > * {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+const BoostValue = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #eee;
+  border-radius: 1rem;
+
+  ${BoostCountup} {
+    font-size: 1.5rem;
   }
 `;
 
-const CalculatorActions = styled.div`
+const BoostAndActions = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 0.5rem;
-  width: auto;
+  flex: 0;
+
+  > * {
+    width: 100%;
+  }
+`;
+
+const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
+  false,
+);
+
+const calculateBoost = (
+  saveBalance?: BigDecimal,
+  vMTABalance?: BigDecimal,
+): number => {
+  if (vMTABalance && saveBalance) {
+    const boost =
+      MIN_BOOST +
+      (COEFFICIENT * vMTABalance.simple) / saveBalance.simple ** SAVE_EXPONENT;
+    return Math.min(MAX_BOOST, boost);
+  }
+  return MIN_BOOST;
+};
+
+const calculateVMTAForMaxBoost = (saveBalance: BigDecimal): number => {
+  return (
+    ((MAX_BOOST - MIN_BOOST) / COEFFICIENT) *
+    saveBalance.simple ** SAVE_EXPONENT
+  );
+};
+
+const CalculatorWidget = styled(Widget)`
+  > :last-child {
+    flex-direction: column;
+
+    @media (min-width: ${ViewportWidth.m}) {
+      flex-direction: row;
+    }
+  }
 `;
 
 export const Calculator: FC = () => {
-  // TODO use boost value
-  // TODO define tooltip
-  // TODO use token icons
-
   const [, toggleShowCalculator] = useShowCalculatorCtx();
 
+  const saveAddress = useSaveV2Address();
+  const save = useTokenSubscription(saveAddress);
+  const vMTA = useTokenSubscription(ADDRESSES.vMTA);
+
+  const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput();
+  const [saveValue, saveFormValue, setSave] = useBigDecimalInput(save?.balance);
+
+  const boost = useMemo(() => {
+    return {
+      fromBalance: calculateBoost(save?.balance, vMTA?.balance),
+      fromInputs: calculateBoost(saveValue, vMTAValue),
+    };
+  }, [saveValue, vMTAValue, vMTA, save]);
+
+  const handlePreviewMax = useCallback(() => {
+    if (saveValue) {
+      const vMTARequired = calculateVMTAForMaxBoost(saveValue);
+      setVmta(vMTARequired.toFixed(2));
+    }
+  }, [saveValue, setVmta]);
+
   return (
-    <Widget
+    <CalculatorWidget
       title="Savings Boost Calculator"
-      tooltip="TODO define tooltip"
+      tooltip="Find out how to get the optimal boost"
       headerContent={<Button onClick={toggleShowCalculator}>Back</Button>}
     >
       <CalculatorInputs>
         <div>
-          <div>vMTA</div>
-          <Input />
+          {vMTA ? (
+            <AssetTokenInput
+              name={Fields.Input}
+              token={{
+                address: vMTA.address,
+                disabled: true,
+              }}
+              amount={{
+                value: vMTAValue,
+                formValue: vMTAFormValue,
+                handleChange: setVmta,
+              }}
+            />
+          ) : (
+            <Skeleton />
+          )}
         </div>
         <div>
-          <div>imUSD</div>
-          <Input />
+          {save ? (
+            <AssetTokenInput
+              name={Fields.Input}
+              token={{
+                address: save.address,
+                disabled: true,
+              }}
+              amount={{
+                value: saveValue,
+                formValue: saveFormValue,
+                handleChange: setSave,
+              }}
+            />
+          ) : (
+            <Skeleton />
+          )}
         </div>
       </CalculatorInputs>
-      <CalculatorBoost>
-        <div>Boost</div>
-        <StyledCountup end={0.75} suffix="x" />
-      </CalculatorBoost>
-      <CalculatorActions>
-        <StyledButton>
+      <BoostAndActions>
+        <BoostValue>
+          <span>Boost</span>
+          <BoostCountup
+            end={boost.fromInputs}
+            prev={boost.fromBalance}
+            suffix="x"
+          />
+        </BoostValue>
+        <StyledButton onClick={handlePreviewMax}>
           <ArrowsSvg />
           Preview Max
         </StyledButton>
-        <StyledButton>
-          <GovSvg />
-          Stake MTA
-        </StyledButton>
-      </CalculatorActions>
-    </Widget>
+        <a
+          href="https://governance.mstable.org/"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          <StyledButton>
+            <GovSvg />
+            Stake MTA
+          </StyledButton>
+        </a>
+      </BoostAndActions>
+    </CalculatorWidget>
   );
 };
 
 const BoostBar: FC = () => {
   const [, toggleShowCalculator] = useShowCalculatorCtx();
+  const saveAddress = useSaveV2Address();
+  const save = useTokenSubscription(saveAddress);
+  const vMTA = useTokenSubscription(ADDRESSES.vMTA);
 
-  // TODO define tooltip content
-  // TODO actually set the boost and get values
-  const [value, setValue] = useState(0);
-  useInterval(() => {
-    setValue(Math.random() + 0.5);
-  }, 10000);
+  const boost = useMemo<number>(
+    () => calculateBoost(save?.balance, vMTA?.balance),
+    [save, vMTA],
+  );
 
   return (
     <Widget
       title="Savings Boost"
-      tooltip="TODO define tooltip"
+      tooltip="Save rewards are boosted by a multiplier (from 0.5 to 1.5)"
       headerContent={<Button onClick={toggleShowCalculator}>Calculator</Button>}
     >
       <div>
         <ProgressBar
           color="#67C73A"
           highlight="#77D16F"
-          value={value}
+          value={boost}
           min={0.5}
           max={1.5}
         />
@@ -181,6 +279,11 @@ const Container = styled.div`
   display: flex;
   gap: 2rem;
   justify-content: space-between;
+  flex-direction: column;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+  }
 
   > * {
     flex: 1;
@@ -191,14 +294,8 @@ const BoostContent: FC = () => {
   const [showCalculator] = useShowCalculatorCtx();
   return (
     <Container>
-      {showCalculator ? (
-        <Calculator />
-      ) : (
-        <>
-          <BoostBar />
-          <Rewards />
-        </>
-      )}
+      {showCalculator ? <Calculator /> : <BoostBar />}
+      <Rewards />
     </Container>
   );
 };
