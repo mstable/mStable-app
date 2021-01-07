@@ -4,6 +4,7 @@ import { pipe } from 'ts-pipe-compose';
 import { Tokens, useTokensState } from '../TokensProvider';
 import {
   BassetState,
+  BoostedSavingsVaultState,
   DataState,
   MassetState,
   SavingsContractState,
@@ -47,6 +48,13 @@ export const useDataState = (): DataState => useContext(dataStateCtx);
 export const useSelectedMassetState = (): MassetState | undefined => {
   const masset = useSelectedMassetName();
   return useDataState()[masset];
+};
+
+export const useSelectedBoostedSavingsVault = ():
+  | BoostedSavingsVaultState
+  | undefined => {
+  const masset = useSelectedMassetState();
+  return masset?.savingsContracts?.v2?.boostedSavingsVault;
 };
 
 export const useV1SavingsBalance = ():
