@@ -1,12 +1,11 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import Skeleton from 'react-loading-skeleton';
-import { SaveMode } from './types';
 import { useSaveState, useSaveDispatch, SaveProvider } from './SaveProvider';
 import { TabsContainer, TabBtn } from '../../../core/Tabs';
 import { Deposit } from './Deposit';
 import { Withdraw } from './Withdraw';
+import { SaveMode } from './types';
 
 const MODE_TYPES = {
   [SaveMode.Deposit]: {
@@ -45,15 +44,7 @@ const SaveForm: FC = () => {
         <TabButton tabMode={SaveMode.Deposit} />
         <TabButton tabMode={SaveMode.Withdraw} />
       </TabsContainer>
-      <div>
-        {mode === SaveMode.Deposit ? (
-          <Deposit />
-        ) : mode === SaveMode.Withdraw ? (
-          <Withdraw />
-        ) : (
-          <Skeleton />
-        )}
-      </div>
+      <div>{mode === SaveMode.Deposit ? <Deposit /> : <Withdraw />}</div>
     </Container>
   );
 };
