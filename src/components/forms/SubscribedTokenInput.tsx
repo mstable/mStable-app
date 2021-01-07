@@ -95,10 +95,6 @@ const Selected = styled.div`
   > div:hover {
     background: none;
   }
-
-  ${Balance} {
-    display: none;
-  }
 `;
 
 const DownArrow = styled.div`
