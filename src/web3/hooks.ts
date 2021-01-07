@@ -16,6 +16,9 @@ import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
 import { Masset } from '../typechain/Masset.d';
 import { useSelectedSaveVersion } from '../context/SelectedSaveVersionProvider';
 import { truncateAddress } from '../utils/strings';
+import { SaveWrapper } from '../typechain/SaveWrapper';
+import { SaveWrapperFactory } from '../typechain/SaveWrapperFactory';
+import { ADDRESSES } from '../constants';
 
 interface BlockTime {
   timestamp: number;
@@ -206,6 +209,18 @@ export const useSelectedSaveV2Contract = (): SavingsContract | undefined => {
     () =>
       signer && address
         ? SavingsContractFactory.connect(address, signer)
+        : undefined,
+    [address, signer],
+  );
+};
+
+export const useSaveWrapperContract = (): SaveWrapper | undefined => {
+  const address = ADDRESSES.mUSD.SaveWrapper;
+  const signer = useSigner();
+  return useMemo(
+    () =>
+      signer && address
+        ? SaveWrapperFactory.connect(address, signer)
         : undefined,
     [address, signer],
   );

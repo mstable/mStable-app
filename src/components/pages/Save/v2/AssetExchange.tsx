@@ -1,6 +1,7 @@
 import { MaxUint256 } from 'ethers/constants';
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { ADDRESSES } from '../../../../constants';
 import { useWalletAddress } from '../../../../context/OnboardProvider';
 import { useTokenAllowance } from '../../../../context/TokensProvider';
 import { useTransactionsDispatch } from '../../../../context/TransactionsProvider';
@@ -8,6 +9,7 @@ import { useTransactionsDispatch } from '../../../../context/TransactionsProvide
 import { ViewportWidth } from '../../../../theme';
 import { Fields, Interfaces } from '../../../../types';
 import {
+  useSaveWrapperContract,
   useSelectedMassetContract,
   useSelectedSaveV2Contract,
 } from '../../../../web3/hooks';
@@ -103,6 +105,10 @@ const Info = styled.div`
 const Column = styled.div`
   display: flex;
   flex-direction: column;
+
+  > div:last-child {
+    margin-top: 0.75rem;
+  }
 `;
 
 const Error = styled.div`
@@ -125,28 +131,43 @@ const Error = styled.div`
 const formId = 'assetExchange';
 
 export const AssetExchange: FC = () => {
-  const { error, exchange, valid, mode, massetState } = useSaveState();
-  const formattedSlippage = `${exchange.slippage?.format(2)}%`;
-  const { input } = exchange;
-  const spender = 'v2Address';
-  const allowance = useTokenAllowance(input.token?.address, spender);
-  const needsUnlock = allowance && input.amount?.exact.gt(allowance.exact);
+  const {
+    error,
+    exchange,
+    exchange: { input },
+    valid,
+    mode,
+    massetState,
+  } = useSaveState();
+
   const massetContract = useSelectedMassetContract();
+  const v2Address = massetContract?.address;
+  const depositAllowance = useTokenAllowance(input.token?.address, v2Address);
+  const wrapperAddress = ADDRESSES.mUSD.SaveWrapper;
+  const depositAndStakeAllowance = useTokenAllowance(
+    input.token?.address,
+    wrapperAddress,
+  );
   const savingsContractV2 = useSelectedSaveV2Contract();
   const walletAddress = useWalletAddress();
-  const v2Address = massetContract?.address;
-  const massetSymbol = massetState?.token.symbol;
-  const wrapperAddress = '';
-  const wrapperContract = '';
+  const wrapperContract = useSaveWrapperContract();
   const { propose } = useTransactionsDispatch();
 
+  const massetSymbol = massetState?.token.symbol;
+  const formattedSlippage = `${exchange.slippage?.format(2)}%`;
+  const depositNeedsUnlock =
+    depositAllowance && input.amount?.exact.gt(depositAllowance.exact);
+  const depositAndStakeNeedsUnlock =
+    depositAndStakeAllowance &&
+    input.amount?.exact.gt(depositAndStakeAllowance.exact);
+
   const handleActionClick = (): void => {
-    if (!savingsContractV2) {
-      return;
-    }
+    if (!savingsContractV2) return;
+
+    const amount = input.amount?.exact;
+    if (!amount) return;
+
     if (mode === Deposit) {
-      const amount = input.amount?.exact;
-      if (!amount) return;
       const tx = new TransactionManifest<
         Interfaces.SavingsContract,
         'depositSavings(uint256,address)'
@@ -162,8 +183,6 @@ export const AssetExchange: FC = () => {
       );
       propose(tx);
     } else {
-      const amount = input.amount?.exact;
-      if (!amount) return;
       const tx = new TransactionManifest<
         Interfaces.SavingsContract,
         'redeemUnderlying(uint256)'
@@ -181,68 +200,53 @@ export const AssetExchange: FC = () => {
     }
   };
 
-  const handleApproveClick = (type: ApproveType): void => {
+  const handleDepositAndStakeClick = (): void => {
+    if (!wrapperContract) return;
+
+    const amount = input.amount?.exact;
+    if (!amount) return;
+
+    const tx = new TransactionManifest<
+      Interfaces.SaveWrapper,
+      'saveAndStake(uint256)'
+    >(
+      wrapperContract,
+      'saveAndStake(uint256)',
+      [amount],
+      {
+        present: `Saving and staking ${input.amount?.simple.toString()}`,
+        past: `Saved and staked ${input.amount?.simple.toString()}`,
+      },
+      formId,
+    );
+    propose(tx);
+  };
+
+  const sendApproveSpenderTx = (type: ApproveType, spender?: string): void => {
     const amount = type === 'exact' ? input.amount?.exact : MaxUint256;
 
     if (!amount) return;
-    if (!(v2Address && massetSymbol && massetContract)) return;
+    if (!(spender && massetSymbol && massetContract)) return;
 
     const body = `transfer of ${massetSymbol}`;
     const tx = new TransactionManifest<Interfaces.ERC20, 'approve'>(
       massetContract,
       'approve',
-      [v2Address, amount],
+      [spender, amount],
       {
         present: `Approving ${body}`,
         past: `Approved ${body}`,
       },
       formId,
     );
-
     propose(tx);
   };
 
-  const handleWrapperApproveClick = (): void => {
-    const amount = input.amount?.exact;
-    if (!amount) return;
-    if (!(wrapperAddress && massetSymbol && massetContract)) return;
+  const handleApproveClick = (type: ApproveType): void =>
+    sendApproveSpenderTx(type, v2Address);
 
-    const body = `transfer of ${massetSymbol}`;
-    const tx = new TransactionManifest<Interfaces.ERC20, 'approve'>(
-      massetContract,
-      'approve',
-      [wrapperAddress, amount],
-      {
-        present: `Approving ${body}`,
-        past: `Approved ${body}`,
-      },
-      formId,
-    );
-
-    propose(tx);
-  };
-
-  // const handleWrapperActionClick = (): void => {
-  //   if (!wrapperContract) {
-  //     return;
-  //   }
-  //   const amount = input.amount?.exact;
-  //   if (!amount) return;
-  //   const tx = new TransactionManifest<
-  //     Interfaces.SaveWrapper,
-  //     'saveAndStake(uint256)'
-  //   >(
-  //     wrapperContract,
-  //     'saveAndStake(uint256)',
-  //     [amount],
-  //     {
-  //       present: `Saving and staking ${amount.toString()}`,
-  //       past: `Saved and staked ${amount.toString()}`,
-  //     },
-  //     formId,
-  //   );
-  //   propose(tx);
-  // };
+  const handleDepositAndStakeApproveClick = (type: ApproveType): void =>
+    sendApproveSpenderTx(type, wrapperAddress);
 
   return (
     <Container>
@@ -267,19 +271,20 @@ export const AssetExchange: FC = () => {
           )}
           <MultiStepButton
             title={mode === 0 ? 'Deposit' : 'Withdraw'}
-            needsUnlock={needsUnlock}
+            needsUnlock={depositNeedsUnlock}
             valid={valid}
             onActionClick={handleActionClick}
             onApproveClick={handleApproveClick}
           />
-          <MultiStepButton
-            title="Deposit and Stake"
-            needsUnlock={needsUnlock}
-            valid={valid}
-            // eslint-disable-next-line no-console
-            onActionClick={() => console.log('TODO')}
-            onApproveClick={handleWrapperApproveClick}
-          />
+          {mode === 0 && (
+            <MultiStepButton
+              title="Deposit & Stake"
+              needsUnlock={depositAndStakeNeedsUnlock}
+              valid={valid}
+              onActionClick={handleDepositAndStakeClick}
+              onApproveClick={handleDepositAndStakeApproveClick}
+            />
+          )}
         </Column>
         {exchange.slippage && (
           <Info>
