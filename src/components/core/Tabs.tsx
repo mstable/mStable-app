@@ -28,7 +28,7 @@ export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
     active ? Color.blueTransparent : 'transparent'};
   color: ${({ active }) => (active ? Color.blue : Color.grey)};
   padding: 0.75rem 0.5rem;
-  font-weight: bold;
+  font-weight: 600;
   font-size: 1.75rem;
   width: 100%;
 
