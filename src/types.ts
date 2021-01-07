@@ -1,6 +1,7 @@
 import { BigNumber } from 'ethers/utils';
 
 import { ISavingsContract } from './typechain/ISavingsContract.d';
+import { SaveWrapper as ISaveWrapper } from './typechain/SaveWrapper.d';
 import { IMasset } from './typechain/IMasset.d';
 import { MusdGauge } from './typechain/MusdGauge.d';
 import { StakingRewards as IStakingRewards } from './typechain/StakingRewards.d';
@@ -30,6 +31,7 @@ export enum Interfaces {
   CurveGauge,
   CurveTokenMinter,
   CurveDeposit,
+  SaveWrapper,
 }
 
 export interface Instances {
@@ -43,6 +45,7 @@ export interface Instances {
   [Interfaces.CurveGauge]: MusdGauge;
   [Interfaces.CurveTokenMinter]: ICurveTokenMinter;
   [Interfaces.CurveDeposit]: ICurveDeposit;
+  [Interfaces.SaveWrapper]: ISaveWrapper;
 }
 
 export interface Token {
