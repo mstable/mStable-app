@@ -278,7 +278,6 @@ const Container = styled.div`
   justify-content: space-between;
   flex-direction: column;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
   margin: 1rem 0;
 
   > * {

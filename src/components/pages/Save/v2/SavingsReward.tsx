@@ -1,6 +1,8 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
@@ -109,7 +111,7 @@ const Row: FC<{
   value?: BigDecimal;
   preview?: BigDecimal;
 }> = ({ title, tip, value, preview }) => {
-  const formattedValue = value?.format(!!preview ? 2 : 4);
+  const formattedValue = value?.format(preview ? 2 : 4);
   const formattedPreview = preview?.format(2);
   return (
     <RowContainer>
@@ -135,27 +137,44 @@ const Row: FC<{
 };
 
 export const SavingsReward: FC = () => {
-  // temporary
-  const loading = false;
-
   const [simulatedValues, setSimulated] = useState<SavingValues | undefined>();
+  const massetState = useSelectedMassetState();
+  const massetToken = useTokenSubscription(massetState?.address);
+  const walletBalance = massetToken?.balance;
+
+  // expand to cover others
+  const loading = !walletBalance;
 
   const values = useMemo((): SavingValues | undefined => {
-    // wait for all values
-    if (loading) return;
+    // TODO: - Add other values so it waits for all before loading
+    if (!walletBalance) return;
     return {
       claimable: new BigDecimal((3e18).toString()),
       vesting: new BigDecimal((3e18).toString()),
-      wallet: new BigDecimal((3e18).toString()),
+      wallet: walletBalance,
     };
-  }, [loading]);
+  }, [walletBalance]);
 
   const handleClick = (): void => {
     if (values === undefined) return;
 
-    const newValues = simulateValues(values);
-    setSimulated(simulatedValues ? undefined : newValues);
+    if (!simulatedValues) {
+      const newValues = simulateValues(values);
+      setSimulated(simulatedValues ? undefined : newValues);
+    }
+
+    // TODO: - claim function call here
+    // claimRewards();
   };
+
+  useEffect(() => {
+    if (!simulatedValues) return;
+    setTimeout(() => {
+      setSimulated(undefined);
+    }, 10000);
+  }, [simulatedValues]);
+
+  const isButtonDisabled = loading || values?.claimable.exact.eq(0);
 
   return (
     <Widget title="Savings Rewards">
@@ -182,7 +201,7 @@ export const SavingsReward: FC = () => {
         <ButtonContainer>
           <Button
             onClick={handleClick}
-            disabled={loading}
+            disabled={isButtonDisabled}
             highlighted={!!simulatedValues}
           >
             {simulatedValues ? `Claim` : `Preview Claim`}
