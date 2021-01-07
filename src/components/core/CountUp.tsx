@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from 'react';
+import React, { ComponentProps, FC, useEffect, useRef } from 'react';
 import { useCountUp, CountUpProps } from 'react-countup';
 import styled from 'styled-components';
 import { useFirstMountState } from 'react-use/lib/useFirstMountState';
@@ -41,7 +41,7 @@ export const CountUp: FC<Props> = ({
   separator = ',',
   duration = DEFAULT_DURATION,
 }) => {
-    // eslint-disable-next-line no-restricted-globals
+  // eslint-disable-next-line no-restricted-globals
   const isValid = typeof end === 'number' && !isNaN(end);
   const prevEnd = useRef(isValid ? end : 0);
   const isIdle = useIsIdle();
@@ -81,5 +81,25 @@ export const CountUp: FC<Props> = ({
       <Number>{isValid ? countUp : '–'}</Number>
       {suffix ? <PrefixOrSuffix>{suffix}</PrefixOrSuffix> : null}
     </Container>
+  );
+};
+
+export const DifferentialCountup: FC<ComponentProps<typeof CountUp> & {
+  prev?: number;
+}> = ({ prev, end, ...props }) => {
+  return (
+    <CountUp
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
+      end={end}
+      highlight
+      highlightColor={
+        typeof prev !== 'number' || typeof end !== 'number' || end === prev
+          ? Color.blue
+          : end > prev
+          ? Color.green
+          : Color.red
+      }
+    />
   );
 };
