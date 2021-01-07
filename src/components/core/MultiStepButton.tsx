@@ -1,20 +1,24 @@
-import React, { FC, useState, useCallback } from 'react';
+import React, { FC, useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { BubbleButton, UnstyledButton } from './Button';
 
+export type ApproveType = 'exact' | 'inf';
+
 enum MultiStepState {
-  DEFAULT,
+  ACTION,
   APPROVE,
 }
 
-const { APPROVE, DEFAULT } = MultiStepState;
+const { APPROVE, ACTION } = MultiStepState;
 
 interface Props {
   className?: string;
   needsUnlock?: boolean;
   valid: boolean;
   title: string;
+  onApproveClick: (type: ApproveType) => void;
+  onActionClick: () => void;
 }
 
 const Button = styled(BubbleButton)`
@@ -57,44 +61,53 @@ export const MultiStepButton: FC<Props> = ({
   valid,
   needsUnlock,
   title,
+  onApproveClick,
+  onActionClick,
 }) => {
-  const [step, setStep] = useState<MultiStepState>(DEFAULT);
-
-  const handleApprove = useCallback((): void => {
-    // TODO: - add approve tx logic + on callback change state.
-    setStep(DEFAULT);
-  }, []);
-
-  const handleDeposit = useCallback((): void => {
+  const [step, setStep] = useState<MultiStepState>(ACTION);
+  
+  const handleAction = useCallback((): void => {
     if (!valid && needsUnlock) return;
     if (needsUnlock) {
       setStep(APPROVE);
     } else {
-      // TODO: -
-      // handle unlocked state & deposit call
+      onActionClick();
     }
-  }, [setStep, needsUnlock, valid]);
+  }, [setStep, needsUnlock, valid, onActionClick]);
 
+  useEffect(() => {
+    if (needsUnlock) return;
+    setStep(ACTION);
+  }, [needsUnlock])
+  
   return (
     <Container className={className}>
-      {step === DEFAULT && (
-        <Button highlighted={valid} disabled={!valid} onClick={handleDeposit}>
+      {step === ACTION && (
+        <Button highlighted={valid} disabled={!valid} onClick={handleAction}>
           {title}
         </Button>
       )}
       {step === APPROVE && (
         <>
           <ApproveContainer>
-            <Button highlighted scale={0.875} onClick={handleApprove}>
+            <Button
+              highlighted
+              scale={0.875}
+              onClick={() => onApproveClick('exact')}
+            >
               <div>Approve</div>
               <div>Exact</div>
             </Button>
-            <Button highlighted scale={0.875} onClick={handleApprove}>
+            <Button
+              highlighted
+              scale={0.875}
+              onClick={() => onApproveClick('inf')}
+            >
               <div>Approve</div>
               <div>∞</div>
             </Button>
           </ApproveContainer>
-          <CloseButton onClick={() => setStep(DEFAULT)}>✕</CloseButton>
+          <CloseButton onClick={() => setStep(ACTION)}>✕</CloseButton>
         </>
       )}
     </Container>
