@@ -32,7 +32,6 @@ const Line = styled.div`
 const RowContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 0.75rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -41,11 +40,14 @@ const ButtonContainer = styled.div`
   justify-content: flex-end;
 `;
 
-const Stats = styled.div``;
+const Stats = styled.div`
+  > div:not(:last-child) {
+    margin-bottom: 0.75rem;
+  }
+`;
 
 const Body = styled.div`
   display: flex;
-  padding-bottom: 1rem;
 
   > div {
     flex-basis: 50%;
