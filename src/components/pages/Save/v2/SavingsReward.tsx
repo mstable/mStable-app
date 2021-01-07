@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
@@ -161,18 +161,14 @@ export const SavingsReward: FC = () => {
     if (!simulatedValues) {
       const newValues = simulateValues(values);
       setSimulated(simulatedValues ? undefined : newValues);
+      setTimeout(() => {
+        setSimulated(undefined);
+      }, 10000);
     }
 
     // TODO: - claim function call here
     // claimRewards();
   };
-
-  useEffect(() => {
-    if (!simulatedValues) return;
-    setTimeout(() => {
-      setSimulated(undefined);
-    }, 10000);
-  }, [simulatedValues]);
 
   const isButtonDisabled = loading || values?.claimable.exact.eq(0);
 
