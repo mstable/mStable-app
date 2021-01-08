@@ -4,14 +4,15 @@ import { Tooltip } from './ReactTooltip';
 
 interface Props {
   className?: string;
-  title: string;
+  title?: string;
   tooltip?: string;
   border?: boolean;
   headerContent?: ReactNode;
+  boldTitle?: boolean;
 }
 
-const Title = styled.h3`
-  font-weight: 600;
+const Title = styled.h3<{ bold?: boolean }>`
+  font-weight: ${({ bold }) => bold && 600};
   font-size: 1.25rem;
   color: ${({ theme }) => theme.color.black};
 `;
@@ -32,7 +33,7 @@ const HeaderContent = styled.div`
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   gap: 1rem;
   height: 2rem;
   overflow: hidden;
@@ -53,19 +54,23 @@ export const Widget: FC<Props> = ({
   headerContent,
   title,
   tooltip,
+  boldTitle,
 }) => {
+  const showHeader = !!title || !!tooltip;
   return (
     <Container border={border} className={className}>
-      <Header>
-        {tooltip ? (
-          <Tooltip tip={tooltip}>
-            <Title>{title}</Title>
-          </Tooltip>
-        ) : (
-          <Title>{title}</Title>
-        )}
-        {headerContent && <HeaderContent>{headerContent}</HeaderContent>}
-      </Header>
+      {showHeader && (
+        <Header>
+          {tooltip ? (
+            <Tooltip tip={tooltip}>
+              <Title>{title}</Title>
+            </Tooltip>
+          ) : (
+            <Title bold={boldTitle}>{title}</Title>
+          )}
+          {headerContent && <HeaderContent>{headerContent}</HeaderContent>}
+        </Header>
+      )}
       <Body>{children}</Body>
     </Container>
   );
