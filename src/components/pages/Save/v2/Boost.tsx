@@ -11,7 +11,7 @@ import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
 import { DifferentialCountup } from '../../../core/CountUp';
 import { ProgressBar } from '../../../core/ProgressBar';
-import { Button, UnstyledButton } from '../../../core/Button';
+import { BubbleButton, Button, UnstyledButton } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -169,7 +169,11 @@ export const Calculator: FC = () => {
     <CalculatorWidget
       title="Savings Boost Calculator"
       tooltip="Find out how to get the optimal boost"
-      headerContent={<Button onClick={toggleShowCalculator}>Back</Button>}
+      headerContent={
+        <BubbleButton scale={0.7} onClick={toggleShowCalculator}>
+          Back
+        </BubbleButton>
+      }
     >
       <CalculatorInputs>
         <div>
@@ -252,7 +256,11 @@ const BoostBar: FC = () => {
     <Widget
       title="Savings Boost"
       tooltip="Save rewards are boosted by a multiplier (from 0.5 to 1.5)"
-      headerContent={<Button onClick={toggleShowCalculator}>Calculator</Button>}
+      headerContent={
+        <BubbleButton scale={0.7} onClick={toggleShowCalculator}>
+          Calculator
+        </BubbleButton>
+      }
     >
       <div>
         <ProgressBar
@@ -272,25 +280,31 @@ const BoostBar: FC = () => {
   );
 };
 
-const Container = styled.div`
-  display: flex;
-  gap: 2rem;
-  justify-content: space-between;
-  flex-direction: column;
-  padding-bottom: 1rem;
-  margin: 1rem 0;
+const Container = styled(Widget)<{ showCalculator?: boolean }>`
+  margin-bottom: 0.75rem;
 
-  > * {
+  > div {
+    display: flex;
+    gap: 2rem;
+    justify-content: space-between;
+    flex-direction: column;
+  }
+
+  > div > * {
     flex: 1;
   }
 
   @media (min-width: ${ViewportWidth.l}) {
-    flex-direction: row;
-    align-items: space-between;
+    > div {
+      flex-direction: row;
+      align-items: space-between;
+      justify-content: space-between;
+    }
 
-    > * {
-      flex: 0;
-      flex-basis: 47.5%;
+    > div > * {
+      flex: ${({ showCalculator }) => !showCalculator && 0};
+      flex-basis: ${({ showCalculator }) =>
+        !showCalculator && `calc(47.5% - 0.75rem)`};
     }
   }
 `;
@@ -298,9 +312,15 @@ const Container = styled.div`
 const BoostContent: FC = () => {
   const [showCalculator] = useShowCalculatorCtx();
   return (
-    <Container>
-      {showCalculator ? <Calculator /> : <BoostBar />}
-      <SavingsReward />
+    <Container border showCalculator={showCalculator}>
+      {showCalculator ? (
+        <Calculator />
+      ) : (
+        <>
+          <BoostBar />
+          <SavingsReward />
+        </>
+      )}
     </Container>
   );
 };
