@@ -20,7 +20,8 @@ export const BubbleButton = styled(UnstyledButton)<{
   disabled?: boolean;
 }>`
   font-size: ${({ scale }) => (scale ? `${scale}rem` : `1rem`)};
-  padding: 0.75em 1.5em;
+  padding: ${({ scale }) =>
+    scale ? `${scale * 0.75}em ${scale * 1.5}em` : `1rem`};
   border-radius: 1.5em;
   background: ${({ theme, highlighted }) =>
     highlighted ? theme.color.blue : `#eee`};
