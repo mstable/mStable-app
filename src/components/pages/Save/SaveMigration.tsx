@@ -28,7 +28,7 @@ const Inner = styled.div`
 `;
 
 const Card = styled.div`
-  margin-top: 2.5rem;
+  margin-top: 1.5rem;
   padding: 1.5rem;
   border-radius: 1.5rem;
   position: relative;
