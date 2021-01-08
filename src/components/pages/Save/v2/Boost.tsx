@@ -11,7 +11,7 @@ import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
 import { DifferentialCountup } from '../../../core/CountUp';
 import { ProgressBar } from '../../../core/ProgressBar';
-import { BubbleButton, Button, UnstyledButton } from '../../../core/Button';
+import { BubbleButton, UnstyledButton } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
