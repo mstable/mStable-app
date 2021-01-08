@@ -19,7 +19,7 @@ const Item = styled.li<{
   position: relative;
   font-weight: 600;
   font-size: 1.4rem;
-  padding: 1.5rem 0;
+  padding: 3rem 0;
 
   a,
   span {
