@@ -60,6 +60,7 @@ export const AssetInputBox: FC<Props> = ({
       className={className}
       title={title}
       border
+      boldTitle
       headerContent={
         showExchangeRate &&
         tokensAvailable && (
