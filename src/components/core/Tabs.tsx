@@ -3,7 +3,7 @@ import { UnstyledButton } from './Button';
 import { Color, FontSize, ViewportWidth } from '../../theme';
 
 export const TabsContainer = styled.div`
-  padding: 16px 0;
+  margin-bottom: 0.75rem;
   display: flex;
   justify-content: space-evenly;
 
@@ -20,12 +20,8 @@ export const TabsContainer = styled.div`
 
 export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
   cursor: pointer;
-  border: ${({ active, theme }) =>
-    `1px ${
-      active ? theme.color.blueTransparent : theme.color.lightGrey
-    } solid`};
-  background: ${({ active }) =>
-    active ? Color.blueTransparent : 'transparent'};
+  border: ${({ theme }) => `1px ${theme.color.blueTransparent} solid`};
+  background: transparent;
   color: ${({ active }) => (active ? Color.blue : Color.grey)};
   padding: 0.75rem 0.5rem;
   font-weight: 600;
