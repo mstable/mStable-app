@@ -6,6 +6,7 @@ import { TabsContainer, TabBtn } from '../../../core/Tabs';
 import { Deposit } from './Deposit';
 import { Withdraw } from './Withdraw';
 import { SaveMode } from './types';
+import { Boost } from './Boost';
 
 const MODE_TYPES = {
   [SaveMode.Deposit]: {
@@ -38,8 +39,12 @@ const TabButton: FC<{ tabMode: SaveMode }> = ({ tabMode }) => {
 const SaveForm: FC = () => {
   const { mode } = useSaveState();
 
+  // TODO: - Make boost conditionally render if use has staked balance
+  const userHasStaked = false;
+
   return (
     <Container>
+      {userHasStaked && <Boost />}
       <TabsContainer>
         <TabButton tabMode={SaveMode.Deposit} />
         <TabButton tabMode={SaveMode.Withdraw} />
