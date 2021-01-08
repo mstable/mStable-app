@@ -12,6 +12,7 @@ import { Widget } from '../../core/Widget';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { useAverageApyForPastWeek } from '../../../web3/hooks';
 import { ViewportWidth } from '../../../theme';
+import { BubbleButton as Button } from '../../core/Button';
 
 const Title = styled.div`
   display: flex;
@@ -20,6 +21,14 @@ const Title = styled.div`
 const Subtitle = styled.div`
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
+`;
+
+const Interest = styled.h4`
+  align-items: center;
+
+  button {
+    margin-left: 0.5rem;
+  }
 `;
 
 const StyledWarningBadge = styled(WarningBadge)`
@@ -90,10 +99,17 @@ const Row: FC<{
       </div>
       <div>
         <Subtitle>Interest:</Subtitle>
-        <h4>
+        <Interest>
           <span>{`${interest?.toFixed(2) ?? `0.00`}%`}</span>&nbsp;
-          {boosted && `+ MTA`}
-        </h4>
+          {boosted ? (
+            `+ MTA`
+          ) : (
+            // TODO: - Hookup to v2 stake function call
+            <Button highlighted scale={0.7} onClick={() => {}}>
+              Stake
+            </Button>
+          )}
+        </Interest>
       </div>
       <div>
         <Subtitle>Balance</Subtitle>
@@ -116,7 +132,7 @@ export const SaveInfo: FC = () => {
 
   // TODO: - Balance should be wallet balance for imUSD
   // Should also split between v1 & v2 state for determing balance, eg from SC vs wallet for v2
-  const balance = undefined; // new BigDecimal((1e18).toString());
+  const balance = new BigDecimal((1e18).toString());
   const stakedBalance = savingsContractState?.savingsBalance?.balance;
 
   return (
