@@ -1,116 +1,139 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
-import { H3 } from '../../core/Typography';
-import { CountUp } from '../../core/CountUp';
 import { MUSDIconTransparent } from '../../icons/TokenIcon';
-import { AnalyticsLink } from '../Analytics/AnalyticsLink';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
 import {
   SaveVersion,
   useSelectedSavingsContractState,
 } from '../../../context/SelectedSaveVersionProvider';
-import { useTokenSubscription } from '../../../context/TokensProvider';
 import { SaveMigration } from './SaveMigration';
+import { Widget } from '../../core/Widget';
+import { BigDecimal } from '../../../web3/BigDecimal';
+import { useAverageApyForPastWeek } from '../../../web3/hooks';
 
-const CreditBalance = styled.div`
+const Title = styled.div`
   display: flex;
-  align-items: center;
-  position: relative;
-  margin: 1rem 0;
-  font-size: 2.5rem;
-
-  img {
-    height: 0.66em;
-    margin-right: 10px;
-  }
-
-  span {
-    font-size: 1em;
-    line-height: 1em;
-  }
-
-  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
-    font-size: 3rem;
-  }
-
-  @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
-    font-size: 3.5rem;
-  }
 `;
 
-const WarningMsg = styled.div`
-  font-size: 12px;
-  background: #ffeaea;
-  color: #de1717;
-  padding: 0.5rem 1.5rem;
-  border-radius: 1.5rem;
-`;
-
-const InfoRow = styled.div`
-  width: 100%;
-
-  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
-    display: flex;
-    justify-content: space-evenly;
-  }
-`;
-
-const BalanceInfoRow = styled(InfoRow)`
-  padding: 1.5rem 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-top: 1px ${({ theme }) => theme.color.blackTransparent} solid;
-
-  h3 {
-    padding: 0;
-  }
+const Subtitle = styled.div`
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
 `;
 
 const StyledWarningBadge = styled(WarningBadge)`
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.25rem;
+  height: 1.25rem;
   position: absolute;
-  right: -0.625em;
+  right: -2rem;
   top: 0;
 `;
 
+const Migration = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const StyledWidget = styled(Widget)`
+  h4 {
+    font-size: 1.25rem;
+    display: inline-flex;
+  }
+  img {
+    height: 1.125rem;
+    margin-right: 0.25rem;
+  }
+  span {
+    ${({ theme }) => theme.mixins.numeric};
+  }
+`;
+
+const Container = styled.div`
+  > div:not(:last-child) {
+    margin-bottom: 0.75rem;
+  }
+  div {
+    position: relative;
+  }
+`;
+
+const Row: FC<{
+  title: string;
+  balance?: BigDecimal;
+  interest?: number;
+  boosted?: boolean;
+  warning?: boolean;
+}> = ({ title, balance, interest, boosted = false, warning = false }) => {
+  if (!balance || balance?.simple === 0) return null;
+
+  return (
+    <StyledWidget border>
+      <div>
+        <Subtitle>Account:</Subtitle>
+        <Title>
+          <div>
+            <h4>{title}</h4>
+            {warning && <StyledWarningBadge />}
+          </div>
+        </Title>
+      </div>
+      <div>
+        <Subtitle>Interest:</Subtitle>
+        <h4>
+          <span>{`${interest?.toFixed(2) ?? `0.00`}%`}</span>&nbsp;
+          {boosted && `+ MTA`}
+        </h4>
+      </div>
+      <div>
+        <Subtitle>Balance</Subtitle>
+        <h4>
+          <MUSDIconTransparent />
+          <span>{balance?.format(8)}</span>
+        </h4>
+      </div>
+    </StyledWidget>
+  );
+};
+
 export const SaveInfo: FC = () => {
-  const selectedMassetName = useSelectedMassetName();
+  const interestRate = useAverageApyForPastWeek();
   const savingsContractState = useSelectedSavingsContractState();
 
   const isV1SelectedAndDeprecated =
     savingsContractState?.version === SaveVersion.V1 &&
     !savingsContractState.current;
 
-  useTokenSubscription(savingsContractState?.address);
+  // TODO: - Balance should be wallet balance for imUSD
+  // Should also split between v1 & v2 state for determing balance, eg from SC vs wallet for v2
+  const balance = undefined; // new BigDecimal((1e18).toString());
+  const stakedBalance = savingsContractState?.savingsBalance?.balance;
 
   return (
-    <BalanceInfoRow>
-      <H3>
-        Your <b>{selectedMassetName}</b> savings balance
-      </H3>
-      <CreditBalance>
-        <MUSDIconTransparent />
-        <CountUp
-          end={savingsContractState?.savingsBalance?.balance?.simple || 0}
-          decimals={7}
+    // TODO: - Move to menu?
+    // <AnalyticsLink section="save" />
+    <Container>
+      {!isV1SelectedAndDeprecated && (
+        <Row
+          title="Staked Savings"
+          balance={stakedBalance}
+          interest={interestRate}
+          boosted
         />
-        {isV1SelectedAndDeprecated && <StyledWarningBadge />}
-      </CreditBalance>
-      {isV1SelectedAndDeprecated ? (
-        <>
-          <WarningMsg>
-            Migrate your <b>{selectedMassetName}</b> to continue earning
-            interest on your balance.
-          </WarningMsg>
-          <SaveMigration />
-        </>
-      ) : (
-        <AnalyticsLink section="save" />
       )}
-    </BalanceInfoRow>
+      <Row
+        title="Savings"
+        balance={balance}
+        interest={interestRate}
+        warning={isV1SelectedAndDeprecated}
+      />
+      <div>
+        {isV1SelectedAndDeprecated && (
+          <Migration>
+            <SaveMigration />
+          </Migration>
+        )}
+      </div>
+    </Container>
   );
 };
