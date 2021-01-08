@@ -11,6 +11,7 @@ import { SaveMigration } from './SaveMigration';
 import { Widget } from '../../core/Widget';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { useAverageApyForPastWeek } from '../../../web3/hooks';
+import { ViewportWidth } from '../../../theme';
 
 const Title = styled.div`
   display: flex;
@@ -46,6 +47,15 @@ const StyledWidget = styled(Widget)`
   }
   span {
     ${({ theme }) => theme.mixins.numeric};
+  }
+  > div {
+    flex-direction: column;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    > div {
+      flex-direction: row;
+    }
   }
 `;
 
