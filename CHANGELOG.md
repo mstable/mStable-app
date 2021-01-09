@@ -2,6 +2,8 @@
 
 ## Next
 
+## Version 1.16.2
+
 - Fix an issue relating to caching of exchange rates
 
 ## Version 1.16.1
