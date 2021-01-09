@@ -49,6 +49,9 @@ const useRawData = (): PartialRawData => {
 
   const latestExchangeRateSub = useBlockPollingSubscription(
     useLatestExchangeRateLazyQuery,
+    {
+      fetchPolicy: 'network-only',
+    },
   );
   const latestExchangeRate = latestExchangeRateSub.data?.exchangeRates[0];
 

@@ -2,6 +2,8 @@
 
 ## Next
 
+- Fix an issue relating to caching of exchange rates
+
 ## Version 1.16.1
 
 - Fix an issue where some historic transactions with removed bAssets would not show

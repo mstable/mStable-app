@@ -20,7 +20,7 @@ import { useAddErrorNotification } from '../NotificationsProvider';
 
 const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
 
-const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}.v2`;
+const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}.v3`;
 
 const ENDPOINTS = {
   legacy: process.env.REACT_APP_GRAPHQL_ENDPOINT_LEGACY as string,
@@ -130,7 +130,7 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
           nextFetchPolicy: 'cache-and-network',
         },
         query: {
-          fetchPolicy: 'cache-first',
+          fetchPolicy: 'cache-and-network' as never,
         },
       },
     });
