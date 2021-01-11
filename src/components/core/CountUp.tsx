@@ -84,7 +84,7 @@ export const CountUp: FC<Props> = ({
   );
 };
 
-export const DifferentialCountup: FC<ComponentProps<typeof CountUp> & {
+export const DifferentialCountup: FC<Props & {
   prev?: number;
 }> = ({ prev, end, ...props }) => {
   return (
