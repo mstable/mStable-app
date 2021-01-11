@@ -3,22 +3,12 @@ import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 interface Props extends ButtonHTMLAttributes<unknown> {
-  inverted?: boolean;
-}
-
-export const UnstyledButton = styled.button`
-  appearance: none;
-  outline: none;
-  border: none;
-  background: transparent;
-  user-select: none;
-`;
-
-export const BubbleButton = styled(UnstyledButton)<{
   highlighted?: boolean;
   scale?: number;
   disabled?: boolean;
-}>`
+}
+
+const ButtonCss = css<Props>`
   font-size: ${({ scale }) => (scale ? `${scale}rem` : `1rem`)};
   padding: ${({ scale }) =>
     scale ? `${scale * 0.75}em ${scale * 1.5}em` : `1rem`};
@@ -32,7 +22,7 @@ export const BubbleButton = styled(UnstyledButton)<{
   position: relative;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
-  transition: 0.5s linear all;
+  transition: 0.2s ease all;
 
   svg circle {
     stroke: rgba(255, 255, 255, 0.4);
@@ -47,24 +37,12 @@ export const BubbleButton = styled(UnstyledButton)<{
   }
 `;
 
-const ButtonCss = css<Props>`
-  background: ${({ inverted, theme }) =>
-    inverted ? theme.color.offBlack : theme.color.white};
-  border-radius: 3px;
-  color: ${({ inverted, theme, disabled }) =>
-    inverted
-      ? disabled
-        ? theme.color.whiteTransparent
-        : theme.color.white
-      : disabled
-      ? theme.color.blackTransparent
-      : theme.color.offBlack};
-  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  font-weight: bold;
-  font-size: 12px;
-  padding: 8px 16px;
-
-  ${({ theme }) => theme.mixins.roundedBorder}
+export const UnstyledButton = styled.button`
+  appearance: none;
+  outline: none;
+  border: none;
+  background: transparent;
+  user-select: none;
 `;
 
 export const Button = styled(UnstyledButton).attrs<ButtonHTMLAttributes<never>>(

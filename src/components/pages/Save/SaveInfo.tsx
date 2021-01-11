@@ -12,7 +12,7 @@ import { Widget } from '../../core/Widget';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { useAverageApyForPastWeek } from '../../../web3/hooks';
 import { ViewportWidth } from '../../../theme';
-import { BubbleButton as Button } from '../../core/Button';
+import { Button } from '../../core/Button';
 
 const Title = styled.div`
   display: flex;

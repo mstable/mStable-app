@@ -107,7 +107,7 @@ export const BassetInput: FC<Props> = ({ address }) => {
             </div>
           ) : null}
           {enabled && mode === Mode.MintSingle ? (
-            <Button onClick={setBassetMaxAmount} type="button">
+            <Button onClick={setBassetMaxAmount} type="button" scale={0.75}>
               Max
             </Button>
           ) : null}
