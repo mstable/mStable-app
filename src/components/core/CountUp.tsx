@@ -1,4 +1,4 @@
-import React, { ComponentProps, FC, useEffect, useRef } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import { useCountUp, CountUpProps } from 'react-countup';
 import styled from 'styled-components';
 import { useFirstMountState } from 'react-use/lib/useFirstMountState';
