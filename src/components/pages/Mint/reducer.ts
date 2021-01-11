@@ -139,7 +139,6 @@ const initialize = (state: State): State =>
               address,
               decimals,
               enabled: false,
-              formValue: null,
             },
           }),
           {},
@@ -210,7 +209,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
           [enabled.address]: {
             ...enabled,
             amount,
-            formValue: amount?.format(2, false) || null,
+            formValue: amount?.format(2, false),
           },
         },
       };
@@ -226,7 +225,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
           ...bAsset,
           enabled: !bAsset.enabled,
           amount: !bAsset.enabled ? bAsset.amount : undefined,
-          formValue: !bAsset.enabled ? bAsset.formValue : null,
+          formValue: !bAsset.enabled ? bAsset.formValue : undefined,
         },
       };
 

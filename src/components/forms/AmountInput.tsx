@@ -9,10 +9,10 @@ import styled from 'styled-components';
 interface Props {
   className?: string;
   error?: string;
-  value: string | null;
-  balance?: string | null;
+  value?: string;
+  balance?: string;
   placeholder?: string;
-  onChange?(formValue: string | null): void;
+  onChange?(formValue?: string): void;
   disabled?: boolean;
 }
 
@@ -90,7 +90,7 @@ export const AmountInput: FC<Props> = ({
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
-      onChange?.(event.target.value || null);
+      onChange?.(event.target.value ?? undefined);
     },
     [onChange],
   );

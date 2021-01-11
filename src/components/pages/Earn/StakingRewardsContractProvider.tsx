@@ -34,7 +34,6 @@ const initialState: State = {
   addLiquidity: {
     valid: false,
     touched: false,
-    formValue: null,
     needsUnlock: false,
   },
   claim: {
@@ -43,13 +42,11 @@ const initialState: State = {
   stake: {
     valid: false,
     touched: false,
-    formValue: null,
     needsUnlock: false,
   },
   exit: {
     valid: false,
     touched: false,
-    formValue: null,
     isExiting: false,
   },
 };
@@ -285,7 +282,7 @@ export const StakingRewardsContractProvider: FC<Props> = ({
     (_, token) => {
       dispatch({
         type: Actions.SetAddLiquidityToken,
-        payload: token?.address || null,
+        payload: token?.address,
       });
     },
     [dispatch],

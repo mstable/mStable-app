@@ -1,13 +1,12 @@
 import { BigNumber, BigNumberish, formatUnits } from 'ethers/utils';
 import { Reducer } from 'react';
-import { Fields, TokenQuantity } from '../../../types';
+import { Fields, TokenQuantityV1 } from '../../../types';
 import { parseAmount } from '../../../web3/amounts';
 import { EXP_SCALE } from '../../../constants';
 import { Action, Actions, State } from './types';
 import { applyValidation } from './validation';
 
-const initialTokenQuantityField: TokenQuantity = {
-  formValue: null,
+const initialTokenQuantityField: TokenQuantityV1 = {
   amount: {
     simple: null,
     exact: null,
@@ -79,8 +78,8 @@ const calculateSwapValues = (
     return state.values;
   }
 
-  let tokenQ: TokenQuantity;
-  let otherTokenQ: TokenQuantity;
+  let tokenQ: TokenQuantityV1;
+  let otherTokenQ: TokenQuantityV1;
   let feeAmountSimple: string | null = prevFeeAmountSimple;
 
   if (action.type === Actions.SetQuantity) {
@@ -89,12 +88,12 @@ const calculateSwapValues = (
 
     tokenQ = {
       formValue,
-      amount: parseAmount(formValue, prevToken.decimals),
+      amount: parseAmount(formValue as string, prevToken.decimals),
       token: prevToken,
     };
 
     // Control the fee amount and other form amount value
-    let otherFormValue: string | null = prevOtherFormValue;
+    let otherFormValue: string | undefined = prevOtherFormValue;
     if (prevIsMint || !applySwapFee) {
       otherFormValue = formValue;
       feeAmountSimple = null;
@@ -116,7 +115,7 @@ const calculateSwapValues = (
 
     otherTokenQ = {
       formValue: otherFormValue,
-      amount: parseAmount(otherFormValue, prevOtherToken.decimals),
+      amount: parseAmount(otherFormValue as string, prevOtherToken.decimals),
       token: prevOtherToken,
     };
   } else {
@@ -148,8 +147,8 @@ const calculateSwapValues = (
       : prevOtherToken;
 
     // Control the fee amount and form amount values
-    let formValue: string | null = prevFormValue;
-    let otherFormValue: string | null = prevOtherFormValue;
+    let formValue: string | undefined = prevFormValue;
+    let otherFormValue: string | undefined = prevOtherFormValue;
     if (isUnsetting) {
       feeAmountSimple = null;
     } else if (isInvert) {
@@ -179,12 +178,12 @@ const calculateSwapValues = (
 
     tokenQ = {
       formValue,
-      amount: parseAmount(formValue, token.decimals),
+      amount: parseAmount(formValue as string, token.decimals),
       token,
     };
     otherTokenQ = {
       formValue: otherFormValue,
-      amount: parseAmount(otherFormValue, otherToken.decimals),
+      amount: parseAmount(otherFormValue as string, otherToken.decimals),
       token: otherToken,
     };
   }

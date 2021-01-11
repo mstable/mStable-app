@@ -124,7 +124,7 @@ export const RedeemInput: FC<{}> = () => {
             <InlineTokenAmountInput
               amount={{
                 value: amountInMasset,
-                formValue: formValue || null,
+                formValue,
                 disabled: mode !== Mode.RedeemMasset,
                 handleChange: setMassetAmount,
                 handleSetMax:

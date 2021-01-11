@@ -13,7 +13,6 @@ import { reducer } from './reducer';
 import { Actions, Dispatch, State, TransactionType } from './types';
 
 const initialState: State = {
-  formValue: null,
   initialized: false,
   touched: false,
   transactionType: TransactionType.Deposit,

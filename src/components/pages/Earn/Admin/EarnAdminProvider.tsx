@@ -21,7 +21,7 @@ import {
 interface RecipientAmounts {
   [recipient: string]: {
     amount?: BigDecimal;
-    formValue: string | null;
+    formValue?: string;
     custom?: boolean;
   };
 }
@@ -39,7 +39,7 @@ interface State {
 interface Dispatch {
   addCustomRecipient(recipient: string): void;
   removeCustomRecipient(recipient: string): void;
-  setRecipientAmount(recipient: string, amount: string | null): void;
+  setRecipientAmount(recipient: string, amount?: string): void;
   toggleCustomRecipients(): void;
 }
 
@@ -62,7 +62,7 @@ type Action =
     }
   | {
       type: Actions.SetRecipientAmount;
-      payload: { recipient: string; amount: string | null };
+      payload: { recipient: string; amount?: string };
     }
   | { type: Actions.AddCustomRecipient; payload: { recipient: string } }
   | { type: Actions.RemoveCustomRecipient; payload: { recipient: string } }
@@ -102,7 +102,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
         ...state,
         recipientAmounts: {
           ...state.recipientAmounts,
-          [recipient.toLowerCase()]: { custom: true, formValue: null },
+          [recipient.toLowerCase()]: { custom: true },
         },
       };
     }

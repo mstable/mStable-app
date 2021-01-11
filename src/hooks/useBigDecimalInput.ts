@@ -14,8 +14,8 @@ export const useBigDecimalInput = (
   decimals = 18,
 ): [
   BigDecimal | undefined,
-  string | null,
-  (formValue: string | null) => void,
+  string | undefined,
+  (formValue: (string | null) | (string | undefined)) => void,
 ] => {
   const [value, setValue] = useState<BigDecimal | undefined>(
     initialValue instanceof BigDecimal
@@ -23,13 +23,13 @@ export const useBigDecimalInput = (
       : BigDecimal.maybeParse(initialValue, decimals),
   );
 
-  const [formValue, setFormValue] = useState<string | null>(
-    value?.format(2, false) ?? null,
+  const [formValue, setFormValue] = useState<string | undefined>(
+    value?.format(2, false),
   );
 
   const onChange = useCallback(
-    (_formValue: string | null) => {
-      setFormValue(_formValue);
+    _formValue => {
+      setFormValue(_formValue ?? undefined);
       setValue(BigDecimal.maybeParse(_formValue, decimals));
     },
     [decimals],

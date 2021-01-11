@@ -64,7 +64,7 @@ const Input: FC = () => {
           onSetMax={setAddLiquidityMaxAmount}
           onChangeToken={setAddLiquidityToken}
           tokenAddresses={tokenAddresses}
-          tokenValue={token || null}
+          tokenValue={token}
           approveAmount={amount}
         />
       </div>
