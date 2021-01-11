@@ -18,6 +18,9 @@ const MODE_TYPES = {
 };
 
 const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   border-radius: 0 0 2px 2px;
   text-align: left;
 `;
@@ -49,7 +52,7 @@ const SaveForm: FC = () => {
         <TabButton tabMode={SaveMode.Deposit} />
         <TabButton tabMode={SaveMode.Withdraw} />
       </TabsContainer>
-      <div>{mode === SaveMode.Deposit ? <Deposit /> : <Withdraw />}</div>
+      {mode === SaveMode.Deposit ? <Deposit /> : <Withdraw />}
     </Container>
   );
 };

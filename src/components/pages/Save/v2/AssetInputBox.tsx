@@ -5,6 +5,8 @@ import { Fields } from '../../../../types';
 import { Widget } from '../../../core/Widget';
 import { AssetTokenInput } from './AssetTokenInput';
 import { useSaveDispatch, useSaveState } from './SaveProvider';
+import { SaveMode } from './types';
+import { BigDecimal } from '../../../../web3/BigDecimal';
 
 interface Props {
   className?: string;
@@ -24,36 +26,64 @@ const ExchangeRate = styled.p`
   }
 `;
 
+// TODO simplify (overspecified)
 export const AssetInputBox: FC<Props> = ({
   fieldType,
   showExchangeRate = false,
   title,
   className,
 }) => {
+  const { setToken, setInput, setMaxInput } = useSaveDispatch();
+
   const {
+    massetState,
+    mode,
     exchange: { input, output, rate: exchangeRate },
     error,
   } = useSaveState();
-  const { setToken, setInput, setMaxInput } = useSaveDispatch();
+
+  const massetAddress = massetState?.address;
+  const saveAddress = massetState?.savingsContracts.v2?.address;
+  const vaultAddress =
+    massetState?.savingsContracts.v2?.boostedSavingsVault?.address;
+  const inputAddress = input.token?.address;
 
   const isInput = fieldType === Fields.Input;
   const field = isInput ? input : output;
-  const inputToken = input.token;
-  const outputToken = output.token;
-  const tokensAvailable = inputToken?.symbol && outputToken?.symbol;
 
   const formattedExchangeRate = exchangeRate?.format(4);
 
-  const tokenAddresses = useMemo<string[]>(() => {
-    // TODO - this can probably be changed to compile list from bassets+massets?
-    if (!(inputToken?.address && outputToken?.address)) return [];
+  // TODO support fewer options with separate forms (this is overspecified)
+  const options = useMemo<
+    { address: string; balance?: BigDecimal; label?: string }[]
+  >(() => {
+    if (!vaultAddress || !saveAddress || !massetAddress) return [];
 
-    // add more here to create dropdown
-    if (fieldType === Input) {
-      return [inputToken.address];
+    // TODO read vault balance
+    const vaultBalance = new BigDecimal(0);
+
+    const vaultOption = {
+      address: vaultAddress,
+      label: 'Vault',
+      balance: vaultBalance,
+    };
+    const massetOption = { address: massetAddress };
+    const saveOption = { address: saveAddress };
+
+    if (mode === SaveMode.Deposit) {
+      if (fieldType === Input) {
+        return [massetOption, saveOption];
+      }
+
+      return inputAddress === massetAddress ? [saveOption] : [vaultOption];
     }
-    return [outputToken.address];
-  }, [fieldType, inputToken, outputToken]);
+
+    if (fieldType === Input) {
+      return [saveOption, vaultOption];
+    }
+
+    return inputAddress === saveAddress ? [massetOption] : [saveOption];
+  }, [fieldType, inputAddress, massetAddress, mode, saveAddress, vaultAddress]);
 
   return (
     <Widget
@@ -63,19 +93,19 @@ export const AssetInputBox: FC<Props> = ({
       boldTitle
       headerContent={
         showExchangeRate &&
-        tokensAvailable && (
+        input.token &&
+        output.token && (
           <ExchangeRate>
             <span>1</span>
             {` `}
-            {input.token?.symbol}
+            {input.token.symbol}
             <span> = {formattedExchangeRate}</span>
-            {` ${output.token?.symbol}`}
+            {` ${output.token.symbol}`}
           </ExchangeRate>
         )
       }
     >
       <AssetTokenInput
-        name={fieldType}
         amount={{
           formValue: field?.formValue,
           disabled: !isInput,
@@ -84,9 +114,11 @@ export const AssetInputBox: FC<Props> = ({
         }}
         token={{
           address: field?.token?.address,
-          addresses: tokenAddresses,
+          options,
           // disabled: !isInput,
-          handleChange: setToken,
+          handleChange: address => {
+            setToken(fieldType, address);
+          },
         }}
         error={isInput ? error : undefined}
       />

@@ -16,7 +16,6 @@ import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { AssetTokenInput } from './AssetTokenInput';
-import { Fields } from '../../../../types';
 import { SavingsReward } from './SavingsReward';
 
 const MAX_BOOST = 1.5;
@@ -59,10 +58,10 @@ const StyledButton = styled(UnstyledButton)`
 
 const BoostBarLine = styled.div`
   width: 100%;
-  height: 1px;
+  height: 2px;
   margin-left: 16px;
   margin-right: 16px;
-  background: #e0e0e0;
+  background: #eee;
 `;
 
 const BoostBarRange = styled.div`
@@ -115,7 +114,12 @@ const calculateBoost = (
   saveBalance?: BigDecimal,
   vMTABalance?: BigDecimal,
 ): number => {
-  if (vMTABalance && saveBalance) {
+  if (
+    vMTABalance &&
+    saveBalance &&
+    vMTABalance.simple > 0 &&
+    saveBalance.simple > 0
+  ) {
     const boost =
       MIN_BOOST +
       (COEFFICIENT * vMTABalance.simple) / saveBalance.simple ** SAVE_EXPONENT;
@@ -179,7 +183,6 @@ export const Calculator: FC = () => {
         <div>
           {vMTA ? (
             <AssetTokenInput
-              name={Fields.Input}
               token={{
                 address: vMTA.address,
                 disabled: true,
@@ -197,7 +200,6 @@ export const Calculator: FC = () => {
         <div>
           {save ? (
             <AssetTokenInput
-              name={Fields.Input}
               token={{
                 address: save.address,
                 disabled: true,
@@ -297,7 +299,7 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
   @media (min-width: ${ViewportWidth.l}) {
     > div {
       flex-direction: row;
-      align-items: space-between;
+      align-items: stretch;
       justify-content: space-between;
     }
 
