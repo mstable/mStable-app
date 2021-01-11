@@ -26,7 +26,7 @@ export type Action =
   | { type: Actions.Data; payload?: MassetState }
   | {
       type: Actions.SetBassetAmount;
-      payload: { formValue: string | null; address: string };
+      payload: { formValue?: string; address: string };
     }
   | {
       type: Actions.SetBassetMaxAmount;
@@ -55,7 +55,7 @@ export enum Mode {
 export interface BassetInput {
   address: string;
   amount?: BigDecimal;
-  formValue: string | null;
+  formValue?: string;
   decimals: number;
   enabled: boolean;
   error?: string;
@@ -76,7 +76,7 @@ export interface State {
 }
 
 export interface Dispatch {
-  setBassetAmount(address: string, formValue: string | null): void;
+  setBassetAmount(address: string, formValue?: string): void;
   setBassetMaxAmount(): void;
   toggleBassetEnabled(bAsset: string): void;
   // setCollateralType(): void; // TODO

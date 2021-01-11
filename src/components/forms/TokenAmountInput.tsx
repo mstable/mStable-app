@@ -17,8 +17,8 @@ interface Props {
   name: string;
   error?: string;
   errorLabel?: string;
-  tokenValue: string | null;
-  amountValue: string | null;
+  tokenValue?: string;
+  amountValue?: string;
   tokenAddresses: string[];
   tokenDisabled?: boolean;
   amountDisabled?: boolean;
@@ -29,7 +29,7 @@ interface Props {
     value?: string | null | undefined;
     highlight?: boolean;
   }[];
-  onChangeAmount?(formValue: string | null): void;
+  onChangeAmount?(formValue?: string): void;
   onChangeToken?(name: Fields, token: Token): void;
   onSetMax?(): void;
   spender?: string;
@@ -94,6 +94,7 @@ const InputsRow = styled.div`
 /**
  * TokenAmountInput
  * Select a token and an amount denominated in that token.
+ * @deprecated
  */
 export const TokenAmountInput: FC<Props> = ({
   error,

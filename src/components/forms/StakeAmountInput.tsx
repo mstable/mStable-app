@@ -14,10 +14,10 @@ interface Props {
   name: string;
   error?: string;
   errorLabel?: string;
-  amountValue: string | null;
+  amountValue?: string;
   amountDisabled?: boolean;
   exactDecimals?: boolean;
-  onChangeAmount?(formValue: string | null): void;
+  onChangeAmount?(formValue?: string): void;
   onSetMax?(): void;
 }
 

@@ -18,9 +18,9 @@ import { Button } from '../core/Button';
 interface Props {
   amount: {
     value?: BigDecimal;
-    formValue: string | null;
+    formValue?: string;
     disabled?: boolean;
-    handleChange?(formValue: string | null): void;
+    handleChange?(formValue?: string): void;
     handleClick?(): void;
     handleSetMax?(): void;
   };
