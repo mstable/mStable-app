@@ -6,7 +6,7 @@ import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
-import { BubbleButton as Button } from '../../../core/Button';
+import { Button } from '../../../core/Button';
 import { Tooltip } from '../../../core/ReactTooltip';
 import { Widget } from '../../../core/Widget';
 

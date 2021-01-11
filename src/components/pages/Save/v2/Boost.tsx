@@ -11,7 +11,7 @@ import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
 import { DifferentialCountup } from '../../../core/CountUp';
 import { ProgressBar } from '../../../core/ProgressBar';
-import { BubbleButton, UnstyledButton } from '../../../core/Button';
+import { Button, UnstyledButton } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -170,9 +170,9 @@ export const Calculator: FC = () => {
       title="Savings Boost Calculator"
       tooltip="Find out how to get the optimal boost"
       headerContent={
-        <BubbleButton scale={0.7} onClick={toggleShowCalculator}>
+        <Button scale={0.7} onClick={toggleShowCalculator}>
           Back
-        </BubbleButton>
+        </Button>
       }
     >
       <CalculatorInputs>
@@ -257,9 +257,9 @@ const BoostBar: FC = () => {
       title="Savings Boost"
       tooltip="Save rewards are boosted by a multiplier (from 0.5 to 1.5)"
       headerContent={
-        <BubbleButton scale={0.7} onClick={toggleShowCalculator}>
+        <Button scale={0.7} onClick={toggleShowCalculator}>
           Calculator
-        </BubbleButton>
+        </Button>
       }
     >
       <div>
