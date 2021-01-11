@@ -222,7 +222,11 @@ export const InlineTokenAmountInput: FC<Props> = ({
                 onChange={amount.handleChange}
               />
               {amount.handleSetMax ? (
-                <Button type="button" onClick={amount.handleSetMax}>
+                <Button
+                  type="button"
+                  onClick={amount.handleSetMax}
+                  scale={0.75}
+                >
                   Max
                 </Button>
               ) : null}

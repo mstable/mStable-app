@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
-import { BubbleButton } from './Button';
+import { Button } from './Button';
 
 interface Props {
   className?: string;
@@ -28,7 +28,7 @@ export const Toggle: FC<Props> = ({ className, options }) => {
         <Skeleton height={42} width={128} />
       ) : (
         options.map(({ title, active, onClick }) => (
-          <BubbleButton
+          <Button
             key={title}
             onClick={onClick}
             type="button"
@@ -36,7 +36,7 @@ export const Toggle: FC<Props> = ({ className, options }) => {
             scale={0.9}
           >
             {title}
-          </BubbleButton>
+          </Button>
         ))
       )}
     </Container>
