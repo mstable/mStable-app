@@ -34,9 +34,9 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 0.5rem;
+  align-items: flex-start;
   gap: 1rem;
-  height: 2rem;
-  overflow: hidden;
+  height: 3rem;
 `;
 
 const Container = styled.div<Pick<Props, 'border'>>`
