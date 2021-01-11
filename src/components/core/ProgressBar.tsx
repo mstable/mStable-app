@@ -19,12 +19,16 @@ const Container = styled.svg`
 `;
 
 export const ProgressBar: FC<Props> = ({
-  value = 0,
+  value = 0 as number,
   max = 1,
   min = 0,
   color = '#67C73A',
   highlight = '#77D16F',
 }) => {
+  const progressWidth = Math.max(
+    ((value - min) / (max - min)) * WIDTH,
+    HEIGHT * 2,
+  );
   return (
     <Container
       viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
@@ -73,7 +77,7 @@ export const ProgressBar: FC<Props> = ({
           stroke="#eee"
         />
         <rect
-          width={Math.max(((value - min) / (max - min)) * WIDTH, HEIGHT)}
+          width={progressWidth}
           height={HEIGHT}
           x={0}
           y={0}
@@ -81,6 +85,17 @@ export const ProgressBar: FC<Props> = ({
           ry={HEIGHT / 2}
           fill="url(#hatch)"
         />
+        <text
+          x={progressWidth - 2.25}
+          y={HEIGHT / 2}
+          alignmentBaseline="central"
+          fontSize={3}
+          fontFamily="'DM Mono', monospace"
+          fill="white"
+          textAnchor="end"
+        >
+          {value.toPrecision(1)}
+        </text>
       </g>
     </Container>
   );
