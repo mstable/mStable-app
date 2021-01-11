@@ -3,7 +3,7 @@ import { UnstyledButton } from './Button';
 import { Color, FontSize, ViewportWidth } from '../../theme';
 
 export const TabsContainer = styled.div`
-  margin-bottom: 0.75rem;
+  padding: 1rem 0;
   display: flex;
   justify-content: space-evenly;
 
