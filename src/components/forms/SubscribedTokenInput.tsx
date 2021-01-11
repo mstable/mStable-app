@@ -1,27 +1,20 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
+
+import { BigDecimal } from '../../web3/BigDecimal';
+import { useTokenSubscription } from '../../context/TokensProvider';
 import { TokenIcon } from '../icons/TokenIcon';
-import { useTokens, useTokenSubscription } from '../../context/TokensProvider';
 import { FontSize, ViewportWidth } from '../../theme';
-import { SubscribedToken } from '../../types';
 
 // TODO: - Create base component for SubscribedTokenInput & TokenInput and inherit.
 
 interface Props {
-  name: string;
-  value: string | null;
-  tokenAddresses: string[];
-  onChange?(name: string, token?: SubscribedToken): void;
+  value?: string;
+  options?: { address: string; balance?: BigDecimal; label?: string }[];
+  onChange?(tokenAddress?: string): void;
   error?: string;
   disabled?: boolean;
-}
-
-interface TokenOptionProps {
-  address: string;
-  symbol: string;
-  selected?: boolean;
-  onClick?(address: string): void;
 }
 
 const RelativeContainer = styled.div`
@@ -57,7 +50,7 @@ const OptionsContainer = styled.div<{ open: boolean }>`
   border-radius: 0 0 4px 4px;
 `;
 
-const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
+const OptionContainer = styled.div<{ selected?: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -101,29 +94,32 @@ const DownArrow = styled.div`
   padding: 4px;
 `;
 
-const Option: FC<TokenOptionProps> = ({
-  address,
-  symbol,
-  selected,
-  onClick,
-}) => {
+const Option: FC<{
+  address: string;
+  balance?: BigDecimal;
+  label?: string;
+  selected?: boolean;
+  onClick?(address: string): void;
+}> = ({ address, balance: _balance, label, selected, onClick }) => {
   const token = useTokenSubscription(address);
-  const hasBalance = !!token?.balance.simple;
-  const handleClick = useCallback(() => {
-    onClick?.(address);
-  }, [onClick, address]);
+  const balance = _balance ?? token?.balance;
   return (
-    <OptionContainer onClick={handleClick} selected={selected}>
-      <TokenIcon symbol={symbol} />
+    <OptionContainer
+      onClick={() => {
+        onClick?.(address);
+      }}
+      selected={selected}
+    >
+      {token?.symbol && <TokenIcon symbol={token.symbol} />}
       <TokenSymbol>
-        {symbol}
-        {hasBalance && <Balance>{token?.balance.format(2, true)}</Balance>}
+        {label ?? token?.symbol}
+        {!!balance?.simple && <Balance>{balance.format(2, true)}</Balance>}
       </TokenSymbol>
     </OptionContainer>
   );
 };
 
-const placeholderText = 'Select a token';
+const placeholderText = 'Select';
 
 const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
@@ -134,7 +130,7 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
     ${({ theme, error }) =>
       error ? theme.color.redTransparent : theme.color.blackTransparent}
     solid;
-  border-radius: 3px;
+  border-radius: 1rem;
   color: ${({ theme }) => theme.color.black};
   font-size: ${FontSize.s};
   font-weight: bold;
@@ -152,52 +148,30 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
  * TokenInput form component
  * Select a token from a given list of tokens.
  *
- * @param name Name of the field, e.g. 'input'
  * @param error Error message
  * @param value Selected token address value (address)
- * @param tokens Available tokens (list of addresses)
+ * @param options Available tokens (list of addresses or { address, balance })
  * @param onChange Optional callback for change event
  * @param disabled Optional flag to disable the input
  */
 export const SubscribedTokenInput: FC<Props> = ({
-  name,
   value,
-  tokenAddresses,
+  options,
   onChange,
   disabled = false,
   error,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const subscribedToken = useTokenSubscription(value);
-  const subscribedTokens = useTokens(tokenAddresses);
-
   const handleClickOutside = useCallback(() => {
     setOpen(false);
   }, [setOpen]);
 
-  const handleClick = useCallback(() => {
-    if (!disabled) {
-      setOpen(!open);
-    }
-  }, [open, setOpen, disabled]);
-
   const handleUnset = useCallback(() => {
     if (open) {
-      onChange?.(name, undefined);
+      onChange?.();
     }
-  }, [onChange, name, open]);
-
-  const handleSelect = useCallback(
-    (address: string) => {
-      const selected = subscribedTokens.find(t => t.address === address);
-
-      if (selected) {
-        onChange?.(name, selected);
-      }
-    },
-    [name, onChange, subscribedTokens],
-  );
+  }, [onChange, open]);
 
   const handleKeyPress = useCallback(
     (event: KeyboardEvent) => {
@@ -221,34 +195,36 @@ export const SubscribedTokenInput: FC<Props> = ({
 
   return (
     <Container
-      onClick={handleClick}
+      onClick={() => {
+        if (!disabled) {
+          setOpen(!open);
+        }
+      }}
       ref={container}
       error={error}
       disabled={disabled}
     >
       <Selected>
-        {subscribedToken ? (
-          <Option
-            address={subscribedToken.address}
-            symbol={subscribedToken.symbol}
-          />
+        {value ? (
+          <Option address={value} />
         ) : (
           <Placeholder onClick={handleUnset}>{placeholderText}</Placeholder>
         )}
-        {subscribedTokens.length > 1 && <DownArrow>▼</DownArrow>}
+        {options && options.length > 1 && <DownArrow>▼</DownArrow>}
       </Selected>
       <RelativeContainer>
         <OptionsContainer open={open}>
           {value ? (
             <Placeholder onClick={handleUnset}>{placeholderText}</Placeholder>
           ) : null}
-          {subscribedTokens.map(({ address, symbol }) => (
+          {options?.map(({ address, balance, label }) => (
             <div key={address}>
               <Option
                 address={address}
-                symbol={symbol}
+                balance={balance}
+                label={label}
                 selected={address === value}
-                onClick={handleSelect}
+                onClick={onChange}
               />
             </div>
           ))}
