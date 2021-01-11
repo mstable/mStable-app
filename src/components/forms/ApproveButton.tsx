@@ -56,6 +56,10 @@ const APPROVE_EDGE_CASES: Record<string, string> = {
   '0xb404c51bbc10dcbe948077f18a4b8e553d160084': 'USDT', // Ropsten
 };
 
+/**
+ * @deprecated
+ * Use ApproveSendButton
+ */
 export const ApproveButton: FC<Props> = ({
   address,
   amount,

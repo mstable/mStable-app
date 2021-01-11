@@ -65,6 +65,9 @@ export interface SubscribedToken extends Token {
   allowances: Allowances;
 }
 
+/**
+ * @deprecated
+ */
 export interface Amount {
   simple: number | null;
   exact: BigNumber | null;
@@ -81,19 +84,6 @@ export interface TokenQuantityV1 {
     decimals: number | null;
     symbol: string | null;
   };
-}
-
-export interface TokenQuantityV2 {
-  formValue: string | null;
-  amount: BigDecimal | null;
-  token?: SubscribedToken;
-  needsUnlock?: boolean;
-}
-
-export interface Connector {
-  id: string;
-  subType?: string;
-  label: string;
 }
 
 export enum Platforms {
