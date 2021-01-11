@@ -97,7 +97,6 @@ const reduce: Reducer<State, Action> = (state, action) => {
                   [current.address]: {
                     ...current,
                     amount: undefined,
-                    formValue: null,
                   },
                 },
           bAssets,
@@ -297,7 +296,7 @@ const updateBassetAmounts = (state: State): State => {
           [bAsset.address]: {
             ...bAsset,
             amount: undefined,
-            formValue: null,
+            formValue: undefined,
           },
         }),
         state.bAssets,
@@ -345,7 +344,11 @@ const unsetDisabledBassetAmounts = (state: State): State => ({
         ? _bAssets
         : {
             ..._bAssets,
-            [bAsset.address]: { ...bAsset, amount: undefined, formValue: null },
+            [bAsset.address]: {
+              ...bAsset,
+              amount: undefined,
+              formValue: undefined,
+            },
           },
     state.bAssets,
   ),

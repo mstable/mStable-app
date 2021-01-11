@@ -125,7 +125,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
         // Reset the amounts when toggling type, and remove `touched`
         amount: undefined,
         amountInCredits: undefined,
-        formValue: null,
+        formValue: undefined,
         touched: false,
       };
     }

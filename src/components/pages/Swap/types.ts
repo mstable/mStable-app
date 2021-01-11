@@ -1,4 +1,4 @@
-import { Fields, Token, TokenQuantity } from '../../../types';
+import { Fields, Token, TokenQuantityV1 } from '../../../types';
 import { MassetState } from '../../../context/DataProvider/types';
 
 export enum Actions {
@@ -20,7 +20,7 @@ export type Action =
     }
   | {
       type: Actions.SetQuantity;
-      payload: { field: Fields; formValue: string | null };
+      payload: { field: Fields; formValue?: string };
     }
   | {
       type: Actions.Data;
@@ -29,8 +29,8 @@ export type Action =
 
 export interface State {
   values: {
-    input: TokenQuantity;
-    output: TokenQuantity;
+    input: TokenQuantityV1;
+    output: TokenQuantityV1;
     feeAmountSimple: string | null;
   };
   applySwapFee: boolean;

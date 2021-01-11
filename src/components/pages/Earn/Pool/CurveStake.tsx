@@ -69,7 +69,7 @@ const Input: FC = () => {
           onSetMax={setMaxStakeAmount}
           tokenAddresses={[stakingToken?.address as string]}
           tokenDisabled
-          tokenValue={stakingToken?.address || null}
+          tokenValue={stakingToken?.address}
           approveAmount={amount}
         />
         {metadata && stakingToken?.balance.exact.lte(0) ? (
