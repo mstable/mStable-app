@@ -5,7 +5,7 @@ import { useEffectOnce } from 'react-use';
 import { useGasPrices } from '../../context/GasPricesProvider';
 import { Color } from '../../theme';
 import { useGas } from './TransactionGasProvider';
-import { BubbleButton } from '../core/Button';
+import { Button } from '../core/Button';
 
 enum GasPriceType {
   Standard = 'standard',
@@ -73,7 +73,7 @@ const Input = styled.input<{ error?: string | void; disabled?: boolean }>`
   ${({ theme }) => theme.mixins.numeric};
 `;
 
-const OptionButton = styled(BubbleButton)`
+const OptionButton = styled(Button)`
   font-size: 0.8rem;
   padding: 0 1rem;
   height: 1.75rem;

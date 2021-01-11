@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { ViewportWidth } from '../../theme';
-import { BubbleButton as Button } from './Button';
+import { Button } from './Button';
 import { ActivitySpinner } from './ActivitySpinner';
 
 interface StepOption {

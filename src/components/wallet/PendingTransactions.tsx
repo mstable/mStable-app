@@ -7,7 +7,7 @@ import {
   useTransactionsState,
 } from '../../context/TransactionsProvider';
 import { TransactionStatus } from '../../web3/TransactionManifest';
-import { BubbleButton } from '../core/Button';
+import { Button } from '../core/Button';
 import { Color } from '../../theme';
 import { GasStation } from './GasStation';
 import { TransactionGasProvider, useGas } from './TransactionGasProvider';
@@ -63,15 +63,15 @@ const PendingTransaction: FC<{
       <Purpose>{transaction.manifest.purpose.present}</Purpose>
       {transaction.status === TransactionStatus.Pending && <GasStation />}
       <Buttons>
-        <BubbleButton
+        <Button
           scale={0.75}
           onClick={() => {
             cancel(transaction.manifest.id);
           }}
         >
           Cancel
-        </BubbleButton>
-        <BubbleButton
+        </Button>
+        <Button
           scale={0.75}
           highlighted={!disabled}
           disabled={disabled}
@@ -82,7 +82,7 @@ const PendingTransaction: FC<{
           }}
         >
           Send transaction
-        </BubbleButton>
+        </Button>
       </Buttons>
     </Container>
   );
