@@ -40,7 +40,7 @@ export const Input = styled.input<{
   color: ${({ error, theme, disabled }) =>
     error ? theme.color.red : disabled ? '#404040' : theme.color.black};
 
-  border-radius: 3px;
+  border-radius: 1rem;
   font-size: 16px;
   font-weight: bold;
   min-width: 0;

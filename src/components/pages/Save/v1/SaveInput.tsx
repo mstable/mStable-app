@@ -69,7 +69,7 @@ export const SaveInput: FC = () => {
         </H3>
         <TokenAmountInput
           name="input"
-          tokenValue={massetAddress}
+          tokenValue={massetAddress as string}
           amountValue={formValue}
           onChangeAmount={handleChangeAmount}
           onSetMax={setMaxAmount}
