@@ -29,7 +29,7 @@ export interface State {
   transactionType: TransactionType;
   amount?: BigDecimal;
   amountInCredits?: BigDecimal;
-  formValue: string | null;
+  formValue?: string;
   touched: boolean;
   initialized: boolean;
   simulated?: MassetState;
@@ -45,14 +45,14 @@ export type Action =
   | {
       type: Actions.SetAmount;
       payload: {
-        formValue: string | null;
+        formValue?: string;
       };
     }
   | { type: Actions.SetMaxAmount }
   | { type: Actions.ToggleTransactionType };
 
 export interface Dispatch {
-  setAmount(formValue: string | null, isCreditAmount?: boolean): void;
+  setAmount(formValue?: string, isCreditAmount?: boolean): void;
   setMaxAmount(): void;
   toggleTransactionType(): void;
 }

@@ -70,8 +70,11 @@ export interface Amount {
   exact: BigNumber | null;
 }
 
-export interface TokenQuantity {
-  formValue: string | null;
+/**
+ * @deprecated
+ */
+export interface TokenQuantityV1 {
+  formValue?: string;
   amount: Amount;
   token: {
     address: string | null;

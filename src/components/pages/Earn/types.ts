@@ -26,7 +26,7 @@ export interface State {
   };
   addLiquidity: {
     amount?: BigDecimal;
-    formValue: string | null;
+    formValue?: string;
     needsUnlock: boolean;
     error?: string;
     valid: boolean;
@@ -35,7 +35,7 @@ export interface State {
   };
   stake: {
     amount?: BigDecimal;
-    formValue: string | null;
+    formValue?: string;
     needsUnlock: boolean;
     error?: string;
     valid: boolean;
@@ -43,7 +43,7 @@ export interface State {
   };
   exit: {
     amount?: BigDecimal;
-    formValue: string | null;
+    formValue?: string;
     error?: string;
     valid: boolean;
     touched: boolean;
@@ -53,12 +53,12 @@ export interface State {
 
 export interface Dispatch {
   setActiveTab(tab: Tabs): void;
-  setStakeAmount(formValue: string | null): void;
+  setStakeAmount(formValue?: string): void;
   setMaxStakeAmount(): void;
-  setWithdrawAmount(formValue: string | null): void;
+  setWithdrawAmount(formValue?: string): void;
   setMaxWithdrawAmount(): void;
   setAddLiquidityToken(name: string, token?: Token): void;
-  setAddLiquidityAmount(formValue: string | null): void;
+  setAddLiquidityAmount(formValue?: string): void;
   setAddLiquidityMaxAmount(): void;
 }
 
@@ -84,12 +84,12 @@ export type Action =
       };
     }
   | { type: Actions.SetActiveTab; payload: Tabs }
-  | { type: Actions.SetStakeAmount; payload: string | null }
+  | { type: Actions.SetStakeAmount; payload?: string }
   | { type: Actions.SetMaxStakeAmount }
-  | { type: Actions.SetWithdrawAmount; payload: string | null }
+  | { type: Actions.SetWithdrawAmount; payload?: string }
   | { type: Actions.SetMaxWithdrawAmount }
-  | { type: Actions.SetAddLiquidityToken; payload: string | null }
-  | { type: Actions.SetAddLiquidityAmount; payload: string | null }
+  | { type: Actions.SetAddLiquidityToken; payload?: string }
+  | { type: Actions.SetAddLiquidityAmount; payload?: string }
   | { type: Actions.SetAddLiquidityMaxAmount };
 
 export enum Reasons {

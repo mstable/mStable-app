@@ -165,7 +165,7 @@ export const SwapInput: FC = () => {
           amountValue={input.formValue}
           approveAmount={approveAmount}
           tokenAddresses={inputAddresses}
-          tokenValue={inputAddress}
+          tokenValue={inputAddress as string}
           name={Fields.Input}
           onChangeAmount={setInputQuantity}
           onChangeToken={setToken}
@@ -184,7 +184,7 @@ export const SwapInput: FC = () => {
         <TokenAmountInput
           amountValue={output.formValue}
           tokenAddresses={outputAddresses}
-          tokenValue={outputAddress}
+          tokenValue={outputAddress as string}
           name={Fields.Output}
           onChangeAmount={setOutputQuantity}
           onChangeToken={setToken}

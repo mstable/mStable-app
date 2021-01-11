@@ -39,11 +39,11 @@ export type Action =
     }
   | {
       type: Actions.SetBassetAmount;
-      payload: { formValue: string | null; address: string };
+      payload: { formValue?: string; address: string };
     }
   | {
       type: Actions.SetMassetAmount;
-      payload: string | null;
+      payload?: string;
     }
   | {
       type: Actions.SetMassetMaxAmount;
@@ -57,7 +57,7 @@ export type Action =
 export interface BassetOutput {
   address: string;
   amount?: BigDecimal;
-  formValue: string | null;
+  formValue?: string;
   amountMinusFee?: BigDecimal;
   enabled: boolean;
   hasError?: boolean;
@@ -88,9 +88,9 @@ export interface State {
 }
 
 export interface Dispatch {
-  setBassetAmount(address: string, formValue: string | null): void;
+  setBassetAmount(address: string, formValue?: string): void;
   setMassetMaxAmount(): void;
-  setMassetAmount(formValue: string | null): void;
+  setMassetAmount(formValue?: string): void;
   toggleRedeemMasset(): void;
   toggleBassetEnabled(bAsset: string): void;
 }
