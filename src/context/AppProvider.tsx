@@ -22,16 +22,11 @@ export interface BannerMessage {
   visible: boolean;
 }
 
-export enum AccountItems {
-  Notifications,
-  Wallet,
-}
-
 enum Actions {
   SupportedChainSelected,
   SetOnline,
-  SetAccountItem,
   ToggleAccount,
+  CloseAccount,
   SetBannerMessage,
 }
 
@@ -43,37 +38,30 @@ export enum StatusWarnings {
 interface State {
   error: string | null;
   supportedChain: boolean;
-  accountItem: AccountItems | null;
+  accountOpen: boolean;
   online: boolean;
   bannerMessage?: BannerMessage;
 }
 
 type Action =
-  | { type: Actions.SetAccountItem; payload: AccountItems | null }
-  | { type: Actions.ToggleAccount; payload: AccountItems }
+  | { type: Actions.ToggleAccount }
+  | { type: Actions.CloseAccount }
   | { type: Actions.SupportedChainSelected; payload: boolean }
   | { type: Actions.SetOnline; payload: boolean }
   | { type: Actions.SetBannerMessage; payload?: BannerMessage };
 
 interface Dispatch {
   closeAccount(): void;
-  toggleNotifications(): void;
   toggleWallet(): void;
   setBannerMessage(message?: BannerMessage): void;
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case Actions.SetAccountItem:
-      return {
-        ...state,
-        accountItem: action.payload,
-      };
     case Actions.ToggleAccount:
       return {
         ...state,
-        accountItem:
-          state.accountItem === action.payload ? null : action.payload,
+        accountOpen: !state.accountOpen,
       };
     case Actions.SupportedChainSelected:
       return {
@@ -93,7 +81,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
 const initialState: State = {
   error: null,
   supportedChain: true,
-  accountItem: null,
+  accountOpen: false,
   online: true,
 };
 
@@ -122,20 +110,11 @@ export const AppProvider: FC = ({ children }) => {
   );
 
   const closeAccount = useCallback<Dispatch['closeAccount']>(() => {
-    dispatch({ type: Actions.SetAccountItem, payload: null });
-  }, [dispatch]);
-
-  const toggleNotifications = useCallback<
-    Dispatch['toggleNotifications']
-  >(() => {
-    dispatch({
-      type: Actions.ToggleAccount,
-      payload: AccountItems.Notifications,
-    });
+    dispatch({ type: Actions.CloseAccount });
   }, [dispatch]);
 
   const toggleWallet = useCallback<Dispatch['toggleWallet']>(() => {
-    dispatch({ type: Actions.ToggleAccount, payload: AccountItems.Wallet });
+    dispatch({ type: Actions.ToggleAccount });
   }, [dispatch]);
 
   const connectionListener = useCallback(() => {
@@ -216,17 +195,10 @@ export const AppProvider: FC = ({ children }) => {
           {
             closeAccount,
             setBannerMessage,
-            toggleNotifications,
             toggleWallet,
           },
         ],
-        [
-          state,
-          closeAccount,
-          setBannerMessage,
-          toggleNotifications,
-          toggleWallet,
-        ],
+        [state, closeAccount, setBannerMessage, toggleWallet],
       )}
     >
       {children}
@@ -240,10 +212,7 @@ export const useAppState = (): State => useAppContext()[0];
 
 export const useIsSupportedChain = (): boolean => useAppState().supportedChain;
 
-export const useAccountOpen = (): boolean => useAppState().accountItem !== null;
-
-export const useAccountItem = (): State['accountItem'] =>
-  useAppState().accountItem;
+export const useAccountOpen = (): boolean => useAppState().accountOpen;
 
 export const useAppDispatch = (): Dispatch => useAppContext()[1];
 
@@ -264,9 +233,6 @@ export const useAppStatusWarnings = (): StatusWarnings[] => {
 
 export const useToggleWallet = (): Dispatch['toggleWallet'] =>
   useAppDispatch().toggleWallet;
-
-export const useToggleNotifications = (): Dispatch['toggleNotifications'] =>
-  useAppDispatch().toggleNotifications;
 
 export const useBannerMessage = (): State['bannerMessage'] =>
   useAppState().bannerMessage;

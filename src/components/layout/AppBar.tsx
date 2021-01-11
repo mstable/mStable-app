@@ -3,11 +3,9 @@ import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
-  AccountItems,
   StatusWarnings,
   useAppStatusWarnings,
   useCloseAccount,
-  useAccountItem,
   useAccountOpen,
   useToggleWallet,
 } from '../../context/AppProvider';
@@ -217,7 +215,7 @@ const StatusWarningsRow: FC = () => {
 };
 
 const WalletButton: FC = () => {
-  const accountItem = useAccountItem();
+  const accountOpen = useAccountOpen();
   const toggleWallet = useToggleWallet();
   const connected = useConnected();
   const account = useWalletAddress();
@@ -229,7 +227,7 @@ const WalletButton: FC = () => {
     <WalletButtonBtn
       title="Account"
       onClick={connected && account ? toggleWallet : connect}
-      active={accountItem === AccountItems.Wallet}
+      active={accountOpen}
     >
       {connected ? (
         <>
