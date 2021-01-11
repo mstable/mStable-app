@@ -9,92 +9,78 @@ import React, {
 } from 'react';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { TokenQuantityV2 } from '../../../../types';
+import { useTokensState } from '../../../../context/TokensProvider';
 import { reducer } from './reducer';
 import { Actions, Dispatch, State, SaveMode } from './types';
-
-export const initialTokenQuantityFieldV2: TokenQuantityV2 = {
-  formValue: null,
-  amount: null,
-};
 
 const initialState: State = {
   initialized: false,
   touched: false,
   valid: false,
   mode: SaveMode.Deposit,
+  tokens: {},
   exchange: {
-    input: initialTokenQuantityFieldV2,
-    output: initialTokenQuantityFieldV2,
+    input: {},
+    output: {},
     feeAmountSimple: null,
   },
 };
 
 const stateCtx = createContext<State>(initialState);
-const dispatchCtx = createContext<Dispatch>({} as Dispatch);
+const dispatchCtx = createContext<Dispatch>(null as never);
 
 export const SaveProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const massetState = useSelectedMassetState();
+  const { tokens } = useTokensState();
 
   useEffect(() => {
-    dispatch({ type: Actions.Data, payload: massetState });
-  }, [massetState]);
+    dispatch({ type: Actions.Data, payload: { massetState, tokens } });
+  }, [massetState, tokens]);
 
-  const setInput = useCallback<Dispatch['setInput']>(
-    formValue => {
-      dispatch({
-        type: Actions.SetInput,
-        payload: { formValue },
-      });
-    },
-    [dispatch],
-  );
+  const setInput = useCallback<Dispatch['setInput']>(formValue => {
+    dispatch({
+      type: Actions.SetInput,
+      payload: { formValue },
+    });
+  }, []);
 
   const setMaxInput = useCallback<Dispatch['setMaxInput']>(
     () => dispatch({ type: Actions.SetMaxInput }),
-    [dispatch],
+    [],
   );
 
-  const setToken = useCallback<Dispatch['setToken']>(
-    (field, token) => {
-      dispatch({
-        type: Actions.SetToken,
-        payload: {
-          field,
-          token,
-        },
-      });
-    },
-    [dispatch],
-  );
+  const setToken = useCallback<Dispatch['setToken']>((field, tokenAddress) => {
+    dispatch({
+      type: Actions.SetToken,
+      payload: {
+        field,
+        tokenAddress,
+      },
+    });
+  }, []);
 
-  const setModeType = useCallback<Dispatch['setModeType']>(
-    modeType => {
-      dispatch({
-        type: Actions.SetModeType,
-        payload: modeType,
-      });
-    },
-    [dispatch],
-  );
+  const setModeType = useCallback<Dispatch['setModeType']>(modeType => {
+    dispatch({
+      type: Actions.SetModeType,
+      payload: modeType,
+    });
+  }, []);
 
   return (
-    <stateCtx.Provider value={state}>
-      <dispatchCtx.Provider
-        value={useMemo(
-          () => ({
-            setInput,
-            setModeType,
-            setToken,
-            setMaxInput,
-          }),
-          [setToken, setInput, setMaxInput, setModeType],
-        )}
-      >
-        {children}
-      </dispatchCtx.Provider>
-    </stateCtx.Provider>
+    <dispatchCtx.Provider
+      value={useMemo(
+        () => ({
+          setInput,
+          setModeType,
+          setToken,
+          setMaxInput,
+        }),
+        [setToken, setInput, setMaxInput, setModeType],
+      )}
+    >
+      <stateCtx.Provider value={state}>{children}</stateCtx.Provider>
+    </dispatchCtx.Provider>
   );
 };
 
