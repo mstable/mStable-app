@@ -1,28 +1,15 @@
 import { Reducer } from 'react';
 import { pipeline } from 'ts-pipe-compose';
 
-import { BigNumber } from 'ethers/utils';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import {
-  Action,
-  Actions,
-  ExchangeState,
-  SaveMode,
-  State,
-  TokenPayload,
-} from './types';
-import { TokenQuantityV2 } from '../../../../types';
+import { Fields } from '../../../../types';
+import { Action, Actions, ExchangeState, SaveMode, State } from './types';
 import { validate } from './validate';
 
-export const BIG_NUM_1 = new BigNumber((1e18).toString());
-
-const initialize = (state: State): State =>
-  !state.initialized && state.massetState
-    ? {
-        ...state,
-        initialized: true,
-      }
-    : state;
+interface TokenPayload {
+  field: Fields;
+  tokenAddress?: string;
+}
 
 const getExchangeRate = (state: State): BigDecimal | undefined => {
   const { massetState, mode } = state;
@@ -33,32 +20,29 @@ const getExchangeRate = (state: State): BigDecimal | undefined => {
   if (!rate) return undefined;
 
   if (mode === SaveMode.Deposit) return rate;
-  return new BigDecimal(BIG_NUM_1).divPrecisely(rate);
+
+  return new BigDecimal((1e18).toString()).divPrecisely(rate);
 };
 
-// TODO - doesn't always set correctly.
-const setInitialExchangePair = (state: State): State => {
-  const { massetState, exchange } = state;
+const initialize = (state: State): State => {
+  if (!state.initialized && state.massetState) {
+    const defaultInputTokenAddress = state.massetState.address;
+    const defaultOutputTokenAddress =
+      state.massetState.savingsContracts.v2?.address;
 
-  if (massetState && !exchange.rate) {
-    const defaultInputToken = massetState.token;
-    const defaultOutputToken = massetState.savingsContracts.v2?.token;
-
-    if (!defaultOutputToken) return state;
+    if (!defaultOutputTokenAddress) return state;
 
     return {
       ...state,
+      initialized: true,
       exchange: {
         rate: getExchangeRate(state),
         input: {
           formValue: state.exchange.input.formValue,
-          amount: null,
-          token: defaultInputToken,
+          tokenAddress: defaultInputTokenAddress,
         },
         output: {
-          formValue: null,
-          amount: null,
-          token: defaultOutputToken,
+          tokenAddress: defaultOutputTokenAddress,
         },
         feeAmountSimple: null,
       },
@@ -67,30 +51,17 @@ const setInitialExchangePair = (state: State): State => {
   return state;
 };
 
-const updateToken = (
-  payload: TokenPayload,
-): { [field: string]: TokenQuantityV2 } => {
-  const { field, token } = payload;
-
-  const formValue = null;
-  const amount = BigDecimal.maybeParse(formValue) ?? null;
-
-  return {
-    [field]: {
-      formValue,
-      amount,
-      token,
-    },
-  };
-};
-
 const updateExchangeState = (
   state: State,
   payload: TokenPayload,
 ): ExchangeState => {
+  const { field, tokenAddress } = payload;
   return {
     ...state.exchange,
-    ...updateToken(payload),
+    [field]: {
+      tokenAddress,
+      ...(tokenAddress ? { token: state.tokens[tokenAddress] } : {}),
+    },
     rate: getExchangeRate(state),
   };
 };
@@ -98,16 +69,14 @@ const updateExchangeState = (
 const calcOutput = (
   state: State,
   inputAmount?: BigDecimal,
-): TokenQuantityV2 => {
+): State['exchange']['output'] => {
   const { exchange } = state;
   const exchangeRate = exchange.rate;
 
   const amount =
-    (inputAmount &&
-      exchangeRate &&
-      inputAmount.mulTruncate(exchangeRate.exact)) ??
-    null;
-  const formValue = amount?.format(2, false) ?? null;
+    inputAmount && exchangeRate && inputAmount.mulTruncate(exchangeRate.exact);
+
+  const formValue = amount?.format(2, false);
 
   return {
     ...state.exchange.output,
@@ -116,17 +85,45 @@ const calcOutput = (
   };
 };
 
+// TODO split up this logic for different forms
 const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case Actions.Data:
-      return { ...state, massetState: action.payload };
+    case Actions.Data: {
+      const { tokens, massetState } = action.payload;
+
+      const { input, output } = state.exchange;
+
+      const exchange = {
+        ...state.exchange,
+        input: input.tokenAddress
+          ? {
+              ...input,
+              token: tokens[input.tokenAddress],
+            }
+          : input,
+        output: output.tokenAddress
+          ? {
+              ...output,
+              token: tokens[output.tokenAddress],
+            }
+          : output,
+      };
+
+      const nextState: State = { ...state, massetState, exchange };
+
+      return {
+        ...nextState,
+        exchange: {
+          ...nextState.exchange,
+          rate: getExchangeRate(nextState),
+        },
+      };
+    }
 
     // input change only for now.
     case Actions.SetInput: {
-      const { exchange, massetState } = state;
+      const { exchange } = state;
       const { formValue } = action.payload;
-
-      if (!massetState) return state;
 
       // will only work with musd - imusd, not other assets.
       const amount = BigDecimal.maybeParse(
@@ -140,7 +137,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
           ...state.exchange,
           input: {
             ...state.exchange.input,
-            amount: amount ?? null,
+            amount,
             formValue,
           },
           output: calcOutput(state, amount),
@@ -157,12 +154,12 @@ const reduce: Reducer<State, Action> = (state, action) => {
 
     case Actions.SetMaxInput: {
       const { exchange, massetState } = state;
-      const inputAddress = exchange.input.token?.address;
+      const inputAddress = exchange.input.tokenAddress;
       if (!inputAddress || !massetState) return state;
 
       const inputToken = exchange.input.token;
       const amount = inputToken?.balance;
-      const formValue = amount?.format(2, false) ?? null;
+      const formValue = amount?.format(2, false);
 
       return {
         ...state,
@@ -170,20 +167,20 @@ const reduce: Reducer<State, Action> = (state, action) => {
           ...state.exchange,
           input: {
             ...state.exchange.input,
-            amount: amount ?? null,
+            amount,
             formValue,
           },
           output: calcOutput(state, amount),
         },
+        touched: true,
       };
     }
 
     case Actions.SetModeType: {
       const mode = action.payload;
-      // disable switching until initialised
-      if (!state.initialized) return state;
-      // reject if same tab clicked
-      if (mode === state.mode) return state;
+
+      // disable switching until initialised, or if same tab clicked
+      if (!state.initialized || mode === state.mode) return state;
 
       const nextState = {
         ...state,
@@ -211,6 +208,5 @@ const reduce: Reducer<State, Action> = (state, action) => {
 export const reducer: Reducer<State, Action> = pipeline(
   reduce,
   initialize,
-  setInitialExchangePair,
   validate,
 );

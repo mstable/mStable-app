@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { ViewportWidth } from '../../../../theme';
-import { Fields, SubscribedToken } from '../../../../types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Button } from '../../../core/Button';
 import { AmountInput } from '../../../forms/AmountInput';
@@ -11,20 +10,19 @@ import { SubscribedTokenInput } from '../../../forms/SubscribedTokenInput';
 // TODO: Might be able to adapt existing InlineTokenInput rather than fork
 
 interface Props {
-  name: Fields;
   amount: {
     value?: BigDecimal;
-    formValue: string | null;
+    formValue?: string;
     disabled?: boolean;
-    handleChange?(formValue: string | null): void;
+    handleChange?(formValue?: string): void;
     handleClick?(): void;
     handleSetMax?(): void;
   };
   token: {
     address?: string;
-    addresses?: string[];
+    options?: { address: string; balance?: BigDecimal; label?: string }[];
     disabled?: boolean;
-    handleChange?(name: string, token?: SubscribedToken): void;
+    handleChange?(tokenAddress?: string): void;
   };
   toggle?: {
     canEnable: boolean;
@@ -103,6 +101,7 @@ const Grid = styled.div<{ enabled?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 0.5rem;
 
   ${InputContainer} {
     overflow: hidden;
@@ -147,7 +146,6 @@ export const AssetTokenInput: FC<Props> = ({
   error,
   overweight,
   toggle,
-  name,
 }) => {
   const enabled = toggle ? toggle.enabled : true;
 
@@ -163,19 +161,18 @@ export const AssetTokenInput: FC<Props> = ({
               error={error}
               onChange={amount.handleChange}
             />
-            {amount.handleSetMax ? (
-              <Button type="button" onClick={amount.handleSetMax}>
+            {amount.handleSetMax && (
+              <Button type="button" onClick={amount.handleSetMax} scale={0.75}>
                 Max
               </Button>
-            ) : null}
+            )}
           </Input>
         </InputContainer>
         <TokenContainer>
           <SubscribedTokenInput
-            name={name}
             disabled={token.disabled}
-            value={token.address ?? null}
-            tokenAddresses={token.addresses ?? []}
+            value={token.address}
+            options={token.options}
             onChange={token.handleChange}
           />
         </TokenContainer>

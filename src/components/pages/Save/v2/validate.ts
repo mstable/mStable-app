@@ -1,16 +1,5 @@
 import { State, Reasons } from './types';
 
-const validateInputToken = (state: State): boolean => {
-  const { massetState, exchange } = state;
-  const inputToken = exchange.input.token;
-  const inputAmount = exchange.input.amount;
-
-  if (!inputAmount || !massetState || !inputToken) return false;
-
-  const massetAddress = massetState.address;
-  return !inputToken.allowances[massetAddress]?.exact.lt(inputAmount.exact);
-};
-
 const validateSave = (state: State): [false, Reasons] | [true] => {
   const { massetState, exchange } = state;
 
@@ -65,12 +54,5 @@ export const validate = (state: State): State => {
     ...state,
     error,
     valid,
-    exchange: {
-      ...state.exchange,
-      input: {
-        ...state.exchange.input,
-        needsUnlock: validateInputToken(state),
-      },
-    },
   };
 };

@@ -1,26 +1,22 @@
-import { MaxUint256 } from 'ethers/constants';
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { ADDRESSES } from '../../../../constants';
-import { useWalletAddress } from '../../../../context/OnboardProvider';
-import { useTokenAllowance } from '../../../../context/TokensProvider';
-import { useTransactionsDispatch } from '../../../../context/TransactionsProvider';
 
-import { ViewportWidth } from '../../../../theme';
-import { Fields, Interfaces } from '../../../../types';
-import {
-  useSaveWrapperContract,
-  useSelectedMassetContract,
-  useSelectedSaveV2Contract,
-} from '../../../../web3/hooks';
+import { SaveWrapperFactory } from '../../../../typechain/SaveWrapperFactory';
+import { SavingsContractFactory } from '../../../../typechain/SavingsContractFactory';
+import { BoostedSavingsVaultFactory } from '../../../../typechain/BoostedSavingsVaultFactory';
+import { useSigner } from '../../../../context/OnboardProvider';
+import { useTransactionsDispatch } from '../../../../context/TransactionsProvider';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import { ApproveType, MultiStepButton } from '../../../core/MultiStepButton';
+import { ADDRESSES } from '../../../../constants';
+import { Fields, Interfaces } from '../../../../types';
+import { ViewportWidth } from '../../../../theme';
+import { SendButton } from '../../../forms/SendButton';
+
 import { AssetInputBox } from './AssetInputBox';
 import { useSaveState } from './SaveProvider';
 import { SaveMode } from './types';
 
 const { Input, Output } = Fields;
-const { Deposit } = SaveMode;
 
 const Container = styled.div`
   display: flex;
@@ -105,10 +101,7 @@ const Info = styled.div`
 const Column = styled.div`
   display: flex;
   flex-direction: column;
-
-  > div:last-child {
-    margin-top: 0.75rem;
-  }
+  gap: 1rem;
 `;
 
 const Error = styled.div`
@@ -130,123 +123,220 @@ const Error = styled.div`
 
 const formId = 'assetExchange';
 
-export const AssetExchange: FC = () => {
+const DepositActions: FC = () => {
+  const signer = useSigner();
+  const { propose } = useTransactionsDispatch();
+
   const {
-    error,
-    exchange,
     exchange: { input },
     valid,
-    mode,
     massetState,
   } = useSaveState();
 
-  const massetContract = useSelectedMassetContract();
-  const v2Address = massetContract?.address;
-  const depositAllowance = useTokenAllowance(input.token?.address, v2Address);
-  const wrapperAddress = ADDRESSES.mUSD.SaveWrapper;
-  const depositAndStakeAllowance = useTokenAllowance(
-    input.token?.address,
-    wrapperAddress,
+  const saveAddress = massetState?.savingsContracts.v2?.address;
+
+  return input.tokenAddress === saveAddress ? (
+    <SendButton
+      title="Stake"
+      valid={valid}
+      approve={{
+        amount: input.amount,
+        address: input.tokenAddress as string,
+        spender: ADDRESSES.mUSD.SaveWrapper,
+      }}
+      handleSend={() => {
+        if (!signer || !input.amount || !input.token || !massetState || !valid)
+          return;
+
+        propose<Interfaces.BoostedSavingsVault, 'stake'>(
+          new TransactionManifest(
+            BoostedSavingsVaultFactory.connect(
+              massetState.savingsContracts.v2?.boostedSavingsVault
+                ?.address as string,
+              signer,
+            ),
+            'stake',
+            [input.amount.exact],
+            {
+              present: `Staking ${input.amount.simple} ${input.token.symbol} in vault`,
+              past: `Staked ${input.amount.simple} ${input.token.symbol} in vault`,
+            },
+            formId,
+          ),
+        );
+      }}
+    />
+  ) : (
+    <>
+      <SendButton
+        title="Deposit & Stake"
+        valid={valid}
+        approve={{
+          amount: input.amount,
+          address: input.tokenAddress as string,
+          spender: ADDRESSES.mUSD.SaveWrapper,
+        }}
+        handleSend={() => {
+          if (!signer || !input.amount || !valid) return;
+
+          propose<Interfaces.SaveWrapper, 'saveAndStake'>(
+            new TransactionManifest(
+              SaveWrapperFactory.connect(ADDRESSES.mUSD.SaveWrapper, signer),
+              'saveAndStake',
+              [input.amount.exact],
+              {
+                present: `Depositing and staking ${input.amount.simple} in vault`,
+                past: `Deposited and staked ${input.amount.simple} in vault`,
+              },
+              formId,
+            ),
+          );
+        }}
+      />
+      <SendButton
+        title="Deposit"
+        valid={valid}
+        approve={{
+          amount: input.amount,
+          address: input.tokenAddress as string,
+          spender: saveAddress as string,
+        }}
+        handleSend={(): void => {
+          if (!signer || !input.amount || !input.token || !valid) {
+            return;
+          }
+
+          const tx = new TransactionManifest<
+            Interfaces.SavingsContract,
+            'depositSavings(uint256)'
+          >(
+            SavingsContractFactory.connect(saveAddress as string, signer),
+            'depositSavings(uint256)',
+            [input.amount.exact],
+            {
+              present: `Depositing ${input.amount.simple} ${input.token.symbol}`,
+              past: `Deposited ${input.amount.simple} ${input.token.symbol}`,
+            },
+            formId,
+          );
+          propose(tx);
+        }}
+      />
+    </>
   );
-  const savingsContractV2 = useSelectedSaveV2Contract();
-  const walletAddress = useWalletAddress();
-  const wrapperContract = useSaveWrapperContract();
+};
+
+const WithdrawActions: FC = () => {
+  const signer = useSigner();
   const { propose } = useTransactionsDispatch();
 
-  const massetSymbol = massetState?.token.symbol;
+  const {
+    exchange: { input },
+    valid,
+    massetState,
+  } = useSaveState();
+
+  const saveAddress = massetState?.savingsContracts.v2?.address;
+  const vaultAddress =
+    massetState?.savingsContracts.v2?.boostedSavingsVault?.address;
+
+  return (
+    <>
+      <SendButton
+        title="Withdraw Savings"
+        valid={valid}
+        handleSend={(): void => {
+          if (
+            !valid ||
+            !input.amount ||
+            !input.token ||
+            !signer ||
+            !saveAddress
+          ) {
+            return;
+          }
+
+          const body = `${input.amount.simple} ${input.token.symbol}`;
+          const tx = new TransactionManifest<
+            Interfaces.SavingsContract,
+            'redeemUnderlying(uint256)'
+          >(
+            SavingsContractFactory.connect(saveAddress, signer),
+            'redeemUnderlying(uint256)',
+            [input.amount.exact],
+            {
+              present: `Withdrawing ${body}`,
+              past: `Withdrew ${body}`,
+            },
+            formId,
+          );
+          propose(tx);
+        }}
+      />
+      <SendButton
+        title="Withdraw Stake"
+        valid={valid}
+        handleSend={() => {
+          if (
+            !valid ||
+            !input.amount ||
+            !input.token ||
+            !signer ||
+            !vaultAddress
+          ) {
+            return;
+          }
+
+          const body = `stake of ${input.amount.simple} ${input.token.symbol} from vault and claiming rewards`;
+          const tx = new TransactionManifest<
+            Interfaces.BoostedSavingsVault,
+            'withdraw'
+          >(
+            BoostedSavingsVaultFactory.connect(vaultAddress, signer),
+            'withdraw',
+            [input.amount.exact],
+            {
+              present: `Withdrawing ${body}`,
+              past: `Withdrew ${body}`,
+            },
+            formId,
+          );
+          propose(tx);
+        }}
+      />
+      <SendButton
+        title="Exit"
+        valid={valid}
+        handleSend={() => {
+          if (!valid || !input.token || !signer || !vaultAddress) {
+            return;
+          }
+
+          const body = `vault and claiming rewards`;
+          const tx = new TransactionManifest<
+            Interfaces.BoostedSavingsVault,
+            'exit()'
+          >(
+            BoostedSavingsVaultFactory.connect(vaultAddress, signer),
+            'exit()',
+            [], // TODO provide first/last args
+            {
+              present: `Exiting ${body}`,
+              past: `Exited ${body}`,
+            },
+            formId,
+          );
+          propose(tx);
+        }}
+      />
+    </>
+  );
+};
+
+export const AssetExchange: FC = () => {
+  const { error, exchange, mode } = useSaveState();
+
   const formattedSlippage = `${exchange.slippage?.format(2)}%`;
-  const depositNeedsUnlock =
-    depositAllowance && input.amount?.exact.gt(depositAllowance.exact);
-  const depositAndStakeNeedsUnlock =
-    depositAndStakeAllowance &&
-    input.amount?.exact.gt(depositAndStakeAllowance.exact);
-
-  const handleActionClick = (): void => {
-    if (!savingsContractV2) return;
-
-    const amount = input.amount?.exact;
-    if (!amount) return;
-
-    if (mode === Deposit) {
-      const tx = new TransactionManifest<
-        Interfaces.SavingsContract,
-        'depositSavings(uint256,address)'
-      >(
-        savingsContractV2,
-        'depositSavings(uint256,address)',
-        [amount, walletAddress as string],
-        {
-          present: `Depositing ${amount.toString()}`,
-          past: `Deposited ${amount.toString()}`,
-        },
-        formId,
-      );
-      propose(tx);
-    } else {
-      const tx = new TransactionManifest<
-        Interfaces.SavingsContract,
-        'redeemUnderlying(uint256)'
-      >(
-        savingsContractV2,
-        'redeemUnderlying(uint256)',
-        [amount],
-        {
-          present: `Withdrawing ${amount.toString()}`,
-          past: `Withdrew ${amount.toString()}`,
-        },
-        formId,
-      );
-      propose(tx);
-    }
-  };
-
-  const handleDepositAndStakeClick = (): void => {
-    if (!wrapperContract) return;
-
-    const amount = input.amount?.exact;
-    if (!amount) return;
-
-    const tx = new TransactionManifest<
-      Interfaces.SaveWrapper,
-      'saveAndStake(uint256)'
-    >(
-      wrapperContract,
-      'saveAndStake(uint256)',
-      [amount],
-      {
-        present: `Saving and staking ${input.amount?.simple.toString()}`,
-        past: `Saved and staked ${input.amount?.simple.toString()}`,
-      },
-      formId,
-    );
-    propose(tx);
-  };
-
-  const sendApproveSpenderTx = (type: ApproveType, spender?: string): void => {
-    const amount = type === 'exact' ? input.amount?.exact : MaxUint256;
-
-    if (!amount) return;
-    if (!(spender && massetSymbol && massetContract)) return;
-
-    const body = `transfer of ${massetSymbol}`;
-    const tx = new TransactionManifest<Interfaces.ERC20, 'approve'>(
-      massetContract,
-      'approve',
-      [spender, amount],
-      {
-        present: `Approving ${body}`,
-        past: `Approved ${body}`,
-      },
-      formId,
-    );
-    propose(tx);
-  };
-
-  const handleApproveClick = (type: ApproveType): void =>
-    sendApproveSpenderTx(type, v2Address);
-
-  const handleDepositAndStakeApproveClick = (type: ApproveType): void =>
-    sendApproveSpenderTx(type, wrapperAddress);
 
   return (
     <Container>
@@ -269,22 +359,7 @@ export const AssetExchange: FC = () => {
               <p>{error}</p>
             </Error>
           )}
-          <MultiStepButton
-            title={mode === 0 ? 'Deposit' : 'Withdraw'}
-            needsUnlock={depositNeedsUnlock}
-            valid={valid}
-            onActionClick={handleActionClick}
-            onApproveClick={handleApproveClick}
-          />
-          {mode === 0 && (
-            <MultiStepButton
-              title="Deposit & Stake"
-              needsUnlock={depositAndStakeNeedsUnlock}
-              valid={valid}
-              onActionClick={handleDepositAndStakeClick}
-              onApproveClick={handleDepositAndStakeApproveClick}
-            />
-          )}
+          {mode === SaveMode.Deposit ? <DepositActions /> : <WithdrawActions />}
         </Column>
         {exchange.slippage && (
           <Info>
