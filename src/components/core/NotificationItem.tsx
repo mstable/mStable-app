@@ -6,7 +6,6 @@ import {
   NotificationType,
   useMarkNotificationAsRead,
 } from '../../context/NotificationsProvider';
-import { Button } from './Button';
 
 const Title = styled.div`
   font-weight: bold;
@@ -39,7 +38,7 @@ const Container = styled.div<
       : theme.color.red};
   color: ${({ theme, type }) =>
     type === NotificationType.Success ? theme.color.black : theme.color.white};
-  border-radius: 4px;
+  border-radius: 0.5rem;
   padding: ${({ theme }) => theme.spacing.s};
   margin-bottom: ${({ theme }) => theme.spacing.m};
   transition: opacity 0.3s ease;
@@ -71,8 +70,8 @@ export const NotificationItem: FC<{
   return (
     <Container type={type} onClick={handleClick} className={className}>
       <Title>{title}</Title>
-      {body ? <div>{body}</div> : null}
-      {link ? (
+      {body && <div>{body}</div>}
+      {link && (
         <Link
           nType={type}
           href={link.href}
@@ -81,16 +80,7 @@ export const NotificationItem: FC<{
         >
           {link.title}
         </Link>
-      ) : null}
-      {type === NotificationType.Update ? (
-        <Button
-          onClick={() => {
-            window.location.reload();
-          }}
-        >
-          Refresh page
-        </Button>
-      ) : null}
+      )}
     </Container>
   );
 };
