@@ -702,6 +702,8 @@ export type BoostedSavingsVaultAccount = {
   id: Scalars['ID'];
   boostedSavingsVault: BoostedSavingsVault;
   account: Account;
+  rawBalance: Scalars['BigInt'];
+  boostedBalance: Scalars['BigInt'];
   rewardPerTokenPaid: Scalars['BigInt'];
   rewards: Scalars['BigInt'];
   lastAction: Scalars['Int'];
@@ -756,6 +758,22 @@ export type BoostedSavingsVaultAccount_Filter = {
   account_not_starts_with?: Maybe<Scalars['String']>;
   account_ends_with?: Maybe<Scalars['String']>;
   account_not_ends_with?: Maybe<Scalars['String']>;
+  rawBalance?: Maybe<Scalars['BigInt']>;
+  rawBalance_not?: Maybe<Scalars['BigInt']>;
+  rawBalance_gt?: Maybe<Scalars['BigInt']>;
+  rawBalance_lt?: Maybe<Scalars['BigInt']>;
+  rawBalance_gte?: Maybe<Scalars['BigInt']>;
+  rawBalance_lte?: Maybe<Scalars['BigInt']>;
+  rawBalance_in?: Maybe<Array<Scalars['BigInt']>>;
+  rawBalance_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  boostedBalance?: Maybe<Scalars['BigInt']>;
+  boostedBalance_not?: Maybe<Scalars['BigInt']>;
+  boostedBalance_gt?: Maybe<Scalars['BigInt']>;
+  boostedBalance_lt?: Maybe<Scalars['BigInt']>;
+  boostedBalance_gte?: Maybe<Scalars['BigInt']>;
+  boostedBalance_lte?: Maybe<Scalars['BigInt']>;
+  boostedBalance_in?: Maybe<Array<Scalars['BigInt']>>;
+  boostedBalance_not_in?: Maybe<Array<Scalars['BigInt']>>;
   rewardPerTokenPaid?: Maybe<Scalars['BigInt']>;
   rewardPerTokenPaid_not?: Maybe<Scalars['BigInt']>;
   rewardPerTokenPaid_gt?: Maybe<Scalars['BigInt']>;
@@ -802,6 +820,8 @@ export enum BoostedSavingsVaultAccount_OrderBy {
   Id = 'id',
   BoostedSavingsVault = 'boostedSavingsVault',
   Account = 'account',
+  RawBalance = 'rawBalance',
+  BoostedBalance = 'boostedBalance',
   RewardPerTokenPaid = 'rewardPerTokenPaid',
   Rewards = 'rewards',
   LastAction = 'lastAction',
