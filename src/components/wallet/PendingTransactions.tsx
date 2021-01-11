@@ -22,10 +22,11 @@ const Buttons = styled.div`
 
 const Purpose = styled.div`
   font-size: 1.3rem;
+  line-height: 1.7rem;
 `;
 
 const Container = styled.div<{ status: TransactionStatus }>`
-  min-width: 24rem;
+  width: 24rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
