@@ -8,7 +8,7 @@ import { Token } from '../../types';
 
 interface Props {
   name: string;
-  value: string | null;
+  value?: string;
   tokens: Token[];
   onChange?(name: string, token: Token | null): void;
   error?: string;
@@ -154,6 +154,7 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
  * TokenInput form component
  * Select a token from a given list of tokens.
  *
+ * @deprecated
  * @param name Name of the field, e.g. 'input'
  * @param error Error message
  * @param value Selected token address value (address)
