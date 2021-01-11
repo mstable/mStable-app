@@ -1,15 +1,16 @@
 import { BigNumber } from 'ethers/utils';
 
 import { ISavingsContract } from './typechain/ISavingsContract.d';
-import { SaveWrapper as ISaveWrapper } from './typechain/SaveWrapper.d';
+import { SaveWrapper } from './typechain/SaveWrapper.d';
 import { IMasset } from './typechain/IMasset.d';
 import { MusdGauge } from './typechain/MusdGauge.d';
-import { StakingRewards as IStakingRewards } from './typechain/StakingRewards.d';
-import { StakingRewardsWithPlatformToken as IStakingRewardsWithPlatformToken } from './typechain/StakingRewardsWithPlatformToken.d';
-import { RewardsDistributor as IRewardsDistributor } from './typechain/RewardsDistributor.d';
-import { MerkleDrop as IMerkleDrop } from './typechain/MerkleDrop.d';
-import { TokenMinter as ICurveTokenMinter } from './typechain/TokenMinter.d';
-import { CurveDeposit as ICurveDeposit } from './typechain/CurveDeposit.d';
+import { StakingRewards } from './typechain/StakingRewards.d';
+import { StakingRewardsWithPlatformToken } from './typechain/StakingRewardsWithPlatformToken.d';
+import { RewardsDistributor } from './typechain/RewardsDistributor.d';
+import { MerkleDrop } from './typechain/MerkleDrop.d';
+import { TokenMinter as CurveTokenMinter } from './typechain/TokenMinter.d';
+import { CurveDeposit } from './typechain/CurveDeposit.d';
+import { BoostedSavingsVault } from './typechain/BoostedSavingsVault.d';
 import { BigDecimal } from './web3/BigDecimal';
 import { Erc20Detailed } from './typechain/Erc20Detailed';
 
@@ -20,6 +21,7 @@ export interface Purpose {
   past: string;
 }
 
+/* eslint-disable @typescript-eslint/no-shadow */
 export enum Interfaces {
   Masset,
   ERC20,
@@ -32,20 +34,23 @@ export enum Interfaces {
   CurveTokenMinter,
   CurveDeposit,
   SaveWrapper,
+  BoostedSavingsVault,
 }
+/* eslint-enable @typescript-eslint/no-shadow */
 
 export interface Instances {
   [Interfaces.Masset]: IMasset;
   [Interfaces.ERC20]: Erc20Detailed;
   [Interfaces.SavingsContract]: ISavingsContract;
-  [Interfaces.StakingRewards]: IStakingRewards;
-  [Interfaces.StakingRewardsWithPlatformToken]: IStakingRewardsWithPlatformToken;
-  [Interfaces.RewardsDistibutor]: IRewardsDistributor;
-  [Interfaces.MerkleDrop]: IMerkleDrop;
+  [Interfaces.StakingRewards]: StakingRewards;
+  [Interfaces.StakingRewardsWithPlatformToken]: StakingRewardsWithPlatformToken;
+  [Interfaces.RewardsDistibutor]: RewardsDistributor;
+  [Interfaces.MerkleDrop]: MerkleDrop;
   [Interfaces.CurveGauge]: MusdGauge;
-  [Interfaces.CurveTokenMinter]: ICurveTokenMinter;
-  [Interfaces.CurveDeposit]: ICurveDeposit;
-  [Interfaces.SaveWrapper]: ISaveWrapper;
+  [Interfaces.CurveTokenMinter]: CurveTokenMinter;
+  [Interfaces.CurveDeposit]: CurveDeposit;
+  [Interfaces.SaveWrapper]: SaveWrapper;
+  [Interfaces.BoostedSavingsVault]: BoostedSavingsVault;
 }
 
 export interface Token {
