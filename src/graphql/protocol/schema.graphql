@@ -1684,6 +1684,8 @@ enum BoostedSavingsVaultAccount_orderBy {
   id
   boostedSavingsVault
   account
+  rawBalance
+  boostedBalance
   rewardPerTokenPaid
   rewards
   lastAction
@@ -1728,6 +1730,22 @@ input BoostedSavingsVaultAccount_filter {
   account_not_starts_with: String
   account_ends_with: String
   account_not_ends_with: String
+  rawBalance: BigInt
+  rawBalance_not: BigInt
+  rawBalance_gt: BigInt
+  rawBalance_lt: BigInt
+  rawBalance_gte: BigInt
+  rawBalance_lte: BigInt
+  rawBalance_in: [BigInt!]
+  rawBalance_not_in: [BigInt!]
+  boostedBalance: BigInt
+  boostedBalance_not: BigInt
+  boostedBalance_gt: BigInt
+  boostedBalance_lt: BigInt
+  boostedBalance_gte: BigInt
+  boostedBalance_lte: BigInt
+  boostedBalance_in: [BigInt!]
+  boostedBalance_not_in: [BigInt!]
   rewardPerTokenPaid: BigInt
   rewardPerTokenPaid_not: BigInt
   rewardPerTokenPaid_gt: BigInt
@@ -1773,6 +1791,8 @@ type BoostedSavingsVaultAccount {
   id: ID!
   boostedSavingsVault: BoostedSavingsVault!
   account: Account!
+  rawBalance: BigInt!
+  boostedBalance: BigInt!
   rewardPerTokenPaid: BigInt!
   rewards: BigInt!
   lastAction: Int!
