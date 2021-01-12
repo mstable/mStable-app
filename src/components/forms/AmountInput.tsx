@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 interface Props {
   className?: string;
-  error?: string;
+  error?: boolean;
   value?: string;
   balance?: string;
   placeholder?: string;
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const Input = styled.input<{
-  error?: string | void;
+  error?: boolean;
   disabled?: boolean;
 }>`
   appearance: none;
@@ -59,16 +59,6 @@ export const Input = styled.input<{
   ${({ theme }) => theme.mixins.numeric};
 `;
 
-/**
- * AmountInput component
- * Form input for selecting an amount denominated in given decimals.
- *
- * @param name Field name sent to onChange handler
- * @param value Controlled form value
- * @param error Error message, e.g. 'Amount too low'
- * @param disabled Flag for disabling the input
- * @param onChange Optional callback with the amount value
- */
 export const AmountInput: FC<Props> = ({
   className,
   error,
