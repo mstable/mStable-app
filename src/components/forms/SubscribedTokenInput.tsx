@@ -1,4 +1,11 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  FC,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
 
@@ -11,7 +18,12 @@ import { FontSize, ViewportWidth } from '../../theme';
 
 interface Props {
   value?: string;
-  options?: { address: string; balance?: BigDecimal; label?: string }[];
+  options?: {
+    address: string;
+    balance?: BigDecimal;
+    label?: string;
+    symbol?: string;
+  }[];
   onChange?(tokenAddress?: string): void;
   error?: string;
   disabled?: boolean;
@@ -98,11 +110,20 @@ const Option: FC<{
   address: string;
   balance?: BigDecimal;
   label?: string;
+  symbol?: string;
   selected?: boolean;
   onClick?(address: string): void;
-}> = ({ address, balance: _balance, label, selected, onClick }) => {
+}> = ({
+  address,
+  balance: _balance,
+  symbol: _symbol,
+  label,
+  selected,
+  onClick,
+}) => {
   const token = useTokenSubscription(address);
   const balance = _balance ?? token?.balance;
+  const symbol = _symbol ?? token?.symbol;
   return (
     <OptionContainer
       onClick={() => {
@@ -110,9 +131,9 @@ const Option: FC<{
       }}
       selected={selected}
     >
-      {token?.symbol && <TokenIcon symbol={token.symbol} />}
+      {symbol && <TokenIcon symbol={symbol} />}
       <TokenSymbol>
-        {label ?? token?.symbol}
+        {label ?? symbol}
         {!!balance?.simple && <Balance>{balance.format(2, true)}</Balance>}
       </TokenSymbol>
     </OptionContainer>
@@ -144,16 +165,6 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   }
 `;
 
-/**
- * TokenInput form component
- * Select a token from a given list of tokens.
- *
- * @param error Error message
- * @param value Selected token address value (address)
- * @param options Available tokens (list of addresses or { address, balance })
- * @param onChange Optional callback for change event
- * @param disabled Optional flag to disable the input
- */
 export const SubscribedTokenInput: FC<Props> = ({
   value,
   options,
@@ -162,6 +173,14 @@ export const SubscribedTokenInput: FC<Props> = ({
   error,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
+
+  const selectedOption = useMemo(
+    () =>
+      value && options
+        ? options.find(option => value === option.address)
+        : undefined,
+    [options, value],
+  );
 
   const handleClickOutside = useCallback(() => {
     setOpen(false);
@@ -186,7 +205,7 @@ export const SubscribedTokenInput: FC<Props> = ({
 
   useOnClickOutside(container, handleClickOutside);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => {
       window.removeEventListener('keypress', handleKeyPress);
@@ -206,7 +225,12 @@ export const SubscribedTokenInput: FC<Props> = ({
     >
       <Selected>
         {value ? (
-          <Option address={value} />
+          <Option
+            address={value}
+            balance={selectedOption?.balance}
+            label={selectedOption?.label}
+            symbol={selectedOption?.symbol}
+          />
         ) : (
           <Placeholder onClick={handleUnset}>{placeholderText}</Placeholder>
         )}
@@ -217,13 +241,14 @@ export const SubscribedTokenInput: FC<Props> = ({
           {value ? (
             <Placeholder onClick={handleUnset}>{placeholderText}</Placeholder>
           ) : null}
-          {options?.map(({ address, balance, label }) => (
+          {options?.map(({ address, balance, label, symbol }) => (
             <div key={address}>
               <Option
                 address={address}
                 balance={balance}
                 label={label}
                 selected={address === value}
+                symbol={symbol}
                 onClick={onChange}
               />
             </div>
