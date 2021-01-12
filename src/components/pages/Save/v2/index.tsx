@@ -1,28 +1,18 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { Button } from '../../../core/Button';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
+import { BalanceRow, BalanceType, BalanceHeader } from '../BalanceRow';
+import { Boost } from './Boost';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 0.75rem;
   border-radius: 0 0 2px 2px;
   text-align: left;
-
-  > * {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 1rem;
-    border: 1px #eee solid;
-    padding: 1rem;
-    > :last-child {
-      display: flex;
-      gap: 1rem;
-    }
-  }
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
 `;
 
 const SaveModal: FC = () => {
@@ -87,28 +77,12 @@ export const Save: FC = () => {
 
   return (
     <Container>
-      <div>
-        <div>mUSD</div>
-        <div>
-          <Button onClick={showSaveModal}>Save</Button>
-          <Button onClick={showSaveAndStakeModal}>Save & Stake</Button>
-        </div>
-      </div>
-      <div>
-        <div>imUSD</div>
-        <div>
-          <Button onClick={showSaveDepositModal}>Deposit</Button>
-          <Button onClick={showSaveWithdrawModal}>Withdraw</Button>
-          <Button onClick={showSaveStakeModal}>Stake</Button>
-        </div>
-      </div>
-      <div>
-        <div>imUSD Vault</div>
-        <div>
-          <Button onClick={showVaultWithdrawModal}>Withdraw</Button>
-          <Button onClick={showVaultExitModal}>Exit</Button>
-        </div>
-      </div>
+      <BalanceHeader />
+      <BalanceRow token={BalanceType.MUSD} onClick={() => {}} />
+      <BalanceRow token={BalanceType.IMUSD} onClick={() => {}} />
+      <BalanceRow token={BalanceType.IMUSD_VAULT} onClick={() => {}}>
+        <Boost />
+      </BalanceRow>
     </Container>
   );
 };

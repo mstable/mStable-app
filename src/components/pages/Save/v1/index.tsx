@@ -1,8 +1,27 @@
 import React, { FC } from 'react';
+import styled from 'styled-components';
 
 import { useSelectedSavingsContractState } from '../../../../context/SelectedSaveVersionProvider';
+import { BalanceHeader, BalanceRow, BalanceType } from '../BalanceRow';
+import { SaveMigration } from '../SaveMigration';
 import { SaveForm } from './SaveForm';
 import { SaveProvider } from './SaveProvider';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-radius: 0 0 2px 2px;
+  text-align: left;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+`;
+
+const Migration = styled.div`
+  display: flex;
+  flex: 1;
+  justify-content: center;
+`;
 
 export const Save: FC = () => {
   const savingsContractState = useSelectedSavingsContractState();
@@ -11,5 +30,13 @@ export const Save: FC = () => {
     <SaveProvider>
       <SaveForm />
     </SaveProvider>
-  ) : null;
+  ) : (
+    <Container>
+      <BalanceHeader />
+      <BalanceRow token={BalanceType.MUSD} onClick={() => {}} warning />
+      <Migration>
+        <SaveMigration />
+      </Migration>
+    </Container>
+  );
 };
