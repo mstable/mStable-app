@@ -43,6 +43,7 @@ export const UnstyledButton = styled.button`
   border: none;
   background: transparent;
   user-select: none;
+  cursor: pointer;
 `;
 
 export const Button = styled(UnstyledButton).attrs<ButtonHTMLAttributes<never>>(

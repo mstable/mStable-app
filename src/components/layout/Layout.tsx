@@ -142,6 +142,9 @@ const Container = styled.div<{ accountOpen?: boolean }>`
   // The sticky header won't always be 80px, so this is less than ideal
   min-height: calc(100vh - 80px);
 
+  // Space for the footer
+  padding-bottom: 8rem;
+
   background: ${({ accountOpen }) =>
     accountOpen ? Color.black : 'transparent'};
 

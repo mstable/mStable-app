@@ -15,8 +15,8 @@ import { Button, UnstyledButton } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { AssetTokenInput } from './AssetTokenInput';
 import { SavingsReward } from './SavingsReward';
+import { AssetInput } from '../../../forms/AssetInput';
 
 const MAX_BOOST = 1.5;
 const MIN_BOOST = 0.5;
@@ -182,16 +182,11 @@ export const Calculator: FC = () => {
       <CalculatorInputs>
         <div>
           {vMTA ? (
-            <AssetTokenInput
-              token={{
-                address: vMTA.address,
-                disabled: true,
-              }}
-              amount={{
-                value: vMTAValue,
-                formValue: vMTAFormValue,
-                handleChange: setVmta,
-              }}
+            <AssetInput
+              address={vMTA.address}
+              addressDisabled
+              formValue={vMTAFormValue}
+              handleSetAmount={setVmta}
             />
           ) : (
             <Skeleton />
@@ -199,16 +194,11 @@ export const Calculator: FC = () => {
         </div>
         <div>
           {save ? (
-            <AssetTokenInput
-              token={{
-                address: save.address,
-                disabled: true,
-              }}
-              amount={{
-                value: saveValue,
-                formValue: saveFormValue,
-                handleChange: setSave,
-              }}
+            <AssetInput
+              address={save.address}
+              addressDisabled
+              formValue={saveFormValue}
+              handleSetAmount={setSave}
             />
           ) : (
             <Skeleton />

@@ -3923,7 +3923,7 @@ export type MassetsQuery = { massets: Array<(
       { token?: Maybe<TokenAllFragment>, boostedSavingsVaults: Array<(
         Pick<BoostedSavingsVault, 'id' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
         & { accounts: Array<(
-          Pick<BoostedSavingsVaultAccount, 'id' | 'lastAction' | 'lastClaim' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
+          Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
           & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
         )> }
       )> }
@@ -4101,8 +4101,10 @@ export const MassetsDocument = gql`
         totalSupply
         accounts(where: {account: $account}) @include(if: $hasAccount) {
           id
+          boostedBalance
           lastAction
           lastClaim
+          rawBalance
           rewardCount
           rewardPerTokenPaid
           rewards

@@ -26,7 +26,7 @@ interface Props {
 interface RowProps {
   title: string;
   subtitle?: string;
-  AssetIcon?: ReactElement;
+  AssetIcon: FC;
 }
 
 export const ContainerSnippet = css`
@@ -75,6 +75,7 @@ const Title = styled.div`
   display: flex;
   font-weight: 600;
   text-align: left;
+  color: ${({ theme }) => theme.color.blue};
 
   div {
     position: relative;
@@ -130,7 +131,7 @@ const HeaderContainer = styled(Widget)`
   ${ContainerSnippet};
 
   padding: 0 1.25rem;
-  font-size: 0.875;
+  font-size: 0.875rem;
   color: ${({ theme }) => theme.color.grey};
 `;
 
@@ -151,7 +152,7 @@ const Tokens = new Map<number, RowProps>([
     {
       title: 'mUSD',
       subtitle: 'mStable USD',
-      AssetIcon: <MUSDIcon />,
+      AssetIcon: MUSDIcon,
     },
   ],
   [
@@ -159,7 +160,7 @@ const Tokens = new Map<number, RowProps>([
     {
       title: 'imUSD',
       subtitle: 'Interest-bearing mUSD',
-      AssetIcon: <IMUSDIcon />,
+      AssetIcon: IMUSDIcon,
     },
   ],
   [
@@ -167,7 +168,7 @@ const Tokens = new Map<number, RowProps>([
     {
       title: 'imUSD Vault',
       subtitle: 'Vault with MTA rewards',
-      AssetIcon: <IMUSDMTAIcon />,
+      AssetIcon: IMUSDMTAIcon,
     },
   ],
 ]);
@@ -188,11 +189,9 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   warning = false,
   hasChildren = false,
 }) => {
-  const tokenInfo = Tokens.get(token);
+  const tokenInfo = Tokens.get(token) as RowProps;
 
   const interestRate = useAverageApyForPastWeek();
-
-  if (!tokenInfo) return null;
 
   const { title, subtitle, AssetIcon } = tokenInfo;
 
@@ -202,13 +201,16 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   const isIMUSDVault = token === BalanceType.IMUSD_VAULT;
 
   const hasBorder = !hasChildren;
-  const hasPadding = hasChildren;
 
   return (
-    <DefaultContainer border={hasBorder} padding={hasPadding} onClick={onClick}>
+    <DefaultContainer
+      border={hasBorder}
+      padding={hasChildren}
+      onClick={onClick}
+    >
       <div>
         <Asset>
-          {AssetIcon}
+          <AssetIcon />
           <div>
             <Title>
               <div>

@@ -64,8 +64,10 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
         totalSupply
         accounts(where: { account: $account }) @include(if: $hasAccount) {
           id
+          boostedBalance
           lastAction
           lastClaim
+          rawBalance
           rewardCount
           rewardPerTokenPaid
           rewards
