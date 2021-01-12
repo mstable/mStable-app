@@ -3,7 +3,6 @@ import React, { FC } from 'react';
 import { useSelectedSaveVersion } from '../../../context/SelectedSaveVersionProvider';
 import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
 import { PageHeader } from '../PageHeader';
-import { SaveInfo } from './SaveInfo';
 import { ToggleSave } from './ToggleSave';
 import { WeeklySaveAPY } from './WeeklySaveAPY';
 import { Save as SaveV1 } from './v1';
@@ -22,7 +21,6 @@ export const Save: FC = () => {
         <ToggleSave />
         <WeeklySaveAPY />
       </PageHeader>
-      <SaveInfo />
       {selectedSaveVersion === 1 ? <SaveV1 /> : <SaveV2 />}
     </>
   );
