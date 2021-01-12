@@ -1,37 +1,22 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { ViewportWidth } from '../../../../theme';
-import { BigDecimal } from '../../../../web3/BigDecimal';
-import { Button } from '../../../core/Button';
-import { AmountInput } from '../../../forms/AmountInput';
-import { SubscribedTokenInput } from '../../../forms/SubscribedTokenInput';
-
-// TODO: Might be able to adapt existing InlineTokenInput rather than fork
+import { ViewportWidth } from '../../theme';
+import { BigDecimal } from '../../web3/BigDecimal';
+import { Button } from '../core/Button';
+import { SubscribedTokenInput } from './SubscribedTokenInput';
+import { AmountInput } from './AmountInput';
 
 interface Props {
-  amount: {
-    value?: BigDecimal;
-    formValue?: string;
-    disabled?: boolean;
-    handleChange?(formValue?: string): void;
-    handleClick?(): void;
-    handleSetMax?(): void;
-  };
-  token: {
-    address?: string;
-    options?: { address: string; balance?: BigDecimal; label?: string }[];
-    disabled?: boolean;
-    handleChange?(tokenAddress?: string): void;
-  };
-  toggle?: {
-    canEnable: boolean;
-    enabled: boolean;
-    reasonCannotEnable?: string;
-    handleToggle(): void;
-  };
-  error?: string;
-  overweight?: boolean;
+  amountDisabled?: boolean;
+  formValue?: string;
+  address?: string;
+  addressOptions?: { address: string; balance?: BigDecimal; label?: string }[];
+  addressDisabled?: boolean;
+  error?: boolean;
+  handleSetAmount?(formValue?: string): void;
+  handleSetAddress?(address: string): void;
+  handleSetMax?(): void;
 }
 
 const TokenContainer = styled.div`
@@ -106,7 +91,6 @@ const Grid = styled.div<{ enabled?: boolean }>`
   ${InputContainer} {
     overflow: hidden;
     transition: all 0.4s ease;
-    opacity: ${({ enabled }) => (enabled ? 1 : 0)};
   }
 
   ${TokenContainer} {
@@ -132,37 +116,35 @@ const Grid = styled.div<{ enabled?: boolean }>`
   }
 `;
 
-const Container = styled.div<{
-  overweight?: boolean;
-  enabled?: boolean;
-}>`
-  background: ${({ theme, overweight }) =>
-    overweight ? theme.color.blackTransparenter : theme.color.white};
+const Container = styled.div`
+  background: ${({ theme }) => theme.color.white};
 `;
 
-export const AssetTokenInput: FC<Props> = ({
-  amount,
-  token,
+export const AssetInput: FC<Props> = ({
+  address,
+  addressDisabled,
+  addressOptions,
+  amountDisabled,
   error,
-  overweight,
-  toggle,
+  formValue,
+  handleSetAddress,
+  handleSetAmount,
+  handleSetMax,
 }) => {
-  const enabled = toggle ? toggle.enabled : true;
-
   return (
-    <Container enabled={enabled} overweight={overweight}>
-      <Grid enabled={enabled}>
-        <InputContainer onClick={amount.handleClick}>
+    <Container>
+      <Grid>
+        <InputContainer>
           <Label>Amount</Label>
           <Input>
             <AmountInput
-              disabled={amount.disabled}
-              value={amount.formValue}
+              disabled={amountDisabled}
+              value={formValue}
               error={error}
-              onChange={amount.handleChange}
+              onChange={handleSetAmount}
             />
-            {amount.handleSetMax && (
-              <Button type="button" onClick={amount.handleSetMax} scale={0.75}>
+            {handleSetMax && (
+              <Button type="button" onClick={handleSetMax} scale={0.75}>
                 Max
               </Button>
             )}
@@ -170,10 +152,10 @@ export const AssetTokenInput: FC<Props> = ({
         </InputContainer>
         <TokenContainer>
           <SubscribedTokenInput
-            disabled={token.disabled}
-            value={token.address}
-            options={token.options}
-            onChange={token.handleChange}
+            disabled={addressDisabled}
+            value={address}
+            options={addressOptions}
+            onChange={handleSetAddress}
           />
         </TokenContainer>
       </Grid>

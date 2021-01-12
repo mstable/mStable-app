@@ -54,6 +54,8 @@ export interface BoostedSavingsVaultAccountState {
   rewardCount: number;
   rewardPerTokenPaid: BigNumber;
   rewards: BigNumber;
+  rawBalance: BigDecimal;
+  boostedBalance: BigDecimal;
   rewardEntries: {
     finish: number;
     start: number;

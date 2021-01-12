@@ -129,15 +129,21 @@ const transformBoostedSavingsVault = ({
   if (accounts?.[0]) {
     const [
       {
+        boostedBalance,
+        lastAction,
+        lastClaim,
+        rawBalance,
         rewardCount,
         rewardEntries,
         rewardPerTokenPaid,
         rewards,
-        lastAction,
-        lastClaim,
       },
     ] = accounts;
     account = {
+      boostedBalance: new BigDecimal(boostedBalance),
+      lastAction,
+      lastClaim,
+      rawBalance: new BigDecimal(rawBalance),
       rewardCount,
       rewardPerTokenPaid: bigNumberify(rewardPerTokenPaid),
       rewards: bigNumberify(rewards),
@@ -147,8 +153,6 @@ const transformBoostedSavingsVault = ({
         index,
         start,
       })),
-      lastAction,
-      lastClaim,
     };
   }
 

@@ -94,7 +94,7 @@ export const BassetInput: FC<Props> = ({ address }) => {
               <AmountInput
                 disabled={!enabled}
                 value={formValue}
-                error={error}
+                error={!!error}
                 onChange={handleChangeAmount}
               />
               {needsUnlock && massetAddress && amount ? (
