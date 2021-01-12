@@ -14,7 +14,7 @@ import { Button } from '../../core/Button';
 import { ExternalLink } from '../../core/ExternalLink';
 import { Color, FontSize, ViewportWidth } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
-import { gradientBackground } from '../../layout/css';
+import { containerBackground } from '../../layout/css';
 import { PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
@@ -341,7 +341,7 @@ const Container = styled.div`
 `;
 
 const BackgroundContainer = styled.div`
-  ${gradientBackground}
+  ${containerBackground}
 `;
 
 const EarnSlider: FC<{

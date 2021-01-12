@@ -12,7 +12,7 @@ import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
-import { gradientBackground } from './css';
+import { containerBackground } from './css';
 import { Color } from '../../theme';
 import { BannerMessage } from './BannerMessage';
 import { PendingTransactions } from '../wallet/PendingTransactions';
@@ -22,7 +22,7 @@ const Main = styled.main`
 `;
 
 const BackgroundContainer = styled.div`
-  ${gradientBackground}
+  ${containerBackground}
 `;
 
 const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
@@ -147,7 +147,7 @@ const Container = styled.div<{ accountOpen?: boolean }>`
 
   grid-template-columns:
     1fr
-    min(1200px, 100%)
+    min(1000px, 100%)
     1fr;
 
   > * {
