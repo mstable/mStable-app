@@ -10,10 +10,17 @@ export const useModalComponent = ({
   title: string;
   children: ReactElement;
 }): [() => void, () => void] => {
-  const [showModal, hideModal] = useModal(({ onExited, in: open }) => (
-    <Modal title={title} onExited={onExited} open={open} hideModal={hideModal}>
-      {children}
-    </Modal>
-  ));
+  const [showModal, hideModal] = useModal(({ onExited, in: open }) => {
+    return (
+      <Modal
+        title={title}
+        onExited={onExited}
+        open={open}
+        hideModal={hideModal}
+      >
+        {children}
+      </Modal>
+    );
+  });
   return [showModal, hideModal];
 };
