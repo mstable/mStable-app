@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
-import styled, { css, keyframes } from 'styled-components';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import React, { FC, RefObject, useRef } from 'react';
+import styled from 'styled-components';
+import useOnClickOutside from 'use-onclickoutside';
 
 import { Button } from './Button';
 
@@ -32,7 +32,7 @@ const Container = styled.div`
   min-width: 50vw;
   max-width: 90vw;
   max-height: 90vw;
-  background: white;
+  background: ${({ theme }) => theme.color.white};
   padding: 1.5rem;
   border-radius: 1rem;
   border: 1px ${({ theme }) => theme.color.lightGrey} solid;
@@ -48,62 +48,61 @@ const FixedContainer = styled.div`
   right: 0;
   bottom: 0;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
 `;
 
-const scaleIn = keyframes`
-  0% {
-    transform: scale(2);
-    transform-origin: 50% 50%;
-    filter: blur(40px);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    transform-origin: 50% 50%;
-    filter: blur(0);
-    opacity: 1;
-  }
-`;
+// TODO fix animation
+// const scaleIn = keyframes`
+//   0% {
+//     transform: scale(2);
+//     transform-origin: 50% 50%;
+//     filter: blur(40px);
+//     opacity: 0;
+//   }
+//   100% {
+//     transform: scale(1);
+//     transform-origin: 50% 50%;
+//     filter: blur(0);
+//     opacity: 1;
+//   }
+// `;
+//
+// const Animation = styled(CSSTransition)`
+//   ${({ classNames }) => `&.${classNames}-enter`} {
+//     animation: ${css`
+//         ${scaleIn}`} 0.5s cubic-bezier(0.19, 1, 0.22, 1) normal;
+//   }
+//
+//   ${({ classNames }) => `&.${classNames}-exit-active`} {
+//     animation: ${css`
+//         ${scaleIn}`} 0.3s cubic-bezier(0.19, 1, 0.22, 1) reverse;
+//   }
+// `;
 
-const Animation = styled(CSSTransition)`
-  ${({ classNames }) => `&.${classNames}-enter`} {
-    animation: ${css`
-        ${scaleIn}`} 0.5s cubic-bezier(0.19, 1, 0.22, 1) normal;
-  }
+export const Modal: FC<Props> = ({ children, title, className, hideModal }) => {
+  const fixedRef = useRef<HTMLDivElement>(null as never);
+  const modalRef = useRef<HTMLDivElement>(null as never);
 
-  ${({ classNames }) => `&.${classNames}-exit-active`} {
-    animation: ${css`
-        ${scaleIn}`} 0.3s cubic-bezier(0.19, 1, 0.22, 1) reverse;
-  }
-`;
+  useOnClickOutside(modalRef as RefObject<HTMLDivElement>, event => {
+    if (event.target === fixedRef.current) {
+      hideModal?.();
+    }
+  });
 
-export const Modal: FC<Props> = ({
-  children,
-  title,
-  className,
-  hideModal,
-  open,
-}) => {
   return (
-    <TransitionGroup>
-      {open && (
-        <Animation timeout={{ enter: 500, exit: 300 }} classNames="item">
-          <FixedContainer onClick={hideModal}>
-            <Container className={className}>
-              <Header>
-                <Title>{title}</Title>
-                {hideModal && (
-                  <Button scale={0.7} onClick={hideModal}>
-                    x
-                  </Button>
-                )}
-              </Header>
-              <Body>{children}</Body>
-            </Container>
-          </FixedContainer>
-        </Animation>
-      )}
-    </TransitionGroup>
+    <FixedContainer ref={fixedRef}>
+      <Container className={className} ref={modalRef}>
+        <Header>
+          <Title>{title}</Title>
+          {hideModal && (
+            <Button scale={0.7} onClick={hideModal}>
+              x
+            </Button>
+          )}
+        </Header>
+        <Body>{children}</Body>
+      </Container>
+    </FixedContainer>
   );
 };
