@@ -133,7 +133,7 @@ export const Widget: FC<Props> = ({
   );
 };
 
-export const WidgetButton: FC<Props> = ({
+export const WidgetButton: FC<Props & { onClick: () => void }> = ({
   border,
   padding,
   children,
@@ -142,9 +142,15 @@ export const WidgetButton: FC<Props> = ({
   title,
   tooltip,
   boldTitle,
+  onClick,
 }) => {
   return (
-    <ContainerButton border={border} padding={padding} className={className}>
+    <ContainerButton
+      border={border}
+      padding={padding}
+      className={className}
+      onClick={onClick}
+    >
       <DefaultWidget
         title={title}
         tooltip={tooltip}
