@@ -1,39 +1,48 @@
-import React, { FC, RefObject, useRef } from 'react';
+import React, {
+  FC,
+  ReactElement,
+  RefObject,
+  useLayoutEffect,
+  useRef,
+} from 'react';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
 
-import { Button } from './Button';
+import { UnstyledButton } from './Button';
 
 interface Props {
   className?: string;
-  title: string;
+  title: ReactElement | string;
   hideModal?(): void;
   open: boolean;
   onExited(): void;
 }
 
 const Title = styled.div`
-  font-size: 1.4rem;
+  flex-grow: 1;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 `;
 
 const Header = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px #eee solid;
 `;
 
 const Body = styled.div``;
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
   min-width: 50vw;
   max-width: 90vw;
   max-height: 90vw;
   background: ${({ theme }) => theme.color.white};
-  padding: 1.5rem;
   border-radius: 1rem;
   border: 1px ${({ theme }) => theme.color.lightGrey} solid;
 `;
@@ -90,16 +99,24 @@ export const Modal: FC<Props> = ({ children, title, className, hideModal }) => {
     }
   });
 
+  useLayoutEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        hideModal?.();
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keypress', handleKeyPress);
+    };
+  }, [hideModal]);
+
   return (
     <FixedContainer ref={fixedRef}>
       <Container className={className} ref={modalRef}>
         <Header>
           <Title>{title}</Title>
-          {hideModal && (
-            <Button scale={0.7} onClick={hideModal}>
-              x
-            </Button>
-          )}
+          {hideModal && <UnstyledButton onClick={hideModal}>✕</UnstyledButton>}
         </Header>
         <Body>{children}</Body>
       </Container>
