@@ -203,6 +203,9 @@ export const useTransactionsState = (): State => useContext(stateCtx);
 
 export const useTransactionsDispatch = (): Dispatch => useContext(dispatchCtx);
 
+export const usePropose = (): Dispatch['propose'] =>
+  useContext(dispatchCtx).propose;
+
 export const useOrderedCurrentTransactions = (): Transaction[] => {
   const state = useTransactionsState();
   return useMemo(() => {
