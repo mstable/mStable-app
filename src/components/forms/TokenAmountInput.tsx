@@ -127,7 +127,7 @@ export const TokenAmountInput: FC<Props> = ({
             value={amountValue}
             disabled={amountDisabled}
             onChange={onChangeAmount}
-            error={error}
+            error={!!error}
           />
           {onSetMax ? (
             <Button type="button" onClick={onSetMax}>

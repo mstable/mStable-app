@@ -218,7 +218,7 @@ export const InlineTokenAmountInput: FC<Props> = ({
               <AmountInput
                 disabled={amount.disabled}
                 value={amount.formValue}
-                error={error}
+                error={!!error}
                 onChange={amount.handleChange}
               />
               {amount.handleSetMax ? (

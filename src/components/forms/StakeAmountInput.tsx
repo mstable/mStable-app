@@ -87,7 +87,7 @@ export const StakeAmountInput: FC = () => {
           <AmountInput
             value={formValue}
             onChange={setWithdrawAmount}
-            error={error}
+            error={!!error}
           />
           <Tooltip tip="Select max amount to exit the pool">
             <Button type="button" onClick={setMaxWithdrawAmount}>
