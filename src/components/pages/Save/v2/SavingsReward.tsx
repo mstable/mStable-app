@@ -3,7 +3,6 @@ import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../../../context/TokensProvider';
-import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 import { Button } from '../../../core/Button';
@@ -134,7 +133,7 @@ export const SavingsReward: FC = () => {
 
   return (
     <Widget
-      title="Savings Rewards"
+      title="Rewards"
       headerContent={
         <Button
           onClick={handleClick}
