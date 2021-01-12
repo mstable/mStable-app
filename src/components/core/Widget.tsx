@@ -1,5 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import styled from 'styled-components';
+import { UnstyledButton } from './Button';
 import { Tooltip } from './ReactTooltip';
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
   title?: string;
   tooltip?: string;
   border?: boolean;
+  padding?: boolean;
   headerContent?: ReactNode;
   boldTitle?: boolean;
 }
@@ -39,18 +41,38 @@ const Header = styled.div`
   height: 3rem;
 `;
 
-const Container = styled.div<Pick<Props, 'border'>>`
-  ${({ border }) => ({
-    padding: border ? '1.25rem' : '0',
+const Container = styled.div<{ border?: boolean; padding?: boolean }>`
+  ${({ border, padding }) => ({
+    padding: border ? '1.25rem' : padding ? '0 1.25rem' : '0',
     border: border ? '1px #eee solid' : 0,
     borderRadius: border ? '0.75rem' : 'none',
   })}
 `;
 
-export const Widget: FC<Props> = ({
-  border,
+const ContainerButton = styled(UnstyledButton)<{
+  border?: boolean;
+  padding?: boolean;
+}>`
+  width: 100%;
+
+  :hover {
+    background: ${({ theme }) => theme.color.lighterGrey};
+    cursor: pointer;
+  }
+
+  :active {
+    background: ${({ theme }) => theme.color.lightGrey};
+  }
+
+  ${({ border, padding }) => ({
+    padding: border ? '1.25rem' : padding ? '0 1.25rem' : '0',
+    border: border ? '1px #eee solid' : 0,
+    borderRadius: border ? '0.75rem' : 'none',
+  })}
+`;
+
+const DefaultWidget: FC<Props> = ({
   children,
-  className,
   headerContent,
   title,
   tooltip,
@@ -58,7 +80,7 @@ export const Widget: FC<Props> = ({
 }) => {
   const showHeader = !!title || !!tooltip;
   return (
-    <Container border={border} className={className}>
+    <>
       {showHeader && (
         <Header>
           {tooltip ? (
@@ -72,6 +94,54 @@ export const Widget: FC<Props> = ({
         </Header>
       )}
       <Body>{children}</Body>
+    </>
+  );
+};
+
+export const Widget: FC<Props> = ({
+  border,
+  padding,
+  children,
+  className,
+  headerContent,
+  title,
+  tooltip,
+  boldTitle,
+}) => {
+  return (
+    <Container border={border} padding={padding} className={className}>
+      <DefaultWidget
+        title={title}
+        tooltip={tooltip}
+        headerContent={headerContent}
+        boldTitle={boldTitle}
+      >
+        {children}
+      </DefaultWidget>
     </Container>
+  );
+};
+
+export const WidgetButton: FC<Props> = ({
+  border,
+  padding,
+  children,
+  className,
+  headerContent,
+  title,
+  tooltip,
+  boldTitle,
+}) => {
+  return (
+    <ContainerButton border={border} padding={padding} className={className}>
+      <DefaultWidget
+        title={title}
+        tooltip={tooltip}
+        headerContent={headerContent}
+        boldTitle={boldTitle}
+      >
+        {children}
+      </DefaultWidget>
+    </ContainerButton>
   );
 };
