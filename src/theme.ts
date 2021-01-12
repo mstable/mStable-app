@@ -20,6 +20,7 @@ export enum Color {
   offWhite = 'rgb(249,245,242)',
   offBlack = 'rgb(37,39,45)',
   lightGrey = 'rgba(235, 235, 235, 1)',
+  lighterGrey = 'rgba(248,248,248,1)',
   grey = 'rgba(121, 121, 121, 1)',
   greyTransparent = 'rgba(127, 127, 127, 0.5)',
 }
