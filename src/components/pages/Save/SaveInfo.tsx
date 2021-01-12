@@ -16,6 +16,7 @@ import { BigDecimal } from '../../../web3/BigDecimal';
 import { useAverageApyForPastWeek } from '../../../web3/hooks';
 import { ViewportWidth } from '../../../theme';
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
+import { Boost } from './v2/Boost';
 
 const ContainerSnippet = css`
   > div > div {
@@ -41,6 +42,12 @@ const ContainerSnippet = css`
       display: inherit;
     }
   }
+`;
+
+const Line = styled.div`
+  background: #eee;
+  height: 2px;
+  width: 4rem;
 `;
 
 const Title = styled.div`
@@ -98,12 +105,11 @@ const Migration = styled.div`
 
 const StyledWidget = styled(Widget)`
   ${ContainerSnippet};
+  padding: 0 1.25rem;
 `;
 
 const StyledWidgetButton = styled(WidgetButton)`
   ${ContainerSnippet};
-
-  margin-bottom: 0.5rem;
 
   h4 {
     font-size: 1.25rem;
@@ -121,6 +127,15 @@ const Number = styled.span`
   }
 `;
 
+const VaultRow = styled.div`
+  border: 1px #eee solid;
+  border-radius: 0.75rem;
+
+  > div {
+    border-top: 1px solid #eee;
+  }
+`;
+
 const Container = styled.div`
   > div:not(:last-child) {
     margin-bottom: 0.75rem;
@@ -130,16 +145,14 @@ const Container = styled.div`
     position: relative;
   }
 
+  > * {
+    margin-bottom: 0.75rem;
+  }
+
   padding: 1.5rem 0;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
   margin-bottom: 1.5rem;
-`;
-
-const Line = styled.div`
-  background: #eee;
-  height: 2px;
-  width: 4rem;
 `;
 
 const Row: FC<{
@@ -161,7 +174,7 @@ const Row: FC<{
     AssetIcon,
   } = props;
   return (
-    <StyledWidgetButton border>
+    <StyledWidgetButton border={!boosted} padding={!!boosted}>
       <div>
         <Asset>
           {AssetIcon}
@@ -222,7 +235,7 @@ export const SaveInfo: FC = () => {
 
   return (
     <Container>
-      <StyledWidget padding>
+      <StyledWidget>
         <HeaderTitle>Asset</HeaderTitle>
         <HeaderTitle>APY</HeaderTitle>
         <HeaderTitle>Balance</HeaderTitle>
@@ -242,14 +255,19 @@ export const SaveInfo: FC = () => {
         interest={1.2}
         AssetIcon={<IMUSD />}
       />
-      <Row
-        title="imUSD Vault"
-        subtitle="Vault with MTA rewards"
-        balance={undefined}
-        interest={interestRate}
-        boosted
-        AssetIcon={<IMUSDMTA />}
-      />
+      <VaultRow>
+        <Row
+          title="imUSD Vault"
+          subtitle="Vault with MTA rewards"
+          balance={undefined}
+          interest={interestRate}
+          boosted
+          AssetIcon={<IMUSDMTA />}
+        />
+        <div>
+          <Boost />
+        </div>
+      </VaultRow>
       <div>
         {isV1SelectedAndDeprecated && (
           <Migration>
