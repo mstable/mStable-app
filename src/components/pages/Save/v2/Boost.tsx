@@ -283,8 +283,6 @@ const BoostBar: FC = () => {
 };
 
 const Container = styled(Widget)<{ showCalculator?: boolean }>`
-  margin-bottom: 0.75rem;
-
   > div {
     display: flex;
     gap: 2rem;
@@ -314,7 +312,7 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
 const BoostContent: FC = () => {
   const [showCalculator] = useShowCalculatorCtx();
   return (
-    <Container border showCalculator={showCalculator}>
+    <Container padding showCalculator={showCalculator}>
       {showCalculator ? (
         <Calculator />
       ) : (

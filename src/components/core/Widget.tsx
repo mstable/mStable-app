@@ -1,5 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import styled from 'styled-components';
+import { ViewportWidth } from '../../theme';
 import { UnstyledButton } from './Button';
 import { Tooltip } from './ReactTooltip';
 
@@ -28,22 +29,32 @@ const Body = styled.div`
   }
 `;
 
-const HeaderContent = styled.div`
-  font-size: 0.9rem;
-`;
-
 const Header = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 0.5rem;
-  align-items: flex-start;
   gap: 1rem;
-  height: 3rem;
+
+  > button {
+    align-self: flex-end;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    flex-direction: row;
+    justify-content: space-between;
+
+    > button {
+      width: inherit;
+    }
+  }
 `;
 
 const Container = styled.div<{ border?: boolean; padding?: boolean }>`
   ${({ border, padding }) => ({
-    padding: border ? '1.25rem' : padding ? '0 1.25rem' : '0',
+    padding: border || padding ? '1.25rem' : '0',
     border: border ? '1px #eee solid' : 0,
     borderRadius: border ? '0.75rem' : 'none',
   })}
@@ -65,7 +76,7 @@ const ContainerButton = styled(UnstyledButton)<{
   }
 
   ${({ border, padding }) => ({
-    padding: border ? '1.25rem' : padding ? '0 1.25rem' : '0',
+    padding: border || padding ? '1.25rem' : '0',
     border: border ? '1px #eee solid' : 0,
     borderRadius: border ? '0.75rem' : 'none',
   })}
@@ -90,7 +101,7 @@ const DefaultWidget: FC<Props> = ({
           ) : (
             <Title bold={boldTitle}>{title}</Title>
           )}
-          {headerContent && <HeaderContent>{headerContent}</HeaderContent>}
+          {headerContent && headerContent}
         </Header>
       )}
       <Body>{children}</Body>

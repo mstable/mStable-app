@@ -45,26 +45,6 @@ const RowContainer = styled.div`
   }
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1rem;
-
-  > button {
-    flex: 1;
-  }
-
-  @media (min-width: ${ViewportWidth.m}) {
-    margin: 0;
-    justify-content: flex-end;
-
-    > button {
-      flex: initial;
-    }
-  }
-`;
-
 const Stats = styled.div`
   > div:not(:last-child) {
     margin-bottom: 0.75rem;
@@ -74,26 +54,6 @@ const Stats = styled.div`
 const Body = styled.div<{ isPreview?: boolean }>`
   display: flex;
   flex-direction: column;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    flex-direction: row;
-
-    > div:first-child {
-      flex-basis: 65%;
-    }
-    > div:last-child {
-      flex-basis: 35%;
-    }
-  }
-
-  @media (min-width: ${ViewportWidth.l}) {
-    > div:first-child {
-      flex-basis: ${({ isPreview }) => (isPreview ? `70%` : `50%`)};
-    }
-    > div:last-child {
-      flex-basis: ${({ isPreview }) => (isPreview ? `30%` : `50%`)};
-    }
-  }
 `;
 
 const simulateValues = (values: SavingValues): SavingValues => {
@@ -173,7 +133,19 @@ export const SavingsReward: FC = () => {
   const isButtonDisabled = loading || values?.claimable.exact.eq(0);
 
   return (
-    <Widget title="Savings Rewards">
+    <Widget
+      title="Savings Rewards"
+      headerContent={
+        <Button
+          onClick={handleClick}
+          disabled={isButtonDisabled}
+          highlighted={!!simulatedValues}
+          scale={0.7}
+        >
+          {simulatedValues ? `Claim` : `Preview Claim`}
+        </Button>
+      }
+    >
       <Body isPreview={!!simulatedValues}>
         <Stats>
           <Row
@@ -194,15 +166,6 @@ export const SavingsReward: FC = () => {
             value={values?.wallet}
           />
         </Stats>
-        <ButtonContainer>
-          <Button
-            onClick={handleClick}
-            disabled={isButtonDisabled}
-            highlighted={!!simulatedValues}
-          >
-            {simulatedValues ? `Claim` : `Preview Claim`}
-          </Button>
-        </ButtonContainer>
       </Body>
     </Widget>
   );
