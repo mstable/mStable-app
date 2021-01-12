@@ -232,6 +232,7 @@ export const SaveInfo: FC = () => {
   // Needs imusd
   const mUSD = massetState?.token;
   const imUSD = undefined;
+  const showRewards = false;
 
   return (
     <Container>
@@ -264,9 +265,7 @@ export const SaveInfo: FC = () => {
           boosted
           AssetIcon={<IMUSDMTA />}
         />
-        <div>
-          <Boost />
-        </div>
+        {showRewards && <Boost />}
       </VaultRow>
       <div>
         {isV1SelectedAndDeprecated && (

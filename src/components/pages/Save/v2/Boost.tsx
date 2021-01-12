@@ -171,7 +171,7 @@ export const Calculator: FC = () => {
 
   return (
     <CalculatorWidget
-      title="Savings Boost Calculator"
+      title="Boost Calculator"
       tooltip="Find out how to get the optimal boost"
       headerContent={
         <Button scale={0.7} onClick={toggleShowCalculator}>
@@ -256,7 +256,7 @@ const BoostBar: FC = () => {
 
   return (
     <Widget
-      title="Savings Boost"
+      title="Boost"
       tooltip="Save rewards are boosted by a multiplier (from 0.5 to 1.5)"
       headerContent={
         <Button scale={0.7} onClick={toggleShowCalculator}>
