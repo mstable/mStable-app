@@ -15,61 +15,39 @@ const Container = styled.div`
   padding-top: 1rem;
 `;
 
-const SaveModal: FC = () => {
-  return <div>SaveModal</div>;
+const IMUSDVaultModal: FC = () => {
+  return <div>imUSD Vault here</div>;
 };
 
-const SaveAndStakeModal: FC = () => {
-  return <div>SaveAndStakeModal</div>;
+const IMUSDModal: FC = () => {
+  return <div>imUSD Modal here</div>;
 };
 
-const SaveDepositModal: FC = () => {
-  return <div>SaveDepositModal</div>;
+const MUSDModal: FC = () => {
+  return <div>mUSD Modal here</div>;
 };
 
 export const Save: FC = () => {
-  const [showSaveModal] = useModalComponent({
-    title: 'Save mUSD',
-    children: <SaveModal />,
+  const [showMUSDModal] = useModalComponent({
+    title: 'mUSD',
+    children: <MUSDModal />,
   });
-  const [showSaveAndStakeModal] = useModalComponent({
-    title: 'Save and Stake mUSD',
-    children: <SaveAndStakeModal />,
-  });
-
-  const [showSaveDepositModal] = useModalComponent({
-    title: 'Deposit assets for imUSD',
-    children: <SaveDepositModal />,
+  const [showIMUSDModal] = useModalComponent({
+    title: 'imUSD',
+    children: <IMUSDModal />,
   });
 
-  // const [showSaveWithdrawModal] = useModalComponent({
-  //   title: 'Withdraw imUSD',
-  //   children: <SaveWithdrawModal />,
-  // });
-
-  // const [showSaveStakeModal] = useModalComponent({
-  //   title: 'Stake imUSD',
-  //   children: <SaveStakeModal />,
-  // });
-
-  // const [showVaultWithdrawModal] = useModalComponent({
-  //   title: 'Withdraw Stake',
-  //   children: <VaultWithdrawModal />,
-  // });
-  // const [showVaultExitModal] = useModalComponent({
-  //   title: 'Exit Vault',
-  //   children: <VaultExitModal />,
-  // });
+  const [showIMUSDVaultModal] = useModalComponent({
+    title: 'imUSD Vault',
+    children: <IMUSDVaultModal />,
+  });
 
   return (
     <Container>
       <BalanceHeader />
-      <BalanceRow token={BalanceType.MUSD} onClick={showSaveModal} />
-      <BalanceRow token={BalanceType.IMUSD} onClick={showSaveAndStakeModal} />
-      <BalanceRow
-        token={BalanceType.IMUSD_VAULT}
-        onClick={showSaveDepositModal}
-      >
+      <BalanceRow token={BalanceType.MUSD} onClick={showMUSDModal} />
+      <BalanceRow token={BalanceType.IMUSD} onClick={showIMUSDModal} />
+      <BalanceRow token={BalanceType.IMUSD_VAULT} onClick={showIMUSDVaultModal}>
         <Boost />
       </BalanceRow>
     </Container>
