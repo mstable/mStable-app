@@ -13,6 +13,7 @@ import { ReactComponent as IMUSDMTAIcon } from '../../icons/tokens/imusd-mta.svg
 
 export enum BalanceType {
   MUSD,
+  MUSD_SAVE,
   IMUSD,
   IMUSD_VAULT,
 }
@@ -21,7 +22,7 @@ interface Props {
   token: BalanceType;
   balance?: BigDecimal;
   warning?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 interface RowProps {
@@ -153,6 +154,14 @@ const Tokens = new Map<number, RowProps>([
     {
       title: 'mUSD',
       subtitle: 'mStable USD',
+      AssetIcon: MUSDIcon,
+    },
+  ],
+  [
+    BalanceType.MUSD_SAVE,
+    {
+      title: 'mUSD Save',
+      subtitle: 'mStable USD in Save V1',
       AssetIcon: MUSDIcon,
     },
   ],
