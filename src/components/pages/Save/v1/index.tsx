@@ -26,6 +26,7 @@ const Migration = styled.div`
 export const Save: FC = () => {
   const savingsContractState = useSelectedSavingsContractState();
   const isCurrent = savingsContractState?.current;
+  const stakedBalance = savingsContractState?.savingsBalance?.balance;
   return isCurrent ? (
     <SaveProvider>
       <SaveForm />
@@ -33,7 +34,12 @@ export const Save: FC = () => {
   ) : (
     <Container>
       <BalanceHeader />
-      <BalanceRow token={BalanceType.MUSD} onClick={() => {}} warning />
+      <BalanceRow
+        token={BalanceType.MUSD}
+        balance={stakedBalance}
+        onClick={() => {}}
+        warning
+      />
       <Migration>
         <SaveMigration />
       </Migration>

@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
-
 import { ReactComponent as IMUSDMTAIcon } from '../../../icons/tokens/imusd-mta.svg';
 import { ReactComponent as IMUSDIcon } from '../../../icons/tokens/imUSD.svg';
 import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
@@ -36,6 +36,13 @@ const Container = styled.div`
 // TODO don't hardcode titles for masset
 
 export const Save: FC = () => {
+  const massetState = useSelectedMassetState();
+
+  const musdBalance = massetState?.token?.balance;
+  const imusdBalance = massetState?.savingsContracts?.v2?.token?.balance;
+  const imusdVaultBalance =
+    massetState?.savingsContracts?.v2?.boostedSavingsVault?.account?.rawBalance; // ??
+
   const [showMassetModal] = useModalComponent({
     title: (
       <ModalTitle>
@@ -68,9 +75,21 @@ export const Save: FC = () => {
   return (
     <Container>
       <BalanceHeader />
-      <BalanceRow token={BalanceType.MUSD} onClick={showMassetModal} />
-      <BalanceRow token={BalanceType.IMUSD} onClick={showSaveModal} />
-      <BalanceRow token={BalanceType.IMUSD_VAULT} onClick={showVaultModal}>
+      <BalanceRow
+        token={BalanceType.MUSD}
+        onClick={showMassetModal}
+        balance={musdBalance}
+      />
+      <BalanceRow
+        token={BalanceType.IMUSD}
+        onClick={showSaveModal}
+        balance={imusdBalance}
+      />
+      <BalanceRow
+        token={BalanceType.IMUSD_VAULT}
+        onClick={showVaultModal}
+        balance={imusdVaultBalance}
+      >
         <Boost />
       </BalanceRow>
     </Container>

@@ -19,6 +19,7 @@ export enum BalanceType {
 
 interface Props {
   token: BalanceType;
+  balance?: BigDecimal;
   warning?: boolean;
   onClick: () => void;
 }
@@ -188,18 +189,13 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   token,
   warning = false,
   hasChildren = false,
+  balance,
 }) => {
+  const interestRate = useAverageApyForPastWeek();
   const tokenInfo = Tokens.get(token) as RowProps;
 
-  const interestRate = useAverageApyForPastWeek();
-
   const { title, subtitle, AssetIcon } = tokenInfo;
-
-  // TODO - add balances
-  const balance = new BigDecimal('0');
-
   const isIMUSDVault = token === BalanceType.IMUSD_VAULT;
-
   const hasBorder = !hasChildren;
 
   return (
@@ -256,6 +252,7 @@ export const BalanceRow: FC<Props> = ({
   token,
   warning,
   children,
+  balance,
 }) => {
   return children ? (
     <VaultContainer>
@@ -264,10 +261,16 @@ export const BalanceRow: FC<Props> = ({
         token={token}
         hasChildren={!!children}
         warning={warning}
+        balance={balance}
       />
       {children}
     </VaultContainer>
   ) : (
-    <InternalBalanceRow onClick={onClick} token={token} warning={warning} />
+    <InternalBalanceRow
+      onClick={onClick}
+      token={token}
+      warning={warning}
+      balance={balance}
+    />
   );
 };
