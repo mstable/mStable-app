@@ -34,7 +34,7 @@ const Container = styled.div<
     type === NotificationType.Success
       ? theme.color.green
       : type === NotificationType.Info || type === NotificationType.Update
-      ? theme.color.blue
+      ? theme.color.primary
       : theme.color.red};
   color: ${({ theme, type }) =>
     type === NotificationType.Success ? theme.color.black : theme.color.white};

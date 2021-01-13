@@ -17,7 +17,7 @@ interface Props {
 const Title = styled.h3<{ bold?: boolean }>`
   font-weight: 600;
   font-size: ${({ bold }) => (bold ? `1.25rem` : `1.125rem`)};
-  color: ${({ theme }) => theme.color.black};
+  color: ${({ theme }) => theme.color.body};
 `;
 
 const Body = styled.div`
@@ -53,9 +53,9 @@ const Header = styled.div`
 `;
 
 const Container = styled.div<{ border?: boolean; padding?: boolean }>`
-  ${({ border, padding }) => ({
+  ${({ border, padding, theme }) => ({
     padding: border || padding ? '1.25rem' : '0',
-    border: border ? '1px #eee solid' : 0,
+    border: border ? `1px ${theme.color.accent} solid` : 0,
     borderRadius: border ? '0.75rem' : 'none',
   })}
 `;
@@ -67,7 +67,7 @@ const ContainerButton = styled(UnstyledButton)<{
   width: 100%;
 
   :hover {
-    background: ${({ theme }) => theme.color.lighterGrey};
+    background: ${({ theme }) => theme.color.accent};
     cursor: pointer;
   }
 
@@ -75,9 +75,9 @@ const ContainerButton = styled(UnstyledButton)<{
     background: ${({ theme }) => theme.color.lightGrey};
   }
 
-  ${({ border, padding }) => ({
+  ${({ border, padding, theme }) => ({
     padding: border || padding ? '1.25rem' : '0',
-    border: border ? '1px #eee solid' : 0,
+    border: border ? `1px ${theme.color.accent} solid` : 0,
     borderRadius: border ? '0.75rem' : 'none',
   })}
 `;

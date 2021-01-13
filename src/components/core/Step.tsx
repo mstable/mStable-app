@@ -67,7 +67,7 @@ const Options = styled.div`
     top: calc(50% - 0.125rem);
     width: 100%;
     height: 0.25rem;
-    background: ${({ theme }) => theme.color.lightGrey};
+    background: ${({ theme }) => theme.color.bodyTransparenter};
     content: '';
     z-index: -1;
   }
@@ -86,10 +86,10 @@ const Container = styled.div<{
       complete
         ? `4px solid ${theme.color.greenTransparent}`
         : active
-        ? `4px solid ${theme.color.blueTransparent}`
+        ? `4px solid ${theme.color.primaryTransparent}`
         : `none`};
     background: ${({ theme, active, complete }) =>
-      complete || active ? theme.color.white : theme.color.lightGrey};
+      complete || active ? theme.color.background : theme.color.lightGrey};
   }
 
   ${Title} {

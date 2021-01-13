@@ -28,7 +28,7 @@ const PreviewText = styled.span`
 `;
 
 const Line = styled.div`
-  background: #eee;
+  background: ${({ theme }) => theme.color.accent};
   height: 2px;
   margin: 0 1.25rem;
   flex: 1;

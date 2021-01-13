@@ -25,7 +25,7 @@ const Item = styled.li<{
   span {
     white-space: nowrap;
     color: ${({ theme, active }) =>
-      active ? theme.color.blue : theme.color.black};
+      active ? theme.color.primary : theme.color.body};
   }
 
   span {

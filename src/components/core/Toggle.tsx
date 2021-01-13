@@ -12,7 +12,7 @@ interface Props {
 const Container = styled.div`
   padding: 0;
   border-radius: 1.5rem;
-  background: #eee;
+  background: ${({ theme }) => theme.color.accent};
 
   button:not(:first-child) {
     margin-left: -0.5rem;

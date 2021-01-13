@@ -234,7 +234,14 @@ export const AppProvider: FC = ({ children }) => {
             toggleThemeMode,
           },
         ],
-        [state, closeAccount, setBannerMessage, toggleWallet, setThemeMode, toggleThemeMode],
+        [
+          state,
+          closeAccount,
+          setBannerMessage,
+          toggleWallet,
+          setThemeMode,
+          toggleThemeMode,
+        ],
       )}
     >
       {children}
