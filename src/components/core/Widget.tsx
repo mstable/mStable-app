@@ -63,16 +63,17 @@ const Container = styled.div<{ border?: boolean; padding?: boolean }>`
 const ContainerButton = styled(UnstyledButton)<{
   border?: boolean;
   padding?: boolean;
+  disabled?: boolean;
 }>`
   width: 100%;
 
   :hover {
-    background: ${({ theme }) => theme.color.accent};
-    cursor: pointer;
+    background: ${({ theme, disabled }) => !disabled && theme.color.accent};
+    cursor: ${({ disabled }) => (disabled ? `not-allowed` : `pointer`)};
   }
 
   :active {
-    background: ${({ theme }) => theme.color.lightGrey};
+    background: ${({ theme, disabled }) => !disabled && theme.color.lightGrey};
   }
 
   ${({ border, padding, theme }) => ({
@@ -133,7 +134,7 @@ export const Widget: FC<Props> = ({
   );
 };
 
-export const WidgetButton: FC<Props & { onClick: () => void }> = ({
+export const WidgetButton: FC<Props & { onClick?: () => void }> = ({
   border,
   padding,
   children,
@@ -150,6 +151,7 @@ export const WidgetButton: FC<Props & { onClick: () => void }> = ({
       padding={padding}
       className={className}
       onClick={onClick}
+      disabled={!onClick}
     >
       <DefaultWidget
         title={title}
