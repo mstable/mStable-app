@@ -6,7 +6,7 @@ import { useBannerMessage } from '../../context/AppProvider';
 
 const Container = styled.div`
   display: flex;
-  background: rgba(248, 248, 248, 1);
+  background: ${({ theme }) => theme.color.backgroundAccent};
   margin-bottom: 1rem;
   border-radius: 2rem;
   align-items: center;
@@ -15,7 +15,7 @@ const Container = styled.div`
 
   a {
     border: none;
-    color: ${({ theme }) => theme.color.blue};
+    color: ${({ theme }) => theme.color.primary};
     font-weight: 600;
 
     :hover,

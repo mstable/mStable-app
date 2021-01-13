@@ -39,7 +39,7 @@ const Container = styled.header<{ accountOpen: boolean; home: boolean }>`
   align-items: center;
   justify-content: center;
   background: ${({ accountOpen, theme }) =>
-    accountOpen ? theme.color.black : theme.color.white};
+    accountOpen ? theme.color.black : theme.color.background};
 `;
 
 export const Header: FC<{ home: boolean }> = ({ home }) => {

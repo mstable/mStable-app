@@ -14,7 +14,7 @@ const ButtonCss = css<Props>`
     scale ? `${scale * 0.75}em ${scale * 1.5}em` : `1rem`};
   border-radius: 1.5em;
   background: ${({ theme, highlighted }) =>
-    highlighted ? theme.color.blue : `#eee`};
+    highlighted ? theme.color.primary : theme.color.accent};
   color: ${({ theme, highlighted }) =>
     highlighted ? theme.color.white : theme.color.grey};
   z-index: ${({ highlighted }) => (highlighted ? 1 : 0)};
@@ -31,7 +31,7 @@ const ButtonCss = css<Props>`
   :hover {
     ${({ disabled, theme, highlighted }) =>
       !disabled && {
-        background: `${highlighted ? theme.color.gold : `#eee`}`,
+        background: `${highlighted ? theme.color.gold : theme.color.accent}`,
         color: `${highlighted ? theme.color.white : theme.color.black}`,
       }}
   }

@@ -22,12 +22,15 @@ export interface BannerMessage {
   visible: boolean;
 }
 
+type ThemeMode = 'light' | 'dark';
+
 enum Actions {
   SupportedChainSelected,
   SetOnline,
   ToggleAccount,
   CloseAccount,
   SetBannerMessage,
+  SetThemeMode,
 }
 
 export enum StatusWarnings {
@@ -41,6 +44,7 @@ interface State {
   accountOpen: boolean;
   online: boolean;
   bannerMessage?: BannerMessage;
+  themeMode: ThemeMode;
 }
 
 type Action =
@@ -48,12 +52,15 @@ type Action =
   | { type: Actions.CloseAccount }
   | { type: Actions.SupportedChainSelected; payload: boolean }
   | { type: Actions.SetOnline; payload: boolean }
+  | { type: Actions.SetThemeMode; payload: ThemeMode | null }
   | { type: Actions.SetBannerMessage; payload?: BannerMessage };
 
 interface Dispatch {
   closeAccount(): void;
   toggleWallet(): void;
   setBannerMessage(message?: BannerMessage): void;
+  setThemeMode(mode: ThemeMode): void;
+  toggleThemeMode(): void;
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
@@ -73,6 +80,15 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return { ...state, online: action.payload };
     case Actions.SetBannerMessage:
       return { ...state, bannerMessage: action.payload };
+    case Actions.SetThemeMode: {
+      if (action.payload === null) {
+        return {
+          ...state,
+          themeMode: state.themeMode === 'light' ? 'dark' : 'light',
+        };
+      }
+      return { ...state, theme: action.payload ?? 'light' };
+    }
     default:
       return state;
   }
@@ -83,6 +99,7 @@ const initialState: State = {
   supportedChain: true,
   accountOpen: false,
   online: true,
+  themeMode: 'light',
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -108,6 +125,23 @@ export const AppProvider: FC = ({ children }) => {
     },
     [dispatch],
   );
+
+  const setThemeMode = useCallback<Dispatch['setThemeMode']>(
+    mode => {
+      dispatch({
+        type: Actions.SetThemeMode,
+        payload: mode,
+      });
+    },
+    [dispatch],
+  );
+
+  const toggleThemeMode = useCallback<Dispatch['toggleThemeMode']>(() => {
+    dispatch({
+      type: Actions.SetThemeMode,
+      payload: null,
+    });
+  }, [dispatch]);
 
   const closeAccount = useCallback<Dispatch['closeAccount']>(() => {
     dispatch({ type: Actions.CloseAccount });
@@ -196,9 +230,18 @@ export const AppProvider: FC = ({ children }) => {
             closeAccount,
             setBannerMessage,
             toggleWallet,
+            setThemeMode,
+            toggleThemeMode,
           },
         ],
-        [state, closeAccount, setBannerMessage, toggleWallet],
+        [
+          state,
+          closeAccount,
+          setBannerMessage,
+          toggleWallet,
+          setThemeMode,
+          toggleThemeMode,
+        ],
       )}
     >
       {children}
@@ -239,3 +282,8 @@ export const useBannerMessage = (): State['bannerMessage'] =>
 
 export const useSetBannerMessage = (): Dispatch['setBannerMessage'] =>
   useAppDispatch().setBannerMessage;
+
+export const useThemeMode = (): State['themeMode'] => useAppState().themeMode;
+
+export const useToggleThemeMode = (): Dispatch['toggleThemeMode'] =>
+  useAppDispatch().toggleThemeMode;

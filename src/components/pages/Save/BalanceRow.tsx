@@ -1,4 +1,4 @@
-import React, { FC, ReactElement } from 'react';
+import React, { FC } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled, { css } from 'styled-components';
 
@@ -66,7 +66,7 @@ const Number = styled.span`
 `;
 
 const Line = styled.div`
-  background: #eee;
+  background: ${({ theme }) => theme.color.accent};
   height: 2px;
   width: 4rem;
 `;
@@ -75,7 +75,7 @@ const Title = styled.div`
   display: flex;
   font-weight: 600;
   text-align: left;
-  color: ${({ theme }) => theme.color.blue};
+  color: ${({ theme }) => theme.color.primary};
 
   div {
     position: relative;
@@ -119,11 +119,11 @@ const StyledWarningBadge = styled(WarningBadge)`
 `;
 
 const VaultContainer = styled.div`
-  border: 1px #eee solid;
+  border: 1px ${({ theme }) => theme.color.accent} solid;
   border-radius: 0.75rem;
 
   > div {
-    border-top: 1px solid #eee;
+    border-top: 1px solid ${({ theme }) => theme.color.accent};
   }
 `;
 

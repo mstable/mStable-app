@@ -62,7 +62,7 @@ const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
   }
   body, button, input {
     font-family: 'Poppins', sans-serif;
-    color: ${Color.offBlack};
+    color: ${({ theme }) => theme.color.body};
     line-height: 1.3rem;
   }
   // Onboard.js

@@ -32,7 +32,7 @@ const Card = styled.div`
   padding: 1.5rem;
   border-radius: 1.5rem;
   position: relative;
-  background: white;
+  background: ${({ theme }) => theme.color.background};
   display: flex;
   align-items: center;
   flex-direction: column;

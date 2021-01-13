@@ -62,7 +62,7 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   overflow-x: hidden;
   padding: ${({ theme }) => theme.spacing.xs};
   background: ${({ selected, theme }) =>
-    selected ? theme.color.blueTransparent : 'transparent'};
+    selected ? theme.color.primaryTransparent : 'transparent'};
 
   img {
     padding-right: 6px;
@@ -70,7 +70,7 @@ const OptionContainer = styled.div<Pick<TokenOptionProps, 'selected'>>`
   }
 
   &:hover {
-    background: ${({ theme }) => theme.color.blueTransparent};
+    background: ${({ theme }) => theme.color.primaryTransparent};
   }
 `;
 

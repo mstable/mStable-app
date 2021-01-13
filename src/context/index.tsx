@@ -18,25 +18,25 @@ export const Providers: FC = ({ children }) => (
   <NotificationsProvider>
     <ApolloProvider>
       <UserProvider>
-        <ThemeProvider>
-          <BlockProvider>
-            <GasPricesProvider>
-              <TransactionsProvider>
-                <SelectedMassetNameProvider>
-                  <TokensProvider>
-                    <DataProvider>
-                      <AppProvider>
+        <BlockProvider>
+          <GasPricesProvider>
+            <TransactionsProvider>
+              <SelectedMassetNameProvider>
+                <TokensProvider>
+                  <DataProvider>
+                    <AppProvider>
+                      <ThemeProvider>
                         <SelectedSaveVersionProvider>
                           <ModalProvider>{children}</ModalProvider>
                         </SelectedSaveVersionProvider>
-                      </AppProvider>
-                    </DataProvider>
-                  </TokensProvider>
-                </SelectedMassetNameProvider>
-              </TransactionsProvider>
-            </GasPricesProvider>
-          </BlockProvider>
-        </ThemeProvider>
+                      </ThemeProvider>
+                    </AppProvider>
+                  </DataProvider>
+                </TokensProvider>
+              </SelectedMassetNameProvider>
+            </TransactionsProvider>
+          </GasPricesProvider>
+        </BlockProvider>
       </UserProvider>
     </ApolloProvider>
   </NotificationsProvider>

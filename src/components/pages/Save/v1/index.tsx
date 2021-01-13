@@ -13,7 +13,7 @@ const Container = styled.div`
   gap: 0.75rem;
   border-radius: 0 0 2px 2px;
   text-align: left;
-  border-top: 1px solid #eee;
+  border-top: 1px solid ${({ theme }) => theme.color.accent};
   padding-top: 1rem;
 `;
 
