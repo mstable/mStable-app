@@ -13,14 +13,16 @@ import { ReactComponent as IMUSDMTAIcon } from '../../icons/tokens/imusd-mta.svg
 
 export enum BalanceType {
   MUSD,
+  MUSD_SAVE,
   IMUSD,
   IMUSD_VAULT,
 }
 
 interface Props {
   token: BalanceType;
+  balance?: BigDecimal;
   warning?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 interface RowProps {
@@ -156,6 +158,14 @@ const Tokens = new Map<number, RowProps>([
     },
   ],
   [
+    BalanceType.MUSD_SAVE,
+    {
+      title: 'mUSD Save',
+      subtitle: 'mStable USD in Save V1',
+      AssetIcon: MUSDIcon,
+    },
+  ],
+  [
     BalanceType.IMUSD,
     {
       title: 'imUSD',
@@ -188,18 +198,13 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   token,
   warning = false,
   hasChildren = false,
+  balance,
 }) => {
+  const interestRate = useAverageApyForPastWeek();
   const tokenInfo = Tokens.get(token) as RowProps;
 
-  const interestRate = useAverageApyForPastWeek();
-
   const { title, subtitle, AssetIcon } = tokenInfo;
-
-  // TODO - add balances
-  const balance = new BigDecimal('0');
-
   const isIMUSDVault = token === BalanceType.IMUSD_VAULT;
-
   const hasBorder = !hasChildren;
 
   return (
@@ -256,6 +261,7 @@ export const BalanceRow: FC<Props> = ({
   token,
   warning,
   children,
+  balance,
 }) => {
   return children ? (
     <VaultContainer>
@@ -264,10 +270,16 @@ export const BalanceRow: FC<Props> = ({
         token={token}
         hasChildren={!!children}
         warning={warning}
+        balance={balance}
       />
       {children}
     </VaultContainer>
   ) : (
-    <InternalBalanceRow onClick={onClick} token={token} warning={warning} />
+    <InternalBalanceRow
+      onClick={onClick}
+      token={token}
+      warning={warning}
+      balance={balance}
+    />
   );
 };
