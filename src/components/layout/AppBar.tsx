@@ -8,6 +8,8 @@ import {
   useCloseAccount,
   useAccountOpen,
   useToggleWallet,
+  useToggleThemeMode,
+  useThemeMode,
 } from '../../context/AppProvider';
 import { Color, ViewportWidth } from '../../theme';
 import { ReactComponent as LogoSvg } from '../icons/mstable-small.svg';
@@ -59,7 +61,8 @@ const Logo = styled.div<{ inverted?: boolean }>`
 
     path,
     rect {
-      fill: ${({ theme, inverted }) => (inverted ? theme.color.white : 'auto')};
+      fill: ${({ theme, inverted }) =>
+        inverted ? theme.color.white : theme.color.body};
     }
   }
 `;
@@ -88,8 +91,8 @@ const AccountButton = styled(UnstyledButton)<{ active: boolean }>`
     active ? Color.whiteTransparent : 'transparent'};
 
   &:hover {
-    background: ${({ active }) =>
-      active ? Color.whiteTransparent : Color.blackTransparent};
+    background: ${({ active, theme }) =>
+      active ? Color.whiteTransparent : theme.color.bodyTransparent};
   }
 `;
 
@@ -117,7 +120,7 @@ const TruncatedAddress = styled.span`
 `;
 
 const Balance = styled.div`
-  border: 1px solid ${({ theme }) => theme.color.blackTransparent};
+  border: 1px solid ${({ theme }) => theme.color.bodyTransparent};
   padding: 0.33rem 0.75rem;
   font-weight: 600;
   border-radius: 1.5rem;
@@ -142,15 +145,17 @@ const Inner = styled.div`
 `;
 
 const Container = styled.div<{ inverted: boolean }>`
-  background: ${({ inverted }) => (inverted ? Color.black : Color.white)};
+  background: ${({ inverted, theme }) =>
+    inverted ? Color.black : theme.color.background};
   height: 48px;
   display: flex;
   justify-content: center;
   padding-top: 2px;
-  border-bottom: 1px solid ${Color.blackTransparenter};
+  border-bottom: 1px solid ${({ theme }) => theme.color.bodyTransparenter};
 
   ${AccountButton}, ${Balance} {
-    color: ${({ inverted }) => (inverted ? Color.white : Color.offBlack)};
+    color: ${({ inverted, theme }) =>
+      inverted ? Color.white : theme.color.body};
   }
 `;
 
@@ -246,6 +251,8 @@ const WalletButton: FC = () => {
 export const AppBar: FC = () => {
   const accountOpen = useAccountOpen();
   const closeAccount = useCloseAccount();
+  const toggleThemeMode = useToggleThemeMode();
+  const themeMode = useThemeMode();
   const massetState = useSelectedMassetState();
   const massetToken = useTokenSubscription(massetState?.address);
 
@@ -262,6 +269,9 @@ export const AppBar: FC = () => {
               {`${massetToken.symbol}`}
             </Balance>
           )}
+          <UnstyledButton onClick={toggleThemeMode}>
+              {themeMode}
+            </UnstyledButton>
         </Logo>
         <WalletButton />
       </Inner>

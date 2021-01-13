@@ -74,7 +74,7 @@ const Info = styled.div`
   justify-content: space-between;
   height: fit-content;
   padding: 0.75rem;
-  border: 1px solid #eee;
+  border: 1px solid ${({ theme }) => theme.color.accent};
   border-radius: 0.75rem;
 `;
 

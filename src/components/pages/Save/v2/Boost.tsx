@@ -31,7 +31,7 @@ const StyledButton = styled(UnstyledButton)`
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1.5rem;
-  background: #eee;
+  background: ${({ theme }) => theme.color.accent};
   color: rgba(121, 121, 121, 1);
   border-radius: 1.5rem;
   font-size: 0.9rem;
@@ -61,7 +61,7 @@ const BoostBarLine = styled.div`
   height: 2px;
   margin-left: 16px;
   margin-right: 16px;
-  background: #eee;
+  background: ${({ theme }) => theme.color.accent};
 `;
 
 const BoostBarRange = styled.div`
@@ -86,7 +86,7 @@ const BoostValue = styled.div`
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  background: #eee;
+  background: ${({ theme }) => theme.color.accent};
   border-radius: 1rem;
 
   ${BoostCountup} {

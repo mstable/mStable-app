@@ -52,8 +52,8 @@ export const Input = styled.input<{
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};
 
   &:focus {
-    border-color: ${({ theme }) => theme.color.blue};
-    background: ${({ theme }) => theme.color.blueTransparent};
+    border-color: ${({ theme }) => theme.color.primary};
+    background: ${({ theme }) => theme.color.primaryTransparent};
   }
 
   ${({ theme }) => theme.mixins.numeric};
