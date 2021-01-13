@@ -33,15 +33,13 @@ const Container = styled.div`
   padding-top: 1rem;
 `;
 
-// TODO don't hardcode titles for masset
-
 export const Save: FC = () => {
   const massetState = useSelectedMassetState();
 
   const musdBalance = massetState?.token?.balance;
   const imusdBalance = massetState?.savingsContracts?.v2?.token?.balance;
   const imusdVaultBalance =
-    massetState?.savingsContracts?.v2?.boostedSavingsVault?.account?.rawBalance; // ??
+    massetState?.savingsContracts?.v2?.boostedSavingsVault?.account?.rawBalance;
 
   const [showMassetModal] = useModalComponent({
     title: (

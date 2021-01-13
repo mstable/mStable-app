@@ -35,9 +35,8 @@ export const Save: FC = () => {
     <Container>
       <BalanceHeader />
       <BalanceRow
-        token={BalanceType.MUSD}
+        token={BalanceType.MUSD_SAVE}
         balance={stakedBalance}
-        onClick={() => {}}
         warning
       />
       <Migration>
