@@ -7,6 +7,7 @@ export enum Color {
   greenTransparent = 'rgba(82,204,147, 0.2)',
   coolMint = 'rgb(133,242,190)',
   blue = 'rgb(23,110,222)',
+  coolBlue = 'rgb(74,161,255)',
   blueTransparent = 'rgba(0,92,222,0.2)',
   orange = 'rgb(202,94,0)',
   red = 'rgb(202,0,27)',
@@ -15,6 +16,7 @@ export enum Color {
   white = 'rgb(255,255,255)',
   black = 'rgb(0,0,0)',
   whiteTransparent = 'rgba(255,255,255,0.2)',
+  whiteTransparenter = 'rgba(255,255,255,0.1)',
   blackTransparent = 'rgba(0,0,0,0.1)',
   blackTransparenter = 'rgba(0,0,0,0.06)',
   offWhite = 'rgb(249,245,242)',
@@ -23,6 +25,30 @@ export enum Color {
   lighterGrey = 'rgba(248,248,248,1)',
   grey = 'rgba(121, 121, 121, 1)',
   greyTransparent = 'rgba(127, 127, 127, 0.5)',
+}
+
+interface ColorTheme {
+  primary: string;
+  body: string;
+  accent: string;
+  bodyTransparent: string;
+  bodyTransparenter: string;
+  background: string;
+  backgroundAccent: string;
+}
+
+export const colorTheme = (theme: 'light' | 'dark'): ColorTheme => {
+  const isLight = theme === 'light'
+  return ({
+    ...Color,
+    primary: isLight ? Color.blue : Color.coolBlue,
+    body: isLight ? Color.offBlack : Color.offWhite,
+    accent: isLight ? '#eee' : '#222',
+    bodyTransparent: isLight ? Color.blackTransparent : Color.whiteTransparent,
+    bodyTransparenter: isLight ? Color.blackTransparenter : Color.whiteTransparenter,
+    background: isLight ? Color.white : Color.black,
+    backgroundAccent: isLight ? '#f3f3f3' : '#222',
+  })
 }
 
 export enum Size {
@@ -127,11 +153,16 @@ export const mixins = {
   `,
 };
 
-export const theme: DefaultTheme = {
-  color: Color,
+export const lightTheme: DefaultTheme = {
+  color: colorTheme('light'),
   spacing: Spacing,
   size: Size,
   fontSize: FontSize,
   viewportWidth: ViewportWidth,
   mixins,
+};
+
+export const darkTheme: DefaultTheme = {
+  ...lightTheme,
+  color: colorTheme('dark'),
 };

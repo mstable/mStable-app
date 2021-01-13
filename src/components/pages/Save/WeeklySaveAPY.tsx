@@ -21,7 +21,7 @@ const SaveAPYContainer = styled.div`
 const InfoCountUp = styled(CountUp)`
   font-size: 1.5rem;
   font-family: 'DM Mono', monospace;
-  color: ${({ theme }) => theme.color.blue};
+  color: ${({ theme }) => theme.color.primary};
 `;
 
 const InfoMsg = styled.div`

@@ -22,7 +22,7 @@ const Spinner = styled.svg<Props>`
         : success
         ? theme.color.green
         : pending
-        ? theme.color.blue
+        ? theme.color.primary
         : theme.color.greyTransparent};
     stroke-width: ${({ size }) => (size ? `${(size * 8) / 50}px` : `8px`)};
     stroke-linecap: round;

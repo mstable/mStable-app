@@ -30,7 +30,7 @@ const StyledButton = styled(Button)`
 `;
 
 const CloseButton = styled(UnstyledButton)`
-  background: #eee;
+  background: ${({ theme }) => theme.color.accent};
   width: 2.25rem;
   height: 2.25rem;
   text-align: center;
