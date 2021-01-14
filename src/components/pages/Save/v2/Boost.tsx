@@ -15,8 +15,9 @@ import { Button, UnstyledButton } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { SavingsReward } from './SavingsReward';
+import { VaultRewards } from './VaultRewards';
 import { AssetInput } from '../../../forms/AssetInput';
+import { RewardsProvider } from './RewardsProvider';
 
 const MAX_BOOST = 1.5;
 const MIN_BOOST = 0.5;
@@ -308,7 +309,7 @@ const BoostContent: FC = () => {
       ) : (
         <>
           <BoostBar />
-          <SavingsReward />
+          <VaultRewards />
         </>
       )}
     </Container>
@@ -317,6 +318,8 @@ const BoostContent: FC = () => {
 
 export const Boost: FC = () => (
   <ShowCalculatorProvider>
-    <BoostContent />
+    <RewardsProvider>
+      <BoostContent />
+    </RewardsProvider>
   </ShowCalculatorProvider>
 );

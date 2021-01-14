@@ -57,6 +57,12 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
       }
       boostedSavingsVaults {
         id
+        lastUpdateTime
+        lockupDuration
+        unlockPercentage
+        periodDuration
+        periodFinish
+        rewardPerToken
         rewardPerTokenStored
         rewardRate
         stakingContract

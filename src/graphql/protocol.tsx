@@ -507,6 +507,8 @@ export type BoostedSavingsVault = {
   lastUpdateTime: Scalars['Int'];
   /** The staking token, e.g. imUSD */
   stakingToken: Token;
+  /** The reward per token */
+  rewardPerToken: Scalars['BigInt'];
   /** The reward per token stored */
   rewardPerTokenStored: Scalars['BigInt'];
   /** The reward rate for the rest of the rewards period */
@@ -618,6 +620,14 @@ export type BoostedSavingsVault_Filter = {
   stakingToken_not_starts_with?: Maybe<Scalars['String']>;
   stakingToken_ends_with?: Maybe<Scalars['String']>;
   stakingToken_not_ends_with?: Maybe<Scalars['String']>;
+  rewardPerToken?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_not?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_gt?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_lt?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_gte?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_lte?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardPerToken_not_in?: Maybe<Array<Scalars['BigInt']>>;
   rewardPerTokenStored?: Maybe<Scalars['BigInt']>;
   rewardPerTokenStored_not?: Maybe<Scalars['BigInt']>;
   rewardPerTokenStored_gt?: Maybe<Scalars['BigInt']>;
@@ -689,6 +699,7 @@ export enum BoostedSavingsVault_OrderBy {
   PeriodFinish = 'periodFinish',
   LastUpdateTime = 'lastUpdateTime',
   StakingToken = 'stakingToken',
+  RewardPerToken = 'rewardPerToken',
   RewardPerTokenStored = 'rewardPerTokenStored',
   RewardRate = 'rewardRate',
   RewardsToken = 'rewardsToken',
@@ -3921,7 +3932,7 @@ export type MassetsQuery = { massets: Array<(
       & SavingsContractAllFragment
     )>, savingsContractsV2: Array<(
       { token?: Maybe<TokenAllFragment>, boostedSavingsVaults: Array<(
-        Pick<BoostedSavingsVault, 'id' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
+        Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerToken' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
         & { accounts: Array<(
           Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
           & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
@@ -4094,6 +4105,12 @@ export const MassetsDocument = gql`
       }
       boostedSavingsVaults {
         id
+        lastUpdateTime
+        lockupDuration
+        unlockPercentage
+        periodDuration
+        periodFinish
+        rewardPerToken
         rewardPerTokenStored
         rewardRate
         stakingContract
