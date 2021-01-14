@@ -8,6 +8,7 @@ export enum Color {
   coolMint = 'rgb(133,242,190)',
   blue = 'rgb(23,110,222)',
   coolBlue = 'rgb(74,161,255)',
+  coolBlueTransparent = 'rgb(74,161,255, 0.2)',
   blueTransparent = 'rgba(0,92,222,0.2)',
   orange = 'rgb(202,94,0)',
   red = 'rgb(202,0,27)',
@@ -29,8 +30,10 @@ export enum Color {
 
 interface ColorTheme {
   primary: string;
+  primaryTransparent: string;
   body: string;
   accent: string;
+  accentDarker: string;
   bodyTransparent: string;
   bodyTransparenter: string;
   background: string;
@@ -38,18 +41,24 @@ interface ColorTheme {
 }
 
 export const colorTheme = (theme: 'light' | 'dark'): ColorTheme => {
-  const isLight = theme === 'light'
-  return ({
+  const isLight = theme === 'light';
+  return {
     ...Color,
     primary: isLight ? Color.blue : Color.coolBlue,
+    primaryTransparent: isLight
+      ? Color.blueTransparent
+      : Color.coolBlueTransparent,
     body: isLight ? Color.offBlack : Color.offWhite,
     accent: isLight ? '#eee' : '#222',
+    accentDarker: isLight ? '#ddd' : '#111',
     bodyTransparent: isLight ? Color.blackTransparent : Color.whiteTransparent,
-    bodyTransparenter: isLight ? Color.blackTransparenter : Color.whiteTransparenter,
+    bodyTransparenter: isLight
+      ? Color.blackTransparenter
+      : Color.whiteTransparenter,
     background: isLight ? Color.white : Color.black,
     backgroundAccent: isLight ? '#f3f3f3' : '#222',
-  })
-}
+  };
+};
 
 export enum Size {
   xs,

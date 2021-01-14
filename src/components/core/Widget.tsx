@@ -73,7 +73,8 @@ const ContainerButton = styled(UnstyledButton)<{
   }
 
   :active {
-    background: ${({ theme, disabled }) => !disabled && theme.color.lightGrey};
+    background: ${({ theme, disabled }) =>
+      !disabled && theme.color.accentDarker};
   }
 
   ${({ border, padding, theme }) => ({

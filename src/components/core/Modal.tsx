@@ -33,7 +33,7 @@ const Header = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px #eee solid;
+  border-bottom: 1px ${({ theme }) => theme.color.accent} solid;
 `;
 
 const Body = styled.div``;
@@ -42,9 +42,9 @@ const Container = styled.div`
   min-width: 50vw;
   max-width: 90vw;
   max-height: 90vw;
-  background: ${({ theme }) => theme.color.white};
+  background: ${({ theme }) => theme.color.background};
   border-radius: 1rem;
-  border: 1px ${({ theme }) => theme.color.lightGrey} solid;
+  border: 1px ${({ theme }) => theme.color.backgroundAccent} solid;
 `;
 
 const FixedContainer = styled.div`

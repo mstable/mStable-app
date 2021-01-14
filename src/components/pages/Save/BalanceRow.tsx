@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import styled, { css } from 'styled-components';
 
 import { ViewportWidth } from '../../../theme';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { Widget, WidgetButton } from '../../core/Widget';
+import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
 import { ReactComponent as MUSDIcon } from '../../icons/tokens/mUSD.svg';
 import { ReactComponent as IMUSDIcon } from '../../icons/tokens/imUSD.svg';
@@ -269,7 +269,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
               {isIMUSDVault && <div>+ MTA</div>}
             </>
           ) : (
-            <Skeleton height={24} width={100} />
+            <ThemedSkeleton height={24} width={100} />
           )}
         </Interest>
       </div>
@@ -279,7 +279,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
             <Number>{balance?.format(6)}</Number>
           </h4>
         ) : (
-          <Skeleton height={24} width={100} />
+          <ThemedSkeleton height={24} width={100} />
         )}
       </div>
     </DefaultContainer>

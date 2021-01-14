@@ -116,10 +116,6 @@ const Grid = styled.div<{ enabled?: boolean }>`
   }
 `;
 
-const Container = styled.div`
-  background: ${({ theme }) => theme.color.white};
-`;
-
 export const AssetInput: FC<Props> = ({
   address,
   addressDisabled,
@@ -132,33 +128,31 @@ export const AssetInput: FC<Props> = ({
   handleSetMax,
 }) => {
   return (
-    <Container>
-      <Grid>
-        <InputContainer>
-          <Label>Amount</Label>
-          <Input>
-            <AmountInput
-              disabled={amountDisabled}
-              value={formValue}
-              error={error}
-              onChange={handleSetAmount}
-            />
-            {handleSetMax && (
-              <Button type="button" onClick={handleSetMax} scale={0.75}>
-                Max
-              </Button>
-            )}
-          </Input>
-        </InputContainer>
-        <TokenContainer>
-          <SubscribedTokenInput
-            disabled={addressDisabled}
-            value={address}
-            options={addressOptions}
-            onChange={handleSetAddress}
+    <Grid>
+      <InputContainer>
+        <Label>Amount</Label>
+        <Input>
+          <AmountInput
+            disabled={amountDisabled}
+            value={formValue}
+            error={error}
+            onChange={handleSetAmount}
           />
-        </TokenContainer>
-      </Grid>
-    </Container>
+          {handleSetMax && (
+            <Button type="button" onClick={handleSetMax} scale={0.75}>
+              Max
+            </Button>
+          )}
+        </Input>
+      </InputContainer>
+      <TokenContainer>
+        <SubscribedTokenInput
+          disabled={addressDisabled}
+          value={address}
+          options={addressOptions}
+          onChange={handleSetAddress}
+        />
+      </TokenContainer>
+    </Grid>
   );
 };

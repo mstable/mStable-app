@@ -90,7 +90,7 @@ const Container = styled.div<{
         ? `4px solid ${theme.color.primaryTransparent}`
         : `none`};
     background: ${({ theme, active, complete }) =>
-      complete || active ? theme.color.background : theme.color.lightGrey};
+      complete || active ? theme.color.background : theme.color.accent};
   }
 
   ${Title} {

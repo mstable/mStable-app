@@ -10,9 +10,9 @@ export const TabsContainer = styled.div`
 export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
   cursor: pointer;
   border-bottom: ${({ active, theme }) =>
-    active ? `4px ${theme.color.blue} solid` : 'none'};
+    active ? `4px ${theme.color.primary} solid` : 'none'};
   background: transparent;
-  color: ${({ active }) => (active ? Color.blue : Color.grey)};
+  color: ${({ active, theme }) => (active ? theme.color.primary : Color.grey)};
   padding: 0.75rem 0.5rem;
   font-weight: 600;
   font-size: 1.75rem;
