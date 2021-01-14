@@ -10,7 +10,7 @@ import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
 import { DifferentialCountup } from '../../../core/CountUp';
 import { ProgressBar } from '../../../core/ProgressBar';
-import { Button, UnstyledButton } from '../../../core/Button';
+import { Button } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -24,36 +24,18 @@ const MIN_BOOST = 0.5;
 const COEFFICIENT = 3.2;
 const SAVE_EXPONENT = 0.875;
 
-const BoostCountup = styled(DifferentialCountup)``;
+const BoostCountup = styled(DifferentialCountup)`
+  font-weight: normal;
+  margin-left: 0.25rem;
+`;
 
-const StyledButton = styled(UnstyledButton)`
+const StyledButton = styled(Button)`
   display: flex;
-  width: 100%;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 1.5rem;
-  background: ${({ theme }) => theme.color.accent};
-  color: rgba(121, 121, 121, 1);
-  border-radius: 1.5rem;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: 0.2s ease;
 
   svg {
-    width: 1.5rem;
-    height: 1.5rem;
-    * {
-      fill: rgba(121, 121, 121, 1);
-    }
-  }
-
-  &:hover {
-    background: #176ede;
-    color: white;
-    svg * {
-      fill: white;
-    }
+    width: 1rem;
+    margin-right: 0.5rem;
   }
 `;
 
@@ -79,32 +61,15 @@ const CalculatorInputs = styled.div`
   justify-content: space-between;
   gap: 2rem;
   flex-direction: column;
-`;
-
-const BoostValue = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.color.accent};
-  border-radius: 1rem;
-
-  ${BoostCountup} {
-    font-size: 1.5rem;
-  }
+  width: 100%;
 `;
 
 const BoostAndActions = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: flex-end;
   gap: 0.5rem;
-  flex: 0;
-
-  > * {
-    width: 100%;
-  }
+  flex-basis: 40%;
 `;
 
 const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
@@ -181,40 +146,36 @@ export const Calculator: FC = () => {
       }
     >
       <CalculatorInputs>
-        <div>
-          {vMTA ? (
-            <AssetInput
-              address={vMTA.address}
-              addressDisabled
-              formValue={vMTAFormValue}
-              handleSetAmount={setVmta}
-            />
-          ) : (
-            <ThemedSkeleton />
-          )}
-        </div>
-        <div>
-          {save ? (
-            <AssetInput
-              address={save.address}
-              addressDisabled
-              formValue={saveFormValue}
-              handleSetAmount={setSave}
-            />
-          ) : (
-            <ThemedSkeleton />
-          )}
-        </div>
+        {vMTA ? (
+          <AssetInput
+            address={vMTA.address}
+            addressDisabled
+            formValue={vMTAFormValue}
+            handleSetAmount={setVmta}
+          />
+        ) : (
+          <ThemedSkeleton />
+        )}
+        {save ? (
+          <AssetInput
+            address={save.address}
+            addressDisabled
+            formValue={saveFormValue}
+            handleSetAmount={setSave}
+          />
+        ) : (
+          <ThemedSkeleton />
+        )}
       </CalculatorInputs>
       <BoostAndActions>
-        <BoostValue>
-          <span>Boost</span>
+        <StyledButton>
+          <span>Boost</span>&nbsp;
           <BoostCountup
             end={boost.fromInputs}
             prev={boost.fromBalance}
             suffix="x"
           />
-        </BoostValue>
+        </StyledButton>
         <StyledButton onClick={handlePreviewMax}>
           <ArrowsSvg />
           Preview Max
@@ -224,9 +185,9 @@ export const Calculator: FC = () => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <StyledButton>
+          <StyledButton highlighted>
             <GovSvg />
-            Stake MTA
+            Governance
           </StyledButton>
         </a>
       </BoostAndActions>

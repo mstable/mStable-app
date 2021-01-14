@@ -62,11 +62,11 @@ export const FormRow = styled.div`
 
 export const SubmitButton = styled(Button)`
   color: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparent : theme.color.white};
+    disabled ? theme.color.bodyTransparent : theme.color.white};
   border-color: ${({ theme, disabled }) =>
     disabled ? theme.color.blackTransparent : theme.color.greenTransparent};
   background: ${({ theme, disabled }) =>
-    disabled ? 'initial' : theme.color.green};
+    disabled ? theme.color.accent : theme.color.green};
   width: 100%;
   margin-bottom: ${({ theme }) => theme.spacing.m};
   padding-top: 16px;

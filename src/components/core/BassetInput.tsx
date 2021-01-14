@@ -103,11 +103,11 @@ export const Container = styled.div<{
 }>`
   border: 1px
     ${({ theme, valid }) =>
-      valid ? theme.color.blackTransparent : theme.color.redTransparent}
+      valid ? theme.color.accent : theme.color.redTransparent}
     solid;
   border-radius: 3px;
   background: ${({ theme, overweight }) =>
-    overweight ? theme.color.blackTransparenter : theme.color.white};
+    overweight && theme.color.blackTransparenter};
   padding: ${({ theme }) => theme.spacing.xs};
   margin-bottom: 8px;
 `;

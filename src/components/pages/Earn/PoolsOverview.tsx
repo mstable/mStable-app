@@ -44,11 +44,13 @@ const PlatformContainer = styled.div<{ colors: AccentColors }>`
   display: flex;
   align-items: center;
   * {
-    color: ${({ colors }) => colors.base};
+    color: ${({ colors, theme }) =>
+      theme.isLight ? colors.base : colors.light};
     border-color: ${({ colors }) => colors.light};
   }
   svg {
-    fill: ${({ colors }) => colors.base} !important;
+    fill: ${({ colors, theme }) =>
+      theme.isLight ? colors.base : colors.light} !important;
   }
 `;
 

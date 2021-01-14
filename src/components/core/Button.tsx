@@ -11,7 +11,7 @@ interface Props extends ButtonHTMLAttributes<unknown> {
 const ButtonCss = css<Props>`
   font-size: ${({ scale }) => (scale ? `${scale}rem` : `1rem`)};
   padding: ${({ scale }) =>
-    scale ? `${scale * 0.75}em ${scale * 1.5}em` : `1rem`};
+    scale ? `${scale * 0.75}em ${scale * 1.5}em` : `0.75rem 1.5rem`};
   border-radius: 1.5em;
   background: ${({ theme, highlighted }) =>
     highlighted ? theme.color.primary : theme.color.accent};
@@ -24,8 +24,11 @@ const ButtonCss = css<Props>`
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   transition: 0.2s ease all;
 
-  svg circle {
-    stroke: rgba(255, 255, 255, 0.4);
+  svg {
+    * {
+      fill: ${({ theme, highlighted }) =>
+        highlighted ? theme.color.white : theme.color.grey};
+    }
   }
 
   :hover {

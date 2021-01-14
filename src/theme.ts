@@ -33,7 +33,7 @@ interface ColorTheme {
   primaryTransparent: string;
   body: string;
   accent: string;
-  accentDarker: string;
+  accentContrast: string;
   bodyTransparent: string;
   bodyTransparenter: string;
   background: string;
@@ -50,7 +50,7 @@ export const colorTheme = (theme: 'light' | 'dark'): ColorTheme => {
       : Color.coolBlueTransparent,
     body: isLight ? Color.offBlack : Color.offWhite,
     accent: isLight ? '#eee' : '#222',
-    accentDarker: isLight ? '#ddd' : '#111',
+    accentContrast: isLight ? '#ddd' : '#333',
     bodyTransparent: isLight ? Color.blackTransparent : Color.whiteTransparent,
     bodyTransparenter: isLight
       ? Color.blackTransparenter
@@ -169,9 +169,11 @@ export const lightTheme: DefaultTheme = {
   fontSize: FontSize,
   viewportWidth: ViewportWidth,
   mixins,
+  isLight: true,
 };
 
 export const darkTheme: DefaultTheme = {
   ...lightTheme,
   color: colorTheme('dark'),
+  isLight: false,
 };
