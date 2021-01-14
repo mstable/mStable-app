@@ -270,8 +270,8 @@ export const AppBar: FC = () => {
             </Balance>
           )}
           <UnstyledButton onClick={toggleThemeMode}>
-              {themeMode}
-            </UnstyledButton>
+            {themeMode === 'light' ? '☀️' : '🌙'}
+          </UnstyledButton>
         </Logo>
         <WalletButton />
       </Inner>
