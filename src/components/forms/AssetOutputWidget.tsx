@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { Widget } from '../core/Widget';
@@ -12,6 +12,7 @@ interface Props {
   inputAddress?: string;
   inputAmount?: BigDecimal;
   outputAddress?: string;
+  outputBalance?: BigDecimal;
   outputLabel?: string;
   title: string;
 }
@@ -31,6 +32,7 @@ export const AssetOutputWidget: FC<Props> = ({
   inputAddress,
   inputAmount,
   outputAddress,
+  outputBalance,
   outputLabel,
   title,
 }) => {
@@ -41,6 +43,20 @@ export const AssetOutputWidget: FC<Props> = ({
 
   const inputToken = useTokenSubscription(inputAddress);
   const outputToken = useTokenSubscription(outputAddress);
+
+  const addressOptions = useMemo(
+    () =>
+      outputAddress
+        ? [
+            {
+              address: outputAddress,
+              balance: outputBalance,
+              label: outputLabel,
+            },
+          ]
+        : [],
+    [outputAddress, outputBalance, outputLabel],
+  );
 
   return (
     <Widget
@@ -67,6 +83,7 @@ export const AssetOutputWidget: FC<Props> = ({
         amountDisabled
         addressDisabled
         address={outputAddress}
+        addressOptions={addressOptions}
       />
     </Widget>
   );
