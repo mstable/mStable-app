@@ -13,6 +13,7 @@ import { CurveDeposit } from './typechain/CurveDeposit.d';
 import { BoostedSavingsVault } from './typechain/BoostedSavingsVault.d';
 import { BigDecimal } from './web3/BigDecimal';
 import { Erc20Detailed } from './typechain/Erc20Detailed';
+import { UniswapRouter02 } from './typechain/UniswapRouter02';
 
 export type MassetName = 'mUSD' | 'mBTC';
 
@@ -35,6 +36,7 @@ export enum Interfaces {
   CurveDeposit,
   SaveWrapper,
   BoostedSavingsVault,
+  UniswapRouter02,
 }
 /* eslint-enable @typescript-eslint/no-shadow */
 
@@ -51,6 +53,7 @@ export interface Instances {
   [Interfaces.CurveDeposit]: CurveDeposit;
   [Interfaces.SaveWrapper]: SaveWrapper;
   [Interfaces.BoostedSavingsVault]: BoostedSavingsVault;
+  [Interfaces.UniswapRouter02]: UniswapRouter02;
 }
 
 export interface Token {
