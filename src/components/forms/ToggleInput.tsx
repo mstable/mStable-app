@@ -46,7 +46,7 @@ const Toggle = styled.span<{
     checked,
     theme,
     enabledColor = theme.color.green,
-    disabledColor = theme.color.blackTransparent,
+    disabledColor = theme.color.accent,
   }) => (checked ? enabledColor : disabledColor)};
   border-radius: 40px;
   position: relative;

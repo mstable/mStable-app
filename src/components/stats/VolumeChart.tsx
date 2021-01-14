@@ -1,5 +1,4 @@
 import React, { FC, useMemo } from 'react';
-import Skeleton from 'react-loading-skeleton/lib';
 import { DocumentNode, gql, useQuery } from '@apollo/client';
 import { format, getUnixTime } from 'date-fns';
 import {
@@ -13,10 +12,12 @@ import {
 
 import { Color } from '../../theme';
 import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
-import { getKeyTimestamp, useBlockTimesForDates } from '../../web3/hooks';
+import { useBlockTimesForDates } from '../../hooks/useBlockTimesForDates';
+import { getKeyTimestamp } from '../../utils/getKeyTimestamp';
 import { periodFormatMapping, toK } from './utils';
 import { RechartsContainer } from './RechartsContainer';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
+import { ThemedSkeleton } from '../core/ThemedSkeleton';
 
 export enum TransactionType {
   MassetMint = 'MASSET_MINT',
@@ -367,7 +368,7 @@ const Chart: FC = () => {
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <Skeleton height={270} />
+        <ThemedSkeleton height={270} />
       )}
     </RechartsContainer>
   );

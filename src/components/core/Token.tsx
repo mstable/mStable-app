@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { TokenIcon } from '../icons/TokenIcon';
-import { Color } from '../../theme';
 
 interface Props {
   symbol: string;
@@ -14,7 +13,7 @@ const Container = styled.div<{ color?: string; transparent?: boolean }>`
   align-items: center;
   font-size: ${({ theme }) => theme.fontSize.l};
   font-weight: bold;
-  color: ${({ color }) => color};
+  color: ${({ color, theme }) => theme.color.body ?? color};
   
   > :first-child {
     padding-right: 6px;
@@ -24,11 +23,7 @@ const Container = styled.div<{ color?: string; transparent?: boolean }>`
 }
 `;
 
-export const Token: FC<Props> = ({
-  symbol,
-  color = Color.black,
-  className,
-}) => (
+export const Token: FC<Props> = ({ symbol, color, className }) => (
   <Container color={color} className={className}>
     <TokenIcon symbol={symbol} />
     <div>{symbol}</div>

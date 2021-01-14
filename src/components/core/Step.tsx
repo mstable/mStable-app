@@ -29,28 +29,30 @@ const SubmitButton = styled(Button)`
   display: flex;
   align-items: center;
   gap: 0.5rem;
+
+  svg circle {
+    stroke: white;
+  }
 `;
 
 const Option = styled.div<{ skipped?: boolean; disabled?: boolean }>`
-  width: 100%;
-  border-radius: 0.75rem;
-  height: 4.5rem;
   display: flex;
   gap: 1rem;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.5rem;
+  width: 100%;
+  border-radius: 0.75rem;
+  padding: 0.5rem;
   font-weight: 600;
   transition: 0.25s linear all;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    padding: 0 1.75rem;
-    height: 5rem;
-  }
-
+  min-height: 4.5rem;
   cursor: ${({ skipped, disabled }) =>
     skipped || disabled ? 'not-allowed' : 'pointer'};
   filter: ${({ skipped }) => (skipped ? 'grayscale(1)' : 'none')};
+
+  @media (min-width: ${ViewportWidth.m}) {
+    padding: 1rem 1.75rem;
+  }
 `;
 
 const Options = styled.div`
@@ -85,12 +87,12 @@ const Container = styled.div<{
   ${Option} {
     border: ${({ theme, active, complete }) =>
       complete
-        ? `4px solid ${theme.color.greenTransparent}`
+        ? `1px solid ${theme.color.greenTransparent}`
         : active
-        ? `4px solid ${theme.color.primaryTransparent}`
+        ? `1px solid ${theme.color.primaryTransparent}`
         : `none`};
     background: ${({ theme, active, complete }) =>
-      complete || active ? theme.color.background : theme.color.lightGrey};
+      complete || active ? theme.color.background : theme.color.accent};
   }
 
   ${Title} {
@@ -106,16 +108,18 @@ export const Step: FC<Props> = ({ active, complete, options }) => (
   <Container active={active} complete={complete}>
     <Options>
       {options.map(
-        ({ key, buttonTitle = 'Submit', title, onClick, pending }) => (
+        ({ buttonTitle = 'Submit', key, onClick, pending, title }) => (
           <Option key={key} disabled={!active}>
             <Title>{title}</Title>
-            <SubmitButton
-              highlighted={active}
-              onClick={onClick}
-              disabled={!active}
-            >
-              {pending ? <ActivitySpinner pending /> : buttonTitle}
-            </SubmitButton>
+            {!complete && (
+              <SubmitButton
+                highlighted={active}
+                onClick={onClick}
+                disabled={!active || pending}
+              >
+                {pending ? <ActivitySpinner pending /> : buttonTitle}
+              </SubmitButton>
+            )}
           </Option>
         ),
       )}

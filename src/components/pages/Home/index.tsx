@@ -127,6 +127,11 @@ const StepIcon = styled.div<{ active: boolean; disabled: boolean }>`
 const Controls = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+
+  ${Button} {
+    background: transparent;
+  }
 `;
 
 const Container = styled.div`
@@ -138,14 +143,10 @@ const Container = styled.div`
 `;
 
 const Carousel = styled.div`
-  color: ${({ theme }) => theme.color.offBlack};
+  color: ${({ theme }) => theme.color.body};
 
   a {
-    color: ${({ theme }) => theme.color.offBlack};
-  }
-
-  ${Button} {
-    background: transparent;
+    color: ${({ theme }) => theme.color.body};
   }
 
   padding: 0 16px;

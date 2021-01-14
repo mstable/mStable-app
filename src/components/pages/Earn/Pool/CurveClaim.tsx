@@ -1,10 +1,8 @@
 import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 
-import {
-  CURVE_ADDRESSES,
-  useCurveContracts,
-} from '../../../../context/earn/CurveProvider';
+import { ADDRESSES } from '../../../../constants';
+import { useCurveContracts } from '../../../../context/earn/CurveProvider';
 import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
 import { useRewardsEarned } from '../StakingRewardsContractProvider';
@@ -92,7 +90,7 @@ const ClaimCRV: FC = () => {
         return new TransactionManifest(
           tokenMinter,
           'mint',
-          [CURVE_ADDRESSES.MUSD_GAUGE],
+          [ADDRESSES.CURVE.MUSD_GAUGE],
           {
             present: 'Claiming CRV rewards',
             past: 'Claimed CRV rewards',

@@ -8,7 +8,7 @@ import { Interfaces } from '../../../types';
 import { MintProvider, useMintState } from './MintProvider';
 import { MintInput } from './MintInput';
 import { MassetStats } from '../../stats/MassetStats';
-import { PageHeader } from '../PageHeader';
+import { PageAction, PageHeader } from '../PageHeader';
 import { TransactionManifest } from '../../../web3/TransactionManifest';
 
 const MintForm: FC = () => {
@@ -79,7 +79,10 @@ const MintForm: FC = () => {
 
 export const Mint: FC = () => (
   <MintProvider>
-    <PageHeader title="Mint" subtitle="Convert stablecoins into mUSD" />
+    <PageHeader
+      action={PageAction.Mint}
+      subtitle="Convert stablecoins into mUSD"
+    />
     <MintForm />
     <MassetStats />
   </MintProvider>

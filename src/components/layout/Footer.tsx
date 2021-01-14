@@ -109,7 +109,7 @@ const Container = styled.div`
   overflow-x: hidden;
   grid-template-columns:
     1fr
-    min(1200px, 100%)
+    min(1000px, 100%)
     1fr;
 
   > * {

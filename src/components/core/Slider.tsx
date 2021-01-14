@@ -97,6 +97,9 @@ const SideControls = styled.div`
     width: 100%;
     display: block;
   }
+  button {
+    background: 'transparent';
+  }
 `;
 
 const SkipButtonContainer = styled.div`

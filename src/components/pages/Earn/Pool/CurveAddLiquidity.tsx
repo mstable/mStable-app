@@ -1,16 +1,14 @@
 import React, { FC, useCallback } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 
-import {
-  CURVE_ADDRESSES,
-  useCurveContracts,
-} from '../../../../context/earn/CurveProvider';
+import { ADDRESSES } from '../../../../constants';
+import { useCurveContracts } from '../../../../context/earn/CurveProvider';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
 import { TokenAmountInput } from '../../../forms/TokenAmountInput';
 import { H3, P } from '../../../core/Typography';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 import {
   useCurrentStakingToken,
   useStakingRewardContractDispatch,
@@ -30,8 +28,8 @@ const ExitLink = styled.span`
 `;
 
 const tokenAddresses = [
-  CURVE_ADDRESSES.MUSD_TOKEN,
-  ...CURVE_ADDRESSES['3POOL_COINS'],
+  ADDRESSES.CURVE.MUSD_TOKEN,
+  ...ADDRESSES.CURVE['3POOL_COINS'],
 ];
 
 const Input: FC = () => {
@@ -46,7 +44,7 @@ const Input: FC = () => {
   } = useStakingRewardContractDispatch();
 
   if (!stakingRewardsContract) {
-    return <Skeleton height={300} />;
+    return <ThemedSkeleton height={300} />;
   }
 
   return (
@@ -59,7 +57,7 @@ const Input: FC = () => {
           error={error}
           exactDecimals
           name="stake"
-          spender={CURVE_ADDRESSES.MUSD_DEPOSIT}
+          spender={ADDRESSES.CURVE.MUSD_DEPOSIT}
           onChangeAmount={setAddLiquidityAmount}
           onSetMax={setAddLiquidityMaxAmount}
           onChangeToken={setAddLiquidityToken}
@@ -96,8 +94,8 @@ const Confirm: FC = () => {
 };
 
 const CURVE_ALL_COINS = [
-  CURVE_ADDRESSES.MUSD_TOKEN,
-  ...CURVE_ADDRESSES['3POOL_COINS'],
+  ADDRESSES.CURVE.MUSD_TOKEN,
+  ...ADDRESSES.CURVE['3POOL_COINS'],
 ];
 
 export const CurveAddLiquidity: FC = () => {

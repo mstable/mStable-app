@@ -17,6 +17,7 @@ interface Props {
 
   inputAmount?: BigDecimal;
   inputAmountDisabled?: boolean;
+  inputLabel?: string;
   inputFormValue?: string;
 
   handleSetAddress?(address: string): void;
@@ -26,7 +27,7 @@ interface Props {
   outputAddress?: string;
   outputLabel?: string;
   outputBalance?: BigDecimal;
-  exchangeRate?: BigDecimal; // e.g. for mUSD->imUSD
+  exchangeRate?: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
   slippage?: BigDecimal;
   error?: string;
 }
@@ -120,6 +121,7 @@ const Error = styled.div`
 export const AssetExchange: FC<Props> = ({
   children,
   error,
+  exchangeRate,
   handleSetAddress,
   handleSetAmount,
   handleSetMax,
@@ -128,11 +130,11 @@ export const AssetExchange: FC<Props> = ({
   inputAddressOptions,
   inputAmount,
   inputAmountDisabled,
+  inputLabel,
   inputFormValue,
   outputAddress,
   outputBalance,
   outputLabel,
-  exchangeRate,
   slippage,
 }) => {
   return (
@@ -153,6 +155,7 @@ export const AssetExchange: FC<Props> = ({
           exchangeRate={exchangeRate}
           inputAmount={inputAmount}
           inputAddress={inputAddress}
+          inputLabel={inputLabel}
           outputAddress={outputAddress}
           outputBalance={outputBalance}
           outputLabel={outputLabel}

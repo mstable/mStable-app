@@ -1,6 +1,5 @@
 import React, { Fragment, FC, useMemo } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 
 import { useDataState } from '../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../context/TokensProvider';
@@ -10,6 +9,7 @@ import { mapSizeToFontSize, Size } from '../../theme';
 import { TokenIcon as TokenIconBase } from '../icons/TokenIcon';
 import { List, ListItem } from '../core/List';
 import { MassetState } from '../../context/DataProvider/types';
+import { ThemedSkeleton } from '../core/ThemedSkeleton';
 
 const Symbol = styled.div`
   display: flex;
@@ -39,7 +39,7 @@ const TokenBalance: FC<{ address: string; size?: Size }> = ({
   return token ? (
     <Balance size={size} end={token.balance.simple} />
   ) : (
-    <Skeleton />
+    <ThemedSkeleton />
   );
 };
 
@@ -99,7 +99,7 @@ export const Balances: FC = () => {
                     end={savingsContractV1.savingsBalance.balance.simple}
                   />
                 ) : (
-                  <Skeleton />
+                  <ThemedSkeleton />
                 )}
               </ListItem>
             )}
@@ -115,7 +115,7 @@ export const Balances: FC = () => {
                     end={savingsContractV2.balance.simple}
                   />
                 ) : (
-                  <Skeleton />
+                  <ThemedSkeleton />
                 )}
               </ListItem>
             )}

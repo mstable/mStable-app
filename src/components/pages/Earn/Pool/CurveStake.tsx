@@ -1,11 +1,8 @@
 import React, { FC, useCallback } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 
-import {
-  CURVE_ADDRESSES,
-  useCurveContracts,
-} from '../../../../context/earn/CurveProvider';
+import { ADDRESSES } from '../../../../constants';
+import { useCurveContracts } from '../../../../context/earn/CurveProvider';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
@@ -21,6 +18,7 @@ import { ExternalLink } from '../../../core/ExternalLink';
 import { PLATFORM_METADATA } from '../constants';
 import { Protip } from '../../../core/Protip';
 import { Tabs } from '../types';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const Row = styled.div`
   width: 100%;
@@ -49,7 +47,7 @@ const Input: FC = () => {
     : undefined;
 
   if (!stakingRewardsContract) {
-    return <Skeleton height={300} />;
+    return <ThemedSkeleton height={300} />;
   }
 
   const { address, curve } = stakingRewardsContract;
@@ -64,7 +62,7 @@ const Input: FC = () => {
           error={error}
           exactDecimals
           name="stake"
-          spender={curve ? CURVE_ADDRESSES.MUSD_GAUGE : address}
+          spender={curve ? ADDRESSES.CURVE.MUSD_GAUGE : address}
           onChangeAmount={setStakeAmount}
           onSetMax={setMaxStakeAmount}
           tokenAddresses={[stakingToken?.address as string]}

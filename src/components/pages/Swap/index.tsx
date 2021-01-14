@@ -11,7 +11,7 @@ import { SwapInput } from './SwapInput';
 import { SwapConfirm } from './SwapConfirm';
 import { Interfaces } from '../../../types';
 import { useSelectedMassetContract } from '../../../web3/hooks';
-import { PageHeader } from '../PageHeader';
+import { PageAction, PageHeader } from '../PageHeader';
 
 const SwapForm: FC = () => {
   const account = useOwnAccount();
@@ -93,7 +93,10 @@ const SwapForm: FC = () => {
 
 export const Swap: FC = () => (
   <SwapProvider>
-    <PageHeader title="Swap" subtitle="Exchange stablecoins with mStable">
+    <PageHeader
+      action={PageAction.Swap}
+      subtitle="Exchange stablecoins with mStable"
+    >
       <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
     </PageHeader>
     <SwapForm />

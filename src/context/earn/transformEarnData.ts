@@ -7,8 +7,9 @@ import {
   StakingRewardsContractsMap,
   SyncedEarnData,
 } from './types';
+import { ADDRESSES } from '../../constants';
 import { BigDecimal } from '../../web3/BigDecimal';
-import { CURVE_MUSD_EARN_URL, CURVE_ADDRESSES } from './CurveProvider';
+import { CURVE_MUSD_EARN_URL } from './CurveProvider';
 import { StakingRewardsContractType } from '../../graphql/ecosystem';
 import { BlockTimestamp, Platforms } from '../../types';
 
@@ -38,7 +39,7 @@ const getStakingRewardsContractsMap = (
       .filter(
         item =>
           pools.current[item.stakingToken.address] ||
-          (item.address === CURVE_ADDRESSES.MTA_STAKING_REWARDS && curvePool),
+          (item.address === ADDRESSES.CURVE.MTA_STAKING_REWARDS && curvePool),
       )
       .map(data => {
         const {
@@ -56,7 +57,7 @@ const getStakingRewardsContractsMap = (
           type,
           totalPlatformRewards,
         } = data;
-        const isCurve = address === CURVE_ADDRESSES.MTA_STAKING_REWARDS;
+        const isCurve = address === ADDRESSES.CURVE.MTA_STAKING_REWARDS;
         const receivesBAL = BAL_REWARDS_EXCEPTIONS.includes(address);
 
         const pool: NormalizedPool = isCurve
@@ -76,7 +77,7 @@ const getStakingRewardsContractsMap = (
         } else if (isCurve) {
           platformToken = {
             symbol: 'CRV',
-            address: CURVE_ADDRESSES.CRV_TOKEN,
+            address: ADDRESSES.CURVE.CRV_TOKEN,
             decimals: 18,
           } as typeof platformToken;
         }

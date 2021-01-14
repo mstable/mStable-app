@@ -1,6 +1,5 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 
 import { useStakingRewardsContracts } from '../../../context/earn/EarnDataProvider';
 import { Color, FontSize } from '../../../theme';
@@ -14,6 +13,7 @@ import { EtherscanLink } from '../../core/EtherscanLink';
 import { ExternalLink } from '../../core/ExternalLink';
 import { AccentColors, Platforms } from '../../../types';
 import { Tooltip } from '../../core/ReactTooltip';
+import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 
 const ApyAmount = styled(Amount)`
   font-size: ${FontSize.m};
@@ -44,11 +44,13 @@ const PlatformContainer = styled.div<{ colors: AccentColors }>`
   display: flex;
   align-items: center;
   * {
-    color: ${({ colors }) => colors.base};
+    color: ${({ colors, theme }) =>
+      theme.isLight ? colors.base : colors.light};
     border-color: ${({ colors }) => colors.light};
   }
   svg {
-    fill: ${({ colors }) => colors.base} !important;
+    fill: ${({ colors, theme }) =>
+      theme.isLight ? colors.base : colors.light} !important;
   }
 `;
 
@@ -200,7 +202,7 @@ export const PoolsOverview: FC<{}> = () => {
                       No data yet
                     </Tooltip>
                   ) : (
-                    <Skeleton />
+                    <ThemedSkeleton />
                   );
                 }
                 case Columns.WeeklyRewards:
@@ -263,7 +265,7 @@ export const PoolsOverview: FC<{}> = () => {
   return (
     <Container>
       {Object.keys(stakingRewardsContracts).length === 0 ? (
-        <Skeleton height={600} />
+        <ThemedSkeleton height={600} />
       ) : (
         <>
           <TableGroup>

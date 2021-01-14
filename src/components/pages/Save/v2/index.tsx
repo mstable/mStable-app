@@ -17,7 +17,12 @@ import { Boost } from './Boost';
 import { MassetModal } from './MassetModal';
 import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
-import { useAverageApyForPastWeek } from '../../../../web3/hooks';
+import { BigDecimal } from '../../../../web3/BigDecimal';
+import { useRewards } from './RewardsProvider';
+import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
+import { VaultROI } from './VaultROI';
+
+const GOVERNANCE_URL = 'https://governance.mstable.org/';
 
 const ModalTitle = styled.div`
   display: flex;
@@ -45,7 +50,7 @@ export const Save: FC = () => {
   const massetState = useSelectedMassetState();
   const vault = massetState?.savingsContracts?.v2?.boostedSavingsVault;
 
-  const vaultBalance = vault?.account?.rawBalance;
+  const vaultBalance = vault?.account?.rawBalance ?? BigDecimal.ZERO;
   const massetToken = useTokenSubscription(massetState?.address);
   const saveToken = useTokenSubscription(
     massetState?.savingsContracts?.v2?.address,
@@ -82,7 +87,14 @@ export const Save: FC = () => {
     children: <VaultModal />,
   });
 
-  const saveApy = useAverageApyForPastWeek();
+  const saveApy = useAvailableSaveApy();
+  const rewards = useRewards();
+
+  const hasRewards = !!(rewards?.now.claimable || rewards?.now.vesting.locked);
+
+  const navigateToGovernance = (): void => {
+    window?.open(GOVERNANCE_URL);
+  };
 
   return (
     <Container>
@@ -94,23 +106,27 @@ export const Save: FC = () => {
       />
       <BalanceRow
         token={BalanceType.SavingsContractV2}
-        apy={saveApy}
+        apy={saveApy?.value}
         onClick={showSaveModal}
         balance={saveToken?.balance}
       />
       <BalanceRow
         token={BalanceType.BoostedSavingsVault}
-        apy={saveApy}
+        apy={saveApy?.value}
+        highlight
+        rewards={<VaultROI />}
         onClick={showVaultModal}
         balance={vaultBalance}
       >
-        <Boost />
+        {(vaultBalance || hasRewards) && <Boost />}
       </BalanceRow>
       <BalanceRow token={BalanceType.Meta} balance={metaToken?.balance} />
       <BalanceRow
         token={BalanceType.VMeta}
         apy="Variable APY"
         balance={vMetaToken?.balance}
+        onClick={navigateToGovernance}
+        external
       />
     </Container>
   );

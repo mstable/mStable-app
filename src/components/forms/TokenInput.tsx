@@ -50,7 +50,7 @@ const OptionsContainer = styled.div<{ open: boolean }>`
   left: -1px;
   right: -1px;
 
-  background: ${({ theme }) => theme.color.white};
+  background: ${({ theme }) => theme.color.accent};
   border: 1px ${({ theme }) => theme.color.blackTransparent} solid;
   border-radius: 0 0 4px 4px;
 `;
@@ -129,15 +129,19 @@ const placeholderText = 'Select a token';
 
 const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  background: ${({ error, theme }) =>
-    error ? theme.color.redTransparenter : theme.color.white};
+  background: ${({ error, disabled, theme }) =>
+    error
+      ? theme.color.redTransparenter
+      : disabled
+      ? theme.color.accent
+      : 'transparent'};
   outline: 0;
   border: 1px
     ${({ theme, error }) =>
-      error ? theme.color.redTransparent : theme.color.blackTransparent}
+      error ? theme.color.redTransparent : theme.color.accentContrast}
     solid;
-  border-radius: 3px;
-  color: ${({ theme }) => theme.color.black};
+  border-radius: 0.5rem;
+  color: ${({ theme }) => theme.color.body};
   font-size: ${FontSize.s};
   font-weight: bold;
   height: 3rem;

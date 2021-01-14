@@ -15,7 +15,7 @@ interface Props {
   className?: string;
   valid: boolean;
   title: string;
-  handleSend(): void;
+  handleSend: (() => Promise<void>) | (() => void);
   approve?: {
     spender: string;
     address: string;
@@ -73,6 +73,8 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
   title,
   handleSend,
 }) => {
+  const [sendError, setSendError] = useState<string | undefined>();
+
   const [
     { needsApprove, hasPendingApproval, isApproveEdgeCase, mode },
     handleApprove,
@@ -92,13 +94,21 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
         <StyledButton
           highlighted={valid}
           disabled={!valid}
-          onClick={(): void => {
+          onClick={async () => {
             if (!valid && needsApprove) return;
 
+            if (sendError) {
+              return setSendError(undefined);
+            }
+
             if (needsApprove) {
-              setStep(Step.APPROVE);
-            } else {
-              handleSend();
+              return setStep(Step.APPROVE);
+            }
+
+            try {
+              await handleSend();
+            } catch (error) {
+              setSendError(error);
             }
           }}
         >

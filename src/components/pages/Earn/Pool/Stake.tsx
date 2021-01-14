@@ -1,5 +1,4 @@
 import React, { FC, useCallback } from 'react';
-import Skeleton from 'react-loading-skeleton';
 
 import styled from 'styled-components';
 import { Interfaces } from '../../../../types';
@@ -18,6 +17,7 @@ import { PLATFORM_METADATA } from '../constants';
 import { Protip } from '../../../core/Protip';
 import { Tabs } from '../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const Row = styled.div`
   width: 100%;
@@ -46,7 +46,7 @@ const Input: FC = () => {
     : undefined;
 
   if (!stakingRewardsContract) {
-    return <Skeleton height={300} />;
+    return <ThemedSkeleton height={300} />;
   }
 
   const { address } = stakingRewardsContract;

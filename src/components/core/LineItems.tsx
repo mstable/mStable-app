@@ -39,8 +39,7 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 8px;
-  background: white;
-  border: 1px ${({ theme }) => theme.color.blackTransparent} solid;
+  border: 1px ${({ theme }) => theme.color.accent} solid;
   border-radius: 2px;
   padding: 8px;
 

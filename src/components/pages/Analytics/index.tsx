@@ -1,14 +1,14 @@
 import React, { FC, useLayoutEffect } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton/lib';
 
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { BasketStats } from '../../stats/BasketStats';
 import { H2, H3, P } from '../../core/Typography';
 import { CountUp } from '../../core/CountUp';
+import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 import { VolumeChart } from '../../stats/VolumeChart';
 import { AggregateChart } from '../../stats/AggregateChart';
-import { PageHeader } from '../PageHeader';
+import { PageAction, PageHeader } from '../PageHeader';
 import { Size } from '../../../theme';
 import { DailyApys } from '../../stats/DailyApys';
 import { ToggleSave } from '../Save/ToggleSave';
@@ -27,7 +27,7 @@ const TotalSupply: FC = () => {
       {totalSupply ? (
         <CountUp end={totalSupply.simpleRounded} decimals={2} />
       ) : (
-        <Skeleton height={50} />
+        <ThemedSkeleton height={50} />
       )}
     </div>
   );
@@ -42,7 +42,7 @@ const TotalSavings: FC = () => {
       {totalSavings ? (
         <CountUp end={totalSavings.simpleRounded} decimals={2} />
       ) : (
-        <Skeleton height={50} />
+        <ThemedSkeleton height={50} />
       )}
     </div>
   );
@@ -97,7 +97,7 @@ export const Analytics: FC = () => {
   return (
     <div>
       <PageHeader
-        title="Analytics"
+        action={PageAction.Analytics}
         subtitle="Explore activity across mStable"
       />
       <Section id="save">

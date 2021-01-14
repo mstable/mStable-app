@@ -113,17 +113,18 @@ export class TransactionManifest<
     let gasPrice: number | undefined = _gasPrice;
 
     const last = this.args[this.args.length - 1];
+    const lastArgIsOverrides = this.isTransactionOverrides(last);
 
-    if (
-      this.isTransactionOverrides(last) &&
-      !(last as TransactionOverrides).gasLimit
-    ) {
+    if (lastArgIsOverrides && (last as TransactionOverrides).gasLimit) {
       // Don't alter the manifest if the gas limit is already set
       return this.args;
     }
 
     // Set the gas limit (with the calculated gas margin)
-    if (!gasLimit) {
+    if (
+      !gasLimit ||
+      (lastArgIsOverrides && !(last as TransactionOverrides).gasLimit)
+    ) {
       gasLimit = await this.estimate();
     }
 
@@ -134,6 +135,16 @@ export class TransactionManifest<
       );
     }
 
-    return [...this.args, { gasLimit, gasPrice }];
+    const overrides = {
+      ...(lastArgIsOverrides ? (last as TransactionOverrides) : null),
+      gasLimit,
+      gasPrice,
+    };
+
+    const argsWithoutOverrides = lastArgIsOverrides
+      ? this.args.slice(0, this.args.length - 1)
+      : this.args;
+
+    return [...argsWithoutOverrides, overrides];
   }
 }

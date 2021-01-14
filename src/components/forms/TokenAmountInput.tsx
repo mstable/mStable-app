@@ -85,6 +85,10 @@ const InputContainer = styled.div`
   > :last-child {
     margin-right: 0;
   }
+
+  > button {
+    border-radius: 0.5rem;
+  }
 `;
 
 const InputsRow = styled.div`
@@ -130,7 +134,7 @@ export const TokenAmountInput: FC<Props> = ({
             error={!!error}
           />
           {onSetMax ? (
-            <Button type="button" onClick={onSetMax}>
+            <Button type="button" onClick={onSetMax} transparent>
               Max
             </Button>
           ) : null}

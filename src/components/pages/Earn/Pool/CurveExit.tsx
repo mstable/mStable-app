@@ -1,10 +1,10 @@
 import React, { FC, useCallback } from 'react';
-import Skeleton from 'react-loading-skeleton';
 
 import styled from 'styled-components';
 import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
 import { CountUp } from '../../../core/CountUp';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 import {
   useCurrentRewardsToken,
   useCurrentStakingToken,
@@ -28,7 +28,7 @@ const Input: FC = () => {
   const { stakingRewardsContract } = useStakingRewardsContractState();
 
   if (!stakingRewardsContract) {
-    return <Skeleton height={300} />;
+    return <ThemedSkeleton height={300} />;
   }
 
   return (
@@ -103,7 +103,7 @@ const ExitFormConfirm: FC = () => {
           <P>No staking balance.</P>
         )
       ) : (
-        <Skeleton />
+        <ThemedSkeleton />
       )}
     </div>
   );

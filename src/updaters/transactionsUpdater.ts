@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { usePrevious } from 'react-use';
 import { Provider, TransactionReceipt } from 'ethers/providers';
 import { Signer } from 'ethers';
 
@@ -11,15 +12,21 @@ import {
   useTransactionsState,
 } from '../context/TransactionsProvider';
 
+const STATUS_NEEDS_CHECK = [
+  TransactionStatus.Pending,
+  TransactionStatus.Sent,
+  TransactionStatus.Response,
+];
+
 /**
  * Update the state of affected transactions when the provider or
  * block number changes.
  */
 export const TransactionsUpdater = (): null => {
   const account = useAccount();
+  const accountPrev = usePrevious(account);
   const provider = useSignerOrInfuraProvider();
   const blockNumber = useBlockNumber();
-  const accountRef = useRef<string | undefined>(account);
 
   const state = useTransactionsState();
   const { check, finalize, reset } = useTransactionsDispatch();
@@ -28,11 +35,10 @@ export const TransactionsUpdater = (): null => {
    * Reset transactions state on account change
    */
   useEffect(() => {
-    if (accountRef.current !== account) {
+    if (accountPrev !== account) {
       reset();
-      accountRef.current = account;
     }
-  }, [account, accountRef, reset]);
+  }, [account, accountPrev, reset]);
 
   /**
    * Check pending transaction status on new blocks, and finalize if possible.
@@ -44,7 +50,7 @@ export const TransactionsUpdater = (): null => {
         Object.values(state)
           .filter(
             tx =>
-              tx.status === TransactionStatus.Sent &&
+              STATUS_NEEDS_CHECK.includes(tx.status) &&
               tx.hash &&
               tx.blockNumber !== blockNumber,
           )

@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import { BigNumber } from 'ethers/utils';
 import styled from 'styled-components';
 
@@ -9,6 +8,7 @@ import { TransactionForm } from '../../../forms/TransactionForm';
 import { ApproveButton } from '../../../forms/ApproveButton';
 import { TokenAmount } from '../../../core/TokenAmount';
 import { NumberFormat } from '../../../core/Amount';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 import { H3, H4 } from '../../../core/Typography';
 import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider';
 import { Interfaces } from '../../../../types';
@@ -92,7 +92,7 @@ const Input: FC = () => {
       ) : null}
     </Row>
   ) : (
-    <Skeleton />
+    <ThemedSkeleton />
   );
 };
 
