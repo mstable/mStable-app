@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useEffectOnce } from 'react-use';
 
 import { useGasPrices } from '../../context/GasPricesProvider';
-import { Color } from '../../theme';
 import { useGas } from './TransactionGasProvider';
 import { Button } from '../core/Button';
 
@@ -47,7 +46,7 @@ const Fee = styled(Price)`
 const Input = styled.input<{ error?: string | void; disabled?: boolean }>`
   appearance: none;
   background: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparenter : theme.color.white};
+    disabled ? theme.color.blackTransparenter : theme.color.background};
 
   border: ${({ theme, disabled }) =>
     `1px ${
@@ -103,7 +102,7 @@ const Container = styled.div`
     top: 0;
     width: 100%;
     height: 1.75rem;
-    background: ${Color.lightGrey};
+    background: ${({ theme }) => theme.color.backgroundAccent};
     border-radius: 1rem;
     z-index: 0;
   }

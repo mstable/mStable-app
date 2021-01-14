@@ -4,31 +4,36 @@ import styled, { css } from 'styled-components';
 
 import { ViewportWidth } from '../../../theme';
 import { BigDecimal } from '../../../web3/BigDecimal';
-import { useAverageApyForPastWeek } from '../../../web3/hooks';
 import { Widget, WidgetButton } from '../../core/Widget';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
 import { ReactComponent as MUSDIcon } from '../../icons/tokens/mUSD.svg';
 import { ReactComponent as IMUSDIcon } from '../../icons/tokens/imUSD.svg';
 import { ReactComponent as IMUSDMTAIcon } from '../../icons/tokens/imusd-mta.svg';
+import { ReactComponent as MTAIcon } from '../../icons/tokens/MTA.svg';
+import { ReactComponent as VMTAIcon } from '../../icons/tokens/vMTA.svg';
 
 export enum BalanceType {
-  MUSD,
-  MUSD_SAVE,
-  IMUSD,
-  IMUSD_VAULT,
+  Masset,
+  SavingsContractV1,
+  SavingsContractV2,
+  BoostedSavingsVault,
+  Meta,
+  VMeta,
 }
 
 interface Props {
   token: BalanceType;
   balance?: BigDecimal;
+  apy?: number | string;
   warning?: boolean;
-  onClick?: () => void;
+  onClick?(): void;
 }
 
 interface RowProps {
   title: string;
   subtitle?: string;
   AssetIcon: FC;
+  hasApy?: boolean;
 }
 
 export const ContainerSnippet = css`
@@ -95,8 +100,9 @@ const Interest = styled.div`
   flex-direction: column;
   justify-content: flex-end;
   text-align: right;
+  font-size: 1.2rem;
 
-  span {
+  div + div {
     font-size: 0.75rem;
   }
 `;
@@ -150,7 +156,7 @@ const DefaultContainer = styled(WidgetButton)`
 
 const Tokens = new Map<number, RowProps>([
   [
-    BalanceType.MUSD,
+    BalanceType.Masset,
     {
       title: 'mUSD',
       subtitle: 'mStable USD',
@@ -158,27 +164,47 @@ const Tokens = new Map<number, RowProps>([
     },
   ],
   [
-    BalanceType.MUSD_SAVE,
+    BalanceType.SavingsContractV1,
     {
       title: 'mUSD Save',
       subtitle: 'mStable USD in Save V1',
       AssetIcon: MUSDIcon,
+      hasApy: true,
     },
   ],
   [
-    BalanceType.IMUSD,
+    BalanceType.SavingsContractV2,
     {
       title: 'imUSD',
       subtitle: 'Interest-bearing mUSD',
       AssetIcon: IMUSDIcon,
+      hasApy: true,
     },
   ],
   [
-    BalanceType.IMUSD_VAULT,
+    BalanceType.BoostedSavingsVault,
     {
       title: 'imUSD Vault',
       subtitle: 'Vault with MTA rewards',
       AssetIcon: IMUSDMTAIcon,
+      hasApy: true,
+    },
+  ],
+  [
+    BalanceType.Meta,
+    {
+      title: 'MTA',
+      subtitle: 'mStable Meta',
+      AssetIcon: MTAIcon,
+    },
+  ],
+  [
+    BalanceType.VMeta,
+    {
+      title: 'vMTA',
+      subtitle: 'Voting escrow MTA',
+      AssetIcon: VMTAIcon,
+      hasApy: true,
     },
   ],
 ]);
@@ -195,16 +221,16 @@ export const BalanceHeader: FC = () => {
 
 const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   onClick,
+  apy,
   token,
   warning = false,
   hasChildren = false,
   balance,
 }) => {
-  const interestRate = useAverageApyForPastWeek();
   const tokenInfo = Tokens.get(token) as RowProps;
 
-  const { title, subtitle, AssetIcon } = tokenInfo;
-  const isIMUSDVault = token === BalanceType.IMUSD_VAULT;
+  const { title, subtitle, AssetIcon, hasApy } = tokenInfo;
+  const isIMUSDVault = token === BalanceType.BoostedSavingsVault;
   const hasBorder = !hasChildren;
 
   return (
@@ -229,15 +255,19 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
       </div>
       <div>
         <Interest>
-          {interestRate ? (
-            <>
-              <Number>
-                <h4>{`${interestRate?.toFixed(2) ?? `0.00`}%`}</h4>
-              </Number>
-              {isIMUSDVault && <span>+ MTA</span>}
-            </>
-          ) : interestRate === 0 ? (
+          {!hasApy || apy === 0 ? (
             <Line />
+          ) : apy ? (
+            <>
+              <div>
+                {typeof apy === 'string' ? (
+                  apy
+                ) : (
+                  <Number>{apy.toFixed(2)}%</Number>
+                )}
+              </div>
+              {isIMUSDVault && <div>+ MTA</div>}
+            </>
           ) : (
             <Skeleton height={24} width={100} />
           )}
@@ -259,6 +289,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
 export const BalanceRow: FC<Props> = ({
   onClick,
   token,
+  apy,
   warning,
   children,
   balance,
@@ -268,6 +299,7 @@ export const BalanceRow: FC<Props> = ({
       <InternalBalanceRow
         onClick={onClick}
         token={token}
+        apy={apy}
         hasChildren={!!children}
         warning={warning}
         balance={balance}
@@ -278,6 +310,7 @@ export const BalanceRow: FC<Props> = ({
     <InternalBalanceRow
       onClick={onClick}
       token={token}
+      apy={apy}
       warning={warning}
       balance={balance}
     />

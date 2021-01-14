@@ -2,10 +2,12 @@ import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 
 import { TabBtn, TabsContainer } from '../../../core/Tabs';
+import { SaveDeposit } from './SaveDeposit';
 import { VaultWithdraw } from './VaultWithdraw';
 import { VaultExit } from './VaultExit';
 
 enum Tabs {
+  Deposit,
   Withdraw,
   Exit,
 }
@@ -23,6 +25,14 @@ export const VaultModal: FC = () => {
     <Container>
       <TabsContainer>
         <TabBtn
+          active={tab === Tabs.Deposit}
+          onClick={() => {
+            setTab(Tabs.Deposit);
+          }}
+        >
+          Deposit
+        </TabBtn>
+        <TabBtn
           active={tab === Tabs.Withdraw}
           onClick={() => {
             setTab(Tabs.Withdraw);
@@ -39,7 +49,13 @@ export const VaultModal: FC = () => {
           Exit
         </TabBtn>
       </TabsContainer>
-      {tab === Tabs.Withdraw ? <VaultWithdraw /> : <VaultExit />}
+      {tab === Tabs.Withdraw ? (
+        <VaultWithdraw />
+      ) : tab === Tabs.Deposit ? (
+        <SaveDeposit saveAndStake />
+      ) : (
+        <VaultExit />
+      )}
     </Container>
   );
 };
