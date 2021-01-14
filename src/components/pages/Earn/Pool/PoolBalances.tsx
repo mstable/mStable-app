@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton/lib';
 import { Link } from 'react-router-dom';
 
 import { Amount, NumberFormat } from '../../../core/Amount';
@@ -15,6 +14,7 @@ import {
 import { ViewAs } from './ViewAs';
 import { P } from '../../../core/Typography';
 import { Protip } from '../../../core/Protip';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 interface Props {
   className?: string;
@@ -167,7 +167,7 @@ export const PoolBalances: FC<Props> = () => {
           </div>
         </Balances>
       ) : (
-        <Skeleton height={200} />
+        <ThemedSkeleton height={200} />
       )}
     </div>
   );

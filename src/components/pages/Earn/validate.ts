@@ -1,6 +1,6 @@
 import { StakingRewardsContract } from '../../../context/earn/types';
 import { Reasons, State, Tabs } from './types';
-import { CURVE_ADDRESSES } from '../../../context/earn/CurveProvider';
+import { ADDRESSES } from '../../../constants';
 
 const getReasonMessage = (reason: Reasons | undefined): string | undefined => {
   switch (reason) {
@@ -42,7 +42,7 @@ const validateActiveTab = (
         tokens: { [stakingTokenAddress]: stakingToken },
       } = state;
 
-      const spender = curve ? CURVE_ADDRESSES.MUSD_GAUGE : address;
+      const spender = curve ? ADDRESSES.CURVE.MUSD_GAUGE : address;
 
       if (!stake.amount) {
         return [false, Reasons.AmountMustBeSet];
@@ -82,7 +82,7 @@ const validateActiveTab = (
         return [false, Reasons.AmountMustBeGreaterThanZero];
       }
 
-      const spender = CURVE_ADDRESSES.MUSD_DEPOSIT;
+      const spender = ADDRESSES.CURVE.MUSD_DEPOSIT;
 
       if (
         !(

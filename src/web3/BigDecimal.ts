@@ -14,6 +14,10 @@ import { RATIO_SCALE, SCALE } from '../constants';
 const DEFAULT_DECIMALS = 18;
 
 export class BigDecimal {
+  static ZERO = new BigDecimal(0);
+
+  static ONE = new BigDecimal((1e18).toString());
+
   /**
    * Parse a BigDecimal from the given amount string (e.g. "12.32") and decimals
    * @param amountStr

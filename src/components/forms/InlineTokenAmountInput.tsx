@@ -73,6 +73,7 @@ const Input = styled.div`
   button {
     padding-top: 5px;
     padding-bottom: 5px;
+    border-radius: 0.5rem;
   }
 `;
 
@@ -159,11 +160,11 @@ const Container = styled.div<{
 }>`
   border: 1px
     ${({ theme, valid }) =>
-      valid ? theme.color.blackTransparent : theme.color.redTransparent}
+      valid ? theme.color.accent : theme.color.redTransparent}
     solid;
   border-radius: 3px;
   background: ${({ theme, overweight }) =>
-    overweight ? theme.color.blackTransparenter : theme.color.white};
+    overweight && theme.color.blackTransparenter};
   padding: ${({ theme }) => theme.spacing.xs};
   margin-bottom: 8px;
 `;
@@ -226,6 +227,7 @@ export const InlineTokenAmountInput: FC<Props> = ({
                   type="button"
                   onClick={amount.handleSetMax}
                   scale={0.75}
+                  transparent
                 >
                   Max
                 </Button>

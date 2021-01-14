@@ -50,6 +50,10 @@ const Container = styled.div`
   border-radius: 0 0 2px 2px;
   padding: 16px 0 32px 0;
   text-align: left;
+
+  > div:not(:last-child) {
+    margin-bottom: 2rem;
+  }
 `;
 
 export const PoolForms: FC<{ address: string }> = () => {

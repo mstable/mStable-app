@@ -7,12 +7,12 @@ import { useTokenSubscription } from '../../../../context/TokensProvider';
 
 import { SavingsContractFactory } from '../../../../typechain/SavingsContractFactory';
 import { Interfaces } from '../../../../types';
-import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
+import { BigDecimal } from '../../../../web3/BigDecimal';
 
 const formId = 'SaveRedeem';
 
@@ -46,13 +46,15 @@ export const SaveRedeem: FC = () => {
     return [{ address: saveAddress as string }];
   }, [saveAddress]);
 
-  const exchangeRate = useMemo(
-    () =>
-      saveExchangeRate
-        ? BigDecimal.parse('1').divPrecisely(saveExchangeRate)
-        : undefined,
-    [saveExchangeRate],
-  );
+  const exchangeRate = useMemo(() => {
+    const value = saveExchangeRate
+      ? saveExchangeRate.divPrecisely(BigDecimal.ONE)
+      : undefined;
+    return {
+      value,
+      fetching: !value,
+    };
+  }, [saveExchangeRate]);
 
   const valid = !!(!error && inputAmount && inputAmount.simple > 0);
 
@@ -60,6 +62,7 @@ export const SaveRedeem: FC = () => {
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
       inputAddress={saveAddress}
+      inputAddressDisabled
       inputAmount={inputAmount}
       inputFormValue={inputFormValue}
       outputAddress={massetAddress}

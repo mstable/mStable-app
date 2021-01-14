@@ -1,17 +1,1 @@
-<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0)">
-<circle cx="64" cy="64" r="62" stroke="black" stroke-width="4"/>
-<circle cx="64" cy="53" r="20" fill="black"/>
-<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="27" y="79" width="74" height="39">
-<ellipse cx="64" cy="98.5" rx="37" ry="19.5" fill="black"/>
-</mask>
-<g mask="url(#mask0)">
-<circle cx="64" cy="64" r="51" fill="black"/>
-</g>
-</g>
-<defs>
-<clipPath id="clip0">
-<rect width="128" height="128" fill="white"/>
-</clipPath>
-</defs>
-</svg>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 700"><defs><style>.cls-1{fill:#020202;}</style></defs><path class="cls-1" d="M611.33,618a274.52,274.52,0,0,0-103-214.27A199.18,199.18,0,0,0,557,273c0-110.46-89.54-200-200-200S157,162.54,157,273a199.09,199.09,0,0,0,40.21,120.28,299.36,299.36,0,0,0-68.05,75.61C100.05,515.08,84.67,566.64,84.67,618h83c0-35.68,11-71.94,31.71-104.87,16.43-26.07,38.2-48.36,62.44-64.19a200.39,200.39,0,0,0,176.61,6.78A191.48,191.48,0,0,1,528.33,618ZM274.27,355.73a117.06,117.06,0,0,1-13-150H452.74a117,117,0,0,1-178.47,150Z"/></svg>

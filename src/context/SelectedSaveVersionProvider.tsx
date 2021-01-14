@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { useSelectedMassetState } from './DataProvider/DataProvider';
 import { SavingsContractState } from './DataProvider/types';
@@ -32,6 +33,8 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
   const ctxValue = useState<SaveVersion | undefined>(undefined);
   const [selectedSaveVersion, setSelectedSaveVersion] = ctxValue;
   const setRef = useRef(false);
+
+  const location = useLocation();
 
   const setBannerMessage = useSetBannerMessage();
   const walletAddress = useWalletAddress();
@@ -96,14 +99,18 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
       }
 
       if (v2Exists) {
-        message.subtitle = 'Safely deposit your savings early now.';
-        message.url = '/save';
+        if (location.pathname !== '/save') {
+          message.url = '/save';
+        }
         if (v2Current) {
           message.title = 'SAVE V2 has launched!';
+          message.emoji = '🚀';
           if (!hasNoV1Balance) {
             message.subtitle =
               'Migrate your funds now to keep earning interest.';
           }
+        } else {
+          message.subtitle = 'Safely deposit your savings early now.';
         }
       }
     }
@@ -111,6 +118,7 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
     setBannerMessage(message);
   }, [
     loading,
+    location,
     setBannerMessage,
     hasNoV1Balance,
     v1Exists,

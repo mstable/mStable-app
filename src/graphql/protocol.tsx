@@ -2,59 +2,63 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-
-      export interface IntrospectionResultData {
-        __schema: {
-          types: {
-            kind: string;
-            name: string;
-            possibleTypes: {
-              name: string;
-            }[];
-          }[];
-        };
-      }
-      const result: IntrospectionResultData = {
-  "__schema": {
-    "types": [
-      {
-        "kind": "INTERFACE",
-        "name": "Transaction",
-        "possibleTypes": [
-          {
-            "name": "SavingsContractDepositTransaction"
-          },
-          {
-            "name": "SavingsContractWithdrawTransaction"
-          },
-          {
-            "name": "SwapTransaction"
-          },
-          {
-            "name": "PaidFeeTransaction"
-          },
-          {
-            "name": "RedeemMassetTransaction"
-          },
-          {
-            "name": "MintMultiTransaction"
-          },
-          {
-            "name": "MintSingleTransaction"
-          },
-          {
-            "name": "RedeemTransaction"
-          }
-        ]
-      }
-    ]
-  }
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
 };
-      export default result;
-    
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
+
+export interface IntrospectionResultData {
+  __schema: {
+    types: {
+      kind: string;
+      name: string;
+      possibleTypes: {
+        name: string;
+      }[];
+    }[];
+  };
+}
+const result: IntrospectionResultData = {
+  __schema: {
+    types: [
+      {
+        kind: 'INTERFACE',
+        name: 'Transaction',
+        possibleTypes: [
+          {
+            name: 'SavingsContractDepositTransaction',
+          },
+          {
+            name: 'SavingsContractWithdrawTransaction',
+          },
+          {
+            name: 'SwapTransaction',
+          },
+          {
+            name: 'PaidFeeTransaction',
+          },
+          {
+            name: 'RedeemMassetTransaction',
+          },
+          {
+            name: 'MintMultiTransaction',
+          },
+          {
+            name: 'MintSingleTransaction',
+          },
+          {
+            name: 'RedeemTransaction',
+          },
+        ],
+      },
+    ],
+  },
+};
+export default result;
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -66,9 +70,6 @@ export type Scalars = {
   BigInt: string;
   BigDecimal: string;
 };
-
-
-
 
 export type _Block_ = {
   /** The hash of the block */
@@ -96,7 +97,7 @@ export enum _SubgraphErrorPolicy_ {
   /** Data will be returned even if the subgraph has indexing errors */
   Allow = 'allow',
   /** If the subgraph has indexing errors, data will be omitted. The default. */
-  Deny = 'deny'
+  Deny = 'deny',
 }
 
 /**
@@ -140,7 +141,7 @@ export type Account_Filter = {
 
 export enum Account_OrderBy {
   Id = 'id',
-  CreditBalance = 'creditBalance'
+  CreditBalance = 'creditBalance',
 }
 
 /** A Basket of Bassets (e.g. for mUSD) */
@@ -159,7 +160,6 @@ export type Basket = {
   /** Masset the Basket belongs to */
   masset: Masset;
 };
-
 
 /** A Basket of Bassets (e.g. for mUSD) */
 export type BasketBassetsArgs = {
@@ -216,7 +216,7 @@ export enum Basket_OrderBy {
   MaxBassets = 'maxBassets',
   UndergoingRecol = 'undergoingRecol',
   Failed = 'failed',
-  Masset = 'masset'
+  Masset = 'masset',
 }
 
 /** Basket Asset (e.g. DAI for the mUSD basket) */
@@ -480,10 +480,8 @@ export enum Basset_OrderBy {
   CumulativeMinted = 'cumulativeMinted',
   CumulativeSwappedAsOutput = 'cumulativeSwappedAsOutput',
   CumulativeRedeemed = 'cumulativeRedeemed',
-  CumulativeFeesPaid = 'cumulativeFeesPaid'
+  CumulativeFeesPaid = 'cumulativeFeesPaid',
 }
-
-
 
 export type Block_Height = {
   hash?: Maybe<Scalars['Bytes']>;
@@ -525,7 +523,6 @@ export type BoostedSavingsVault = {
   totalStakingRewards: Scalars['BigInt'];
 };
 
-
 export type BoostedSavingsVaultAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -533,7 +530,6 @@ export type BoostedSavingsVaultAccountsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<BoostedSavingsVaultAccount_Filter>;
 };
-
 
 export type BoostedSavingsVaultRewardEntriesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -706,7 +702,7 @@ export enum BoostedSavingsVault_OrderBy {
   RewardsDistributor = 'rewardsDistributor',
   StakingContract = 'stakingContract',
   TotalSupply = 'totalSupply',
-  TotalStakingRewards = 'totalStakingRewards'
+  TotalStakingRewards = 'totalStakingRewards',
 }
 
 export type BoostedSavingsVaultAccount = {
@@ -722,7 +718,6 @@ export type BoostedSavingsVaultAccount = {
   rewardCount: Scalars['Int'];
   rewardEntries: Array<BoostedSavingsVaultRewardEntry>;
 };
-
 
 export type BoostedSavingsVaultAccountRewardEntriesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -838,7 +833,7 @@ export enum BoostedSavingsVaultAccount_OrderBy {
   LastAction = 'lastAction',
   LastClaim = 'lastClaim',
   RewardCount = 'rewardCount',
-  RewardEntries = 'rewardEntries'
+  RewardEntries = 'rewardEntries',
 }
 
 export type BoostedSavingsVaultRewardEntry = {
@@ -929,9 +924,8 @@ export enum BoostedSavingsVaultRewardEntry_OrderBy {
   Index = 'index',
   Start = 'start',
   Finish = 'finish',
-  Rate = 'rate'
+  Rate = 'rate',
 }
-
 
 export type Counter = {
   id: Scalars['ID'];
@@ -960,7 +954,7 @@ export type Counter_Filter = {
 
 export enum Counter_OrderBy {
   Id = 'id',
-  Value = 'value'
+  Value = 'value',
 }
 
 /**
@@ -1028,7 +1022,7 @@ export enum CreditBalance_OrderBy {
   Id = 'id',
   Account = 'account',
   Amount = 'amount',
-  SavingsContract = 'savingsContract'
+  SavingsContract = 'savingsContract',
 }
 
 export type ExchangeRate = {
@@ -1106,7 +1100,7 @@ export enum ExchangeRate_OrderBy {
   Rate = 'rate',
   Timestamp = 'timestamp',
   SavingsContract = 'savingsContract',
-  Next = 'next'
+  Next = 'next',
 }
 
 /** An mStable asset (e.g. mUSD) */
@@ -1167,7 +1161,6 @@ export type Masset = {
   redeemTransactions: Array<RedeemTransaction>;
 };
 
-
 /** An mStable asset (e.g. mUSD) */
 export type MassetSavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1176,7 +1169,6 @@ export type MassetSavingsContractsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContract_Filter>;
 };
-
 
 /** An mStable asset (e.g. mUSD) */
 export type MassetSwapTransactionsArgs = {
@@ -1187,7 +1179,6 @@ export type MassetSwapTransactionsArgs = {
   where?: Maybe<SwapTransaction_Filter>;
 };
 
-
 /** An mStable asset (e.g. mUSD) */
 export type MassetPaidFeeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1196,7 +1187,6 @@ export type MassetPaidFeeTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<PaidFeeTransaction_Filter>;
 };
-
 
 /** An mStable asset (e.g. mUSD) */
 export type MassetRedeemMassetTransactionsArgs = {
@@ -1207,7 +1197,6 @@ export type MassetRedeemMassetTransactionsArgs = {
   where?: Maybe<RedeemMassetTransaction_Filter>;
 };
 
-
 /** An mStable asset (e.g. mUSD) */
 export type MassetMintMultiTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1217,7 +1206,6 @@ export type MassetMintMultiTransactionsArgs = {
   where?: Maybe<MintMultiTransaction_Filter>;
 };
 
-
 /** An mStable asset (e.g. mUSD) */
 export type MassetMintSingleTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1226,7 +1214,6 @@ export type MassetMintSingleTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<MintSingleTransaction_Filter>;
 };
-
 
 /** An mStable asset (e.g. mUSD) */
 export type MassetRedeemTransactionsArgs = {
@@ -1521,7 +1508,7 @@ export enum Masset_OrderBy {
   RedeemMassetTransactions = 'redeemMassetTransactions',
   MintMultiTransactions = 'mintMultiTransactions',
   MintSingleTransactions = 'mintSingleTransactions',
-  RedeemTransactions = 'redeemTransactions'
+  RedeemTransactions = 'redeemTransactions',
 }
 
 export type Metric = {
@@ -1573,7 +1560,7 @@ export enum Metric_OrderBy {
   Id = 'id',
   Exact = 'exact',
   Decimals = 'decimals',
-  Simple = 'simple'
+  Simple = 'simple',
 }
 
 export type MintMultiTransaction = Transaction & {
@@ -1592,7 +1579,6 @@ export type MintMultiTransaction = Transaction & {
   /** The respective Basset units for each Basset used in this mint. */
   bassetsUnits: Array<Scalars['BigInt']>;
 };
-
 
 export type MintMultiTransactionBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1687,7 +1673,7 @@ export enum MintMultiTransaction_OrderBy {
   Masset = 'masset',
   MassetUnits = 'massetUnits',
   Bassets = 'bassets',
-  BassetsUnits = 'bassetsUnits'
+  BassetsUnits = 'bassetsUnits',
 }
 
 export type MintSingleTransaction = Transaction & {
@@ -1806,12 +1792,12 @@ export enum MintSingleTransaction_OrderBy {
   Masset = 'masset',
   MassetUnits = 'massetUnits',
   Basset = 'basset',
-  BassetUnits = 'bassetUnits'
+  BassetUnits = 'bassetUnits',
 }
 
 export enum OrderDirection {
   Asc = 'asc',
-  Desc = 'desc'
+  Desc = 'desc',
 }
 
 export type PaidFeeTransaction = Transaction & {
@@ -1922,7 +1908,7 @@ export enum PaidFeeTransaction_OrderBy {
   Masset = 'masset',
   MassetUnits = 'massetUnits',
   Basset = 'basset',
-  BassetUnits = 'bassetUnits'
+  BassetUnits = 'bassetUnits',
 }
 
 export type Query = {
@@ -1968,20 +1954,22 @@ export type Query = {
   redeemMassetTransactions: Array<RedeemMassetTransaction>;
   savingsContractDepositTransaction?: Maybe<SavingsContractDepositTransaction>;
   savingsContractDepositTransactions: Array<SavingsContractDepositTransaction>;
-  savingsContractWithdrawTransaction?: Maybe<SavingsContractWithdrawTransaction>;
-  savingsContractWithdrawTransactions: Array<SavingsContractWithdrawTransaction>;
+  savingsContractWithdrawTransaction?: Maybe<
+    SavingsContractWithdrawTransaction
+  >;
+  savingsContractWithdrawTransactions: Array<
+    SavingsContractWithdrawTransaction
+  >;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
 
-
 export type QueryTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryTokensArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -1992,12 +1980,10 @@ export type QueryTokensArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2008,12 +1994,10 @@ export type QueryMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryCounterArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryCountersArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2024,12 +2008,10 @@ export type QueryCountersArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2040,12 +2022,10 @@ export type QueryBassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryBasketsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2056,12 +2036,10 @@ export type QueryBasketsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryMassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2072,12 +2050,10 @@ export type QueryMassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2088,12 +2064,10 @@ export type QueryAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2104,12 +2078,10 @@ export type QueryCreditBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QuerySavingsManagerArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QuerySavingsManagersArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2120,12 +2092,10 @@ export type QuerySavingsManagersArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QuerySavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QuerySavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2136,12 +2106,10 @@ export type QuerySavingsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryBoostedSavingsVaultArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryBoostedSavingsVaultsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2152,12 +2120,10 @@ export type QueryBoostedSavingsVaultsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryBoostedSavingsVaultAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryBoostedSavingsVaultAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2168,12 +2134,10 @@ export type QueryBoostedSavingsVaultAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryBoostedSavingsVaultRewardEntryArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryBoostedSavingsVaultRewardEntriesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2184,12 +2148,10 @@ export type QueryBoostedSavingsVaultRewardEntriesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2200,12 +2162,10 @@ export type QueryExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QuerySwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QuerySwapTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2216,12 +2176,10 @@ export type QuerySwapTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryPaidFeeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryPaidFeeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2232,12 +2190,10 @@ export type QueryPaidFeeTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryMintSingleTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryMintSingleTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2248,12 +2204,10 @@ export type QueryMintSingleTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryMintMultiTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryMintMultiTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2264,12 +2218,10 @@ export type QueryMintMultiTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryRedeemTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryRedeemTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2280,12 +2232,10 @@ export type QueryRedeemTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryRedeemMassetTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryRedeemMassetTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2296,12 +2246,10 @@ export type QueryRedeemMassetTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QuerySavingsContractDepositTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QuerySavingsContractDepositTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2312,12 +2260,10 @@ export type QuerySavingsContractDepositTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QuerySavingsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QuerySavingsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2328,12 +2274,10 @@ export type QuerySavingsContractWithdrawTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type QueryTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type QueryTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2343,7 +2287,6 @@ export type QueryTransactionsArgs = {
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
 };
-
 
 export type Query_MetaArgs = {
   block?: Maybe<Block_Height>;
@@ -2437,7 +2380,7 @@ export enum RedeemMassetTransaction_OrderBy {
   Recipient = 'recipient',
   Timestamp = 'timestamp',
   Masset = 'masset',
-  MassetUnits = 'massetUnits'
+  MassetUnits = 'massetUnits',
 }
 
 export type RedeemTransaction = Transaction & {
@@ -2456,7 +2399,6 @@ export type RedeemTransaction = Transaction & {
   /** The respective units of each Basset selected to redeem. */
   bassetsUnits: Array<Scalars['BigInt']>;
 };
-
 
 export type RedeemTransactionBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2551,7 +2493,7 @@ export enum RedeemTransaction_OrderBy {
   Masset = 'masset',
   MassetUnits = 'massetUnits',
   Bassets = 'bassets',
-  BassetsUnits = 'bassetsUnits'
+  BassetsUnits = 'bassetsUnits',
 }
 
 export type SavingsContract = {
@@ -2617,7 +2559,6 @@ export type SavingsContract = {
   token?: Maybe<Token>;
 };
 
-
 export type SavingsContractCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -2625,7 +2566,6 @@ export type SavingsContractCreditBalancesArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<CreditBalance_Filter>;
 };
-
 
 export type SavingsContractExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2635,7 +2575,6 @@ export type SavingsContractExchangeRatesArgs = {
   where?: Maybe<ExchangeRate_Filter>;
 };
 
-
 export type SavingsContractDepositTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -2644,7 +2583,6 @@ export type SavingsContractDepositTransactionsArgs = {
   where?: Maybe<SavingsContractDepositTransaction_Filter>;
 };
 
-
 export type SavingsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
   first?: Maybe<Scalars['Int']>;
@@ -2652,7 +2590,6 @@ export type SavingsContractWithdrawTransactionsArgs = {
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContractWithdrawTransaction_Filter>;
 };
-
 
 export type SavingsContractBoostedSavingsVaultsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -2872,7 +2809,7 @@ export enum SavingsContract_OrderBy {
   WithdrawTransactions = 'withdrawTransactions',
   BoostedSavingsVaults = 'boostedSavingsVaults',
   Version = 'version',
-  Token = 'token'
+  Token = 'token',
 }
 
 export type SavingsContractDepositTransaction = Transaction & {
@@ -2955,7 +2892,7 @@ export enum SavingsContractDepositTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   SavingsContract = 'savingsContract',
-  Amount = 'amount'
+  Amount = 'amount',
 }
 
 export type SavingsContractWithdrawTransaction = Transaction & {
@@ -3038,7 +2975,7 @@ export enum SavingsContractWithdrawTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   SavingsContract = 'savingsContract',
-  Amount = 'amount'
+  Amount = 'amount',
 }
 
 export type SavingsManager = {
@@ -3091,7 +3028,7 @@ export enum SavingsManager_OrderBy {
   Id = 'id',
   Address = 'address',
   SavingsRate = 'savingsRate',
-  StreamsFrozen = 'streamsFrozen'
+  StreamsFrozen = 'streamsFrozen',
 }
 
 export type Subscription = {
@@ -3137,20 +3074,22 @@ export type Subscription = {
   redeemMassetTransactions: Array<RedeemMassetTransaction>;
   savingsContractDepositTransaction?: Maybe<SavingsContractDepositTransaction>;
   savingsContractDepositTransactions: Array<SavingsContractDepositTransaction>;
-  savingsContractWithdrawTransaction?: Maybe<SavingsContractWithdrawTransaction>;
-  savingsContractWithdrawTransactions: Array<SavingsContractWithdrawTransaction>;
+  savingsContractWithdrawTransaction?: Maybe<
+    SavingsContractWithdrawTransaction
+  >;
+  savingsContractWithdrawTransactions: Array<
+    SavingsContractWithdrawTransaction
+  >;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
   _meta?: Maybe<_Meta_>;
 };
 
-
 export type SubscriptionTokenArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionTokensArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3161,12 +3100,10 @@ export type SubscriptionTokensArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionMetricArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionMetricsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3177,12 +3114,10 @@ export type SubscriptionMetricsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionCounterArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionCountersArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3193,12 +3128,10 @@ export type SubscriptionCountersArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionBassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionBassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3209,12 +3142,10 @@ export type SubscriptionBassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionBasketArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionBasketsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3225,12 +3156,10 @@ export type SubscriptionBasketsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionMassetArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionMassetsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3241,12 +3170,10 @@ export type SubscriptionMassetsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3257,12 +3184,10 @@ export type SubscriptionAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionCreditBalanceArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionCreditBalancesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3273,12 +3198,10 @@ export type SubscriptionCreditBalancesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionSavingsManagerArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionSavingsManagersArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3289,12 +3212,10 @@ export type SubscriptionSavingsManagersArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionSavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionSavingsContractsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3305,12 +3226,10 @@ export type SubscriptionSavingsContractsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionBoostedSavingsVaultArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionBoostedSavingsVaultsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3321,12 +3240,10 @@ export type SubscriptionBoostedSavingsVaultsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionBoostedSavingsVaultAccountArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionBoostedSavingsVaultAccountsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3337,12 +3254,10 @@ export type SubscriptionBoostedSavingsVaultAccountsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionBoostedSavingsVaultRewardEntryArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionBoostedSavingsVaultRewardEntriesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3353,12 +3268,10 @@ export type SubscriptionBoostedSavingsVaultRewardEntriesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionExchangeRateArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionExchangeRatesArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3369,12 +3282,10 @@ export type SubscriptionExchangeRatesArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionSwapTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionSwapTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3385,12 +3296,10 @@ export type SubscriptionSwapTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionPaidFeeTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionPaidFeeTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3401,12 +3310,10 @@ export type SubscriptionPaidFeeTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionMintSingleTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionMintSingleTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3417,12 +3324,10 @@ export type SubscriptionMintSingleTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionMintMultiTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionMintMultiTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3433,12 +3338,10 @@ export type SubscriptionMintMultiTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionRedeemTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionRedeemTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3449,12 +3352,10 @@ export type SubscriptionRedeemTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionRedeemMassetTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionRedeemMassetTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3465,12 +3366,10 @@ export type SubscriptionRedeemMassetTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionSavingsContractDepositTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionSavingsContractDepositTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3481,12 +3380,10 @@ export type SubscriptionSavingsContractDepositTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionSavingsContractWithdrawTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionSavingsContractWithdrawTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3497,12 +3394,10 @@ export type SubscriptionSavingsContractWithdrawTransactionsArgs = {
   block?: Maybe<Block_Height>;
 };
 
-
 export type SubscriptionTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
 };
-
 
 export type SubscriptionTransactionsArgs = {
   skip?: Maybe<Scalars['Int']>;
@@ -3512,7 +3407,6 @@ export type SubscriptionTransactionsArgs = {
   where?: Maybe<Transaction_Filter>;
   block?: Maybe<Block_Height>;
 };
-
 
 export type Subscription_MetaArgs = {
   block?: Maybe<Block_Height>;
@@ -3641,7 +3535,7 @@ export enum SwapTransaction_OrderBy {
   MassetUnits = 'massetUnits',
   InputBasset = 'inputBasset',
   OutputBasset = 'outputBasset',
-  Recipient = 'recipient'
+  Recipient = 'recipient',
 }
 
 /** An ERC20-compatible token */
@@ -3817,7 +3711,7 @@ export enum Token_OrderBy {
   TotalMinted = 'totalMinted',
   TotalTransfers = 'totalTransfers',
   TotalMints = 'totalMints',
-  TotalBurns = 'totalBurns'
+  TotalBurns = 'totalBurns',
 }
 
 export type Transaction = {
@@ -3877,70 +3771,151 @@ export enum Transaction_OrderBy {
   Hash = 'hash',
   Block = 'block',
   Timestamp = 'timestamp',
-  Sender = 'sender'
+  Sender = 'sender',
 }
 
-export type TokenAllFragment = (
-  Pick<Token, 'id' | 'address' | 'decimals' | 'symbol'>
-  & { totalSupply: MetricFieldsFragment }
-);
+export type TokenAllFragment = Pick<
+  Token,
+  'id' | 'address' | 'decimals' | 'symbol'
+> & { totalSupply: MetricFieldsFragment };
 
-export type SavingsContractAllFragment = (
-  Pick<SavingsContract, 'id' | 'dailyAPY' | 'version' | 'active'>
-  & { totalSavings: MetricFieldsFragment, latestExchangeRate?: Maybe<Pick<ExchangeRate, 'rate' | 'timestamp'>> }
-);
+export type SavingsContractAllFragment = Pick<
+  SavingsContract,
+  'id' | 'dailyAPY' | 'version' | 'active'
+> & {
+  totalSavings: MetricFieldsFragment;
+  latestExchangeRate?: Maybe<Pick<ExchangeRate, 'rate' | 'timestamp'>>;
+};
 
-type TransactionFields_SavingsContractDepositTransaction_Fragment = Pick<SavingsContractDepositTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+type TransactionFields_SavingsContractDepositTransaction_Fragment = Pick<
+  SavingsContractDepositTransaction,
+  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
+>;
 
-type TransactionFields_SavingsContractWithdrawTransaction_Fragment = Pick<SavingsContractWithdrawTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+type TransactionFields_SavingsContractWithdrawTransaction_Fragment = Pick<
+  SavingsContractWithdrawTransaction,
+  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
+>;
 
-type TransactionFields_SwapTransaction_Fragment = Pick<SwapTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+type TransactionFields_SwapTransaction_Fragment = Pick<
+  SwapTransaction,
+  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
+>;
 
-type TransactionFields_PaidFeeTransaction_Fragment = Pick<PaidFeeTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+type TransactionFields_PaidFeeTransaction_Fragment = Pick<
+  PaidFeeTransaction,
+  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
+>;
 
-type TransactionFields_RedeemMassetTransaction_Fragment = Pick<RedeemMassetTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+type TransactionFields_RedeemMassetTransaction_Fragment = Pick<
+  RedeemMassetTransaction,
+  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
+>;
 
-type TransactionFields_MintMultiTransaction_Fragment = Pick<MintMultiTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+type TransactionFields_MintMultiTransaction_Fragment = Pick<
+  MintMultiTransaction,
+  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
+>;
 
-type TransactionFields_MintSingleTransaction_Fragment = Pick<MintSingleTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+type TransactionFields_MintSingleTransaction_Fragment = Pick<
+  MintSingleTransaction,
+  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
+>;
 
-type TransactionFields_RedeemTransaction_Fragment = Pick<RedeemTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+type TransactionFields_RedeemTransaction_Fragment = Pick<
+  RedeemTransaction,
+  'id' | 'hash' | 'timestamp' | 'block' | 'sender'
+>;
 
-export type TransactionFieldsFragment = TransactionFields_SavingsContractDepositTransaction_Fragment | TransactionFields_SavingsContractWithdrawTransaction_Fragment | TransactionFields_SwapTransaction_Fragment | TransactionFields_PaidFeeTransaction_Fragment | TransactionFields_RedeemMassetTransaction_Fragment | TransactionFields_MintMultiTransaction_Fragment | TransactionFields_MintSingleTransaction_Fragment | TransactionFields_RedeemTransaction_Fragment;
+export type TransactionFieldsFragment =
+  | TransactionFields_SavingsContractDepositTransaction_Fragment
+  | TransactionFields_SavingsContractWithdrawTransaction_Fragment
+  | TransactionFields_SwapTransaction_Fragment
+  | TransactionFields_PaidFeeTransaction_Fragment
+  | TransactionFields_RedeemMassetTransaction_Fragment
+  | TransactionFields_MintMultiTransaction_Fragment
+  | TransactionFields_MintSingleTransaction_Fragment
+  | TransactionFields_RedeemTransaction_Fragment;
 
-export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
+export type MetricFieldsFragment = Pick<
+  Metric,
+  'exact' | 'decimals' | 'simple'
+>;
 
 export type MassetsQueryVariables = Exact<{
   account: Scalars['String'];
   hasAccount: Scalars['Boolean'];
 }>;
 
-
-export type MassetsQuery = { massets: Array<(
-    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
-    & { token: TokenAllFragment, basket: (
-      Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
-      & { bassets: Array<(
-        Pick<Basset, 'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
-        & { vaultBalance: MetricFieldsFragment, token: TokenAllFragment }
-      )>, removedBassets: Array<(
-        Pick<Basset, 'id'>
-        & { token: TokenAllFragment }
-      )> }
-    ), currentSavingsContract?: Maybe<Pick<SavingsContract, 'id'>>, savingsContractsV1: Array<(
-      { totalCredits?: Maybe<MetricFieldsFragment>, creditBalances: Array<Pick<CreditBalance, 'amount'>> }
-      & SavingsContractAllFragment
-    )>, savingsContractsV2: Array<(
-      { token?: Maybe<TokenAllFragment>, boostedSavingsVaults: Array<(
-        Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerToken' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
-        & { accounts: Array<(
-          Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
-          & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
-        )> }
-      )> }
-      & SavingsContractAllFragment
-    )> }
-  )> };
+export type MassetsQuery = {
+  massets: Array<
+    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'> & {
+      token: TokenAllFragment;
+      basket: Pick<
+        Basket,
+        'failed' | 'collateralisationRatio' | 'undergoingRecol'
+      > & {
+        bassets: Array<
+          Pick<
+            Basset,
+            'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'
+          > & { vaultBalance: MetricFieldsFragment; token: TokenAllFragment }
+        >;
+        removedBassets: Array<Pick<Basset, 'id'> & { token: TokenAllFragment }>;
+      };
+      currentSavingsContract?: Maybe<Pick<SavingsContract, 'id'>>;
+      savingsContractsV1: Array<
+        {
+          totalCredits?: Maybe<MetricFieldsFragment>;
+          creditBalances: Array<Pick<CreditBalance, 'amount'>>;
+        } & SavingsContractAllFragment
+      >;
+      savingsContractsV2: Array<
+        {
+          token?: Maybe<TokenAllFragment>;
+          boostedSavingsVaults: Array<
+            Pick<
+              BoostedSavingsVault,
+              | 'id'
+              | 'lastUpdateTime'
+              | 'lockupDuration'
+              | 'unlockPercentage'
+              | 'periodDuration'
+              | 'periodFinish'
+              | 'rewardPerToken'
+              | 'rewardPerTokenStored'
+              | 'rewardRate'
+              | 'stakingContract'
+              | 'totalStakingRewards'
+              | 'totalSupply'
+            > & {
+              accounts: Array<
+                Pick<
+                  BoostedSavingsVaultAccount,
+                  | 'id'
+                  | 'boostedBalance'
+                  | 'lastAction'
+                  | 'lastClaim'
+                  | 'rawBalance'
+                  | 'rewardCount'
+                  | 'rewardPerTokenPaid'
+                  | 'rewards'
+                > & {
+                  rewardEntries: Array<
+                    Pick<
+                      BoostedSavingsVaultRewardEntry,
+                      'id' | 'finish' | 'index' | 'rate' | 'start'
+                    >
+                  >;
+                }
+              >;
+            }
+          >;
+        } & SavingsContractAllFragment
+      >;
+    }
+  >;
+};
 
 export type V1SavingsBalanceQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -3948,21 +3923,24 @@ export type V1SavingsBalanceQueryVariables = Exact<{
   include: Scalars['Boolean'];
 }>;
 
+export type V1SavingsBalanceQuery = {
+  savingsContract?: Maybe<{
+    creditBalances: Array<Pick<CreditBalance, 'amount'>>;
+  }>;
+};
 
-export type V1SavingsBalanceQuery = { savingsContract?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
+export type AllTokensQueryVariables = Exact<{ [key: string]: never }>;
 
-export type AllTokensQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllTokensQuery = { savingsContracts: Array<(
-    Pick<SavingsContract, 'id'>
-    & { address: SavingsContract['id'] }
-  )>, tokens: Array<TokenAllFragment> };
+export type AllTokensQuery = {
+  savingsContracts: Array<
+    Pick<SavingsContract, 'id'> & { address: SavingsContract['id'] }
+  >;
+  tokens: Array<TokenAllFragment>;
+};
 
 export type TokenQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
-
 
 export type TokenQuery = { token?: Maybe<TokenAllFragment> };
 
@@ -3970,176 +3948,227 @@ export type HistoricTransactionsQueryVariables = Exact<{
   account?: Maybe<Scalars['Bytes']>;
 }>;
 
-
-export type HistoricTransactionsQuery = { transactions: Array<(
-    { __typename: 'SavingsContractDepositTransaction' }
-    & Pick<SavingsContractDepositTransaction, 'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { savingsContract: (
-      Pick<SavingsContract, 'id'>
-      & { masset: Pick<Masset, 'id'> }
-    ) }
-  ) | (
-    { __typename: 'SavingsContractWithdrawTransaction' }
-    & Pick<SavingsContractWithdrawTransaction, 'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { savingsContract: (
-      Pick<SavingsContract, 'id'>
-      & { masset: Pick<Masset, 'id'> }
-    ) }
-  ) | (
-    { __typename: 'SwapTransaction' }
-    & Pick<SwapTransaction, 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { masset: Pick<Masset, 'id'>, inputBasset: Pick<Basset, 'id'>, outputBasset: Pick<Basset, 'id'> }
-  ) | (
-    { __typename: 'PaidFeeTransaction' }
-    & Pick<PaidFeeTransaction, 'bassetUnits' | 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { basset: Pick<Basset, 'id'>, masset: Pick<Masset, 'id'> }
-  ) | (
-    { __typename: 'RedeemMassetTransaction' }
-    & Pick<RedeemMassetTransaction, 'massetUnits' | 'recipient' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { masset: Pick<Masset, 'id'> }
-  ) | (
-    { __typename: 'MintMultiTransaction' }
-    & Pick<MintMultiTransaction, 'massetUnits' | 'bassetsUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { masset: Pick<Masset, 'id'>, bassets: Array<Pick<Basset, 'id'>> }
-  ) | (
-    { __typename: 'MintSingleTransaction' }
-    & Pick<MintSingleTransaction, 'bassetUnits' | 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { masset: Pick<Masset, 'id'>, basset: Pick<Basset, 'id'> }
-  ) | (
-    { __typename: 'RedeemTransaction' }
-    & Pick<RedeemTransaction, 'massetUnits' | 'bassetsUnits' | 'recipient' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { masset: Pick<Masset, 'id'>, bassets: Array<Pick<Basset, 'id'>> }
-  )> };
+export type HistoricTransactionsQuery = {
+  transactions: Array<
+    | ({ __typename: 'SavingsContractDepositTransaction' } & Pick<
+        SavingsContractDepositTransaction,
+        'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'
+      > & {
+          savingsContract: Pick<SavingsContract, 'id'> & {
+            masset: Pick<Masset, 'id'>;
+          };
+        })
+    | ({ __typename: 'SavingsContractWithdrawTransaction' } & Pick<
+        SavingsContractWithdrawTransaction,
+        'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'
+      > & {
+          savingsContract: Pick<SavingsContract, 'id'> & {
+            masset: Pick<Masset, 'id'>;
+          };
+        })
+    | ({ __typename: 'SwapTransaction' } & Pick<
+        SwapTransaction,
+        'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'
+      > & {
+          masset: Pick<Masset, 'id'>;
+          inputBasset: Pick<Basset, 'id'>;
+          outputBasset: Pick<Basset, 'id'>;
+        })
+    | ({ __typename: 'PaidFeeTransaction' } & Pick<
+        PaidFeeTransaction,
+        | 'bassetUnits'
+        | 'massetUnits'
+        | 'id'
+        | 'hash'
+        | 'block'
+        | 'timestamp'
+        | 'sender'
+      > & { basset: Pick<Basset, 'id'>; masset: Pick<Masset, 'id'> })
+    | ({ __typename: 'RedeemMassetTransaction' } & Pick<
+        RedeemMassetTransaction,
+        | 'massetUnits'
+        | 'recipient'
+        | 'id'
+        | 'hash'
+        | 'block'
+        | 'timestamp'
+        | 'sender'
+      > & { masset: Pick<Masset, 'id'> })
+    | ({ __typename: 'MintMultiTransaction' } & Pick<
+        MintMultiTransaction,
+        | 'massetUnits'
+        | 'bassetsUnits'
+        | 'id'
+        | 'hash'
+        | 'block'
+        | 'timestamp'
+        | 'sender'
+      > & { masset: Pick<Masset, 'id'>; bassets: Array<Pick<Basset, 'id'>> })
+    | ({ __typename: 'MintSingleTransaction' } & Pick<
+        MintSingleTransaction,
+        | 'bassetUnits'
+        | 'massetUnits'
+        | 'id'
+        | 'hash'
+        | 'block'
+        | 'timestamp'
+        | 'sender'
+      > & { masset: Pick<Masset, 'id'>; basset: Pick<Basset, 'id'> })
+    | ({ __typename: 'RedeemTransaction' } & Pick<
+        RedeemTransaction,
+        | 'massetUnits'
+        | 'bassetsUnits'
+        | 'recipient'
+        | 'id'
+        | 'hash'
+        | 'block'
+        | 'timestamp'
+        | 'sender'
+      > & { masset: Pick<Masset, 'id'>; bassets: Array<Pick<Basset, 'id'>> })
+  >;
+};
 
 export const MetricFieldsFragmentDoc = gql`
-    fragment MetricFields on Metric {
-  exact
-  decimals
-  simple
-}
-    `;
+  fragment MetricFields on Metric {
+    exact
+    decimals
+    simple
+  }
+`;
 export const TokenAllFragmentDoc = gql`
-    fragment TokenAll on Token {
-  id
-  address
-  decimals
-  symbol
-  totalSupply {
-    ...MetricFields
-  }
-}
-    ${MetricFieldsFragmentDoc}`;
-export const SavingsContractAllFragmentDoc = gql`
-    fragment SavingsContractAll on SavingsContract {
-  id
-  totalSavings {
-    ...MetricFields
-  }
-  latestExchangeRate {
-    rate
-    timestamp
-  }
-  dailyAPY
-  version
-  active
-}
-    ${MetricFieldsFragmentDoc}`;
-export const TransactionFieldsFragmentDoc = gql`
-    fragment TransactionFields on Transaction {
-  id
-  hash
-  timestamp
-  block
-  sender
-}
-    `;
-export const MassetsDocument = gql`
-    query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
-  massets {
+  fragment TokenAll on Token {
     id
-    token {
-      ...TokenAll
+    address
+    decimals
+    symbol
+    totalSupply {
+      ...MetricFields
     }
-    feeRate
-    redemptionFeeRate
-    basket {
-      failed
-      collateralisationRatio
-      undergoingRecol
-      bassets: bassets(where: {removed: false}) {
-        id
-        vaultBalance {
-          ...MetricFields
-        }
-        isTransferFeeCharged
-        ratio
-        status
-        maxWeight
-        token {
-          ...TokenAll
-        }
-      }
-      removedBassets: bassets(where: {removed: true}) {
-        id
-        token {
-          ...TokenAll
-        }
-      }
+  }
+  ${MetricFieldsFragmentDoc}
+`;
+export const SavingsContractAllFragmentDoc = gql`
+  fragment SavingsContractAll on SavingsContract {
+    id
+    totalSavings {
+      ...MetricFields
     }
-    currentSavingsContract {
+    latestExchangeRate {
+      rate
+      timestamp
+    }
+    dailyAPY
+    version
+    active
+  }
+  ${MetricFieldsFragmentDoc}
+`;
+export const TransactionFieldsFragmentDoc = gql`
+  fragment TransactionFields on Transaction {
+    id
+    hash
+    timestamp
+    block
+    sender
+  }
+`;
+export const MassetsDocument = gql`
+  query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
+    massets {
       id
-    }
-    savingsContractsV1: savingsContracts(where: {version: 1}) {
-      ...SavingsContractAll
-      totalCredits {
-        ...MetricFields
-      }
-      creditBalances(where: {account: $account}) @include(if: $hasAccount) {
-        amount
-      }
-    }
-    savingsContractsV2: savingsContracts(where: {version: 2, id_not: "0x478e379d5f3e2f949a94f1ccfb7217fb35916615"}) {
-      ...SavingsContractAll
       token {
         ...TokenAll
       }
-      boostedSavingsVaults {
-        id
-        lastUpdateTime
-        lockupDuration
-        unlockPercentage
-        periodDuration
-        periodFinish
-        rewardPerToken
-        rewardPerTokenStored
-        rewardRate
-        stakingContract
-        totalStakingRewards
-        totalSupply
-        accounts(where: {account: $account}) @include(if: $hasAccount) {
+      feeRate
+      redemptionFeeRate
+      basket {
+        failed
+        collateralisationRatio
+        undergoingRecol
+        bassets: bassets(where: { removed: false }) {
           id
-          boostedBalance
-          lastAction
-          lastClaim
-          rawBalance
-          rewardCount
-          rewardPerTokenPaid
-          rewards
-          rewardEntries(orderBy: index, orderDirection: asc) {
+          vaultBalance {
+            ...MetricFields
+          }
+          isTransferFeeCharged
+          ratio
+          status
+          maxWeight
+          token {
+            ...TokenAll
+          }
+        }
+        removedBassets: bassets(where: { removed: true }) {
+          id
+          token {
+            ...TokenAll
+          }
+        }
+      }
+      currentSavingsContract {
+        id
+      }
+      savingsContractsV1: savingsContracts(where: { version: 1 }) {
+        ...SavingsContractAll
+        totalCredits {
+          ...MetricFields
+        }
+        creditBalances(where: { account: $account }) @include(if: $hasAccount) {
+          amount
+        }
+      }
+      savingsContractsV2: savingsContracts(
+        where: {
+          version: 2
+          id_not_in: [
+            "0x478e379d5f3e2f949a94f1ccfb7217fb35916615"
+            "0x5b7f01dae6bce656c9ca4175eb3e406adc6c7957"
+            "0x06F1711b04011f2f0acD0370B24D9A7e23516255"
+          ]
+        }
+      ) {
+        ...SavingsContractAll
+        token {
+          ...TokenAll
+        }
+        boostedSavingsVaults {
+          id
+          lastUpdateTime
+          lockupDuration
+          unlockPercentage
+          periodDuration
+          periodFinish
+          rewardPerToken
+          rewardPerTokenStored
+          rewardRate
+          stakingContract
+          totalStakingRewards
+          totalSupply
+          accounts(where: { account: $account }) @include(if: $hasAccount) {
             id
-            finish
-            index
-            rate
-            start
+            boostedBalance
+            lastAction
+            lastClaim
+            rawBalance
+            rewardCount
+            rewardPerTokenPaid
+            rewards
+            rewardEntries(orderBy: index, orderDirection: asc) {
+              id
+              finish
+              index
+              rate
+              start
+            }
           }
         }
       }
     }
   }
-}
-    ${TokenAllFragmentDoc}
-${MetricFieldsFragmentDoc}
-${SavingsContractAllFragmentDoc}`;
+  ${TokenAllFragmentDoc}
+  ${MetricFieldsFragmentDoc}
+  ${SavingsContractAllFragmentDoc}
+`;
 
 /**
  * __useMassetsQuery__
@@ -4158,24 +4187,44 @@ ${SavingsContractAllFragmentDoc}`;
  *   },
  * });
  */
-export function useMassetsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MassetsQuery, MassetsQueryVariables>) {
-        return ApolloReactHooks.useQuery<MassetsQuery, MassetsQueryVariables>(MassetsDocument, baseOptions);
-      }
-export function useMassetsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MassetsQuery, MassetsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<MassetsQuery, MassetsQueryVariables>(MassetsDocument, baseOptions);
-        }
+export function useMassetsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    MassetsQuery,
+    MassetsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<MassetsQuery, MassetsQueryVariables>(
+    MassetsDocument,
+    baseOptions,
+  );
+}
+export function useMassetsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    MassetsQuery,
+    MassetsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<MassetsQuery, MassetsQueryVariables>(
+    MassetsDocument,
+    baseOptions,
+  );
+}
 export type MassetsQueryHookResult = ReturnType<typeof useMassetsQuery>;
 export type MassetsLazyQueryHookResult = ReturnType<typeof useMassetsLazyQuery>;
-export type MassetsQueryResult = ApolloReactCommon.QueryResult<MassetsQuery, MassetsQueryVariables>;
+export type MassetsQueryResult = ApolloReactCommon.QueryResult<
+  MassetsQuery,
+  MassetsQueryVariables
+>;
 export const V1SavingsBalanceDocument = gql`
-    query V1SavingsBalance($id: ID!, $account: String!, $include: Boolean!) @api(name: protocol) {
-  savingsContract(id: $id) @include(if: $include) {
-    creditBalances(where: {account: $account}) {
-      amount
+  query V1SavingsBalance($id: ID!, $account: String!, $include: Boolean!)
+    @api(name: protocol) {
+    savingsContract(id: $id) @include(if: $include) {
+      creditBalances(where: { account: $account }) {
+        amount
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useV1SavingsBalanceQuery__
@@ -4195,26 +4244,50 @@ export const V1SavingsBalanceDocument = gql`
  *   },
  * });
  */
-export function useV1SavingsBalanceQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>) {
-        return ApolloReactHooks.useQuery<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>(V1SavingsBalanceDocument, baseOptions);
-      }
-export function useV1SavingsBalanceLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>(V1SavingsBalanceDocument, baseOptions);
-        }
-export type V1SavingsBalanceQueryHookResult = ReturnType<typeof useV1SavingsBalanceQuery>;
-export type V1SavingsBalanceLazyQueryHookResult = ReturnType<typeof useV1SavingsBalanceLazyQuery>;
-export type V1SavingsBalanceQueryResult = ApolloReactCommon.QueryResult<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>;
-export const AllTokensDocument = gql`
-    query AllTokens @api(name: protocol) {
-  savingsContracts(where: {version: 1}) {
-    address: id
-    id
-  }
-  tokens {
-    ...TokenAll
-  }
+export function useV1SavingsBalanceQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    V1SavingsBalanceQuery,
+    V1SavingsBalanceQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    V1SavingsBalanceQuery,
+    V1SavingsBalanceQueryVariables
+  >(V1SavingsBalanceDocument, baseOptions);
 }
-    ${TokenAllFragmentDoc}`;
+export function useV1SavingsBalanceLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    V1SavingsBalanceQuery,
+    V1SavingsBalanceQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    V1SavingsBalanceQuery,
+    V1SavingsBalanceQueryVariables
+  >(V1SavingsBalanceDocument, baseOptions);
+}
+export type V1SavingsBalanceQueryHookResult = ReturnType<
+  typeof useV1SavingsBalanceQuery
+>;
+export type V1SavingsBalanceLazyQueryHookResult = ReturnType<
+  typeof useV1SavingsBalanceLazyQuery
+>;
+export type V1SavingsBalanceQueryResult = ApolloReactCommon.QueryResult<
+  V1SavingsBalanceQuery,
+  V1SavingsBalanceQueryVariables
+>;
+export const AllTokensDocument = gql`
+  query AllTokens @api(name: protocol) {
+    savingsContracts(where: { version: 1 }) {
+      address: id
+      id
+    }
+    tokens {
+      ...TokenAll
+    }
+  }
+  ${TokenAllFragmentDoc}
+`;
 
 /**
  * __useAllTokensQuery__
@@ -4231,22 +4304,44 @@ export const AllTokensDocument = gql`
  *   },
  * });
  */
-export function useAllTokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllTokensQuery, AllTokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<AllTokensQuery, AllTokensQueryVariables>(AllTokensDocument, baseOptions);
-      }
-export function useAllTokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllTokensQuery, AllTokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<AllTokensQuery, AllTokensQueryVariables>(AllTokensDocument, baseOptions);
-        }
-export type AllTokensQueryHookResult = ReturnType<typeof useAllTokensQuery>;
-export type AllTokensLazyQueryHookResult = ReturnType<typeof useAllTokensLazyQuery>;
-export type AllTokensQueryResult = ApolloReactCommon.QueryResult<AllTokensQuery, AllTokensQueryVariables>;
-export const TokenDocument = gql`
-    query Token($id: ID!) @api(name: protocol) {
-  token(id: $id) {
-    ...TokenAll
-  }
+export function useAllTokensQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    AllTokensQuery,
+    AllTokensQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<AllTokensQuery, AllTokensQueryVariables>(
+    AllTokensDocument,
+    baseOptions,
+  );
 }
-    ${TokenAllFragmentDoc}`;
+export function useAllTokensLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    AllTokensQuery,
+    AllTokensQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<AllTokensQuery, AllTokensQueryVariables>(
+    AllTokensDocument,
+    baseOptions,
+  );
+}
+export type AllTokensQueryHookResult = ReturnType<typeof useAllTokensQuery>;
+export type AllTokensLazyQueryHookResult = ReturnType<
+  typeof useAllTokensLazyQuery
+>;
+export type AllTokensQueryResult = ApolloReactCommon.QueryResult<
+  AllTokensQuery,
+  AllTokensQueryVariables
+>;
+export const TokenDocument = gql`
+  query Token($id: ID!) @api(name: protocol) {
+    token(id: $id) {
+      ...TokenAll
+    }
+  }
+  ${TokenAllFragmentDoc}
+`;
 
 /**
  * __useTokenQuery__
@@ -4264,105 +4359,128 @@ export const TokenDocument = gql`
  *   },
  * });
  */
-export function useTokenQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TokenQuery, TokenQueryVariables>) {
-        return ApolloReactHooks.useQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
-      }
-export function useTokenLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TokenQuery, TokenQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<TokenQuery, TokenQueryVariables>(TokenDocument, baseOptions);
-        }
+export function useTokenQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    TokenQuery,
+    TokenQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<TokenQuery, TokenQueryVariables>(
+    TokenDocument,
+    baseOptions,
+  );
+}
+export function useTokenLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    TokenQuery,
+    TokenQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<TokenQuery, TokenQueryVariables>(
+    TokenDocument,
+    baseOptions,
+  );
+}
 export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
 export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
-export type TokenQueryResult = ApolloReactCommon.QueryResult<TokenQuery, TokenQueryVariables>;
+export type TokenQueryResult = ApolloReactCommon.QueryResult<
+  TokenQuery,
+  TokenQueryVariables
+>;
 export const HistoricTransactionsDocument = gql`
-    query HistoricTransactions($account: Bytes) @api(name: protocol) {
-  transactions(where: {sender: $account}, orderBy: timestamp, orderDirection: desc) {
-    id
-    hash
-    block
-    timestamp
-    sender
-    __typename
-    ... on RedeemTransaction {
-      masset {
-        id
-      }
-      massetUnits
-      bassets {
-        id
-      }
-      bassetsUnits
-      recipient
-    }
-    ... on RedeemMassetTransaction {
-      masset {
-        id
-      }
-      massetUnits
-      recipient
-    }
-    ... on MintMultiTransaction {
-      masset {
-        id
-      }
-      massetUnits
-      bassets {
-        id
-      }
-      bassetsUnits
-    }
-    ... on MintSingleTransaction {
-      bassetUnits
-      masset {
-        id
-      }
-      basset {
-        id
-      }
-      massetUnits
-    }
-    ... on PaidFeeTransaction {
-      basset {
-        id
-      }
-      bassetUnits
-      masset {
-        id
-      }
-      massetUnits
-    }
-    ... on SavingsContractDepositTransaction {
-      amount
-      savingsContract {
-        id
+  query HistoricTransactions($account: Bytes) @api(name: protocol) {
+    transactions(
+      where: { sender: $account }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      id
+      hash
+      block
+      timestamp
+      sender
+      __typename
+      ... on RedeemTransaction {
         masset {
           id
         }
+        massetUnits
+        bassets {
+          id
+        }
+        bassetsUnits
+        recipient
       }
-    }
-    ... on SavingsContractWithdrawTransaction {
-      amount
-      savingsContract {
-        id
+      ... on RedeemMassetTransaction {
         masset {
           id
         }
+        massetUnits
+        recipient
       }
-    }
-    ... on SwapTransaction {
-      masset {
-        id
+      ... on MintMultiTransaction {
+        masset {
+          id
+        }
+        massetUnits
+        bassets {
+          id
+        }
+        bassetsUnits
       }
-      inputBasset {
-        id
+      ... on MintSingleTransaction {
+        bassetUnits
+        masset {
+          id
+        }
+        basset {
+          id
+        }
+        massetUnits
       }
-      outputBasset {
-        id
+      ... on PaidFeeTransaction {
+        basset {
+          id
+        }
+        bassetUnits
+        masset {
+          id
+        }
+        massetUnits
       }
-      massetUnits
+      ... on SavingsContractDepositTransaction {
+        amount
+        savingsContract {
+          id
+          masset {
+            id
+          }
+        }
+      }
+      ... on SavingsContractWithdrawTransaction {
+        amount
+        savingsContract {
+          id
+          masset {
+            id
+          }
+        }
+      }
+      ... on SwapTransaction {
+        masset {
+          id
+        }
+        inputBasset {
+          id
+        }
+        outputBasset {
+          id
+        }
+        massetUnits
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useHistoricTransactionsQuery__
@@ -4380,12 +4498,35 @@ export const HistoricTransactionsDocument = gql`
  *   },
  * });
  */
-export function useHistoricTransactionsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>) {
-        return ApolloReactHooks.useQuery<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>(HistoricTransactionsDocument, baseOptions);
-      }
-export function useHistoricTransactionsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>(HistoricTransactionsDocument, baseOptions);
-        }
-export type HistoricTransactionsQueryHookResult = ReturnType<typeof useHistoricTransactionsQuery>;
-export type HistoricTransactionsLazyQueryHookResult = ReturnType<typeof useHistoricTransactionsLazyQuery>;
-export type HistoricTransactionsQueryResult = ApolloReactCommon.QueryResult<HistoricTransactionsQuery, HistoricTransactionsQueryVariables>;
+export function useHistoricTransactionsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    HistoricTransactionsQuery,
+    HistoricTransactionsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    HistoricTransactionsQuery,
+    HistoricTransactionsQueryVariables
+  >(HistoricTransactionsDocument, baseOptions);
+}
+export function useHistoricTransactionsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    HistoricTransactionsQuery,
+    HistoricTransactionsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    HistoricTransactionsQuery,
+    HistoricTransactionsQueryVariables
+  >(HistoricTransactionsDocument, baseOptions);
+}
+export type HistoricTransactionsQueryHookResult = ReturnType<
+  typeof useHistoricTransactionsQuery
+>;
+export type HistoricTransactionsLazyQueryHookResult = ReturnType<
+  typeof useHistoricTransactionsLazyQuery
+>;
+export type HistoricTransactionsQueryResult = ApolloReactCommon.QueryResult<
+  HistoricTransactionsQuery,
+  HistoricTransactionsQueryVariables
+>;

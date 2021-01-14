@@ -1,6 +1,6 @@
 import React, { FC, createContext, useContext, useState, useMemo } from 'react';
 import { useInterval, useToggle } from 'react-use';
-import { getUnixTime } from 'date-fns';
+import { addDays, getUnixTime } from 'date-fns';
 
 import { calculateRewards, Rewards } from './utils';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
@@ -19,7 +19,9 @@ export const useRewards = (): Rewards | undefined => useContext(rewardsCtx);
 export const RewardsProvider: FC = ({ children }) => {
   const [rewards, setRewards] = useState<Rewards>();
   const [timeTravel, toggleTimeTravel] = useToggle(false);
-  const [time, setTime] = useState<number | undefined>();
+  const [time, setTime] = useState<number | undefined>(
+    getUnixTime(addDays(Date.now(), 90)),
+  );
 
   const massetState = useSelectedMassetState();
   const vault = massetState?.savingsContracts?.v2?.boostedSavingsVault;

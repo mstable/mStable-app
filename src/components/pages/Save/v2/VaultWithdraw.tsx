@@ -15,6 +15,13 @@ import { SendButton } from '../../../forms/SendButton';
 
 const formId = 'VaultWithdraw';
 
+const Rewards = styled.div`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.color.bodyAccent};
+  text-align: center;
+  align-self: center;
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -92,7 +99,7 @@ export const VaultWithdraw: FC = () => {
           }
         }}
       />
-      <div>This transaction will claim any available MTA rewards.</div>
+      <Rewards>This transaction will claim any available MTA rewards.</Rewards>
     </Container>
   );
 };

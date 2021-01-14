@@ -15,7 +15,7 @@ import { ExternalLink } from '../../core/ExternalLink';
 import { Color, FontSize, ViewportWidth } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
 import { containerBackground } from '../../layout/css';
-import { PageHeader } from '../PageHeader';
+import { PageAction, PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
 import { MerkleDropClaims } from './MerkleDropClaims';
@@ -380,7 +380,7 @@ const EarnContent: FC = () => {
           <BackgroundContainer>
             <PageHeaderContainer>
               <PageHeader
-                title="Earn"
+                action={PageAction.Earn}
                 subtitle="Ecosystem rewards with mStable"
               >
                 <Button onClick={toggleOnboardingVisible}>

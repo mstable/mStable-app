@@ -9,6 +9,7 @@ import { SCALE } from '../../../../constants';
 
 export interface Rewards {
   now: {
+    claimable: BigDecimal;
     earned: {
       locked: BigDecimal;
       unlocked: BigDecimal;
@@ -30,8 +31,6 @@ export interface Rewards {
   nextUnlock?: number;
   currentTime: number;
 }
-
-const ZERO = new BigDecimal(0);
 
 const getRewardPerToken = (
   {
@@ -93,7 +92,11 @@ const calculateEarned = (
 
   if (userRewardDelta.eq(0)) {
     // Short circuit if there is nothing new to distribute
-    return { total: ZERO, locked: ZERO, unlocked: ZERO };
+    return {
+      locked: BigDecimal.ZERO,
+      unlocked: BigDecimal.ZERO,
+      total: BigDecimal.ZERO,
+    };
   }
 
   // New reward = staked tokens * difference in rate
@@ -131,29 +134,30 @@ export const calculateRewards = (
     simulateConstantRewards,
   );
 
+  const claimableEntries = rewardEntries.filter(
+    entry => currentTime >= entry.start && lastClaim <= entry.finish,
+  );
+
   // It is assumed that rewardEntries is sorted by start (ascending)
-  const first = lastClaim
-    ? (rewardEntries.find(entry => entry.start > lastClaim)?.index as number)
-    : 0;
+  const first = claimableEntries[0]?.index ?? 0;
+  const last = claimableEntries[claimableEntries.length - 1]?.index ?? 0;
 
-  const last =
-    ([...rewardEntries].reverse().find(entry => currentTime > entry.start)
-      ?.index as number) ?? 0;
+  const nextUnlock = rewardEntries[first]?.start;
 
-  const nextUnlock = rewardEntries.find(entry => entry.start > currentTime)
-    ?.start;
-
+  // doesn't include claims that have completely been claimed (obvs)
+  // but this means that the 'after vested' locked amount is off - in some cases, this should go down.
+  // what if we isolate the finished ones?
   const vesting = rewardEntries
-    .filter(entry => entry.start > lastClaim)
+    .filter(entry => lastClaim < entry.finish)
     .reduce(
       (prev, { finish, start, rate }) => {
-        const amount = new BigDecimal(
+        const fullAmount = new BigDecimal(
           new BigNumber(finish).sub(start).mul(rate),
         );
 
         if (currentTime < start) {
           return {
-            locked: prev.locked.add(amount),
+            locked: prev.locked.add(fullAmount),
             unlocked: prev.unlocked,
           };
         }
@@ -161,32 +165,38 @@ export const calculateRewards = (
         if (currentTime > finish) {
           return {
             locked: prev.locked,
-            unlocked: prev.unlocked.add(amount),
+            unlocked: prev.unlocked.add(fullAmount),
           };
         }
 
-        const lockedAmount = new BigDecimal(
-          new BigNumber(currentTime).sub(start).mul(rate),
-        );
+        const endTime = Math.min(finish, currentTime);
+        const startTime = Math.max(start, lastClaim);
+
         const unlockedAmount = new BigDecimal(
-          new BigNumber(finish).sub(currentTime).mul(rate),
+          new BigNumber(endTime).sub(startTime).mul(rate),
         );
+
+        const lockedAmount = fullAmount.sub(unlockedAmount);
+
         return {
-          locked: prev.unlocked.add(lockedAmount),
+          locked: prev.locked.add(lockedAmount),
           unlocked: prev.unlocked.add(unlockedAmount),
         };
       },
-      { locked: ZERO, unlocked: ZERO },
+      { locked: BigDecimal.ZERO, unlocked: BigDecimal.ZERO },
     );
 
   const transferred = vesting.unlocked.add(earned.unlocked);
 
   const afterClaimVesting = {
-    locked: vesting.locked.sub(vesting.unlocked).add(earned.locked),
+    locked: vesting.locked.add(earned.locked),
   };
+
+  const claimable = vesting.unlocked.add(earned.total);
 
   return {
     now: {
+      claimable,
       earned,
       vesting,
     },

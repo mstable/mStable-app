@@ -59,7 +59,6 @@ const Column = styled.div<{ numeric?: boolean }>`
 `;
 
 const DivRow = styled.div<{ link?: boolean; colors?: AccentColors }>`
-  background: ${Color.white};
   width: 100%;
   cursor: ${({ link }) => (link ? 'pointer' : 'auto')};
   transition: background-color 0.2s ease;

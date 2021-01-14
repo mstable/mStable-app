@@ -33,7 +33,7 @@ const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   gap: 1rem;
 
   > button {
@@ -66,6 +66,7 @@ const ContainerButton = styled(UnstyledButton)<{
   disabled?: boolean;
 }>`
   width: 100%;
+  transition: background-color 0.2s ease;
 
   :hover {
     background: ${({ theme, disabled }) => !disabled && theme.color.accent};
@@ -73,7 +74,8 @@ const ContainerButton = styled(UnstyledButton)<{
   }
 
   :active {
-    background: ${({ theme, disabled }) => !disabled && theme.color.lightGrey};
+    background: ${({ theme, disabled }) =>
+      !disabled && theme.color.accentContrast};
   }
 
   ${({ border, padding, theme }) => ({

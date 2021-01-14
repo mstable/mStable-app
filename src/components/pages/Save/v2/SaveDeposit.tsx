@@ -5,7 +5,10 @@ import { usePropose } from '../../../../context/TransactionsProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 
+import { SaveWrapperFactory } from '../../../../typechain/SaveWrapperFactory';
+import { BoostedSavingsVaultFactory } from '../../../../typechain/BoostedSavingsVaultFactory';
 import { SavingsContractFactory } from '../../../../typechain/SavingsContractFactory';
+
 import { Interfaces } from '../../../../types';
 import { ADDRESSES } from '../../../../constants';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -14,10 +17,20 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
-import { SaveWrapperFactory } from '../../../../typechain/SaveWrapperFactory';
-import { BoostedSavingsVaultFactory } from '../../../../typechain/BoostedSavingsVaultFactory';
 
 const formId = 'SaveDeposit';
+
+const depositPurpose = {
+  present: 'Depositing savings',
+  past: 'Deposited savings',
+};
+
+const depositAndStakePurpose = {
+  present: 'Depositing and staking savings',
+  past: 'Deposited and staked savings',
+};
+
+const saveWrapperDeployed = !!ADDRESSES.mUSD.SaveWrapper;
 
 export const SaveDeposit: FC<{
   saveAndStake?: boolean;
@@ -27,65 +40,88 @@ export const SaveDeposit: FC<{
 
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
-  const bassets = Object.keys(massetState?.bAssets ?? {});
   const savingsContract = massetState?.savingsContracts.v2;
   const vault = savingsContract?.boostedSavingsVault;
   const vaultAddress = vault?.address;
-  const vaultBalance = vault?.account?.rawBalance;
+  const vaultBalance = vault?.account?.rawBalance ?? BigDecimal.ZERO;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
+
+  const bassets = useMemo(
+    () => (saveWrapperDeployed ? Object.keys(massetState?.bAssets ?? {}) : []),
+    [massetState?.bAssets],
+  );
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
   const [inputAddress, setInputAddress] = useState<string | undefined>(
     massetAddress,
   );
 
-  const inputToken = useTokenSubscription(inputAddress);
+  const isDepositingSave = inputAddress === saveAddress;
+  const isDepositingBasset = inputAddress && bassets.includes(inputAddress);
 
-  const isStakingOnly = inputAddress === saveAddress;
+  const inputToken = useTokenSubscription(inputAddress);
 
   const error = useMemo<string | undefined>(() => {
     if (
       inputAmount &&
-      inputToken &&
+      inputToken?.balance &&
       inputToken.balance.simple < inputAmount.simple
     ) {
       return 'Insufficient balance';
     }
 
     return undefined;
-  }, [inputToken, inputAmount]);
+  }, [inputAmount, inputToken]);
 
   const inputAddressOptions = useMemo(() => {
     return [
       { address: massetAddress as string },
       { address: saveAddress as string },
-      // TODO: ETH
       ...bassets.map(address => ({ address })),
     ];
   }, [massetAddress, saveAddress, bassets]);
 
-  const exchangeRate = useMemo<BigDecimal | undefined>(() => {
-    // TODO: handle rate for Curve and Uniswap, and slippage
-    return isStakingOnly ? undefined : saveExchangeRate;
-  }, [saveExchangeRate, isStakingOnly]);
+  const exchangeRate = useMemo<{
+    fetching?: boolean;
+    value?: BigDecimal;
+  }>(() => {
+    if (isDepositingSave || !inputAmount || !saveExchangeRate) return {};
+
+    return { value: saveExchangeRate };
+  }, [inputAmount, isDepositingSave, saveExchangeRate]);
+
+  const basset = inputAddress && massetState?.bAssets[inputAddress];
+  const scaledInputAmount = useMemo<BigDecimal | undefined>(
+    () =>
+      basset && inputAmount
+        ? inputAmount
+            .divRatioPrecisely(basset.ratio)
+            .setDecimals(basset.token.decimals)
+        : inputAmount,
+    [basset, inputAmount],
+  );
 
   const depositApprove = useMemo(
     () => ({
-      spender: saveAddress as string,
-      amount: inputAmount,
+      spender: isDepositingBasset
+        ? (ADDRESSES.mUSD.SaveWrapper as string)
+        : (saveAddress as string),
+      amount: scaledInputAmount,
       address: inputAddress as string,
     }),
-    [inputAmount, inputAddress, saveAddress],
+    [isDepositingBasset, saveAddress, scaledInputAmount, inputAddress],
   );
 
   const stakeApprove = useMemo(
     () => ({
-      spender: ADDRESSES.mUSD.SaveWrapper,
-      amount: inputAmount,
+      spender: isDepositingSave
+        ? (vaultAddress as string)
+        : (ADDRESSES.mUSD.SaveWrapper as string),
+      amount: scaledInputAmount,
       address: inputAddress as string,
     }),
-    [inputAmount, inputAddress],
+    [scaledInputAmount, inputAddress, isDepositingSave, vaultAddress],
   );
 
   const valid = !!(!error && inputAmount && inputAmount.simple > 0);
@@ -97,8 +133,8 @@ export const SaveDeposit: FC<{
       inputAmount={inputAmount}
       inputFormValue={inputFormValue}
       outputAddress={saveAddress}
-      outputLabel={isStakingOnly ? 'imUSD Vault' : undefined}
-      outputBalance={isStakingOnly ? vaultBalance : undefined}
+      outputLabel={isDepositingSave ? 'imUSD Vault' : undefined}
+      outputBalance={isDepositingSave ? vaultBalance : undefined}
       error={error}
       exchangeRate={exchangeRate}
       // slippage={slippage}
@@ -110,10 +146,11 @@ export const SaveDeposit: FC<{
         }
       }}
     >
-      {isStakingOnly ? (
+      {isDepositingSave ? (
         <SendButton
           valid={valid}
           title="Stake"
+          approve={stakeApprove}
           handleSend={() => {
             if (
               signer &&
@@ -143,15 +180,15 @@ export const SaveDeposit: FC<{
             <SendButton
               valid={valid}
               title="Deposit"
-              handleSend={() => {
+              handleSend={async () => {
                 if (
                   signer &&
                   saveAddress &&
                   massetAddress &&
+                  massetState &&
                   inputAmount &&
                   inputAddress
                 ) {
-                  // TODO: add detail to purposes
                   if (inputAddress === massetAddress) {
                     return propose<
                       Interfaces.SavingsContract,
@@ -161,86 +198,85 @@ export const SaveDeposit: FC<{
                         SavingsContractFactory.connect(saveAddress, signer),
                         'depositSavings(uint256)',
                         [inputAmount.exact],
-                        {
-                          present: 'Depositing savings',
-                          past: 'Deposited savings',
-                        },
+                        depositPurpose,
                         formId,
                       ),
                     );
                   }
-                  if (bassets.includes(inputAddress)) {
+
+                  if (
+                    saveWrapperDeployed &&
+                    isDepositingBasset &&
+                    scaledInputAmount
+                  ) {
                     return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
                       new TransactionManifest(
                         SaveWrapperFactory.connect(
-                          ADDRESSES.mUSD.SaveWrapper,
+                          ADDRESSES.mUSD.SaveWrapper as string,
                           signer,
                         ),
                         'saveViaMint',
-                        [inputAddress, inputAmount.exact, false],
-                        {
-                          present: 'Depositing savings',
-                          past: 'Deposited savings',
-                        },
+                        [inputAddress, scaledInputAmount.exact, false],
+                        depositPurpose,
                         formId,
                       ),
                     );
                   }
-                  // TODO: via Curve, Uniswap
+
+                  // TODO: via Curve
                 }
               }}
               approve={depositApprove}
             />
           )}
-          <SendButton
-            valid={valid}
-            title="Deposit & Stake"
-            handleSend={() => {
-              if (
-                signer &&
-                massetAddress &&
-                saveAddress &&
-                inputAmount &&
-                inputAddress
-              ) {
-                // TODO: add detail to purposes
-                if (inputAddress === massetAddress) {
-                  return propose<Interfaces.SaveWrapper, 'saveAndStake'>(
-                    new TransactionManifest(
-                      SaveWrapperFactory.connect(saveAddress, signer),
-                      'saveAndStake',
-                      [inputAmount.exact],
-                      {
-                        present: 'Depositing and staking savings',
-                        past: 'Deposited and staked savings',
-                      },
-                      formId,
-                    ),
-                  );
-                }
-
-                if (bassets.includes(inputAddress)) {
-                  return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
-                    new TransactionManifest(
-                      SaveWrapperFactory.connect(
-                        ADDRESSES.mUSD.SaveWrapper,
-                        signer,
+          {saveWrapperDeployed && (
+            <SendButton
+              valid={valid}
+              title="Deposit & Stake"
+              handleSend={async () => {
+                if (
+                  signer &&
+                  massetAddress &&
+                  massetState &&
+                  saveAddress &&
+                  inputAmount &&
+                  inputAddress
+                ) {
+                  if (inputAddress === massetAddress) {
+                    return propose<Interfaces.SaveWrapper, 'saveAndStake'>(
+                      new TransactionManifest(
+                        SaveWrapperFactory.connect(
+                          ADDRESSES.mUSD.SaveWrapper as string,
+                          signer,
+                        ),
+                        'saveAndStake',
+                        [inputAmount.exact],
+                        depositAndStakePurpose,
+                        formId,
                       ),
-                      'saveViaMint',
-                      [inputAddress, inputAmount.exact, true],
-                      {
-                        present: 'Depositing and staking savings',
-                        past: 'Deposited and staked savings',
-                      },
-                      formId,
-                    ),
-                  );
+                    );
+                  }
+
+                  if (isDepositingBasset && scaledInputAmount) {
+                    return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
+                      new TransactionManifest(
+                        SaveWrapperFactory.connect(
+                          ADDRESSES.mUSD.SaveWrapper as string,
+                          signer,
+                        ),
+                        'saveViaMint',
+                        [inputAddress, scaledInputAmount.exact, true],
+                        depositAndStakePurpose,
+                        formId,
+                      ),
+                    );
+                  }
+                  // TODO: via Curve
                 }
-                // TODO: via Curve, Uniswap
-              }
-            }}
-            approve={stakeApprove}
-          />
+              }}
+              approve={stakeApprove}
+            />
+          )}
         </>
       )}
     </AssetExchange>

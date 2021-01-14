@@ -7,17 +7,15 @@ import {
   AreaChart,
   ResponsiveContainer,
 } from 'recharts';
-import Skeleton from 'react-loading-skeleton/lib';
 import { format } from 'date-fns';
-import {
-  useDailyApysForBlockTimes,
-  useBlockTimesForDates,
-} from '../../web3/hooks';
 import { Color } from '../../theme';
 import { percentageFormat, periodFormatMapping } from './utils';
 import { DateRange, Metrics, useDateFilter, useMetrics } from './Metrics';
 import { RechartsContainer } from './RechartsContainer';
 import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider';
+import { ThemedSkeleton } from '../core/ThemedSkeleton';
+import { useBlockTimesForDates } from '../../hooks/useBlockTimesForDates';
+import { useDailyApysForBlockTimes } from '../../hooks/useDailyApysForBlockTimes';
 
 enum MetricTypes {
   DailyApy = 'DailyApy',
@@ -156,7 +154,7 @@ const DailyApysChart: FC = () => {
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <Skeleton height={270} />
+        <ThemedSkeleton height={270} />
       )}
     </RechartsContainer>
   );
