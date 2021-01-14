@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useLayoutEffect } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 import { useParams } from 'react-router-dom';
 
 import { useMatchStakingRewardsAddressFromUrl } from '../../../../context/earn/useMatchStakingRewardsAddressFromUrl';
@@ -9,6 +8,7 @@ import { PoolContent } from './PoolContent';
 import { useMasquerade } from '../../../../context/UserProvider';
 import { CurveProvider } from '../../../../context/earn/CurveProvider';
 import { EarnDataProvider } from '../../../../context/earn/EarnDataProvider';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const Container = styled.div`
   width: 100%;
@@ -52,7 +52,7 @@ const PoolPageContent: FC = () => {
       </Container>
     </StakingRewardsContractProvider>
   ) : (
-    <Skeleton height={225} />
+    <ThemedSkeleton height={225} />
   );
 };
 

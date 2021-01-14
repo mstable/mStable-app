@@ -1,7 +1,6 @@
 import React, { FC, ReactComponentElement, useMemo } from 'react';
 
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton/lib';
 import {
   Bar,
   BarChart,
@@ -24,6 +23,7 @@ import { BigDecimal } from '../../web3/BigDecimal';
 import { Color } from '../../theme';
 import { toK } from './utils';
 import { RechartsContainer } from './RechartsContainer';
+import { ThemedSkeleton } from '../core/ThemedSkeleton';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TooltipProps = any;
@@ -292,7 +292,7 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
           </BarChart>
         </ResponsiveContainer>
       ) : (
-        <Skeleton height={132} />
+        <ThemedSkeleton height={132} />
       )}
     </Container>
   );

@@ -9,7 +9,6 @@ import {
   YAxis,
 } from 'recharts';
 import { format, getUnixTime } from 'date-fns';
-import Skeleton from 'react-loading-skeleton/lib';
 
 import { getKeyTimestamp, useBlockTimesForDates } from '../../web3/hooks';
 import { Color } from '../../theme';
@@ -17,6 +16,7 @@ import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
 import { periodFormatMapping, toK } from './utils';
 import { RechartsContainer } from './RechartsContainer';
 import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider';
+import { ThemedSkeleton } from '../core/ThemedSkeleton';
 
 interface AggregateMetricsQueryResult {
   [timestamp: string]: {
@@ -218,7 +218,7 @@ const Chart: FC = () => {
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <Skeleton height={270} />
+        <ThemedSkeleton height={270} />
       )}
     </RechartsContainer>
   );

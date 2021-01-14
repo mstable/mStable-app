@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 import { Link } from 'react-router-dom';
 
 import { Amount, NumberFormat } from '../../core/Amount';
@@ -19,6 +18,7 @@ import {
 import { Color } from '../../../theme';
 import { PlatformMetadata } from './types';
 import { PLATFORM_METADATA } from './constants';
+import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 
 interface Props {
   address: string;
@@ -281,7 +281,7 @@ export const Card: FC<Props> = ({ address, linkToPool, className }) => {
             </Row>
           </Content>
         ) : (
-          <Skeleton height={225} />
+          <ThemedSkeleton height={225} />
         )}
       </>
     </Container>

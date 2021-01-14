@@ -1,5 +1,4 @@
 import React, { FC, useMemo } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 import { useToggle } from 'react-use';
 import {
@@ -27,6 +26,7 @@ import { CountUp } from '../../../core/CountUp';
 
 import { useRewards, useRewardsTimeTravel } from './RewardsProvider';
 import { ToggleInput } from '../../../forms/ToggleInput';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const ZERO = new BigDecimal(0);
 
@@ -166,7 +166,7 @@ const Row: FC<{
           </>
         ) : (
           <SkeleWrapper>
-            <Skeleton height={8} />
+            <ThemedSkeleton height={8} />
           </SkeleWrapper>
         )}
       </div>

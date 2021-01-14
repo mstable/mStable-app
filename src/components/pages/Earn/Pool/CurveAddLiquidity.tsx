@@ -1,5 +1,4 @@
 import React, { FC, useCallback } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 
 import {
@@ -11,6 +10,7 @@ import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
 import { TokenAmountInput } from '../../../forms/TokenAmountInput';
 import { H3, P } from '../../../core/Typography';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 import {
   useCurrentStakingToken,
   useStakingRewardContractDispatch,
@@ -46,7 +46,7 @@ const Input: FC = () => {
   } = useStakingRewardContractDispatch();
 
   if (!stakingRewardsContract) {
-    return <Skeleton height={300} />;
+    return <ThemedSkeleton height={300} />;
   }
 
   return (

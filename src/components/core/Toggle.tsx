@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 
 import { Button } from './Button';
+import { ThemedSkeleton } from './ThemedSkeleton';
 
 interface Props {
   className?: string;
@@ -25,7 +25,7 @@ export const Toggle: FC<Props> = ({ className, options }) => {
   return (
     <Container className={className}>
       {isLoading ? (
-        <Skeleton height={42} width={128} />
+        <ThemedSkeleton height={42} width={128} />
       ) : (
         options.map(({ title, active, onClick }) => (
           <Button

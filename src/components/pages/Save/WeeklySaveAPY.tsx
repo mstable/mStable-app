@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton/lib';
 import CountUp from 'react-countup';
 
 import { useAverageApyForPastWeek } from '../../../web3/hooks';
+import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 
 const SaveAPYContainer = styled.div`
   display: flex;
@@ -66,7 +66,7 @@ export const WeeklySaveAPY: FC = () => {
           </InfoMsg>
         </>
       ) : (
-        <Skeleton height={42} width={100} />
+        <ThemedSkeleton height={42} width={100} />
       )}
     </SaveAPYContainer>
   );

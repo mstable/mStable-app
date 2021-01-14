@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton/lib';
 
 import { ADDRESSES } from '../../../../constants';
 import { useSaveV2Address } from '../../../../context/DataProvider/DataProvider';
@@ -18,6 +17,7 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { VaultRewards } from './VaultRewards';
 import { AssetInput } from '../../../forms/AssetInput';
 import { RewardsProvider } from './RewardsProvider';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const MAX_BOOST = 1.5;
 const MIN_BOOST = 0.5;
@@ -190,7 +190,7 @@ export const Calculator: FC = () => {
               handleSetAmount={setVmta}
             />
           ) : (
-            <Skeleton />
+            <ThemedSkeleton />
           )}
         </div>
         <div>
@@ -202,7 +202,7 @@ export const Calculator: FC = () => {
               handleSetAmount={setSave}
             />
           ) : (
-            <Skeleton />
+            <ThemedSkeleton />
           )}
         </div>
       </CalculatorInputs>
