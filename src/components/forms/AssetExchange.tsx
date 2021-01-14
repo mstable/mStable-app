@@ -25,6 +25,7 @@ interface Props {
 
   outputAddress?: string;
   outputLabel?: string;
+  outputBalance?: BigDecimal;
   exchangeRate?: BigDecimal; // e.g. for mUSD->imUSD
   slippage?: BigDecimal;
   error?: string;
@@ -129,6 +130,7 @@ export const AssetExchange: FC<Props> = ({
   inputAmountDisabled,
   inputFormValue,
   outputAddress,
+  outputBalance,
   outputLabel,
   exchangeRate,
   slippage,
@@ -152,6 +154,7 @@ export const AssetExchange: FC<Props> = ({
           inputAmount={inputAmount}
           inputAddress={inputAddress}
           outputAddress={outputAddress}
+          outputBalance={outputBalance}
           outputLabel={outputLabel}
           title="Receive"
         />
