@@ -36,6 +36,7 @@ const Option = styled.div<{ skipped?: boolean; disabled?: boolean }>`
   border-radius: 0.75rem;
   height: 4.5rem;
   display: flex;
+  gap: 1rem;
   align-items: center;
   justify-content: space-between;
   padding: 0 0.5rem;
