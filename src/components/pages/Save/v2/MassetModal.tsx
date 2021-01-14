@@ -103,7 +103,7 @@ export const MassetModal: FC = () => {
               UNISWAP_ROUTER02,
               signer,
             );
-            const input = new BigDecimal(1, 16);
+            const input = BigDecimal.parse('0.01');
             const amountsOut = await uniswap.getAmountsOut(input.exact, path);
 
             const amountOut = new BigDecimal(amountsOut[1]);
