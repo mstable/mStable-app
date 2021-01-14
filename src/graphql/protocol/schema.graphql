@@ -1504,6 +1504,7 @@ enum BoostedSavingsVault_orderBy {
   periodFinish
   lastUpdateTime
   stakingToken
+  rewardPerToken
   rewardPerTokenStored
   rewardRate
   rewardsToken
@@ -1589,6 +1590,14 @@ input BoostedSavingsVault_filter {
   stakingToken_not_starts_with: String
   stakingToken_ends_with: String
   stakingToken_not_ends_with: String
+  rewardPerToken: BigInt
+  rewardPerToken_not: BigInt
+  rewardPerToken_gt: BigInt
+  rewardPerToken_lt: BigInt
+  rewardPerToken_gte: BigInt
+  rewardPerToken_lte: BigInt
+  rewardPerToken_in: [BigInt!]
+  rewardPerToken_not_in: [BigInt!]
   rewardPerTokenStored: BigInt
   rewardPerTokenStored_not: BigInt
   rewardPerTokenStored_gt: BigInt
@@ -1665,6 +1674,8 @@ type BoostedSavingsVault {
   lastUpdateTime: Int!
   """The staking token, e.g. imUSD"""
   stakingToken: Token!
+  """The reward per token"""
+  rewardPerToken: BigInt!
   """The reward per token stored"""
   rewardPerTokenStored: BigInt!
   """The reward rate for the rest of the rewards period"""

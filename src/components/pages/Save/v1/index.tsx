@@ -35,7 +35,7 @@ export const Save: FC = () => {
     <Container>
       <BalanceHeader />
       <BalanceRow
-        token={BalanceType.MUSD_SAVE}
+        token={BalanceType.SavingsContractV1}
         balance={stakedBalance}
         warning
       />

@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import styled from 'styled-components';
 
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
@@ -9,8 +10,15 @@ import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 
 import { SendButton } from '../../../forms/SendButton';
+import { AssetOutputWidget } from '../../../forms/AssetOutputWidget';
 
 const formId = 'VaultExit';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
 
 export const VaultExit: FC = () => {
   const signer = useSigner();
@@ -18,16 +26,20 @@ export const VaultExit: FC = () => {
 
   const massetState = useSelectedMassetState();
   const savingsContract = massetState?.savingsContracts.v2;
+  const saveAddress = savingsContract?.address;
   const vault = savingsContract?.boostedSavingsVault;
   const vaultAddress = vault?.address;
+  const rawBalance = vault?.account?.rawBalance;
 
-  // TODO show stake balance and rewards
-
-  // TODO validate the user has staked
-  const valid = true;
+  const valid = !!rawBalance?.exact.gt(0);
 
   return (
-    <div>
+    <Container>
+      <AssetOutputWidget
+        title="Receive"
+        outputAddress={saveAddress}
+        inputAmount={rawBalance}
+      />
       <SendButton
         valid={valid}
         title="Exit"
@@ -49,7 +61,7 @@ export const VaultExit: FC = () => {
           }
         }}
       />
-      <div>This will claim XXX rewards</div>
-    </div>
+      <div>{valid && 'Any available MTA rewards will be claimed.'}</div>
+    </Container>
   );
 };

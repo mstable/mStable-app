@@ -49,13 +49,13 @@ export interface MassetState {
 }
 
 export interface BoostedSavingsVaultAccountState {
+  boostedBalance: BigDecimal;
+  rawBalance: BigDecimal;
   lastAction: number;
   lastClaim: number;
   rewardCount: number;
   rewardPerTokenPaid: BigNumber;
   rewards: BigNumber;
-  rawBalance: BigDecimal;
-  boostedBalance: BigDecimal;
   rewardEntries: {
     finish: number;
     start: number;
@@ -66,12 +66,18 @@ export interface BoostedSavingsVaultAccountState {
 
 export interface BoostedSavingsVaultState {
   address: string;
+  account?: BoostedSavingsVaultAccountState;
+  lastUpdateTime: number;
+  lockupDuration: number;
+  periodDuration: number;
+  periodFinish: number;
+  rewardPerToken: BigNumber;
   rewardPerTokenStored: BigNumber;
   rewardRate: BigNumber;
   stakingContract: string;
   totalStakingRewards: BigDecimal;
   totalSupply: BigDecimal;
-  account?: BoostedSavingsVaultAccountState;
+  unlockPercentage: BigNumber;
 }
 
 export type SavingsContractState = {
