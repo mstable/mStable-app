@@ -61,9 +61,9 @@ const SendButtonContent: FC<Omit<Props, 'approve'>> = ({
   handleSend,
 }) => (
   <Container className={className}>
-    <Button highlighted={valid} disabled={!valid} onClick={handleSend}>
+    <StyledButton highlighted={valid} disabled={!valid} onClick={handleSend}>
       {title}
-    </Button>
+    </StyledButton>
   </Container>
 );
 
