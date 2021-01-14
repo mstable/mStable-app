@@ -222,7 +222,7 @@ export const useHasPendingApproval = (
   const state = useTransactionsState();
   return Object.values(state).some(
     tx =>
-      tx.status !== TransactionStatus.Sent &&
+      tx.status !== TransactionStatus.Confirmed &&
       tx.manifest.fn === 'approve' &&
       tx.manifest.args[0] === spender &&
       tx.to === address,
@@ -270,14 +270,14 @@ export const TransactionsProvider: FC = ({ children }) => {
           getEtherscanLinkForHash(receipt.transactionHash as string),
         );
       } else {
-        addSuccessNotification(
+        addErrorNotification(
           'Transaction failed',
           manifest.purpose.past,
           getEtherscanLinkForHash(receipt.transactionHash as string),
         );
       }
     },
-    [addSuccessNotification],
+    [addErrorNotification, addSuccessNotification],
   );
 
   const check = useCallback<Dispatch['check']>((id, blockNumber) => {
@@ -312,6 +312,7 @@ export const TransactionsProvider: FC = ({ children }) => {
             type: Actions.Error,
             payload: { id, error },
           });
+          console.error(error);
           addErrorNotification(
             'Transaction failed',
             manifest.purpose.present,

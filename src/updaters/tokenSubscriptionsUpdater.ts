@@ -1,4 +1,7 @@
-import { Reducer, useEffect, useReducer, useRef } from 'react';
+import { Reducer, useEffect, useReducer } from 'react';
+import { usePrevious } from 'react-use';
+import { AddressZero } from 'ethers/constants';
+
 import { useBlockNumber } from '../context/BlockProvider';
 import { useAccount } from '../context/UserProvider';
 import {
@@ -52,7 +55,7 @@ export const TokenSubscriptionsUpdater = (): null => {
   const [contracts, dispatch] = useReducer(reducer, initialState);
 
   const account = useAccount();
-  const accountRef = useRef<string | undefined>(account);
+  const prevAccount = usePrevious(account);
   const blockNumber = useBlockNumber();
 
   const tokenSubscriptionsSerialized = useTokenSubscriptionsSerialized();
@@ -65,13 +68,15 @@ export const TokenSubscriptionsUpdater = (): null => {
 
     const addresses: string[] = JSON.parse(tokenSubscriptionsSerialized);
 
-    const instances = addresses.reduce(
-      (_contracts, address) => ({
-        ..._contracts,
-        [address]: Erc20DetailedFactory.connect(address, signer),
-      }),
-      contracts,
-    );
+    const instances = addresses
+      .filter(address => address !== AddressZero)
+      .reduce(
+        (_contracts, address) => ({
+          ..._contracts,
+          [address]: Erc20DetailedFactory.connect(address, signer),
+        }),
+        contracts,
+      );
 
     dispatch({ type: Actions.SetContracts, payload: instances });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -165,12 +170,11 @@ export const TokenSubscriptionsUpdater = (): null => {
 
   // Clear all contracts and tokens if the account changes.
   useEffect(() => {
-    if (accountRef.current !== account) {
+    if (prevAccount !== account || !account) {
       dispatch({ type: Actions.Reset });
       reset();
-      accountRef.current = account;
     }
-  }, [account, accountRef, reset]);
+  }, [account, prevAccount, reset]);
 
   return null;
 };

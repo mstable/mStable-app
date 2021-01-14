@@ -11,8 +11,7 @@ import React, {
 import useInterval from 'react-use/lib/useInterval';
 
 import { StakingRewards } from '../../../typechain/StakingRewards.d';
-import { SCALE } from '../../../constants';
-import { CURVE_ADDRESSES } from '../../../context/earn/CurveProvider';
+import { ADDRESSES, SCALE } from '../../../constants';
 import { useTokensState } from '../../../context/TokensProvider';
 import { StakingRewardsFactory } from '../../../typechain/StakingRewardsFactory';
 import { SubscribedToken } from '../../../types';
@@ -52,7 +51,7 @@ const initialState: State = {
 };
 
 const initializer = (address: string): State =>
-  address === CURVE_ADDRESSES.MTA_STAKING_REWARDS
+  address === ADDRESSES.CURVE.MTA_STAKING_REWARDS
     ? { ...initialState, activeTab: Tabs.AddLiquidity }
     : initialState;
 

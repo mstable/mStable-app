@@ -8,12 +8,12 @@ import {
 } from '../../context/NotificationsProvider';
 
 const Title = styled.div`
-  font-weight: bold;
-  font-size: ${({ theme }) => theme.fontSize.s};
+  font-weight: 600;
+  font-size: 1rem;
 `;
 
 const Link = styled.a<{ nType: NotificationType }>`
-  font-size: ${({ theme }) => theme.fontSize.s};
+  font-size: 1rem;
   color: ${({ theme, nType }) =>
     nType === NotificationType.Success ? theme.color.black : theme.color.white};
   border-color: ${({ theme, nType }) =>
@@ -38,9 +38,9 @@ const Container = styled.div<
       : theme.color.red};
   color: ${({ theme, type }) =>
     type === NotificationType.Success ? theme.color.black : theme.color.white};
-  border-radius: 0.5rem;
-  padding: ${({ theme }) => theme.spacing.s};
-  margin-bottom: ${({ theme }) => theme.spacing.m};
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  margin-bottom: 1rem;
   transition: opacity 0.3s ease;
   cursor: pointer;
 

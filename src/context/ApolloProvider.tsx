@@ -13,10 +13,10 @@ import {
 import { ApolloLink } from 'apollo-link';
 import { onError } from 'apollo-link-error';
 import { persistCache } from 'apollo-cache-persist';
-import Skeleton from 'react-loading-skeleton';
 import useThrottleFn from 'react-use/lib/useThrottleFn';
 
 import { useAddErrorNotification } from './NotificationsProvider';
+import { ThemedSkeleton } from '../components/core/ThemedSkeleton';
 
 const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
 
@@ -142,6 +142,6 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
       {children}
     </ApolloReactProvider>
   ) : (
-    <Skeleton />
+    <ThemedSkeleton />
   );
 };

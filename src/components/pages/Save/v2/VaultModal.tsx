@@ -3,11 +3,13 @@ import styled from 'styled-components';
 
 import { TabBtn, TabsContainer } from '../../../core/Tabs';
 import { SaveDeposit } from './SaveDeposit';
+import { SaveDepositETH } from './SaveDepositETH';
 import { VaultWithdraw } from './VaultWithdraw';
 import { VaultExit } from './VaultExit';
 
 enum Tabs {
   Deposit,
+  DepositETH,
   Withdraw,
   Exit,
 }
@@ -19,19 +21,11 @@ const Container = styled.div`
 `;
 
 export const VaultModal: FC = () => {
-  const [tab, setTab] = useState<Tabs>(Tabs.Withdraw);
+  const [tab, setTab] = useState<Tabs>(Tabs.Deposit);
 
   return (
     <Container>
       <TabsContainer>
-        <TabBtn
-          active={tab === Tabs.Deposit}
-          onClick={() => {
-            setTab(Tabs.Deposit);
-          }}
-        >
-          Deposit
-        </TabBtn>
         <TabBtn
           active={tab === Tabs.Withdraw}
           onClick={() => {
@@ -39,6 +33,22 @@ export const VaultModal: FC = () => {
           }}
         >
           Withdraw
+        </TabBtn>
+        <TabBtn
+          active={tab === Tabs.Deposit}
+          onClick={() => {
+            setTab(Tabs.Deposit);
+          }}
+        >
+          Deposit stablecoins
+        </TabBtn>
+        <TabBtn
+          active={tab === Tabs.DepositETH}
+          onClick={() => {
+            setTab(Tabs.DepositETH);
+          }}
+        >
+          Deposit ETH
         </TabBtn>
         <TabBtn
           active={tab === Tabs.Exit}
@@ -53,6 +63,8 @@ export const VaultModal: FC = () => {
         <VaultWithdraw />
       ) : tab === Tabs.Deposit ? (
         <SaveDeposit saveAndStake />
+      ) : tab === Tabs.DepositETH ? (
+        <SaveDepositETH saveAndStake />
       ) : (
         <VaultExit />
       )}

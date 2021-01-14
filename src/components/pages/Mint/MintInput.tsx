@@ -1,6 +1,5 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 
 import { Color } from '../../../theme';
 import { FormRow } from '../../core/Form';
@@ -9,6 +8,7 @@ import { H3 } from '../../core/Typography';
 import { useMintState } from './MintProvider';
 import { BassetInput } from './BassetInput';
 import { BassetInputs } from '../../core/BassetInputs';
+import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 
 const Header = styled.div`
   display: flex;
@@ -84,7 +84,7 @@ export const MintInput: FC = () => {
         {massetState ? (
           <LineItems symbol={massetState.token.symbol} data={lineItems} />
         ) : (
-          <Skeleton />
+          <ThemedSkeleton />
         )}
       </FormRow>
     </>

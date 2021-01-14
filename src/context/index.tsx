@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { ModalProvider } from 'react-modal-hook';
+import { TransitionGroup } from 'react-transition-group';
 
 import { UserProvider } from './UserProvider';
 import { AppProvider } from './AppProvider';
@@ -12,14 +13,14 @@ import { BlockProvider } from './BlockProvider';
 import { DataProvider } from './DataProvider/DataProvider';
 import { ApolloProvider } from './ApolloProvider';
 import { SelectedSaveVersionProvider } from './SelectedSaveVersionProvider';
-import { GasPricesProvider } from './GasPricesProvider';
+import { EthProvider } from './EthProvider';
 
 export const Providers: FC = ({ children }) => (
   <NotificationsProvider>
     <ApolloProvider>
       <UserProvider>
         <BlockProvider>
-          <GasPricesProvider>
+          <EthProvider>
             <TransactionsProvider>
               <SelectedMassetNameProvider>
                 <TokensProvider>
@@ -27,7 +28,9 @@ export const Providers: FC = ({ children }) => (
                     <AppProvider>
                       <ThemeProvider>
                         <SelectedSaveVersionProvider>
-                          <ModalProvider>{children}</ModalProvider>
+                          <ModalProvider rootComponent={TransitionGroup}>
+                            {children}
+                          </ModalProvider>
                         </SelectedSaveVersionProvider>
                       </ThemeProvider>
                     </AppProvider>
@@ -35,7 +38,7 @@ export const Providers: FC = ({ children }) => (
                 </TokensProvider>
               </SelectedMassetNameProvider>
             </TransactionsProvider>
-          </GasPricesProvider>
+          </EthProvider>
         </BlockProvider>
       </UserProvider>
     </ApolloProvider>

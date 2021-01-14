@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 
 import { FormRow } from '../../core/Form';
@@ -16,6 +15,7 @@ import { BassetOutput } from './BassetOutput';
 import { Mode } from './types';
 import { TokenIcon } from '../../icons/TokenIcon';
 import { ViewportWidth } from '../../../theme';
+import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 
 const RedeemMode = styled.div`
   display: flex;
@@ -153,7 +153,7 @@ export const RedeemInput: FC<{}> = () => {
             ) : null}
           </MassetInputGroup>
         ) : (
-          <Skeleton />
+          <ThemedSkeleton />
         )}
       </FormRow>
       <FormRow>

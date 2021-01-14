@@ -19,7 +19,7 @@ let ctx: HookResult<Ctx>;
 const state = (): Ctx[0] => ctx.current[0];
 const dispatch = (): Ctx[1] => ctx.current[1];
 
-const setQuantity = (field: Fields, formValue: string | null): void => {
+const setQuantity = (field: Fields, formValue?: string): void => {
   dispatch()({
     type: Actions.SetQuantity,
     payload: { formValue, field },

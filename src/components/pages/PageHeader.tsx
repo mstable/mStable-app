@@ -3,22 +3,40 @@ import styled from 'styled-components';
 
 import { H2, P } from '../core/Typography';
 import { FontSize } from '../../theme';
-import { ReactComponent as MUSDBadge } from '../icons/tokens/mUSD.svg';
+import { ReactComponent as SaveIcon } from '../icons/circle/save.svg';
+import { ReactComponent as MintIcon } from '../icons/circle/mint.svg';
+import { ReactComponent as EarnIcon } from '../icons/circle/earn.svg';
+import { ReactComponent as SwapIcon } from '../icons/circle/swap.svg';
+import { ReactComponent as RedeemIcon } from '../icons/circle/redeem.svg';
+import { ReactComponent as AnalyticsIcon } from '../icons/circle/analytics.svg';
+import { ReactComponent as AccountIcon } from '../icons/circle/account.svg';
 
-enum Masset {
-  MUSD = 'MUSD',
+export enum PageAction {
+  Save = 'Save',
+  Mint = 'Mint',
+  Earn = 'Earn',
+  Swap = 'Swap',
+  Redeem = 'Redeem',
+  Analytics = 'Analytics',
+  Account = 'Account',
 }
 
 interface Props {
-  title: string;
+  action: PageAction;
   subtitle: string;
 }
 
-const MassetIcons: { [masset: string]: JSX.Element } = {
-  MUSD: <MUSDBadge />,
+const ActionIcons: { [action: string]: JSX.Element } = {
+  Save: <SaveIcon />,
+  Mint: <MintIcon />,
+  Earn: <EarnIcon />,
+  Swap: <SwapIcon />,
+  Redeem: <RedeemIcon />,
+  Analytics: <AnalyticsIcon />,
+  Account: <AccountIcon />,
 };
 
-const Icon = styled.div`
+const Icon = styled.div<{ inverted?: boolean }>`
   padding: 0;
   display: flex;
 
@@ -27,6 +45,10 @@ const Icon = styled.div`
     width: 64px;
     height: 64px;
     margin-right: 16px;
+
+    * {
+      fill: ${({ theme }) => theme.color.body};
+    }
   }
 
   img + div {
@@ -74,16 +96,15 @@ const ChildrenRow = styled.div`
   }
 `;
 
-export const PageHeader: FC<Props> = ({ children, title, subtitle }) => {
-  const asset = Masset.MUSD; // query from url
-  const icon = MassetIcons[asset];
+export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
+  const icon = ActionIcons[action];
 
   return (
     <Container>
       <Row>
-        <Icon>{icon}</Icon>
+        <Icon inverted>{icon}</Icon>
         <Column>
-          <H2>{title}</H2>
+          <H2>{action}</H2>
           <P>{subtitle}</P>
         </Column>
       </Row>

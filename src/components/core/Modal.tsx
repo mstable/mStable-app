@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
+import { ViewportWidth } from '../../theme';
 
 import { UnstyledButton } from './Button';
 
@@ -29,22 +30,34 @@ const Title = styled.div`
 `;
 
 const Header = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px #eee solid;
+  padding: 1rem 2rem;
+  border-bottom: 1px ${({ theme }) => theme.color.accent} solid;
+  background: ${({ theme }) => theme.color.background};
 `;
 
 const Body = styled.div``;
 
 const Container = styled.div`
+  position: relative;
+  overflow-y: scroll;
   min-width: 50vw;
-  max-width: 90vw;
-  max-height: 90vw;
-  background: ${({ theme }) => theme.color.white};
+  width: 100%;
+  margin: 0 1rem;
+  max-height: calc(90vh - 50px);
+  background: ${({ theme }) => theme.color.background};
   border-radius: 1rem;
-  border: 1px ${({ theme }) => theme.color.lightGrey} solid;
+  border: 1px ${({ theme }) => theme.color.backgroundAccent} solid;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    margin: 0 2rem;
+    max-width: 44rem;
+  }
 `;
 
 const FixedContainer = styled.div`
@@ -57,16 +70,22 @@ const FixedContainer = styled.div`
   right: 0;
   bottom: 0;
   z-index: 1;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: ${({ theme }) =>
+    theme.isLight ? `rgba(0, 0, 0, 0.5)` : `rgba(0, 0, 0, 0.9)`};
+  
+  @supports (backdrop-filter: blur(0.25em)) {
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(0.25em);
+  }
+}
 `;
 
-// TODO fix animation
+// TODO Fix animation
 // const scaleIn = keyframes`
 //   0% {
-//     transform: scale(2);
+//     transform: scale(1.2);
 //     transform-origin: 50% 50%;
-//     filter: blur(40px);
+//     filter: blur(20px);
 //     opacity: 0;
 //   }
 //   100% {
@@ -76,20 +95,26 @@ const FixedContainer = styled.div`
 //     opacity: 1;
 //   }
 // `;
-//
+
 // const Animation = styled(CSSTransition)`
 //   ${({ classNames }) => `&.${classNames}-enter`} {
 //     animation: ${css`
 //         ${scaleIn}`} 0.5s cubic-bezier(0.19, 1, 0.22, 1) normal;
 //   }
-//
+
 //   ${({ classNames }) => `&.${classNames}-exit-active`} {
 //     animation: ${css`
 //         ${scaleIn}`} 0.3s cubic-bezier(0.19, 1, 0.22, 1) reverse;
 //   }
 // `;
 
-export const Modal: FC<Props> = ({ children, title, className, hideModal }) => {
+export const Modal: FC<Props> = ({
+  children,
+  title,
+  className,
+  hideModal,
+  open,
+}) => {
   const fixedRef = useRef<HTMLDivElement>(null as never);
   const modalRef = useRef<HTMLDivElement>(null as never);
 
@@ -110,6 +135,8 @@ export const Modal: FC<Props> = ({ children, title, className, hideModal }) => {
       window.removeEventListener('keypress', handleKeyPress);
     };
   }, [hideModal]);
+
+  if (!open) return null;
 
   return (
     <FixedContainer ref={fixedRef}>

@@ -25,7 +25,7 @@ const Container = styled.div`
   top: 24px;
   right: 40px;
   width: 20%;
-  min-width: 240px;
+  min-width: 280px;
   z-index: 2;
 `;
 

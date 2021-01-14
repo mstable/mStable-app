@@ -1,6 +1,5 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton/lib';
 
 import { ADDRESSES } from '../../../../constants';
 import { useSaveV2Address } from '../../../../context/DataProvider/DataProvider';
@@ -11,49 +10,32 @@ import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
 import { DifferentialCountup } from '../../../core/CountUp';
 import { ProgressBar } from '../../../core/ProgressBar';
-import { Button, UnstyledButton } from '../../../core/Button';
+import { Button } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { VaultRewards } from './VaultRewards';
 import { AssetInput } from '../../../forms/AssetInput';
 import { RewardsProvider } from './RewardsProvider';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
-const MAX_BOOST = 1.5;
-const MIN_BOOST = 0.5;
+const MAX_BOOST = 3;
+const MIN_BOOST = 1;
 const COEFFICIENT = 3.2;
 const SAVE_EXPONENT = 0.875;
 
-const BoostCountup = styled(DifferentialCountup)``;
+const BoostCountup = styled(DifferentialCountup)`
+  font-weight: normal;
+  margin-left: 0.25rem;
+`;
 
-const StyledButton = styled(UnstyledButton)`
+const StyledButton = styled(Button)`
   display: flex;
-  width: 100%;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 1.5rem;
-  background: ${({ theme }) => theme.color.accent};
-  color: rgba(121, 121, 121, 1);
-  border-radius: 1.5rem;
-  font-size: 0.9rem;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: 0.2s ease;
 
   svg {
-    width: 1.5rem;
-    height: 1.5rem;
-    * {
-      fill: rgba(121, 121, 121, 1);
-    }
-  }
-
-  &:hover {
-    background: #176ede;
-    color: white;
-    svg * {
-      fill: white;
-    }
+    width: 1rem;
+    margin-right: 0.5rem;
   }
 `;
 
@@ -79,32 +61,15 @@ const CalculatorInputs = styled.div`
   justify-content: space-between;
   gap: 2rem;
   flex-direction: column;
-`;
-
-const BoostValue = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  background: ${({ theme }) => theme.color.accent};
-  border-radius: 1rem;
-
-  ${BoostCountup} {
-    font-size: 1.5rem;
-  }
+  width: 100%;
 `;
 
 const BoostAndActions = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: flex-end;
   gap: 0.5rem;
-  flex: 0;
-
-  > * {
-    width: 100%;
-  }
+  flex-basis: 40%;
 `;
 
 const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
@@ -153,7 +118,7 @@ export const Calculator: FC = () => {
   const save = useTokenSubscription(saveAddress);
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
 
-  const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput();
+  const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTA?.balance);
   const [saveValue, saveFormValue, setSave] = useBigDecimalInput(save?.balance);
 
   const boost = useMemo(() => {
@@ -172,7 +137,7 @@ export const Calculator: FC = () => {
 
   return (
     <CalculatorWidget
-      title="Boost Calculator"
+      title="Earning power calculator"
       tooltip="Find out how to get the optimal boost"
       headerContent={
         <Button scale={0.7} onClick={toggleShowCalculator}>
@@ -181,40 +146,36 @@ export const Calculator: FC = () => {
       }
     >
       <CalculatorInputs>
-        <div>
-          {vMTA ? (
-            <AssetInput
-              address={vMTA.address}
-              addressDisabled
-              formValue={vMTAFormValue}
-              handleSetAmount={setVmta}
-            />
-          ) : (
-            <Skeleton />
-          )}
-        </div>
-        <div>
-          {save ? (
-            <AssetInput
-              address={save.address}
-              addressDisabled
-              formValue={saveFormValue}
-              handleSetAmount={setSave}
-            />
-          ) : (
-            <Skeleton />
-          )}
-        </div>
+        {vMTA ? (
+          <AssetInput
+            address={vMTA.address}
+            addressDisabled
+            formValue={vMTAFormValue}
+            handleSetAmount={setVmta}
+          />
+        ) : (
+          <ThemedSkeleton />
+        )}
+        {save ? (
+          <AssetInput
+            address={save.address}
+            addressDisabled
+            formValue={saveFormValue}
+            handleSetAmount={setSave}
+          />
+        ) : (
+          <ThemedSkeleton />
+        )}
       </CalculatorInputs>
       <BoostAndActions>
-        <BoostValue>
-          <span>Boost</span>
+        <StyledButton>
+          <span>Multiplier</span>&nbsp;
           <BoostCountup
             end={boost.fromInputs}
             prev={boost.fromBalance}
             suffix="x"
           />
-        </BoostValue>
+        </StyledButton>
         <StyledButton onClick={handlePreviewMax}>
           <ArrowsSvg />
           Preview Max
@@ -224,9 +185,9 @@ export const Calculator: FC = () => {
           target="_blank"
           rel="noreferrer noopener"
         >
-          <StyledButton>
+          <StyledButton highlighted>
             <GovSvg />
-            Stake MTA
+            Governance
           </StyledButton>
         </a>
       </BoostAndActions>
@@ -239,15 +200,17 @@ const BoostBar: FC = () => {
   const saveAddress = useSaveV2Address();
   const save = useTokenSubscription(saveAddress);
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
+  const saveBalance = save?.balance;
+  const vMTABalance = vMTA?.balance;
 
   const boost = useMemo<number>(
-    () => calculateBoost(save?.balance, vMTA?.balance),
-    [save, vMTA],
+    () => calculateBoost(saveBalance, vMTABalance),
+    [saveBalance, vMTABalance],
   );
 
   return (
     <Widget
-      title="Boost"
+      title="Earning power multiplier"
       tooltip="Save rewards are boosted by a multiplier (from 0.5 to 1.5)"
       headerContent={
         <Button scale={0.7} onClick={toggleShowCalculator}>
@@ -256,17 +219,11 @@ const BoostBar: FC = () => {
       }
     >
       <div>
-        <ProgressBar
-          color="#67C73A"
-          highlight="#77D16F"
-          value={boost}
-          min={0.5}
-          max={1.5}
-        />
+        <ProgressBar value={boost} min={1} max={3} />
         <BoostBarRange>
-          <div>0.5x</div>
+          <div>1x</div>
           <BoostBarLine />
-          <div>1.5x</div>
+          <div>3x</div>
         </BoostBarRange>
       </div>
     </Widget>
@@ -302,6 +259,7 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
 
 const BoostContent: FC = () => {
   const [showCalculator] = useShowCalculatorCtx();
+
   return (
     <Container padding showCalculator={showCalculator}>
       {showCalculator ? (

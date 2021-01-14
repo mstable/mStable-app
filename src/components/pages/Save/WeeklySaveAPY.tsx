@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton/lib';
 import CountUp from 'react-countup';
 
-import { useAverageApyForPastWeek } from '../../../web3/hooks';
+import { useAvailableSaveApy } from '../../../hooks/useAvailableSaveApy';
+import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 
 const SaveAPYContainer = styled.div`
   display: flex;
@@ -48,12 +48,18 @@ const InfoMsg = styled.div`
 `;
 
 export const WeeklySaveAPY: FC = () => {
-  const apyForPastWeek = useAverageApyForPastWeek();
+  const apy = useAvailableSaveApy();
   return (
     <SaveAPYContainer>
-      {apyForPastWeek ? (
+      {apy.type === 'fetching' ? (
+        <ThemedSkeleton height={42} width={100} />
+      ) : apy.type === 'inactive' ? (
+        <InfoMsg>Not receiving interest</InfoMsg>
+      ) : apy.type === 'bootstrapping' ? (
+        <InfoMsg>APY not available yet</InfoMsg>
+      ) : (
         <>
-          <InfoCountUp end={apyForPastWeek} suffix="%" decimals={2} />
+          <InfoCountUp end={apy?.value} suffix="%" decimals={2} />
           <InfoMsg>
             {' '}
             <a
@@ -61,12 +67,12 @@ export const WeeklySaveAPY: FC = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              Average daily APY over the last 7 days
+              {apy.type === 'average'
+                ? 'Average daily APY over the last 7 days'
+                : 'Live APY (unstable)'}
             </a>
           </InfoMsg>
         </>
-      ) : (
-        <Skeleton height={42} width={100} />
       )}
     </SaveAPYContainer>
   );

@@ -1,5 +1,4 @@
 import React, { FC, useCallback } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 
 import { Interfaces } from '../../../../types';
@@ -15,6 +14,7 @@ import {
 } from '../StakingRewardsContractProvider';
 import { H3, P } from '../../../core/Typography';
 import { StakeAmountInput } from '../../../forms/StakeAmountInput';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const Row = styled.div`
   width: 100%;
@@ -25,7 +25,7 @@ const Input: FC = () => {
   const { stakingRewardsContract } = useStakingRewardsContractState();
 
   if (!stakingRewardsContract) {
-    return <Skeleton height={300} />;
+    return <ThemedSkeleton height={300} />;
   }
 
   return (
@@ -84,7 +84,7 @@ const ExitFormConfirm: FC = () => {
           <P>No staking balance.</P>
         )
       ) : (
-        <Skeleton />
+        <ThemedSkeleton />
       )}
     </div>
   );

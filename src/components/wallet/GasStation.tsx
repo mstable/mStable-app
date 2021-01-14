@@ -2,7 +2,7 @@ import React, { FC, ChangeEventHandler, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useEffectOnce } from 'react-use';
 
-import { useGasPrices } from '../../context/GasPricesProvider';
+import { useGasPrices } from '../../context/EthProvider';
 import { useGas } from './TransactionGasProvider';
 import { Button } from '../core/Button';
 

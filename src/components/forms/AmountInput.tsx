@@ -25,23 +25,19 @@ export const Input = styled.input<{
     error
       ? theme.color.redTransparenter
       : disabled
-      ? theme.color.blackTransparenter
-      : theme.color.white};
+      ? theme.color.accent
+      : 'transparent'};
 
-  border: ${({ theme, error, disabled }) =>
+  border: ${({ theme, error }) =>
     `1px ${
-      error
-        ? theme.color.redTransparent
-        : disabled
-        ? theme.color.blackTransparent
-        : 'rgba(0, 0, 0, 0.5)'
+      error ? theme.color.redTransparent : theme.color.accentContrast
     } solid`};
 
   color: ${({ error, theme, disabled }) =>
-    error ? theme.color.red : disabled ? '#404040' : theme.color.black};
+    error ? theme.color.red : disabled ? '#404040' : theme.color.body};
 
-  border-radius: 1rem;
-  font-size: 16px;
+  border-radius: 0.5rem;
+  font-size: 1rem;
   font-weight: bold;
   min-width: 0;
   width: 100%;

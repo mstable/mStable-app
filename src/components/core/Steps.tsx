@@ -21,7 +21,7 @@ const Container = styled.div`
     width: 0.25rem;
     top: 0;
     bottom: 0;
-    background: ${({ theme }) => theme.color.lightGrey};
+    background: ${({ theme }) => theme.color.bodyTransparenter};
     content: '';
     z-index: -1;
     left: 1rem;

@@ -8,7 +8,6 @@ import { Header } from './Header';
 import { Footer } from './Footer';
 import { Account } from './Account';
 import { useAccountOpen } from '../../context/AppProvider';
-import { useIsIdle } from '../../context/UserProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
@@ -17,15 +16,16 @@ import { Color } from '../../theme';
 import { BannerMessage } from './BannerMessage';
 import { PendingTransactions } from '../wallet/PendingTransactions';
 
-const Main = styled.main`
+const Main = styled.main<{ marginTop?: boolean }>`
   padding: 0 1rem;
+  margin-top: ${({ marginTop }) => marginTop && `4rem`};
 `;
 
 const BackgroundContainer = styled.div`
   ${containerBackground}
 `;
 
-const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
+const GlobalStyle = createGlobalStyle`
   ${reset}
   a {
     color: ${Color.blue};
@@ -44,10 +44,6 @@ const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
   }
   body {
     min-width: 320px;
-    ${({ idle }) =>
-      idle
-        ? 'transition: filter 5s ease; filter: grayscale(50%) brightness(50%)'
-        : ''};
   }
   code {
     display: block;
@@ -67,11 +63,11 @@ const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
   }
   // Onboard.js
   aside.bn-onboard-custom {
-    color: ${Color.offBlack};
+    color: ${({ theme }) => theme.color.black};
     z-index: 1;
     > section {
       font-family: 'Poppins', sans-serif !important;
-      border-radius: 2px;
+      border-radius: 1rem;
     }
     .bn-onboard-modal-content-header {
       > :first-child {
@@ -79,6 +75,8 @@ const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
       }
       > h3 {
         margin-left: 0;
+        font-weight: 600;
+        color: ${({ theme }) => theme.color.black};
       }
     }
     .bn-onboard-select-description {
@@ -88,13 +86,14 @@ const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
       font-weight: normal;
       padding: 4px 16px;
       border: 1px ${Color.blackTransparent} solid;
-      border-radius: 3px;
+      border-radius: 0.5rem;
       > :first-child {
         min-width: 32px;
       }
       > span {
         font-weight: normal;
         font-size: 16px;
+        color: ${({ theme }) => theme.color.black};
       }
       &:hover {
         box-shadow: none;
@@ -106,11 +105,11 @@ const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
       background: transparent;
       user-select: none;
       text-transform: uppercase;
-      font-weight: bold;
+      font-weight: 600;
       font-size: 12px;
       padding: 8px 16px;
       border: 1px ${Color.blackTransparent} solid;
-      border-radius: 3px;
+      border-radius: 0.5rem;
       color: ${Color.black};
       &:hover {
         background: white;
@@ -160,7 +159,6 @@ const Container = styled.div<{ accountOpen?: boolean }>`
 
 export const Layout: FC = ({ children }) => {
   const accountOpen = useAccountOpen();
-  const idle = useIsIdle();
   const { pathname } = useLocation();
   const home = pathname === '/';
   const earn = pathname === '/earn';
@@ -180,8 +178,8 @@ export const Layout: FC = ({ children }) => {
         ) : earn ? (
           <>{children}</>
         ) : (
-          <Main>
-            <BannerMessage />
+          <Main marginTop={home}>
+            {!home && <BannerMessage />}
             <BackgroundContainer>{children}</BackgroundContainer>
           </Main>
         )}
@@ -190,7 +188,7 @@ export const Layout: FC = ({ children }) => {
       <PendingTransactions />
       <NotificationToasts />
       <ReactTooltip id="global" />
-      <GlobalStyle idle={idle} />
+      <GlobalStyle />
     </>
   );
 };

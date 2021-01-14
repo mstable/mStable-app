@@ -11,26 +11,25 @@ import React, {
 import { BigNumber } from 'ethers/utils';
 import { MaxUint256 } from 'ethers/constants';
 
-import { useWalletAddress } from '../../../context/OnboardProvider';
-import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
-import { useTokenAllowance } from '../../../context/TokensProvider';
-import { useSelectedSavingsContractState } from '../../../context/SelectedSaveVersionProvider';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import { useTokenAllowance } from '../../../../context/TokensProvider';
 import {
   Transaction,
   useTransactionsDispatch,
   useTransactionsState,
-} from '../../../context/TransactionsProvider';
+} from '../../../../context/TransactionsProvider';
 import {
   useSelectedMassetContract,
   useSelectedSaveV1Contract,
-  useSelectedSaveV2Contract,
-} from '../../../web3/hooks';
+} from '../../../../web3/hooks';
 import {
   TransactionManifest,
   TransactionStatus,
-} from '../../../web3/TransactionManifest';
-import { Interfaces } from '../../../types';
-import { StepProps } from '../../core/Step';
+} from '../../../../web3/TransactionManifest';
+import { Interfaces } from '../../../../types';
+import { StepProps } from '../../../core/Step';
+import { useModalComponent } from '../../../../hooks/useModalComponent';
+import { MassetModal } from '../v2/MassetModal';
 
 const isTxPending = (
   transactions: Record<string, Transaction>,
@@ -39,9 +38,11 @@ const isTxPending = (
   return !!(
     id &&
     transactions[id] &&
-    [TransactionStatus.Pending, TransactionStatus.Sent].includes(
-      transactions[id].status,
-    )
+    [
+      TransactionStatus.Pending,
+      TransactionStatus.Sent,
+      TransactionStatus.Response,
+    ].includes(transactions[id].status)
   );
 };
 
@@ -53,7 +54,6 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const [approveInfinite, setApproveInfinite] = useState<boolean>(true);
   const [withdrawId, setWithdrawId] = useState<string | undefined>();
   const [approveId, setApproveId] = useState<string | undefined>();
-  const [depositId, setDepositId] = useState<string | undefined>();
 
   const { propose } = useTransactionsDispatch();
   const transactions = useTransactionsState();
@@ -62,12 +62,14 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const v1SavingsBalance = massetState?.savingsContracts.v1?.savingsBalance;
   const v2Address = massetState?.savingsContracts.v2?.address;
 
-  const walletAddress = useWalletAddress();
   const savingsContractV1 = useSelectedSaveV1Contract();
-  const savingsContractV2 = useSelectedSaveV2Contract();
   const massetContract = useSelectedMassetContract();
-  const savingsContractState = useSelectedSavingsContractState();
   useTokenAllowance(massetState?.address, v2Address);
+
+  const [showDepositModal] = useModalComponent({
+    title: 'Deposit mUSD',
+    children: <MassetModal />,
+  });
 
   const proposeWithdrawTx = useCallback(() => {
     if (
@@ -136,47 +138,6 @@ export const SaveMigrationProvider: FC = ({ children }) => {
     v2Address,
   ]);
 
-  const proposeDepositTx = useCallback(() => {
-    if (!v1SavingsBalance?.balance || !savingsContractV2) {
-      return;
-    }
-
-    const tx =
-      savingsContractState?.version === 2 && !savingsContractState.current
-        ? new TransactionManifest<Interfaces.SavingsContract, 'preDeposit'>(
-            savingsContractV2,
-            'preDeposit',
-            [v1SavingsBalance.balance.exact, walletAddress as string],
-            {
-              present: `Pre depositing ${v1SavingsBalance.balance.format()}`,
-              past: `Pre deposited ${v1SavingsBalance.balance.format()}`,
-            },
-            formId,
-          )
-        : new TransactionManifest<
-            Interfaces.SavingsContract,
-            'depositSavings(uint256,address)'
-          >(
-            savingsContractV2,
-            'depositSavings(uint256,address)',
-            [v1SavingsBalance.balance.exact, walletAddress as string],
-            {
-              present: `Depositing ${v1SavingsBalance.balance.format()}`,
-              past: `Deposited ${v1SavingsBalance.balance.format()}`,
-            },
-            formId,
-          );
-
-    setDepositId(tx.id);
-    propose(tx);
-  }, [
-    propose,
-    savingsContractState,
-    savingsContractV2,
-    v1SavingsBalance,
-    walletAddress,
-  ]);
-
   const steps = useMemo<StepProps[]>(() => {
     if (
       !(
@@ -195,7 +156,6 @@ export const SaveMigrationProvider: FC = ({ children }) => {
     );
 
     const withdrawTxSubmitting = isTxPending(transactions, withdrawId);
-    const depositTxSubmitting = isTxPending(transactions, depositId);
     const approveTxSubmitting = isTxPending(transactions, approveId);
 
     return [
@@ -246,9 +206,10 @@ export const SaveMigrationProvider: FC = ({ children }) => {
         options: [
           {
             title: 'Deposit to Save V2',
+            buttonTitle: 'Deposit',
             key: 'deposit',
-            onClick: proposeDepositTx,
-            pending: depositTxSubmitting,
+            onClick: showDepositModal,
+            pending: false,
           },
         ],
       },
@@ -256,11 +217,10 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   }, [
     approveId,
     approveInfinite,
-    depositId,
     massetState,
     proposeApproveTx,
-    proposeDepositTx,
     proposeWithdrawTx,
+    showDepositModal,
     transactions,
     withdrawId,
   ]);

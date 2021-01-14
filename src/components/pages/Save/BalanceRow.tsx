@@ -1,16 +1,19 @@
-import React, { FC } from 'react';
-import Skeleton from 'react-loading-skeleton';
+import React, { FC, ReactElement } from 'react';
 import styled, { css } from 'styled-components';
 
-import { ViewportWidth } from '../../../theme';
+import { gradientShift, ViewportWidth } from '../../../theme';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { Widget, WidgetButton } from '../../core/Widget';
+import { ThemedSkeleton } from '../../core/ThemedSkeleton';
+import { useAccount } from '../../../context/UserProvider';
+import { ReactComponent as ExternalLinkArrow } from '../../core/external-link-arrow.svg';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
 import { ReactComponent as MUSDIcon } from '../../icons/tokens/mUSD.svg';
 import { ReactComponent as IMUSDIcon } from '../../icons/tokens/imUSD.svg';
 import { ReactComponent as IMUSDMTAIcon } from '../../icons/tokens/imusd-mta.svg';
 import { ReactComponent as MTAIcon } from '../../icons/tokens/MTA.svg';
 import { ReactComponent as VMTAIcon } from '../../icons/tokens/vMTA.svg';
+import { CountUp } from '../../core/CountUp';
 
 export enum BalanceType {
   Masset,
@@ -24,8 +27,11 @@ export enum BalanceType {
 interface Props {
   token: BalanceType;
   balance?: BigDecimal;
+  rewards?: ReactElement;
+  highlight?: boolean;
   apy?: number | string;
   warning?: boolean;
+  external?: boolean;
   onClick?(): void;
 }
 
@@ -37,6 +43,9 @@ interface RowProps {
 }
 
 export const ContainerSnippet = css`
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+
   > div > div {
     display: flex;
     align-items: center;
@@ -62,7 +71,7 @@ export const ContainerSnippet = css`
   }
 `;
 
-const Number = styled.span`
+const Number = styled(CountUp)`
   ${({ theme }) => theme.mixins.numeric};
 
   font-size: 1rem;
@@ -98,7 +107,8 @@ const Subtitle = styled.div`
 const Interest = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 0.5rem;
   text-align: right;
   font-size: 1.2rem;
 
@@ -118,21 +128,35 @@ const Asset = styled.div`
   }
 `;
 
-const StyledWarningBadge = styled(WarningBadge)`
-  width: 1.25rem;
-  height: 1.25rem;
+const StyledExternalLinkArrow = styled(ExternalLinkArrow)`
   position: absolute;
+  top: 1px;
+  width: 1rem;
+  height: 1rem;
   right: -3rem;
-  top: 0;
+
+  * {
+    fill: ${({ theme }) => theme.color.bodyAccent};
+  }
 `;
 
-const VaultContainer = styled.div`
+const StyledWarningBadge = styled(WarningBadge)`
+  position: absolute;
+  top: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  right: -3rem;
+`;
+
+const VaultContainer = styled.div<{ highlight?: boolean }>`
   border: 1px ${({ theme }) => theme.color.accent} solid;
   border-radius: 0.75rem;
 
   > div {
     border-top: 1px solid ${({ theme }) => theme.color.accent};
   }
+
+  ${({ highlight }) => (highlight ? gradientShift : '')}
 `;
 
 const HeaderContainer = styled(Widget)`
@@ -143,8 +167,9 @@ const HeaderContainer = styled(Widget)`
   color: ${({ theme }) => theme.color.grey};
 `;
 
-const DefaultContainer = styled(WidgetButton)`
+const DefaultContainer = styled(WidgetButton)<{ highlight?: boolean }>`
   ${ContainerSnippet};
+  ${({ highlight }) => (highlight ? gradientShift : '')}
 
   width: 100%;
 
@@ -222,15 +247,19 @@ export const BalanceHeader: FC = () => {
 const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   onClick,
   apy,
+  rewards,
   token,
   warning = false,
   hasChildren = false,
   balance,
+  external,
+  highlight,
 }) => {
+  const account = useAccount();
+
   const tokenInfo = Tokens.get(token) as RowProps;
 
   const { title, subtitle, AssetIcon, hasApy } = tokenInfo;
-  const isIMUSDVault = token === BalanceType.BoostedSavingsVault;
   const hasBorder = !hasChildren;
 
   return (
@@ -238,6 +267,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
       border={hasBorder}
       padding={hasChildren}
       onClick={onClick}
+      highlight={highlight}
     >
       <div>
         <Asset>
@@ -246,6 +276,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
             <Title>
               <div>
                 <h4>{title}</h4>
+                {external && <StyledExternalLinkArrow />}
                 {warning && <StyledWarningBadge />}
               </div>
             </Title>
@@ -263,23 +294,25 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
                 {typeof apy === 'string' ? (
                   apy
                 ) : (
-                  <Number>{apy.toFixed(2)}%</Number>
+                  <Number end={apy} suffix="%" />
                 )}
               </div>
-              {isIMUSDVault && <div>+ MTA</div>}
             </>
           ) : (
-            <Skeleton height={24} width={100} />
+            <ThemedSkeleton height={24} width={100} />
           )}
+          {rewards}
         </Interest>
       </div>
       <div>
-        {balance ? (
-          <h4>
-            <Number>{balance?.format(6)}</Number>
-          </h4>
+        {account ? (
+          balance ? (
+            <Number end={balance?.simple} decimals={6} />
+          ) : (
+            <ThemedSkeleton height={24} width={100} />
+          )
         ) : (
-          <Skeleton height={24} width={100} />
+          <Line />
         )}
       </div>
     </DefaultContainer>
@@ -289,20 +322,25 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
 export const BalanceRow: FC<Props> = ({
   onClick,
   token,
+  rewards,
+  highlight,
   apy,
   warning,
+  external,
   children,
   balance,
 }) => {
   return children ? (
-    <VaultContainer>
+    <VaultContainer highlight={highlight}>
       <InternalBalanceRow
         onClick={onClick}
         token={token}
+        rewards={rewards}
         apy={apy}
         hasChildren={!!children}
         warning={warning}
         balance={balance}
+        external={external}
       />
       {children}
     </VaultContainer>
@@ -310,8 +348,10 @@ export const BalanceRow: FC<Props> = ({
     <InternalBalanceRow
       onClick={onClick}
       token={token}
+      highlight={highlight}
       apy={apy}
       warning={warning}
+      external={external}
       balance={balance}
     />
   );

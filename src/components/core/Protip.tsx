@@ -19,12 +19,12 @@ const Container = styled.div`
   padding: 8px 16px;
   border: 1px ${Color.blackTransparent} solid;
   border-radius: 2px;
-  color: ${Color.offBlack};
+  color: ${({ theme }) => theme.color.body};
   a {
-    color: ${Color.offBlack};
+    color: ${({ theme }) => theme.color.body};
   }
   svg {
-    fill: ${Color.offBlack};
+    fill: ${({ theme }) => theme.color.body};
   }
 `;
 

@@ -16,6 +16,7 @@ import {
 } from '../../context/TransactionsProvider';
 
 interface GasCtx {
+  estimationError?: string;
   gasLimit?: BigNumber;
   gasPrice?: number;
   setGasPrice: Dispatch<SetStateAction<number | undefined>>;
@@ -30,6 +31,7 @@ export const TransactionGasProvider: FC<{ id: string }> = ({
   id,
 }) => {
   const { [id]: transaction } = useTransactionsState();
+  const [estimationError, setEstimationError] = useState<string | undefined>();
   const [gasLimit, setGasLimit] = useState<BigNumber | undefined>();
   const [gasPrice, setGasPrice] = useState<number | undefined>();
 
@@ -40,6 +42,9 @@ export const TransactionGasProvider: FC<{ id: string }> = ({
         try {
           estimate = await _transaction.manifest.estimate();
         } catch (error) {
+          // MetaMask error messages are in a `data` property
+          const txMessage = error.data?.message || error.message;
+          setEstimationError(txMessage);
           console.error(error);
         }
       }
@@ -51,11 +56,10 @@ export const TransactionGasProvider: FC<{ id: string }> = ({
 
   return (
     <ctx.Provider
-      value={useMemo(() => ({ gasLimit, gasPrice, setGasPrice }), [
-        gasLimit,
-        gasPrice,
-        setGasPrice,
-      ])}
+      value={useMemo(
+        () => ({ estimationError, gasLimit, gasPrice, setGasPrice }),
+        [estimationError, gasLimit, gasPrice, setGasPrice],
+      )}
     >
       {children}
     </ctx.Provider>

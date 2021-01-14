@@ -1,5 +1,4 @@
-import React, { FC, useMemo } from 'react';
-import Skeleton from 'react-loading-skeleton';
+import React, { FC, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { useToggle } from 'react-use';
 import {
@@ -16,6 +15,7 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useSigner } from '../../../../context/OnboardProvider';
 import { useMetaToken } from '../../../../context/TokensProvider';
+import { useEmojisplosion } from '../../../../hooks/useEmojisplosion';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Interfaces } from '../../../../types';
@@ -27,8 +27,7 @@ import { CountUp } from '../../../core/CountUp';
 
 import { useRewards, useRewardsTimeTravel } from './RewardsProvider';
 import { ToggleInput } from '../../../forms/ToggleInput';
-
-const ZERO = new BigDecimal(0);
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const SkeleWrapper = styled.div`
   flex: 1;
@@ -166,7 +165,7 @@ const Row: FC<{
           </>
         ) : (
           <SkeleWrapper>
-            <Skeleton height={8} />
+            <ThemedSkeleton height={8} />
           </SkeleWrapper>
         )}
       </div>
@@ -175,18 +174,21 @@ const Row: FC<{
   );
 };
 
+const explodeSettings = { emojis: ['💰', '💸', '💵'], emojiCount: 8 };
+
 export const VaultRewards: FC = () => {
+  const explodeRef = useRef<HTMLElement>();
+  const explode = useEmojisplosion(explodeRef, explodeSettings);
+
   const signer = useSigner();
   const propose = usePropose();
-
   const metaToken = useMetaToken();
-
   const massetState = useSelectedMassetState();
-  const vaultAddress =
-    massetState?.savingsContracts.v2?.boostedSavingsVault?.address;
-
   const rewards = useRewards();
   const [showSimulated, toggleShowSimulated] = useToggle(false);
+
+  const vaultAddress =
+    massetState?.savingsContracts.v2?.boostedSavingsVault?.address;
 
   const previewedBalance = useMemo(
     () =>
@@ -204,7 +206,9 @@ export const VaultRewards: FC = () => {
       title="Rewards"
       headerContent={
         <Button
+          ref={explodeRef as never}
           onClick={(): void => {
+            explode();
             if (!rewards) return;
 
             if (!showSimulated) {
@@ -247,27 +251,33 @@ export const VaultRewards: FC = () => {
       <Body isPreview={showSimulated}>
         <Stats>
           <Row
-            title="Claimable"
-            tip="Earned + Unlocked tokens"
-            preview={showSimulated ? ZERO : undefined}
+            title="Unclaimed"
+            tip="Rewards earned but not yet claimed. The next claim will send 20% of these rewards to you now, and 80% to your 'Vested' amount."
+            preview={showSimulated ? BigDecimal.ZERO : undefined}
             value={rewards?.now.earned.total}
           />
           <Row
+            title="Vested"
+            tip="Rewards from previous claims that have vested. The next claim will send 100% of these rewards to you."
+            preview={showSimulated ? BigDecimal.ZERO : undefined}
+            value={rewards?.now.vesting.unlocked}
+          />
+          <Row
             title="Vesting"
-            tip="These tokens will unlock over time"
+            tip="Rewards from previous claims that are vesting. When a new vesting period starts, these rewards will gradually move to your 'Vested' amount."
             preview={
               showSimulated ? rewards?.afterClaim.vesting.locked : undefined
             }
             value={rewards?.now.vesting.locked}
           >
             {rewards?.nextUnlock ? (
-              <span>
-                Next unlock in{' '}
+              <div>
+                Next vesting period starts in{' '}
                 {formatDistance(
                   fromUnixTime(rewards.currentTime),
                   fromUnixTime(rewards.nextUnlock),
                 )}
-              </span>
+              </div>
             ) : (
               '-'
             )}

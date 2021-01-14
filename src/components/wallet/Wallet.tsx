@@ -5,7 +5,7 @@ import { Button } from '../core/Button';
 import { H3 } from '../core/Typography';
 import { Address } from '../core/Address';
 import { FlexRow } from '../core/Containers';
-import { PageHeader } from '../pages/PageHeader';
+import { PageAction, PageHeader } from '../pages/PageHeader';
 import { Balances } from './Balances';
 import { HistoricTransactions } from './HistoricTransactions';
 import { Transactions } from './Transactions';
@@ -96,7 +96,7 @@ export const Wallet: FC = () => {
     <Container>
       <div>
         <PageHeader
-          title="Account"
+          action={PageAction.Account}
           subtitle={
             connected && address
               ? `Connected`

@@ -54,6 +54,14 @@ export const MassetModal: FC = () => {
     return undefined;
   }, [inputToken, inputAmount]);
 
+  const exchangeRate = useMemo(
+    () => ({
+      value: savingsContract?.latestExchangeRate?.rate,
+      fetching: !savingsContract,
+    }),
+    [savingsContract],
+  );
+
   const inputAddressOptions = useMemo(() => {
     return [{ address: massetAddress as string }];
   }, [massetAddress]);
@@ -69,7 +77,7 @@ export const MassetModal: FC = () => {
 
   const stakeApprove = useMemo(
     () => ({
-      spender: ADDRESSES.mUSD.SaveWrapper,
+      spender: ADDRESSES.mUSD.SaveWrapper as string,
       amount: inputAmount,
       address: massetAddress as string,
     }),
@@ -94,7 +102,7 @@ export const MassetModal: FC = () => {
         inputAddressDisabled
         inputFormValue={inputFormValue}
         outputAddress={saveAddress}
-        exchangeRate={savingsContract?.latestExchangeRate?.rate}
+        exchangeRate={exchangeRate}
         handleSetAddress={setInputAddress}
         handleSetAmount={setInputFormValue}
         handleSetMax={() => {
@@ -126,31 +134,33 @@ export const MassetModal: FC = () => {
           }}
           approve={depositApprove}
         />
-        <SendButton
-          valid={valid}
-          title="Deposit & Stake"
-          handleSend={() => {
-            if (signer && inputAmount && massetSymbol) {
-              const body = `${inputAmount.format()} ${massetSymbol}`;
-              propose<Interfaces.SaveWrapper, 'saveAndStake'>(
-                new TransactionManifest(
-                  SaveWrapperFactory.connect(
-                    ADDRESSES.mUSD.SaveWrapper,
-                    signer,
+        {ADDRESSES.mUSD.SaveWrapper && (
+          <SendButton
+            valid={valid}
+            title="Deposit & Stake"
+            handleSend={() => {
+              if (signer && inputAmount && massetSymbol) {
+                const body = `${inputAmount.format()} ${massetSymbol}`;
+                propose<Interfaces.SaveWrapper, 'saveAndStake'>(
+                  new TransactionManifest(
+                    SaveWrapperFactory.connect(
+                      ADDRESSES.mUSD.SaveWrapper as string,
+                      signer,
+                    ),
+                    'saveAndStake',
+                    [inputAmount.exact],
+                    {
+                      present: `Depositing and staking ${body}`,
+                      past: `Deposited and staking ${body}`,
+                    },
+                    formId,
                   ),
-                  'saveAndStake',
-                  [inputAmount.exact],
-                  {
-                    present: `Depositing and staking ${body}`,
-                    past: `Deposited and staking ${body}`,
-                  },
-                  formId,
-                ),
-              );
-            }
-          }}
-          approve={stakeApprove}
-        />
+                );
+              }
+            }}
+            approve={stakeApprove}
+          />
+        )}
       </AssetExchange>
     </Container>
   );

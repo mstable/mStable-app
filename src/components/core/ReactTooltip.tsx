@@ -8,9 +8,9 @@ import { Color, FontSize } from '../../theme';
 export const ReactTooltip = styled(ReactTooltipBase)`
   background: ${Color.blackTransparent};
   color: ${Color.white};
-  padding: 4px 8px;
+  padding: 0.25rem;
   font-size: ${FontSize.s};
-  font-weight: bold;
+  font-weight: 600;
   max-width: 200px;
 `;
 
