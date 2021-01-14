@@ -70,6 +70,11 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ...state,
         accountOpen: !state.accountOpen,
       };
+    case Actions.CloseAccount:
+      return {
+        ...state,
+        accountOpen: false,
+      };
     case Actions.SupportedChainSelected:
       return {
         ...state,
