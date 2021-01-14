@@ -39,8 +39,8 @@ export const TransactionGasProvider: FC<{ id: string }> = ({
       if (_transaction) {
         try {
           estimate = await _transaction.manifest.estimate();
-        } catch {
-          // ignore
+        } catch (error) {
+          console.error(error);
         }
       }
       setGasLimit(estimate);
