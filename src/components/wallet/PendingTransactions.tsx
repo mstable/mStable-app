@@ -7,8 +7,8 @@ import {
   useTransactionsState,
 } from '../../context/TransactionsProvider';
 import { TransactionStatus } from '../../web3/TransactionManifest';
+
 import { Button } from '../core/Button';
-import { Color } from '../../theme';
 import { GasStation } from './GasStation';
 import { TransactionGasProvider, useGas } from './TransactionGasProvider';
 
@@ -41,8 +41,8 @@ const Container = styled.div<{ status: TransactionStatus }>`
         : theme.color.lightGrey}
     solid;
   border-radius: 1rem;
-  color: ${Color.grey};
-  background: white;
+  color: ${({ theme }) => theme.color.body};
+  background: ${({ theme }) => theme.color.background};
 `;
 
 const PendingTransaction: FC<{
@@ -65,7 +65,7 @@ const PendingTransaction: FC<{
       {transaction.status === TransactionStatus.Pending && <GasStation />}
       <Buttons>
         <Button
-          scale={0.75}
+          scale={0.7}
           onClick={() => {
             cancel(transaction.manifest.id);
           }}
@@ -73,7 +73,7 @@ const PendingTransaction: FC<{
           Cancel
         </Button>
         <Button
-          scale={0.75}
+          scale={0.7}
           highlighted={!disabled}
           disabled={disabled}
           onClick={() => {

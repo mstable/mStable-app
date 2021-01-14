@@ -2,15 +2,22 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import {
+  useMetaToken,
+  useTokenSubscription,
+} from '../../../../context/TokensProvider';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
+
 import { ReactComponent as IMUSDMTAIcon } from '../../../icons/tokens/imusd-mta.svg';
 import { ReactComponent as IMUSDIcon } from '../../../icons/tokens/imUSD.svg';
 import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
+
 import { BalanceRow, BalanceType, BalanceHeader } from '../BalanceRow';
 import { Boost } from './Boost';
 import { MassetModal } from './MassetModal';
 import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
+import { useAverageApyForPastWeek } from '../../../../web3/hooks';
 
 const ModalTitle = styled.div`
   display: flex;
@@ -33,13 +40,18 @@ const Container = styled.div`
   padding-top: 1rem;
 `;
 
+// TODO replace masset-specific names/icons
 export const Save: FC = () => {
   const massetState = useSelectedMassetState();
+  const vault = massetState?.savingsContracts?.v2?.boostedSavingsVault;
 
-  const musdBalance = massetState?.token?.balance;
-  const imusdBalance = massetState?.savingsContracts?.v2?.token?.balance;
-  const imusdVaultBalance =
-    massetState?.savingsContracts?.v2?.boostedSavingsVault?.account?.rawBalance;
+  const vaultBalance = vault?.account?.rawBalance;
+  const massetToken = useTokenSubscription(massetState?.address);
+  const saveToken = useTokenSubscription(
+    massetState?.savingsContracts?.v2?.address,
+  );
+  const metaToken = useMetaToken();
+  const vMetaToken = useTokenSubscription(vault?.stakingContract);
 
   const [showMassetModal] = useModalComponent({
     title: (
@@ -70,26 +82,36 @@ export const Save: FC = () => {
     children: <VaultModal />,
   });
 
+  const saveApy = useAverageApyForPastWeek();
+
   return (
     <Container>
       <BalanceHeader />
       <BalanceRow
-        token={BalanceType.MUSD}
+        token={BalanceType.Masset}
         onClick={showMassetModal}
-        balance={musdBalance}
+        balance={massetToken?.balance}
       />
       <BalanceRow
-        token={BalanceType.IMUSD}
+        token={BalanceType.SavingsContractV2}
+        apy={saveApy}
         onClick={showSaveModal}
-        balance={imusdBalance}
+        balance={saveToken?.balance}
       />
       <BalanceRow
-        token={BalanceType.IMUSD_VAULT}
+        token={BalanceType.BoostedSavingsVault}
+        apy={saveApy}
         onClick={showVaultModal}
-        balance={imusdVaultBalance}
+        balance={vaultBalance}
       >
         <Boost />
       </BalanceRow>
+      <BalanceRow token={BalanceType.Meta} balance={metaToken?.balance} />
+      <BalanceRow
+        token={BalanceType.VMeta}
+        apy="Variable APY"
+        balance={vMetaToken?.balance}
+      />
     </Container>
   );
 };

@@ -1,4 +1,4 @@
-import { bigNumberify } from 'ethers/utils';
+import { BigNumber, bigNumberify } from 'ethers/utils';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { MassetName, SubscribedToken } from '../../types';
@@ -115,12 +115,18 @@ const transformSavingsContractV1 = (
 
 const transformBoostedSavingsVault = ({
   id: address,
-  totalSupply,
   accounts,
+  lastUpdateTime,
+  lockupDuration,
+  periodDuration,
+  periodFinish,
+  rewardPerToken,
   rewardPerTokenStored,
   rewardRate,
   stakingContract,
   totalStakingRewards,
+  totalSupply,
+  unlockPercentage,
 }: NonNullable<
   SavingsContractV2QueryResult['boostedSavingsVaults'][number]
 >): BoostedSavingsVaultState => {
@@ -157,13 +163,19 @@ const transformBoostedSavingsVault = ({
   }
 
   return {
-    address,
     account,
-    rewardRate: bigNumberify(rewardRate),
+    address,
+    lastUpdateTime,
+    lockupDuration,
+    periodDuration,
+    periodFinish,
+    rewardPerToken: bigNumberify(rewardPerToken),
     rewardPerTokenStored: bigNumberify(rewardPerTokenStored),
+    rewardRate: bigNumberify(rewardRate),
     stakingContract,
-    totalSupply: new BigDecimal(totalSupply),
     totalStakingRewards: BigDecimal.parse(totalStakingRewards),
+    totalSupply: new BigDecimal(totalSupply),
+    unlockPercentage: new BigNumber(unlockPercentage),
   };
 };
 

@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from 'react';
+import styled from 'styled-components';
 
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
@@ -13,6 +14,12 @@ import { AssetInput } from '../../../forms/AssetInput';
 import { SendButton } from '../../../forms/SendButton';
 
 const formId = 'VaultWithdraw';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
 
 export const VaultWithdraw: FC = () => {
   const signer = useSigner();
@@ -50,7 +57,7 @@ export const VaultWithdraw: FC = () => {
   const valid = !!(inputAmount && inputAmount.simple > 0 && !error);
 
   return (
-    <div>
+    <Container>
       <AssetInput
         address={vaultAddress}
         addressOptions={addressOptions}
@@ -85,7 +92,7 @@ export const VaultWithdraw: FC = () => {
           }
         }}
       />
-      <div>This will claim XXX rewards.</div>
-    </div>
+      <div>This transaction will claim any available MTA rewards.</div>
+    </Container>
   );
 };
