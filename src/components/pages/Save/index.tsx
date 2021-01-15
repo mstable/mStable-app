@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 
 import { useSelectedSaveVersion } from '../../../context/SelectedSaveVersionProvider';
 import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
-import { PageHeader } from '../PageHeader';
+import { PageAction, PageHeader } from '../PageHeader';
 import { ToggleSave } from './ToggleSave';
 import { WeeklySaveAPY } from './WeeklySaveAPY';
 import { Save as SaveV1 } from './v1';
@@ -15,7 +15,7 @@ export const Save: FC = () => {
   return (
     <>
       <PageHeader
-        title="Save"
+        action={PageAction.Save}
         subtitle={`Earn interest on your deposited ${selectedMassetName}`}
       >
         <ToggleSave />

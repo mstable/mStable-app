@@ -1,13 +1,1 @@
-<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0)">
-<circle cx="64" cy="64" r="62" stroke="#25272D" stroke-width="4"/>
-<rect x="28" y="45" width="20" height="52" fill="#25272D"/>
-<rect x="54" y="60" width="20" height="37" fill="#25272D"/>
-<rect x="80" y="30" width="20" height="67" fill="#25272D"/>
-</g>
-<defs>
-<clipPath id="clip0">
-<rect width="128" height="128" fill="white"/>
-</clipPath>
-</defs>
-</svg>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 700"><defs><style>.cls-1{fill:#020202;}</style></defs><path class="cls-1" d="M464.44,465.05,619.53,160.61l-73.06-37.22L431.56,349,246.79,236.26,167.17,424.15V87.56H85.76V617.72h81.41v-1.37H613.54V534.93H209.29l75.92-179.19ZM167.17,534.93V532.5l5.75,2.43Z"/></svg>

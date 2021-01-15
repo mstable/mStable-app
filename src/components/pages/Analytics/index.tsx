@@ -8,7 +8,7 @@ import { CountUp } from '../../core/CountUp';
 import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 import { VolumeChart } from '../../stats/VolumeChart';
 import { AggregateChart } from '../../stats/AggregateChart';
-import { PageHeader } from '../PageHeader';
+import { PageAction, PageHeader } from '../PageHeader';
 import { Size } from '../../../theme';
 import { DailyApys } from '../../stats/DailyApys';
 import { ToggleSave } from '../Save/ToggleSave';
@@ -97,7 +97,7 @@ export const Analytics: FC = () => {
   return (
     <div>
       <PageHeader
-        title="Analytics"
+        action={PageAction.Analytics}
         subtitle="Explore activity across mStable"
       />
       <Section id="save">

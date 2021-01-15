@@ -4,7 +4,7 @@ import { useSelectedMassetContract } from '../../../web3/hooks';
 import { useOwnAccount } from '../../../context/UserProvider';
 import { Interfaces } from '../../../types';
 import { TransactionForm } from '../../forms/TransactionForm';
-import { PageHeader } from '../PageHeader';
+import { PageAction, PageHeader } from '../PageHeader';
 import { RedeemInput } from './RedeemInput';
 import { RedeemConfirm } from './RedeemConfirm';
 import { RedeemProvider, useRedeemState } from './RedeemProvider';
@@ -91,7 +91,7 @@ const RedeemForm: FC = () => {
 export const Redeem: FC = () => (
   <RedeemProvider>
     <PageHeader
-      title="Redeem"
+      action={PageAction.Redeem}
       subtitle="Exchange mUSD for its underlying collateral"
     />
     <RedeemForm />
