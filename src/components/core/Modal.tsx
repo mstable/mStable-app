@@ -34,9 +34,9 @@ const Header = styled.div`
   top: 0;
   z-index: 1;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 1rem 2rem;
   border-bottom: 1px ${({ theme }) => theme.color.accent} solid;
   background: ${({ theme }) => theme.color.background};
 `;
