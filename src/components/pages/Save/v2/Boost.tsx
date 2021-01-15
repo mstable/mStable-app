@@ -263,6 +263,7 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
 
 const BoostContent: FC = () => {
   const [showCalculator] = useShowCalculatorCtx();
+
   return (
     <Container padding showCalculator={showCalculator}>
       {showCalculator ? (

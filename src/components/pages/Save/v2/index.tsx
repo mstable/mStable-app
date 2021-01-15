@@ -21,6 +21,7 @@ import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
 import { useAverageApyForPastWeek } from '../../../../web3/hooks';
 import { BigDecimal } from '../../../../web3/BigDecimal';
+import { useRewards } from './RewardsProvider';
 
 const ModalTitle = styled.div`
   display: flex;
@@ -99,6 +100,10 @@ export const Save: FC = () => {
   });
 
   const saveApy = useAverageApyForPastWeek();
+  const rewards = useRewards();
+
+  const hasRewards =
+    !!rewards?.now.earned.total || !!rewards?.now.vesting.locked;
 
   return (
     <Container>
@@ -122,7 +127,7 @@ export const Save: FC = () => {
         onClick={showVaultModal}
         balance={vaultBalance}
       >
-        <Boost />
+        {(vaultBalance || hasRewards) && <Boost />}
       </BalanceRow>
       <BalanceRow token={BalanceType.Meta} balance={metaToken?.balance} />
       <BalanceRow

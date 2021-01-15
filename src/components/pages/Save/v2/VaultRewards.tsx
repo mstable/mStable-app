@@ -154,7 +154,7 @@ const Row: FC<{
       <div>
         {title}
         {tip && <Tooltip tip={tip} />}
-        {value ? (
+        {!!value ? (
           <>
             <Line />
             <CountUp end={value.simple} decimals={3} />
@@ -178,15 +178,13 @@ const Row: FC<{
 export const VaultRewards: FC = () => {
   const signer = useSigner();
   const propose = usePropose();
-
   const metaToken = useMetaToken();
-
   const massetState = useSelectedMassetState();
-  const vaultAddress =
-    massetState?.savingsContracts.v2?.boostedSavingsVault?.address;
-
   const rewards = useRewards();
   const [showSimulated, toggleShowSimulated] = useToggle(false);
+
+  const vaultAddress =
+    massetState?.savingsContracts.v2?.boostedSavingsVault?.address;
 
   const previewedBalance = useMemo(
     () =>

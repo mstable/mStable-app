@@ -155,8 +155,9 @@ const HeaderContainer = styled(Widget)`
   color: ${({ theme }) => theme.color.grey};
 `;
 
-const DefaultContainer = styled(WidgetButton)`
+const DefaultContainer = styled(WidgetButton)<{ highlight?: boolean }>`
   ${ContainerSnippet};
+  ${({ highlight }) => (highlight ? gradientShift : '')}
 
   width: 100%;
 
@@ -239,6 +240,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   warning = false,
   hasChildren = false,
   balance,
+  highlight,
 }) => {
   const account = useAccount();
 
@@ -252,6 +254,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
       border={hasBorder}
       padding={hasChildren}
       onClick={onClick}
+      highlight={highlight}
     >
       <div>
         <Asset>
