@@ -5,9 +5,8 @@ import React, {
   useLayoutEffect,
   useRef,
 } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { UnstyledButton } from './Button';
 
@@ -74,33 +73,33 @@ const FixedContainer = styled.div`
 }
 `;
 
-// TODO fix animation
-const scaleIn = keyframes`
-  0% {
-    transform: scale(1.2);
-    transform-origin: 50% 50%;
-    filter: blur(20px);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    transform-origin: 50% 50%;
-    filter: blur(0);
-    opacity: 1;
-  }
-`;
+// TODO Fix animation
+// const scaleIn = keyframes`
+//   0% {
+//     transform: scale(1.2);
+//     transform-origin: 50% 50%;
+//     filter: blur(20px);
+//     opacity: 0;
+//   }
+//   100% {
+//     transform: scale(1);
+//     transform-origin: 50% 50%;
+//     filter: blur(0);
+//     opacity: 1;
+//   }
+// `;
 
-const Animation = styled(CSSTransition)`
-  ${({ classNames }) => `&.${classNames}-enter`} {
-    animation: ${css`
-        ${scaleIn}`} 0.5s cubic-bezier(0.19, 1, 0.22, 1) normal;
-  }
+// const Animation = styled(CSSTransition)`
+//   ${({ classNames }) => `&.${classNames}-enter`} {
+//     animation: ${css`
+//         ${scaleIn}`} 0.5s cubic-bezier(0.19, 1, 0.22, 1) normal;
+//   }
 
-  ${({ classNames }) => `&.${classNames}-exit-active`} {
-    animation: ${css`
-        ${scaleIn}`} 0.3s cubic-bezier(0.19, 1, 0.22, 1) reverse;
-  }
-`;
+//   ${({ classNames }) => `&.${classNames}-exit-active`} {
+//     animation: ${css`
+//         ${scaleIn}`} 0.3s cubic-bezier(0.19, 1, 0.22, 1) reverse;
+//   }
+// `;
 
 export const Modal: FC<Props> = ({
   children,
@@ -130,23 +129,17 @@ export const Modal: FC<Props> = ({
     };
   }, [hideModal]);
 
+  if (!open) return null;
+
   return (
-    <TransitionGroup exit enter appear>
-      {open && (
-        <Animation timeout={{ enter: 500, exit: 200 }} classNames="item">
-          <FixedContainer ref={fixedRef}>
-            <Container className={className} ref={modalRef}>
-              <Header>
-                <Title>{title}</Title>
-                {hideModal && (
-                  <UnstyledButton onClick={hideModal}>✕</UnstyledButton>
-                )}
-              </Header>
-              <Body>{children}</Body>
-            </Container>
-          </FixedContainer>
-        </Animation>
-      )}
-    </TransitionGroup>
+    <FixedContainer ref={fixedRef}>
+      <Container className={className} ref={modalRef}>
+        <Header>
+          <Title>{title}</Title>
+          {hideModal && <UnstyledButton onClick={hideModal}>✕</UnstyledButton>}
+        </Header>
+        <Body>{children}</Body>
+      </Container>
+    </FixedContainer>
   );
 };
