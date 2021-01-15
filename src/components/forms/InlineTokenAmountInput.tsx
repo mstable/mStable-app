@@ -227,6 +227,7 @@ export const InlineTokenAmountInput: FC<Props> = ({
                   type="button"
                   onClick={amount.handleSetMax}
                   scale={0.75}
+                  transparent
                 >
                   Max
                 </Button>
