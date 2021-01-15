@@ -32,7 +32,6 @@ const realConfig = {
     'react/prop-types': 'off',
     'consistent-return': 'off',
     'no-nested-ternary': 'off',
-    'no-extra-boolean-cast': 'off',
   },
 };
 

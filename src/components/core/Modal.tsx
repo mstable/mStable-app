@@ -64,8 +64,14 @@ const FixedContainer = styled.div`
   right: 0;
   bottom: 0;
   z-index: 1;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: ${({ theme }) =>
+    theme.isLight ? `rgba(0, 0, 0, 0.5)` : `rgba(0, 0, 0, 0.9)`};
+  
+  @supports (backdrop-filter: blur(0.25em)) {
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(0.25em);
+  }
+}
 `;
 
 // TODO fix animation
