@@ -13,6 +13,7 @@ import { DataProvider } from './DataProvider/DataProvider';
 import { ApolloProvider } from './ApolloProvider';
 import { SelectedSaveVersionProvider } from './SelectedSaveVersionProvider';
 import { EthProvider } from './EthProvider';
+import { TransitionGroup } from 'react-transition-group';
 
 export const Providers: FC = ({ children }) => (
   <NotificationsProvider>
@@ -27,7 +28,9 @@ export const Providers: FC = ({ children }) => (
                     <AppProvider>
                       <ThemeProvider>
                         <SelectedSaveVersionProvider>
-                          <ModalProvider>{children}</ModalProvider>
+                          <ModalProvider rootComponent={TransitionGroup}>
+                            {children}
+                          </ModalProvider>
                         </SelectedSaveVersionProvider>
                       </ThemeProvider>
                     </AppProvider>

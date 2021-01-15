@@ -237,7 +237,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
     }
 
     case Actions.Reset: {
-      console.log('reset', state);
       return {
         tokens: Object.keys(state.tokens).reduce(
           (_tokens, address) => ({

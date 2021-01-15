@@ -1,86 +1,26 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
-import { useDebounce } from 'react-use';
-import { AddressZero } from 'ethers/constants';
-import { BigNumber } from 'ethers/utils';
+import React, { FC, useMemo, useState } from 'react';
 
-import { MassetState } from '../../../../context/DataProvider/types';
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../../../context/TokensProvider';
-import { useEthBalance } from '../../../../context/EthProvider';
 
 import { SaveWrapperFactory } from '../../../../typechain/SaveWrapperFactory';
 import { BoostedSavingsVaultFactory } from '../../../../typechain/BoostedSavingsVaultFactory';
-import { UniswapRouter02Factory } from '../../../../typechain/UniswapRouter02Factory';
 import { SavingsContractFactory } from '../../../../typechain/SavingsContractFactory';
 
 import { Interfaces } from '../../../../types';
-import {
-  ADDRESSES,
-  PERCENT_SCALE,
-  RATIO_SCALE,
-  SCALE,
-} from '../../../../constants';
+import { ADDRESSES } from '../../../../constants';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
-import { UniswapRouter02 } from '../../../../typechain/UniswapRouter02';
+import { MassetFactory } from '../../../../typechain/MassetFactory';
+import { BasketManagerFactory } from '../../../../typechain/BasketManagerFactory';
 
 const formId = 'SaveDeposit';
-
-interface UniswapBassetOutput {
-  path: [string, string];
-  amountOut: BigNumber;
-  normalizedAmountOut: BigNumber;
-  position: number;
-}
-
-const getUniswapBassetOutputForETH = async (
-  uniswap: UniswapRouter02,
-  inputAmount: BigDecimal,
-  massetState: MassetState,
-): Promise<UniswapBassetOutput> => {
-  const bassetAmountsOut = [
-    ...(await Promise.all(
-      ADDRESSES.CURVE['3POOL_COINS'].map(async (address, position) => {
-        try {
-          const path = [ADDRESSES.WETH, address];
-
-          const [, amountOut] = await uniswap.getAmountsOut(
-            inputAmount.exact,
-            path,
-          );
-
-          const { ratio } = massetState.bAssets[address];
-          const normalizedAmountOut = amountOut.mul(ratio).div(RATIO_SCALE);
-
-          return {
-            path,
-            normalizedAmountOut,
-            amountOut,
-            position,
-          };
-        } catch {
-          //
-        }
-      }),
-    )),
-  ].filter(Boolean) as UniswapBassetOutput[];
-
-  const optimalBasset = bassetAmountsOut.reduce((prev, current) =>
-    current.normalizedAmountOut.gt(prev.normalizedAmountOut) ? current : prev,
-  );
-
-  if (!optimalBasset) {
-    throw new Error('No Uniswap path found');
-  }
-
-  return optimalBasset;
-};
 
 const depositPurpose = {
   present: 'Depositing savings',
@@ -97,7 +37,6 @@ export const SaveDeposit: FC<{
 }> = ({ saveAndStake }) => {
   const signer = useSigner();
   const propose = usePropose();
-  const ethBalance = useEthBalance();
 
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
@@ -110,48 +49,34 @@ export const SaveDeposit: FC<{
   const saveAddress = savingsContract?.address;
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
-  const [uniswapAmountOut, setUniswapAmountOut] = useState<{
-    fetching: boolean;
-    amount?: BigNumber;
-    error?: string;
-  }>({ fetching: false });
   const [inputAddress, setInputAddress] = useState<string | undefined>(
     massetAddress,
   );
 
   const isDepositingSave = inputAddress === saveAddress;
   const isDepositingBasset = inputAddress && bassets.includes(inputAddress);
-  const isDepositingETH = inputAddress && inputAddress === AddressZero;
 
   const inputToken = useTokenSubscription(inputAddress);
 
-  const uniswap = useMemo(
-    () =>
-      signer
-        ? UniswapRouter02Factory.connect(ADDRESSES.UNISWAP_ROUTER02, signer)
-        : undefined,
-    [signer],
-  );
-
   const error = useMemo<string | undefined>(() => {
-    if (inputAmount) {
-      const inputBalance = isDepositingETH ? ethBalance : inputToken?.balance;
-      if (inputBalance?.simple && inputBalance.simple < inputAmount.simple) {
-        return 'Insufficient balance';
-      }
+    if (
+      inputAmount &&
+      inputToken?.balance &&
+      inputToken.balance.simple < inputAmount.simple
+    ) {
+      return 'Insufficient balance';
     }
 
     return undefined;
-  }, [inputAmount, isDepositingETH, ethBalance, inputToken]);
+  }, [inputAmount, inputToken]);
 
   const inputAddressOptions = useMemo(() => {
     return [
       { address: massetAddress as string },
       { address: saveAddress as string },
-      { address: AddressZero, balance: ethBalance, label: 'ETH', decimals: 18 },
       ...bassets.map(address => ({ address })),
     ];
-  }, [massetAddress, saveAddress, bassets, ethBalance]);
+  }, [massetAddress, saveAddress, bassets]);
 
   const exchangeRate = useMemo<{
     fetching?: boolean;
@@ -159,80 +84,43 @@ export const SaveDeposit: FC<{
   }>(() => {
     if (isDepositingSave || !inputAmount || !saveExchangeRate) return {};
 
-    if (isDepositingETH) {
-      if (uniswapAmountOut.fetching) return { fetching: true };
-
-      if (inputAmount.exact.eq(0) || !uniswapAmountOut.amount) return {};
-
-      const uniswapRate = uniswapAmountOut.amount
-        .mul(SCALE)
-        .div(inputAmount.exact);
-
-      return {
-        value: new BigDecimal(
-          uniswapRate.mul(saveExchangeRate.exact).div(SCALE),
-        ),
-      };
-    }
-
     return { value: saveExchangeRate };
-  }, [
-    inputAmount,
-    isDepositingETH,
-    isDepositingSave,
-    saveExchangeRate,
-    uniswapAmountOut,
-  ]);
+  }, [inputAmount, isDepositingSave, saveExchangeRate]);
+
+  const basset = inputAddress && massetState?.bAssets[inputAddress];
+  const scaledInputAmount = useMemo<BigDecimal | undefined>(
+    () =>
+      basset && inputAmount
+        ? inputAmount.divRatioPrecisely(basset.ratio)
+        : inputAmount,
+    [basset, inputAmount],
+  );
 
   const depositApprove = useMemo(
     () => ({
       spender: saveAddress as string,
-      amount: inputAmount,
+      amount: scaledInputAmount,
       address: inputAddress as string,
     }),
-    [inputAmount, inputAddress, saveAddress],
+    [scaledInputAmount, inputAddress, saveAddress],
   );
 
   const stakeApprove = useMemo(
     () => ({
       spender: ADDRESSES.mUSD.SaveWrapper,
-      amount: inputAmount,
+      amount: scaledInputAmount,
       address: inputAddress as string,
     }),
-    [inputAmount, inputAddress],
+    [scaledInputAmount, inputAddress],
   );
 
   const valid = !!(!error && inputAmount && inputAmount.simple > 0);
-
-  useEffect(() => {
-    setUniswapAmountOut({ fetching: true });
-  }, [inputAmount, isDepositingETH]);
-
-  useDebounce(
-    () => {
-      if (valid && isDepositingETH && inputAmount && uniswap && massetState) {
-        getUniswapBassetOutputForETH(uniswap, inputAmount, massetState)
-          .then(optimalBasset => {
-            setUniswapAmountOut({
-              amount: optimalBasset.normalizedAmountOut,
-              fetching: false,
-            });
-          })
-          .catch(_error => {
-            setUniswapAmountOut({ error: _error, fetching: false });
-          });
-      }
-    },
-    5000,
-    [inputAmount, isDepositingETH, valid, signer, massetState],
-  );
 
   return (
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
       inputAddress={inputAddress}
       inputAmount={inputAmount}
-      inputLabel={isDepositingETH ? 'ETH' : undefined}
       inputFormValue={inputFormValue}
       outputAddress={saveAddress}
       outputLabel={isDepositingSave ? 'imUSD Vault' : undefined}
@@ -305,7 +193,8 @@ export const SaveDeposit: FC<{
                     );
                   }
 
-                  if (isDepositingBasset) {
+                  if (isDepositingBasset && scaledInputAmount) {
+                    console.log(scaledInputAmount.exact.toString());
                     return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
                       new TransactionManifest(
                         SaveWrapperFactory.connect(
@@ -313,44 +202,7 @@ export const SaveDeposit: FC<{
                           signer,
                         ),
                         'saveViaMint',
-                        [inputAddress, inputAmount.exact, false],
-                        depositPurpose,
-                        formId,
-                      ),
-                    );
-                  }
-
-                  if (isDepositingETH && uniswap) {
-                    const {
-                      amountOut,
-                      path,
-                      position,
-                    } = await getUniswapBassetOutputForETH(
-                      uniswap,
-                      inputAmount,
-                      massetState,
-                    );
-
-                    const minOutCurve = amountOut
-                      .mul(PERCENT_SCALE)
-                      .mul(99)
-                      .div(SCALE);
-
-                    propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
-                      new TransactionManifest(
-                        SaveWrapperFactory.connect(
-                          ADDRESSES.mUSD.SaveWrapper,
-                          signer,
-                        ),
-                        'saveViaUniswapETH',
-                        [
-                          amountOut,
-                          path,
-                          position,
-                          minOutCurve,
-                          false,
-                          { value: inputAmount.exact },
-                        ],
+                        [inputAddress, scaledInputAmount.exact, false],
                         depositPurpose,
                         formId,
                       ),
@@ -387,7 +239,7 @@ export const SaveDeposit: FC<{
                   );
                 }
 
-                if (isDepositingBasset) {
+                if (isDepositingBasset && scaledInputAmount) {
                   return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
                     new TransactionManifest(
                       SaveWrapperFactory.connect(
@@ -395,44 +247,7 @@ export const SaveDeposit: FC<{
                         signer,
                       ),
                       'saveViaMint',
-                      [inputAddress, inputAmount.exact, true],
-                      depositAndStakePurpose,
-                      formId,
-                    ),
-                  );
-                }
-
-                if (isDepositingETH && uniswap) {
-                  const {
-                    amountOut,
-                    path,
-                    position,
-                  } = await getUniswapBassetOutputForETH(
-                    uniswap,
-                    inputAmount,
-                    massetState,
-                  );
-
-                  const minOutCurve = amountOut
-                    .mul(PERCENT_SCALE)
-                    .mul(99)
-                    .div(SCALE);
-
-                  propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
-                    new TransactionManifest(
-                      SaveWrapperFactory.connect(
-                        ADDRESSES.mUSD.SaveWrapper,
-                        signer,
-                      ),
-                      'saveViaUniswapETH',
-                      [
-                        amountOut,
-                        path,
-                        position,
-                        minOutCurve,
-                        true,
-                        { value: inputAmount.exact },
-                      ],
+                      [inputAddress, scaledInputAmount.exact, true],
                       depositAndStakePurpose,
                       formId,
                     ),

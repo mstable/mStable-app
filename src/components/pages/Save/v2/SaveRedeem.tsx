@@ -62,6 +62,7 @@ export const SaveRedeem: FC = () => {
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
       inputAddress={saveAddress}
+      inputAddressDisabled
       inputAmount={inputAmount}
       inputFormValue={inputFormValue}
       outputAddress={massetAddress}

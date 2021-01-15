@@ -144,7 +144,7 @@ const VaultContainer = styled.div<{ highlight?: boolean }>`
     border-top: 1px solid ${({ theme }) => theme.color.accent};
   }
 
-  ${gradientShift}
+  ${({ highlight }) => (highlight ? gradientShift : '')}
 `;
 
 const HeaderContainer = styled(Widget)`

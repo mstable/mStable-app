@@ -25,7 +25,7 @@ const BackgroundContainer = styled.div`
   ${containerBackground}
 `;
 
-const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
+const GlobalStyle = createGlobalStyle`
   ${reset}
   a {
     color: ${Color.blue};
@@ -44,10 +44,6 @@ const GlobalStyle = createGlobalStyle<{ idle: boolean }>`
   }
   body {
     min-width: 320px;
-    ${({ idle }) =>
-      idle
-        ? 'transition: filter 5s ease; filter: grayscale(50%) brightness(50%)'
-        : ''};
   }
   code {
     display: block;
@@ -160,7 +156,6 @@ const Container = styled.div<{ accountOpen?: boolean }>`
 
 export const Layout: FC = ({ children }) => {
   const accountOpen = useAccountOpen();
-  const idle = useIsIdle();
   const { pathname } = useLocation();
   const home = pathname === '/';
   const earn = pathname === '/earn';
@@ -190,7 +185,7 @@ export const Layout: FC = ({ children }) => {
       <PendingTransactions />
       <NotificationToasts />
       <ReactTooltip id="global" />
-      <GlobalStyle idle={idle} />
+      <GlobalStyle />
     </>
   );
 };
