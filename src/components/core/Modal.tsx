@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
+import { ViewportWidth } from '../../theme';
 
 import { UnstyledButton } from './Button';
 
@@ -45,12 +46,18 @@ const Body = styled.div``;
 const Container = styled.div`
   position: relative;
   overflow-y: scroll;
-  min-width: 50vw;
-  max-width: 90vw;
+  min-width: 40vw;
+  width: 100%;
+  margin: 0 1rem;
   max-height: calc(90vh - 50px);
   background: ${({ theme }) => theme.color.background};
   border-radius: 1rem;
   border: 1px ${({ theme }) => theme.color.backgroundAccent} solid;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    margin: 0 2rem;
+    max-width: 38rem;
+  }
 `;
 
 const FixedContainer = styled.div`
