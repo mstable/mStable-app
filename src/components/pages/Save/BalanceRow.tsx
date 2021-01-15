@@ -5,13 +5,14 @@ import { gradientShift, ViewportWidth } from '../../../theme';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { Widget, WidgetButton } from '../../core/Widget';
 import { ThemedSkeleton } from '../../core/ThemedSkeleton';
+import { useAccount } from '../../../context/UserProvider';
+import { ReactComponent as ExternalLinkArrow } from '../../core/external-link-arrow.svg';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
 import { ReactComponent as MUSDIcon } from '../../icons/tokens/mUSD.svg';
 import { ReactComponent as IMUSDIcon } from '../../icons/tokens/imUSD.svg';
 import { ReactComponent as IMUSDMTAIcon } from '../../icons/tokens/imusd-mta.svg';
 import { ReactComponent as MTAIcon } from '../../icons/tokens/MTA.svg';
 import { ReactComponent as VMTAIcon } from '../../icons/tokens/vMTA.svg';
-import { useAccount } from '../../../context/UserProvider';
 
 export enum BalanceType {
   Masset,
@@ -29,6 +30,7 @@ interface Props {
   highlight?: boolean;
   apy?: number | string;
   warning?: boolean;
+  external?: boolean;
   onClick?(): void;
 }
 
@@ -128,12 +130,24 @@ const Asset = styled.div`
   }
 `;
 
+const StyledExternalLinkArrow = styled(ExternalLinkArrow)`
+  position: absolute;
+  top: 1px;
+  width: 1rem;
+  height: 1rem;
+  right: -3rem;
+
+  * {
+    fill: ${({ theme }) => theme.color.bodyAccent};
+  }
+`;
+
 const StyledWarningBadge = styled(WarningBadge)`
+  position: absolute;
+  top: 0;
   width: 1.25rem;
   height: 1.25rem;
-  position: absolute;
   right: -3rem;
-  top: 0;
 `;
 
 const VaultContainer = styled.div<{ highlight?: boolean }>`
@@ -240,6 +254,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   warning = false,
   hasChildren = false,
   balance,
+  external,
   highlight,
 }) => {
   const account = useAccount();
@@ -263,6 +278,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
             <Title>
               <div>
                 <h4>{title}</h4>
+                {external && <StyledExternalLinkArrow />}
                 {warning && <StyledWarningBadge />}
               </div>
             </Title>
@@ -312,6 +328,7 @@ export const BalanceRow: FC<Props> = ({
   highlight,
   apy,
   warning,
+  external,
   children,
   balance,
 }) => {
@@ -325,6 +342,7 @@ export const BalanceRow: FC<Props> = ({
         hasChildren={!!children}
         warning={warning}
         balance={balance}
+        external={external}
       />
       {children}
     </VaultContainer>
@@ -335,6 +353,7 @@ export const BalanceRow: FC<Props> = ({
       highlight={highlight}
       apy={apy}
       warning={warning}
+      external={external}
       balance={balance}
     />
   );

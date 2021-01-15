@@ -23,6 +23,8 @@ import { useAverageApyForPastWeek } from '../../../../web3/hooks';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { useRewards } from './RewardsProvider';
 
+const GOVERNANCE_URL = 'https://governance.mstable.org/';
+
 const ModalTitle = styled.div`
   display: flex;
   align-items: center;
@@ -105,6 +107,10 @@ export const Save: FC = () => {
   const hasRewards =
     !!rewards?.now.earned.total || !!rewards?.now.vesting.locked;
 
+  const navigateToGovernance = (): void => {
+    window?.open(GOVERNANCE_URL);
+  };
+
   return (
     <Container>
       <BalanceHeader />
@@ -134,6 +140,8 @@ export const Save: FC = () => {
         token={BalanceType.VMeta}
         apy="Variable APY"
         balance={vMetaToken?.balance}
+        onClick={navigateToGovernance}
+        external
       />
     </Container>
   );
