@@ -19,19 +19,11 @@ const Container = styled.div`
 `;
 
 export const VaultModal: FC = () => {
-  const [tab, setTab] = useState<Tabs>(Tabs.Withdraw);
+  const [tab, setTab] = useState<Tabs>(Tabs.Deposit);
 
   return (
     <Container>
       <TabsContainer>
-        <TabBtn
-          active={tab === Tabs.Deposit}
-          onClick={() => {
-            setTab(Tabs.Deposit);
-          }}
-        >
-          Deposit
-        </TabBtn>
         <TabBtn
           active={tab === Tabs.Withdraw}
           onClick={() => {
@@ -39,6 +31,14 @@ export const VaultModal: FC = () => {
           }}
         >
           Withdraw
+        </TabBtn>
+        <TabBtn
+          active={tab === Tabs.Deposit}
+          onClick={() => {
+            setTab(Tabs.Deposit);
+          }}
+        >
+          Deposit
         </TabBtn>
         <TabBtn
           active={tab === Tabs.Exit}
