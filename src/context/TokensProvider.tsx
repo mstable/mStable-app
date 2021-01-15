@@ -9,11 +9,11 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
+import { AddressZero } from 'ethers/constants';
 
 import { AllTokensQueryResult } from '../graphql/protocol';
 import { Allowances, SubscribedToken } from '../types';
 import { BigDecimal } from '../web3/BigDecimal';
-import { CURVE_ADDRESSES } from './earn/CurveProvider';
 import { ADDRESSES } from '../constants';
 
 interface State {
@@ -90,13 +90,21 @@ type Action =
 const initialState: State = {
   tokens: {
     // TODO later: Remove hardcoded token when it's on the subgraph
-    [CURVE_ADDRESSES.CRV_TOKEN]: {
+    [ADDRESSES.CURVE.CRV_TOKEN]: {
       symbol: 'CRV',
-      address: CURVE_ADDRESSES.CRV_TOKEN,
+      address: ADDRESSES.CURVE.CRV_TOKEN,
       decimals: 18,
       balance: new BigDecimal(0, 18),
       allowances: {},
       totalSupply: new BigDecimal(0, 18),
+    },
+    [AddressZero as string]: {
+      symbol: 'ETH',
+      address: AddressZero,
+      decimals: 18,
+      balance: new BigDecimal(0),
+      allowances: {},
+      totalSupply: new BigDecimal(0),
     },
   },
   subscriptions: {},
@@ -228,7 +236,8 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return state;
     }
 
-    case Actions.Reset:
+    case Actions.Reset: {
+      console.log('reset', state);
       return {
         tokens: Object.keys(state.tokens).reduce(
           (_tokens, address) => ({
@@ -246,6 +255,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ),
         subscriptions: {},
       };
+    }
 
     case Actions.UpdateBalances: {
       const balances = action.payload;

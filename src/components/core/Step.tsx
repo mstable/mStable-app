@@ -85,9 +85,9 @@ const Container = styled.div<{
   ${Option} {
     border: ${({ theme, active, complete }) =>
       complete
-        ? `4px solid ${theme.color.greenTransparent}`
+        ? `1px solid ${theme.color.greenTransparent}`
         : active
-        ? `4px solid ${theme.color.primaryTransparent}`
+        ? `1px solid ${theme.color.primaryTransparent}`
         : `none`};
     background: ${({ theme, active, complete }) =>
       complete || active ? theme.color.background : theme.color.accent};
@@ -109,13 +109,15 @@ export const Step: FC<Props> = ({ active, complete, options }) => (
         ({ key, buttonTitle = 'Submit', title, onClick, pending }) => (
           <Option key={key} disabled={!active}>
             <Title>{title}</Title>
-            <SubmitButton
-              highlighted={active}
-              onClick={onClick}
-              disabled={!active}
-            >
-              {pending ? <ActivitySpinner pending /> : buttonTitle}
-            </SubmitButton>
+            {!complete && (
+              <SubmitButton
+                highlighted={active}
+                onClick={onClick}
+                disabled={!active}
+              >
+                {pending ? <ActivitySpinner pending /> : buttonTitle}
+              </SubmitButton>
+            )}
           </Option>
         ),
       )}

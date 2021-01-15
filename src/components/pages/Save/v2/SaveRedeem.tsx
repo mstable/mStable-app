@@ -46,13 +46,15 @@ export const SaveRedeem: FC = () => {
     return [{ address: saveAddress as string }];
   }, [saveAddress]);
 
-  const exchangeRate = useMemo(
-    () =>
-      saveExchangeRate
-        ? BigDecimal.parse('1').divPrecisely(saveExchangeRate)
-        : undefined,
-    [saveExchangeRate],
-  );
+  const exchangeRate = useMemo(() => {
+    const value = saveExchangeRate
+      ? BigDecimal.parse('1').divPrecisely(saveExchangeRate)
+      : undefined;
+    return {
+      value,
+      fetching: !value,
+    };
+  }, [saveExchangeRate]);
 
   const valid = !!(!error && inputAmount && inputAmount.simple > 0);
 

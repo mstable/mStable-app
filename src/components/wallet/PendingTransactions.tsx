@@ -25,6 +25,17 @@ const Purpose = styled.div`
   line-height: 1.7rem;
 `;
 
+const TxError = styled.div`
+  font-size: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: ${({ theme }) => theme.color.redTransparent};
+  > div {
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+`;
+
 const Container = styled.div<{ status: TransactionStatus }>`
   width: 24rem;
   display: flex;
@@ -50,19 +61,29 @@ const PendingTransaction: FC<{
 }> = ({ id }) => {
   const { [id]: transaction } = useTransactionsState();
   const { cancel, send } = useTransactionsDispatch();
-  const { gasLimit, gasPrice } = useGas();
+  const { estimationError, gasLimit, gasPrice } = useGas();
 
   if (!transaction) {
     return null;
   }
 
-  const disabled =
-    !gasLimit || !gasPrice || transaction.status !== TransactionStatus.Pending;
+  const disabled = !!(
+    estimationError ||
+    !gasLimit ||
+    !gasPrice ||
+    transaction.status !== TransactionStatus.Pending
+  );
 
   return (
     <Container status={transaction.status}>
       <Purpose>{transaction.manifest.purpose.present}</Purpose>
       {transaction.status === TransactionStatus.Pending && <GasStation />}
+      {estimationError && (
+        <TxError>
+          <div>Error during estimation</div>
+          {estimationError}
+        </TxError>
+      )}
       <Buttons>
         <Button
           scale={0.7}

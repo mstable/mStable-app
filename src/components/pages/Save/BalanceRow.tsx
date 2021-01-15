@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styled, { css } from 'styled-components';
 
-import { ViewportWidth } from '../../../theme';
+import { gradientShift, ViewportWidth } from '../../../theme';
 import { BigDecimal } from '../../../web3/BigDecimal';
 import { Widget, WidgetButton } from '../../core/Widget';
 import { ThemedSkeleton } from '../../core/ThemedSkeleton';
@@ -11,6 +11,7 @@ import { ReactComponent as IMUSDIcon } from '../../icons/tokens/imUSD.svg';
 import { ReactComponent as IMUSDMTAIcon } from '../../icons/tokens/imusd-mta.svg';
 import { ReactComponent as MTAIcon } from '../../icons/tokens/MTA.svg';
 import { ReactComponent as VMTAIcon } from '../../icons/tokens/vMTA.svg';
+import { useAccount } from '../../../context/UserProvider';
 
 export enum BalanceType {
   Masset,
@@ -24,6 +25,8 @@ export enum BalanceType {
 interface Props {
   token: BalanceType;
   balance?: BigDecimal;
+  rewardsText?: string;
+  highlight?: boolean;
   apy?: number | string;
   warning?: boolean;
   onClick?(): void;
@@ -37,6 +40,9 @@ interface RowProps {
 }
 
 export const ContainerSnippet = css`
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+
   > div > div {
     display: flex;
     align-items: center;
@@ -76,6 +82,10 @@ const Line = styled.div`
   background: ${({ theme }) => theme.color.accent};
   height: 2px;
   width: 4rem;
+`;
+
+const RewardsText = styled.div`
+  font-weight: 600;
 `;
 
 const Title = styled.div`
@@ -126,13 +136,15 @@ const StyledWarningBadge = styled(WarningBadge)`
   top: 0;
 `;
 
-const VaultContainer = styled.div`
+const VaultContainer = styled.div<{ highlight?: boolean }>`
   border: 1px ${({ theme }) => theme.color.accent} solid;
   border-radius: 0.75rem;
 
   > div {
     border-top: 1px solid ${({ theme }) => theme.color.accent};
   }
+
+  ${gradientShift}
 `;
 
 const HeaderContainer = styled(Widget)`
@@ -222,15 +234,17 @@ export const BalanceHeader: FC = () => {
 const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   onClick,
   apy,
+  rewardsText,
   token,
   warning = false,
   hasChildren = false,
   balance,
 }) => {
+  const account = useAccount();
+
   const tokenInfo = Tokens.get(token) as RowProps;
 
   const { title, subtitle, AssetIcon, hasApy } = tokenInfo;
-  const isIMUSDVault = token === BalanceType.BoostedSavingsVault;
   const hasBorder = !hasChildren;
 
   return (
@@ -266,7 +280,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
                   <Number>{apy.toFixed(2)}%</Number>
                 )}
               </div>
-              {isIMUSDVault && <div>+ MTA</div>}
+              {rewardsText && <RewardsText>{rewardsText}</RewardsText>}
             </>
           ) : (
             <ThemedSkeleton height={24} width={100} />
@@ -274,12 +288,14 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
         </Interest>
       </div>
       <div>
-        {balance ? (
-          <h4>
+        {account ? (
+          balance ? (
             <Number>{balance?.format(6)}</Number>
-          </h4>
+          ) : (
+            <ThemedSkeleton height={24} width={100} />
+          )
         ) : (
-          <ThemedSkeleton height={24} width={100} />
+          <Line />
         )}
       </div>
     </DefaultContainer>
@@ -289,16 +305,19 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
 export const BalanceRow: FC<Props> = ({
   onClick,
   token,
+  rewardsText,
+  highlight,
   apy,
   warning,
   children,
   balance,
 }) => {
   return children ? (
-    <VaultContainer>
+    <VaultContainer highlight={highlight}>
       <InternalBalanceRow
         onClick={onClick}
         token={token}
+        rewardsText={rewardsText}
         apy={apy}
         hasChildren={!!children}
         warning={warning}
@@ -310,6 +329,7 @@ export const BalanceRow: FC<Props> = ({
     <InternalBalanceRow
       onClick={onClick}
       token={token}
+      highlight={highlight}
       apy={apy}
       warning={warning}
       balance={balance}

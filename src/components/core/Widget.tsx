@@ -66,6 +66,7 @@ const ContainerButton = styled(UnstyledButton)<{
   disabled?: boolean;
 }>`
   width: 100%;
+  transition: background-color 0.2s ease;
 
   :hover {
     background: ${({ theme, disabled }) => !disabled && theme.color.accent};

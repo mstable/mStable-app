@@ -12,14 +12,14 @@ import { BlockProvider } from './BlockProvider';
 import { DataProvider } from './DataProvider/DataProvider';
 import { ApolloProvider } from './ApolloProvider';
 import { SelectedSaveVersionProvider } from './SelectedSaveVersionProvider';
-import { GasPricesProvider } from './GasPricesProvider';
+import { EthProvider } from './EthProvider';
 
 export const Providers: FC = ({ children }) => (
   <NotificationsProvider>
     <ApolloProvider>
       <UserProvider>
         <BlockProvider>
-          <GasPricesProvider>
+          <EthProvider>
             <TransactionsProvider>
               <SelectedMassetNameProvider>
                 <TokensProvider>
@@ -35,7 +35,7 @@ export const Providers: FC = ({ children }) => (
                 </TokensProvider>
               </SelectedMassetNameProvider>
             </TransactionsProvider>
-          </GasPricesProvider>
+          </EthProvider>
         </BlockProvider>
       </UserProvider>
     </ApolloProvider>

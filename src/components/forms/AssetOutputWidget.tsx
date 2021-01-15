@@ -5,12 +5,14 @@ import { Widget } from '../core/Widget';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { AssetInput } from './AssetInput';
 import { useTokenSubscription } from '../../context/TokensProvider';
+import Skeleton from 'react-loading-skeleton';
 
 interface Props {
   className?: string;
-  exchangeRate?: BigDecimal;
+  exchangeRate?: { value?: BigDecimal; fetching?: boolean };
   inputAddress?: string;
   inputAmount?: BigDecimal;
+  inputLabel?: string;
   outputAddress?: string;
   outputBalance?: BigDecimal;
   outputLabel?: string;
@@ -31,14 +33,15 @@ export const AssetOutputWidget: FC<Props> = ({
   exchangeRate,
   inputAddress,
   inputAmount,
+  inputLabel,
   outputAddress,
   outputBalance,
   outputLabel,
   title,
 }) => {
   const outputAmount =
-    inputAmount && exchangeRate
-      ? inputAmount.mulTruncate(exchangeRate.exact)
+    inputAmount && exchangeRate?.value
+      ? inputAmount.mulTruncate(exchangeRate.value.exact)
       : inputAmount;
 
   const inputToken = useTokenSubscription(inputAddress);
@@ -66,14 +69,19 @@ export const AssetOutputWidget: FC<Props> = ({
       boldTitle
       headerContent={
         exchangeRate &&
-        inputToken &&
+        (inputToken || inputLabel) &&
         (outputToken || outputLabel) && (
           <ExchangeRate>
-            <span>1</span>
-            {` `}
-            {inputToken.symbol}
-            <span> = {exchangeRate?.format(4)}</span>
-            {` ${outputLabel ?? outputToken?.symbol}`}
+            {exchangeRate.fetching && <Skeleton height={16} width={150} />}
+            {exchangeRate.value && (
+              <>
+                <span>1</span>
+                {` `}
+                {inputLabel ?? inputToken?.symbol}
+                <span> = {exchangeRate.value.format(4)}</span>
+                {` ${outputLabel ?? outputToken?.symbol}`}
+              </>
+            )}
           </ExchangeRate>
         )
       }

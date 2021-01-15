@@ -41,7 +41,7 @@ export const BannerMessage: FC = () => {
       </span>
       <p>
         <b>{bannerMessage.title}</b>
-        {bannerMessage.subtitle && ` ${bannerMessage.subtitle} `}
+        {bannerMessage.subtitle && ` ${bannerMessage.subtitle} `}{' '}
         {bannerMessage.url &&
           (bannerMessage.url.startsWith('http') ? (
             <a href={bannerMessage.url}>Learn more</a>

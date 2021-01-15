@@ -1,10 +1,8 @@
 import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 
-import {
-  CURVE_ADDRESSES,
-  useCurveContracts,
-} from '../../../../context/earn/CurveProvider';
+import { ADDRESSES } from '../../../../constants';
+import { useCurveContracts } from '../../../../context/earn/CurveProvider';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
@@ -30,8 +28,8 @@ const ExitLink = styled.span`
 `;
 
 const tokenAddresses = [
-  CURVE_ADDRESSES.MUSD_TOKEN,
-  ...CURVE_ADDRESSES['3POOL_COINS'],
+  ADDRESSES.CURVE.MUSD_TOKEN,
+  ...ADDRESSES.CURVE['3POOL_COINS'],
 ];
 
 const Input: FC = () => {
@@ -59,7 +57,7 @@ const Input: FC = () => {
           error={error}
           exactDecimals
           name="stake"
-          spender={CURVE_ADDRESSES.MUSD_DEPOSIT}
+          spender={ADDRESSES.CURVE.MUSD_DEPOSIT}
           onChangeAmount={setAddLiquidityAmount}
           onSetMax={setAddLiquidityMaxAmount}
           onChangeToken={setAddLiquidityToken}
@@ -96,8 +94,8 @@ const Confirm: FC = () => {
 };
 
 const CURVE_ALL_COINS = [
-  CURVE_ADDRESSES.MUSD_TOKEN,
-  ...CURVE_ADDRESSES['3POOL_COINS'],
+  ADDRESSES.CURVE.MUSD_TOKEN,
+  ...ADDRESSES.CURVE['3POOL_COINS'],
 ];
 
 export const CurveAddLiquidity: FC = () => {

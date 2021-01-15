@@ -16,18 +16,16 @@ import { Interfaces } from '../../../../types';
 import { TabBtn, TabsContainer } from '../../../core/Tabs';
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
-import { UniswapRouter02Factory } from '../../../../typechain/UniswapRouter02Factory';
-import { Button } from '../../../core/Button';
-import { BigDecimal } from '../../../../web3/BigDecimal';
 
 const formId = 'MassetModal';
-const UNISWAP_ROUTER02 = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D';
 
 const Container = styled.div`
   > :last-child {
     padding: 2rem;
   }
 `;
+
+// TODO ropsten: use DAI 0xb5e5d0f8c0cba267cd3d7035d6adc8eba7df7cdd
 
 export const MassetModal: FC = () => {
   const signer = useSigner();
@@ -57,6 +55,14 @@ export const MassetModal: FC = () => {
 
     return undefined;
   }, [inputToken, inputAmount]);
+
+  const exchangeRate = useMemo(
+    () => ({
+      value: savingsContract?.latestExchangeRate?.rate,
+      fetching: !savingsContract,
+    }),
+    [savingsContract],
+  );
 
   const inputAddressOptions = useMemo(() => {
     return [{ address: massetAddress as string }];
@@ -92,63 +98,13 @@ export const MassetModal: FC = () => {
       <TabsContainer>
         <TabBtn active>Deposit mUSD & receive imUSD</TabBtn>
       </TabsContainer>
-      <Button
-        onClick={async () => {
-          if (signer) {
-            const path = [
-              '0xc778417E063141139Fce010982780140Aa0cD5Ab', // weth
-              '0xaD6D458402F60fD3Bd25163575031ACDce07538D', // dai
-            ];
-            const uniswap = UniswapRouter02Factory.connect(
-              UNISWAP_ROUTER02,
-              signer,
-            );
-            const input = BigDecimal.parse('0.01');
-            const amountsOut = await uniswap.getAmountsOut(input.exact, path);
-
-            const amountOut = new BigDecimal(amountsOut[1]);
-            const curvePosition = 0;
-            const minOutCurve = new BigDecimal(99e16 * input.simple);
-
-            // console.log(
-            //   'alert',
-            //   input.simple.toFixed(18),
-            //   amountOut.simple.toFixed(18),
-            //   // curvePosition.toString(),
-            //   minOutCurve.toString(),
-            // );
-
-            propose<
-              Interfaces.SaveWrapper,
-              'saveViaUniswapETH(uint256,address[],int128,uint256,bool)'
-            >(
-              new TransactionManifest(
-                SaveWrapperFactory.connect(ADDRESSES.mUSD.SaveWrapper, signer),
-                'saveViaUniswapETH(uint256,address[],int128,uint256,bool)',
-                [
-                  amountOut.exact,
-                  path,
-                  curvePosition,
-                  minOutCurve.exact,
-                  false,
-                ],
-                {
-                  present: `Curving in`,
-                  past: `Curve out, over.`,
-                },
-                formId,
-              ),
-            );
-          }
-        }}
-      >{`Eth -> mUSD`}</Button>
       <AssetExchange
         inputAddressOptions={inputAddressOptions}
         inputAddress={inputAddress}
         inputAddressDisabled
         inputFormValue={inputFormValue}
         outputAddress={saveAddress}
-        exchangeRate={savingsContract?.latestExchangeRate?.rate}
+        exchangeRate={exchangeRate}
         handleSetAddress={setInputAddress}
         handleSetAmount={setInputFormValue}
         handleSetMax={() => {

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
@@ -18,6 +18,9 @@ import { MassetModal } from './MassetModal';
 import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
 import { useAverageApyForPastWeek } from '../../../../web3/hooks';
+import { getUnixTime } from 'date-fns';
+import { BigNumber } from 'ethers/utils';
+import { BigDecimal } from '../../../../web3/BigDecimal';
 
 const ModalTitle = styled.div`
   display: flex;
@@ -40,6 +43,8 @@ const Container = styled.div`
   padding-top: 1rem;
 `;
 
+const nowUnix = getUnixTime(Date.now());
+
 // TODO replace masset-specific names/icons
 export const Save: FC = () => {
   const massetState = useSelectedMassetState();
@@ -52,6 +57,17 @@ export const Save: FC = () => {
   );
   const metaToken = useMetaToken();
   const vMetaToken = useTokenSubscription(vault?.stakingContract);
+
+  const vaultRewardsText = useMemo<string>(() => {
+    if (vault && nowUnix < vault.periodFinish) {
+      const rewards = new BigDecimal(
+        new BigNumber(vault.periodDuration).mul(vault.rewardRate),
+      );
+      return `+ ${rewards.abbreviated} MTA weekly`;
+    }
+
+    return '+ MTA';
+  }, [vault]);
 
   const [showMassetModal] = useModalComponent({
     title: (
@@ -101,6 +117,8 @@ export const Save: FC = () => {
       <BalanceRow
         token={BalanceType.BoostedSavingsVault}
         apy={saveApy}
+        highlight
+        rewardsText={vaultRewardsText}
         onClick={showVaultModal}
         balance={vaultBalance}
       >

@@ -19,13 +19,9 @@ import {
   SyncedEarnData,
   TokenPricesMap,
 } from './types';
-import { STABLECOIN_SYMBOLS } from '../../constants';
+import { STABLECOIN_SYMBOLS, ADDRESSES } from '../../constants';
 import { useMerkleDrops } from './useMerkleDrops';
-import {
-  CURVE_ADDRESSES,
-  CurveJsonData,
-  useCurveJsonData,
-} from './CurveProvider';
+import { CurveJsonData, useCurveJsonData } from './CurveProvider';
 
 interface CoingeckoPrices {
   [address: string]: { usd: number };
@@ -104,7 +100,7 @@ const getUniqueTokens = (
     // MTA/BAL/CRV
     '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2': 18,
     '0xba100000625a3754423978a60c9317c58a424e3d': 18,
-    [CURVE_ADDRESSES.CRV_TOKEN]: 18,
+    [ADDRESSES.CURVE.CRV_TOKEN]: 18,
     ...tokens,
     ...balancerTokens,
     ...uniswapTokens,
@@ -236,12 +232,12 @@ const normalizeCurvePools = (
 
   return [
     {
-      address: CURVE_ADDRESSES.MUSD_LP_TOKEN,
+      address: ADDRESSES.CURVE.MUSD_LP_TOKEN,
       platform: Platforms.Curve,
       totalSupply: supply?.value ? new BigDecimal(supply.value, 18) : undefined,
       tokens: [
         {
-          address: CURVE_ADDRESSES.MUSD_TOKEN,
+          address: ADDRESSES.CURVE.MUSD_TOKEN,
           symbol: 'mUSD',
           decimals: 18,
           liquidity: balances?.[0]?.value
@@ -251,7 +247,7 @@ const normalizeCurvePools = (
           totalSupply: new BigDecimal(0, 18),
         },
         {
-          address: CURVE_ADDRESSES['3POOL_TOKEN'],
+          address: ADDRESSES.CURVE['3POOL_TOKEN'],
           symbol: '3POOL',
           decimals: 18,
           liquidity: balances?.[1]?.value
@@ -331,8 +327,8 @@ const useRawPlatformPools = (
   // TODO later: include when the subgraph works
   // const curveQuery = useCurvePoolsQuery({
   //   variables: {
-  //     basePool: CURVE_ADDRESSES['3POOL_SWAP'],
-  //     musdPool: CURVE_ADDRESSES.MUSD_SWAP,
+  //     basePool: ADDRESSES.CURVE['3POOL_SWAP'],
+  //     musdPool: ADDRESSES.CURVE.MUSD_SWAP,
   //   },
   //   fetchPolicy: 'cache-and-network',
   // });

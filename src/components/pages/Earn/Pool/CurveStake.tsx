@@ -1,10 +1,8 @@
 import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 
-import {
-  CURVE_ADDRESSES,
-  useCurveContracts,
-} from '../../../../context/earn/CurveProvider';
+import { ADDRESSES } from '../../../../constants';
+import { useCurveContracts } from '../../../../context/earn/CurveProvider';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
@@ -64,7 +62,7 @@ const Input: FC = () => {
           error={error}
           exactDecimals
           name="stake"
-          spender={curve ? CURVE_ADDRESSES.MUSD_GAUGE : address}
+          spender={curve ? ADDRESSES.CURVE.MUSD_GAUGE : address}
           onChangeAmount={setStakeAmount}
           onSetMax={setMaxStakeAmount}
           tokenAddresses={[stakingToken?.address as string]}
