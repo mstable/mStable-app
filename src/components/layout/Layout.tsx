@@ -64,11 +64,11 @@ const GlobalStyle = createGlobalStyle`
   }
   // Onboard.js
   aside.bn-onboard-custom {
-    color: ${({ theme }) => theme.color.body};
+    color: ${({ theme }) => theme.color.black};
     z-index: 1;
     > section {
       font-family: 'Poppins', sans-serif !important;
-      border-radius: 2px;
+      border-radius: 1rem;
     }
     .bn-onboard-modal-content-header {
       > :first-child {
@@ -76,6 +76,8 @@ const GlobalStyle = createGlobalStyle`
       }
       > h3 {
         margin-left: 0;
+        font-weight: 600;
+        color: ${({ theme }) => theme.color.black};
       }
     }
     .bn-onboard-select-description {
@@ -85,13 +87,14 @@ const GlobalStyle = createGlobalStyle`
       font-weight: normal;
       padding: 4px 16px;
       border: 1px ${Color.blackTransparent} solid;
-      border-radius: 3px;
+      border-radius: 0.5rem;
       > :first-child {
         min-width: 32px;
       }
       > span {
         font-weight: normal;
         font-size: 16px;
+        color: ${({ theme }) => theme.color.black};
       }
       &:hover {
         box-shadow: none;
@@ -103,11 +106,11 @@ const GlobalStyle = createGlobalStyle`
       background: transparent;
       user-select: none;
       text-transform: uppercase;
-      font-weight: bold;
+      font-weight: 600;
       font-size: 12px;
       padding: 8px 16px;
       border: 1px ${Color.blackTransparent} solid;
-      border-radius: 3px;
+      border-radius: 0.5rem;
       color: ${Color.black};
       &:hover {
         background: white;
