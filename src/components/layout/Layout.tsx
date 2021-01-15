@@ -17,8 +17,9 @@ import { Color } from '../../theme';
 import { BannerMessage } from './BannerMessage';
 import { PendingTransactions } from '../wallet/PendingTransactions';
 
-const Main = styled.main`
+const Main = styled.main<{ marginTop?: boolean }>`
   padding: 0 1rem;
+  margin-top: ${({ marginTop }) => marginTop && `4rem`};
 `;
 
 const BackgroundContainer = styled.div`
@@ -63,7 +64,7 @@ const GlobalStyle = createGlobalStyle`
   }
   // Onboard.js
   aside.bn-onboard-custom {
-    color: ${Color.offBlack};
+    color: ${({ theme }) => theme.color.body};
     z-index: 1;
     > section {
       font-family: 'Poppins', sans-serif !important;
@@ -175,8 +176,8 @@ export const Layout: FC = ({ children }) => {
         ) : earn ? (
           <>{children}</>
         ) : (
-          <Main>
-            <BannerMessage />
+          <Main marginTop={home}>
+            {!home && <BannerMessage />}
             <BackgroundContainer>{children}</BackgroundContainer>
           </Main>
         )}

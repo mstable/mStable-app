@@ -73,6 +73,7 @@ const Input = styled.div`
   button {
     padding-top: 5px;
     padding-bottom: 5px;
+    border-radius: 0.5rem;
   }
 `;
 

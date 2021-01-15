@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 interface Props extends ButtonHTMLAttributes<unknown> {
   highlighted?: boolean;
+  transparent?: boolean;
   scale?: number;
   disabled?: boolean;
 }
@@ -13,8 +14,12 @@ const ButtonCss = css<Props>`
   padding: ${({ scale }) =>
     scale ? `${scale * 0.75}em ${scale * 1.5}em` : `0.75rem 1.5rem`};
   border-radius: 1.5em;
-  background: ${({ theme, highlighted }) =>
-    highlighted ? theme.color.primary : theme.color.accent};
+  background: ${({ theme, highlighted, transparent }) =>
+    highlighted
+      ? theme.color.primary
+      : transparent
+      ? 'transparent'
+      : theme.color.accent};
   color: ${({ theme, highlighted }) =>
     highlighted ? theme.color.white : theme.color.grey};
   z-index: ${({ highlighted }) => (highlighted ? 1 : 0)};
@@ -23,6 +28,8 @@ const ButtonCss = css<Props>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   transition: 0.2s ease all;
+  border: ${({ transparent, theme }) =>
+    transparent && `1px solid ${theme.color.accentContrast}`};
 
   svg {
     * {

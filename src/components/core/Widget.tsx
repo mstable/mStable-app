@@ -33,7 +33,7 @@ const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   gap: 1rem;
 
   > button {

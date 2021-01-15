@@ -43,6 +43,7 @@ const Input = styled.div`
   button {
     padding-top: 5px;
     padding-bottom: 5px;
+    border-radius: 0.5rem;
   }
 `;
 
@@ -139,7 +140,12 @@ export const AssetInput: FC<Props> = ({
             onChange={handleSetAmount}
           />
           {handleSetMax && (
-            <Button type="button" onClick={handleSetMax} scale={0.75}>
+            <Button
+              type="button"
+              onClick={handleSetMax}
+              scale={0.75}
+              transparent
+            >
               Max
             </Button>
           )}

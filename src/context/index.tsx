@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import { ModalProvider } from 'react-modal-hook';
 
+import { TransitionGroup } from 'react-transition-group';
 import { UserProvider } from './UserProvider';
 import { AppProvider } from './AppProvider';
 import { SelectedMassetNameProvider } from './SelectedMassetNameProvider';
@@ -13,7 +14,6 @@ import { DataProvider } from './DataProvider/DataProvider';
 import { ApolloProvider } from './ApolloProvider';
 import { SelectedSaveVersionProvider } from './SelectedSaveVersionProvider';
 import { EthProvider } from './EthProvider';
-import { TransitionGroup } from 'react-transition-group';
 
 export const Providers: FC = ({ children }) => (
   <NotificationsProvider>

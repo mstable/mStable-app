@@ -1,6 +1,8 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 
+import { getUnixTime } from 'date-fns';
+import { BigNumber } from 'ethers/utils';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import {
   useMetaToken,
@@ -18,8 +20,6 @@ import { MassetModal } from './MassetModal';
 import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
 import { useAverageApyForPastWeek } from '../../../../web3/hooks';
-import { getUnixTime } from 'date-fns';
-import { BigNumber } from 'ethers/utils';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 const ModalTitle = styled.div`
