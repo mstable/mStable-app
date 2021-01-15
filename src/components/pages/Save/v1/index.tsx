@@ -17,22 +17,11 @@ const Container = styled.div`
   padding-top: 1rem;
 `;
 
-const Migration = styled.div`
-  display: flex;
-  flex: 1;
-  justify-content: center;
-  > * {
-    width: 100%;
-    > * {
-      width: 100%;
-    }
-  }
-`;
-
 export const Save: FC = () => {
   const savingsContractState = useSelectedSavingsContractState();
   const isCurrent = savingsContractState?.current;
-  const stakedBalance = savingsContractState?.savingsBalance?.balance;
+  const saveV1Balance = savingsContractState?.savingsBalance?.balance;
+
   return isCurrent ? (
     <SaveProvider>
       <SaveForm />
@@ -42,12 +31,10 @@ export const Save: FC = () => {
       <BalanceHeader />
       <BalanceRow
         token={BalanceType.SavingsContractV1}
-        balance={stakedBalance}
+        balance={saveV1Balance}
         warning
       />
-      <Migration>
-        <SaveMigration />
-      </Migration>
+      {saveV1Balance && saveV1Balance?.simple !== 0 && <SaveMigration />}
     </Container>
   );
 };
