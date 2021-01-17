@@ -211,7 +211,7 @@ const BoostBar: FC = () => {
   return (
     <Widget
       title="Earning power multiplier"
-      tooltip="Save rewards are boosted by a multiplier (from 0.5 to 1.5)"
+      tooltip="Save rewards are boosted by a multiplier (1x to 3x)"
       headerContent={
         <Button scale={0.7} onClick={toggleShowCalculator}>
           Calculator
