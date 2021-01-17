@@ -1872,13 +1872,13 @@ export type RewardsDistributorQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type RewardsDistributorQuery = { rewardsDistributors: Array<Pick<RewardsDistributor, 'id' | 'fundManagers'>> };
 
-export type ScriptRewardsQueryVariables = {
+export type ScriptRewardsQueryVariables = Exact<{
   id: Scalars['ID'];
   end: Scalars['BigInt'];
   block?: Maybe<Block_Height>;
   limit: Scalars['Int'];
   offset: Scalars['Int'];
-};
+}>;
 
 
 export type ScriptRewardsQuery = { stakingRewardsContracts: Array<(

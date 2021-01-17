@@ -11,8 +11,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Token
   tokens(
     skip: Int = 0
@@ -26,8 +24,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Token!]!
   basset(
     id: ID!
@@ -37,8 +33,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Basset
   bassets(
     skip: Int = 0
@@ -52,8 +46,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Basset!]!
   basket(
     id: ID!
@@ -63,8 +55,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Basket
   baskets(
     skip: Int = 0
@@ -78,8 +68,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Basket!]!
   masset(
     id: ID!
@@ -89,8 +77,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Masset
   massets(
     skip: Int = 0
@@ -104,8 +90,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Masset!]!
   account(
     id: ID!
@@ -115,8 +99,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Account
   accounts(
     skip: Int = 0
@@ -130,8 +112,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Account!]!
   accountBalance(
     id: ID!
@@ -141,8 +121,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): AccountBalance
   accountBalances(
     skip: Int = 0
@@ -156,8 +134,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [AccountBalance!]!
   creditBalance(
     id: ID!
@@ -167,8 +143,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): CreditBalance
   creditBalances(
     skip: Int = 0
@@ -182,8 +156,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [CreditBalance!]!
   savingsContract(
     id: ID!
@@ -193,8 +165,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SavingsContract
   savingsContracts(
     skip: Int = 0
@@ -208,8 +178,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SavingsContract!]!
   exchangeRate(
     id: ID!
@@ -219,8 +187,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): ExchangeRate
   exchangeRates(
     skip: Int = 0
@@ -234,8 +200,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ExchangeRate!]!
   volumeMetric(
     id: ID!
@@ -245,8 +209,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): VolumeMetric
   volumeMetrics(
     skip: Int = 0
@@ -260,8 +222,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [VolumeMetric!]!
   aggregateMetric(
     id: ID!
@@ -271,8 +231,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): AggregateMetric
   aggregateMetrics(
     skip: Int = 0
@@ -286,8 +244,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [AggregateMetric!]!
   swapTransaction(
     id: ID!
@@ -297,8 +253,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SwapTransaction
   swapTransactions(
     skip: Int = 0
@@ -312,8 +266,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SwapTransaction!]!
   feePaidTransaction(
     id: ID!
@@ -323,8 +275,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): FeePaidTransaction
   feePaidTransactions(
     skip: Int = 0
@@ -338,8 +288,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [FeePaidTransaction!]!
   stakingRewardsContractTransaction(
     id: ID!
@@ -349,8 +297,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContractTransaction
   stakingRewardsContractTransactions(
     skip: Int = 0
@@ -364,8 +310,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContractTransaction!]!
   stakingRewardsContractClaimRewardTransaction(
     id: ID!
@@ -375,8 +319,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContractClaimRewardTransaction
   stakingRewardsContractClaimRewardTransactions(
     skip: Int = 0
@@ -390,8 +332,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContractClaimRewardTransaction!]!
   stakingRewardsContractStakeTransaction(
     id: ID!
@@ -401,8 +341,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContractStakeTransaction
   stakingRewardsContractStakeTransactions(
     skip: Int = 0
@@ -416,8 +354,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContractStakeTransaction!]!
   stakingRewardsContractWithdrawTransaction(
     id: ID!
@@ -427,8 +363,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContractWithdrawTransaction
   stakingRewardsContractWithdrawTransactions(
     skip: Int = 0
@@ -442,8 +376,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContractWithdrawTransaction!]!
   rewardsDistributor(
     id: ID!
@@ -453,8 +385,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): RewardsDistributor
   rewardsDistributors(
     skip: Int = 0
@@ -468,8 +398,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [RewardsDistributor!]!
   stakingReward(
     id: ID!
@@ -479,8 +407,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingReward
   stakingRewards(
     skip: Int = 0
@@ -494,8 +420,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingReward!]!
   stakingRewardsContract(
     id: ID!
@@ -505,8 +429,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContract
   stakingRewardsContracts(
     skip: Int = 0
@@ -520,8 +442,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContract!]!
   stakingBalance(
     id: ID!
@@ -531,8 +451,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingBalance
   stakingBalances(
     skip: Int = 0
@@ -546,8 +464,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingBalance!]!
   merkleDropClaim(
     id: ID!
@@ -557,8 +473,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MerkleDropClaim
   merkleDropClaims(
     skip: Int = 0
@@ -572,8 +486,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MerkleDropClaim!]!
   merkleDropTranche(
     id: ID!
@@ -583,8 +495,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MerkleDropTranche
   merkleDropTranches(
     skip: Int = 0
@@ -598,8 +508,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MerkleDropTranche!]!
   merkleDrop(
     id: ID!
@@ -609,8 +517,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MerkleDrop
   merkleDrops(
     skip: Int = 0
@@ -624,8 +530,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MerkleDrop!]!
   timeMetric(
     id: ID!
@@ -635,8 +539,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): TimeMetric
   timeMetrics(
     skip: Int = 0
@@ -650,8 +552,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TimeMetric!]!
   transaction(
     id: ID!
@@ -661,8 +561,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Transaction
   transactions(
     skip: Int = 0
@@ -676,8 +574,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Transaction!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
@@ -687,12 +583,6 @@ input Block_height {
   number: Int
 }
 scalar Bytes
-enum _SubgraphErrorPolicy_ {
-  """Data will be returned even if the subgraph has indexing errors"""
-  allow
-  """If the subgraph has indexing errors, data will be omitted. The default."""
-  deny
-}
 """An ERC20-compatible token"""
 type Token {
   id: ID!
@@ -2590,8 +2480,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Token
   tokens(
     skip: Int = 0
@@ -2605,8 +2493,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Token!]!
   basset(
     id: ID!
@@ -2616,8 +2502,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Basset
   bassets(
     skip: Int = 0
@@ -2631,8 +2515,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Basset!]!
   basket(
     id: ID!
@@ -2642,8 +2524,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Basket
   baskets(
     skip: Int = 0
@@ -2657,8 +2537,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Basket!]!
   masset(
     id: ID!
@@ -2668,8 +2546,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Masset
   massets(
     skip: Int = 0
@@ -2683,8 +2559,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Masset!]!
   account(
     id: ID!
@@ -2694,8 +2568,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Account
   accounts(
     skip: Int = 0
@@ -2709,8 +2581,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Account!]!
   accountBalance(
     id: ID!
@@ -2720,8 +2590,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): AccountBalance
   accountBalances(
     skip: Int = 0
@@ -2735,8 +2603,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [AccountBalance!]!
   creditBalance(
     id: ID!
@@ -2746,8 +2612,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): CreditBalance
   creditBalances(
     skip: Int = 0
@@ -2761,8 +2625,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [CreditBalance!]!
   savingsContract(
     id: ID!
@@ -2772,8 +2634,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SavingsContract
   savingsContracts(
     skip: Int = 0
@@ -2787,8 +2647,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SavingsContract!]!
   exchangeRate(
     id: ID!
@@ -2798,8 +2656,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): ExchangeRate
   exchangeRates(
     skip: Int = 0
@@ -2813,8 +2669,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ExchangeRate!]!
   volumeMetric(
     id: ID!
@@ -2824,8 +2678,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): VolumeMetric
   volumeMetrics(
     skip: Int = 0
@@ -2839,8 +2691,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [VolumeMetric!]!
   aggregateMetric(
     id: ID!
@@ -2850,8 +2700,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): AggregateMetric
   aggregateMetrics(
     skip: Int = 0
@@ -2865,8 +2713,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [AggregateMetric!]!
   swapTransaction(
     id: ID!
@@ -2876,8 +2722,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): SwapTransaction
   swapTransactions(
     skip: Int = 0
@@ -2891,8 +2735,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [SwapTransaction!]!
   feePaidTransaction(
     id: ID!
@@ -2902,8 +2744,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): FeePaidTransaction
   feePaidTransactions(
     skip: Int = 0
@@ -2917,8 +2757,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [FeePaidTransaction!]!
   stakingRewardsContractTransaction(
     id: ID!
@@ -2928,8 +2766,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContractTransaction
   stakingRewardsContractTransactions(
     skip: Int = 0
@@ -2943,8 +2779,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContractTransaction!]!
   stakingRewardsContractClaimRewardTransaction(
     id: ID!
@@ -2954,8 +2788,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContractClaimRewardTransaction
   stakingRewardsContractClaimRewardTransactions(
     skip: Int = 0
@@ -2969,8 +2801,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContractClaimRewardTransaction!]!
   stakingRewardsContractStakeTransaction(
     id: ID!
@@ -2980,8 +2810,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContractStakeTransaction
   stakingRewardsContractStakeTransactions(
     skip: Int = 0
@@ -2995,8 +2823,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContractStakeTransaction!]!
   stakingRewardsContractWithdrawTransaction(
     id: ID!
@@ -3006,8 +2832,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContractWithdrawTransaction
   stakingRewardsContractWithdrawTransactions(
     skip: Int = 0
@@ -3021,8 +2845,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContractWithdrawTransaction!]!
   rewardsDistributor(
     id: ID!
@@ -3032,8 +2854,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): RewardsDistributor
   rewardsDistributors(
     skip: Int = 0
@@ -3047,8 +2867,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [RewardsDistributor!]!
   stakingReward(
     id: ID!
@@ -3058,8 +2876,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingReward
   stakingRewards(
     skip: Int = 0
@@ -3073,8 +2889,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingReward!]!
   stakingRewardsContract(
     id: ID!
@@ -3084,8 +2898,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingRewardsContract
   stakingRewardsContracts(
     skip: Int = 0
@@ -3099,8 +2911,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingRewardsContract!]!
   stakingBalance(
     id: ID!
@@ -3110,8 +2920,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): StakingBalance
   stakingBalances(
     skip: Int = 0
@@ -3125,8 +2933,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [StakingBalance!]!
   merkleDropClaim(
     id: ID!
@@ -3136,8 +2942,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MerkleDropClaim
   merkleDropClaims(
     skip: Int = 0
@@ -3151,8 +2955,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MerkleDropClaim!]!
   merkleDropTranche(
     id: ID!
@@ -3162,8 +2964,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MerkleDropTranche
   merkleDropTranches(
     skip: Int = 0
@@ -3177,8 +2977,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MerkleDropTranche!]!
   merkleDrop(
     id: ID!
@@ -3188,8 +2986,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): MerkleDrop
   merkleDrops(
     skip: Int = 0
@@ -3203,8 +2999,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [MerkleDrop!]!
   timeMetric(
     id: ID!
@@ -3214,8 +3008,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): TimeMetric
   timeMetrics(
     skip: Int = 0
@@ -3229,8 +3021,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [TimeMetric!]!
   transaction(
     id: ID!
@@ -3240,8 +3030,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Transaction
   transactions(
     skip: Int = 0
@@ -3255,8 +3043,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Transaction!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
@@ -3267,3 +3053,6 @@ enum _SubgraphErrorPolicy_ {
   """If the subgraph has indexing errors, data will be omitted. The default."""
   deny
 }
+directive @entity on OBJECT
+directive @derivedFrom(field: String) on FIELD_DEFINITION
+directive @subgraphId(id: String) on OBJECT
