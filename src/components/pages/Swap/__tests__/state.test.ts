@@ -139,7 +139,6 @@ describe('Swap form state', () => {
             exact: null,
             simple: null,
           },
-          formValue: null,
           token: {
             address: null,
             decimals: null,
@@ -151,7 +150,6 @@ describe('Swap form state', () => {
             exact: null,
             simple: null,
           },
-          formValue: null,
           token: {
             address: null,
             decimals: null,
@@ -252,7 +250,6 @@ describe('Swap form state', () => {
               token: DAI,
             },
             output: {
-              formValue: null,
               token: {
                 address: null,
               },
