@@ -50,8 +50,8 @@ type AddressesByNetwork = Record<typeof CHAIN_ID, Addresses>;
 
 export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
   1: {
-    UNISWAP_ROUTER02: 'TODO', // FIXME
-    WETH: 'TODO', // FIXME
+    UNISWAP_ROUTER02: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+    WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     MTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
     vMTA: '0xae8bc96da4f9a9613c323478be181fdb2aa0e1bf',
     mUSD: {
