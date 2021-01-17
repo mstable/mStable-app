@@ -12,6 +12,7 @@ cp ./node_modules/@mstable/protocol/build/contracts/@openzeppelin/contracts/owne
 cp ./node_modules/@mstable/protocol/build/contracts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json ./lib/abis/combined/ERC20.json
 cp ./node_modules/@mstable/protocol/build/contracts/@openzeppelin/contracts/token/ERC20/ERC20Burnable.sol/ERC20Burnable.json ./lib/abis/combined/ERC20Burnable.json
 cp ./node_modules/@mstable/protocol/build/contracts/@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol/ERC20Mintable.json ./lib/abis/combined/ERC20Mintable.json
+cp ./node_modules/@mstable/protocol/build/contracts/@openzeppelin/contracts/token/ERC20/ERC20Detailed.sol/ERC20Detailed.json ./lib/abis/combined/ERC20Detailed.json
 cp ./node_modules/@mstable/protocol/build/contracts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json ./lib/abis/combined/IERC20.json
 cp ./node_modules/@mstable/protocol/build/contracts/@openzeppelin/contracts/token/ERC20/SafeERC20.sol/SafeERC20.json ./lib/abis/combined/SafeERC20.json
 cp ./node_modules/@mstable/protocol/build/contracts/@openzeppelin/contracts/utils/Address.sol/Address.json ./lib/abis/combined/Address.json
