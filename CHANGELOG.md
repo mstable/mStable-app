@@ -2,6 +2,14 @@
 
 ## Next
 
+Features:
+
+- SAVE v2 support
+- Support for migrating savings from Save v1 to v2
+- Boosted Savings Vault support
+- Overhaul of the UI
+- Performance improvements
+
 ## Version 1.16.2
 
 - Fix an issue relating to caching of exchange rates
