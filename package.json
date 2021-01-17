@@ -83,7 +83,7 @@
     "build:ipfs:ropsten": "cp .env.example.ropsten .env && yarn && yarn run codegen && yarn run build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml -r dotenv/config",
-    "codegen:typechain": "./scripts/codegen-typechain.sh",
+    "codegen:typechain": "pwd && sh ./scripts/codegen-typechain.sh",
     "eject": "react-scripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "start": "DISABLE_ESLINT=true react-scripts start",
