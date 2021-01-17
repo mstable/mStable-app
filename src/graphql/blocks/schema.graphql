@@ -11,8 +11,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Block
   blocks(
     skip: Int = 0
@@ -26,8 +24,6 @@ type Query {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Block!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
@@ -37,12 +33,6 @@ input Block_height {
   number: Int
 }
 scalar Bytes
-enum _SubgraphErrorPolicy_ {
-  """Data will be returned even if the subgraph has indexing errors"""
-  allow
-  """If the subgraph has indexing errors, data will be omitted. The default."""
-  deny
-}
 type Block {
   id: ID!
   number: BigInt!
@@ -259,8 +249,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): Block
   blocks(
     skip: Int = 0
@@ -274,8 +262,6 @@ type Subscription {
     block hash. Defaults to the latest block when omitted.
     """
     block: Block_height
-    """Set to `ALLOW` to receive data even if the subgraph has skipped over errors while syncing."""
-    subgraphError: _SubgraphErrorPolicy_! = deny
   ): [Block!]!
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
@@ -287,3 +273,6 @@ enum _SubgraphErrorPolicy_ {
   """If the subgraph has indexing errors, data will be omitted. The default."""
   deny
 }
+directive @entity on OBJECT
+directive @derivedFrom(field: String) on FIELD_DEFINITION
+directive @subgraphId(id: String) on OBJECT

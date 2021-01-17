@@ -2,6 +2,9 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
       export interface IntrospectionResultData {
         __schema: {
@@ -96,11 +99,17 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-/** An Ethereum account that has interacted with parts of mStable */
+/**
+ * An Ethereum account that has interacted with Save v1
+ * @deprecated
+ */
 export type Account = {
   /** Address of the account */
   id: Scalars['ID'];
-  /** CreditBalance of the account */
+  /**
+   * Credit balance of the account (Save v1 only)
+   * @deprecated
+   */
   creditBalance?: Maybe<CreditBalance>;
 };
 
@@ -481,6 +490,448 @@ export type Block_Height = {
   number?: Maybe<Scalars['Int']>;
 };
 
+export type BoostedSavingsVault = {
+  id: Scalars['ID'];
+  savingsContract: SavingsContract;
+  accounts: Array<BoostedSavingsVaultAccount>;
+  rewardEntries: Array<BoostedSavingsVaultRewardEntry>;
+  /** Length of token lockup (in seconds), after rewards are earned */
+  lockupDuration: Scalars['Int'];
+  /** Percentage of earned tokens that are unlocked immediately upon claiming */
+  unlockPercentage: Scalars['BigInt'];
+  /** Rewards period duration (in seconds) */
+  periodDuration: Scalars['Int'];
+  /** Timestamp for current rewards period finish */
+  periodFinish: Scalars['Int'];
+  /** Last time any user took action */
+  lastUpdateTime: Scalars['Int'];
+  /** The staking token, e.g. imUSD */
+  stakingToken: Token;
+  /** The reward per token */
+  rewardPerToken: Scalars['BigInt'];
+  /** The reward per token stored */
+  rewardPerTokenStored: Scalars['BigInt'];
+  /** The reward rate for the rest of the rewards period */
+  rewardRate: Scalars['BigInt'];
+  /** The rewards token, e.g. MTA */
+  rewardsToken: Token;
+  /** Rewards distributor contract address */
+  rewardsDistributor: Scalars['Bytes'];
+  /** Staking rewards contract address */
+  stakingContract: Scalars['Bytes'];
+  /** Total boosted amount */
+  totalSupply: Scalars['BigInt'];
+  /** Total staking rewards (rewardRate * periodDuration) */
+  totalStakingRewards: Scalars['BigInt'];
+};
+
+
+export type BoostedSavingsVaultAccountsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultAccount_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultAccount_Filter>;
+};
+
+
+export type BoostedSavingsVaultRewardEntriesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
+};
+
+export type BoostedSavingsVault_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  savingsContract?: Maybe<Scalars['String']>;
+  savingsContract_not?: Maybe<Scalars['String']>;
+  savingsContract_gt?: Maybe<Scalars['String']>;
+  savingsContract_lt?: Maybe<Scalars['String']>;
+  savingsContract_gte?: Maybe<Scalars['String']>;
+  savingsContract_lte?: Maybe<Scalars['String']>;
+  savingsContract_in?: Maybe<Array<Scalars['String']>>;
+  savingsContract_not_in?: Maybe<Array<Scalars['String']>>;
+  savingsContract_contains?: Maybe<Scalars['String']>;
+  savingsContract_not_contains?: Maybe<Scalars['String']>;
+  savingsContract_starts_with?: Maybe<Scalars['String']>;
+  savingsContract_not_starts_with?: Maybe<Scalars['String']>;
+  savingsContract_ends_with?: Maybe<Scalars['String']>;
+  savingsContract_not_ends_with?: Maybe<Scalars['String']>;
+  lockupDuration?: Maybe<Scalars['Int']>;
+  lockupDuration_not?: Maybe<Scalars['Int']>;
+  lockupDuration_gt?: Maybe<Scalars['Int']>;
+  lockupDuration_lt?: Maybe<Scalars['Int']>;
+  lockupDuration_gte?: Maybe<Scalars['Int']>;
+  lockupDuration_lte?: Maybe<Scalars['Int']>;
+  lockupDuration_in?: Maybe<Array<Scalars['Int']>>;
+  lockupDuration_not_in?: Maybe<Array<Scalars['Int']>>;
+  unlockPercentage?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_not?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_gt?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_lt?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_gte?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_lte?: Maybe<Scalars['BigInt']>;
+  unlockPercentage_in?: Maybe<Array<Scalars['BigInt']>>;
+  unlockPercentage_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  periodDuration?: Maybe<Scalars['Int']>;
+  periodDuration_not?: Maybe<Scalars['Int']>;
+  periodDuration_gt?: Maybe<Scalars['Int']>;
+  periodDuration_lt?: Maybe<Scalars['Int']>;
+  periodDuration_gte?: Maybe<Scalars['Int']>;
+  periodDuration_lte?: Maybe<Scalars['Int']>;
+  periodDuration_in?: Maybe<Array<Scalars['Int']>>;
+  periodDuration_not_in?: Maybe<Array<Scalars['Int']>>;
+  periodFinish?: Maybe<Scalars['Int']>;
+  periodFinish_not?: Maybe<Scalars['Int']>;
+  periodFinish_gt?: Maybe<Scalars['Int']>;
+  periodFinish_lt?: Maybe<Scalars['Int']>;
+  periodFinish_gte?: Maybe<Scalars['Int']>;
+  periodFinish_lte?: Maybe<Scalars['Int']>;
+  periodFinish_in?: Maybe<Array<Scalars['Int']>>;
+  periodFinish_not_in?: Maybe<Array<Scalars['Int']>>;
+  lastUpdateTime?: Maybe<Scalars['Int']>;
+  lastUpdateTime_not?: Maybe<Scalars['Int']>;
+  lastUpdateTime_gt?: Maybe<Scalars['Int']>;
+  lastUpdateTime_lt?: Maybe<Scalars['Int']>;
+  lastUpdateTime_gte?: Maybe<Scalars['Int']>;
+  lastUpdateTime_lte?: Maybe<Scalars['Int']>;
+  lastUpdateTime_in?: Maybe<Array<Scalars['Int']>>;
+  lastUpdateTime_not_in?: Maybe<Array<Scalars['Int']>>;
+  stakingToken?: Maybe<Scalars['String']>;
+  stakingToken_not?: Maybe<Scalars['String']>;
+  stakingToken_gt?: Maybe<Scalars['String']>;
+  stakingToken_lt?: Maybe<Scalars['String']>;
+  stakingToken_gte?: Maybe<Scalars['String']>;
+  stakingToken_lte?: Maybe<Scalars['String']>;
+  stakingToken_in?: Maybe<Array<Scalars['String']>>;
+  stakingToken_not_in?: Maybe<Array<Scalars['String']>>;
+  stakingToken_contains?: Maybe<Scalars['String']>;
+  stakingToken_not_contains?: Maybe<Scalars['String']>;
+  stakingToken_starts_with?: Maybe<Scalars['String']>;
+  stakingToken_not_starts_with?: Maybe<Scalars['String']>;
+  stakingToken_ends_with?: Maybe<Scalars['String']>;
+  stakingToken_not_ends_with?: Maybe<Scalars['String']>;
+  rewardPerToken?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_not?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_gt?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_lt?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_gte?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_lte?: Maybe<Scalars['BigInt']>;
+  rewardPerToken_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardPerToken_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardPerTokenStored?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_not?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_gt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_lt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_gte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_lte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenStored_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardPerTokenStored_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardRate?: Maybe<Scalars['BigInt']>;
+  rewardRate_not?: Maybe<Scalars['BigInt']>;
+  rewardRate_gt?: Maybe<Scalars['BigInt']>;
+  rewardRate_lt?: Maybe<Scalars['BigInt']>;
+  rewardRate_gte?: Maybe<Scalars['BigInt']>;
+  rewardRate_lte?: Maybe<Scalars['BigInt']>;
+  rewardRate_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardsToken?: Maybe<Scalars['String']>;
+  rewardsToken_not?: Maybe<Scalars['String']>;
+  rewardsToken_gt?: Maybe<Scalars['String']>;
+  rewardsToken_lt?: Maybe<Scalars['String']>;
+  rewardsToken_gte?: Maybe<Scalars['String']>;
+  rewardsToken_lte?: Maybe<Scalars['String']>;
+  rewardsToken_in?: Maybe<Array<Scalars['String']>>;
+  rewardsToken_not_in?: Maybe<Array<Scalars['String']>>;
+  rewardsToken_contains?: Maybe<Scalars['String']>;
+  rewardsToken_not_contains?: Maybe<Scalars['String']>;
+  rewardsToken_starts_with?: Maybe<Scalars['String']>;
+  rewardsToken_not_starts_with?: Maybe<Scalars['String']>;
+  rewardsToken_ends_with?: Maybe<Scalars['String']>;
+  rewardsToken_not_ends_with?: Maybe<Scalars['String']>;
+  rewardsDistributor?: Maybe<Scalars['Bytes']>;
+  rewardsDistributor_not?: Maybe<Scalars['Bytes']>;
+  rewardsDistributor_in?: Maybe<Array<Scalars['Bytes']>>;
+  rewardsDistributor_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  rewardsDistributor_contains?: Maybe<Scalars['Bytes']>;
+  rewardsDistributor_not_contains?: Maybe<Scalars['Bytes']>;
+  stakingContract?: Maybe<Scalars['Bytes']>;
+  stakingContract_not?: Maybe<Scalars['Bytes']>;
+  stakingContract_in?: Maybe<Array<Scalars['Bytes']>>;
+  stakingContract_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  stakingContract_contains?: Maybe<Scalars['Bytes']>;
+  stakingContract_not_contains?: Maybe<Scalars['Bytes']>;
+  totalSupply?: Maybe<Scalars['BigInt']>;
+  totalSupply_not?: Maybe<Scalars['BigInt']>;
+  totalSupply_gt?: Maybe<Scalars['BigInt']>;
+  totalSupply_lt?: Maybe<Scalars['BigInt']>;
+  totalSupply_gte?: Maybe<Scalars['BigInt']>;
+  totalSupply_lte?: Maybe<Scalars['BigInt']>;
+  totalSupply_in?: Maybe<Array<Scalars['BigInt']>>;
+  totalSupply_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  totalStakingRewards?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_not?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_gt?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_lt?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_gte?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_lte?: Maybe<Scalars['BigInt']>;
+  totalStakingRewards_in?: Maybe<Array<Scalars['BigInt']>>;
+  totalStakingRewards_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum BoostedSavingsVault_OrderBy {
+  Id = 'id',
+  SavingsContract = 'savingsContract',
+  Accounts = 'accounts',
+  RewardEntries = 'rewardEntries',
+  LockupDuration = 'lockupDuration',
+  UnlockPercentage = 'unlockPercentage',
+  PeriodDuration = 'periodDuration',
+  PeriodFinish = 'periodFinish',
+  LastUpdateTime = 'lastUpdateTime',
+  StakingToken = 'stakingToken',
+  RewardPerToken = 'rewardPerToken',
+  RewardPerTokenStored = 'rewardPerTokenStored',
+  RewardRate = 'rewardRate',
+  RewardsToken = 'rewardsToken',
+  RewardsDistributor = 'rewardsDistributor',
+  StakingContract = 'stakingContract',
+  TotalSupply = 'totalSupply',
+  TotalStakingRewards = 'totalStakingRewards'
+}
+
+export type BoostedSavingsVaultAccount = {
+  id: Scalars['ID'];
+  boostedSavingsVault: BoostedSavingsVault;
+  account: Account;
+  rawBalance: Scalars['BigInt'];
+  boostedBalance: Scalars['BigInt'];
+  rewardPerTokenPaid: Scalars['BigInt'];
+  rewards: Scalars['BigInt'];
+  lastAction: Scalars['Int'];
+  lastClaim: Scalars['Int'];
+  rewardCount: Scalars['Int'];
+  rewardEntries: Array<BoostedSavingsVaultRewardEntry>;
+};
+
+
+export type BoostedSavingsVaultAccountRewardEntriesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
+};
+
+export type BoostedSavingsVaultAccount_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  boostedSavingsVault?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_not_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_ends_with?: Maybe<Scalars['String']>;
+  account?: Maybe<Scalars['String']>;
+  account_not?: Maybe<Scalars['String']>;
+  account_gt?: Maybe<Scalars['String']>;
+  account_lt?: Maybe<Scalars['String']>;
+  account_gte?: Maybe<Scalars['String']>;
+  account_lte?: Maybe<Scalars['String']>;
+  account_in?: Maybe<Array<Scalars['String']>>;
+  account_not_in?: Maybe<Array<Scalars['String']>>;
+  account_contains?: Maybe<Scalars['String']>;
+  account_not_contains?: Maybe<Scalars['String']>;
+  account_starts_with?: Maybe<Scalars['String']>;
+  account_not_starts_with?: Maybe<Scalars['String']>;
+  account_ends_with?: Maybe<Scalars['String']>;
+  account_not_ends_with?: Maybe<Scalars['String']>;
+  rawBalance?: Maybe<Scalars['BigInt']>;
+  rawBalance_not?: Maybe<Scalars['BigInt']>;
+  rawBalance_gt?: Maybe<Scalars['BigInt']>;
+  rawBalance_lt?: Maybe<Scalars['BigInt']>;
+  rawBalance_gte?: Maybe<Scalars['BigInt']>;
+  rawBalance_lte?: Maybe<Scalars['BigInt']>;
+  rawBalance_in?: Maybe<Array<Scalars['BigInt']>>;
+  rawBalance_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  boostedBalance?: Maybe<Scalars['BigInt']>;
+  boostedBalance_not?: Maybe<Scalars['BigInt']>;
+  boostedBalance_gt?: Maybe<Scalars['BigInt']>;
+  boostedBalance_lt?: Maybe<Scalars['BigInt']>;
+  boostedBalance_gte?: Maybe<Scalars['BigInt']>;
+  boostedBalance_lte?: Maybe<Scalars['BigInt']>;
+  boostedBalance_in?: Maybe<Array<Scalars['BigInt']>>;
+  boostedBalance_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardPerTokenPaid?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_not?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_gt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_lt?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_gte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_lte?: Maybe<Scalars['BigInt']>;
+  rewardPerTokenPaid_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewardPerTokenPaid_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewards?: Maybe<Scalars['BigInt']>;
+  rewards_not?: Maybe<Scalars['BigInt']>;
+  rewards_gt?: Maybe<Scalars['BigInt']>;
+  rewards_lt?: Maybe<Scalars['BigInt']>;
+  rewards_gte?: Maybe<Scalars['BigInt']>;
+  rewards_lte?: Maybe<Scalars['BigInt']>;
+  rewards_in?: Maybe<Array<Scalars['BigInt']>>;
+  rewards_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  lastAction?: Maybe<Scalars['Int']>;
+  lastAction_not?: Maybe<Scalars['Int']>;
+  lastAction_gt?: Maybe<Scalars['Int']>;
+  lastAction_lt?: Maybe<Scalars['Int']>;
+  lastAction_gte?: Maybe<Scalars['Int']>;
+  lastAction_lte?: Maybe<Scalars['Int']>;
+  lastAction_in?: Maybe<Array<Scalars['Int']>>;
+  lastAction_not_in?: Maybe<Array<Scalars['Int']>>;
+  lastClaim?: Maybe<Scalars['Int']>;
+  lastClaim_not?: Maybe<Scalars['Int']>;
+  lastClaim_gt?: Maybe<Scalars['Int']>;
+  lastClaim_lt?: Maybe<Scalars['Int']>;
+  lastClaim_gte?: Maybe<Scalars['Int']>;
+  lastClaim_lte?: Maybe<Scalars['Int']>;
+  lastClaim_in?: Maybe<Array<Scalars['Int']>>;
+  lastClaim_not_in?: Maybe<Array<Scalars['Int']>>;
+  rewardCount?: Maybe<Scalars['Int']>;
+  rewardCount_not?: Maybe<Scalars['Int']>;
+  rewardCount_gt?: Maybe<Scalars['Int']>;
+  rewardCount_lt?: Maybe<Scalars['Int']>;
+  rewardCount_gte?: Maybe<Scalars['Int']>;
+  rewardCount_lte?: Maybe<Scalars['Int']>;
+  rewardCount_in?: Maybe<Array<Scalars['Int']>>;
+  rewardCount_not_in?: Maybe<Array<Scalars['Int']>>;
+};
+
+export enum BoostedSavingsVaultAccount_OrderBy {
+  Id = 'id',
+  BoostedSavingsVault = 'boostedSavingsVault',
+  Account = 'account',
+  RawBalance = 'rawBalance',
+  BoostedBalance = 'boostedBalance',
+  RewardPerTokenPaid = 'rewardPerTokenPaid',
+  Rewards = 'rewards',
+  LastAction = 'lastAction',
+  LastClaim = 'lastClaim',
+  RewardCount = 'rewardCount',
+  RewardEntries = 'rewardEntries'
+}
+
+export type BoostedSavingsVaultRewardEntry = {
+  id: Scalars['ID'];
+  account: BoostedSavingsVaultAccount;
+  boostedSavingsVault: BoostedSavingsVault;
+  index: Scalars['Int'];
+  start: Scalars['Int'];
+  finish: Scalars['Int'];
+  rate: Scalars['BigInt'];
+};
+
+export type BoostedSavingsVaultRewardEntry_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  account?: Maybe<Scalars['String']>;
+  account_not?: Maybe<Scalars['String']>;
+  account_gt?: Maybe<Scalars['String']>;
+  account_lt?: Maybe<Scalars['String']>;
+  account_gte?: Maybe<Scalars['String']>;
+  account_lte?: Maybe<Scalars['String']>;
+  account_in?: Maybe<Array<Scalars['String']>>;
+  account_not_in?: Maybe<Array<Scalars['String']>>;
+  account_contains?: Maybe<Scalars['String']>;
+  account_not_contains?: Maybe<Scalars['String']>;
+  account_starts_with?: Maybe<Scalars['String']>;
+  account_not_starts_with?: Maybe<Scalars['String']>;
+  account_ends_with?: Maybe<Scalars['String']>;
+  account_not_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_not_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_ends_with?: Maybe<Scalars['String']>;
+  index?: Maybe<Scalars['Int']>;
+  index_not?: Maybe<Scalars['Int']>;
+  index_gt?: Maybe<Scalars['Int']>;
+  index_lt?: Maybe<Scalars['Int']>;
+  index_gte?: Maybe<Scalars['Int']>;
+  index_lte?: Maybe<Scalars['Int']>;
+  index_in?: Maybe<Array<Scalars['Int']>>;
+  index_not_in?: Maybe<Array<Scalars['Int']>>;
+  start?: Maybe<Scalars['Int']>;
+  start_not?: Maybe<Scalars['Int']>;
+  start_gt?: Maybe<Scalars['Int']>;
+  start_lt?: Maybe<Scalars['Int']>;
+  start_gte?: Maybe<Scalars['Int']>;
+  start_lte?: Maybe<Scalars['Int']>;
+  start_in?: Maybe<Array<Scalars['Int']>>;
+  start_not_in?: Maybe<Array<Scalars['Int']>>;
+  finish?: Maybe<Scalars['Int']>;
+  finish_not?: Maybe<Scalars['Int']>;
+  finish_gt?: Maybe<Scalars['Int']>;
+  finish_lt?: Maybe<Scalars['Int']>;
+  finish_gte?: Maybe<Scalars['Int']>;
+  finish_lte?: Maybe<Scalars['Int']>;
+  finish_in?: Maybe<Array<Scalars['Int']>>;
+  finish_not_in?: Maybe<Array<Scalars['Int']>>;
+  rate?: Maybe<Scalars['BigInt']>;
+  rate_not?: Maybe<Scalars['BigInt']>;
+  rate_gt?: Maybe<Scalars['BigInt']>;
+  rate_lt?: Maybe<Scalars['BigInt']>;
+  rate_gte?: Maybe<Scalars['BigInt']>;
+  rate_lte?: Maybe<Scalars['BigInt']>;
+  rate_in?: Maybe<Array<Scalars['BigInt']>>;
+  rate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum BoostedSavingsVaultRewardEntry_OrderBy {
+  Id = 'id',
+  Account = 'account',
+  BoostedSavingsVault = 'boostedSavingsVault',
+  Index = 'index',
+  Start = 'start',
+  Finish = 'finish',
+  Rate = 'rate'
+}
+
 
 export type Counter = {
   id: Scalars['ID'];
@@ -512,7 +963,10 @@ export enum Counter_OrderBy {
   Value = 'value'
 }
 
-/** A credit balance for a given savings contract */
+/**
+ * A credit balance for a given savings contract (Save v1 only)
+ * @deprecated
+ */
 export type CreditBalance = {
   id: Scalars['ID'];
   /** Account */
@@ -687,9 +1141,17 @@ export type Masset = {
   cumulativeRedeemedMasset: Metric;
   /** Cumulative amount of fees paid (e.g. for swaps and redemptions) for this Masset */
   cumulativeFeesPaid: Metric;
+  /** The cumulative interest collected from platforms */
+  cumulativeInterestCollected: Metric;
+  /** The cumulative interest distributed to savers */
+  cumulativeInterestDistributed: Metric;
+  /** The cumulative amount deposited by liquidators */
+  cumulativeLiquidatorDeposited: Metric;
   /** The underlying Token for this Masset */
   token: Token;
-  /** All savings Contracts for this Masset */
+  /** Current SavingsContract for this Masset (i.e. added/updated via SavingsManager and receiving interest) */
+  currentSavingsContract?: Maybe<SavingsContract>;
+  /** All Savings Contracts for this Masset */
   savingsContracts: Array<SavingsContract>;
   /** All swap transactions sent with this Masset */
   swapTransactions: Array<SwapTransaction>;
@@ -960,6 +1422,48 @@ export type Masset_Filter = {
   cumulativeFeesPaid_not_starts_with?: Maybe<Scalars['String']>;
   cumulativeFeesPaid_ends_with?: Maybe<Scalars['String']>;
   cumulativeFeesPaid_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_not?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_gt?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_lt?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_gte?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_lte?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeInterestCollected_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeInterestCollected_contains?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_not_contains?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_starts_with?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_ends_with?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_not?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_gt?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_lt?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_gte?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_lte?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeInterestDistributed_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeInterestDistributed_contains?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_not_contains?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_starts_with?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_ends_with?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_not?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_gt?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_lt?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_gte?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_lte?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeLiquidatorDeposited_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeLiquidatorDeposited_contains?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_not_contains?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_starts_with?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_ends_with?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_not_ends_with?: Maybe<Scalars['String']>;
   token?: Maybe<Scalars['String']>;
   token_not?: Maybe<Scalars['String']>;
   token_gt?: Maybe<Scalars['String']>;
@@ -974,6 +1478,20 @@ export type Masset_Filter = {
   token_not_starts_with?: Maybe<Scalars['String']>;
   token_ends_with?: Maybe<Scalars['String']>;
   token_not_ends_with?: Maybe<Scalars['String']>;
+  currentSavingsContract?: Maybe<Scalars['String']>;
+  currentSavingsContract_not?: Maybe<Scalars['String']>;
+  currentSavingsContract_gt?: Maybe<Scalars['String']>;
+  currentSavingsContract_lt?: Maybe<Scalars['String']>;
+  currentSavingsContract_gte?: Maybe<Scalars['String']>;
+  currentSavingsContract_lte?: Maybe<Scalars['String']>;
+  currentSavingsContract_in?: Maybe<Array<Scalars['String']>>;
+  currentSavingsContract_not_in?: Maybe<Array<Scalars['String']>>;
+  currentSavingsContract_contains?: Maybe<Scalars['String']>;
+  currentSavingsContract_not_contains?: Maybe<Scalars['String']>;
+  currentSavingsContract_starts_with?: Maybe<Scalars['String']>;
+  currentSavingsContract_not_starts_with?: Maybe<Scalars['String']>;
+  currentSavingsContract_ends_with?: Maybe<Scalars['String']>;
+  currentSavingsContract_not_ends_with?: Maybe<Scalars['String']>;
 };
 
 export enum Masset_OrderBy {
@@ -992,7 +1510,11 @@ export enum Masset_OrderBy {
   CumulativeRedeemed = 'cumulativeRedeemed',
   CumulativeRedeemedMasset = 'cumulativeRedeemedMasset',
   CumulativeFeesPaid = 'cumulativeFeesPaid',
+  CumulativeInterestCollected = 'cumulativeInterestCollected',
+  CumulativeInterestDistributed = 'cumulativeInterestDistributed',
+  CumulativeLiquidatorDeposited = 'cumulativeLiquidatorDeposited',
   Token = 'token',
+  CurrentSavingsContract = 'currentSavingsContract',
   SavingsContracts = 'savingsContracts',
   SwapTransactions = 'swapTransactions',
   PaidFeeTransactions = 'paidFeeTransactions',
@@ -1420,8 +1942,16 @@ export type Query = {
   accounts: Array<Account>;
   creditBalance?: Maybe<CreditBalance>;
   creditBalances: Array<CreditBalance>;
+  savingsManager?: Maybe<SavingsManager>;
+  savingsManagers: Array<SavingsManager>;
   savingsContract?: Maybe<SavingsContract>;
   savingsContracts: Array<SavingsContract>;
+  boostedSavingsVault?: Maybe<BoostedSavingsVault>;
+  boostedSavingsVaults: Array<BoostedSavingsVault>;
+  boostedSavingsVaultAccount?: Maybe<BoostedSavingsVaultAccount>;
+  boostedSavingsVaultAccounts: Array<BoostedSavingsVaultAccount>;
+  boostedSavingsVaultRewardEntry?: Maybe<BoostedSavingsVaultRewardEntry>;
+  boostedSavingsVaultRewardEntries: Array<BoostedSavingsVaultRewardEntry>;
   exchangeRate?: Maybe<ExchangeRate>;
   exchangeRates: Array<ExchangeRate>;
   swapTransaction?: Maybe<SwapTransaction>;
@@ -1575,6 +2105,22 @@ export type QueryCreditBalancesArgs = {
 };
 
 
+export type QuerySavingsManagerArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QuerySavingsManagersArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<SavingsManager_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<SavingsManager_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
 export type QuerySavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -1587,6 +2133,54 @@ export type QuerySavingsContractsArgs = {
   orderBy?: Maybe<SavingsContract_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContract_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVault_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVault_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultAccountArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultAccountsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultAccount_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultAccount_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultRewardEntryArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultRewardEntriesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -1963,12 +2557,17 @@ export enum RedeemTransaction_OrderBy {
 export type SavingsContract = {
   /** Address of the SavingsContract */
   id: Scalars['ID'];
+  /** Flag for whether the SavingsContract is "active" (i.e. added via the SavingsManager) */
+  active: Scalars['Boolean'];
   /** The Masset using this SavingsContract */
   masset: Masset;
   /** The amount of underlying savings in the contract */
   totalSavings: Metric;
-  /** Total number of savings credits issued */
-  totalCredits: Metric;
+  /**
+   * Total number of savings credits issued (v1 only)
+   * @deprecated
+   */
+  totalCredits?: Maybe<Metric>;
   /** The total number of deposits made */
   totalDeposits: Counter;
   /** The total number of withdrawals made */
@@ -2004,6 +2603,18 @@ export type SavingsContract = {
   depositTransactions: Array<SavingsContractDepositTransaction>;
   /** All withdraw transactions sent with this Savings Contract. */
   withdrawTransactions: Array<SavingsContractWithdrawTransaction>;
+  /** All Boosted Savings Vaults associated with this Savings Contract. */
+  boostedSavingsVaults: Array<BoostedSavingsVault>;
+  /**
+   * Version of the savings contract (starting from 1). This value will never change for each entity,
+   * and can be used to determine the features of the contract.
+   */
+  version: Scalars['Int'];
+  /**
+   * This field is not present in v1 savings contracts; starting from v2, savings contracts
+   * are ERC20-compatible tokens.
+   */
+  token?: Maybe<Token>;
 };
 
 
@@ -2042,6 +2653,15 @@ export type SavingsContractWithdrawTransactionsArgs = {
   where?: Maybe<SavingsContractWithdrawTransaction_Filter>;
 };
 
+
+export type SavingsContractBoostedSavingsVaultsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVault_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVault_Filter>;
+};
+
 export type SavingsContract_Filter = {
   id?: Maybe<Scalars['ID']>;
   id_not?: Maybe<Scalars['ID']>;
@@ -2051,6 +2671,10 @@ export type SavingsContract_Filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_in?: Maybe<Array<Scalars['ID']>>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
+  active?: Maybe<Scalars['Boolean']>;
+  active_not?: Maybe<Scalars['Boolean']>;
+  active_in?: Maybe<Array<Scalars['Boolean']>>;
+  active_not_in?: Maybe<Array<Scalars['Boolean']>>;
   masset?: Maybe<Scalars['String']>;
   masset_not?: Maybe<Scalars['String']>;
   masset_gt?: Maybe<Scalars['String']>;
@@ -2203,10 +2827,33 @@ export type SavingsContract_Filter = {
   exchangeRate24hAgo_not_starts_with?: Maybe<Scalars['String']>;
   exchangeRate24hAgo_ends_with?: Maybe<Scalars['String']>;
   exchangeRate24hAgo_not_ends_with?: Maybe<Scalars['String']>;
+  version?: Maybe<Scalars['Int']>;
+  version_not?: Maybe<Scalars['Int']>;
+  version_gt?: Maybe<Scalars['Int']>;
+  version_lt?: Maybe<Scalars['Int']>;
+  version_gte?: Maybe<Scalars['Int']>;
+  version_lte?: Maybe<Scalars['Int']>;
+  version_in?: Maybe<Array<Scalars['Int']>>;
+  version_not_in?: Maybe<Array<Scalars['Int']>>;
+  token?: Maybe<Scalars['String']>;
+  token_not?: Maybe<Scalars['String']>;
+  token_gt?: Maybe<Scalars['String']>;
+  token_lt?: Maybe<Scalars['String']>;
+  token_gte?: Maybe<Scalars['String']>;
+  token_lte?: Maybe<Scalars['String']>;
+  token_in?: Maybe<Array<Scalars['String']>>;
+  token_not_in?: Maybe<Array<Scalars['String']>>;
+  token_contains?: Maybe<Scalars['String']>;
+  token_not_contains?: Maybe<Scalars['String']>;
+  token_starts_with?: Maybe<Scalars['String']>;
+  token_not_starts_with?: Maybe<Scalars['String']>;
+  token_ends_with?: Maybe<Scalars['String']>;
+  token_not_ends_with?: Maybe<Scalars['String']>;
 };
 
 export enum SavingsContract_OrderBy {
   Id = 'id',
+  Active = 'active',
   Masset = 'masset',
   TotalSavings = 'totalSavings',
   TotalCredits = 'totalCredits',
@@ -2222,7 +2869,10 @@ export enum SavingsContract_OrderBy {
   CreditBalances = 'creditBalances',
   ExchangeRates = 'exchangeRates',
   DepositTransactions = 'depositTransactions',
-  WithdrawTransactions = 'withdrawTransactions'
+  WithdrawTransactions = 'withdrawTransactions',
+  BoostedSavingsVaults = 'boostedSavingsVaults',
+  Version = 'version',
+  Token = 'token'
 }
 
 export type SavingsContractDepositTransaction = Transaction & {
@@ -2391,6 +3041,59 @@ export enum SavingsContractWithdrawTransaction_OrderBy {
   Amount = 'amount'
 }
 
+export type SavingsManager = {
+  /** Singleton ID of the SavingsManager == "SavingsManager"" */
+  id: Scalars['ID'];
+  /** Address of the SavingsManager */
+  address: Scalars['Bytes'];
+  /** Amount of collected interest that will be sent to Savings Contract (100%) */
+  savingsRate: Metric;
+  /** Flag for whether yield/liquidator streams are frozen */
+  streamsFrozen: Scalars['Boolean'];
+};
+
+export type SavingsManager_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  address?: Maybe<Scalars['Bytes']>;
+  address_not?: Maybe<Scalars['Bytes']>;
+  address_in?: Maybe<Array<Scalars['Bytes']>>;
+  address_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  address_contains?: Maybe<Scalars['Bytes']>;
+  address_not_contains?: Maybe<Scalars['Bytes']>;
+  savingsRate?: Maybe<Scalars['String']>;
+  savingsRate_not?: Maybe<Scalars['String']>;
+  savingsRate_gt?: Maybe<Scalars['String']>;
+  savingsRate_lt?: Maybe<Scalars['String']>;
+  savingsRate_gte?: Maybe<Scalars['String']>;
+  savingsRate_lte?: Maybe<Scalars['String']>;
+  savingsRate_in?: Maybe<Array<Scalars['String']>>;
+  savingsRate_not_in?: Maybe<Array<Scalars['String']>>;
+  savingsRate_contains?: Maybe<Scalars['String']>;
+  savingsRate_not_contains?: Maybe<Scalars['String']>;
+  savingsRate_starts_with?: Maybe<Scalars['String']>;
+  savingsRate_not_starts_with?: Maybe<Scalars['String']>;
+  savingsRate_ends_with?: Maybe<Scalars['String']>;
+  savingsRate_not_ends_with?: Maybe<Scalars['String']>;
+  streamsFrozen?: Maybe<Scalars['Boolean']>;
+  streamsFrozen_not?: Maybe<Scalars['Boolean']>;
+  streamsFrozen_in?: Maybe<Array<Scalars['Boolean']>>;
+  streamsFrozen_not_in?: Maybe<Array<Scalars['Boolean']>>;
+};
+
+export enum SavingsManager_OrderBy {
+  Id = 'id',
+  Address = 'address',
+  SavingsRate = 'savingsRate',
+  StreamsFrozen = 'streamsFrozen'
+}
+
 export type Subscription = {
   token?: Maybe<Token>;
   tokens: Array<Token>;
@@ -2408,8 +3111,16 @@ export type Subscription = {
   accounts: Array<Account>;
   creditBalance?: Maybe<CreditBalance>;
   creditBalances: Array<CreditBalance>;
+  savingsManager?: Maybe<SavingsManager>;
+  savingsManagers: Array<SavingsManager>;
   savingsContract?: Maybe<SavingsContract>;
   savingsContracts: Array<SavingsContract>;
+  boostedSavingsVault?: Maybe<BoostedSavingsVault>;
+  boostedSavingsVaults: Array<BoostedSavingsVault>;
+  boostedSavingsVaultAccount?: Maybe<BoostedSavingsVaultAccount>;
+  boostedSavingsVaultAccounts: Array<BoostedSavingsVaultAccount>;
+  boostedSavingsVaultRewardEntry?: Maybe<BoostedSavingsVaultRewardEntry>;
+  boostedSavingsVaultRewardEntries: Array<BoostedSavingsVaultRewardEntry>;
   exchangeRate?: Maybe<ExchangeRate>;
   exchangeRates: Array<ExchangeRate>;
   swapTransaction?: Maybe<SwapTransaction>;
@@ -2563,6 +3274,22 @@ export type SubscriptionCreditBalancesArgs = {
 };
 
 
+export type SubscriptionSavingsManagerArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionSavingsManagersArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<SavingsManager_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<SavingsManager_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
 export type SubscriptionSavingsContractArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -2575,6 +3302,54 @@ export type SubscriptionSavingsContractsArgs = {
   orderBy?: Maybe<SavingsContract_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContract_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVault_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVault_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultAccountArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultAccountsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultAccount_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultAccount_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultRewardEntryArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultRewardEntriesArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -3105,20 +3880,14 @@ export enum Transaction_OrderBy {
   Sender = 'sender'
 }
 
-export type TokenDetailsFragment = (
+export type TokenAllFragment = (
   Pick<Token, 'id' | 'address' | 'decimals' | 'symbol'>
   & { totalSupply: MetricFieldsFragment }
 );
 
-export type MassetAllFragment = (
-  Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
-  & { token: TokenDetailsFragment, basket: (
-    Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
-    & { bassets: Array<(
-      Pick<Basset, 'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
-      & { vaultBalance: MetricFieldsFragment, token: TokenDetailsFragment }
-    )> }
-  ) }
+export type SavingsContractAllFragment = (
+  Pick<SavingsContract, 'id' | 'dailyAPY' | 'version' | 'active'>
+  & { totalSavings: MetricFieldsFragment, latestExchangeRate?: Maybe<Pick<ExchangeRate, 'rate' | 'timestamp'>> }
 );
 
 type TransactionFields_SavingsContractDepositTransaction_Fragment = Pick<SavingsContractDepositTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
@@ -3141,115 +3910,81 @@ export type TransactionFieldsFragment = TransactionFields_SavingsContractDeposit
 
 export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
 
-export type CoreTokensQueryVariables = {};
+export type MassetsQueryVariables = Exact<{
+  account: Scalars['String'];
+  hasAccount: Scalars['Boolean'];
+}>;
 
 
-export type CoreTokensQuery = { mUSD: Array<TokenDetailsFragment>, mUSDSavings: Array<Pick<SavingsContract, 'id'>> };
+export type MassetsQuery = { massets: Array<(
+    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
+    & { token: TokenAllFragment, basket: (
+      Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
+      & { bassets: Array<(
+        Pick<Basset, 'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
+        & { vaultBalance: MetricFieldsFragment, token: TokenAllFragment }
+      )>, removedBassets: Array<(
+        Pick<Basset, 'id'>
+        & { token: TokenAllFragment }
+      )> }
+    ), currentSavingsContract?: Maybe<Pick<SavingsContract, 'id'>>, savingsContractsV1: Array<(
+      { totalCredits?: Maybe<MetricFieldsFragment>, creditBalances: Array<Pick<CreditBalance, 'amount'>> }
+      & SavingsContractAllFragment
+    )>, savingsContractsV2: Array<(
+      { token?: Maybe<TokenAllFragment>, boostedSavingsVaults: Array<(
+        Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerToken' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
+        & { accounts: Array<(
+          Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
+          & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
+        )> }
+      )> }
+      & SavingsContractAllFragment
+    )> }
+  )> };
 
-export type MassetQueryVariables = {
+export type V1SavingsBalanceQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+  account: Scalars['String'];
+  include: Scalars['Boolean'];
+}>;
 
 
-export type MassetQuery = { masset?: Maybe<MassetAllFragment> };
+export type V1SavingsBalanceQuery = { savingsContract?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
 
-export type Erc20TokensQueryVariables = {
-  addresses: Array<Scalars['Bytes']>;
-};
+export type AllTokensQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Erc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
-
-export type AllErc20TokensQueryVariables = {};
-
-
-export type AllErc20TokensQuery = { savingsContracts: Array<(
+export type AllTokensQuery = { savingsContracts: Array<(
     Pick<SavingsContract, 'id'>
     & { address: SavingsContract['id'] }
-  )>, tokens: Array<TokenDetailsFragment> };
+  )>, tokens: Array<TokenAllFragment> };
 
-export type ErFragment = Pick<ExchangeRate, 'rate' | 'timestamp'>;
-
-export type LastExchangeRateBeforeTimestampQueryVariables = {
-  timestamp: Scalars['Int'];
-};
-
-
-export type LastExchangeRateBeforeTimestampQuery = { exchangeRates: Array<ErFragment> };
-
-export type WeeklyExchangeRatesQueryVariables = {
-  day0: Scalars['Int'];
-  day1: Scalars['Int'];
-  day2: Scalars['Int'];
-  day3: Scalars['Int'];
-  day4: Scalars['Int'];
-  day5: Scalars['Int'];
-  day6: Scalars['Int'];
-};
-
-
-export type WeeklyExchangeRatesQuery = { day0: Array<ErFragment>, day1: Array<ErFragment>, day2: Array<ErFragment>, day3: Array<ErFragment>, day4: Array<ErFragment>, day5: Array<ErFragment>, day6: Array<ErFragment> };
-
-export type SavingsContractQueryVariables = {
+export type TokenQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
-export type SavingsContractQuery = { savingsContracts: Array<(
-    Pick<SavingsContract, 'id' | 'dailyAPY' | 'automationEnabled'>
-    & { totalSavings: MetricFieldsFragment, totalCredits: MetricFieldsFragment, exchangeRates: Array<Pick<ExchangeRate, 'id'>> }
-  )> };
+export type TokenQuery = { token?: Maybe<TokenAllFragment> };
 
-export type TokenQueryVariables = {
-  id: Scalars['ID'];
-};
-
-
-export type TokenQuery = { token?: Maybe<TokenDetailsFragment> };
-
-export type CreditBalancesQueryVariables = {
-  account: Scalars['ID'];
-};
-
-
-export type CreditBalancesQuery = { account?: Maybe<{ creditBalance?: Maybe<Pick<CreditBalance, 'amount'>> }> };
-
-export type LatestExchangeRateQueryVariables = {};
-
-
-export type LatestExchangeRateQuery = { exchangeRates: Array<ErFragment> };
-
-export type ScriptVaultBalancesQueryVariables = {
-  block?: Maybe<Block_Height>;
-};
-
-
-export type ScriptVaultBalancesQuery = { bassets: Array<(
-    Pick<Basset, 'id'>
-    & { token: Pick<Token, 'symbol' | 'decimals'>, vaultBalance: MetricFieldsFragment }
-  )> };
-
-export type ScriptFeesQueryVariables = {
-  limit: Scalars['Int'];
-  offset: Scalars['Int'];
-};
-
-
-export type ScriptFeesQuery = { paidFeeTransactions: Array<Pick<PaidFeeTransaction, 'massetUnits'>> };
-
-export type HistoricTransactionsQueryVariables = {
+export type HistoricTransactionsQueryVariables = Exact<{
   account?: Maybe<Scalars['Bytes']>;
-};
+}>;
 
 
 export type HistoricTransactionsQuery = { transactions: Array<(
     { __typename: 'SavingsContractDepositTransaction' }
     & Pick<SavingsContractDepositTransaction, 'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { savingsContract: Pick<SavingsContract, 'id'> }
+    & { savingsContract: (
+      Pick<SavingsContract, 'id'>
+      & { masset: Pick<Masset, 'id'> }
+    ) }
   ) | (
     { __typename: 'SavingsContractWithdrawTransaction' }
     & Pick<SavingsContractWithdrawTransaction, 'amount' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
-    & { savingsContract: Pick<SavingsContract, 'id'> }
+    & { savingsContract: (
+      Pick<SavingsContract, 'id'>
+      & { masset: Pick<Masset, 'id'> }
+    ) }
   ) | (
     { __typename: 'SwapTransaction' }
     & Pick<SwapTransaction, 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
@@ -3283,8 +4018,8 @@ export const MetricFieldsFragmentDoc = gql`
   simple
 }
     `;
-export const TokenDetailsFragmentDoc = gql`
-    fragment TokenDetails on Token {
+export const TokenAllFragmentDoc = gql`
+    fragment TokenAll on Token {
   id
   address
   decimals
@@ -3294,35 +4029,21 @@ export const TokenDetailsFragmentDoc = gql`
   }
 }
     ${MetricFieldsFragmentDoc}`;
-export const MassetAllFragmentDoc = gql`
-    fragment MassetAll on Masset {
+export const SavingsContractAllFragmentDoc = gql`
+    fragment SavingsContractAll on SavingsContract {
   id
-  token {
-    ...TokenDetails
+  totalSavings {
+    ...MetricFields
   }
-  feeRate
-  redemptionFeeRate
-  basket {
-    failed
-    collateralisationRatio
-    undergoingRecol
-    bassets {
-      id
-      vaultBalance {
-        ...MetricFields
-      }
-      isTransferFeeCharged
-      ratio
-      status
-      maxWeight
-      token {
-        ...TokenDetails
-      }
-    }
+  latestExchangeRate {
+    rate
+    timestamp
   }
+  dailyAPY
+  version
+  active
 }
-    ${TokenDetailsFragmentDoc}
-${MetricFieldsFragmentDoc}`;
+    ${MetricFieldsFragmentDoc}`;
 export const TransactionFieldsFragmentDoc = gql`
     fragment TransactionFields on Transaction {
   id
@@ -3332,290 +4053,200 @@ export const TransactionFieldsFragmentDoc = gql`
   sender
 }
     `;
-export const ErFragmentDoc = gql`
-    fragment ER on ExchangeRate {
-  rate
-  timestamp
+export const MassetsDocument = gql`
+    query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
+  massets {
+    id
+    token {
+      ...TokenAll
+    }
+    feeRate
+    redemptionFeeRate
+    basket {
+      failed
+      collateralisationRatio
+      undergoingRecol
+      bassets: bassets(where: {removed: false}) {
+        id
+        vaultBalance {
+          ...MetricFields
+        }
+        isTransferFeeCharged
+        ratio
+        status
+        maxWeight
+        token {
+          ...TokenAll
+        }
+      }
+      removedBassets: bassets(where: {removed: true}) {
+        id
+        token {
+          ...TokenAll
+        }
+      }
+    }
+    currentSavingsContract {
+      id
+    }
+    savingsContractsV1: savingsContracts(where: {version: 1}) {
+      ...SavingsContractAll
+      totalCredits {
+        ...MetricFields
+      }
+      creditBalances(where: {account: $account}) @include(if: $hasAccount) {
+        amount
+      }
+    }
+    savingsContractsV2: savingsContracts(where: {version: 2, id_not_in: ["0x478e379d5f3e2f949a94f1ccfb7217fb35916615", "0x5b7f01dae6bce656c9ca4175eb3e406adc6c7957", "0x06F1711b04011f2f0acD0370B24D9A7e23516255"]}) {
+      ...SavingsContractAll
+      token {
+        ...TokenAll
+      }
+      boostedSavingsVaults {
+        id
+        lastUpdateTime
+        lockupDuration
+        unlockPercentage
+        periodDuration
+        periodFinish
+        rewardPerToken
+        rewardPerTokenStored
+        rewardRate
+        stakingContract
+        totalStakingRewards
+        totalSupply
+        accounts(where: {account: $account}) @include(if: $hasAccount) {
+          id
+          boostedBalance
+          lastAction
+          lastClaim
+          rawBalance
+          rewardCount
+          rewardPerTokenPaid
+          rewards
+          rewardEntries(orderBy: index, orderDirection: asc) {
+            id
+            finish
+            index
+            rate
+            start
+          }
+        }
+      }
+    }
+  }
+}
+    ${TokenAllFragmentDoc}
+${MetricFieldsFragmentDoc}
+${SavingsContractAllFragmentDoc}`;
+
+/**
+ * __useMassetsQuery__
+ *
+ * To run a query within a React component, call `useMassetsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMassetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMassetsQuery({
+ *   variables: {
+ *      account: // value for 'account'
+ *      hasAccount: // value for 'hasAccount'
+ *   },
+ * });
+ */
+export function useMassetsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MassetsQuery, MassetsQueryVariables>) {
+        return ApolloReactHooks.useQuery<MassetsQuery, MassetsQueryVariables>(MassetsDocument, baseOptions);
+      }
+export function useMassetsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MassetsQuery, MassetsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<MassetsQuery, MassetsQueryVariables>(MassetsDocument, baseOptions);
+        }
+export type MassetsQueryHookResult = ReturnType<typeof useMassetsQuery>;
+export type MassetsLazyQueryHookResult = ReturnType<typeof useMassetsLazyQuery>;
+export type MassetsQueryResult = ApolloReactCommon.QueryResult<MassetsQuery, MassetsQueryVariables>;
+export const V1SavingsBalanceDocument = gql`
+    query V1SavingsBalance($id: ID!, $account: String!, $include: Boolean!) @api(name: protocol) {
+  savingsContract(id: $id) @include(if: $include) {
+    creditBalances(where: {account: $account}) {
+      amount
+    }
+  }
 }
     `;
-export const CoreTokensDocument = gql`
-    query CoreTokens @api(name: protocol) {
-  mUSD: tokens(where: {symbol: "mUSD"}) {
-    ...TokenDetails
-  }
-  mUSDSavings: savingsContracts(first: 1) {
-    id
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
 
 /**
- * __useCoreTokensQuery__
+ * __useV1SavingsBalanceQuery__
  *
- * To run a query within a React component, call `useCoreTokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useCoreTokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useV1SavingsBalanceQuery` and pass it any options that fit your needs.
+ * When your component renders, `useV1SavingsBalanceQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useCoreTokensQuery({
- *   variables: {
- *   },
- * });
- */
-export function useCoreTokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
-      }
-export function useCoreTokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CoreTokensQuery, CoreTokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<CoreTokensQuery, CoreTokensQueryVariables>(CoreTokensDocument, baseOptions);
-        }
-export type CoreTokensQueryHookResult = ReturnType<typeof useCoreTokensQuery>;
-export type CoreTokensLazyQueryHookResult = ReturnType<typeof useCoreTokensLazyQuery>;
-export type CoreTokensQueryResult = ApolloReactCommon.QueryResult<CoreTokensQuery, CoreTokensQueryVariables>;
-export const MassetDocument = gql`
-    query Masset($id: ID!) @api(name: protocol) {
-  masset(id: $id) {
-    ...MassetAll
-  }
-}
-    ${MassetAllFragmentDoc}`;
-
-/**
- * __useMassetQuery__
- *
- * To run a query within a React component, call `useMassetQuery` and pass it any options that fit your needs.
- * When your component renders, `useMassetQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useMassetQuery({
+ * const { data, loading, error } = useV1SavingsBalanceQuery({
  *   variables: {
  *      id: // value for 'id'
+ *      account: // value for 'account'
+ *      include: // value for 'include'
  *   },
  * });
  */
-export function useMassetQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MassetQuery, MassetQueryVariables>) {
-        return ApolloReactHooks.useQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
+export function useV1SavingsBalanceQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>) {
+        return ApolloReactHooks.useQuery<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>(V1SavingsBalanceDocument, baseOptions);
       }
-export function useMassetLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MassetQuery, MassetQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<MassetQuery, MassetQueryVariables>(MassetDocument, baseOptions);
+export function useV1SavingsBalanceLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>(V1SavingsBalanceDocument, baseOptions);
         }
-export type MassetQueryHookResult = ReturnType<typeof useMassetQuery>;
-export type MassetLazyQueryHookResult = ReturnType<typeof useMassetLazyQuery>;
-export type MassetQueryResult = ApolloReactCommon.QueryResult<MassetQuery, MassetQueryVariables>;
-export const Erc20TokensDocument = gql`
-    query Erc20Tokens($addresses: [Bytes!]!) @api(name: protocol) {
-  tokens(where: {address_in: $addresses}) {
-    ...TokenDetails
-  }
-}
-    ${TokenDetailsFragmentDoc}`;
-
-/**
- * __useErc20TokensQuery__
- *
- * To run a query within a React component, call `useErc20TokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useErc20TokensQuery({
- *   variables: {
- *      addresses: // value for 'addresses'
- *   },
- * });
- */
-export function useErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
-      }
-export function useErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<Erc20TokensQuery, Erc20TokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<Erc20TokensQuery, Erc20TokensQueryVariables>(Erc20TokensDocument, baseOptions);
-        }
-export type Erc20TokensQueryHookResult = ReturnType<typeof useErc20TokensQuery>;
-export type Erc20TokensLazyQueryHookResult = ReturnType<typeof useErc20TokensLazyQuery>;
-export type Erc20TokensQueryResult = ApolloReactCommon.QueryResult<Erc20TokensQuery, Erc20TokensQueryVariables>;
-export const AllErc20TokensDocument = gql`
-    query AllErc20Tokens @api(name: protocol) {
-  savingsContracts {
+export type V1SavingsBalanceQueryHookResult = ReturnType<typeof useV1SavingsBalanceQuery>;
+export type V1SavingsBalanceLazyQueryHookResult = ReturnType<typeof useV1SavingsBalanceLazyQuery>;
+export type V1SavingsBalanceQueryResult = ApolloReactCommon.QueryResult<V1SavingsBalanceQuery, V1SavingsBalanceQueryVariables>;
+export const AllTokensDocument = gql`
+    query AllTokens @api(name: protocol) {
+  savingsContracts(where: {version: 1}) {
     address: id
     id
   }
   tokens {
-    ...TokenDetails
+    ...TokenAll
   }
 }
-    ${TokenDetailsFragmentDoc}`;
+    ${TokenAllFragmentDoc}`;
 
 /**
- * __useAllErc20TokensQuery__
+ * __useAllTokensQuery__
  *
- * To run a query within a React component, call `useAllErc20TokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useAllErc20TokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useAllTokensQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAllTokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useAllErc20TokensQuery({
+ * const { data, loading, error } = useAllTokensQuery({
  *   variables: {
  *   },
  * });
  */
-export function useAllErc20TokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
-        return ApolloReactHooks.useQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
+export function useAllTokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllTokensQuery, AllTokensQueryVariables>) {
+        return ApolloReactHooks.useQuery<AllTokensQuery, AllTokensQueryVariables>(AllTokensDocument, baseOptions);
       }
-export function useAllErc20TokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllErc20TokensQuery, AllErc20TokensQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<AllErc20TokensQuery, AllErc20TokensQueryVariables>(AllErc20TokensDocument, baseOptions);
+export function useAllTokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllTokensQuery, AllTokensQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<AllTokensQuery, AllTokensQueryVariables>(AllTokensDocument, baseOptions);
         }
-export type AllErc20TokensQueryHookResult = ReturnType<typeof useAllErc20TokensQuery>;
-export type AllErc20TokensLazyQueryHookResult = ReturnType<typeof useAllErc20TokensLazyQuery>;
-export type AllErc20TokensQueryResult = ApolloReactCommon.QueryResult<AllErc20TokensQuery, AllErc20TokensQueryVariables>;
-export const LastExchangeRateBeforeTimestampDocument = gql`
-    query LastExchangeRateBeforeTimestamp($timestamp: Int!) @api(name: protocol) {
-  exchangeRates(where: {timestamp_lt: $timestamp}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-}
-    ${ErFragmentDoc}`;
-
-/**
- * __useLastExchangeRateBeforeTimestampQuery__
- *
- * To run a query within a React component, call `useLastExchangeRateBeforeTimestampQuery` and pass it any options that fit your needs.
- * When your component renders, `useLastExchangeRateBeforeTimestampQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useLastExchangeRateBeforeTimestampQuery({
- *   variables: {
- *      timestamp: // value for 'timestamp'
- *   },
- * });
- */
-export function useLastExchangeRateBeforeTimestampQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
-        return ApolloReactHooks.useQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
-      }
-export function useLastExchangeRateBeforeTimestampLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>(LastExchangeRateBeforeTimestampDocument, baseOptions);
-        }
-export type LastExchangeRateBeforeTimestampQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampQuery>;
-export type LastExchangeRateBeforeTimestampLazyQueryHookResult = ReturnType<typeof useLastExchangeRateBeforeTimestampLazyQuery>;
-export type LastExchangeRateBeforeTimestampQueryResult = ApolloReactCommon.QueryResult<LastExchangeRateBeforeTimestampQuery, LastExchangeRateBeforeTimestampQueryVariables>;
-export const WeeklyExchangeRatesDocument = gql`
-    query WeeklyExchangeRates($day0: Int!, $day1: Int!, $day2: Int!, $day3: Int!, $day4: Int!, $day5: Int!, $day6: Int!) @api(name: protocol) {
-  day0: exchangeRates(where: {timestamp_lt: $day0}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day1: exchangeRates(where: {timestamp_lt: $day1}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day2: exchangeRates(where: {timestamp_lt: $day2}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day3: exchangeRates(where: {timestamp_lt: $day3}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day4: exchangeRates(where: {timestamp_lt: $day4}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day5: exchangeRates(where: {timestamp_lt: $day5}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-  day6: exchangeRates(where: {timestamp_lt: $day6}, orderDirection: desc, orderBy: timestamp, first: 1) {
-    ...ER
-  }
-}
-    ${ErFragmentDoc}`;
-
-/**
- * __useWeeklyExchangeRatesQuery__
- *
- * To run a query within a React component, call `useWeeklyExchangeRatesQuery` and pass it any options that fit your needs.
- * When your component renders, `useWeeklyExchangeRatesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useWeeklyExchangeRatesQuery({
- *   variables: {
- *      day0: // value for 'day0'
- *      day1: // value for 'day1'
- *      day2: // value for 'day2'
- *      day3: // value for 'day3'
- *      day4: // value for 'day4'
- *      day5: // value for 'day5'
- *      day6: // value for 'day6'
- *   },
- * });
- */
-export function useWeeklyExchangeRatesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
-        return ApolloReactHooks.useQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
-      }
-export function useWeeklyExchangeRatesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>(WeeklyExchangeRatesDocument, baseOptions);
-        }
-export type WeeklyExchangeRatesQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesQuery>;
-export type WeeklyExchangeRatesLazyQueryHookResult = ReturnType<typeof useWeeklyExchangeRatesLazyQuery>;
-export type WeeklyExchangeRatesQueryResult = ApolloReactCommon.QueryResult<WeeklyExchangeRatesQuery, WeeklyExchangeRatesQueryVariables>;
-export const SavingsContractDocument = gql`
-    query SavingsContract($id: ID!) @api(name: protocol) {
-  savingsContracts(where: {id: $id}) {
-    id
-    totalSavings {
-      ...MetricFields
-    }
-    totalCredits {
-      ...MetricFields
-    }
-    exchangeRates {
-      id
-    }
-    dailyAPY
-    automationEnabled
-  }
-}
-    ${MetricFieldsFragmentDoc}`;
-
-/**
- * __useSavingsContractQuery__
- *
- * To run a query within a React component, call `useSavingsContractQuery` and pass it any options that fit your needs.
- * When your component renders, `useSavingsContractQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useSavingsContractQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useSavingsContractQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
-        return ApolloReactHooks.useQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
-      }
-export function useSavingsContractLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<SavingsContractQuery, SavingsContractQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<SavingsContractQuery, SavingsContractQueryVariables>(SavingsContractDocument, baseOptions);
-        }
-export type SavingsContractQueryHookResult = ReturnType<typeof useSavingsContractQuery>;
-export type SavingsContractLazyQueryHookResult = ReturnType<typeof useSavingsContractLazyQuery>;
-export type SavingsContractQueryResult = ApolloReactCommon.QueryResult<SavingsContractQuery, SavingsContractQueryVariables>;
+export type AllTokensQueryHookResult = ReturnType<typeof useAllTokensQuery>;
+export type AllTokensLazyQueryHookResult = ReturnType<typeof useAllTokensLazyQuery>;
+export type AllTokensQueryResult = ApolloReactCommon.QueryResult<AllTokensQuery, AllTokensQueryVariables>;
 export const TokenDocument = gql`
     query Token($id: ID!) @api(name: protocol) {
   token(id: $id) {
-    ...TokenDetails
+    ...TokenAll
   }
 }
-    ${TokenDetailsFragmentDoc}`;
+    ${TokenAllFragmentDoc}`;
 
 /**
  * __useTokenQuery__
@@ -3642,147 +4273,6 @@ export function useTokenLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOp
 export type TokenQueryHookResult = ReturnType<typeof useTokenQuery>;
 export type TokenLazyQueryHookResult = ReturnType<typeof useTokenLazyQuery>;
 export type TokenQueryResult = ApolloReactCommon.QueryResult<TokenQuery, TokenQueryVariables>;
-export const CreditBalancesDocument = gql`
-    query CreditBalances($account: ID!) @api(name: protocol) {
-  account(id: $account) {
-    creditBalance {
-      amount
-    }
-  }
-}
-    `;
-
-/**
- * __useCreditBalancesQuery__
- *
- * To run a query within a React component, call `useCreditBalancesQuery` and pass it any options that fit your needs.
- * When your component renders, `useCreditBalancesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useCreditBalancesQuery({
- *   variables: {
- *      account: // value for 'account'
- *   },
- * });
- */
-export function useCreditBalancesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
-        return ApolloReactHooks.useQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
-      }
-export function useCreditBalancesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<CreditBalancesQuery, CreditBalancesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<CreditBalancesQuery, CreditBalancesQueryVariables>(CreditBalancesDocument, baseOptions);
-        }
-export type CreditBalancesQueryHookResult = ReturnType<typeof useCreditBalancesQuery>;
-export type CreditBalancesLazyQueryHookResult = ReturnType<typeof useCreditBalancesLazyQuery>;
-export type CreditBalancesQueryResult = ApolloReactCommon.QueryResult<CreditBalancesQuery, CreditBalancesQueryVariables>;
-export const LatestExchangeRateDocument = gql`
-    query LatestExchangeRate @api(name: protocol) {
-  exchangeRates(first: 1, orderDirection: desc, orderBy: timestamp) {
-    ...ER
-  }
-}
-    ${ErFragmentDoc}`;
-
-/**
- * __useLatestExchangeRateQuery__
- *
- * To run a query within a React component, call `useLatestExchangeRateQuery` and pass it any options that fit your needs.
- * When your component renders, `useLatestExchangeRateQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useLatestExchangeRateQuery({
- *   variables: {
- *   },
- * });
- */
-export function useLatestExchangeRateQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
-        return ApolloReactHooks.useQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
-      }
-export function useLatestExchangeRateLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>(LatestExchangeRateDocument, baseOptions);
-        }
-export type LatestExchangeRateQueryHookResult = ReturnType<typeof useLatestExchangeRateQuery>;
-export type LatestExchangeRateLazyQueryHookResult = ReturnType<typeof useLatestExchangeRateLazyQuery>;
-export type LatestExchangeRateQueryResult = ApolloReactCommon.QueryResult<LatestExchangeRateQuery, LatestExchangeRateQueryVariables>;
-export const ScriptVaultBalancesDocument = gql`
-    query ScriptVaultBalances($block: Block_height) @api(name: protocol) {
-  bassets(block: $block) {
-    id
-    token {
-      symbol
-      decimals
-    }
-    vaultBalance {
-      ...MetricFields
-    }
-  }
-}
-    ${MetricFieldsFragmentDoc}`;
-
-/**
- * __useScriptVaultBalancesQuery__
- *
- * To run a query within a React component, call `useScriptVaultBalancesQuery` and pass it any options that fit your needs.
- * When your component renders, `useScriptVaultBalancesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useScriptVaultBalancesQuery({
- *   variables: {
- *      block: // value for 'block'
- *   },
- * });
- */
-export function useScriptVaultBalancesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>) {
-        return ApolloReactHooks.useQuery<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>(ScriptVaultBalancesDocument, baseOptions);
-      }
-export function useScriptVaultBalancesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>(ScriptVaultBalancesDocument, baseOptions);
-        }
-export type ScriptVaultBalancesQueryHookResult = ReturnType<typeof useScriptVaultBalancesQuery>;
-export type ScriptVaultBalancesLazyQueryHookResult = ReturnType<typeof useScriptVaultBalancesLazyQuery>;
-export type ScriptVaultBalancesQueryResult = ApolloReactCommon.QueryResult<ScriptVaultBalancesQuery, ScriptVaultBalancesQueryVariables>;
-export const ScriptFeesDocument = gql`
-    query ScriptFees($limit: Int!, $offset: Int!) @api(name: protocol) {
-  paidFeeTransactions(first: $limit, skip: $offset) {
-    massetUnits
-  }
-}
-    `;
-
-/**
- * __useScriptFeesQuery__
- *
- * To run a query within a React component, call `useScriptFeesQuery` and pass it any options that fit your needs.
- * When your component renders, `useScriptFeesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useScriptFeesQuery({
- *   variables: {
- *      limit: // value for 'limit'
- *      offset: // value for 'offset'
- *   },
- * });
- */
-export function useScriptFeesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ScriptFeesQuery, ScriptFeesQueryVariables>) {
-        return ApolloReactHooks.useQuery<ScriptFeesQuery, ScriptFeesQueryVariables>(ScriptFeesDocument, baseOptions);
-      }
-export function useScriptFeesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ScriptFeesQuery, ScriptFeesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<ScriptFeesQuery, ScriptFeesQueryVariables>(ScriptFeesDocument, baseOptions);
-        }
-export type ScriptFeesQueryHookResult = ReturnType<typeof useScriptFeesQuery>;
-export type ScriptFeesLazyQueryHookResult = ReturnType<typeof useScriptFeesLazyQuery>;
-export type ScriptFeesQueryResult = ApolloReactCommon.QueryResult<ScriptFeesQuery, ScriptFeesQueryVariables>;
 export const HistoricTransactionsDocument = gql`
     query HistoricTransactions($account: Bytes) @api(name: protocol) {
   transactions(where: {sender: $account}, orderBy: timestamp, orderDirection: desc) {
@@ -3844,12 +4334,18 @@ export const HistoricTransactionsDocument = gql`
       amount
       savingsContract {
         id
+        masset {
+          id
+        }
       }
     }
     ... on SavingsContractWithdrawTransaction {
       amount
       savingsContract {
         id
+        masset {
+          id
+        }
       }
     }
     ... on SwapTransaction {
