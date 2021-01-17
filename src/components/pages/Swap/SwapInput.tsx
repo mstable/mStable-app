@@ -43,15 +43,14 @@ export const SwapInput: FC = () => {
       feeRate && feeAmountSimple
         ? [
             {
-              label: 'Low fee 🎉',
-              // TODO ideally 'see details' would open up the details
-              value: `To celebrate our beta launch, fees are at ${formatExactAmount(
+              label: 'Swap fee',
+              value: `A swap fee of ${formatExactAmount(
                 feeRate,
                 16,
                 '%',
                 false,
                 3,
-              )}`,
+              )} applies`,
               highlight: true,
             },
           ]
