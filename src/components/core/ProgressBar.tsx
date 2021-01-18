@@ -33,7 +33,6 @@ export const ProgressBar: FC<Props> = ({
   const themeMode = useThemeMode();
   const scaledValue = (value - min) / (max - min);
   const progressWidth = Math.max(scaledValue * WIDTH, HEIGHT * 2);
-  const saturation = `${scaledValue * 90}%`;
   return (
     <Container viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="none">
       <defs>
@@ -49,7 +48,7 @@ export const ProgressBar: FC<Props> = ({
             y={0}
             width={4}
             height={4}
-            fill={`hsl(${hue},${saturation},${lightness}%)`}
+            fill={`hsl(${hue},85%,${lightness}%)`}
           />
           <animateTransform
             attributeType="xml"
@@ -68,7 +67,7 @@ export const ProgressBar: FC<Props> = ({
             x2="0"
             y2="4"
             style={{
-              stroke: `hsl(${hue},${saturation},${lightness - 4}%)`,
+              stroke: `hsl(${hue},85%,${lightness - 4}%)`,
               strokeWidth: 4,
             }}
           />
