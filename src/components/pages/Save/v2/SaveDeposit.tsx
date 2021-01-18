@@ -44,8 +44,9 @@ export const SaveDeposit: FC<{
   const vaultBalance = vault?.account?.rawBalance ?? BigDecimal.ZERO;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
-  const canDepositWithWrapper =
-    savingsContract?.active && !!ADDRESSES.mUSD.SaveWrapper;
+  const canDepositWithWrapper = !!(
+    savingsContract?.active && !!ADDRESSES.mUSD.SaveWrapper
+  );
 
   const bassets = useMemo(
     () =>
@@ -89,7 +90,7 @@ export const SaveDeposit: FC<{
   }>(() => {
     if (isDepositingSave || !inputAmount || !saveExchangeRate) return {};
 
-    return { value: saveExchangeRate };
+    return { value: BigDecimal.ONE.divPrecisely(saveExchangeRate) };
   }, [inputAmount, isDepositingSave, saveExchangeRate]);
 
   const basset = inputAddress && massetState?.bAssets[inputAddress];
