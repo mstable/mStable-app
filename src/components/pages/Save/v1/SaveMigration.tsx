@@ -113,7 +113,7 @@ const SaveMigrationContent: FC = () => {
           )}
         </H2>
         {(!active || !stepsComplete) && (
-          <P>
+          <div>
             To continue earning interest, please migrate your <b>Save V1</b>{' '}
             balance.
             <ExchangeRate>
@@ -128,7 +128,7 @@ const SaveMigrationContent: FC = () => {
                 &nbsp; imUSD
               </div>
             </ExchangeRate>
-          </P>
+          </div>
         )}
         {active && (
           <StepsContainer>
