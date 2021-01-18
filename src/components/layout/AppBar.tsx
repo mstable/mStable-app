@@ -1,28 +1,31 @@
 import styled from 'styled-components';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
   StatusWarnings,
+  useAccountOpen,
   useAppStatusWarnings,
   useCloseAccount,
-  useAccountOpen,
-  useToggleWallet,
-  useToggleThemeMode,
   useThemeMode,
+  useToggleThemeMode,
+  useToggleWallet,
 } from '../../context/AppProvider';
 import { Color, ViewportWidth } from '../../theme';
 import { ReactComponent as LogoSvg } from '../icons/mstable-small.svg';
 import { UnstyledButton } from '../core/Button';
+import { ActivitySpinner } from '../core/ActivitySpinner';
 import { useTruncatedAddress } from '../../web3/hooks';
 import {
   useConnect,
   useConnected,
-  useWalletAddress,
   useWallet,
+  useWalletAddress,
 } from '../../context/OnboardProvider';
 import { useTokenSubscription } from '../../context/TokensProvider';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
+import { useTransactionsState } from '../../context/TransactionsProvider';
+import { TransactionStatus } from '../../web3/TransactionManifest';
 import { ReactComponent as BraveIcon } from '../icons/wallets/brave.svg';
 import { ReactComponent as MetaMaskIcon } from '../icons/wallets/metamask.svg';
 import { ReactComponent as FortmaticIcon } from '../icons/wallets/fortmatic.svg';
@@ -183,6 +186,13 @@ const WalletIcon: FC = () => {
   }
 };
 
+const WalletAndSpinner = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 const StatusWarning = styled.div<{ error?: boolean }>`
   text-transform: uppercase;
   font-weight: bold;
@@ -248,6 +258,22 @@ const WalletButton: FC = () => {
   );
 };
 
+const TransactionsSpinner: FC = () => {
+  const transactions = useTransactionsState();
+
+  const pending = useMemo(
+    () =>
+      Object.values(transactions).some(
+        tx =>
+          tx.status === TransactionStatus.Response ||
+          tx.status === TransactionStatus.Sent,
+      ),
+    [transactions],
+  );
+
+  return <ActivitySpinner pending={pending} />;
+};
+
 export const AppBar: FC = () => {
   const accountOpen = useAccountOpen();
   const closeAccount = useCloseAccount();
@@ -273,7 +299,10 @@ export const AppBar: FC = () => {
             {themeMode === 'light' ? '☀️' : '🌙'}
           </UnstyledButton>
         </Logo>
-        <WalletButton />
+        <WalletAndSpinner>
+          <TransactionsSpinner />
+          <WalletButton />
+        </WalletAndSpinner>
       </Inner>
       <StatusWarningsRow />
     </Container>

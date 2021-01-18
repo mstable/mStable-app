@@ -75,7 +75,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
     if (
       !(
         v1SavingsBalance?.balance &&
-        v1SavingsBalance.credits &&
+        v1SavingsBalance.credits?.exact.gt(0) &&
         savingsContractV1
       )
     ) {

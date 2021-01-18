@@ -3,32 +3,21 @@ import styled from 'styled-components';
 
 interface Props {
   className?: string;
-  error?: boolean;
-  success?: boolean;
   pending?: boolean;
   size?: number;
 }
 
-const Spinner = styled.svg<Props>`
-  animation: ${({ pending }) =>
-    pending ? 'rotate 2s linear infinite' : 'none'};
+const Spinner = styled.svg<Pick<Props, 'size'>>`
+  animation: rotate 2s linear infinite;
   width: ${({ size }) => (size ? `${size}px` : `50px`)};
   height: ${({ size }) => (size ? `${size}px` : `50px`)};
 
   circle {
-    stroke: ${({ theme, error, success, pending }) =>
-      error
-        ? theme.color.red
-        : success
-        ? theme.color.green
-        : pending
-        ? theme.color.primary
-        : theme.color.greyTransparent};
+    stroke: ${({ theme }) => theme.color.primary};
     stroke-width: ${({ size }) => (size ? `${(size * 8) / 50}px` : `8px`)};
     stroke-linecap: round;
     fill: none;
-    animation: ${({ pending }) =>
-      pending ? 'dash 1.5s ease-in-out infinite' : 'none'};
+    animation: dash 1.5s ease-in-out infinite;
     transition: stroke 0.5s ease;
   }
 
@@ -64,23 +53,13 @@ const Container = styled.div<Props>`
 `;
 
 export const ActivitySpinner: FC<Props> = ({
-  error,
-  success,
   pending,
   className,
   size = 20,
 }) => (
   <Container className={className} size={size}>
-    <Spinner
-      viewBox={`0 0 ${size} ${size}`}
-      error={error}
-      pending={pending}
-      success={success}
-      size={size}
-    >
-      {(pending || success || error) && (
-        <circle cx={size / 2} cy={size / 2} r={(size / 2) * 0.8} />
-      )}
+    <Spinner viewBox={`0 0 ${size} ${size}`} size={size}>
+      {pending && <circle cx={size / 2} cy={size / 2} r={(size / 2) * 0.8} />}
     </Spinner>
   </Container>
 );
