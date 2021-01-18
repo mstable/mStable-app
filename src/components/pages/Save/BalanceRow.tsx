@@ -286,9 +286,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
       </div>
       <div>
         <Interest>
-          {rewards ? (
-            <div>{rewards}</div>
-          ) : !hasApy || apy === 0 ? (
+          {!hasApy || apy === 0 ? (
             <Line />
           ) : apy ? (
             <>
@@ -303,6 +301,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
           ) : (
             <ThemedSkeleton height={24} width={100} />
           )}
+          {rewards}
         </Interest>
       </div>
       <div>
