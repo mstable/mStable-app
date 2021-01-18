@@ -100,7 +100,7 @@ const Title = styled.div`
 
 const Subtitle = styled.div`
   font-size: 0.75rem;
-  color: ${({ theme }) => theme.color.grey};
+  color: ${({ theme }) => theme.color.bodyAccent};
   text-align: left;
 `;
 
@@ -286,7 +286,9 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
       </div>
       <div>
         <Interest>
-          {!hasApy || apy === 0 ? (
+          {rewards ? (
+            <div>{rewards}</div>
+          ) : !hasApy || apy === 0 ? (
             <Line />
           ) : apy ? (
             <>
@@ -301,7 +303,6 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
           ) : (
             <ThemedSkeleton height={24} width={100} />
           )}
-          {rewards}
         </Interest>
       </div>
       <div>

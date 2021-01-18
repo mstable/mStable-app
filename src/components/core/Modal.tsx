@@ -41,6 +41,19 @@ const Header = styled.div`
   background: ${({ theme }) => theme.color.background};
 `;
 
+const CloseButton = styled(UnstyledButton)`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 1rem;
+
+  :hover {
+    background: ${({ theme }) => theme.color.accent};
+  }
+  :active {
+    background: ${({ theme }) => theme.color.accentContrast};
+  }
+`;
+
 const Body = styled.div``;
 
 const Container = styled.div`
@@ -143,7 +156,11 @@ export const Modal: FC<Props> = ({
       <Container className={className} ref={modalRef}>
         <Header>
           <Title>{title}</Title>
-          {hideModal && <UnstyledButton onClick={hideModal}>✕</UnstyledButton>}
+          {hideModal && (
+            <div>
+              <CloseButton onClick={hideModal}>✕</CloseButton>
+            </div>
+          )}
         </Header>
         <Body>{children}</Body>
       </Container>
