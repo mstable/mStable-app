@@ -188,6 +188,10 @@ export const gradientShift = css`
   &:before {
     position: absolute;
     content: '';
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
     background: linear-gradient(
       45deg,
       rgb(255, 0, 0) 0%,
