@@ -142,7 +142,8 @@ export const calculateRewards = (
   const first = claimableEntries[0]?.index ?? 0;
   const last = claimableEntries[claimableEntries.length - 1]?.index ?? 0;
 
-  const nextUnlock = rewardEntries[first]?.start;
+  const nextUnlock = rewardEntries.find(entry => entry.start > currentTime)
+    ?.start;
 
   // doesn't include claims that have completely been claimed (obvs)
   // but this means that the 'after vested' locked amount is off - in some cases, this should go down.
