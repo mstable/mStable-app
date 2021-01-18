@@ -138,8 +138,7 @@ const Container = styled.div<{ accountOpen?: boolean }>`
   display: grid;
   overflow-x: hidden;
 
-  // The sticky header won't always be 80px, so this is less than ideal
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 182px);
 
   // Space for the footer
   padding-bottom: 8rem;
