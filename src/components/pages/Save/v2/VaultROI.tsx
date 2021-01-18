@@ -11,9 +11,17 @@ import { CountUp } from '../../../core/CountUp';
 
 const StyledCountUp = styled(CountUp)`
   font-size: 1rem;
+  font-weight: normal;
+  color: ${({ theme }) => theme.color.body};
 `;
 
-const Container = styled.div``;
+const Subtitle = styled.span`
+  color: ${({ theme }) => theme.color.bodyAccent};
+`;
+
+const Container = styled.div`
+  font-size: 1rem;
+`;
 
 const nowUnix = getUnixTime(Date.now());
 
@@ -37,7 +45,7 @@ export const VaultROI: FC = () => {
     <Container>
       <div>{rewardsText}</div>
       <div>
-        <h5>Weekly ROI (unstable)</h5>
+        <Subtitle>Weekly ROI (unstable) </Subtitle>
         {weeklyROI.fetching ? (
           <Skeleton height={4} width={40} />
         ) : (
