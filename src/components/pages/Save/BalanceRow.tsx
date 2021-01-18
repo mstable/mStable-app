@@ -28,6 +28,7 @@ interface Props {
   token: BalanceType;
   balance?: BigDecimal;
   rewards?: ReactElement;
+  dollarExchangeRate?: number;
   highlight?: boolean;
   apy?: number | string;
   warning?: boolean;
@@ -72,6 +73,8 @@ export const ContainerSnippet = css`
 `;
 
 const Number = styled(CountUp)`
+  display: block;
+
   ${({ theme }) => theme.mixins.numeric};
 
   font-size: 1rem;
@@ -125,6 +128,17 @@ const Asset = styled.div`
   > svg {
     height: 2rem;
     width: 2rem;
+  }
+`;
+
+const BalanceValue = styled.div`
+  flex-direction: column;
+  justify-content: center !important;
+  align-items: flex-end !important;
+  gap: 0.5rem;
+
+  ${Number} + ${Number} {
+    font-size: 1rem;
   }
 `;
 
@@ -245,15 +259,16 @@ export const BalanceHeader: FC = () => {
 };
 
 const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
-  onClick,
   apy,
+  balance,
+  dollarExchangeRate,
+  external,
+  hasChildren = false,
+  highlight,
+  onClick,
   rewards,
   token,
   warning = false,
-  hasChildren = false,
-  balance,
-  external,
-  highlight,
 }) => {
   const account = useAccount();
 
@@ -304,55 +319,68 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
           {rewards}
         </Interest>
       </div>
-      <div>
+      <BalanceValue>
         {account ? (
           balance ? (
-            <Number end={balance?.simple} decimals={6} />
+            <>
+              <Number end={balance.simple} decimals={6} />
+              {dollarExchangeRate && (
+                <Number
+                  prefix="$"
+                  end={dollarExchangeRate * balance.simple}
+                  decimals={6}
+                />
+              )}
+            </>
           ) : (
             <ThemedSkeleton height={24} width={100} />
           )
         ) : (
           <Line />
         )}
-      </div>
+      </BalanceValue>
     </DefaultContainer>
   );
 };
 
 export const BalanceRow: FC<Props> = ({
-  onClick,
-  token,
-  rewards,
-  highlight,
   apy,
-  warning,
-  external,
-  children,
   balance,
+  children,
+  dollarExchangeRate,
+  external,
+  highlight,
+  onClick,
+  rewards,
+  token,
+  warning,
 }) => {
   return children ? (
     <VaultContainer highlight={highlight}>
       <InternalBalanceRow
-        onClick={onClick}
-        token={token}
-        rewards={rewards}
         apy={apy}
-        hasChildren={!!children}
-        warning={warning}
         balance={balance}
+        dollarExchangeRate={dollarExchangeRate}
         external={external}
+        hasChildren={!!children}
+        onClick={onClick}
+        rewards={rewards}
+        token={token}
+        warning={warning}
       />
       {children}
     </VaultContainer>
   ) : (
     <InternalBalanceRow
-      onClick={onClick}
-      token={token}
-      highlight={highlight}
       apy={apy}
-      warning={warning}
-      external={external}
       balance={balance}
+      dollarExchangeRate={dollarExchangeRate}
+      external={external}
+      highlight={highlight}
+      onClick={onClick}
+      rewards={rewards}
+      token={token}
+      warning={warning}
     />
   );
 };

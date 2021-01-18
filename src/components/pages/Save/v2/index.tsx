@@ -21,6 +21,7 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { useRewards } from './RewardsProvider';
 import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
 import { VaultROI } from './VaultROI';
+import { useMtaPrice } from '../../../../hooks/useMtaPrice';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/';
 
@@ -48,13 +49,14 @@ const Container = styled.div`
 // TODO replace masset-specific names/icons
 export const Save: FC = () => {
   const massetState = useSelectedMassetState();
-  const vault = massetState?.savingsContracts?.v2?.boostedSavingsVault;
-
+  const savingsContract = massetState?.savingsContracts?.v2;
+  const vault = savingsContract?.boostedSavingsVault;
   const vaultBalance = vault?.account?.rawBalance;
+  const exchangeRate = savingsContract?.latestExchangeRate?.rate.simple;
+  const mtaPrice = useMtaPrice();
+
   const massetToken = useTokenSubscription(massetState?.address);
-  const saveToken = useTokenSubscription(
-    massetState?.savingsContracts?.v2?.address,
-  );
+  const saveToken = useTokenSubscription(savingsContract?.address);
   const metaToken = useMetaToken();
   const vMetaToken = useTokenSubscription(vault?.stakingContract);
 
@@ -109,6 +111,7 @@ export const Save: FC = () => {
         apy={saveApy?.value}
         onClick={showSaveModal}
         balance={saveToken?.balance}
+        dollarExchangeRate={exchangeRate}
       />
       <BalanceRow
         token={BalanceType.BoostedSavingsVault}
@@ -117,10 +120,15 @@ export const Save: FC = () => {
         rewards={<VaultROI />}
         onClick={showVaultModal}
         balance={vaultBalance ?? BigDecimal.ZERO}
+        dollarExchangeRate={exchangeRate}
       >
         {(vaultBalance || hasRewards) && <Boost />}
       </BalanceRow>
-      <BalanceRow token={BalanceType.Meta} balance={metaToken?.balance} />
+      <BalanceRow
+        token={BalanceType.Meta}
+        balance={metaToken?.balance}
+        dollarExchangeRate={mtaPrice}
+      />
       <BalanceRow
         token={BalanceType.VMeta}
         apy="Variable APY"
