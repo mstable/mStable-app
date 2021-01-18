@@ -219,6 +219,7 @@ export const VaultRewards: FC = () => {
           ref={explodeRef as never}
           disabled={isButtonDisabled}
           onClick={(): void => {
+            explode();
             if (!rewards) return;
 
             if (!showSimulated) {
@@ -228,8 +229,6 @@ export const VaultRewards: FC = () => {
               }, 60000);
               return;
             }
-
-            explode();
 
             if (
               signer &&
