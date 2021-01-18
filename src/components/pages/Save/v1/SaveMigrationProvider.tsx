@@ -216,6 +216,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
       },
     ];
   }, [
+    allowance?.exact,
     approveId,
     approveInfinite,
     massetState,
