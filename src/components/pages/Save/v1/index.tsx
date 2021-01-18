@@ -35,15 +35,7 @@ export const Save: FC = () => {
   const isCurrent = savingsContractState?.current;
   const saveV1Balance = savingsContractState?.savingsBalance?.balance;
 
-  return isCurrent ? (
-    <>
-      {saveV2Exists && <SaveMigration />}
-      <SaveProvider>
-        {saveV2Exists && <SaveV1Separator>Save v1</SaveV1Separator>}
-        <SaveForm />
-      </SaveProvider>
-    </>
-  ) : (
+  return (
     <Container>
       <BalanceHeader />
       <BalanceRow
@@ -53,6 +45,12 @@ export const Save: FC = () => {
         warning
       />
       <SaveMigration />
+      {isCurrent && (
+        <SaveProvider>
+          {saveV2Exists && <SaveV1Separator>Save v1</SaveV1Separator>}
+          <SaveForm />
+        </SaveProvider>
+      )}
     </Container>
   );
 };
