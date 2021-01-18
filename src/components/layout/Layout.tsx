@@ -3,7 +3,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import { useLocation } from 'react-router-dom';
 
-import { ReactTooltip } from '../core/ReactTooltip';
+import { ReactTooltip, Tooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Account } from './Account';
@@ -187,7 +187,8 @@ export const Layout: FC = ({ children }) => {
       <Footer />
       <PendingTransactions />
       <NotificationToasts />
-      <ReactTooltip id="global" />
+      <Tooltip tip="" hideIcon />
+      <ReactTooltip id="global" place="top" />
       <GlobalStyle />
     </>
   );
