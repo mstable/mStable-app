@@ -219,7 +219,6 @@ export const VaultRewards: FC = () => {
           ref={explodeRef as never}
           disabled={isButtonDisabled}
           onClick={(): void => {
-            explode();
             if (!rewards) return;
 
             if (!showSimulated) {
@@ -229,6 +228,8 @@ export const VaultRewards: FC = () => {
               }, 10000);
               return;
             }
+
+            explode();
 
             if (
               signer &&
@@ -254,7 +255,7 @@ export const VaultRewards: FC = () => {
           highlighted={showSimulated}
           scale={0.7}
         >
-          {showSimulated ? 'Claim' : 'Preview Claim'}
+          {showSimulated ? 'Claim MTA' : 'Preview Claim'}
         </Button>
       }
     >
@@ -283,17 +284,16 @@ export const VaultRewards: FC = () => {
             value={rewards?.now.vesting.locked}
             fetching={fetching}
           >
-            {rewards?.nextUnlock && rewards.currentTime < rewards.nextUnlock ? (
-              <div>
-                Next vesting period starts in{' '}
-                {formatDistance(
-                  fromUnixTime(rewards.currentTime),
-                  fromUnixTime(rewards.nextUnlock),
-                )}
-              </div>
-            ) : (
-              '-'
-            )}
+            {rewards?.nextUnlock &&
+              rewards.currentTime < rewards.nextUnlock && (
+                <div>
+                  Next vesting period starts in{' '}
+                  {formatDistance(
+                    fromUnixTime(rewards.currentTime),
+                    fromUnixTime(rewards.nextUnlock),
+                  )}
+                </div>
+              )}
           </Row>
           <Row
             title="Wallet"
