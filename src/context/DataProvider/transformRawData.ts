@@ -186,7 +186,7 @@ const transformSavingsContractV2 = (
   current: boolean,
 ): Extract<SavingsContractState, { version: 2 }> => {
   const {
-    active,
+    // active,
     dailyAPY,
     id,
     latestExchangeRate,
@@ -196,7 +196,7 @@ const transformSavingsContractV2 = (
   } = savingsContract;
 
   return {
-    active,
+    active: true,
     current,
     address: id,
     dailyAPY: parseFloat(dailyAPY),
@@ -235,7 +235,7 @@ const transformTokenData = (
 
 const transformMassetData = (
   {
-    currentSavingsContract,
+    // currentSavingsContract,
     feeRate,
     redemptionFeeRate,
     token: { decimals, address },
@@ -275,7 +275,9 @@ const transformMassetData = (
             savingsContractV1,
             tokens,
             address,
-            savingsContractV1.id === currentSavingsContract?.id,
+            // savingsContractV1.id === currentSavingsContract?.id,
+            // TODO marking as inactive manually because of a subgraph issue
+            false,
           )
         : undefined,
       v2: savingsContractV2
@@ -283,7 +285,9 @@ const transformMassetData = (
             savingsContractV2,
             tokens,
             address,
-            savingsContractV2.id === currentSavingsContract?.id,
+            // savingsContractV2.id === currentSavingsContract?.id,
+            // TODO marking as active manually because of a subgraph issue
+            true,
           )
         : undefined,
     },
