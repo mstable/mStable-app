@@ -16,6 +16,7 @@ import { Interfaces } from '../../../../types';
 import { TabBtn, TabsContainer } from '../../../core/Tabs';
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
+import { BigDecimal } from '../../../../web3/BigDecimal';
 
 const formId = 'MassetModal';
 
@@ -56,7 +57,9 @@ export const MassetModal: FC = () => {
 
   const exchangeRate = useMemo(
     () => ({
-      value: savingsContract?.latestExchangeRate?.rate,
+      value: savingsContract?.latestExchangeRate?.rate
+        ? BigDecimal.ONE.divPrecisely(savingsContract.latestExchangeRate.rate)
+        : undefined,
       fetching: !savingsContract,
     }),
     [savingsContract],
