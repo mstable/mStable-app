@@ -21,7 +21,7 @@ import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const MAX_BOOST = 3;
 const MIN_BOOST = 1;
-const COEFFICIENT = 3.2;
+const COEFFICIENT = 6;
 const SAVE_EXPONENT = 0.875;
 
 const BoostCountup = styled(DifferentialCountup)`
