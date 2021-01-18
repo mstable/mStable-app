@@ -22,7 +22,7 @@ const slideIn = keyframes`
 
 const Container = styled.div`
   position: fixed;
-  top: 24px;
+  top: 32px;
   right: 40px;
   width: 20%;
   min-width: 280px;

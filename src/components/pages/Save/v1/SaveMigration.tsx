@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { useToggle } from 'react-use';
 
 import { useTransactionsState } from '../../../../context/TransactionsProvider';
 import { TransactionStatus } from '../../../../web3/TransactionManifest';
@@ -7,6 +8,7 @@ import { TransactionStatus } from '../../../../web3/TransactionManifest';
 import { ViewportWidth, gradientShift } from '../../../../theme';
 import { H2, P } from '../../../core/Typography';
 import { Steps } from '../../../core/Steps';
+import { Button } from '../../../core/Button';
 
 import {
   SaveMigrationProvider,
@@ -64,10 +66,11 @@ const Card = styled.div`
 `;
 
 const SaveMigrationContent: FC = () => {
+  const [active, toggleActive] = useToggle(false);
   const steps = useMigrationSteps();
   const transactions = useTransactionsState();
   const submitting = Object.values(transactions)
-    .filter(tx => tx.manifest.formId === 'saveMigration')
+    .filter(tx => tx.manifest?.formId === 'saveMigration')
     .some(
       tx =>
         tx.status === TransactionStatus.Pending ||
@@ -81,17 +84,29 @@ const SaveMigrationContent: FC = () => {
     <Card>
       <Inner>
         <H2>
-          {!stepsComplete ? `Migration Assistant` : `Migration Complete! 🎉`}
+          {active ? (
+            !stepsComplete ? (
+              `Migration Assistant`
+            ) : (
+              `Migration Complete! 🎉`
+            )
+          ) : (
+            <Button highlighted onClick={toggleActive}>
+              Migrate your Save V1 balance
+            </Button>
+          )}
         </H2>
-        {!stepsComplete && (
+        {(!active || !stepsComplete) && (
           <P>
-            To continue earning interest, please follow these steps to migrate
-            your <b>Save V1</b> balance.
+            To continue earning interest, please migrate your <b>Save V1</b>{' '}
+            balance.
           </P>
         )}
-        <StepsContainer>
-          {steps.length && <Steps steps={steps} pending={submitting} />}
-        </StepsContainer>
+        {active && (
+          <StepsContainer>
+            {steps.length && <Steps steps={steps} pending={submitting} />}
+          </StepsContainer>
+        )}
       </Inner>
     </Card>
   );
