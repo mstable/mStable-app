@@ -29,7 +29,7 @@ import {
 import { Interfaces } from '../../../../types';
 import { StepProps } from '../../../core/Step';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
-import { MassetModal } from '../v2/MassetModal';
+import { SaveModal } from '../v2/SaveModal';
 
 const isTxPending = (
   transactions: Record<string, Transaction>,
@@ -69,7 +69,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
 
   const [showDepositModal] = useModalComponent({
     title: 'Deposit mUSD',
-    children: <MassetModal />,
+    children: <SaveModal />,
   });
 
   const proposeWithdrawTx = useCallback(() => {
