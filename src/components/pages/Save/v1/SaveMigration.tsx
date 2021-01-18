@@ -14,12 +14,26 @@ import {
   SaveMigrationProvider,
   useMigrationSteps,
 } from './SaveMigrationProvider';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 
 const StepsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 100%;
+`;
+
+const ExchangeRate = styled.div`
+  margin: 2rem 0 0;
+  text-align: center;
+  display: flex;
+  font-size: 1rem;
+  flex: 1;
+  justify-content: center;
+
+  span {
+    ${({ theme }) => theme.mixins.numeric};
+  }
 `;
 
 const Inner = styled.div`
@@ -69,6 +83,8 @@ const SaveMigrationContent: FC = () => {
   const [active, toggleActive] = useToggle(false);
   const steps = useMigrationSteps();
   const transactions = useTransactionsState();
+  const massetState = useSelectedMassetState();
+  const savingsContract = massetState?.savingsContracts.v2;
   const submitting = Object.values(transactions)
     .filter(tx => tx.manifest?.formId === 'saveMigration')
     .some(
@@ -100,6 +116,15 @@ const SaveMigrationContent: FC = () => {
           <P>
             To continue earning interest, please migrate your <b>Save V1</b>{' '}
             balance.
+            <ExchangeRate>
+              <div>
+                <span>1</span>&nbsp; mUSD = &nbsp;
+                <span>
+                  {savingsContract?.latestExchangeRate?.rate.simple.toFixed(2)}
+                </span>
+                &nbsp; imUSD
+              </div>
+            </ExchangeRate>
           </P>
         )}
         {active && (
