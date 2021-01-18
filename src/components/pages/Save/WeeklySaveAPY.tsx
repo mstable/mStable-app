@@ -56,7 +56,12 @@ export const WeeklySaveAPY: FC = () => {
       ) : apy.type === 'inactive' ? (
         <InfoMsg>Not receiving interest</InfoMsg>
       ) : apy.type === 'bootstrapping' || apy.value === 0 ? (
-        <InfoMsg>APY not available yet</InfoMsg>
+        <div>
+          <InfoMsg>APY not available yet.</InfoMsg>
+          <InfoMsg>
+            Save V1 APY: <CountUp end={apy.v1Apy} suffix="%" decimals={2} />
+          </InfoMsg>
+        </div>
       ) : (
         <>
           <InfoCountUp end={apy?.value} suffix="%" decimals={2} />

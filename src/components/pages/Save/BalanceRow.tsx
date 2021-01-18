@@ -150,7 +150,7 @@ const StyledExternalLinkArrow = styled(ExternalLinkArrow)`
   right: -3rem;
 
   * {
-    fill: ${({ theme }) => theme.color.bodyAccent};
+    fill: ${({ theme }) => theme.color.primary};
   }
 `;
 

@@ -131,7 +131,6 @@ export const Save: FC = () => {
       />
       <BalanceRow
         token={BalanceType.VMeta}
-        apy="Variable APY"
         balance={vMetaToken?.balance}
         onClick={navigateToGovernance}
         external

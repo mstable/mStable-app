@@ -100,7 +100,7 @@ const RewardsTimeTravel: FC = () => {
         min={0}
         step={1}
         disabled={!timeTravel}
-        max={181}
+        max={190}
         onChange={event => {
           setTimeTravel(
             getUnixTime(

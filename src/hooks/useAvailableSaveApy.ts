@@ -5,6 +5,7 @@ import { useSelectedSavingsContractState } from '../context/SelectedSaveVersionP
 
 import { useBlockTimesForDates } from './useBlockTimesForDates';
 import { useDailyApysForBlockTimes } from './useDailyApysForBlockTimes';
+import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
 
 const now = new Date();
 const timestampsForWeek = eachDayOfInterval({
@@ -16,9 +17,12 @@ const timestampsForWeek = eachDayOfInterval({
 
 export const useAvailableSaveApy = (): {
   value: number;
+  v1Apy: number;
   type: 'live' | 'average' | 'inactive' | 'fetching' | 'bootstrapping';
 } => {
+  const massetState = useSelectedMassetState();
   const savingsContract = useSelectedSavingsContractState();
+  const v1Apy = massetState?.savingsContracts.v1?.dailyAPY ?? 0;
   const liveAPY = savingsContract?.dailyAPY;
 
   const blockTimes = useBlockTimesForDates(timestampsForWeek);
@@ -33,11 +37,11 @@ export const useAvailableSaveApy = (): {
     let value = 0;
 
     if (fetching) {
-      return { value, type: 'fetching' };
+      return { value, v1Apy, type: 'fetching' };
     }
 
     if (!current) {
-      return { value, type: 'inactive' };
+      return { value, v1Apy, type: 'inactive' };
     }
 
     // Not enough data to sample an average
@@ -53,9 +57,9 @@ export const useAvailableSaveApy = (): {
 
     // It's possible to get misleading APYs during boostrapping
     if (value > 1000) {
-      return { value: 0, type: 'bootstrapping' };
+      return { value: 0, v1Apy, type: 'bootstrapping' };
     }
 
-    return { value, type: useLive ? 'live' : 'average' };
+    return { value, v1Apy, type: useLive ? 'live' : 'average' };
   }, [current, liveAPY, dailyApys, fetching]);
 };
