@@ -1,26 +1,15 @@
-import { useMemo, useState } from 'react';
-import { useEffectOnce } from 'react-use';
+import { useMemo } from 'react';
 
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
-import { fetchCoingeckoPrices } from '../utils/fetchCoingeckoPrices';
 import { BigDecimal } from '../web3/BigDecimal';
-import { ADDRESSES_BY_NETWORK } from '../constants';
+import { useMtaPrice } from './useMtaPrice';
 
 export const useVaultWeeklyROI = (): {
   fetching?: boolean;
   baseValue: number;
   boostedValue: number;
 } => {
-  const [mtaPrice, setMtaPrice] = useState<number>();
-
-  useEffectOnce(() => {
-    fetchCoingeckoPrices([ADDRESSES_BY_NETWORK[1].MTA]).then(result => {
-      const price = result?.[ADDRESSES_BY_NETWORK[1].MTA]?.usd;
-      if (price) {
-        setMtaPrice(price);
-      }
-    });
-  });
+  const mtaPrice = useMtaPrice();
 
   const massetState = useSelectedMassetState();
   const savingsContract = massetState?.savingsContracts.v2;
