@@ -326,7 +326,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
               <Number end={balance.simple} decimals={6} />
               {dollarExchangeRate && (
                 <Number
-                  prefix="$"
+                  prefix="≈ $"
                   end={dollarExchangeRate * balance.simple}
                   decimals={6}
                 />
