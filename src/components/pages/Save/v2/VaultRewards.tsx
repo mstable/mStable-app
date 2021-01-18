@@ -225,7 +225,7 @@ export const VaultRewards: FC = () => {
               toggleShowSimulated(true);
               setTimeout(() => {
                 toggleShowSimulated(false);
-              }, 10000);
+              }, 60000);
               return;
             }
 
