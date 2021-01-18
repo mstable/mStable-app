@@ -55,8 +55,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     MTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
     vMTA: '0xae8bc96da4f9a9613c323478be181fdb2aa0e1bf',
     mUSD: {
-      // TODO add this when the contract is deployed
-      // SaveWrapper: '',
+      SaveWrapper: '0xD7c346C228bDdd8a6a4c1a69E6cC82292909dcAD',
     },
     CURVE: {
       CURVE_V2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',
