@@ -25,7 +25,7 @@ const TotalSupply: FC = () => {
     <div>
       <H3>Total supply</H3>
       {totalSupply ? (
-        <CountUp end={totalSupply.simpleRounded} decimals={2} />
+        <CountUp prefix="$" end={totalSupply.simpleRounded} decimals={2} />
       ) : (
         <ThemedSkeleton height={50} />
       )}
@@ -33,14 +33,18 @@ const TotalSupply: FC = () => {
   );
 };
 
-const TotalSavings: FC = () => {
-  const savingsContractState = useSelectedSavingsContractState();
-  const totalSavings = savingsContractState?.totalSavings;
+const TotalSavings: FC<{ version: 'v1' | 'v2' }> = ({ version }) => {
+  const massetState = useSelectedMassetState();
+  const savingsContract = massetState?.savingsContracts[version];
+  const exchangeRate = savingsContract?.latestExchangeRate?.rate.simple;
+  const totalSavings = savingsContract?.totalSavings?.simple;
+  const value =
+    exchangeRate && totalSavings ? exchangeRate * totalSavings : undefined;
   return (
     <div>
-      <H3>Total savings</H3>
-      {totalSavings ? (
-        <CountUp end={totalSavings.simpleRounded} decimals={2} />
+      <H3>Total savings ({version})</H3>
+      {value ? (
+        <CountUp prefix="$" end={value} decimals={2} />
       ) : (
         <ThemedSkeleton height={50} />
       )}
@@ -109,15 +113,14 @@ export const Analytics: FC = () => {
       </Section>
       <Section id="volumes">
         <H2>Volumes</H2>
-        <P size={Size.s}>All values in mUSD</P>
         <VolumeChart />
       </Section>
       <Section id="totals">
         <H2>Totals</H2>
-        <P size={Size.s}>All values in mUSD</P>
         <NiceBigNumbers>
           <TotalSupply />
-          <TotalSavings />
+          <TotalSavings version="v1" />
+          <TotalSavings version="v2" />
         </NiceBigNumbers>
         <AggregateChart />
       </Section>

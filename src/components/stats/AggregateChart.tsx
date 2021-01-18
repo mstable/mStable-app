@@ -24,19 +24,21 @@ interface AggregateMetricsQueryResult {
     totalSupply: {
       simple: string;
     };
-    savingsContracts: [
-      {
-        totalSavings: {
-          simple: string;
-        };
-      },
-    ];
+    savingsContracts: {
+      latestExchangeRate: {
+        rate: number;
+      };
+      totalSavings: {
+        simple: string;
+      };
+    }[];
   };
 }
 
 const colors = {
   totalSupply: Color.green,
-  totalSavings: Color.blue,
+  totalSavingsV1: Color.grey,
+  totalSavingsV2: Color.blue,
 };
 
 const aggregateMetrics = [
@@ -47,10 +49,16 @@ const aggregateMetrics = [
     color: colors.totalSupply,
   },
   {
-    type: 'totalSavings',
+    type: 'totalSavingsV1',
     enabled: true,
-    label: 'Total savings',
-    color: colors.totalSavings,
+    label: 'Total savings (V1)',
+    color: colors.totalSavingsV1,
+  },
+  {
+    type: 'totalSavingsV2',
+    enabled: true,
+    label: 'Total savings (V2)',
+    color: colors.totalSavingsV2,
   },
 ];
 
@@ -59,11 +67,11 @@ const nowUnix = getUnixTime(new Date());
 const useAggregateMetrics = (): {
   timestamp: number;
   totalSupply: number;
-  totalSavings: number;
+  totalSavingsV1: number;
+  totalSavingsV2: number;
 }[] => {
   const dateFilter = useDateFilter();
   const savingsContractState = useSelectedSavingsContractState();
-  const version = savingsContractState?.version;
   const massetAddress = savingsContractState?.massetAddress;
 
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
@@ -82,14 +90,16 @@ const useAggregateMetrics = (): {
         totalSupply {
           simple
         }
-        #first deposited version of save-v2
-        savingsContracts(where: {version: $version, id_not: "0x478e379d5f3e2f949a94f1ccfb7217fb35916615"}) {
+        savingsContracts(orderBy: version, orderDirection: asc) {
+          latestExchangeRate {
+            rate
+          }
           totalSavings {
             simple
           }
         }
       }
-      query AggregateMetrics($version: Int!) @api(name: protocol) {
+      query AggregateMetrics @api(name: protocol) {
         ${current}
         ${blockMetrics}
       }
@@ -98,7 +108,6 @@ const useAggregateMetrics = (): {
 
   const query = useQuery<AggregateMetricsQueryResult>(metricsDoc, {
     fetchPolicy: 'no-cache',
-    variables: { version },
   });
 
   return useMemo(() => {
@@ -111,12 +120,18 @@ const useAggregateMetrics = (): {
     return filtered
       .sort(([a], [b]) => (a > b ? 1 : -1))
       .map(([timestamp, { totalSupply, savingsContracts }]) => {
+        const totalSavingsV1 = parseFloat(
+          savingsContracts[0] ? savingsContracts[0].totalSavings.simple : '0',
+        );
+        const totalSavingsV2 =
+          parseFloat(
+            savingsContracts[1] ? savingsContracts[1].totalSavings.simple : '0',
+          ) * (savingsContracts[1]?.latestExchangeRate?.rate ?? 0.1);
         return {
           timestamp,
           totalSupply: parseFloat(totalSupply.simple),
-          totalSavings: parseFloat(
-            savingsContracts[0] ? savingsContracts[0].totalSavings.simple : '0',
-          ),
+          totalSavingsV1,
+          totalSavingsV2,
         };
       });
   }, [query.data]);

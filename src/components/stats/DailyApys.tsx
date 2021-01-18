@@ -7,6 +7,7 @@ import {
   AreaChart,
   ResponsiveContainer,
 } from 'recharts';
+import styled from 'styled-components';
 import { format } from 'date-fns';
 import { Color } from '../../theme';
 import { percentageFormat, periodFormatMapping } from './utils';
@@ -16,6 +17,13 @@ import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersi
 import { ThemedSkeleton } from '../core/ThemedSkeleton';
 import { useBlockTimesForDates } from '../../hooks/useBlockTimesForDates';
 import { useDailyApysForBlockTimes } from '../../hooks/useDailyApysForBlockTimes';
+
+const NoData = styled.div`
+  display: flex;
+  height: 16rem;
+  justify-content: center;
+  align-items: center;
+`;
 
 enum MetricTypes {
   DailyApy = 'DailyApy',
@@ -51,6 +59,10 @@ const DailyApysChart: FC = () => {
     savingsContractState?.address,
     blockTimes,
   );
+
+  if (dailyApys.some(value => value.dailyAPY === 0 || value.dailyAPY > 1000)) {
+    return <NoData>No data available yet</NoData>;
+  }
 
   return (
     <RechartsContainer>
