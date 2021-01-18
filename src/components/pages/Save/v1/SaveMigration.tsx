@@ -120,7 +120,10 @@ const SaveMigrationContent: FC = () => {
               <div>
                 <span>1</span>&nbsp; mUSD = &nbsp;
                 <span>
-                  {savingsContract?.latestExchangeRate?.rate.simple.toFixed(2)}
+                  {savingsContract?.latestExchangeRate?.rate &&
+                    (
+                      1 / savingsContract.latestExchangeRate?.rate.simple
+                    ).toFixed(2)}
                 </span>
                 &nbsp; imUSD
               </div>
