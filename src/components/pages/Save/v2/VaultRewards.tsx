@@ -262,7 +262,7 @@ export const VaultRewards: FC = () => {
         <Stats>
           <Row
             title="Unclaimed"
-            tip="Rewards earned but not yet claimed. The next claim will send 20% of these rewards to you now, and 80% to your 'Vested' amount."
+            tip="Rewards earned but not yet claimed. The next claim will send 20% of these rewards to you now, and 80% to your 'Vesting' amount."
             preview={showSimulated ? BigDecimal.ZERO : undefined}
             value={rewards?.now.earned.total}
             fetching={fetching}
