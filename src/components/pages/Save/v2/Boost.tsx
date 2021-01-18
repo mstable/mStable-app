@@ -2,7 +2,10 @@ import React, { FC, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { ADDRESSES } from '../../../../constants';
-import { useSaveV2Address } from '../../../../context/DataProvider/DataProvider';
+import {
+  useSaveV2Address,
+  useSelectedMassetState,
+} from '../../../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { createToggleContext } from '../../../../hooks/createToggleContext';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
@@ -77,27 +80,28 @@ const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
 );
 
 const calculateBoost = (
-  saveBalance?: BigDecimal,
+  stakingBalance?: BigDecimal,
   vMTABalance?: BigDecimal,
 ): number => {
   if (
     vMTABalance &&
-    saveBalance &&
+    stakingBalance &&
     vMTABalance.simple > 0 &&
-    saveBalance.simple > 0
+    stakingBalance.simple > 0
   ) {
     const boost =
       MIN_BOOST +
-      (COEFFICIENT * vMTABalance.simple) / saveBalance.simple ** SAVE_EXPONENT;
+      (COEFFICIENT * vMTABalance.simple) /
+        stakingBalance.simple ** SAVE_EXPONENT;
     return Math.min(MAX_BOOST, boost);
   }
   return MIN_BOOST;
 };
 
-const calculateVMTAForMaxBoost = (saveBalance: BigDecimal): number => {
+const calculateVMTAForMaxBoost = (stakingBalance: BigDecimal): number => {
   return (
     ((MAX_BOOST - MIN_BOOST) / COEFFICIENT) *
-    saveBalance.simple ** SAVE_EXPONENT
+    stakingBalance.simple ** SAVE_EXPONENT
   );
 };
 
@@ -197,15 +201,15 @@ export const Calculator: FC = () => {
 
 const BoostBar: FC = () => {
   const [, toggleShowCalculator] = useShowCalculatorCtx();
-  const saveAddress = useSaveV2Address();
-  const save = useTokenSubscription(saveAddress);
+  const massetState = useSelectedMassetState();
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
-  const saveBalance = save?.balance;
+  const vaultBalance =
+    massetState?.savingsContracts.v2?.boostedSavingsVault?.account?.rawBalance;
   const vMTABalance = vMTA?.balance;
 
   const boost = useMemo<number>(
-    () => calculateBoost(saveBalance, vMTABalance),
-    [saveBalance, vMTABalance],
+    () => calculateBoost(vaultBalance, vMTABalance),
+    [vaultBalance, vMTABalance],
   );
 
   return (
