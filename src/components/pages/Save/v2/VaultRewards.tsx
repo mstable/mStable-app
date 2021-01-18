@@ -80,7 +80,11 @@ const RewardsTimeTravel: FC = () => {
     <TimeTravelContainer>
       <div>
         <div>
-          <ToggleInput onClick={toggleTimeTravel} checked={timeTravel} />
+          <ToggleInput
+            onClick={toggleTimeTravel}
+            checked={timeTravel}
+            disabled={!rewards}
+          />
           <Tooltip tip="Simulate your rewards in 6 months time. This assumes that the vault's rewards will be added a constant rate for this time.">
             Time Travel Rewards
           </Tooltip>
@@ -145,28 +149,29 @@ const Body = styled.div<{ isPreview?: boolean }>`
 const Row: FC<{
   title: string;
   tip?: string;
+  fetching?: boolean;
   value?: BigDecimal;
   preview?: BigDecimal;
-}> = ({ children, title, tip, value, preview }) => {
+}> = ({ children, title, tip, value, preview, fetching }) => {
   return (
     <RowContainer>
       <div>
         {title}
         {tip && <Tooltip tip={tip} />}
-        {value ? (
+        {fetching ? (
+          <SkeleWrapper>
+            <ThemedSkeleton height={8} />
+          </SkeleWrapper>
+        ) : (
           <>
             <Line />
-            <CountUp end={value.simple} decimals={3} />
+            {value && <CountUp end={value.simple} decimals={3} />}
             {!!preview && (
               <span>
                 &nbsp;→ <PreviewCountUp end={preview.simple} decimals={3} />
               </span>
             )}
           </>
-        ) : (
-          <SkeleWrapper>
-            <ThemedSkeleton height={8} />
-          </SkeleWrapper>
         )}
       </div>
       <div>{children}</div>
@@ -198,8 +203,13 @@ export const VaultRewards: FC = () => {
     [metaToken, rewards, showSimulated],
   );
 
-  const isButtonDisabled =
-    !metaToken || rewards?.now.earned.unlocked.exact.eq(0);
+  const fetching = !(metaToken && massetState);
+
+  const isButtonDisabled = !!(
+    fetching ||
+    !rewards ||
+    rewards?.now.earned.unlocked.exact.eq(0)
+  );
 
   return (
     <Widget
@@ -207,6 +217,7 @@ export const VaultRewards: FC = () => {
       headerContent={
         <Button
           ref={explodeRef as never}
+          disabled={isButtonDisabled}
           onClick={(): void => {
             explode();
             if (!rewards) return;
@@ -240,7 +251,6 @@ export const VaultRewards: FC = () => {
               );
             }
           }}
-          disabled={isButtonDisabled}
           highlighted={showSimulated}
           scale={0.7}
         >
@@ -255,12 +265,14 @@ export const VaultRewards: FC = () => {
             tip="Rewards earned but not yet claimed. The next claim will send 20% of these rewards to you now, and 80% to your 'Vested' amount."
             preview={showSimulated ? BigDecimal.ZERO : undefined}
             value={rewards?.now.earned.total}
+            fetching={fetching}
           />
           <Row
             title="Vested"
             tip="Rewards from previous claims that have vested. The next claim will send 100% of these rewards to you."
             preview={showSimulated ? BigDecimal.ZERO : undefined}
             value={rewards?.now.vesting.unlocked}
+            fetching={fetching}
           />
           <Row
             title="Vesting"
@@ -269,8 +281,9 @@ export const VaultRewards: FC = () => {
               showSimulated ? rewards?.afterClaim.vesting.locked : undefined
             }
             value={rewards?.now.vesting.locked}
+            fetching={fetching}
           >
-            {rewards?.nextUnlock ? (
+            {rewards?.nextUnlock && rewards.currentTime < rewards.nextUnlock ? (
               <div>
                 Next vesting period starts in{' '}
                 {formatDistance(
