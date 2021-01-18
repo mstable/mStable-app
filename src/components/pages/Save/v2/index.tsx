@@ -50,7 +50,7 @@ export const Save: FC = () => {
   const massetState = useSelectedMassetState();
   const vault = massetState?.savingsContracts?.v2?.boostedSavingsVault;
 
-  const vaultBalance = vault?.account?.rawBalance ?? BigDecimal.ZERO;
+  const vaultBalance = vault?.account?.rawBalance;
   const massetToken = useTokenSubscription(massetState?.address);
   const saveToken = useTokenSubscription(
     massetState?.savingsContracts?.v2?.address,
@@ -116,7 +116,7 @@ export const Save: FC = () => {
         highlight
         rewards={<VaultROI />}
         onClick={showVaultModal}
-        balance={vaultBalance}
+        balance={vaultBalance ?? BigDecimal.ZERO}
       >
         {(vaultBalance || hasRewards) && <Boost />}
       </BalanceRow>
