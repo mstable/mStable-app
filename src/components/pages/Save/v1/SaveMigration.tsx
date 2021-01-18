@@ -6,7 +6,7 @@ import { useTransactionsState } from '../../../../context/TransactionsProvider';
 import { TransactionStatus } from '../../../../web3/TransactionManifest';
 
 import { ViewportWidth, gradientShift } from '../../../../theme';
-import { H2, P } from '../../../core/Typography';
+import { H2 } from '../../../core/Typography';
 import { Steps } from '../../../core/Steps';
 import { Button } from '../../../core/Button';
 
