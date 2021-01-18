@@ -64,7 +64,8 @@ export const SaveMigrationProvider: FC = ({ children }) => {
 
   const savingsContractV1 = useSelectedSaveV1Contract();
   const massetContract = useSelectedMassetContract();
-  useTokenAllowance(massetState?.address, v2Address);
+
+  const allowance = useTokenAllowance(massetState?.address, v2Address);
 
   const [showDepositModal] = useModalComponent({
     title: 'Deposit mUSD',
@@ -151,9 +152,9 @@ export const SaveMigrationProvider: FC = ({ children }) => {
 
     const { v1, v2 } = massetState.savingsContracts;
 
-    const approveComplete = massetState.token.allowances[v2.address]?.exact.gte(
-      v1.savingsBalance.balance?.exact as BigNumber,
-    );
+    const approveComplete =
+      allowance?.exact.gte(massetState.token.balance?.exact as BigNumber) ??
+      false;
 
     const withdrawTxSubmitting = isTxPending(transactions, withdrawId);
     const approveTxSubmitting = isTxPending(transactions, approveId);
