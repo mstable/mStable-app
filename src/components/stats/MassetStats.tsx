@@ -9,13 +9,6 @@ import { AnalyticsLink } from '../pages/Analytics/AnalyticsLink';
 
 const StatsGraphic = styled.div`
   width: 100%;
-  flex-grow: 1;
-  padding-bottom: 20px;
-`;
-
-const StatsGraphicNull = styled.div`
-  width: 10%;
-  flex-grow: 0;
   padding-bottom: 20px;
 `;
 
@@ -24,9 +17,16 @@ const StatsContainer = styled.div`
 `;
 
 const StatsRow = styled.div`
-  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
-    display: flex;
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+    flex-direction: row;
     justify-content: space-between;
+
+    > div {
+      flex-basis: calc(50% - 5%);
+    }
   }
 `;
 
@@ -40,7 +40,6 @@ export const MassetStats: FC = () => {
           <H3>{masset.token.symbol} basket share</H3>
           <BasketStats />
         </StatsGraphic>
-        <StatsGraphicNull />
         <StatsGraphic>
           <H3>Total {masset.token.symbol} supply</H3>
           <CountUp end={masset.token.totalSupply.simple} />

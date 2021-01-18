@@ -183,7 +183,6 @@ export const darkTheme: DefaultTheme = {
 export const gradientShift = css`
   position: relative;
   background: ${({ theme }) => theme.color.background};
-  border-color: transparent;
 
   &:before {
     position: absolute;

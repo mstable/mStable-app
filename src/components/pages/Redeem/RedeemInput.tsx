@@ -43,6 +43,9 @@ const CurveProtip = styled(Protip)`
   box-shadow: 0 0 0 3px #3465a4, 1em 1em 3px 0 rgba(0, 0, 0, 0.5);
   margin-top: 1rem;
   margin-bottom: 32px;
+  max-height: 7rem;
+  display: flex;
+  flex-direction: column;
 
   > :last-child {
     display: flex;

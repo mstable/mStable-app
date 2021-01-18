@@ -6,6 +6,10 @@ import { H2, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ViewportWidth } from '../../../theme';
 import { ReactComponent as GovernanceIcon } from '../../icons/circle/gavel.svg';
+import { ReactComponent as EarnIcon } from '../../icons/circle/earn.svg';
+import { ReactComponent as SaveIcon } from '../../icons/circle/save.svg';
+import { ReactComponent as SwapIcon } from '../../icons/circle/swap.svg';
+import { ReactComponent as MintIcon } from '../../icons/circle/mint.svg';
 import { useConnected, useConnect } from '../../../context/OnboardProvider';
 import { useToggleWallet } from '../../../context/AppProvider';
 
@@ -19,12 +23,16 @@ const Symbol = styled.div`
   svg {
     height: 80px;
     width: 80px;
+
+    * {
+      fill: ${({ theme }) => theme.color.body};
+    }
   }
 
   div {
     font-size: 24px;
     line-height: 32px;
-    text-transform: lowercase;
+    text-transform: capitalize;
     padding-right: 16px;
   }
 
@@ -44,6 +52,15 @@ const Symbol = styled.div`
   }
 `;
 
+const ButtonContainer = styled(P)`
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    margin: 1rem 0;
+  }
+`;
+
 const Block = styled.div`
   ${P} {
     font-size: ${({ theme }) => theme.fontSize.l};
@@ -56,10 +73,15 @@ const SymbolBlock = styled(Block)`
 
 const CarouselItem = styled.section`
   min-height: 400px;
-  padding-bottom: 32px;
 
   > :first-child {
-    padding-bottom: 64px;
+    padding-bottom: 1rem;
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    > :first-child {
+      padding-bottom: 2rem;
+    }
   }
 
   ${H2} {
@@ -144,11 +166,6 @@ const Container = styled.div`
 
 const Carousel = styled.div`
   color: ${({ theme }) => theme.color.body};
-
-  a {
-    color: ${({ theme }) => theme.color.body};
-  }
-
   padding: 0 16px;
   width: 100%;
   margin: 0 auto;
@@ -171,7 +188,7 @@ const Start: FC<{}> = () => {
           By reducing complexity and fragmentation, mStable is a step-change in
           the usability of stablecoins.
         </P>
-        <P>
+        <ButtonContainer>
           <Button
             type="button"
             onClick={() => {
@@ -184,7 +201,7 @@ const Start: FC<{}> = () => {
           >
             {connected ? 'Go to app' : 'Connect'}
           </Button>
-        </P>
+        </ButtonContainer>
       </Block>
     </>
   );
@@ -228,7 +245,9 @@ const HOME_STEPS: {
         <SymbolBlock>
           <Symbol>
             <div>Mint</div>
-            <i>+</i>
+            <i>
+              <MintIcon />
+            </i>
           </Symbol>
         </SymbolBlock>
         <Block>
@@ -249,7 +268,9 @@ const HOME_STEPS: {
         <SymbolBlock>
           <Symbol>
             <div>Save</div>
-            <i>×</i>
+            <i>
+              <SaveIcon />
+            </i>
           </Symbol>
         </SymbolBlock>
         <Block>
@@ -268,7 +289,9 @@ const HOME_STEPS: {
         <SymbolBlock>
           <Symbol>
             <div>Swap</div>
-            <i>=</i>
+            <i>
+              <SwapIcon />
+            </i>
           </Symbol>
         </SymbolBlock>
         <Block>
@@ -289,7 +312,9 @@ const HOME_STEPS: {
         <SymbolBlock>
           <Symbol>
             <div>Earn</div>
-            <i>$</i>
+            <i>
+              <EarnIcon />
+            </i>
           </Symbol>
         </SymbolBlock>
         <Block>

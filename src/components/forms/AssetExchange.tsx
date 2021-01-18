@@ -88,11 +88,14 @@ const Column = styled.div`
   > :last-child {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+
+    > div {
+      margin: 0.5rem 0;
+    }
+
     > * > {
       display: flex;
       flex-direction: row;
-      gap: 1rem;
 
       * {
         width: 100%;
