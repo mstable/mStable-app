@@ -55,7 +55,7 @@ export const WeeklySaveAPY: FC = () => {
         <ThemedSkeleton height={42} width={100} />
       ) : apy.type === 'inactive' ? (
         <InfoMsg>Not receiving interest</InfoMsg>
-      ) : apy.type === 'bootstrapping' ? (
+      ) : apy.type === 'bootstrapping' || apy.value === 0 ? (
         <InfoMsg>APY not available yet</InfoMsg>
       ) : (
         <>
