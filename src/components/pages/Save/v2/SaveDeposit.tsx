@@ -30,8 +30,6 @@ const depositAndStakePurpose = {
   past: 'Deposited and staked savings',
 };
 
-const saveWrapperDeployed = !!ADDRESSES.mUSD.SaveWrapper;
-
 export const SaveDeposit: FC<{
   saveAndStake?: boolean;
 }> = ({ saveAndStake }) => {
@@ -46,10 +44,13 @@ export const SaveDeposit: FC<{
   const vaultBalance = vault?.account?.rawBalance ?? BigDecimal.ZERO;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
+  const canDepositWithWrapper =
+    savingsContract?.active && !!ADDRESSES.mUSD.SaveWrapper;
 
   const bassets = useMemo(
-    () => (saveWrapperDeployed ? Object.keys(massetState?.bAssets ?? {}) : []),
-    [massetState?.bAssets],
+    () =>
+      canDepositWithWrapper ? Object.keys(massetState?.bAssets ?? {}) : [],
+    [canDepositWithWrapper, massetState?.bAssets],
   );
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
@@ -205,7 +206,7 @@ export const SaveDeposit: FC<{
                   }
 
                   if (
-                    saveWrapperDeployed &&
+                    canDepositWithWrapper &&
                     isDepositingBasset &&
                     scaledInputAmount
                   ) {
@@ -229,7 +230,7 @@ export const SaveDeposit: FC<{
               approve={depositApprove}
             />
           )}
-          {saveWrapperDeployed && (
+          {canDepositWithWrapper && (
             <SendButton
               valid={valid}
               title="Deposit & Stake"

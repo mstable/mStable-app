@@ -6,6 +6,8 @@ import { SaveDeposit } from './SaveDeposit';
 import { SaveDepositETH } from './SaveDepositETH';
 import { VaultWithdraw } from './VaultWithdraw';
 import { VaultExit } from './VaultExit';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import { ADDRESSES } from '../../../../constants';
 
 enum Tabs {
   Deposit,
@@ -22,6 +24,10 @@ const Container = styled.div`
 
 export const VaultModal: FC = () => {
   const [tab, setTab] = useState<Tabs>(Tabs.Deposit);
+  const massetState = useSelectedMassetState();
+  const savingsContract = massetState?.savingsContracts.v2;
+  const canDepositWithWrapper =
+    savingsContract?.active && !!ADDRESSES.mUSD.SaveWrapper;
 
   return (
     <Container>
@@ -42,14 +48,16 @@ export const VaultModal: FC = () => {
         >
           Deposit stablecoins
         </TabBtn>
-        <TabBtn
-          active={tab === Tabs.DepositETH}
-          onClick={() => {
-            setTab(Tabs.DepositETH);
-          }}
-        >
-          Deposit ETH
-        </TabBtn>
+        {canDepositWithWrapper && (
+          <TabBtn
+            active={tab === Tabs.DepositETH}
+            onClick={() => {
+              setTab(Tabs.DepositETH);
+            }}
+          >
+            Deposit ETH
+          </TabBtn>
+        )}
         <TabBtn
           active={tab === Tabs.Exit}
           onClick={() => {
