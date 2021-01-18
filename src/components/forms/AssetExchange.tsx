@@ -83,7 +83,7 @@ const Info = styled.div`
 const Column = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.25rem;
 
   > :last-child {
     display: flex;

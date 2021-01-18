@@ -149,7 +149,7 @@ const StyledWarningBadge = styled(WarningBadge)`
 `;
 
 const VaultContainer = styled.div<{ highlight?: boolean }>`
-  border: 1px ${({ theme }) => theme.color.accent} solid;
+  border: 1px solid ${({ theme }) => theme.color.accent};
   border-radius: 0.75rem;
 
   > div {
