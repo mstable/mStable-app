@@ -2,22 +2,25 @@ import React, { FC, useLayoutEffect } from 'react';
 import ReactTooltipBase from 'react-tooltip';
 import styled from 'styled-components';
 
-import TooltipIcon from './tooltip-icon.svg';
-import { Color, FontSize } from '../../theme';
+import { ReactComponent as TooltipIcon } from './tooltip-icon.svg';
+import { FontSize } from '../../theme';
 
 export const ReactTooltip = styled(ReactTooltipBase)`
-  background: ${Color.blackTransparent};
-  color: ${Color.white};
-  padding: 0.25rem;
-  font-size: ${FontSize.s};
-  font-weight: 600;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  font-size: ${FontSize.s} !important;
+  font-weight: 600 !important;
   max-width: 200px;
 `;
 
-const TooltipImg = styled.img`
+const TooltipImg = styled(TooltipIcon)`
   margin-left: 4px;
   width: 14px;
   height: auto;
+
+  path {
+    fill: ${({ theme }) => theme.color.body};
+  }
 `;
 
 const TooltipSpan = styled.span`
@@ -36,7 +39,7 @@ export const Tooltip: FC<{
   return (
     <TooltipSpan data-tip={tip} data-for="global" className={className}>
       <span>{children}</span>
-      {hideIcon || !tip ? null : <TooltipImg src={TooltipIcon} alt="" />}
+      {hideIcon || !tip ? null : <TooltipImg />}
     </TooltipSpan>
   );
 };
