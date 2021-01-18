@@ -9,10 +9,8 @@ import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 import { VolumeChart } from '../../stats/VolumeChart';
 import { AggregateChart } from '../../stats/AggregateChart';
 import { PageAction, PageHeader } from '../PageHeader';
-import { Size } from '../../../theme';
 import { DailyApys } from '../../stats/DailyApys';
 import { ToggleSave } from '../Save/ToggleSave';
-import { useSelectedSavingsContractState } from '../../../context/SelectedSaveVersionProvider';
 
 const Section = styled.section`
   padding-bottom: 32px;

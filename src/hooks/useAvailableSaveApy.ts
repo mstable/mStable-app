@@ -61,5 +61,5 @@ export const useAvailableSaveApy = (): {
     }
 
     return { value, v1Apy, type: useLive ? 'live' : 'average' };
-  }, [current, liveAPY, dailyApys, fetching]);
+  }, [fetching, current, dailyApys, v1Apy, liveAPY]);
 };
