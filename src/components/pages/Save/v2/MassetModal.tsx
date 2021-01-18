@@ -100,6 +100,7 @@ export const MassetModal: FC = () => {
         inputAddressOptions={inputAddressOptions}
         inputAddress={inputAddress}
         inputAddressDisabled
+        inputAmount={inputAmount}
         inputFormValue={inputFormValue}
         outputAddress={saveAddress}
         exchangeRate={exchangeRate}
