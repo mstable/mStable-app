@@ -35,6 +35,9 @@ export const Tooltip: FC<{
 }> = ({ tip, hideIcon, children, className }) => {
   useLayoutEffect(() => {
     ReactTooltipBase.rebuild();
+    return () => {
+      ReactTooltipBase.rebuild();
+    };
   }, []);
   return (
     <TooltipSpan data-tip={tip} data-for="global" className={className}>
