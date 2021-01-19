@@ -16,16 +16,11 @@ import { ProgressBar } from '../../../core/ProgressBar';
 import { Button } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
-import { BigDecimal } from '../../../../web3/BigDecimal';
 import { VaultRewards } from './VaultRewards';
 import { AssetInput } from '../../../forms/AssetInput';
 import { RewardsProvider } from './RewardsProvider';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
-
-const MAX_BOOST = 3;
-const MIN_BOOST = 1;
-const COEFFICIENT = 6;
-const SAVE_EXPONENT = 0.875;
+import { calculateBoost, calculateVMTAForMaxBoost } from './utils';
 
 const BoostCountup = styled(DifferentialCountup)`
   font-weight: normal;
@@ -79,32 +74,6 @@ const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
   false,
 );
 
-const calculateBoost = (
-  stakingBalance?: BigDecimal,
-  vMTABalance?: BigDecimal,
-): number => {
-  if (
-    vMTABalance &&
-    stakingBalance &&
-    vMTABalance.simple > 0 &&
-    stakingBalance.simple > 0
-  ) {
-    const boost =
-      MIN_BOOST +
-      (COEFFICIENT * vMTABalance.simple) /
-        stakingBalance.simple ** SAVE_EXPONENT;
-    return Math.min(MAX_BOOST, boost);
-  }
-  return MIN_BOOST;
-};
-
-const calculateVMTAForMaxBoost = (stakingBalance: BigDecimal): number => {
-  return (
-    ((MAX_BOOST - MIN_BOOST) / COEFFICIENT) *
-    stakingBalance.simple ** SAVE_EXPONENT
-  );
-};
-
 const CalculatorWidget = styled(Widget)`
   > :last-child {
     flex-direction: column;
@@ -115,7 +84,7 @@ const CalculatorWidget = styled(Widget)`
   }
 `;
 
-export const Calculator: FC = () => {
+const Calculator: FC<{ onBackClick?: () => void }> = ({ onBackClick }) => {
   const [, toggleShowCalculator] = useShowCalculatorCtx();
 
   const saveAddress = useSaveV2Address();
@@ -141,10 +110,10 @@ export const Calculator: FC = () => {
 
   return (
     <CalculatorWidget
-      title="Earning power calculator"
+      title="Earning Power Calculator"
       tooltip="Find out how to get the optimal boost"
       headerContent={
-        <Button scale={0.7} onClick={toggleShowCalculator}>
+        <Button scale={0.7} onClick={onBackClick ?? toggleShowCalculator}>
           Back
         </Button>
       }
@@ -214,7 +183,7 @@ const BoostBar: FC = () => {
 
   return (
     <Widget
-      title="Earning power multiplier"
+      title="Earning Power Multiplier"
       tooltip="Save rewards are boosted by a multiplier (1x to 3x)"
       headerContent={
         <Button scale={0.7} onClick={toggleShowCalculator}>
@@ -282,6 +251,16 @@ export const Boost: FC = () => (
   <ShowCalculatorProvider>
     <RewardsProvider>
       <BoostContent />
+    </RewardsProvider>
+  </ShowCalculatorProvider>
+);
+
+export const BoostCalculator: FC<{ onBackClick?: () => void }> = ({
+  onBackClick,
+}) => (
+  <ShowCalculatorProvider>
+    <RewardsProvider>
+      <Calculator onBackClick={onBackClick} />
     </RewardsProvider>
   </ShowCalculatorProvider>
 );
