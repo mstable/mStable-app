@@ -45,7 +45,7 @@ const Container = styled.div`
   padding-top: 1rem;
 
   > * {
-    margin: 0.5rem 0;
+    margin: 0.25rem 0;
   }
 `;
 
@@ -136,6 +136,7 @@ export const Save: FC = () => {
         token={BalanceType.VMeta}
         balance={vMetaToken?.balance}
         onClick={navigateToGovernance}
+        apy="Variable APY"
         external
       />
     </Container>
