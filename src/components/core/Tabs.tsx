@@ -5,6 +5,7 @@ import { Color, FontSize, ViewportWidth } from '../../theme';
 export const TabsContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  margin: 0.5rem 0;
 `;
 
 export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
@@ -16,7 +17,7 @@ export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
   color: ${({ active, theme }) => (active ? theme.color.primary : Color.grey)};
   padding: 0.75rem 0.5rem;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 1rem;
   width: 100%;
   transition: border-bottom-color 0.2s ease;
 
@@ -28,4 +29,11 @@ export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
   @media (min-width: ${ViewportWidth.s}) {
     font-size: ${FontSize.m};
   }
+`;
+
+export const MoreInfo = styled.div`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.color.bodyAccent};
+  text-align: center;
+  align-self: center;
 `;

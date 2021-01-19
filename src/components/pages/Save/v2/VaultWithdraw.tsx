@@ -12,15 +12,9 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 
 import { AssetInput } from '../../../forms/AssetInput';
 import { SendButton } from '../../../forms/SendButton';
+import { MoreInfo } from '../../../core/Tabs';
 
 const formId = 'VaultWithdraw';
-
-const Rewards = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.color.bodyAccent};
-  text-align: center;
-  align-self: center;
-`;
 
 const Container = styled.div`
   display: flex;
@@ -99,7 +93,9 @@ export const VaultWithdraw: FC = () => {
           }
         }}
       />
-      <Rewards>This transaction will claim any available MTA rewards.</Rewards>
+      <MoreInfo>
+        This transaction will claim any available MTA rewards.
+      </MoreInfo>
     </Container>
   );
 };

@@ -8,18 +8,11 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { BoostedSavingsVaultFactory } from '../../../../typechain/BoostedSavingsVaultFactory';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
-
+import { MoreInfo } from '../../../core/Tabs';
 import { SendButton } from '../../../forms/SendButton';
 import { AssetOutputWidget } from '../../../forms/AssetOutputWidget';
 
 const formId = 'VaultExit';
-
-const Rewards = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.color.bodyAccent};
-  text-align: center;
-  align-self: center;
-`;
 
 const Container = styled.div`
   display: flex;
@@ -68,9 +61,9 @@ export const VaultExit: FC = () => {
           }
         }}
       />
-      <Rewards>
+      <MoreInfo>
         {valid && 'This transaction will claim any available MTA rewards.'}
-      </Rewards>
+      </MoreInfo>
     </Container>
   );
 };
