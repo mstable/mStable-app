@@ -40,7 +40,6 @@ interface RowProps {
   title: string;
   subtitle?: string;
   AssetIcon: FC;
-  hasApy?: boolean;
 }
 
 export const ContainerSnippet = css`
@@ -131,6 +130,10 @@ const Asset = styled.div`
   }
 `;
 
+const ExchangeRate = styled(Number)`
+  color: ${({ theme }) => theme.color.bodyAccent};
+`;
+
 const BalanceValue = styled.div`
   flex-direction: column;
   justify-content: center !important;
@@ -208,7 +211,6 @@ const Tokens = new Map<number, RowProps>([
       title: 'mUSD Save',
       subtitle: 'mStable USD in Save V1',
       AssetIcon: MUSDIcon,
-      hasApy: true,
     },
   ],
   [
@@ -217,7 +219,6 @@ const Tokens = new Map<number, RowProps>([
       title: 'imUSD',
       subtitle: 'Interest-bearing mUSD',
       AssetIcon: IMUSDIcon,
-      hasApy: true,
     },
   ],
   [
@@ -226,7 +227,6 @@ const Tokens = new Map<number, RowProps>([
       title: 'imUSD Vault',
       subtitle: 'Vault with MTA rewards',
       AssetIcon: IMUSDMTAIcon,
-      hasApy: true,
     },
   ],
   [
@@ -243,7 +243,6 @@ const Tokens = new Map<number, RowProps>([
       title: 'vMTA',
       subtitle: 'Voting escrow MTA',
       AssetIcon: VMTAIcon,
-      hasApy: true,
     },
   ],
 ]);
@@ -274,7 +273,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
 
   const tokenInfo = Tokens.get(token) as RowProps;
 
-  const { title, subtitle, AssetIcon, hasApy } = tokenInfo;
+  const { title, subtitle, AssetIcon } = tokenInfo;
   const hasBorder = !hasChildren;
 
   return (
@@ -301,7 +300,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
       </div>
       <div>
         <Interest>
-          {!hasApy || apy === 0 ? (
+          {!apy || apy === 0 ? (
             <Line />
           ) : apy ? (
             <>
@@ -324,8 +323,8 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
           balance ? (
             <>
               <Number end={balance.simple} decimals={6} />
-              {dollarExchangeRate && (
-                <Number
+              {balance.simple !== 0 && dollarExchangeRate && (
+                <ExchangeRate
                   prefix="≈ $"
                   end={dollarExchangeRate * balance.simple}
                   decimals={6}

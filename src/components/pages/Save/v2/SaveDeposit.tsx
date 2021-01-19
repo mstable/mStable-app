@@ -234,7 +234,7 @@ export const SaveDeposit: FC<{
           {canDepositWithWrapper && (
             <SendButton
               valid={valid}
-              title="Deposit & Stake"
+              title="Deposit to Vault"
               handleSend={async () => {
                 if (
                   signer &&

@@ -13,7 +13,7 @@ import { useTokenSubscription } from '../../../../context/TokensProvider';
 
 import { ADDRESSES } from '../../../../constants';
 import { Interfaces } from '../../../../types';
-import { TabBtn, TabsContainer } from '../../../core/Tabs';
+import { TabBtn, TabsContainer, Message } from '../../../core/Tabs';
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -97,8 +97,14 @@ export const MassetModal: FC = () => {
   return (
     <Container>
       <TabsContainer>
-        <TabBtn active>Deposit mUSD & receive imUSD</TabBtn>
+        <TabBtn active>Deposit mUSD</TabBtn>
       </TabsContainer>
+      <Message>
+        <span>
+          mUSD will be deposited and you will receive imUSD (interest-bearing
+          mUSD)
+        </span>
+      </Message>
       <AssetExchange
         inputAddressOptions={inputAddressOptions}
         inputAddress={inputAddress}

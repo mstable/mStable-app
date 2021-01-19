@@ -268,13 +268,6 @@ export const VaultRewards: FC = () => {
             fetching={fetching}
           />
           <Row
-            title="Vested"
-            tip="Rewards from previous claims that have vested. The next claim will send 100% of these rewards to you."
-            preview={showSimulated ? BigDecimal.ZERO : undefined}
-            value={rewards?.now.vesting.unlocked}
-            fetching={fetching}
-          />
-          <Row
             title="Vesting"
             tip="Rewards from previous claims that are vesting. When a new vesting period starts, these rewards will gradually move to your 'Vested' amount."
             preview={
@@ -294,6 +287,13 @@ export const VaultRewards: FC = () => {
                 </div>
               )}
           </Row>
+          <Row
+            title="Vested"
+            tip="Rewards from previous claims that have vested. The next claim will send 100% of these rewards to you."
+            preview={showSimulated ? BigDecimal.ZERO : undefined}
+            value={rewards?.now.vesting.unlocked}
+            fetching={fetching}
+          />
           <Row
             title="Wallet"
             preview={showSimulated ? previewedBalance : undefined}
