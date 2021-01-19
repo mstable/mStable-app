@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
@@ -13,7 +13,7 @@ import { ReactComponent as IMUSDIcon } from '../../../icons/tokens/imUSD.svg';
 import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
 
 import { BalanceRow, BalanceType, BalanceHeader } from '../BalanceRow';
-import { Boost } from './Boost';
+import { Boost, BoostCalculator } from './Boost';
 import { MassetModal } from './MassetModal';
 import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
@@ -22,6 +22,7 @@ import { useRewards } from './RewardsProvider';
 import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
 import { VaultROI } from './VaultROI';
 import { useMtaPrice } from '../../../../hooks/useMtaPrice';
+import { Button } from '../../../core/Button';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/';
 
@@ -33,6 +34,18 @@ const ModalTitle = styled.div`
   > svg {
     width: 2rem;
     height: auto;
+  }
+`;
+
+const PotentialBoost = styled.div`
+  border-top: 1px solid ${({ theme }) => theme.color.accent};
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  > div {
+    width: 100%;
   }
 `;
 
@@ -51,12 +64,14 @@ const Container = styled.div`
 
 // TODO replace masset-specific names/icons
 export const Save: FC = () => {
+  const [isCalculatorVisible, setCalculatorVisible] = useState(false);
   const massetState = useSelectedMassetState();
+  const mtaPrice = useMtaPrice();
+
   const savingsContract = massetState?.savingsContracts?.v2;
   const vault = savingsContract?.boostedSavingsVault;
   const vaultBalance = vault?.account?.rawBalance;
   const exchangeRate = savingsContract?.latestExchangeRate?.rate.simple;
-  const mtaPrice = useMtaPrice();
 
   const massetToken = useTokenSubscription(massetState?.address);
   const saveToken = useTokenSubscription(savingsContract?.address);
@@ -125,7 +140,21 @@ export const Save: FC = () => {
         balance={vaultBalance ?? BigDecimal.ZERO}
         dollarExchangeRate={exchangeRate}
       >
-        {(vaultBalance || hasRewards) && <Boost />}
+        {vaultBalance || hasRewards ? (
+          <Boost />
+        ) : (
+          <PotentialBoost>
+            {isCalculatorVisible ? (
+              <BoostCalculator
+                onBackClick={() => setCalculatorVisible(false)}
+              />
+            ) : (
+              <Button scale={0.875} onClick={() => setCalculatorVisible(true)}>
+                Calculate rewards
+              </Button>
+            )}
+          </PotentialBoost>
+        )}
       </BalanceRow>
       <BalanceRow
         token={BalanceType.Meta}
