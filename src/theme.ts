@@ -71,7 +71,6 @@ export enum Size {
 }
 
 export enum Spacing {
-  xxs = '2px',
   xs = '6px',
   s = '16px',
   m = '20px',
@@ -92,8 +91,7 @@ export enum ViewportWidth {
   xs = '320px',
   s = '480px',
   m = '640px',
-  l = '1000px',
-  xl = '1400px',
+  l = '910px',
 }
 
 // eslint-disable-next-line consistent-return
