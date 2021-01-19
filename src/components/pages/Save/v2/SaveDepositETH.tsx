@@ -256,7 +256,7 @@ export const SaveDepositETH: FC<{
         )}
         <SendButton
           valid={valid}
-          title="Deposit & Stake"
+          title="Deposit to Vault"
           handleSend={async () => {
             if (
               signer &&
