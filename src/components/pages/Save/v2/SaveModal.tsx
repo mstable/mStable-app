@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-import { TabBtn, TabsContainer } from '../../../core/Tabs';
+import { TabBtn, TabsContainer, Message } from '../../../core/Tabs';
 import { SaveDeposit } from './SaveDeposit';
 import { SaveDepositETH } from './SaveDepositETH';
 import { SaveRedeem } from './SaveRedeem';
@@ -15,11 +15,20 @@ enum Tabs {
   Redeem,
 }
 
+const { DepositStablecoins, DepositETH, Redeem } = Tabs;
+
 const Container = styled.div`
   > :last-child {
     padding: 2rem;
   }
 `;
+
+const tabInfo: { [key in Tabs]: string | undefined } = {
+  [DepositStablecoins]: 'mUSD will be minted from your selected stablecoin',
+  [DepositETH]:
+    'ETH will be automatically traded via Uniswap V2 & Curve for mUSD. Your mUSD will then be swapped for imUSD',
+  [Redeem]: 'Redeem an amount of imUSD for mUSD',
+};
 
 // TODO TabbedModal
 export const SaveModal: FC = () => {
@@ -28,11 +37,13 @@ export const SaveModal: FC = () => {
 
   const [tab, setTab] = useState<Tabs>(Tabs.DepositStablecoins);
 
+  const tabInfoMessage = tabInfo[tab];
+
   const [tabs, ActiveComponent] = useMemo(() => {
     const _tabs = [
       {
         tab: Tabs.DepositStablecoins,
-        label: isActive ? 'Deposit stablecoins' : 'Pre-deposit',
+        label: isActive ? 'Deposit via Stablecoin' : 'Pre-deposit',
         component: isActive ? SaveDeposit : PreDeposit,
         active: tab === Tabs.DepositStablecoins,
       },
@@ -40,7 +51,7 @@ export const SaveModal: FC = () => {
         ? [
             {
               tab: Tabs.DepositETH,
-              label: 'Deposit ETH',
+              label: 'Deposit via ETH',
               component: SaveDepositETH,
               active: tab === Tabs.DepositETH,
             },
@@ -48,7 +59,7 @@ export const SaveModal: FC = () => {
         : []),
       {
         tab: Tabs.Redeem,
-        label: 'Redeem collateral',
+        label: 'Redeem mUSD',
         component: SaveRedeem,
         active: tab === Tabs.Redeem,
       },
@@ -72,6 +83,11 @@ export const SaveModal: FC = () => {
           </TabBtn>
         ))}
       </TabsContainer>
+      {tabInfoMessage && (
+        <Message>
+          <span>{tabInfoMessage}</span>
+        </Message>
+      )}
       {ActiveComponent && <ActiveComponent />}
     </Container>
   );

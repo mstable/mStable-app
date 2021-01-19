@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 
-import { TabBtn, TabsContainer, MoreInfo } from '../../../core/Tabs';
+import { TabBtn, TabsContainer, Message } from '../../../core/Tabs';
 import { SaveDeposit } from './SaveDeposit';
 import { SaveDepositETH } from './SaveDepositETH';
 import { VaultWithdraw } from './VaultWithdraw';
@@ -18,22 +18,6 @@ enum Tabs {
 
 const { Deposit, DepositETH, Withdraw, Exit } = Tabs;
 
-const Message = styled.div`
-  display: flex;
-  justify-content: center;
-  border: 1px solid ${({ theme }) => theme.color.backgroundAccent};
-  padding: 1rem;
-  margin: 1rem 2rem 0 2rem;
-  border-radius: 0.5rem;
-
-  span {
-    font-size: 1rem;
-    line-height: 1.5rem;
-    text-align: center;
-    color: ${({ theme }) => theme.color.bodyAccent};
-  }
-`;
-
 const Content = styled.div`
   padding: 2rem;
 `;
@@ -41,20 +25,20 @@ const Content = styled.div`
 const Container = styled.div``;
 
 const tabTitles: { [key in Tabs]: string } = {
-  [Deposit]: 'Deposit Stablecoins',
-  [DepositETH]: 'Deposit ETH',
+  [Deposit]: 'Deposit via Stablecoin',
+  [DepositETH]: 'Deposit via ETH',
   [Withdraw]: 'Withdraw',
   [Exit]: 'Exit',
 };
 
 const tabInfo: { [key in Tabs]: string | undefined } = {
   [Deposit]:
-    'mUSD will be minted from your selected stablecoin and deposited into the Vault.',
+    'mUSD will be minted from your selected stablecoin and deposited into the Vault',
   [DepositETH]:
-    'ETH will be automatically traded via Uniswap V2 & Curve for mUSD. Your mUSD will then be swapped for imUSD and deposited into the Vault.',
+    'ETH will be automatically traded via Uniswap V2 & Curve for mUSD. Your mUSD will then be swapped for imUSD and deposited into the Vault',
   [Withdraw]: 'Withdraw an amount of imUSD from the Vault',
   [Exit]:
-    'Exiting the Vault will return your imUSD, you will no longer receive new MTA rewards but you will continue earning interest.',
+    'Exiting the Vault will return your imUSD, you will no longer receive new MTA rewards but you will continue earning interest',
 };
 
 export const VaultModal: FC = () => {
