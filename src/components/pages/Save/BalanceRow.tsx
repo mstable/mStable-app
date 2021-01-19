@@ -130,6 +130,10 @@ const Asset = styled.div`
   }
 `;
 
+const ExchangeRate = styled(Number)`
+  color: ${({ theme }) => theme.color.bodyAccent};
+`;
+
 const BalanceValue = styled.div`
   flex-direction: column;
   justify-content: center !important;
@@ -319,8 +323,8 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
           balance ? (
             <>
               <Number end={balance.simple} decimals={6} />
-              {dollarExchangeRate && (
-                <Number
+              {balance.simple !== 0 && dollarExchangeRate && (
+                <ExchangeRate
                   prefix="≈ $"
                   end={dollarExchangeRate * balance.simple}
                   decimals={6}
