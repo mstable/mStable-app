@@ -6,7 +6,6 @@ import { SaveDeposit } from './SaveDeposit';
 import { SaveDepositETH } from './SaveDepositETH';
 import { SaveRedeem } from './SaveRedeem';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { PreDeposit } from './PreDeposit';
 import { ADDRESSES } from '../../../../constants';
 
 enum Tabs {
@@ -32,8 +31,8 @@ export const SaveModal: FC = () => {
     const _tabs = [
       {
         tab: Tabs.DepositStablecoins,
-        label: isActive ? 'Deposit stablecoins' : 'Pre-deposit',
-        component: isActive ? SaveDeposit : PreDeposit,
+        label: 'Deposit stablecoins',
+        component: SaveDeposit,
         active: tab === Tabs.DepositStablecoins,
       },
       ...(isActive && ADDRESSES.mUSD.SaveWrapper
