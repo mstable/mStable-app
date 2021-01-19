@@ -117,6 +117,10 @@ const WalletButtonBtn = styled(AccountButton)`
   }
 `;
 
+const ToggleButton = styled(UnstyledButton)`
+  margin-left: 1rem;
+`;
+
 const TruncatedAddress = styled.span`
   font-family: 'DM Mono', monospace;
   text-transform: none;
@@ -295,9 +299,9 @@ export const AppBar: FC = () => {
               {`${massetToken.symbol}`}
             </Balance>
           )}
-          <UnstyledButton onClick={toggleThemeMode}>
+          <ToggleButton onClick={toggleThemeMode}>
             {themeMode === 'light' ? '☀️' : '🌙'}
-          </UnstyledButton>
+          </ToggleButton>
         </Logo>
         <WalletAndSpinner>
           <TransactionsSpinner />
