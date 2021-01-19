@@ -1,9 +1,9 @@
-import React, { FC, ReactNode, ReactElement, useCallback } from 'react';
+import React, { FC, ReactNode, ReactElement } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
 import { AccentColors } from '../../types';
-import { Color, ViewportWidth } from '../../theme';
+import { Color } from '../../theme';
 import { Tooltip } from './ReactTooltip';
 
 export interface TableRow<TColumns extends number> {
@@ -21,36 +21,23 @@ export interface TableColumn<TColumns extends number> {
 }
 
 export interface TableProps<TColumns extends number> {
+  className?: string;
   columns: TableColumn<TColumns>[];
   items: TableRow<TColumns>[];
   noItems?: string;
 }
 
 const Data = styled.div`
-  font-size: 12px;
-
-  @media (min-width: ${ViewportWidth.s}) {
-    font-size: 14px;
-  }
+  font-size: 0.9rem;
+  line-height: 1.3rem;
 `;
 
 const Column = styled.div<{ numeric?: boolean }>`
-  display: table-cell;
-  padding: 8px;
-  vertical-align: middle;
-
   text-align: ${({ numeric }) => (numeric ? 'right' : 'left')};
+  padding: 1rem;
 
   > span {
     justify-content: ${({ numeric }) => (numeric ? 'flex-end' : 'initial')};
-  }
-
-  &:first-of-type {
-    padding-left: 0;
-  }
-
-  &:last-of-type {
-    padding-right: 0;
   }
 
   ${Data} {
@@ -59,50 +46,20 @@ const Column = styled.div<{ numeric?: boolean }>`
 `;
 
 const DivRow = styled.div<{ link?: boolean; colors?: AccentColors }>`
-  width: 100%;
+  border: 1px solid ${({ colors }) => colors?.light ?? Color.blackTransparent};
+  border-radius: 1rem;
   cursor: ${({ link }) => (link ? 'pointer' : 'auto')};
   transition: background-color 0.2s ease;
 
   &:hover {
-    background: ${({ link, colors }) =>
-      link ? colors?.light ?? Color.blackTransparent : 'transparent'};
-  }
-
-  > ${Column} {
-    border-top: 1px solid
-      ${({ colors }) => colors?.light ?? Color.blackTransparent};
-    border-bottom: 1px solid
-      ${({ colors }) => colors?.light ?? Color.blackTransparent};
-    :first-child {
-      border-left: 1px solid
-        ${({ colors }) => colors?.light ?? Color.blackTransparent};
-      border-top-left-radius: 16px;
-      border-bottom-left-radius: 16px;
-      padding-left: 16px;
-    }
-    :last-child {
-      border-right: 1px solid
-        ${({ colors }) => colors?.light ?? Color.blackTransparent};
-      border-top-right-radius: 16px;
-      border-bottom-right-radius: 16px;
-      padding-right: 16px;
-    }
+    background: ${({ link, theme }) =>
+      link ? theme.color.bodyTransparenter : 'transparent'};
   }
 `;
 
 const HeaderRow = styled.div`
-  background: transparent;
-  text-transform: uppercase;
-  font-size: 12px;
-  font-weight: bold;
-
-  > ${Column} {
-    border: none !important;
-  }
-`;
-
-const NoItems = styled.div`
-  height: 32px;
+  font-size: 1rem;
+  font-weight: 600;
 `;
 
 const Row: FC<{ href?: string; colors?: AccentColors }> = ({
@@ -111,62 +68,61 @@ const Row: FC<{ href?: string; colors?: AccentColors }> = ({
   colors,
 }) => {
   const history = useHistory();
-  const handleClick = useCallback(
-    event => {
-      if (href) {
-        event.stopPropagation();
-        history.push(href);
-      }
-    },
-    [history, href],
-  );
 
   return (
-    <DivRow colors={colors} link={!!href} onClick={handleClick}>
+    <DivRow
+      colors={colors}
+      link={!!href}
+      onClick={event => {
+        if (href) {
+          event.stopPropagation();
+          history.push(href);
+        }
+      }}
+    >
       {children}
     </DivRow>
   );
 };
 
-const Container = styled.div`
-  display: table;
-  border-spacing: 0 16px;
+const Container = styled.div<{ columns: number }>`
   width: 100%;
   background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-x: auto;
 
   > * {
-    display: table-row;
-    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(${({ columns }) => columns}, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 0.5rem;
+    grid-row-gap: 1rem;
   }
 `;
 
 export const Table = <TColumns extends number>({
+  className,
   columns,
   items,
-  noItems = 'No items.',
 }: TableProps<TColumns>): ReactElement => (
-  <Container>
-    {items.length === 0 ? (
-      <NoItems>{noItems}</NoItems>
-    ) : (
-      <>
-        <HeaderRow>
-          {columns.map(({ key, title, tip, numeric }) => (
-            <Column key={key} numeric={numeric}>
-              {tip ? <Tooltip tip={tip}>{title}</Tooltip> : title}
-            </Column>
-          ))}
-        </HeaderRow>
-        {items.map(({ id, data, url, colors }) => (
-          <Row key={id} href={url} colors={colors}>
-            {columns.map(({ key, numeric }) => (
-              <Column key={key} numeric={numeric}>
-                <Data>{data[key] ?? '-'}</Data>
-              </Column>
-            ))}
-          </Row>
+  <Container columns={columns.length} className={className}>
+    <HeaderRow>
+      {columns.map(({ key, title, tip, numeric }) => (
+        <Column key={key} numeric={numeric}>
+          {tip ? <Tooltip tip={tip}>{title}</Tooltip> : title}
+        </Column>
+      ))}
+    </HeaderRow>
+    {items.map(({ id, data, url, colors }) => (
+      <Row key={id} href={url} colors={colors}>
+        {columns.map(({ key, numeric }) => (
+          <Column key={key} numeric={numeric}>
+            <Data>{data[key] ?? '-'}</Data>
+          </Column>
         ))}
-      </>
-    )}
+      </Row>
+    ))}
   </Container>
 );

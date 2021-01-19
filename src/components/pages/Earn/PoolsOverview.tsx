@@ -22,12 +22,18 @@ const ApyAmount = styled(Amount)`
 `;
 
 const MtaApyAmount = styled(ApyAmount)`
-  font-size: ${FontSize.xl};
+  font-size: 1.5rem;
 `;
 
 const ApyNote = styled.div`
   font-weight: bold;
   font-size: ${FontSize.m};
+`;
+
+const StyledTable = styled(Table)`
+  > * {
+    min-width: 40rem;
+  }
 `;
 
 const TableGroup = styled.div`
@@ -56,7 +62,6 @@ const PlatformContainer = styled.div<{ colors: AccentColors }>`
 
 const Container = styled.div`
   width: 100%;
-  overflow-x: auto;
   max-width: calc(100vw - 16px);
 `;
 
@@ -268,21 +273,23 @@ export const PoolsOverview: FC<{}> = () => {
         <ThemedSkeleton height={600} />
       ) : (
         <>
-          <TableGroup>
-            <H3>Your pools</H3>
-            <Table
-              columns={COLUMNS}
-              items={activePools}
-              noItems="No pools joined yet."
-            />
-          </TableGroup>
+          {activePools.length > 0 && (
+            <TableGroup>
+              <H3>Your pools</H3>
+              <StyledTable
+                columns={COLUMNS}
+                items={activePools}
+                noItems="No pools joined yet."
+              />
+            </TableGroup>
+          )}
           <TableGroup>
             <H3>Ecosystem pools</H3>
-            <Table columns={COLUMNS} items={otherPools} />
+            <StyledTable columns={COLUMNS} items={otherPools} />
           </TableGroup>
           <TableGroup>
             <H3>Expired pools</H3>
-            <Table columns={COLUMNS} items={expiredPools} />
+            <StyledTable columns={COLUMNS} items={expiredPools} />
           </TableGroup>
         </>
       )}
