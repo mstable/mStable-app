@@ -1,41 +1,18 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { ADDRESSES } from '../../../../constants';
-import {
-  useSaveV2Address,
-  useSelectedMassetState,
-} from '../../../../context/DataProvider/DataProvider';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { createToggleContext } from '../../../../hooks/createToggleContext';
-import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
-import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
-import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
-import { DifferentialCountup } from '../../../core/CountUp';
 import { ProgressBar } from '../../../core/ProgressBar';
 import { Button } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { VaultRewards } from './VaultRewards';
-import { AssetInput } from '../../../forms/AssetInput';
 import { RewardsProvider } from './RewardsProvider';
-import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
-import { calculateBoost, calculateVMTAForMaxBoost } from './utils';
-
-const BoostCountup = styled(DifferentialCountup)`
-  font-weight: normal;
-  margin-left: 0.25rem;
-`;
-
-const StyledButton = styled(Button)`
-  display: flex;
-  align-items: center;
-
-  svg {
-    width: 1rem;
-    margin-right: 0.5rem;
-  }
-`;
+import { calculateBoost } from './utils';
+import { SaveCalculator } from './SaveCalculator';
 
 const BoostBarLine = styled.div`
   width: 100%;
@@ -46,127 +23,18 @@ const BoostBarLine = styled.div`
 `;
 
 const BoostBarRange = styled.div`
+  ${({ theme }) => theme.mixins.numeric};
+
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: grey;
   padding: 0.5rem 0;
-  ${({ theme }) => theme.mixins.numeric}
-`;
-
-const CalculatorInputs = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
-  flex-direction: column;
-  width: 100%;
-`;
-
-const BoostAndActions = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
-  flex-basis: 40%;
 `;
 
 const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
   false,
 );
-
-const CalculatorWidget = styled(Widget)`
-  > :last-child {
-    flex-direction: column;
-
-    @media (min-width: ${ViewportWidth.m}) {
-      flex-direction: row;
-    }
-  }
-`;
-
-const Calculator: FC<{ onBackClick?: () => void }> = ({ onBackClick }) => {
-  const [, toggleShowCalculator] = useShowCalculatorCtx();
-
-  const saveAddress = useSaveV2Address();
-  const save = useTokenSubscription(saveAddress);
-  const vMTA = useTokenSubscription(ADDRESSES.vMTA);
-
-  const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTA?.balance);
-  const [saveValue, saveFormValue, setSave] = useBigDecimalInput(save?.balance);
-
-  const boost = useMemo(() => {
-    return {
-      fromBalance: calculateBoost(save?.balance, vMTA?.balance),
-      fromInputs: calculateBoost(saveValue, vMTAValue),
-    };
-  }, [saveValue, vMTAValue, vMTA, save]);
-
-  const handlePreviewMax = useCallback(() => {
-    if (saveValue) {
-      const vMTARequired = calculateVMTAForMaxBoost(saveValue);
-      setVmta(vMTARequired.toFixed(2));
-    }
-  }, [saveValue, setVmta]);
-
-  return (
-    <CalculatorWidget
-      title="Earning Power Calculator"
-      tooltip="Find out how to get the optimal boost"
-      headerContent={
-        <Button scale={0.7} onClick={onBackClick ?? toggleShowCalculator}>
-          Back
-        </Button>
-      }
-    >
-      <CalculatorInputs>
-        {vMTA ? (
-          <AssetInput
-            address={vMTA.address}
-            addressDisabled
-            formValue={vMTAFormValue}
-            handleSetAmount={setVmta}
-          />
-        ) : (
-          <ThemedSkeleton />
-        )}
-        {save ? (
-          <AssetInput
-            address={save.address}
-            addressDisabled
-            formValue={saveFormValue}
-            handleSetAmount={setSave}
-          />
-        ) : (
-          <ThemedSkeleton />
-        )}
-      </CalculatorInputs>
-      <BoostAndActions>
-        <StyledButton>
-          <span>Multiplier</span>&nbsp;
-          <BoostCountup
-            end={boost.fromInputs}
-            prev={boost.fromBalance}
-            suffix="x"
-          />
-        </StyledButton>
-        <StyledButton onClick={handlePreviewMax}>
-          <ArrowsSvg />
-          Preview Max
-        </StyledButton>
-        <a
-          href="https://governance.mstable.org/"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <StyledButton highlighted>
-            <GovSvg />
-            Governance
-          </StyledButton>
-        </a>
-      </BoostAndActions>
-    </CalculatorWidget>
-  );
-};
 
 const BoostBar: FC = () => {
   const [, toggleShowCalculator] = useShowCalculatorCtx();
@@ -206,8 +74,6 @@ const BoostBar: FC = () => {
 const Container = styled(Widget)<{ showCalculator?: boolean }>`
   > div {
     display: flex;
-    gap: 2rem;
-    justify-content: space-between;
     flex-direction: column;
   }
 
@@ -219,7 +85,6 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
     > div {
       flex-direction: row;
       align-items: stretch;
-      justify-content: space-between;
     }
 
     > div > * {
@@ -231,12 +96,12 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
 `;
 
 const BoostContent: FC = () => {
-  const [showCalculator] = useShowCalculatorCtx();
+  const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx();
 
   return (
     <Container padding showCalculator={showCalculator}>
       {showCalculator ? (
-        <Calculator />
+        <SaveCalculator onClick={toggleShowCalculator} />
       ) : (
         <>
           <BoostBar />
@@ -260,7 +125,7 @@ export const BoostCalculator: FC<{ onBackClick?: () => void }> = ({
 }) => (
   <ShowCalculatorProvider>
     <RewardsProvider>
-      <Calculator onBackClick={onBackClick} />
+      <SaveCalculator onClick={onBackClick} />
     </RewardsProvider>
   </ShowCalculatorProvider>
 );

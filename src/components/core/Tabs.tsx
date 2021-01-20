@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { UnstyledButton } from './Button';
 import { Color, FontSize, ViewportWidth } from '../../theme';
+import { InfoMessage } from './InfoMessage';
 
 export const TabsContainer = styled.div`
   display: flex;
@@ -38,18 +39,6 @@ export const MoreInfo = styled.div`
   align-self: center;
 `;
 
-export const Message = styled.div`
-  display: flex;
-  justify-content: center;
-  border: 1px solid ${({ theme }) => theme.color.backgroundAccent};
-  padding: 1rem;
+export const Message = styled(InfoMessage)`
   margin: 1rem 2rem 0 2rem;
-  border-radius: 0.5rem;
-
-  span {
-    font-size: 1rem;
-    line-height: 1.5rem;
-    text-align: center;
-    color: ${({ theme }) => theme.color.bodyAccent};
-  }
 `;
