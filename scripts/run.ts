@@ -1,4 +1,3 @@
-import { main as vaultBreakdown } from './vaultBreakdown';
 import { main as platformRewards } from './platformRewards';
 import { main as merkleRootHash } from './merkleRootHash';
 
@@ -9,9 +8,6 @@ const script = process.argv[2];
 switch (script) {
   case 'platform-rewards':
     runMain(platformRewards);
-    break;
-  case 'vault-breakdown':
-    runMain(vaultBreakdown);
     break;
   case 'merkle-root-hash':
     runMain(merkleRootHash);
