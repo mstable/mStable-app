@@ -8,6 +8,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import styled from 'styled-components';
+
 import { BigNumber } from 'ethers/utils';
 import { MaxUint256 } from 'ethers/constants';
 
@@ -29,7 +31,8 @@ import {
 import { Interfaces } from '../../../../types';
 import { StepProps } from '../../../core/Step';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
-import { SaveModal } from '../v2/SaveModal';
+import { MassetModal } from '../v2/MassetModal';
+import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
 
 const isTxPending = (
   transactions: Record<string, Transaction>,
@@ -45,6 +48,17 @@ const isTxPending = (
     ].includes(transactions[id].status)
   );
 };
+
+const ModalTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  > svg {
+    width: 2rem;
+    height: auto;
+  }
+`;
 
 const stepsCtx = createContext<StepProps[]>([]);
 
@@ -68,8 +82,13 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const allowance = useTokenAllowance(massetState?.address, v2Address);
 
   const [showDepositModal] = useModalComponent({
-    title: 'Deposit mUSD',
-    children: <SaveModal />,
+    title: (
+      <ModalTitle>
+        <MUSDIcon />
+        mUSD
+      </ModalTitle>
+    ),
+    children: <MassetModal />,
   });
 
   const proposeWithdrawTx = useCallback(() => {
