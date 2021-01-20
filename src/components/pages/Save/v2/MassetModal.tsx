@@ -102,7 +102,9 @@ export const MassetModal: FC = () => {
       <Message>
         <span>
           mUSD will be deposited and you will receive imUSD (interest-bearing
-          mUSD)
+          mUSD).
+          <br />
+          Deposit to the Vault to earn bonus MTA rewards.
         </span>
       </Message>
       <AssetExchange
@@ -124,7 +126,7 @@ export const MassetModal: FC = () => {
       >
         <SendButton
           valid={valid}
-          title="Deposit"
+          title="Mint imUSD"
           handleSend={() => {
             if (saveAddress && signer && inputAmount && massetSymbol) {
               const body = `${inputAmount.format()} ${massetSymbol}`;
@@ -147,7 +149,7 @@ export const MassetModal: FC = () => {
         {ADDRESSES.mUSD.SaveWrapper && (
           <SendButton
             valid={valid}
-            title="Deposit & Stake"
+            title="Mint & Deposit to Vault"
             handleSend={() => {
               if (signer && inputAmount && massetSymbol) {
                 const body = `${inputAmount.format()} ${massetSymbol}`;

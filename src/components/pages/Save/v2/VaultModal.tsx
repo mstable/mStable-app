@@ -31,12 +31,12 @@ const tabTitles: { [key in Tabs]: string } = {
   [Exit]: 'Exit',
 };
 
-const tabInfo: { [key in Tabs]: string | undefined } = {
+const tabInfo: { [key in Tabs]: string } = {
   [Deposit]:
-    'mUSD will be minted from your selected stablecoin and deposited into the Vault',
+    'imUSD will be minted from your selected stablecoin & deposited into the Vault',
   [DepositETH]:
-    'ETH will be automatically traded via Uniswap V2 & Curve for mUSD. Your mUSD will then be swapped for imUSD and deposited into the Vault',
-  [Withdraw]: 'Withdraw an amount of imUSD from the Vault',
+    'ETH will be traded via Uniswap V2 & Curve for mUSD. Your mUSD will then mint imUSD & be deposited into the Vault',
+  [Withdraw]: 'Withdraws an amount of imUSD from the Vault',
   [Exit]:
     'Exiting the Vault will return your imUSD, you will no longer receive new MTA rewards but you will continue earning interest',
 };
@@ -60,14 +60,11 @@ export const VaultModal: FC = () => {
   return (
     <Container>
       <TabsContainer>
-        {tabs.map(
-          t =>
-            t && (
-              <TabBtn active={tab === t} onClick={() => setTab(t)} key={t}>
-                {tabTitles[t]}
-              </TabBtn>
-            ),
-        )}
+        {tabs.map(t => (
+          <TabBtn active={tab === t} onClick={() => setTab(t)} key={t}>
+            {tabTitles[t]}
+          </TabBtn>
+        ))}
       </TabsContainer>
       {tabInfoMessage && (
         <Message>

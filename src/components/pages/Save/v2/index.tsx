@@ -49,6 +49,12 @@ const PotentialBoost = styled.div`
   }
 `;
 
+const Divider = styled.div`
+  height: 1px;
+  background: ${({ theme }) => theme.color.accent};
+  width: 100%;
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -58,7 +64,7 @@ const Container = styled.div`
   padding-top: 1rem;
 
   > * {
-    margin: 0.25rem 0;
+    margin: 0.5rem 0;
   }
 `;
 
@@ -131,6 +137,9 @@ export const Save: FC = () => {
         balance={saveToken?.balance}
         dollarExchangeRate={exchangeRate}
       />
+      <div />
+      <Divider />
+      <div />
       <BalanceRow
         token={BalanceType.BoostedSavingsVault}
         apy={saveApy?.value}

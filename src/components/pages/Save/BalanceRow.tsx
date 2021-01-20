@@ -225,7 +225,7 @@ const Tokens = new Map<number, RowProps>([
     BalanceType.BoostedSavingsVault,
     {
       title: 'imUSD Vault',
-      subtitle: 'Vault with MTA rewards',
+      subtitle: 'Interest + MTA rewards',
       AssetIcon: IMUSDMTAIcon,
     },
   ],
