@@ -60,11 +60,14 @@ export const VaultModal: FC = () => {
   return (
     <Container>
       <TabsContainer>
-        {tabs.map(t => (
-          <TabBtn active={tab === t} onClick={() => setTab(t)} key={t}>
-            {tabTitles[t]}
-          </TabBtn>
-        ))}
+        {tabs.map(
+          t =>
+            t && (
+              <TabBtn active={tab === t} onClick={() => setTab(t)} key={t}>
+                {tabTitles[t]}
+              </TabBtn>
+            ),
+        )}
       </TabsContainer>
       {tabInfoMessage && (
         <Message>
