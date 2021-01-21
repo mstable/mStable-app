@@ -41,6 +41,8 @@ export const getApolloClient = () => {
         balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
         uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
         blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,
+        vault:
+          'https://api.thegraph.com/subgraphs/name/jameslefrere/boosted-savings-vault',
       },
       httpSuffix: '', // By default, this library adds `/graphql` as a suffix
       createHttpLink: () => new HttpLink({ fetch }) as never,
