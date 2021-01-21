@@ -4,6 +4,7 @@ src/graphql/uniswap.tsx
 src/graphql/blocks.tsx
 src/graphql/ecosystem.tsx
 src/graphql/legacy.tsx
+src/graphql/vault.tsx
 src/react-app-env.d.ts
 src/typechain
 scripts/*

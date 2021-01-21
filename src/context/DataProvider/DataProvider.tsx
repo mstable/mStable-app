@@ -19,10 +19,15 @@ import {
   useMassetsLazyQuery,
 } from '../../graphql/protocol';
 import { useSelectedMassetName } from '../SelectedMassetNameProvider';
+import { useVaultsLazyQuery, VaultsQueryResult } from '../../graphql/vault';
 
 const dataStateCtx = createContext<DataState>({});
 
-const useRawData = (): [MassetsQueryResult['data'], Tokens] => {
+const useRawData = (): [
+  MassetsQueryResult['data'],
+  VaultsQueryResult['data'],
+  Tokens,
+] => {
   const blockNumber = useBlockNumber();
   const { tokens } = useTokensState();
 
@@ -31,14 +36,19 @@ const useRawData = (): [MassetsQueryResult['data'], Tokens] => {
     variables: { account: account ?? '', hasAccount: !!account },
   });
 
+  const vaultSub = useBlockPollingSubscription(useVaultsLazyQuery, {
+    variables: { account: account ?? '', hasAccount: !!account },
+  });
+
   // Intentionally limit updates.
   // Given that the blockNumber and the subscription's loading state are what
   // drive updates to both the tokens state and the DataState, use these
   // as the deps to prevent creating new objects with the same underlying data.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => [subscription.data, tokens], [
+  return useMemo(() => [subscription.data, vaultSub.data, tokens], [
     blockNumber,
     subscription.loading,
+    vaultSub.loading,
     tokens,
   ]);
 };

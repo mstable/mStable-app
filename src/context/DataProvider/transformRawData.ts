@@ -11,6 +11,7 @@ import {
   SavingsContractState,
 } from './types';
 import { Tokens } from '../TokensProvider';
+import { VaultsQueryResult } from '../../graphql/vault';
 
 type SavingsContractV1QueryResult = NonNullable<
   MassetsQueryResult['data']
@@ -296,14 +297,33 @@ const transformMassetData = (
   };
 };
 
-export const transformRawData = ([data, tokens]: [
+export const transformRawData = ([data, vaultData, tokens]: [
   MassetsQueryResult['data'],
+  VaultsQueryResult['data'],
   Tokens,
 ]): DataState => {
   return Object.fromEntries(
-    (data?.massets ?? []).map(masset => [
-      masset.token.symbol as MassetName,
-      transformMassetData(masset, tokens),
-    ]),
+    (data?.massets ?? []).map(masset => {
+      if (masset.savingsContractsV2?.[0]?.boostedSavingsVaults.length) {
+        return [
+          masset.token.symbol as MassetName,
+          transformMassetData(masset, tokens),
+        ];
+      }
+
+      const mergedData: typeof masset = {
+        ...masset,
+        savingsContractsV2: [
+          {
+            ...masset.savingsContractsV2[0],
+            boostedSavingsVaults: vaultData?.boostedSavingsVaults ?? [],
+          },
+        ],
+      };
+      return [
+        masset.token.symbol as MassetName,
+        transformMassetData(mergedData, tokens),
+      ];
+    }),
   );
 };
