@@ -125,3 +125,26 @@ query ScriptRewards(
     }
   }
 }
+
+query MerkleDropClaims($account: Bytes!) @api(name: ecosystem) {
+  merkleDrops {
+    id
+    token {
+      id
+      address
+      decimals
+      symbol
+    }
+    tranches(
+      orderDirection: asc
+      orderBy: trancheNumber
+      where: { expired: false }
+    ) {
+      trancheNumber
+      totalAmount
+      claims(where: { account: $account }) {
+        balance
+      }
+    }
+  }
+}

@@ -1887,6 +1887,19 @@ export type ScriptRewardsQuery = { stakingRewardsContracts: Array<(
     & { stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
   )> };
 
+export type MerkleDropClaimsQueryVariables = Exact<{
+  account: Scalars['Bytes'];
+}>;
+
+
+export type MerkleDropClaimsQuery = { merkleDrops: Array<(
+    Pick<MerkleDrop, 'id'>
+    & { token: Pick<Token, 'id' | 'address' | 'decimals' | 'symbol'>, tranches: Array<(
+      Pick<MerkleDropTranche, 'trancheNumber' | 'totalAmount'>
+      & { claims: Array<Pick<MerkleDropClaim, 'balance'>> }
+    )> }
+  )> };
+
 export const TokenDetailsFragmentDoc = gql`
     fragment TokenDetails on Token {
   id
@@ -2145,3 +2158,49 @@ export function useScriptRewardsLazyQuery(baseOptions?: ApolloReactHooks.LazyQue
 export type ScriptRewardsQueryHookResult = ReturnType<typeof useScriptRewardsQuery>;
 export type ScriptRewardsLazyQueryHookResult = ReturnType<typeof useScriptRewardsLazyQuery>;
 export type ScriptRewardsQueryResult = ApolloReactCommon.QueryResult<ScriptRewardsQuery, ScriptRewardsQueryVariables>;
+export const MerkleDropClaimsDocument = gql`
+    query MerkleDropClaims($account: Bytes!) @api(name: ecosystem) {
+  merkleDrops {
+    id
+    token {
+      id
+      address
+      decimals
+      symbol
+    }
+    tranches(orderDirection: asc, orderBy: trancheNumber, where: {expired: false}) {
+      trancheNumber
+      totalAmount
+      claims(where: {account: $account}) {
+        balance
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useMerkleDropClaimsQuery__
+ *
+ * To run a query within a React component, call `useMerkleDropClaimsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMerkleDropClaimsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMerkleDropClaimsQuery({
+ *   variables: {
+ *      account: // value for 'account'
+ *   },
+ * });
+ */
+export function useMerkleDropClaimsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>) {
+        return ApolloReactHooks.useQuery<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>(MerkleDropClaimsDocument, baseOptions);
+      }
+export function useMerkleDropClaimsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>(MerkleDropClaimsDocument, baseOptions);
+        }
+export type MerkleDropClaimsQueryHookResult = ReturnType<typeof useMerkleDropClaimsQuery>;
+export type MerkleDropClaimsLazyQueryHookResult = ReturnType<typeof useMerkleDropClaimsLazyQuery>;
+export type MerkleDropClaimsQueryResult = ApolloReactCommon.QueryResult<MerkleDropClaimsQuery, MerkleDropClaimsQueryVariables>;
