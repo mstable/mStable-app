@@ -14,6 +14,7 @@ import { AssetInput } from '../../../forms/AssetInput';
 import { calculateBoost, calculateVMTAForMaxBoost } from './utils';
 import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
+import { BigDecimal } from '../../../../web3/BigDecimal';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/';
 
@@ -171,7 +172,11 @@ export const SaveCalculator: FC<{ onClick?: () => void }> = ({ onClick }) => {
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
 
   const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTA?.balance);
-  const [saveValue, saveFormValue, setSave] = useBigDecimalInput(save?.balance);
+  const [saveValue, saveFormValue, setSave] = useBigDecimalInput(
+    save?.balance?.simpleRounded !== 0
+      ? save?.balance
+      : new BigDecimal((100e18).toString()),
+  );
 
   const navigateToGovernance = (): void => {
     window?.open(GOVERNANCE_URL);
@@ -187,7 +192,7 @@ export const SaveCalculator: FC<{ onClick?: () => void }> = ({ onClick }) => {
   const handlePreviewMax = useCallback(() => {
     if (saveValue) {
       const vMTARequired = calculateVMTAForMaxBoost(saveValue);
-      setVmta(vMTARequired.toFixed(2));
+      setVmta(vMTARequired?.toFixed(2));
     }
   }, [saveValue, setVmta]);
 
