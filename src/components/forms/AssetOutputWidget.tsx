@@ -16,7 +16,7 @@ interface Props {
   outputAddress?: string;
   outputBalance?: BigDecimal;
   outputLabel?: string;
-  title: string;
+  title?: string;
 }
 
 const ExchangeRate = styled.p`
@@ -65,7 +65,6 @@ export const AssetOutputWidget: FC<Props> = ({
     <Widget
       className={className}
       title={title}
-      border
       boldTitle
       headerContent={
         exchangeRate &&

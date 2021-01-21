@@ -24,7 +24,7 @@ export const useBigDecimalInput = (
   );
 
   const [formValue, setFormValue] = useState<string | undefined>(
-    value?.format(2, false),
+    value?.simple !== 0 ? value?.format(2, false) : undefined,
   );
 
   const onChange = useCallback(

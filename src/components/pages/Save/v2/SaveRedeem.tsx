@@ -77,7 +77,7 @@ export const SaveRedeem: FC = () => {
     >
       <SendButton
         valid={valid}
-        title="Redeem credits"
+        title="Redeem mUSD"
         handleSend={() => {
           if (
             signer &&

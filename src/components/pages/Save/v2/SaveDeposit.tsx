@@ -181,7 +181,7 @@ export const SaveDeposit: FC<{
           {!saveAndStake && (
             <SendButton
               valid={valid}
-              title="Deposit"
+              title="Mint imUSD"
               handleSend={async () => {
                 if (
                   signer &&
@@ -234,7 +234,7 @@ export const SaveDeposit: FC<{
           {canDepositWithWrapper && (
             <SendButton
               valid={valid}
-              title="Deposit to Vault"
+              title="Mint & Deposit to Vault"
               handleSend={async () => {
                 if (
                   signer &&

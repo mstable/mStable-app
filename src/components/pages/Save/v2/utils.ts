@@ -239,9 +239,9 @@ export const calculateBoost = (
 
 export const calculateVMTAForMaxBoost = (
   stakingBalance: BigDecimal,
-): number => {
-  return (
+): number | undefined => {
+  const vMTA =
     ((MAX_BOOST - MIN_BOOST) / COEFFICIENT) *
-    stakingBalance.simple ** SAVE_EXPONENT
-  );
+    stakingBalance.simple ** SAVE_EXPONENT;
+  return vMTA !== 0 ? vMTA : undefined;
 };

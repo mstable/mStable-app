@@ -58,6 +58,12 @@ export const ContainerSnippet = css`
 
   > div > div:first-child {
     justify-content: flex-start;
+    flex-basis: 80%;
+  }
+
+  > div > div:last-child {
+    justify-content: flex-end;
+    flex-basis: 20%;
   }
 
   > div > div:nth-child(2) {
@@ -65,8 +71,14 @@ export const ContainerSnippet = css`
   }
 
   @media (min-width: ${ViewportWidth.m}) {
+    > div > div:first-child {
+      flex-basis: unset;
+    }
     > div > div:nth-child(2) {
       display: inherit;
+    }
+    > div > div:last-child {
+      flex-basis: unset;
     }
   }
 `;
@@ -225,7 +237,7 @@ const Tokens = new Map<number, RowProps>([
     BalanceType.BoostedSavingsVault,
     {
       title: 'imUSD Vault',
-      subtitle: 'Vault with MTA rewards',
+      subtitle: 'Interest + MTA rewards',
       AssetIcon: IMUSDMTAIcon,
     },
   ],
@@ -327,7 +339,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
                 <ExchangeRate
                   prefix="≈ $"
                   end={dollarExchangeRate * balance.simple}
-                  decimals={6}
+                  decimals={4}
                 />
               )}
             </>
