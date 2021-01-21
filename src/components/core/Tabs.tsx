@@ -40,5 +40,5 @@ export const MoreInfo = styled.div`
 `;
 
 export const Message = styled(InfoMessage)`
-  margin: 1rem 2rem 0 2rem;
+  margin: 2rem 2rem 0 2rem;
 `;

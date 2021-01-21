@@ -92,7 +92,7 @@ const DefaultWidget: FC<Props> = ({
   tooltip,
   boldTitle,
 }) => {
-  const showHeader = !!title || !!tooltip;
+  const showHeader = !!title || !!headerContent;
   return (
     <>
       {showHeader && (

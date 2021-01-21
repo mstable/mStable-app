@@ -45,6 +45,13 @@ const Container = styled.div`
 
 const Exchange = styled.div`
   flex-direction: column;
+  padding: 1rem;
+  border: 1px solid ${({ theme }) => theme.color.accent};
+  border-radius: 0.5rem;
+
+  > div:first-child {
+    margin-bottom: 1rem;
+  }
 `;
 
 const Details = styled.div`
@@ -162,7 +169,6 @@ export const AssetExchange: FC<Props> = ({
           outputAddress={outputAddress}
           outputBalance={outputBalance}
           outputLabel={outputLabel}
-          title="Receive"
         />
       </Exchange>
       <Details>

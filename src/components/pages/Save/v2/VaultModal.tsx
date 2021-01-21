@@ -18,11 +18,11 @@ enum Tabs {
 
 const { Deposit, DepositETH, Withdraw, Exit } = Tabs;
 
-const Content = styled.div`
-  padding: 2rem;
+const Container = styled.div`
+  > :last-child {
+    padding: 2rem;
+  }
 `;
-
-const Container = styled.div``;
 
 const tabTitles: { [key in Tabs]: string } = {
   [Deposit]: 'Deposit via Stablecoin',
@@ -74,7 +74,7 @@ export const VaultModal: FC = () => {
           <span>{tabInfoMessage}</span>
         </Message>
       )}
-      <Content>
+      <div>
         {
           ({
             [Deposit]: <SaveDeposit saveAndStake />,
@@ -83,7 +83,7 @@ export const VaultModal: FC = () => {
             [Exit]: <VaultExit />,
           } as { [key in Tabs]: JSX.Element })[tab]
         }
-      </Content>
+      </div>
     </Container>
   );
 };

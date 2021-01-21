@@ -75,6 +75,7 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
   > div {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
   }
 
   > div > * {
