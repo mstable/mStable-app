@@ -487,6 +487,94 @@ type Query {
     """
     block: Block_height
   ): [SavingsContractWithdrawTransaction!]!
+  boostedSavingsVaultStakeTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): BoostedSavingsVaultStakeTransaction
+  boostedSavingsVaultStakeTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: BoostedSavingsVaultStakeTransaction_orderBy
+    orderDirection: OrderDirection
+    where: BoostedSavingsVaultStakeTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [BoostedSavingsVaultStakeTransaction!]!
+  boostedSavingsVaultRewardAddedTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): BoostedSavingsVaultRewardAddedTransaction
+  boostedSavingsVaultRewardAddedTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: BoostedSavingsVaultRewardAddedTransaction_orderBy
+    orderDirection: OrderDirection
+    where: BoostedSavingsVaultRewardAddedTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [BoostedSavingsVaultRewardAddedTransaction!]!
+  boostedSavingsVaultRewardPaidTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): BoostedSavingsVaultRewardPaidTransaction
+  boostedSavingsVaultRewardPaidTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: BoostedSavingsVaultRewardPaidTransaction_orderBy
+    orderDirection: OrderDirection
+    where: BoostedSavingsVaultRewardPaidTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [BoostedSavingsVaultRewardPaidTransaction!]!
+  boostedSavingsVaultWithdrawTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): BoostedSavingsVaultWithdrawTransaction
+  boostedSavingsVaultWithdrawTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: BoostedSavingsVaultWithdrawTransaction_orderBy
+    orderDirection: OrderDirection
+    where: BoostedSavingsVaultWithdrawTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [BoostedSavingsVaultWithdrawTransaction!]!
   transaction(
     id: ID!
     """
@@ -1504,7 +1592,6 @@ enum BoostedSavingsVault_orderBy {
   periodFinish
   lastUpdateTime
   stakingToken
-  rewardPerToken
   rewardPerTokenStored
   rewardRate
   rewardsToken
@@ -1512,6 +1599,10 @@ enum BoostedSavingsVault_orderBy {
   stakingContract
   totalSupply
   totalStakingRewards
+  stakeTransactions
+  rewardAddedTransactions
+  rewardPaidTransactions
+  withdrawTransactions
 }
 input BoostedSavingsVault_filter {
   id: ID
@@ -1590,14 +1681,6 @@ input BoostedSavingsVault_filter {
   stakingToken_not_starts_with: String
   stakingToken_ends_with: String
   stakingToken_not_ends_with: String
-  rewardPerToken: BigInt
-  rewardPerToken_not: BigInt
-  rewardPerToken_gt: BigInt
-  rewardPerToken_lt: BigInt
-  rewardPerToken_gte: BigInt
-  rewardPerToken_lte: BigInt
-  rewardPerToken_in: [BigInt!]
-  rewardPerToken_not_in: [BigInt!]
   rewardPerTokenStored: BigInt
   rewardPerTokenStored_not: BigInt
   rewardPerTokenStored_gt: BigInt
@@ -1674,8 +1757,6 @@ type BoostedSavingsVault {
   lastUpdateTime: Int!
   """The staking token, e.g. imUSD"""
   stakingToken: Token!
-  """The reward per token"""
-  rewardPerToken: BigInt!
   """The reward per token stored"""
   rewardPerTokenStored: BigInt!
   """The reward rate for the rest of the rewards period"""
@@ -1690,6 +1771,10 @@ type BoostedSavingsVault {
   totalSupply: BigInt!
   """Total staking rewards (rewardRate * periodDuration)"""
   totalStakingRewards: BigInt!
+  stakeTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultStakeTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultStakeTransaction_filter): [BoostedSavingsVaultStakeTransaction!]!
+  rewardAddedTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultRewardAddedTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultRewardAddedTransaction_filter): [BoostedSavingsVaultRewardAddedTransaction!]!
+  rewardPaidTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultRewardPaidTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultRewardPaidTransaction_filter): [BoostedSavingsVaultRewardPaidTransaction!]!
+  withdrawTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultWithdrawTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultWithdrawTransaction_filter): [BoostedSavingsVaultWithdrawTransaction!]!
 }
 enum BoostedSavingsVaultAccount_orderBy {
   id
@@ -1703,6 +1788,9 @@ enum BoostedSavingsVaultAccount_orderBy {
   lastClaim
   rewardCount
   rewardEntries
+  stakeTransactions
+  rewardPaidTransactions
+  withdrawTransactions
 }
 input BoostedSavingsVaultAccount_filter {
   id: ID
@@ -1810,6 +1898,9 @@ type BoostedSavingsVaultAccount {
   lastClaim: Int!
   rewardCount: Int!
   rewardEntries(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultRewardEntry_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultRewardEntry_filter): [BoostedSavingsVaultRewardEntry!]!
+  stakeTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultStakeTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultStakeTransaction_filter): [BoostedSavingsVaultStakeTransaction!]!
+  rewardPaidTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultRewardPaidTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultRewardPaidTransaction_filter): [BoostedSavingsVaultRewardPaidTransaction!]!
+  withdrawTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultWithdrawTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultWithdrawTransaction_filter): [BoostedSavingsVaultWithdrawTransaction!]!
 }
 enum BoostedSavingsVaultRewardEntry_orderBy {
   id
@@ -1898,6 +1989,377 @@ type BoostedSavingsVaultRewardEntry {
   start: Int!
   finish: Int!
   rate: BigInt!
+}
+enum BoostedSavingsVaultStakeTransaction_orderBy {
+  id
+  hash
+  block
+  sender
+  timestamp
+  boostedSavingsVault
+  amount
+  account
+}
+input BoostedSavingsVaultStakeTransaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  hash: Bytes
+  hash_not: Bytes
+  hash_in: [Bytes!]
+  hash_not_in: [Bytes!]
+  hash_contains: Bytes
+  hash_not_contains: Bytes
+  block: Int
+  block_not: Int
+  block_gt: Int
+  block_lt: Int
+  block_gte: Int
+  block_lte: Int
+  block_in: [Int!]
+  block_not_in: [Int!]
+  sender: Bytes
+  sender_not: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  boostedSavingsVault: String
+  boostedSavingsVault_not: String
+  boostedSavingsVault_gt: String
+  boostedSavingsVault_lt: String
+  boostedSavingsVault_gte: String
+  boostedSavingsVault_lte: String
+  boostedSavingsVault_in: [String!]
+  boostedSavingsVault_not_in: [String!]
+  boostedSavingsVault_contains: String
+  boostedSavingsVault_not_contains: String
+  boostedSavingsVault_starts_with: String
+  boostedSavingsVault_not_starts_with: String
+  boostedSavingsVault_ends_with: String
+  boostedSavingsVault_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_not_contains: String
+  account_starts_with: String
+  account_not_starts_with: String
+  account_ends_with: String
+  account_not_ends_with: String
+}
+type BoostedSavingsVaultStakeTransaction implements Transaction {
+  id: ID!
+  hash: Bytes!
+  block: Int!
+  sender: Bytes!
+  timestamp: BigInt!
+  """The BoostedSavingsVault the transaction relates to."""
+  boostedSavingsVault: BoostedSavingsVault!
+  """The amount staked."""
+  amount: BigInt!
+  """The account the staked amount is being added for."""
+  account: BoostedSavingsVaultAccount!
+}
+enum BoostedSavingsVaultRewardPaidTransaction_orderBy {
+  id
+  hash
+  block
+  sender
+  timestamp
+  boostedSavingsVault
+  amount
+  account
+}
+input BoostedSavingsVaultRewardPaidTransaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  hash: Bytes
+  hash_not: Bytes
+  hash_in: [Bytes!]
+  hash_not_in: [Bytes!]
+  hash_contains: Bytes
+  hash_not_contains: Bytes
+  block: Int
+  block_not: Int
+  block_gt: Int
+  block_lt: Int
+  block_gte: Int
+  block_lte: Int
+  block_in: [Int!]
+  block_not_in: [Int!]
+  sender: Bytes
+  sender_not: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  boostedSavingsVault: String
+  boostedSavingsVault_not: String
+  boostedSavingsVault_gt: String
+  boostedSavingsVault_lt: String
+  boostedSavingsVault_gte: String
+  boostedSavingsVault_lte: String
+  boostedSavingsVault_in: [String!]
+  boostedSavingsVault_not_in: [String!]
+  boostedSavingsVault_contains: String
+  boostedSavingsVault_not_contains: String
+  boostedSavingsVault_starts_with: String
+  boostedSavingsVault_not_starts_with: String
+  boostedSavingsVault_ends_with: String
+  boostedSavingsVault_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_not_contains: String
+  account_starts_with: String
+  account_not_starts_with: String
+  account_ends_with: String
+  account_not_ends_with: String
+}
+type BoostedSavingsVaultRewardPaidTransaction implements Transaction {
+  id: ID!
+  hash: Bytes!
+  block: Int!
+  sender: Bytes!
+  timestamp: BigInt!
+  """The BoostedSavingsVault the transaction relates to."""
+  boostedSavingsVault: BoostedSavingsVault!
+  """The amount of the reward paid."""
+  amount: BigInt!
+  """The account receiving the rewarded amount."""
+  account: BoostedSavingsVaultAccount!
+}
+enum BoostedSavingsVaultWithdrawTransaction_orderBy {
+  id
+  hash
+  block
+  sender
+  timestamp
+  boostedSavingsVault
+  amount
+  account
+}
+input BoostedSavingsVaultWithdrawTransaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  hash: Bytes
+  hash_not: Bytes
+  hash_in: [Bytes!]
+  hash_not_in: [Bytes!]
+  hash_contains: Bytes
+  hash_not_contains: Bytes
+  block: Int
+  block_not: Int
+  block_gt: Int
+  block_lt: Int
+  block_gte: Int
+  block_lte: Int
+  block_in: [Int!]
+  block_not_in: [Int!]
+  sender: Bytes
+  sender_not: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  boostedSavingsVault: String
+  boostedSavingsVault_not: String
+  boostedSavingsVault_gt: String
+  boostedSavingsVault_lt: String
+  boostedSavingsVault_gte: String
+  boostedSavingsVault_lte: String
+  boostedSavingsVault_in: [String!]
+  boostedSavingsVault_not_in: [String!]
+  boostedSavingsVault_contains: String
+  boostedSavingsVault_not_contains: String
+  boostedSavingsVault_starts_with: String
+  boostedSavingsVault_not_starts_with: String
+  boostedSavingsVault_ends_with: String
+  boostedSavingsVault_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_not_contains: String
+  account_starts_with: String
+  account_not_starts_with: String
+  account_ends_with: String
+  account_not_ends_with: String
+}
+type BoostedSavingsVaultWithdrawTransaction implements Transaction {
+  id: ID!
+  hash: Bytes!
+  block: Int!
+  sender: Bytes!
+  timestamp: BigInt!
+  """The BoostedSavingsVault the transaction relates to."""
+  boostedSavingsVault: BoostedSavingsVault!
+  """The amount of the stake withdrawn."""
+  amount: BigInt!
+  """The account the stake is withdrawn for."""
+  account: BoostedSavingsVaultAccount!
+}
+enum BoostedSavingsVaultRewardAddedTransaction_orderBy {
+  id
+  hash
+  block
+  sender
+  timestamp
+  boostedSavingsVault
+  amount
+}
+input BoostedSavingsVaultRewardAddedTransaction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  hash: Bytes
+  hash_not: Bytes
+  hash_in: [Bytes!]
+  hash_not_in: [Bytes!]
+  hash_contains: Bytes
+  hash_not_contains: Bytes
+  block: Int
+  block_not: Int
+  block_gt: Int
+  block_lt: Int
+  block_gte: Int
+  block_lte: Int
+  block_in: [Int!]
+  block_not_in: [Int!]
+  sender: Bytes
+  sender_not: Bytes
+  sender_in: [Bytes!]
+  sender_not_in: [Bytes!]
+  sender_contains: Bytes
+  sender_not_contains: Bytes
+  timestamp: BigInt
+  timestamp_not: BigInt
+  timestamp_gt: BigInt
+  timestamp_lt: BigInt
+  timestamp_gte: BigInt
+  timestamp_lte: BigInt
+  timestamp_in: [BigInt!]
+  timestamp_not_in: [BigInt!]
+  boostedSavingsVault: String
+  boostedSavingsVault_not: String
+  boostedSavingsVault_gt: String
+  boostedSavingsVault_lt: String
+  boostedSavingsVault_gte: String
+  boostedSavingsVault_lte: String
+  boostedSavingsVault_in: [String!]
+  boostedSavingsVault_not_in: [String!]
+  boostedSavingsVault_contains: String
+  boostedSavingsVault_not_contains: String
+  boostedSavingsVault_starts_with: String
+  boostedSavingsVault_not_starts_with: String
+  boostedSavingsVault_ends_with: String
+  boostedSavingsVault_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+}
+type BoostedSavingsVaultRewardAddedTransaction implements Transaction {
+  id: ID!
+  hash: Bytes!
+  block: Int!
+  sender: Bytes!
+  timestamp: BigInt!
+  """The BoostedSavingsVault the transaction relates to."""
+  boostedSavingsVault: BoostedSavingsVault!
+  """The amount of rewards added."""
+  amount: BigInt!
 }
 enum SavingsContract_orderBy {
   id
@@ -3711,6 +4173,94 @@ type Subscription {
     """
     block: Block_height
   ): [SavingsContractWithdrawTransaction!]!
+  boostedSavingsVaultStakeTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): BoostedSavingsVaultStakeTransaction
+  boostedSavingsVaultStakeTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: BoostedSavingsVaultStakeTransaction_orderBy
+    orderDirection: OrderDirection
+    where: BoostedSavingsVaultStakeTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [BoostedSavingsVaultStakeTransaction!]!
+  boostedSavingsVaultRewardAddedTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): BoostedSavingsVaultRewardAddedTransaction
+  boostedSavingsVaultRewardAddedTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: BoostedSavingsVaultRewardAddedTransaction_orderBy
+    orderDirection: OrderDirection
+    where: BoostedSavingsVaultRewardAddedTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [BoostedSavingsVaultRewardAddedTransaction!]!
+  boostedSavingsVaultRewardPaidTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): BoostedSavingsVaultRewardPaidTransaction
+  boostedSavingsVaultRewardPaidTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: BoostedSavingsVaultRewardPaidTransaction_orderBy
+    orderDirection: OrderDirection
+    where: BoostedSavingsVaultRewardPaidTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [BoostedSavingsVaultRewardPaidTransaction!]!
+  boostedSavingsVaultWithdrawTransaction(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): BoostedSavingsVaultWithdrawTransaction
+  boostedSavingsVaultWithdrawTransactions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: BoostedSavingsVaultWithdrawTransaction_orderBy
+    orderDirection: OrderDirection
+    where: BoostedSavingsVaultWithdrawTransaction_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [BoostedSavingsVaultWithdrawTransaction!]!
   transaction(
     id: ID!
     """

@@ -66,7 +66,6 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
         unlockPercentage
         periodDuration
         periodFinish
-        rewardPerToken
         rewardPerTokenStored
         rewardRate
         stakingContract

@@ -71,7 +71,6 @@ export interface BoostedSavingsVaultState {
   lockupDuration: number;
   periodDuration: number;
   periodFinish: number;
-  rewardPerToken: BigNumber;
   rewardPerTokenStored: BigNumber;
   rewardRate: BigNumber;
   stakingContract: string;

@@ -31,6 +31,18 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Mayb
             "name": "SavingsContractWithdrawTransaction"
           },
           {
+            "name": "BoostedSavingsVaultStakeTransaction"
+          },
+          {
+            "name": "BoostedSavingsVaultRewardPaidTransaction"
+          },
+          {
+            "name": "BoostedSavingsVaultWithdrawTransaction"
+          },
+          {
+            "name": "BoostedSavingsVaultRewardAddedTransaction"
+          },
+          {
             "name": "SwapTransaction"
           },
           {
@@ -507,8 +519,6 @@ export type BoostedSavingsVault = {
   lastUpdateTime: Scalars['Int'];
   /** The staking token, e.g. imUSD */
   stakingToken: Token;
-  /** The reward per token */
-  rewardPerToken: Scalars['BigInt'];
   /** The reward per token stored */
   rewardPerTokenStored: Scalars['BigInt'];
   /** The reward rate for the rest of the rewards period */
@@ -523,6 +533,10 @@ export type BoostedSavingsVault = {
   totalSupply: Scalars['BigInt'];
   /** Total staking rewards (rewardRate * periodDuration) */
   totalStakingRewards: Scalars['BigInt'];
+  stakeTransactions: Array<BoostedSavingsVaultStakeTransaction>;
+  rewardAddedTransactions: Array<BoostedSavingsVaultRewardAddedTransaction>;
+  rewardPaidTransactions: Array<BoostedSavingsVaultRewardPaidTransaction>;
+  withdrawTransactions: Array<BoostedSavingsVaultWithdrawTransaction>;
 };
 
 
@@ -541,6 +555,42 @@ export type BoostedSavingsVaultRewardEntriesArgs = {
   orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
+};
+
+
+export type BoostedSavingsVaultStakeTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultStakeTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultStakeTransaction_Filter>;
+};
+
+
+export type BoostedSavingsVaultRewardAddedTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardAddedTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardAddedTransaction_Filter>;
+};
+
+
+export type BoostedSavingsVaultRewardPaidTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardPaidTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardPaidTransaction_Filter>;
+};
+
+
+export type BoostedSavingsVaultWithdrawTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultWithdrawTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultWithdrawTransaction_Filter>;
 };
 
 export type BoostedSavingsVault_Filter = {
@@ -620,14 +670,6 @@ export type BoostedSavingsVault_Filter = {
   stakingToken_not_starts_with?: Maybe<Scalars['String']>;
   stakingToken_ends_with?: Maybe<Scalars['String']>;
   stakingToken_not_ends_with?: Maybe<Scalars['String']>;
-  rewardPerToken?: Maybe<Scalars['BigInt']>;
-  rewardPerToken_not?: Maybe<Scalars['BigInt']>;
-  rewardPerToken_gt?: Maybe<Scalars['BigInt']>;
-  rewardPerToken_lt?: Maybe<Scalars['BigInt']>;
-  rewardPerToken_gte?: Maybe<Scalars['BigInt']>;
-  rewardPerToken_lte?: Maybe<Scalars['BigInt']>;
-  rewardPerToken_in?: Maybe<Array<Scalars['BigInt']>>;
-  rewardPerToken_not_in?: Maybe<Array<Scalars['BigInt']>>;
   rewardPerTokenStored?: Maybe<Scalars['BigInt']>;
   rewardPerTokenStored_not?: Maybe<Scalars['BigInt']>;
   rewardPerTokenStored_gt?: Maybe<Scalars['BigInt']>;
@@ -699,14 +741,17 @@ export enum BoostedSavingsVault_OrderBy {
   PeriodFinish = 'periodFinish',
   LastUpdateTime = 'lastUpdateTime',
   StakingToken = 'stakingToken',
-  RewardPerToken = 'rewardPerToken',
   RewardPerTokenStored = 'rewardPerTokenStored',
   RewardRate = 'rewardRate',
   RewardsToken = 'rewardsToken',
   RewardsDistributor = 'rewardsDistributor',
   StakingContract = 'stakingContract',
   TotalSupply = 'totalSupply',
-  TotalStakingRewards = 'totalStakingRewards'
+  TotalStakingRewards = 'totalStakingRewards',
+  StakeTransactions = 'stakeTransactions',
+  RewardAddedTransactions = 'rewardAddedTransactions',
+  RewardPaidTransactions = 'rewardPaidTransactions',
+  WithdrawTransactions = 'withdrawTransactions'
 }
 
 export type BoostedSavingsVaultAccount = {
@@ -721,6 +766,9 @@ export type BoostedSavingsVaultAccount = {
   lastClaim: Scalars['Int'];
   rewardCount: Scalars['Int'];
   rewardEntries: Array<BoostedSavingsVaultRewardEntry>;
+  stakeTransactions: Array<BoostedSavingsVaultStakeTransaction>;
+  rewardPaidTransactions: Array<BoostedSavingsVaultRewardPaidTransaction>;
+  withdrawTransactions: Array<BoostedSavingsVaultWithdrawTransaction>;
 };
 
 
@@ -730,6 +778,33 @@ export type BoostedSavingsVaultAccountRewardEntriesArgs = {
   orderBy?: Maybe<BoostedSavingsVaultRewardEntry_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<BoostedSavingsVaultRewardEntry_Filter>;
+};
+
+
+export type BoostedSavingsVaultAccountStakeTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultStakeTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultStakeTransaction_Filter>;
+};
+
+
+export type BoostedSavingsVaultAccountRewardPaidTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardPaidTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardPaidTransaction_Filter>;
+};
+
+
+export type BoostedSavingsVaultAccountWithdrawTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultWithdrawTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultWithdrawTransaction_Filter>;
 };
 
 export type BoostedSavingsVaultAccount_Filter = {
@@ -838,7 +913,93 @@ export enum BoostedSavingsVaultAccount_OrderBy {
   LastAction = 'lastAction',
   LastClaim = 'lastClaim',
   RewardCount = 'rewardCount',
-  RewardEntries = 'rewardEntries'
+  RewardEntries = 'rewardEntries',
+  StakeTransactions = 'stakeTransactions',
+  RewardPaidTransactions = 'rewardPaidTransactions',
+  WithdrawTransactions = 'withdrawTransactions'
+}
+
+export type BoostedSavingsVaultRewardAddedTransaction = Transaction & {
+  id: Scalars['ID'];
+  hash: Scalars['Bytes'];
+  block: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  /** The BoostedSavingsVault the transaction relates to. */
+  boostedSavingsVault: BoostedSavingsVault;
+  /** The amount of rewards added. */
+  amount: Scalars['BigInt'];
+};
+
+export type BoostedSavingsVaultRewardAddedTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  hash?: Maybe<Scalars['Bytes']>;
+  hash_not?: Maybe<Scalars['Bytes']>;
+  hash_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_contains?: Maybe<Scalars['Bytes']>;
+  hash_not_contains?: Maybe<Scalars['Bytes']>;
+  block?: Maybe<Scalars['Int']>;
+  block_not?: Maybe<Scalars['Int']>;
+  block_gt?: Maybe<Scalars['Int']>;
+  block_lt?: Maybe<Scalars['Int']>;
+  block_gte?: Maybe<Scalars['Int']>;
+  block_lte?: Maybe<Scalars['Int']>;
+  block_in?: Maybe<Array<Scalars['Int']>>;
+  block_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['BigInt']>;
+  timestamp_not?: Maybe<Scalars['BigInt']>;
+  timestamp_gt?: Maybe<Scalars['BigInt']>;
+  timestamp_lt?: Maybe<Scalars['BigInt']>;
+  timestamp_gte?: Maybe<Scalars['BigInt']>;
+  timestamp_lte?: Maybe<Scalars['BigInt']>;
+  timestamp_in?: Maybe<Array<Scalars['BigInt']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  boostedSavingsVault?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_not_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_ends_with?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['BigInt']>;
+  amount_not?: Maybe<Scalars['BigInt']>;
+  amount_gt?: Maybe<Scalars['BigInt']>;
+  amount_lt?: Maybe<Scalars['BigInt']>;
+  amount_gte?: Maybe<Scalars['BigInt']>;
+  amount_lte?: Maybe<Scalars['BigInt']>;
+  amount_in?: Maybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum BoostedSavingsVaultRewardAddedTransaction_OrderBy {
+  Id = 'id',
+  Hash = 'hash',
+  Block = 'block',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
+  BoostedSavingsVault = 'boostedSavingsVault',
+  Amount = 'amount'
 }
 
 export type BoostedSavingsVaultRewardEntry = {
@@ -930,6 +1091,306 @@ export enum BoostedSavingsVaultRewardEntry_OrderBy {
   Start = 'start',
   Finish = 'finish',
   Rate = 'rate'
+}
+
+export type BoostedSavingsVaultRewardPaidTransaction = Transaction & {
+  id: Scalars['ID'];
+  hash: Scalars['Bytes'];
+  block: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  /** The BoostedSavingsVault the transaction relates to. */
+  boostedSavingsVault: BoostedSavingsVault;
+  /** The amount of the reward paid. */
+  amount: Scalars['BigInt'];
+  /** The account receiving the rewarded amount. */
+  account: BoostedSavingsVaultAccount;
+};
+
+export type BoostedSavingsVaultRewardPaidTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  hash?: Maybe<Scalars['Bytes']>;
+  hash_not?: Maybe<Scalars['Bytes']>;
+  hash_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_contains?: Maybe<Scalars['Bytes']>;
+  hash_not_contains?: Maybe<Scalars['Bytes']>;
+  block?: Maybe<Scalars['Int']>;
+  block_not?: Maybe<Scalars['Int']>;
+  block_gt?: Maybe<Scalars['Int']>;
+  block_lt?: Maybe<Scalars['Int']>;
+  block_gte?: Maybe<Scalars['Int']>;
+  block_lte?: Maybe<Scalars['Int']>;
+  block_in?: Maybe<Array<Scalars['Int']>>;
+  block_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['BigInt']>;
+  timestamp_not?: Maybe<Scalars['BigInt']>;
+  timestamp_gt?: Maybe<Scalars['BigInt']>;
+  timestamp_lt?: Maybe<Scalars['BigInt']>;
+  timestamp_gte?: Maybe<Scalars['BigInt']>;
+  timestamp_lte?: Maybe<Scalars['BigInt']>;
+  timestamp_in?: Maybe<Array<Scalars['BigInt']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  boostedSavingsVault?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_not_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_ends_with?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['BigInt']>;
+  amount_not?: Maybe<Scalars['BigInt']>;
+  amount_gt?: Maybe<Scalars['BigInt']>;
+  amount_lt?: Maybe<Scalars['BigInt']>;
+  amount_gte?: Maybe<Scalars['BigInt']>;
+  amount_lte?: Maybe<Scalars['BigInt']>;
+  amount_in?: Maybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  account?: Maybe<Scalars['String']>;
+  account_not?: Maybe<Scalars['String']>;
+  account_gt?: Maybe<Scalars['String']>;
+  account_lt?: Maybe<Scalars['String']>;
+  account_gte?: Maybe<Scalars['String']>;
+  account_lte?: Maybe<Scalars['String']>;
+  account_in?: Maybe<Array<Scalars['String']>>;
+  account_not_in?: Maybe<Array<Scalars['String']>>;
+  account_contains?: Maybe<Scalars['String']>;
+  account_not_contains?: Maybe<Scalars['String']>;
+  account_starts_with?: Maybe<Scalars['String']>;
+  account_not_starts_with?: Maybe<Scalars['String']>;
+  account_ends_with?: Maybe<Scalars['String']>;
+  account_not_ends_with?: Maybe<Scalars['String']>;
+};
+
+export enum BoostedSavingsVaultRewardPaidTransaction_OrderBy {
+  Id = 'id',
+  Hash = 'hash',
+  Block = 'block',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
+  BoostedSavingsVault = 'boostedSavingsVault',
+  Amount = 'amount',
+  Account = 'account'
+}
+
+export type BoostedSavingsVaultStakeTransaction = Transaction & {
+  id: Scalars['ID'];
+  hash: Scalars['Bytes'];
+  block: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  /** The BoostedSavingsVault the transaction relates to. */
+  boostedSavingsVault: BoostedSavingsVault;
+  /** The amount staked. */
+  amount: Scalars['BigInt'];
+  /** The account the staked amount is being added for. */
+  account: BoostedSavingsVaultAccount;
+};
+
+export type BoostedSavingsVaultStakeTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  hash?: Maybe<Scalars['Bytes']>;
+  hash_not?: Maybe<Scalars['Bytes']>;
+  hash_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_contains?: Maybe<Scalars['Bytes']>;
+  hash_not_contains?: Maybe<Scalars['Bytes']>;
+  block?: Maybe<Scalars['Int']>;
+  block_not?: Maybe<Scalars['Int']>;
+  block_gt?: Maybe<Scalars['Int']>;
+  block_lt?: Maybe<Scalars['Int']>;
+  block_gte?: Maybe<Scalars['Int']>;
+  block_lte?: Maybe<Scalars['Int']>;
+  block_in?: Maybe<Array<Scalars['Int']>>;
+  block_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['BigInt']>;
+  timestamp_not?: Maybe<Scalars['BigInt']>;
+  timestamp_gt?: Maybe<Scalars['BigInt']>;
+  timestamp_lt?: Maybe<Scalars['BigInt']>;
+  timestamp_gte?: Maybe<Scalars['BigInt']>;
+  timestamp_lte?: Maybe<Scalars['BigInt']>;
+  timestamp_in?: Maybe<Array<Scalars['BigInt']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  boostedSavingsVault?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_not_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_ends_with?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['BigInt']>;
+  amount_not?: Maybe<Scalars['BigInt']>;
+  amount_gt?: Maybe<Scalars['BigInt']>;
+  amount_lt?: Maybe<Scalars['BigInt']>;
+  amount_gte?: Maybe<Scalars['BigInt']>;
+  amount_lte?: Maybe<Scalars['BigInt']>;
+  amount_in?: Maybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  account?: Maybe<Scalars['String']>;
+  account_not?: Maybe<Scalars['String']>;
+  account_gt?: Maybe<Scalars['String']>;
+  account_lt?: Maybe<Scalars['String']>;
+  account_gte?: Maybe<Scalars['String']>;
+  account_lte?: Maybe<Scalars['String']>;
+  account_in?: Maybe<Array<Scalars['String']>>;
+  account_not_in?: Maybe<Array<Scalars['String']>>;
+  account_contains?: Maybe<Scalars['String']>;
+  account_not_contains?: Maybe<Scalars['String']>;
+  account_starts_with?: Maybe<Scalars['String']>;
+  account_not_starts_with?: Maybe<Scalars['String']>;
+  account_ends_with?: Maybe<Scalars['String']>;
+  account_not_ends_with?: Maybe<Scalars['String']>;
+};
+
+export enum BoostedSavingsVaultStakeTransaction_OrderBy {
+  Id = 'id',
+  Hash = 'hash',
+  Block = 'block',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
+  BoostedSavingsVault = 'boostedSavingsVault',
+  Amount = 'amount',
+  Account = 'account'
+}
+
+export type BoostedSavingsVaultWithdrawTransaction = Transaction & {
+  id: Scalars['ID'];
+  hash: Scalars['Bytes'];
+  block: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  /** The BoostedSavingsVault the transaction relates to. */
+  boostedSavingsVault: BoostedSavingsVault;
+  /** The amount of the stake withdrawn. */
+  amount: Scalars['BigInt'];
+  /** The account the stake is withdrawn for. */
+  account: BoostedSavingsVaultAccount;
+};
+
+export type BoostedSavingsVaultWithdrawTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  hash?: Maybe<Scalars['Bytes']>;
+  hash_not?: Maybe<Scalars['Bytes']>;
+  hash_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_contains?: Maybe<Scalars['Bytes']>;
+  hash_not_contains?: Maybe<Scalars['Bytes']>;
+  block?: Maybe<Scalars['Int']>;
+  block_not?: Maybe<Scalars['Int']>;
+  block_gt?: Maybe<Scalars['Int']>;
+  block_lt?: Maybe<Scalars['Int']>;
+  block_gte?: Maybe<Scalars['Int']>;
+  block_lte?: Maybe<Scalars['Int']>;
+  block_in?: Maybe<Array<Scalars['Int']>>;
+  block_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['BigInt']>;
+  timestamp_not?: Maybe<Scalars['BigInt']>;
+  timestamp_gt?: Maybe<Scalars['BigInt']>;
+  timestamp_lt?: Maybe<Scalars['BigInt']>;
+  timestamp_gte?: Maybe<Scalars['BigInt']>;
+  timestamp_lte?: Maybe<Scalars['BigInt']>;
+  timestamp_in?: Maybe<Array<Scalars['BigInt']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  boostedSavingsVault?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lt?: Maybe<Scalars['String']>;
+  boostedSavingsVault_gte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_lte?: Maybe<Scalars['String']>;
+  boostedSavingsVault_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_not_in?: Maybe<Array<Scalars['String']>>;
+  boostedSavingsVault_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_contains?: Maybe<Scalars['String']>;
+  boostedSavingsVault_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_starts_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_ends_with?: Maybe<Scalars['String']>;
+  boostedSavingsVault_not_ends_with?: Maybe<Scalars['String']>;
+  amount?: Maybe<Scalars['BigInt']>;
+  amount_not?: Maybe<Scalars['BigInt']>;
+  amount_gt?: Maybe<Scalars['BigInt']>;
+  amount_lt?: Maybe<Scalars['BigInt']>;
+  amount_gte?: Maybe<Scalars['BigInt']>;
+  amount_lte?: Maybe<Scalars['BigInt']>;
+  amount_in?: Maybe<Array<Scalars['BigInt']>>;
+  amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  account?: Maybe<Scalars['String']>;
+  account_not?: Maybe<Scalars['String']>;
+  account_gt?: Maybe<Scalars['String']>;
+  account_lt?: Maybe<Scalars['String']>;
+  account_gte?: Maybe<Scalars['String']>;
+  account_lte?: Maybe<Scalars['String']>;
+  account_in?: Maybe<Array<Scalars['String']>>;
+  account_not_in?: Maybe<Array<Scalars['String']>>;
+  account_contains?: Maybe<Scalars['String']>;
+  account_not_contains?: Maybe<Scalars['String']>;
+  account_starts_with?: Maybe<Scalars['String']>;
+  account_not_starts_with?: Maybe<Scalars['String']>;
+  account_ends_with?: Maybe<Scalars['String']>;
+  account_not_ends_with?: Maybe<Scalars['String']>;
+};
+
+export enum BoostedSavingsVaultWithdrawTransaction_OrderBy {
+  Id = 'id',
+  Hash = 'hash',
+  Block = 'block',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
+  BoostedSavingsVault = 'boostedSavingsVault',
+  Amount = 'amount',
+  Account = 'account'
 }
 
 
@@ -1970,6 +2431,14 @@ export type Query = {
   savingsContractDepositTransactions: Array<SavingsContractDepositTransaction>;
   savingsContractWithdrawTransaction?: Maybe<SavingsContractWithdrawTransaction>;
   savingsContractWithdrawTransactions: Array<SavingsContractWithdrawTransaction>;
+  boostedSavingsVaultStakeTransaction?: Maybe<BoostedSavingsVaultStakeTransaction>;
+  boostedSavingsVaultStakeTransactions: Array<BoostedSavingsVaultStakeTransaction>;
+  boostedSavingsVaultRewardAddedTransaction?: Maybe<BoostedSavingsVaultRewardAddedTransaction>;
+  boostedSavingsVaultRewardAddedTransactions: Array<BoostedSavingsVaultRewardAddedTransaction>;
+  boostedSavingsVaultRewardPaidTransaction?: Maybe<BoostedSavingsVaultRewardPaidTransaction>;
+  boostedSavingsVaultRewardPaidTransactions: Array<BoostedSavingsVaultRewardPaidTransaction>;
+  boostedSavingsVaultWithdrawTransaction?: Maybe<BoostedSavingsVaultWithdrawTransaction>;
+  boostedSavingsVaultWithdrawTransactions: Array<BoostedSavingsVaultWithdrawTransaction>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
@@ -2325,6 +2794,70 @@ export type QuerySavingsContractWithdrawTransactionsArgs = {
   orderBy?: Maybe<SavingsContractWithdrawTransaction_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContractWithdrawTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultStakeTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultStakeTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultStakeTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultStakeTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultRewardAddedTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultRewardAddedTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardAddedTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardAddedTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultRewardPaidTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultRewardPaidTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardPaidTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardPaidTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultWithdrawTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostedSavingsVaultWithdrawTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultWithdrawTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultWithdrawTransaction_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -3139,6 +3672,14 @@ export type Subscription = {
   savingsContractDepositTransactions: Array<SavingsContractDepositTransaction>;
   savingsContractWithdrawTransaction?: Maybe<SavingsContractWithdrawTransaction>;
   savingsContractWithdrawTransactions: Array<SavingsContractWithdrawTransaction>;
+  boostedSavingsVaultStakeTransaction?: Maybe<BoostedSavingsVaultStakeTransaction>;
+  boostedSavingsVaultStakeTransactions: Array<BoostedSavingsVaultStakeTransaction>;
+  boostedSavingsVaultRewardAddedTransaction?: Maybe<BoostedSavingsVaultRewardAddedTransaction>;
+  boostedSavingsVaultRewardAddedTransactions: Array<BoostedSavingsVaultRewardAddedTransaction>;
+  boostedSavingsVaultRewardPaidTransaction?: Maybe<BoostedSavingsVaultRewardPaidTransaction>;
+  boostedSavingsVaultRewardPaidTransactions: Array<BoostedSavingsVaultRewardPaidTransaction>;
+  boostedSavingsVaultWithdrawTransaction?: Maybe<BoostedSavingsVaultWithdrawTransaction>;
+  boostedSavingsVaultWithdrawTransactions: Array<BoostedSavingsVaultWithdrawTransaction>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
@@ -3494,6 +4035,70 @@ export type SubscriptionSavingsContractWithdrawTransactionsArgs = {
   orderBy?: Maybe<SavingsContractWithdrawTransaction_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContractWithdrawTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultStakeTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultStakeTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultStakeTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultStakeTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultRewardAddedTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultRewardAddedTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardAddedTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardAddedTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultRewardPaidTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultRewardPaidTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultRewardPaidTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultRewardPaidTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultWithdrawTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostedSavingsVaultWithdrawTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVaultWithdrawTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVaultWithdrawTransaction_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -3894,6 +4499,14 @@ type TransactionFields_SavingsContractDepositTransaction_Fragment = Pick<Savings
 
 type TransactionFields_SavingsContractWithdrawTransaction_Fragment = Pick<SavingsContractWithdrawTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
+type TransactionFields_BoostedSavingsVaultStakeTransaction_Fragment = Pick<BoostedSavingsVaultStakeTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+
+type TransactionFields_BoostedSavingsVaultRewardPaidTransaction_Fragment = Pick<BoostedSavingsVaultRewardPaidTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+
+type TransactionFields_BoostedSavingsVaultWithdrawTransaction_Fragment = Pick<BoostedSavingsVaultWithdrawTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+
+type TransactionFields_BoostedSavingsVaultRewardAddedTransaction_Fragment = Pick<BoostedSavingsVaultRewardAddedTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+
 type TransactionFields_SwapTransaction_Fragment = Pick<SwapTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
 type TransactionFields_PaidFeeTransaction_Fragment = Pick<PaidFeeTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
@@ -3906,7 +4519,7 @@ type TransactionFields_MintSingleTransaction_Fragment = Pick<MintSingleTransacti
 
 type TransactionFields_RedeemTransaction_Fragment = Pick<RedeemTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-export type TransactionFieldsFragment = TransactionFields_SavingsContractDepositTransaction_Fragment | TransactionFields_SavingsContractWithdrawTransaction_Fragment | TransactionFields_SwapTransaction_Fragment | TransactionFields_PaidFeeTransaction_Fragment | TransactionFields_RedeemMassetTransaction_Fragment | TransactionFields_MintMultiTransaction_Fragment | TransactionFields_MintSingleTransaction_Fragment | TransactionFields_RedeemTransaction_Fragment;
+export type TransactionFieldsFragment = TransactionFields_SavingsContractDepositTransaction_Fragment | TransactionFields_SavingsContractWithdrawTransaction_Fragment | TransactionFields_BoostedSavingsVaultStakeTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardPaidTransaction_Fragment | TransactionFields_BoostedSavingsVaultWithdrawTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardAddedTransaction_Fragment | TransactionFields_SwapTransaction_Fragment | TransactionFields_PaidFeeTransaction_Fragment | TransactionFields_RedeemMassetTransaction_Fragment | TransactionFields_MintMultiTransaction_Fragment | TransactionFields_MintSingleTransaction_Fragment | TransactionFields_RedeemTransaction_Fragment;
 
 export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
 
@@ -3932,7 +4545,7 @@ export type MassetsQuery = { massets: Array<(
       & SavingsContractAllFragment
     )>, savingsContractsV2: Array<(
       { token?: Maybe<TokenAllFragment>, boostedSavingsVaults: Array<(
-        Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerToken' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
+        Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
         & { accounts: Array<(
           Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
           & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
@@ -3985,6 +4598,18 @@ export type HistoricTransactionsQuery = { transactions: Array<(
       Pick<SavingsContract, 'id'>
       & { masset: Pick<Masset, 'id'> }
     ) }
+  ) | (
+    { __typename: 'BoostedSavingsVaultStakeTransaction' }
+    & Pick<BoostedSavingsVaultStakeTransaction, 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+  ) | (
+    { __typename: 'BoostedSavingsVaultRewardPaidTransaction' }
+    & Pick<BoostedSavingsVaultRewardPaidTransaction, 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+  ) | (
+    { __typename: 'BoostedSavingsVaultWithdrawTransaction' }
+    & Pick<BoostedSavingsVaultWithdrawTransaction, 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+  ) | (
+    { __typename: 'BoostedSavingsVaultRewardAddedTransaction' }
+    & Pick<BoostedSavingsVaultRewardAddedTransaction, 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
   ) | (
     { __typename: 'SwapTransaction' }
     & Pick<SwapTransaction, 'massetUnits' | 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
@@ -4110,7 +4735,6 @@ export const MassetsDocument = gql`
         unlockPercentage
         periodDuration
         periodFinish
-        rewardPerToken
         rewardPerTokenStored
         rewardRate
         stakingContract
