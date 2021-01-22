@@ -161,8 +161,13 @@ export const transformHistoricTransactionsData = (
           };
         }
         default:
-          throw new Error('Unhandled transaction type');
+          return null;
       }
     })
-    .sort((a, b) => b.timestamp - a.timestamp) as HistoricTransaction[];
+    .filter(Boolean)
+    .sort(
+      (a, b) =>
+        (b as HistoricTransaction).timestamp -
+        (a as HistoricTransaction).timestamp,
+    ) as HistoricTransaction[];
 };
