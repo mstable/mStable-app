@@ -63,6 +63,15 @@ const tabInfo = (vault = false): { [key in Action]: string | undefined } => ({
     'Exiting the Vault will return your imUSD, you will no longer receive new MTA rewards but you will continue earning interest',
 });
 
+const tabMoreInfo: { [key in Action]: string | undefined } = {
+  [Mint]: undefined,
+  [Deposit]: undefined,
+  [DepositETH]: undefined,
+  [Redeem]: undefined,
+  [Withdraw]: 'This transaction will claim any available MTA rewards.',
+  [Exit]: 'This transaction will claim any available MTA rewards.',
+};
+
 const tabContent = (vault = false): { [key in Action]: JSX.Element } => ({
   [Mint]: <SaveMint />,
   [Deposit]: vault ? <SaveDeposit saveAndStake /> : <SaveDeposit />,
@@ -72,12 +81,20 @@ const tabContent = (vault = false): { [key in Action]: JSX.Element } => ({
   [Exit]: <VaultExit />,
 });
 
+const MoreInfo = styled.div`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.color.bodyAccent};
+  text-align: center;
+  align-self: center;
+  margin-top: 2rem;
+`;
+
 const Message = styled(InfoMessage)`
   margin: 2rem 0;
 `;
 
 const Content = styled.div`
-  margin: 0 4rem 2rem 4rem;
+  margin: 2rem 4rem 2rem 4rem;
 `;
 
 const Container = styled.div``;
@@ -88,6 +105,7 @@ export const SaveTabs: FC<Props> = ({ type, defaultIndex }) => {
 
   const isMasset = type === Masset;
   const saveTabInfo = tabInfo(type === Vault)[tab];
+  const saveTabMoreInfo = tabMoreInfo[tab];
   const saveTabContent = tabContent(type === Vault)[tab];
 
   return (
@@ -108,6 +126,7 @@ export const SaveTabs: FC<Props> = ({ type, defaultIndex }) => {
           </Message>
         )}
         <div>{saveTabContent}</div>
+        {saveTabMoreInfo && <MoreInfo>{saveTabMoreInfo}</MoreInfo>}
       </Content>
     </Container>
   );

@@ -109,7 +109,7 @@ export const Save: FC = () => {
         imUSD Vault
       </ModalTitle>
     ),
-    children: <SaveTabs type={TabType.Vault} />,
+    children: <SaveTabs type={TabType.Vault} defaultIndex={1} />,
   });
 
   const saveApy = useAvailableSaveApy();

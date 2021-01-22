@@ -30,10 +30,3 @@ export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
     font-size: ${FontSize.m};
   }
 `;
-
-export const MoreInfo = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.color.bodyAccent};
-  text-align: center;
-  align-self: center;
-`;
