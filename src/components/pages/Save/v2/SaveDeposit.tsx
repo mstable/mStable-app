@@ -50,7 +50,12 @@ export const SaveDeposit: FC<{
 
   const bassets = useMemo(
     () =>
-      canDepositWithWrapper ? Object.keys(massetState?.bAssets ?? {}) : [],
+      canDepositWithWrapper
+        ? Object.keys(massetState?.bAssets ?? {}).filter(
+            // Exclude USDT; reverts with SaveViaMint
+            addr => addr !== '0xdac17f958d2ee523a2206206994597c13d831ec7',
+          )
+        : [],
     [canDepositWithWrapper, massetState?.bAssets],
   );
 
