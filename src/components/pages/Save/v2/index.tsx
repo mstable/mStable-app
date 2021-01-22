@@ -14,9 +14,7 @@ import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
 
 import { BalanceRow, BalanceType, BalanceHeader } from '../BalanceRow';
 import { Boost, BoostCalculator } from './Boost';
-import { MassetModal } from './MassetModal';
-import { SaveModal } from './SaveModal';
-import { VaultModal } from './VaultModal';
+import { SaveTabs, TabType } from './SaveTabs';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { useRewards } from './RewardsProvider';
 import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
@@ -91,8 +89,9 @@ export const Save: FC = () => {
         mUSD
       </ModalTitle>
     ),
-    children: <MassetModal />,
+    children: <SaveTabs type={TabType.Masset} />,
   });
+
   const [showSaveModal] = useModalComponent({
     title: (
       <ModalTitle>
@@ -100,7 +99,7 @@ export const Save: FC = () => {
         imUSD
       </ModalTitle>
     ),
-    children: <SaveModal />,
+    children: <SaveTabs type={TabType.Save} />,
   });
 
   const [showVaultModal] = useModalComponent({
@@ -110,7 +109,7 @@ export const Save: FC = () => {
         imUSD Vault
       </ModalTitle>
     ),
-    children: <VaultModal />,
+    children: <SaveTabs type={TabType.Vault} />,
   });
 
   const saveApy = useAvailableSaveApy();

@@ -62,7 +62,7 @@ export const VaultExit: FC = () => {
         }}
       />
       <MoreInfo>
-        {valid && 'This transaction will claim any available MTA rewards.'}
+        This transaction will claim any available MTA rewards.
       </MoreInfo>
     </Container>
   );

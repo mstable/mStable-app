@@ -31,7 +31,7 @@ import {
 import { Interfaces } from '../../../../types';
 import { StepProps } from '../../../core/Step';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
-import { MassetModal } from '../v2/MassetModal';
+import { SaveTabs, TabType } from '../v2/SaveTabs';
 import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
 
 const isTxPending = (
@@ -88,7 +88,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
         mUSD
       </ModalTitle>
     ),
-    children: <MassetModal />,
+    children: <SaveTabs type={TabType.Masset} />,
   });
 
   const proposeWithdrawTx = useCallback(() => {

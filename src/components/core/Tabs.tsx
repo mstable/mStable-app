@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { UnstyledButton } from './Button';
 import { Color, FontSize, ViewportWidth } from '../../theme';
-import { InfoMessage } from './InfoMessage';
 
 export const TabsContainer = styled.div`
   display: flex;
@@ -37,8 +36,4 @@ export const MoreInfo = styled.div`
   color: ${({ theme }) => theme.color.bodyAccent};
   text-align: center;
   align-self: center;
-`;
-
-export const Message = styled(InfoMessage)`
-  margin: 2rem 2rem 0 2rem;
 `;

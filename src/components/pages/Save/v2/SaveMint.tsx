@@ -1,5 +1,4 @@
 import React, { FC, useMemo, useState } from 'react';
-import styled from 'styled-components';
 
 import { SavingsContractFactory } from '../../../../typechain/SavingsContractFactory';
 import { SaveWrapperFactory } from '../../../../typechain/SaveWrapperFactory';
@@ -13,20 +12,13 @@ import { useTokenSubscription } from '../../../../context/TokensProvider';
 
 import { ADDRESSES } from '../../../../constants';
 import { Interfaces } from '../../../../types';
-import { TabBtn, TabsContainer, Message } from '../../../core/Tabs';
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 const formId = 'MassetModal';
 
-const Container = styled.div`
-  > :last-child {
-    padding: 2rem;
-  }
-`;
-
-export const MassetModal: FC = () => {
+export const SaveMint: FC = () => {
   const signer = useSigner();
   const propose = usePropose();
 
@@ -95,85 +87,72 @@ export const MassetModal: FC = () => {
   );
 
   return (
-    <Container>
-      <TabsContainer>
-        <TabBtn active>Deposit mUSD</TabBtn>
-      </TabsContainer>
-      <Message>
-        <span>
-          mUSD will be deposited and you will receive imUSD (interest-bearing
-          mUSD).
-          <br />
-          Deposit to the Vault to earn bonus MTA rewards.
-        </span>
-      </Message>
-      <AssetExchange
-        inputAddressOptions={inputAddressOptions}
-        inputAddress={inputAddress}
-        inputAddressDisabled
-        inputAmount={inputAmount}
-        inputFormValue={inputFormValue}
-        outputAddress={saveAddress}
-        exchangeRate={exchangeRate}
-        handleSetAddress={setInputAddress}
-        handleSetAmount={setInputFormValue}
-        handleSetMax={() => {
-          if (inputToken) {
-            setInputFormValue(inputToken.balance.string);
+    <AssetExchange
+      inputAddressOptions={inputAddressOptions}
+      inputAddress={inputAddress}
+      inputAddressDisabled
+      inputAmount={inputAmount}
+      inputFormValue={inputFormValue}
+      outputAddress={saveAddress}
+      exchangeRate={exchangeRate}
+      handleSetAddress={setInputAddress}
+      handleSetAmount={setInputFormValue}
+      handleSetMax={() => {
+        if (inputToken) {
+          setInputFormValue(inputToken.balance.string);
+        }
+      }}
+      error={error}
+    >
+      <SendButton
+        valid={valid}
+        title="Mint imUSD"
+        handleSend={() => {
+          if (saveAddress && signer && inputAmount && massetSymbol) {
+            const body = `${inputAmount.format()} ${massetSymbol}`;
+            propose<Interfaces.SavingsContract, 'depositSavings(uint256)'>(
+              new TransactionManifest(
+                SavingsContractFactory.connect(saveAddress, signer),
+                'depositSavings(uint256)',
+                [inputAmount.exact],
+                {
+                  present: `Depositing ${body}`,
+                  past: `Deposited ${body}`,
+                },
+                formId,
+              ),
+            );
           }
         }}
-        error={error}
-      >
+        approve={depositApprove}
+      />
+      {ADDRESSES.mUSD.SaveWrapper && (
         <SendButton
           valid={valid}
-          title="Mint imUSD"
+          title="Mint & Deposit to Vault"
           handleSend={() => {
-            if (saveAddress && signer && inputAmount && massetSymbol) {
+            if (signer && inputAmount && massetSymbol) {
               const body = `${inputAmount.format()} ${massetSymbol}`;
-              propose<Interfaces.SavingsContract, 'depositSavings(uint256)'>(
+              propose<Interfaces.SaveWrapper, 'saveAndStake'>(
                 new TransactionManifest(
-                  SavingsContractFactory.connect(saveAddress, signer),
-                  'depositSavings(uint256)',
+                  SaveWrapperFactory.connect(
+                    ADDRESSES.mUSD.SaveWrapper as string,
+                    signer,
+                  ),
+                  'saveAndStake',
                   [inputAmount.exact],
                   {
-                    present: `Depositing ${body}`,
-                    past: `Deposited ${body}`,
+                    present: `Depositing and staking ${body}`,
+                    past: `Deposited and staking ${body}`,
                   },
                   formId,
                 ),
               );
             }
           }}
-          approve={depositApprove}
+          approve={stakeApprove}
         />
-        {ADDRESSES.mUSD.SaveWrapper && (
-          <SendButton
-            valid={valid}
-            title="Mint & Deposit to Vault"
-            handleSend={() => {
-              if (signer && inputAmount && massetSymbol) {
-                const body = `${inputAmount.format()} ${massetSymbol}`;
-                propose<Interfaces.SaveWrapper, 'saveAndStake'>(
-                  new TransactionManifest(
-                    SaveWrapperFactory.connect(
-                      ADDRESSES.mUSD.SaveWrapper as string,
-                      signer,
-                    ),
-                    'saveAndStake',
-                    [inputAmount.exact],
-                    {
-                      present: `Depositing and staking ${body}`,
-                      past: `Deposited and staking ${body}`,
-                    },
-                    formId,
-                  ),
-                );
-              }
-            }}
-            approve={stakeApprove}
-          />
-        )}
-      </AssetExchange>
-    </Container>
+      )}
+    </AssetExchange>
   );
 };
