@@ -52,7 +52,7 @@ export const colorTheme = (theme: 'light' | 'dark'): ColorTheme => {
     body: isLight ? Color.offBlack : Color.offWhite,
     bodyAccent: Color.grey,
     accent: isLight ? '#eee' : '#222',
-    accentContrast: isLight ? '#ddd' : '#333',
+    accentContrast: isLight ? '#ccc' : '#333',
     bodyTransparent: isLight ? Color.blackTransparent : Color.whiteTransparent,
     bodyTransparenter: isLight
       ? Color.blackTransparenter
