@@ -15,7 +15,7 @@ export const useVaultWeeklyROI = (): {
   const savingsContract = massetState?.savingsContracts.v2;
   const vault = savingsContract?.boostedSavingsVault;
   const rewardPerTokenStored = vault?.rewardPerTokenStored;
-  const stakingTokenPrice = savingsContract?.latestExchangeRate;
+  const stakingTokenPrice = savingsContract?.latestExchangeRate?.rate.simple;
 
   return useMemo(() => {
     if (rewardPerTokenStored && stakingTokenPrice && mtaPrice) {
@@ -23,8 +23,7 @@ export const useVaultWeeklyROI = (): {
         .simple;
 
       const baseValue =
-        (rewardPerTokenStoredSimple * mtaPrice * 100) /
-        stakingTokenPrice.rate.simple;
+        (rewardPerTokenStoredSimple * mtaPrice) / stakingTokenPrice;
 
       // TODO use user's boost
       return { baseValue, boostedValue: baseValue * 3 };
