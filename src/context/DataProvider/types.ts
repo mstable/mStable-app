@@ -50,6 +50,7 @@ export interface MassetState {
 
 export interface BoostedSavingsVaultAccountState {
   boostedBalance: BigDecimal;
+  boostMultiplier: number;
   rawBalance: BigDecimal;
   lastAction: number;
   lastClaim: number;
