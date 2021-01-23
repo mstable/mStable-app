@@ -9,11 +9,11 @@ import { useVaultWeeklyROI } from '../../../../hooks/useVaultWeeklyROI';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { CountUp } from '../../../core/CountUp';
 import { Tooltip } from '../../../core/ReactTooltip';
+import { Color } from '../../../../theme';
 
 const StyledCountUp = styled(CountUp)`
   font-size: 1rem;
   font-weight: normal;
-  color: ${({ theme }) => theme.color.body};
 `;
 
 const Subtitle = styled.div`
@@ -55,6 +55,8 @@ export const VaultROI: FC = () => {
     return '+ MTA';
   }, [vault]);
 
+  const isBoosted = weeklyROI.boostedValue > weeklyROI.baseValue;
+
   return (
     <Container>
       <div>{rewardsText}</div>
@@ -64,8 +66,13 @@ export const VaultROI: FC = () => {
           {weeklyROI.fetching ? (
             <Skeleton height={4} width={40} />
           ) : (
-            <Tooltip tip="This is calculated as: (reward per imUSD * current MTA price) / (imUSD price)">
-              <StyledCountUp end={weeklyROI.baseValue} suffix="%" />
+            <Tooltip tip={isBoosted ? 'Your ROI is multiplied' : undefined}>
+              <StyledCountUp
+                end={weeklyROI.boostedValue}
+                suffix="%"
+                highlight={isBoosted}
+                highlightColor={Color.green}
+              />
             </Tooltip>
           )}
         </div>

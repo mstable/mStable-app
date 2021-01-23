@@ -1,7 +1,8 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
-import { BigDecimal } from '../web3/BigDecimal';
+import { useSignerOrInfuraProvider } from '../context/OnboardProvider';
 import { useMtaPrice } from './useMtaPrice';
 
 export const useVaultWeeklyROI = (): {
@@ -9,26 +10,52 @@ export const useVaultWeeklyROI = (): {
   baseValue: number;
   boostedValue: number;
 } => {
+  // TODO add this field to the Subgraph
+  const [totalStaked, setTotalStaked] = useState<number | undefined>();
+  const provider = useSignerOrInfuraProvider();
+
   const mtaPrice = useMtaPrice();
 
   const massetState = useSelectedMassetState();
   const savingsContract = massetState?.savingsContracts.v2;
+  const saveAddress = savingsContract?.address;
   const vault = savingsContract?.boostedSavingsVault;
-  const rewardPerTokenStored = vault?.rewardPerTokenStored;
+  const vaultAddress = vault?.address;
+  const totalStakingRewards = vault?.totalStakingRewards.simple;
   const stakingTokenPrice = savingsContract?.latestExchangeRate?.rate.simple;
+  const boostMultiplier = vault?.account?.boostMultiplier;
+
+  useEffect(() => {
+    if (saveAddress && vaultAddress && !totalStaked) {
+      Erc20DetailedFactory.connect(saveAddress, provider)
+        .balanceOf(vaultAddress)
+        .then(balance => {
+          setTotalStaked(parseInt(balance.toString(), 10) / 1e18);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  }, [provider, vaultAddress, saveAddress, totalStaked]);
 
   return useMemo(() => {
-    if (rewardPerTokenStored && stakingTokenPrice && mtaPrice) {
-      const rewardPerTokenStoredSimple = new BigDecimal(rewardPerTokenStored)
-        .simple;
+    if (totalStakingRewards && stakingTokenPrice && mtaPrice && totalStaked) {
+      const mtaPerWeekInUsd = totalStakingRewards * mtaPrice;
+      const totalStakedInUsd = stakingTokenPrice * totalStaked;
+      const baseValue = (mtaPerWeekInUsd / totalStakedInUsd) * 100;
 
-      const baseValue =
-        (rewardPerTokenStoredSimple * mtaPrice) / stakingTokenPrice;
-
-      // TODO use user's boost
-      return { baseValue, boostedValue: baseValue * 3 };
+      return {
+        baseValue,
+        boostedValue: boostMultiplier ? baseValue * boostMultiplier : baseValue,
+      };
     }
 
     return { baseValue: 0, boostedValue: 0, fetching: true };
-  }, [mtaPrice, rewardPerTokenStored, stakingTokenPrice]);
+  }, [
+    boostMultiplier,
+    mtaPrice,
+    stakingTokenPrice,
+    totalStaked,
+    totalStakingRewards,
+  ]);
 };
