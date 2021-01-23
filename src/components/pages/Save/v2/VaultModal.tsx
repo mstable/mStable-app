@@ -33,12 +33,13 @@ const tabTitles: { [key in Tabs]: string } = {
 
 const tabInfo: { [key in Tabs]: string } = {
   [Deposit]:
-    'imUSD will be minted from your selected stablecoin & deposited into the Vault',
+    'imUSD will be minted from your selected stablecoin & deposited into the Vault. Your imUSD can be withdrawn at any time.',
   [DepositETH]:
-    'ETH will be traded via Uniswap V2 & Curve for mUSD. Your mUSD will then mint imUSD & be deposited into the Vault',
-  [Withdraw]: 'Withdraws an amount of imUSD from the Vault',
+    'ETH will be traded via Uniswap V2 & Curve for mUSD. Your mUSD will then mint imUSD & be deposited into the Vault. Your imUSD can be withdrawn at any time.',
+  [Withdraw]:
+    'Withdraw an amount of imUSD from the Vault, returning imUSD to your wallet.',
   [Exit]:
-    'Exiting the Vault will return your imUSD, you will no longer receive new MTA rewards but you will continue earning interest',
+    'Exiting the Vault will return your imUSD. You will no longer receive new MTA rewards but you will continue earning interest by holding imUSD.',
 };
 
 export const VaultModal: FC = () => {

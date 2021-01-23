@@ -16,7 +16,7 @@ import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
-const GOVERNANCE_URL = 'https://governance.mstable.org/';
+const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
 
 const BoostCountup = styled(DifferentialCountup)`
   font-weight: normal;
@@ -248,7 +248,7 @@ export const SaveCalculator: FC<{ onClick?: () => void }> = ({ onClick }) => {
             <StyledButton highlighted onClick={navigateToGovernance}>
               <div>
                 <GovSvg />
-                Governance
+                Get vMTA
               </div>
             </StyledButton>
           </BoostAndActions>

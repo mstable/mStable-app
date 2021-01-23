@@ -105,6 +105,8 @@ export const MassetModal: FC = () => {
           mUSD).
           <br />
           Deposit to the Vault to earn bonus MTA rewards.
+          <br />
+          Your imUSD can be redeemed for imUSD at any time.
         </span>
       </Message>
       <AssetExchange
