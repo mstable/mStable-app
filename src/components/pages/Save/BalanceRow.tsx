@@ -39,6 +39,8 @@ interface Props {
 interface RowProps {
   title: string;
   subtitle?: string;
+  apyLabel?: string;
+  info?: string | ReactElement;
   AssetIcon: FC;
 }
 
@@ -46,39 +48,38 @@ export const ContainerSnippet = css`
   border-top-left-radius: 0.75rem;
   border-top-right-radius: 0.75rem;
 
-  > div > div {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+  > div {
+    display: block;
+    width: 100%;
 
-    svg {
-      margin-right: 1.25rem;
+    > div {
+      display: flex;
+      align-items: center;
+
+      &:first-child {
+        justify-content: flex-start;
+        margin-bottom: 1rem;
+      }
+
+      svg {
+        margin-right: 1.25rem;
+      }
     }
-  }
-
-  > div > div:first-child {
-    justify-content: flex-start;
-    flex-basis: 80%;
-  }
-
-  > div > div:last-child {
-    justify-content: flex-end;
-    flex-basis: 20%;
-  }
-
-  > div > div:nth-child(2) {
-    display: none;
   }
 
   @media (min-width: ${ViewportWidth.m}) {
-    > div > div:first-child {
-      flex-basis: unset;
-    }
-    > div > div:nth-child(2) {
-      display: inherit;
-    }
-    > div > div:last-child {
-      flex-basis: unset;
+    > div {
+      display: flex;
+
+      > div {
+        justify-content: flex-end;
+        width: 25%;
+
+        &:first-child {
+          width: 50%;
+          margin-bottom: 0;
+        }
+      }
     }
   }
 `;
@@ -101,6 +102,21 @@ const Line = styled.div`
   width: 4rem;
 `;
 
+const Label = styled.div`
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    display: none;
+  }
+`;
+
+const ApyLabel = styled(Label)`
+  @media (min-width: ${ViewportWidth.m}) {
+    display: block;
+  }
+`;
+
 const Title = styled.div`
   display: flex;
   font-weight: 600;
@@ -112,22 +128,42 @@ const Title = styled.div`
   }
 `;
 
-const Subtitle = styled.div`
+const Info = styled.div`
   font-size: 0.75rem;
   color: ${({ theme }) => theme.color.bodyAccent};
   text-align: left;
+  p {
+    margin-bottom: 0.25rem;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+`;
+
+const Subtitle = styled(Info)`
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  &:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 const Interest = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
-  text-align: right;
-  font-size: 1.2rem;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
 
   div + div {
     font-size: 0.75rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    align-items: flex-end;
+    text-align: right;
+    font-size: 1.2rem;
+    margin-bottom: 0;
   }
 `;
 
@@ -137,8 +173,10 @@ const Asset = styled.div`
   align-items: center;
 
   > svg {
-    height: 2rem;
-    width: 2rem;
+    align-self: flex-start;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: auto;
   }
 `;
 
@@ -149,11 +187,14 @@ const ExchangeRate = styled(Number)`
 const BalanceValue = styled.div`
   flex-direction: column;
   justify-content: center !important;
-  align-items: flex-end !important;
-  gap: 0.5rem;
 
   ${Number} + ${Number} {
     font-size: 1rem;
+  }
+  
+  @media (min-width: ${ViewportWidth.m}) {
+    gap: 0.5rem;
+    align-items: flex-end !important;
   }
 `;
 
@@ -194,6 +235,12 @@ const HeaderContainer = styled(Widget)`
   padding: 0 1.25rem;
   font-size: 0.875rem;
   color: ${({ theme }) => theme.color.grey};
+
+  display: none;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    display: flex;
+  }
 `;
 
 const DefaultContainer = styled(WidgetButton)<{ highlight?: boolean }>`
@@ -214,6 +261,7 @@ const Tokens = new Map<number, RowProps>([
     {
       title: 'mUSD',
       subtitle: 'mStable USD',
+      info: <p>A meta-stablecoin with a native interest rate.</p>,
       AssetIcon: MUSDIcon,
     },
   ],
@@ -230,6 +278,16 @@ const Tokens = new Map<number, RowProps>([
     {
       title: 'imUSD',
       subtitle: 'Interest-bearing mUSD',
+      info: (
+        <>
+          <p>imUSD is a token that is redeemable for mUSD.</p>
+          <p>
+            It passively gains interest while holding it, such that it is
+            redeemable for a greater amount of mUSD as interest accrues over
+            time.
+          </p>
+        </>
+      ),
       AssetIcon: IMUSDIcon,
     },
   ],
@@ -237,7 +295,21 @@ const Tokens = new Map<number, RowProps>([
     BalanceType.BoostedSavingsVault,
     {
       title: 'imUSD Vault',
-      subtitle: 'Interest + MTA rewards',
+      subtitle: 'Interest and MTA rewards',
+      apyLabel: 'APY (imUSD only)',
+      info: (
+        <>
+          <p>
+            Optionally, deposit imUSD and get MTA rewards on top of imUSD's
+            interest rate.
+          </p>
+          <p>The rewards earned can be multiplied by staking MTA.</p>
+          <p>
+            imUSD can be withdrawn at any time, and claimed MTA rewards are
+            streamed after a lockup time.
+          </p>
+        </>
+      ),
       AssetIcon: IMUSDMTAIcon,
     },
   ],
@@ -246,6 +318,12 @@ const Tokens = new Map<number, RowProps>([
     {
       title: 'MTA',
       subtitle: 'mStable Meta',
+      info: (
+        <p>
+          The token used to govern mStable, incentivise contributors, and to
+          secure the protocol.
+        </p>
+      ),
       AssetIcon: MTAIcon,
     },
   ],
@@ -254,6 +332,15 @@ const Tokens = new Map<number, RowProps>([
     {
       title: 'vMTA',
       subtitle: 'Voting escrow MTA',
+      info: (
+        <>
+          <p>Locking up MTA to create a stake creates vMTA.</p>
+          <p>
+            vMTA confers power to vote on proposals, earn staking rewards, and
+            get multiplied rewards (via the imUSD Vault).
+          </p>
+        </>
+      ),
       AssetIcon: VMTAIcon,
     },
   ],
@@ -263,7 +350,7 @@ export const BalanceHeader: FC = () => {
   return (
     <HeaderContainer>
       <div>Asset</div>
-      <div>APY</div>
+      <div>APY/Rewards</div>
       <div>Balance</div>
     </HeaderContainer>
   );
@@ -285,7 +372,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
 
   const tokenInfo = Tokens.get(token) as RowProps;
 
-  const { title, subtitle, AssetIcon } = tokenInfo;
+  const { title, subtitle, info, AssetIcon, apyLabel } = tokenInfo;
   const hasBorder = !hasChildren;
 
   return (
@@ -307,6 +394,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
               </div>
             </Title>
             {subtitle && <Subtitle>{subtitle}</Subtitle>}
+            {info && <Info>{info}</Info>}
           </div>
         </Asset>
       </div>
@@ -316,6 +404,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
             <Line />
           ) : apy ? (
             <>
+              <ApyLabel>{apyLabel ?? 'APY'}</ApyLabel>
               <div>
                 {typeof apy === 'string' ? (
                   apy
@@ -331,6 +420,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
         </Interest>
       </div>
       <BalanceValue>
+        <Label>Balance</Label>
         {account ? (
           balance ? (
             <>

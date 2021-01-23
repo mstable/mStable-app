@@ -24,10 +24,10 @@ const Container = styled.div`
 
 const tabInfo: { [key in Tabs]: string | undefined } = {
   [DepositStablecoins]:
-    'Interest-bearing mUSD (imUSD) will be minted from your selected stablecoin',
+    'Interest-bearing mUSD (imUSD) will be minted from your selected stablecoin. Your imUSD can be redeemed for mUSD at any time.',
   [DepositETH]:
-    'ETH will be automatically traded via Uniswap V2 & Curve for mUSD. Your mUSD will then be deposited for imUSD (interest-bearing mUSD)',
-  [Redeem]: 'Redeem an amount of imUSD for mUSD',
+    'ETH will be automatically traded via Uniswap V2 & Curve for mUSD. Your mUSD will then be deposited for imUSD (interest-bearing mUSD). Your imUSD can be redeemed for mUSD at any time.',
+  [Redeem]: 'Redeem an amount of imUSD for mUSD.',
 };
 
 // TODO TabbedModal

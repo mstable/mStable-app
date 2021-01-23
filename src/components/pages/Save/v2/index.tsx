@@ -24,7 +24,7 @@ import { VaultROI } from './VaultROI';
 import { useMtaPrice } from '../../../../hooks/useMtaPrice';
 import { Button } from '../../../core/Button';
 
-const GOVERNANCE_URL = 'https://governance.mstable.org/';
+const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
 
 const ModalTitle = styled.div`
   display: flex;
