@@ -290,7 +290,15 @@ const getStakingRewardsContractsMap = (
 
           // percentage = gains / stakingTokenPrice
           const percentage = gains / stakingTokenPrice;
-
+          // eslint-disable-next-line no-console
+          console.log({
+            rewardsTokenPrice,
+            deltaR,
+            deltaT,
+            gains,
+            percentage,
+            apy: percentage * ((365 * 24 * 60 * 60) / deltaT),
+          });
           // apy = percentage * (seconds in year / deltaT)
           return percentage * ((365 * 24 * 60 * 60) / deltaT);
         })();

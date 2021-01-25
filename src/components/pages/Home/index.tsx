@@ -11,7 +11,6 @@ import { ReactComponent as SaveIcon } from '../../icons/circle/save.svg';
 import { ReactComponent as SwapIcon } from '../../icons/circle/swap.svg';
 import { ReactComponent as MintIcon } from '../../icons/circle/mint.svg';
 import { useConnected, useConnect } from '../../../context/OnboardProvider';
-import { useToggleWallet } from '../../../context/AppProvider';
 
 const Symbol = styled.div`
   align-items: center;
@@ -210,7 +209,7 @@ const Start: FC<{}> = () => {
 const GetStarted: FC<{}> = () => {
   const connect = useConnect();
   const connected = useConnected();
-  const toggleWallet = useToggleWallet();
+  const history = useHistory();
   return (
     <>
       <SymbolBlock>
@@ -221,8 +220,17 @@ const GetStarted: FC<{}> = () => {
       <Block>
         <P>Start by connecting your Ethereum wallet</P>
         <P>
-          <Button type="button" onClick={connected ? toggleWallet : connect}>
-            Connect
+          <Button
+            type="button"
+            onClick={() => {
+              if (connected) {
+                history.push('/mint');
+              } else {
+                connect();
+              }
+            }}
+          >
+            {connected ? 'Go to app' : 'Connect'}
           </Button>
         </P>
       </Block>
