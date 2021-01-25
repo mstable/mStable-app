@@ -43,7 +43,7 @@ const transformBassets = (
           {
             address,
             isTransferFeeCharged,
-            maxWeight: bigNumberify(maxWeight),
+            maxWeight: maxWeight ? bigNumberify(maxWeight) : undefined,
             ratio: bigNumberify(ratio),
             status: status as BassetStatus,
             totalVault: BigDecimal.fromMetric(vaultBalance),
@@ -271,7 +271,9 @@ const transformMassetData = (
         transformTokenData(b.token, tokens),
       ]),
     ),
-    collateralisationRatio: bigNumberify(collateralisationRatio),
+    collateralisationRatio: collateralisationRatio
+      ? bigNumberify(collateralisationRatio)
+      : undefined,
     feeRate: bigNumberify(feeRate),
     redemptionFeeRate: bigNumberify(redemptionFeeRate),
     savingsContracts: {
@@ -312,7 +314,7 @@ export const transformRawData = ([data, vaultData, tokens]: [
     (data?.massets ?? []).map(masset => {
       if (masset.savingsContractsV2?.[0]?.boostedSavingsVaults.length) {
         return [
-          masset.token.symbol as MassetName,
+          masset.token.symbol.toLowerCase() as MassetName,
           transformMassetData(masset, tokens),
         ];
       }
@@ -327,7 +329,7 @@ export const transformRawData = ([data, vaultData, tokens]: [
         ],
       };
       return [
-        masset.token.symbol as MassetName,
+        masset.token.symbol.toLowerCase() as MassetName,
         transformMassetData(mergedData, tokens),
       ];
     }),

@@ -111,6 +111,19 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
 
 export const ADDRESSES: Addresses = ADDRESSES_BY_NETWORK[CHAIN_ID];
 
+export const MASSETS = {
+  musd: {
+    name: 'mStable USD',
+    symbol: 'mUSD',
+    slug: 'musd',
+  },
+  mbtc: {
+    name: 'mStable BTC',
+    symbol: 'mBTC',
+    slug: 'mbtc',
+  },
+};
+
 export const EMOJIS = {
   error: '❌',
   approve: '✔️',

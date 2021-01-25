@@ -15,7 +15,7 @@ import { BigDecimal } from './web3/BigDecimal';
 import { Erc20Detailed } from './typechain/Erc20Detailed';
 import { UniswapRouter02 } from './typechain/UniswapRouter02';
 
-export type MassetName = 'mUSD' | 'mBTC';
+export type MassetName = 'musd' | 'mbtc';
 
 export interface Purpose {
   present: string;

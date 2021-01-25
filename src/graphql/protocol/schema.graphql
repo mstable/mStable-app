@@ -866,8 +866,8 @@ type Basset {
   id: ID!
   """Basket the Basset is contained in"""
   basket: Basket!
-  """Target weight of the Basset"""
-  maxWeight: BigInt!
+  """Target weight of the Basset (mUSD only)"""
+  maxWeight: BigInt
   """Basset to Masset ratio for quantity conversion"""
   ratio: BigInt!
   """Flag that is set when the bAsset is removed from the basket (and unset when added)"""
@@ -904,8 +904,8 @@ type Basket {
   id: ID!
   """The Bassets in the Basket"""
   bassets(skip: Int = 0, first: Int = 100, orderBy: Basset_orderBy, orderDirection: OrderDirection, where: Basset_filter): [Basset!]!
-  """The collateralisation ratio of the Basket"""
-  collateralisationRatio: BigInt!
+  """The collateralisation ratio of the Basket (mUSD only)"""
+  collateralisationRatio: BigInt
   """Max number of Bassets that can be present in the Basket"""
   maxBassets: Int!
   """Flag for whether the Basket has failed"""
@@ -1143,8 +1143,8 @@ type Masset {
   id: ID!
   """The Basket of Bassets for this Masset"""
   basket: Basket!
-  """The address of the `BasketManager` contract for this Masset"""
-  basketManager: Bytes!
+  """The address of the `BasketManager` contract for this Masset (mUSD only)"""
+  basketManager: Bytes
   """The swap fee rate"""
   feeRate: BigInt!
   """The redemption fee rate"""

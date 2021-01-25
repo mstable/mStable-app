@@ -19,8 +19,8 @@ export interface BassetState {
   balanceInMasset: BigDecimal;
   basketShare: BigDecimal;
   isTransferFeeCharged: boolean;
-  maxWeight: BigNumber;
-  maxWeightInMasset: BigDecimal;
+  maxWeight?: BigNumber;
+  maxWeightInMasset?: BigDecimal;
   overweight: boolean;
   ratio: BigNumber;
   status: BassetStatus;
@@ -35,7 +35,7 @@ export interface MassetState {
   bAssets: { [address: string]: BassetState };
   removedBassets: { [address: string]: SubscribedToken };
   blacklistedBassets: string[];
-  collateralisationRatio: BigNumber;
+  collateralisationRatio?: BigNumber;
   failed: boolean;
   feeRate: BigNumber;
   overweightBassets: string[];
@@ -110,6 +110,6 @@ export type SavingsContractState = {
 );
 
 export interface DataState {
-  mUSD?: MassetState;
-  mBTC?: MassetState;
+  musd?: MassetState;
+  mbtc?: MassetState;
 }

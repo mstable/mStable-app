@@ -170,7 +170,7 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
         }) => {
           const basketShareAsPercentage = basketShare.toPercent();
           const maxWeightAsPercentage = new BigDecimal(
-            maxWeight,
+            maxWeight ?? '0',
             18,
           ).toPercent();
 

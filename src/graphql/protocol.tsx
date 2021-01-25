@@ -160,8 +160,8 @@ export type Basket = {
   id: Scalars['ID'];
   /** The Bassets in the Basket */
   bassets: Array<Basset>;
-  /** The collateralisation ratio of the Basket */
-  collateralisationRatio: Scalars['BigInt'];
+  /** The collateralisation ratio of the Basket (mUSD only) */
+  collateralisationRatio?: Maybe<Scalars['BigInt']>;
   /** Max number of Bassets that can be present in the Basket */
   maxBassets: Scalars['Int'];
   /** Flag for whether the Basket has failed */
@@ -237,8 +237,8 @@ export type Basset = {
   id: Scalars['ID'];
   /** Basket the Basset is contained in */
   basket: Basket;
-  /** Target weight of the Basset */
-  maxWeight: Scalars['BigInt'];
+  /** Target weight of the Basset (mUSD only) */
+  maxWeight?: Maybe<Scalars['BigInt']>;
   /** Basset to Masset ratio for quantity conversion */
   ratio: Scalars['BigInt'];
   /** Flag that is set when the bAsset is removed from the basket (and unset when added) */
@@ -1576,8 +1576,8 @@ export type Masset = {
   id: Scalars['ID'];
   /** The Basket of Bassets for this Masset */
   basket: Basket;
-  /** The address of the `BasketManager` contract for this Masset */
-  basketManager: Scalars['Bytes'];
+  /** The address of the `BasketManager` contract for this Masset (mUSD only) */
+  basketManager?: Maybe<Scalars['Bytes']>;
   /** The swap fee rate */
   feeRate: Scalars['BigInt'];
   /** The redemption fee rate */
