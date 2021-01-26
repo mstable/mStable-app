@@ -61,7 +61,7 @@ export const AmountInput: FC<Props> = ({
   className,
   error,
   disabled = false,
-  placeholder = '0.00',
+  placeholder = '0.0',
   onChange,
   value,
   min = '0',

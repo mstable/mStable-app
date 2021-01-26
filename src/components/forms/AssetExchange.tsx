@@ -45,9 +45,9 @@ const Container = styled.div`
 
 const Exchange = styled.div`
   flex-direction: column;
-  padding: 1rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  border-radius: 0.5rem;
+  max-width: 32rem;
+  align-self: center;
+  width: 100%;
 
   > div:first-child {
     margin-bottom: 1rem;
@@ -56,6 +56,9 @@ const Exchange = styled.div`
 
 const Details = styled.div`
   flex-direction: column-reverse;
+  max-width: 32rem;
+  width: 100%;
+  align-self: center;
 
   > * {
     margin-top: 0.75rem;
