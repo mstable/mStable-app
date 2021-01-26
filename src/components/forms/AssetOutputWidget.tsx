@@ -1,11 +1,12 @@
 import React, { FC, useMemo } from 'react';
+import styled from 'styled-components';
+import Skeleton from 'react-loading-skeleton';
 
-import { useTokenSubscription } from '../../context/TokensProvider';
 import { Widget } from '../core/Widget';
 import { BigDecimal } from '../../web3/BigDecimal';
-
 import { AssetInput } from './AssetInput';
-import { ExchangeRate } from './ExchangeRate';
+import { useTokenSubscription } from '../../context/TokensProvider';
+import { ExchangeRate } from '../core/ExchangeRate';
 
 interface Props {
   className?: string;
@@ -62,11 +63,11 @@ export const AssetOutputWidget: FC<Props> = ({
         (inputToken || inputLabel) &&
         (outputToken || outputLabel) && (
           <ExchangeRate
-            exchangeRate={exchangeRate}
-            outputLabel={outputLabel}
-            inputLabel={inputLabel}
             inputToken={inputToken}
             outputToken={outputToken}
+            inputLabel={inputLabel}
+            outputLabel={outputLabel}
+            exchangeRate={exchangeRate}
           />
         )
       }
