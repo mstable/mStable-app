@@ -242,6 +242,7 @@ const transformMassetData = (
   {
     // currentSavingsContract,
     feeRate,
+    forgeValidator,
     redemptionFeeRate,
     token: { decimals, address },
     token,
@@ -262,6 +263,7 @@ const transformMassetData = (
   return {
     address,
     failed,
+    forgeValidator,
     undergoingRecol,
     token: transformTokenData(token, tokens),
     bAssets,

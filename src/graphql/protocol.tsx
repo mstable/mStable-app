@@ -1578,6 +1578,8 @@ export type Masset = {
   basket: Basket;
   /** The address of the `BasketManager` contract for this Masset (mUSD only) */
   basketManager?: Maybe<Scalars['Bytes']>;
+  /** The address of the `ForgeValidator` or `InvariantValidator` contract */
+  forgeValidator: Scalars['Bytes'];
   /** The swap fee rate */
   feeRate: Scalars['BigInt'];
   /** The redemption fee rate */
@@ -1727,6 +1729,12 @@ export type Masset_Filter = {
   basketManager_not_in?: Maybe<Array<Scalars['Bytes']>>;
   basketManager_contains?: Maybe<Scalars['Bytes']>;
   basketManager_not_contains?: Maybe<Scalars['Bytes']>;
+  forgeValidator?: Maybe<Scalars['Bytes']>;
+  forgeValidator_not?: Maybe<Scalars['Bytes']>;
+  forgeValidator_in?: Maybe<Array<Scalars['Bytes']>>;
+  forgeValidator_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  forgeValidator_contains?: Maybe<Scalars['Bytes']>;
+  forgeValidator_not_contains?: Maybe<Scalars['Bytes']>;
   feeRate?: Maybe<Scalars['BigInt']>;
   feeRate_not?: Maybe<Scalars['BigInt']>;
   feeRate_gt?: Maybe<Scalars['BigInt']>;
@@ -1959,6 +1967,7 @@ export enum Masset_OrderBy {
   Id = 'id',
   Basket = 'basket',
   BasketManager = 'basketManager',
+  ForgeValidator = 'forgeValidator',
   FeeRate = 'feeRate',
   RedemptionFeeRate = 'redemptionFeeRate',
   TotalMints = 'totalMints',
@@ -4530,7 +4539,7 @@ export type MassetsQueryVariables = Exact<{
 
 
 export type MassetsQuery = { massets: Array<(
-    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
+    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'forgeValidator'>
     & { token: TokenAllFragment, basket: (
       Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
       & { bassets: Array<(
@@ -4687,6 +4696,7 @@ export const MassetsDocument = gql`
     }
     feeRate
     redemptionFeeRate
+    forgeValidator
     basket {
       failed
       collateralisationRatio

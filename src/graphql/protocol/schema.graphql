@@ -1145,6 +1145,8 @@ type Masset {
   basket: Basket!
   """The address of the `BasketManager` contract for this Masset (mUSD only)"""
   basketManager: Bytes
+  """The address of the `ForgeValidator` or `InvariantValidator` contract"""
+  forgeValidator: Bytes!
   """The swap fee rate"""
   feeRate: BigInt!
   """The redemption fee rate"""
@@ -3262,6 +3264,7 @@ enum Masset_orderBy {
   id
   basket
   basketManager
+  forgeValidator
   feeRate
   redemptionFeeRate
   totalMints
@@ -3316,6 +3319,12 @@ input Masset_filter {
   basketManager_not_in: [Bytes!]
   basketManager_contains: Bytes
   basketManager_not_contains: Bytes
+  forgeValidator: Bytes
+  forgeValidator_not: Bytes
+  forgeValidator_in: [Bytes!]
+  forgeValidator_not_in: [Bytes!]
+  forgeValidator_contains: Bytes
+  forgeValidator_not_contains: Bytes
   feeRate: BigInt
   feeRate_not: BigInt
   feeRate_gt: BigInt
