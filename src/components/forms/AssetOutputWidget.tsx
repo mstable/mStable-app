@@ -1,11 +1,11 @@
 import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 
+import { useTokenSubscription } from '../../context/TokensProvider';
 import { Widget } from '../core/Widget';
 import { BigDecimal } from '../../web3/BigDecimal';
+
 import { AssetInput } from './AssetInput';
-import { useTokenSubscription } from '../../context/TokensProvider';
+import { ExchangeRate } from './ExchangeRate';
 
 interface Props {
   className?: string;
@@ -18,15 +18,6 @@ interface Props {
   outputLabel?: string;
   title?: string;
 }
-
-const ExchangeRate = styled.p`
-  font-size: 0.95rem;
-  color: ${({ theme }) => theme.color.grey};
-
-  span {
-    ${({ theme }) => theme.mixins.numeric};
-  }
-`;
 
 export const AssetOutputWidget: FC<Props> = ({
   className,
@@ -70,18 +61,13 @@ export const AssetOutputWidget: FC<Props> = ({
         exchangeRate &&
         (inputToken || inputLabel) &&
         (outputToken || outputLabel) && (
-          <ExchangeRate>
-            {exchangeRate.fetching && <Skeleton height={16} width={150} />}
-            {exchangeRate.value && (
-              <>
-                <span>1</span>
-                {` `}
-                {inputLabel ?? inputToken?.symbol}
-                <span> ≈ {exchangeRate.value.format(6)}</span>
-                {` ${outputLabel ?? outputToken?.symbol}`}
-              </>
-            )}
-          </ExchangeRate>
+          <ExchangeRate
+            exchangeRate={exchangeRate}
+            outputLabel={outputLabel}
+            inputLabel={inputLabel}
+            inputToken={inputToken}
+            outputToken={outputToken}
+          />
         )
       }
     >
