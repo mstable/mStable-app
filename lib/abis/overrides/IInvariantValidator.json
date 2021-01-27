@@ -1,0 +1,231 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IInvariantValidator",
+  "sourceName": "contracts/curved-masset/IInvariantValidator.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "ratio",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "vaultBalance",
+              "type": "uint128"
+            }
+          ],
+          "internalType": "struct MassetStructs.BassetData[]",
+          "name": "_bAssets",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_i",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_rawInput",
+          "type": "uint256"
+        }
+      ],
+      "name": "computeMint",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "ratio",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "vaultBalance",
+              "type": "uint128"
+            }
+          ],
+          "internalType": "struct MassetStructs.BassetData[]",
+          "name": "_bAssets",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "_indices",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_rawInputs",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "computeMintMulti",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "ratio",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "vaultBalance",
+              "type": "uint128"
+            }
+          ],
+          "internalType": "struct MassetStructs.BassetData[]",
+          "name": "_bAssets",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_i",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_mAssetQuantity",
+          "type": "uint256"
+        }
+      ],
+      "name": "computeRedeem",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "ratio",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "vaultBalance",
+              "type": "uint128"
+            }
+          ],
+          "internalType": "struct MassetStructs.BassetData[]",
+          "name": "_bAssets",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint8[]",
+          "name": "_indices",
+          "type": "uint8[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_rawOutputs",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "computeRedeemExact",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint128",
+              "name": "ratio",
+              "type": "uint128"
+            },
+            {
+              "internalType": "uint128",
+              "name": "vaultBalance",
+              "type": "uint128"
+            }
+          ],
+          "internalType": "struct MassetStructs.BassetData[]",
+          "name": "_bAssets",
+          "type": "tuple[]"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_i",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint8",
+          "name": "_o",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_rawInput",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_feeRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "computeSwap",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
