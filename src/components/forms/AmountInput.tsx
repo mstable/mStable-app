@@ -14,6 +14,8 @@ interface Props {
   placeholder?: string;
   onChange?(formValue?: string): void;
   disabled?: boolean;
+  min?: string;
+  max?: string;
 }
 
 export const Input = styled.input<{
@@ -62,6 +64,8 @@ export const AmountInput: FC<Props> = ({
   placeholder = '0.00',
   onChange,
   value,
+  min = '0',
+  max,
 }) => {
   const handleKeyPress = useCallback<KeyboardEventHandler<HTMLInputElement>>(
     event => {
@@ -86,7 +90,8 @@ export const AmountInput: FC<Props> = ({
       className={className}
       error={error}
       type="number"
-      min="0"
+      min={min}
+      max={max}
       placeholder={placeholder}
       step="0.01"
       value={value || ''}
