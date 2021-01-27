@@ -11,6 +11,7 @@ import { MerkleDrop } from './typechain/MerkleDrop.d';
 import { TokenMinter as CurveTokenMinter } from './typechain/TokenMinter.d';
 import { CurveDeposit } from './typechain/CurveDeposit.d';
 import { BoostedSavingsVault } from './typechain/BoostedSavingsVault.d';
+import { CurvedMasset } from './typechain/CurvedMasset.d';
 import { BigDecimal } from './web3/BigDecimal';
 import { Erc20Detailed } from './typechain/Erc20Detailed';
 import { UniswapRouter02 } from './typechain/UniswapRouter02';
@@ -25,6 +26,7 @@ export interface Purpose {
 /* eslint-disable @typescript-eslint/no-shadow */
 export enum Interfaces {
   Masset,
+  CurvedMasset,
   ERC20,
   SavingsContract,
   StakingRewards,
@@ -42,6 +44,7 @@ export enum Interfaces {
 
 export interface Instances {
   [Interfaces.Masset]: IMasset;
+  [Interfaces.CurvedMasset]: CurvedMasset;
   [Interfaces.ERC20]: Erc20Detailed;
   [Interfaces.SavingsContract]: ISavingsContract;
   [Interfaces.StakingRewards]: StakingRewards;
