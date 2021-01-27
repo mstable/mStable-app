@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { SubscribedToken } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
-import { ExchangeRate, FetchRate } from '../core/ExchangeRate';
+import { ExchangeRate } from '../core/ExchangeRate';
 import { AssetInput } from './AssetInput';
 
 export interface AssetState {
@@ -25,28 +25,6 @@ interface Props {
   onAmountChange(address: string, formValue?: string): void;
   onMaxAmountClick(address: string): void;
 }
-
-// TODO: - Pull out into state / spread between props & state.
-const mBTCMock: {
-  bAssets?: string[];
-  inputToken: SubscribedToken;
-  exchangeRate: FetchRate;
-} = {
-  bAssets: ['12'],
-  inputToken: {
-    balance: new BigDecimal(10, 10),
-    allowances: { '0x': new BigDecimal(10, 10) },
-    address: '0x',
-    decimals: 10,
-    symbol: 'mBTC',
-    totalSupply: new BigDecimal(10, 10),
-    price: new BigDecimal(10, 10),
-  },
-  exchangeRate: {
-    value: new BigDecimal(10, 10),
-    fetching: false,
-  },
-};
 
 const AdvancedButton = styled(Button)`
   width: 100%;
@@ -88,10 +66,8 @@ export const MultiAssetExchange: FC<Props> = ({
   onAmountChange,
   onMaxAmountClick,
 }) => {
-  // const inputTokens = _inputTokens.filter(t => !!t) as SubscribedToken[];
-  // const outputTokens = _outputTokens.filter(t => !!t) as SubscribedToken[];
-
-  const handleSetAddress = (address: string) => {};
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleSetAddress = (address: string): void => {};
 
   // use to swap layout & usage
   // const isManyToOne = outputTokens.length === 1;

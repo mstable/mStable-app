@@ -1,6 +1,4 @@
 import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
-import Skeleton from 'react-loading-skeleton';
 
 import { Widget } from '../core/Widget';
 import { BigDecimal } from '../../web3/BigDecimal';

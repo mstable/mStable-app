@@ -1,6 +1,4 @@
-import { BigDecimal } from '../../../../../web3/BigDecimal';
 import { MassetState } from '../../../../../context/DataProvider/types';
-import { SubscribedToken } from '../../../../../types';
 import { AssetState } from '../../../../forms/MultiAssetExchange';
 
 export enum Actions {
