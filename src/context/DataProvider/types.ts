@@ -38,6 +38,7 @@ export interface MassetState {
   collateralisationRatio?: BigNumber;
   failed: boolean;
   feeRate: BigNumber;
+  forgeValidator: string;
   overweightBassets: string[];
   redemptionFeeRate: BigNumber;
   token: SubscribedToken;
