@@ -2,6 +2,8 @@ import React, { FC, useLayoutEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import { useLocation } from 'react-router-dom';
+import { TransitionGroup } from 'react-transition-group';
+import { ModalProvider } from 'react-modal-hook';
 
 import { ReactTooltip, Tooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
@@ -168,7 +170,7 @@ export const Layout: FC = ({ children }) => {
   }, [accountOpen]);
 
   return (
-    <>
+    <ModalProvider rootComponent={TransitionGroup}>
       <Background home={home} accountOpen={accountOpen} />
       <HeaderGroup home={home} />
       <Container>
@@ -189,6 +191,6 @@ export const Layout: FC = ({ children }) => {
       <Tooltip tip="" hideIcon />
       <ReactTooltip id="global" place="top" />
       <GlobalStyle />
-    </>
+    </ModalProvider>
   );
 };

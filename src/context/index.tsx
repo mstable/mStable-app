@@ -1,6 +1,4 @@
 import React, { FC } from 'react';
-import { ModalProvider } from 'react-modal-hook';
-import { TransitionGroup } from 'react-transition-group';
 
 import { UserProvider } from './UserProvider';
 import { AppProvider } from './AppProvider';
@@ -28,9 +26,7 @@ export const Providers: FC = ({ children }) => (
                     <AppProvider>
                       <ThemeProvider>
                         <SelectedSaveVersionProvider>
-                          <ModalProvider rootComponent={TransitionGroup}>
-                            {children}
-                          </ModalProvider>
+                          {children}
                         </SelectedSaveVersionProvider>
                       </ThemeProvider>
                     </AppProvider>

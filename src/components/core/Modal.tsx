@@ -5,8 +5,10 @@ import React, {
   useLayoutEffect,
   useRef,
 } from 'react';
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
+import { CSSTransition } from 'react-transition-group';
+
 import { ViewportWidth } from '../../theme';
 
 import { UnstyledButton } from './Button';
@@ -93,33 +95,29 @@ const FixedContainer = styled.div`
 }
 `;
 
-// TODO Fix animation
-// const scaleIn = keyframes`
-//   0% {
-//     transform: scale(1.2);
-//     transform-origin: 50% 50%;
-//     filter: blur(20px);
-//     opacity: 0;
-//   }
-//   100% {
-//     transform: scale(1);
-//     transform-origin: 50% 50%;
-//     filter: blur(0);
-//     opacity: 1;
-//   }
-// `;
+const scale = keyframes`
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+`;
 
-// const Animation = styled(CSSTransition)`
-//   ${({ classNames }) => `&.${classNames}-enter`} {
-//     animation: ${css`
-//         ${scaleIn}`} 0.5s cubic-bezier(0.19, 1, 0.22, 1) normal;
-//   }
+const Animation = styled(CSSTransition)<{ classNames: string }>`
+  transform-origin: 50% 50%;
+  &.item-enter-active {
+    animation: ${css`
+        ${scale}`} 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  }
 
-//   ${({ classNames }) => `&.${classNames}-exit-active`} {
-//     animation: ${css`
-//         ${scaleIn}`} 0.3s cubic-bezier(0.19, 1, 0.22, 1) reverse;
-//   }
-// `;
+  &.item-exit-active {
+    animation: ${css`
+        ${scale}`} 0.4s cubic-bezier(0.19, 1, 0.22, 1) reverse;
+  }
+`;
 
 export const Modal: FC<Props> = ({
   children,
@@ -127,6 +125,7 @@ export const Modal: FC<Props> = ({
   className,
   hideModal,
   open,
+  onExited,
 }) => {
   const fixedRef = useRef<HTMLDivElement>(null as never);
   const modalRef = useRef<HTMLDivElement>(null as never);
@@ -149,21 +148,27 @@ export const Modal: FC<Props> = ({
     };
   }, [hideModal]);
 
-  if (!open) return null;
-
   return (
     <FixedContainer ref={fixedRef}>
-      <Container className={className} ref={modalRef}>
-        <Header>
-          <Title>{title}</Title>
-          {hideModal && (
-            <div>
-              <CloseButton onClick={hideModal}>✕</CloseButton>
-            </div>
-          )}
-        </Header>
-        <Body>{children}</Body>
-      </Container>
+      <Animation
+        classNames="item"
+        timeout={400}
+        unmountOnExit
+        in={open}
+        onExited={onExited}
+      >
+        <Container className={className} ref={modalRef}>
+          <Header>
+            <Title>{title}</Title>
+            {hideModal && (
+              <div>
+                <CloseButton onClick={hideModal}>✕</CloseButton>
+              </div>
+            )}
+          </Header>
+          <Body>{children}</Body>
+        </Container>
+      </Animation>
     </FixedContainer>
   );
 };
