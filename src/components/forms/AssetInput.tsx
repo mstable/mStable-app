@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { SubscribedTokenInput } from './SubscribedTokenInput';
 import { AmountInput } from './AmountInput';
-import { ApproveContent, SendButton } from './SendButton';
+import { ApproveContent } from './SendButton';
 import { ReactComponent as LockIcon } from '../icons/lock-open.svg';
 import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg';
 
@@ -17,9 +17,9 @@ interface Props {
   addressOptions?: { address: string; balance?: BigDecimal; label?: string }[];
   addressDisabled?: boolean;
   error?: 'warning' | 'error';
-  handleSetAmount?(formValue?: string): void;
+  handleSetAmount?(address: string, formValue?: string): void;
   handleSetAddress?(address: string): void;
-  handleSetMax?(): void;
+  handleSetMax?(address: string): void;
   needsUnlock?: boolean;
   showUnlockStatus?: boolean;
 }
@@ -146,6 +146,8 @@ export const AssetInput: FC<Props> = ({
     setUnlockState(true);
   };
 
+  if (!address) return null;
+
   return (
     <Container error={error} disabled={disabled ?? false}>
       {needsUnlock && unlockState ? (
@@ -163,12 +165,12 @@ export const AssetInput: FC<Props> = ({
                 disabled={amountDisabled}
                 value={formValue}
                 // error={!!error} // remove for now
-                onChange={handleSetAmount}
+                onChange={v => handleSetAmount?.(address, v)}
               />
               {handleSetMax && (
                 <Button
                   type="button"
-                  onClick={handleSetMax}
+                  onClick={() => handleSetMax(address)}
                   scale={0.75}
                   transparent
                 >

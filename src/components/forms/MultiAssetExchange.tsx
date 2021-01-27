@@ -1,14 +1,30 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 import { SubscribedToken } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { ExchangeRate, FetchRate } from '../core/ExchangeRate';
 import { AssetInput } from './AssetInput';
 
-interface Props {}
+export interface AssetState {
+  index: number;
+  address: string;
+  amount?: BigDecimal;
+  formValue?: string;
+  decimals: number;
+  enabled: boolean;
+  error?: string;
+  token: SubscribedToken;
+  exchangeRate?: BigDecimal;
+}
+
+interface Props {
+  inputAssets: AssetState[];
+  outputAssets: AssetState[];
+  onAmountChange(address: string, formValue?: string): void;
+  onMaxAmountClick(address: string): void;
+}
 
 // TODO: - Pull out into state / spread between props & state.
 const mBTCMock: {
@@ -66,53 +82,71 @@ const Container = styled.div`
   }
 `;
 
-export const MultiAssetExchange: FC<Props> = () => {
-  const massetState = useSelectedMassetState();
-
-  const bAssets: SubscribedToken[] = Object.values(
-    massetState?.bAssets ?? {},
-  ).map(b => b.token);
+export const MultiAssetExchange: FC<Props> = ({
+  inputAssets,
+  outputAssets,
+  onAmountChange,
+  onMaxAmountClick,
+}) => {
+  // const inputTokens = _inputTokens.filter(t => !!t) as SubscribedToken[];
+  // const outputTokens = _outputTokens.filter(t => !!t) as SubscribedToken[];
 
   const handleSetAddress = (address: string) => {};
-  const handleSetAmount = (formValue?: string | undefined) => {};
-  const handleSetMax = () => {};
+
+  // use to swap layout & usage
+  // const isManyToOne = outputTokens.length === 1;
+  const singleInputToken =
+    inputAssets.filter(asset => (asset.amount?.simple ?? 0) > 0).length === 1
+      ? inputAssets.find(asset => (asset.amount?.simple ?? 0) > 0)?.token
+      : undefined;
 
   // const { bAssets } = mBTCMock;
   return (
     <Container>
-      {bAssets.map((t, i) => (
-        <AssetInput
-          address={t.address}
-          addressDisabled
-          addressOptions={[]} // ?
-          amountDisabled={false}
-          // formValue="100"
-          handleSetAddress={handleSetAddress}
-          handleSetAmount={handleSetAmount}
-          handleSetMax={handleSetMax}
-          // error={i === 0 ? 'error' : undefined}
-          needsUnlock={i === 0}
-          showUnlockStatus
-        />
-      ))}
+      {inputAssets
+        .sort((a, b) => a.index - b.index)
+        .map((asset, i) => (
+          <AssetInput
+            key={asset.address}
+            address={asset.address}
+            addressDisabled
+            addressOptions={[]} // ?
+            amountDisabled={false}
+            formValue={asset.formValue}
+            handleSetAddress={handleSetAddress}
+            handleSetAmount={onAmountChange}
+            handleSetMax={onMaxAmountClick}
+            // error={i === 0 ? 'error' : undefined}
+            needsUnlock={i === 0}
+            showUnlockStatus
+          />
+        ))}
       <Arrow>↓</Arrow>
-      <ExchangeRate
-        inputToken={mBTCMock.inputToken}
-        outputToken={mBTCMock.inputToken}
-        exchangeRate={mBTCMock.exchangeRate}
-      />
-      {bAssets.length > 0 && (
-        <AssetInput
-          disabled
-          address={bAssets[0].address}
-          addressDisabled
-          addressOptions={[]} // ?
-          amountDisabled
-          // formValue="100"
-          handleSetAddress={handleSetAddress}
-          handleSetAmount={handleSetAmount}
+      {outputAssets.length > 0 && (
+        <ExchangeRate
+          inputToken={singleInputToken}
+          outputToken={outputAssets[0].token}
+          exchangeRate={{
+            value: outputAssets[0]?.exchangeRate,
+            fetching: false,
+          }}
         />
       )}
+      {outputAssets
+        .sort((a, b) => a.index - b.index)
+        .map(asset => (
+          <AssetInput
+            key={asset.address}
+            disabled
+            address={asset.address}
+            addressDisabled
+            addressOptions={[]} // ?
+            amountDisabled
+            formValue={asset.formValue}
+            handleSetAddress={handleSetAddress}
+            handleSetAmount={onAmountChange}
+          />
+        ))}
 
       <AdvancedButton transparent>
         <div>
