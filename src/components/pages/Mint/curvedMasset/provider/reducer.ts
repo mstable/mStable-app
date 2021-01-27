@@ -126,9 +126,9 @@ const reduce: Reducer<State, Action> = (state, action) => {
 
     case Actions.SetBassetMaxAmount: {
       const { address } = action.payload;
-      const { [address]: bAsset, ...inputAssets } = state.inputAssets;
-      const amount = bAsset.token.balance;
-      const formValue = bAsset.token.balance?.format(2, false);
+      const { [address]: inputAsset, ...inputAssets } = state.inputAssets;
+      const amount = inputAsset.token.balance;
+      const formValue = inputAsset.token.balance?.format(2, false);
 
       return {
         ...state,
@@ -136,7 +136,7 @@ const reduce: Reducer<State, Action> = (state, action) => {
         inputAssets: {
           ...inputAssets,
           [address]: {
-            ...bAsset,
+            ...inputAsset,
             amount,
             formValue,
           },

@@ -24,6 +24,7 @@ interface Props {
   outputAssets: AssetState[];
   onAmountChange(address: string, formValue?: string): void;
   onMaxAmountClick(address: string): void;
+  spender?: string;
 }
 
 const AdvancedButton = styled(Button)`
@@ -65,38 +66,38 @@ export const MultiAssetExchange: FC<Props> = ({
   outputAssets,
   onAmountChange,
   onMaxAmountClick,
+  spender,
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSetAddress = (address: string): void => {};
 
   // use to swap layout & usage
   // const isManyToOne = outputTokens.length === 1;
+
   const singleInputToken =
     inputAssets.filter(asset => (asset.amount?.simple ?? 0) > 0).length === 1
       ? inputAssets.find(asset => (asset.amount?.simple ?? 0) > 0)?.token
       : undefined;
 
-  // const { bAssets } = mBTCMock;
   return (
     <Container>
-      {inputAssets
-        .sort((a, b) => a.index - b.index)
-        .map((asset, i) => (
-          <AssetInput
-            key={asset.address}
-            address={asset.address}
-            addressDisabled
-            addressOptions={[]} // ?
-            amountDisabled={false}
-            formValue={asset.formValue}
-            handleSetAddress={handleSetAddress}
-            handleSetAmount={onAmountChange}
-            handleSetMax={onMaxAmountClick}
-            // error={i === 0 ? 'error' : undefined}
-            needsUnlock={i === 0}
-            showUnlockStatus
-          />
-        ))}
+      {spender &&
+        inputAssets
+          .sort((a, b) => a.index - b.index)
+          .map(asset => (
+            <AssetInput
+              key={asset.address}
+              address={asset.address}
+              addressDisabled
+              addressOptions={[]} // ?
+              amountDisabled={false}
+              formValue={asset.formValue}
+              handleSetAddress={handleSetAddress}
+              handleSetAmount={onAmountChange}
+              handleSetMax={onMaxAmountClick}
+              spender={spender}
+            />
+          ))}
       <Arrow>↓</Arrow>
       {outputAssets.length > 0 && (
         <ExchangeRate
@@ -123,7 +124,6 @@ export const MultiAssetExchange: FC<Props> = ({
             handleSetAmount={onAmountChange}
           />
         ))}
-
       <AdvancedButton transparent>
         <div>
           <div>Advanced</div>

@@ -21,6 +21,7 @@ const MintForm: FC = () => {
         outputAssets={outputAssets}
         onAmountChange={setBassetAmount}
         onMaxAmountClick={setBassetMaxAmount}
+        spender={mintState.massetState?.address}
       />
     </div>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 
@@ -8,6 +9,7 @@ import { AmountInput } from './AmountInput';
 import { ApproveContent } from './SendButton';
 import { ReactComponent as LockIcon } from '../icons/lock-open.svg';
 import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg';
+import { ApproveProvider, Mode, useApprove } from './ApproveProvider';
 
 interface Props {
   disabled?: boolean;
@@ -20,8 +22,9 @@ interface Props {
   handleSetAmount?(address: string, formValue?: string): void;
   handleSetAddress?(address: string): void;
   handleSetMax?(address: string): void;
-  needsUnlock?: boolean;
-  showUnlockStatus?: boolean;
+  needsApprove?: boolean;
+  handleApprove?: (mode: Mode) => void;
+  spender?: string;
 }
 
 const Input = styled.div`
@@ -126,7 +129,7 @@ const Container = styled.div<{
   }
 `;
 
-export const AssetInput: FC<Props> = ({
+const AssetInputContent: FC<Props> = ({
   disabled,
   address,
   addressDisabled,
@@ -137,8 +140,9 @@ export const AssetInput: FC<Props> = ({
   handleSetAddress,
   handleSetAmount,
   handleSetMax,
-  needsUnlock,
-  showUnlockStatus,
+  needsApprove,
+  handleApprove,
+  spender,
 }) => {
   const [unlockState, setUnlockState] = useState(false);
 
@@ -146,15 +150,16 @@ export const AssetInput: FC<Props> = ({
     setUnlockState(true);
   };
 
+  // TODO: - Fix this
   if (!address) return null;
 
   return (
     <Container error={error} disabled={disabled ?? false}>
-      {needsUnlock && unlockState ? (
+      {needsApprove && unlockState && handleApprove ? (
         <Approve
           mode="exact"
           onCloseClick={() => setUnlockState(false)}
-          onApproveClick={() => alert('a')}
+          onApproveClick={handleApprove}
           hasPendingApproval={false}
         />
       ) : (
@@ -186,20 +191,44 @@ export const AssetInput: FC<Props> = ({
               options={addressOptions}
               onChange={handleSetAddress}
             />
-            {showUnlockStatus && (
+            {spender && (
               <LockButton
                 scale={0.875}
-                highlighted={needsUnlock}
-                transparent={!needsUnlock}
-                disabled={!needsUnlock}
+                highlighted={needsApprove}
+                transparent={!needsApprove}
+                disabled={!needsApprove}
                 onClick={handleUnlockClick}
               >
-                {needsUnlock ? <UnlockedIcon /> : <LockIcon />}
+                {needsApprove ? <UnlockedIcon /> : <LockIcon />}
               </LockButton>
             )}
           </TokenContainer>
         </>
       )}
     </Container>
+  );
+};
+
+const AssetInputApproveContent: FC<Props> = props => {
+  const [{ needsApprove }, handleApprove] = useApprove();
+  return (
+    <AssetInputContent
+      {...props}
+      needsApprove={needsApprove}
+      handleApprove={handleApprove}
+    />
+  );
+};
+
+export const AssetInput: FC<Props> = props => {
+  const { address, spender, formValue } = props;
+  const amount = BigDecimal.parse(formValue ?? '0');
+
+  return spender && address ? (
+    <ApproveProvider address={address} spender={spender} amount={amount}>
+      <AssetInputApproveContent {...props} />
+    </ApproveProvider>
+  ) : (
+    <AssetInputContent {...props} />
   );
 };
