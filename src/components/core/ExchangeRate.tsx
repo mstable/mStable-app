@@ -29,18 +29,19 @@ export const ExchangeRate: FC<{
   inputToken?: SubscribedToken;
   outputToken?: SubscribedToken;
   exchangeRate: FetchRate;
-}> = ({ exchangeRate, inputToken, outputToken, inputLabel, outputLabel }) => (
-  <Container>
-    <p>
-      {exchangeRate.fetching && <ThemedSkeleton height={16} width={150} />}
-      {exchangeRate.value && (
-        <>
-          <span>1</span>
-          {` ${inputLabel ?? inputToken?.symbol}`}
-          <span> ≈ {exchangeRate.value.format(6)}</span>
-          {` ${outputLabel ?? outputToken?.symbol}`}
-        </>
-      )}
-    </p>
-  </Container>
-);
+}> = ({ exchangeRate, inputToken, outputToken, inputLabel, outputLabel }) => {
+  const hasInput = inputLabel || inputToken;
+  return (
+    <Container>
+      <p>
+        {exchangeRate.fetching && <ThemedSkeleton height={16} width={150} />}
+        {exchangeRate.value && (
+          <span>{` ≈ ${exchangeRate.value.format(6)} ${outputLabel ??
+            outputToken?.symbol} ${
+            hasInput ? `per ${inputLabel ?? inputToken?.symbol}` : ``
+          }`}</span>
+        )}
+      </p>
+    </Container>
+  );
+};
