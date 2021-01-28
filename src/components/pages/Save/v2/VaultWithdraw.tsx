@@ -70,7 +70,7 @@ export const VaultWithdraw: FC = () => {
             setInputFormValue(rawBalance.string);
           }
         }}
-        error={!!error}
+        error={error ? 'error' : undefined}
       />
       <SendButton
         valid={valid}

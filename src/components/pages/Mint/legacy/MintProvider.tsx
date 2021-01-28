@@ -28,8 +28,8 @@ const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
 export const MintProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
   const massetState = useSelectedMassetState();
+
   useEffect(() => {
     dispatch({ type: Actions.Data, payload: massetState });
   }, [massetState]);

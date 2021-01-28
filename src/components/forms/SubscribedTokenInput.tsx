@@ -27,6 +27,7 @@ interface Props {
   onChange?(tokenAddress?: string): void;
   error?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 const RelativeContainer = styled.div`
@@ -34,17 +35,22 @@ const RelativeContainer = styled.div`
   overflow: visible;
 `;
 
-const TokenSymbol = styled.div`
+const TokenSymbol = styled.div<{ hasBalance: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   overflow: hidden;
+
+  span {
+    font-size: ${({ hasBalance }) => (hasBalance ? `1rem` : `1.125rem`)};
+  }
 `;
 
 const Balance = styled.div`
   font-size: ${FontSize.s};
   font-weight: normal;
   text-overflow: ellipsis;
+  color: ${({ theme }) => theme.color.grey};
 `;
 
 const OptionsContainer = styled.div<{ open: boolean }>`
@@ -67,13 +73,13 @@ const OptionContainer = styled.div<{ selected?: boolean }>`
   flex-direction: row;
   align-items: center;
   overflow-x: hidden;
-  padding: ${({ theme }) => theme.spacing.xs};
+  padding: 0.5rem;
   background: ${({ selected, theme }) =>
     selected ? theme.color.blueTransparent : 'transparent'};
 
   img {
-    padding-right: 6px;
-    width: 36px;
+    padding-right: 0.75rem;
+    width: 2.75rem;
   }
 
   &:hover {
@@ -132,8 +138,8 @@ const Option: FC<{
       selected={selected}
     >
       {symbol && <TokenIcon symbol={symbol} />}
-      <TokenSymbol>
-        {label ?? symbol}
+      <TokenSymbol hasBalance={!!balance?.simple}>
+        <span>{label ?? symbol}</span>
         {!!balance?.simple && <Balance>{balance.format(2, true)}</Balance>}
       </TokenSymbol>
     </OptionContainer>
@@ -159,12 +165,10 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   color: ${({ theme }) => theme.color.body};
   font-size: ${FontSize.s};
   font-weight: bold;
-  height: 3rem;
   user-select: none;
-  min-width: 100px;
+  min-width: 8rem;
 
   @media (min-width: ${ViewportWidth.s}) {
-    min-width: 145px;
     font-size: ${FontSize.m};
   }
 `;
@@ -175,6 +179,7 @@ export const SubscribedTokenInput: FC<Props> = ({
   onChange,
   disabled = false,
   error,
+  className,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
 
@@ -226,6 +231,7 @@ export const SubscribedTokenInput: FC<Props> = ({
       ref={container}
       error={error}
       disabled={disabled}
+      className={className}
     >
       <Selected>
         {value ? (

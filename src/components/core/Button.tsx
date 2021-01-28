@@ -32,7 +32,7 @@ const ButtonCss = css<Props>`
     transparent && `1px solid ${theme.color.accentContrast}`};
 
   svg {
-    * {
+    rect {
       fill: ${({ theme, highlighted }) =>
         highlighted ? theme.color.white : theme.color.grey};
     }
