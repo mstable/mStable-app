@@ -5,7 +5,7 @@ import { useTokenSubscription } from '../../context/TokensProvider';
 import { ViewportWidth } from '../../theme';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { AssetInput } from './AssetInput';
-import { ExchangeRate } from './ExchangeRate';
+import { ExchangeRate } from '../core/ExchangeRate';
 import { Widget } from '../core/Widget';
 import { Tooltip } from '../core/ReactTooltip';
 import { SlippageInput } from './SlippageInput';

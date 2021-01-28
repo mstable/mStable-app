@@ -7,6 +7,14 @@ import { ThemedSkeleton } from './ThemedSkeleton';
 
 export type FetchRate = { value?: BigDecimal; fetching?: boolean };
 
+interface Props {
+  inputLabel?: string;
+  outputLabel?: string;
+  inputToken?: SubscribedToken;
+  outputToken?: SubscribedToken;
+  exchangeRate: FetchRate;
+}
+
 const Container = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -23,13 +31,13 @@ const Container = styled.div`
   }
 `;
 
-export const ExchangeRate: FC<{
-  inputLabel?: string;
-  outputLabel?: string;
-  inputToken?: SubscribedToken;
-  outputToken?: SubscribedToken;
-  exchangeRate: FetchRate;
-}> = ({ exchangeRate, inputToken, outputToken, inputLabel, outputLabel }) => {
+export const ExchangeRate: FC<Props> = ({
+  exchangeRate,
+  inputToken,
+  outputToken,
+  inputLabel,
+  outputLabel,
+}) => {
   const hasInput = inputLabel || inputToken;
   return (
     <Container>
