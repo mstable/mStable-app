@@ -141,12 +141,13 @@ const Inner = styled.div`
 const MassetContainer = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
 `;
 
 const Container = styled.div<{ inverted: boolean }>`
   background: ${({ inverted, theme }) =>
     inverted ? Color.black : theme.color.background};
-  height: 48px;
+  height: 56px;
   display: flex;
   justify-content: center;
   padding-top: 2px;

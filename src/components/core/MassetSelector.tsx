@@ -9,56 +9,100 @@ import { useSelectedMasset } from '../../context/SelectedMassetNameProvider';
 import { MassetName } from '../../types';
 import { TokenIcon } from '../icons/TokenIcon';
 import { UnstyledButton } from './Button';
+import { ReactComponent as ChevronIcon } from '../icons/chevron-down.svg';
 
-const OptionContainer = styled(UnstyledButton)`
-  background: blue;
+const Arrow = styled.span<{ selected?: boolean; active?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  opacity: ${({ selected }) => (selected ? 1 : 0)};
+
+  svg {
+    height: 8px;
+    width: auto;
+    margin-left: 0.5rem;
+    transform: ${({ active }) => (active ? `rotate(180deg)` : `auto`)};
+    transition: 0.1s ease-out transform;
+
+    path {
+      fill: ${({ theme }) => theme.color.body};
+    }
+  }
+`;
+
+const OptionContainer = styled(UnstyledButton)<{
+  active?: boolean;
+  selected?: boolean;
+}>`
   display: flex;
   width: 100%;
-  border-radius: 0.33rem;
-  background: red;
+  border: ${({ theme, selected }) =>
+    selected ? `1px solid ${theme.color.accent}` : `none`};
   text-align: left;
-  padding: 0.25rem 0.75rem;
+  padding: 0.25rem 0.5rem;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: bold;
   align-items: center;
 
+  border-top-left-radius: ${({ active, selected }) =>
+    active ? `0.75rem` : !selected ? 0 : `0.75rem`};
+  border-top-right-radius: ${({ active, selected }) =>
+    active ? `0.75rem` : !selected ? 0 : `0.75rem`};
+  border-bottom-left-radius: ${({ active, selected }) =>
+    active ? 0 : !selected ? 0 : `0.75rem`};
+  border-bottom-right-radius: ${({ active, selected }) =>
+    active ? 0 : !selected ? 0 : `0.75rem`};
+
   &:hover {
-    color: white;
-    background: #4db8ff;
+    color: ${({ theme }) => theme.color.body};
+    background: ${({ theme }) => theme.color.accent};
+  }
+
+  > * {
+    margin-right: 0.5rem;
   }
 
   img {
     height: 32px;
     width: 32px;
-    margin-right: 0.5rem;
   }
 `;
 
 const OptionList = styled.div`
   position: absolute;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  background: blue;
-  min-width: 120px;
+  background: ${({ theme }) => theme.color.background};
   padding: 0.5rem 0;
+  margin-top: -1px;
+  border: 1px solid ${({ theme }) => theme.color.accent};
+  min-width: 9.5rem;
 `;
 
 const Container = styled.div`
-  min-width: 120px;
+  position: relative;
+  min-width: 9.5rem;
 `;
 
 const Option: FC<{
+  selected?: boolean;
   active?: boolean;
   onClick: () => void;
   massetState?: MassetState;
-}> = ({ onClick, massetState, active = false }) => {
+}> = ({ onClick, massetState, selected = false, active = false }) => {
   if (!massetState) return null;
   const { symbol } = massetState.token;
 
   return (
-    <OptionContainer onClick={onClick}>
+    <OptionContainer onClick={onClick} active={active} selected={selected}>
       <TokenIcon symbol={symbol} />
-      {symbol}
-      {active && `▼`}
+      <span>{symbol}</span>
+      <Arrow selected={selected} active={active}>
+        <ChevronIcon />
+      </Arrow>
     </OptionContainer>
   );
 };
@@ -96,7 +140,8 @@ export const MassetSelector: FC = () => {
       <Option
         onClick={handleToggle}
         massetState={massetStates[selected]}
-        active
+        selected
+        active={show}
       />
       <OptionList hidden={!show}>
         {Object.keys(massetStates)
