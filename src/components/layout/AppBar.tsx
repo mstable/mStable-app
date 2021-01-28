@@ -130,7 +130,6 @@ const Inner = styled.div`
   width: 100%;
   height: 100%;
   align-items: center;
-  /* justify-content: space-between; */
   padding: 0 1rem;
 
   > div {
@@ -186,7 +185,7 @@ const WalletIcon: FC = () => {
 const WalletAndSpinner = styled.div`
   display: flex;
   gap: 0.5rem;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
 `;
 
@@ -284,14 +283,14 @@ export const AppBar: FC = () => {
           <Link to="/" title="Home" onClick={closeAccount}>
             <LogoSvg />
           </Link>
-          <ToggleButton onClick={toggleThemeMode}>
-            {themeMode === 'light' ? '☀️' : '🌙'}
-          </ToggleButton>
         </Logo>
         <MassetContainer>
           <MassetSelector />
         </MassetContainer>
         <WalletAndSpinner>
+          <ToggleButton onClick={toggleThemeMode}>
+            {themeMode === 'light' ? '☀️' : '🌙'}
+          </ToggleButton>
           <TransactionsSpinner />
           <WalletButton />
         </WalletAndSpinner>
