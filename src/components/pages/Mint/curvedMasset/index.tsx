@@ -1,26 +1,41 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { MultiAssetExchange } from '../../../forms/MultiAssetExchange';
 import {
   CurvedMintProvider,
-  useMintSetBassetAmount,
-  useMintSetBassetMaxAmount,
   useMintState,
 } from './provider/CurvedMintProvider';
 
 const MintForm: FC = () => {
+  const massetState = useSelectedMassetState();
   const mintState = useMintState();
-  const setBassetAmount = useMintSetBassetAmount();
-  const setBassetMaxAmount = useMintSetBassetMaxAmount();
-  const inputAssets = Object.values(mintState?.inputAssets ?? {});
-  const outputAssets = Object.values(mintState?.outputAssets ?? {});
+
+  const inputAssets = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(massetState?.bAssets ?? {}).map(
+          ([
+            address,
+            {
+              token: { decimals, balance },
+            },
+          ]) => [address, { decimals, balance }],
+        ),
+      ),
+    [massetState],
+  );
+
+  const outputAssets = useMemo(() => {
+    if (!massetState) return {};
+    const { address, decimals } = massetState.token;
+    return { [address]: { decimals } };
+  }, [massetState]);
 
   return (
     <div>
       <MultiAssetExchange
         inputAssets={inputAssets}
         outputAssets={outputAssets}
-        onAmountChange={setBassetAmount}
-        onMaxAmountClick={setBassetMaxAmount}
         spender={mintState.massetState?.address}
       />
     </div>

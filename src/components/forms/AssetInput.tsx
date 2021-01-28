@@ -19,9 +19,9 @@ interface Props {
   addressOptions?: { address: string; balance?: BigDecimal; label?: string }[];
   addressDisabled?: boolean;
   error?: 'warning' | 'error';
-  handleSetAmount?(address: string, formValue?: string): void;
+  handleSetAmount?(formValue?: string): void;
   handleSetAddress?(address: string): void;
-  handleSetMax?(address: string): void;
+  handleSetMax?(): void;
   needsApprove?: boolean;
   handleApprove?: (mode: Mode) => void;
   spender?: string;
@@ -170,12 +170,12 @@ const AssetInputContent: FC<Props> = ({
                 disabled={amountDisabled}
                 value={formValue}
                 // error={!!error} // remove for now
-                onChange={v => handleSetAmount?.(address, v)}
+                onChange={handleSetAmount}
               />
               {handleSetMax && (
                 <Button
                   type="button"
-                  onClick={() => handleSetMax(address)}
+                  onClick={handleSetMax}
                   scale={0.75}
                   transparent
                 >

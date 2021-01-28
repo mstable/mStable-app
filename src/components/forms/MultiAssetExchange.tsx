@@ -1,11 +1,30 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
+import {
+  useBigDecimalInputs,
+  InitialiserArg,
+} from '../../hooks/useBigDecimalInputs';
 
 import { SubscribedToken } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { ExchangeRate } from '../core/ExchangeRate';
 import { AssetInput } from './AssetInput';
+
+const BIG_ZERO = new BigDecimal((0e18).toString());
+
+// TODO: - Remove once not mocked
+const mockExchangeMapping: { [key: string]: BigDecimal } = {
+  '0x82e6459d1b9529cc6a8203f1bfe3b04d6cfcbd43': new BigDecimal(
+    (1e18).toString(),
+  ),
+  '0xd4da7c3b1c985b8baec8d2a5709409ccfe809096': new BigDecimal(
+    (2e18).toString(),
+  ),
+  '0xf08d8ab65e709b66e77908cc4edb530113d8d855': new BigDecimal(
+    (0.5e18).toString(),
+  ),
+};
 
 export interface AssetState {
   index: number;
@@ -20,10 +39,8 @@ export interface AssetState {
 }
 
 interface Props {
-  inputAssets: AssetState[];
-  outputAssets: AssetState[];
-  onAmountChange(address: string, formValue?: string): void;
-  onMaxAmountClick(address: string): void;
+  inputAssets: InitialiserArg;
+  outputAssets: InitialiserArg;
   spender?: string;
 }
 
@@ -64,66 +81,107 @@ const Container = styled.div`
 export const MultiAssetExchange: FC<Props> = ({
   inputAssets,
   outputAssets,
-  onAmountChange,
-  onMaxAmountClick,
   spender,
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSetAddress = (address: string): void => {};
 
+  const [inputValues, inputCallbacks] = useBigDecimalInputs(inputAssets);
+  const [outputValues, outputCallbacks] = useBigDecimalInputs(outputAssets);
+
   // use to swap layout & usage
   // const isManyToOne = outputTokens.length === 1;
 
-  const singleInputToken =
-    inputAssets.filter(asset => (asset.amount?.simple ?? 0) > 0).length === 1
-      ? inputAssets.find(asset => (asset.amount?.simple ?? 0) > 0)?.token
-      : undefined;
+  // const singleInputToken =
+  //   inputAssets.filter(asset => (asset.amount?.simple ?? 0) > 0).length === 1
+  //     ? inputAssets.find(asset => (asset.amount?.simple ?? 0) > 0)?.token
+  //     : undefined;
+
+  // things to include:
+  // symbol
+
+  const nonZeroInputs = useMemo(
+    () =>
+      Object.keys(inputValues).filter(
+        v => (inputValues[v].amount?.simple ?? 0) > 0,
+      ),
+    [inputValues],
+  );
+
+  const { outputAmount, exchangeRate } = useMemo(() => {
+    if (!nonZeroInputs.length)
+      return { outputAmount: BIG_ZERO, exchangeRate: undefined };
+
+    const addressWithRate = nonZeroInputs.map<{
+      amount: BigDecimal;
+      exchangeRate: BigDecimal;
+    }>(address => ({
+      amount: inputValues[address].amount ?? BIG_ZERO,
+      exchangeRate: mockExchangeMapping[address],
+    }));
+
+    const cumulativeAmount = Object.values(addressWithRate)
+      .map<BigDecimal>(({ amount }) => amount)
+      .reduce((a, b) => a.add(b));
+
+    const outputAmount = Object.values(addressWithRate)
+      .map<BigDecimal>(({ amount, exchangeRate }) =>
+        amount.mulTruncate(exchangeRate.exact),
+      )
+      .reduce((a, b) => a.add(b));
+
+    const exchangeRate =
+      outputAmount.simple > 0
+        ? outputAmount.divPrecisely(cumulativeAmount)
+        : undefined;
+
+    return { outputAmount, exchangeRate };
+  }, [nonZeroInputs]);
 
   return (
     <Container>
-      {spender &&
-        inputAssets
-          .sort((a, b) => a.index - b.index)
-          .map(asset => (
+      {Object.keys(inputValues).map(
+        address =>
+          spender &&
+          inputAssets && (
             <AssetInput
-              key={asset.address}
-              address={asset.address}
+              key={address}
+              address={address}
               addressDisabled
               addressOptions={[]} // ?
               amountDisabled={false}
-              formValue={asset.formValue}
+              formValue={inputValues[address].formValue}
               handleSetAddress={handleSetAddress}
-              handleSetAmount={onAmountChange}
-              handleSetMax={onMaxAmountClick}
+              handleSetAmount={inputCallbacks[address].setFormValue}
+              handleSetMax={inputCallbacks[address].setMaxAmount}
               spender={spender}
             />
-          ))}
+          ),
+      )}
       <Arrow>↓</Arrow>
-      {outputAssets.length > 0 && (
+      {!!exchangeRate && (
         <ExchangeRate
-          inputToken={singleInputToken}
-          outputToken={outputAssets[0].token}
+          // inputToken={undefined}
+          // outputToken={outputAssets[0].token}
           exchangeRate={{
-            value: outputAssets[0]?.exchangeRate,
+            value: exchangeRate,
             fetching: false,
           }}
         />
       )}
-      {outputAssets
-        .sort((a, b) => a.index - b.index)
-        .map(asset => (
-          <AssetInput
-            key={asset.address}
-            disabled
-            address={asset.address}
-            addressDisabled
-            addressOptions={[]} // ?
-            amountDisabled
-            formValue={asset.formValue}
-            handleSetAddress={handleSetAddress}
-            handleSetAmount={onAmountChange}
-          />
-        ))}
+      {Object.keys(outputValues).map(address => (
+        <AssetInput
+          key={address}
+          disabled
+          address={address}
+          addressDisabled
+          addressOptions={[]} // ?
+          amountDisabled
+          formValue={outputAmount.format(2, false)}
+          // handleSetAddress={handleSetAddress}
+          // handleSetAmount={outputCallbacks[address].setFormValue}
+        />
+      ))}
       <AdvancedButton transparent>
         <div>
           <div>Advanced</div>
