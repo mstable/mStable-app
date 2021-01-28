@@ -26,18 +26,6 @@ const mockExchangeMapping: { [key: string]: BigDecimal } = {
   ),
 };
 
-export interface AssetState {
-  index: number;
-  address: string;
-  amount?: BigDecimal;
-  formValue?: string;
-  decimals: number;
-  enabled: boolean;
-  error?: string;
-  token: SubscribedToken;
-  exchangeRate?: BigDecimal;
-}
-
 interface Props {
   inputAssets: InitialiserArg;
   outputAssets: InitialiserArg;

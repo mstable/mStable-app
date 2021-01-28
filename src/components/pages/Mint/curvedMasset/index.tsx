@@ -1,14 +1,9 @@
 import React, { FC, useMemo } from 'react';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { MultiAssetExchange } from '../../../forms/MultiAssetExchange';
-import {
-  CurvedMintProvider,
-  useMintState,
-} from './provider/CurvedMintProvider';
 
-const MintForm: FC = () => {
+export const Mint: FC = () => {
   const massetState = useSelectedMassetState();
-  const mintState = useMintState();
 
   const inputAssets = useMemo(
     () =>
@@ -36,14 +31,8 @@ const MintForm: FC = () => {
       <MultiAssetExchange
         inputAssets={inputAssets}
         outputAssets={outputAssets}
-        spender={mintState.massetState?.address}
+        spender={massetState?.address}
       />
     </div>
   );
 };
-
-export const Mint: FC = () => (
-  <CurvedMintProvider>
-    <MintForm />
-  </CurvedMintProvider>
-);
