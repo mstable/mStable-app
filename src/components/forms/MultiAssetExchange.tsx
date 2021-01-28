@@ -5,7 +5,6 @@ import {
   InitialiserArg,
 } from '../../hooks/useBigDecimalInputs';
 
-import { SubscribedToken } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { ExchangeRate } from '../core/ExchangeRate';
@@ -71,22 +70,11 @@ export const MultiAssetExchange: FC<Props> = ({
   outputAssets,
   spender,
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleSetAddress = (address: string): void => {};
-
   const [inputValues, inputCallbacks] = useBigDecimalInputs(inputAssets);
-  const [outputValues, outputCallbacks] = useBigDecimalInputs(outputAssets);
+  const [outputValues] = useBigDecimalInputs(outputAssets);
 
   const isManyToOne =
-    Object.keys(inputValues).length >= Object.keys(inputValues).length;
-
-  // const singleInputToken =
-  //   inputAssets.filter(asset => (asset.amount?.simple ?? 0) > 0).length === 1
-  //     ? inputAssets.find(asset => (asset.amount?.simple ?? 0) > 0)?.token
-  //     : undefined;
-
-  // things to include:
-  // symbol
+    Object.keys(inputValues).length >= Object.keys(outputValues).length;
 
   const nonZeroInputs = useMemo(
     () =>
@@ -96,7 +84,7 @@ export const MultiAssetExchange: FC<Props> = ({
     [inputValues],
   );
 
-  const { outputAmount, exchangeRate } = useMemo(() => {
+  const exchangeInfo = useMemo(() => {
     if (!nonZeroInputs.length)
       return { outputAmount: BIG_ZERO, exchangeRate: undefined };
 
@@ -124,10 +112,13 @@ export const MultiAssetExchange: FC<Props> = ({
         : undefined;
 
     return { outputAmount, exchangeRate };
-  }, [nonZeroInputs]);
+  }, [nonZeroInputs, inputValues]);
 
-  const exchangeRateInputToken =
-    nonZeroInputs.length === 1 ? inputAssets[nonZeroInputs[0]] : undefined;
+  const { outputAmount, exchangeRate } = exchangeInfo;
+
+  const exchangeRateInputToken = nonZeroInputs.length
+    ? inputAssets[nonZeroInputs[0]]
+    : undefined;
 
   return (
     <Container>
@@ -143,7 +134,6 @@ export const MultiAssetExchange: FC<Props> = ({
               addressOptions={[]} // ?
               amountDisabled={false}
               formValue={inputValues[address].formValue}
-              handleSetAddress={handleSetAddress}
               handleSetAmount={inputCallbacks[address].setFormValue}
               handleSetMax={inputCallbacks[address].setMaxAmount}
               spender={spender}
