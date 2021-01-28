@@ -10,8 +10,6 @@ import { Button } from '../core/Button';
 import { ExchangeRate } from '../core/ExchangeRate';
 import { AssetInput } from './AssetInput';
 
-const BIG_ZERO = new BigDecimal((0e18).toString());
-
 // TODO: - Remove once not mocked
 const mockExchangeMapping: { [key: string]: BigDecimal } = {
   '0x82e6459d1b9529cc6a8203f1bfe3b04d6cfcbd43': new BigDecimal(
@@ -86,13 +84,13 @@ export const MultiAssetExchange: FC<Props> = ({
 
   const exchangeInfo = useMemo(() => {
     if (!nonZeroInputs.length)
-      return { outputAmount: BIG_ZERO, exchangeRate: undefined };
+      return { outputAmount: BigDecimal.ZERO, exchangeRate: undefined };
 
     const addressWithRate = nonZeroInputs.map<{
       amount: BigDecimal;
       exchangeRate: BigDecimal;
     }>(address => ({
-      amount: inputValues[address].amount ?? BIG_ZERO,
+      amount: inputValues[address].amount ?? BigDecimal.ZERO,
       exchangeRate: mockExchangeMapping[address],
     }));
 
