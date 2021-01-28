@@ -89,8 +89,8 @@ export const MultiAssetExchange: FC<Props> = ({
   const [inputValues, inputCallbacks] = useBigDecimalInputs(inputAssets);
   const [outputValues, outputCallbacks] = useBigDecimalInputs(outputAssets);
 
-  // use to swap layout & usage
-  // const isManyToOne = outputTokens.length === 1;
+  const isManyToOne =
+    Object.keys(inputValues).length >= Object.keys(inputValues).length;
 
   // const singleInputToken =
   //   inputAssets.filter(asset => (asset.amount?.simple ?? 0) > 0).length === 1
@@ -138,6 +138,9 @@ export const MultiAssetExchange: FC<Props> = ({
     return { outputAmount, exchangeRate };
   }, [nonZeroInputs]);
 
+  const exchangeRateInputToken =
+    nonZeroInputs.length === 1 ? inputAssets[nonZeroInputs[0]] : undefined;
+
   return (
     <Container>
       {Object.keys(inputValues).map(
@@ -146,6 +149,7 @@ export const MultiAssetExchange: FC<Props> = ({
           inputAssets && (
             <AssetInput
               key={address}
+              disabled={!isManyToOne}
               address={address}
               addressDisabled
               addressOptions={[]} // ?
@@ -161,25 +165,23 @@ export const MultiAssetExchange: FC<Props> = ({
       <Arrow>↓</Arrow>
       {!!exchangeRate && (
         <ExchangeRate
-          // inputToken={undefined}
-          // outputToken={outputAssets[0].token}
+          inputLabel={exchangeRateInputToken?.symbol}
+          outputLabel={outputAssets[Object.keys(outputAssets)[0]]?.symbol}
           exchangeRate={{
             value: exchangeRate,
-            fetching: false,
+            fetching: !exchangeRate,
           }}
         />
       )}
       {Object.keys(outputValues).map(address => (
         <AssetInput
           key={address}
-          disabled
+          disabled={isManyToOne}
           address={address}
           addressDisabled
           addressOptions={[]} // ?
           amountDisabled
           formValue={outputAmount.format(2, false)}
-          // handleSetAddress={handleSetAddress}
-          // handleSetAmount={outputCallbacks[address].setFormValue}
         />
       ))}
       <AdvancedButton transparent>

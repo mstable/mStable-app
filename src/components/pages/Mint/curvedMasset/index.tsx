@@ -17,9 +17,9 @@ const MintForm: FC = () => {
           ([
             address,
             {
-              token: { decimals, balance },
+              token: { decimals, balance, symbol },
             },
-          ]) => [address, { decimals, balance }],
+          ]) => [address, { decimals, balance, symbol }],
         ),
       ),
     [massetState],
@@ -27,8 +27,8 @@ const MintForm: FC = () => {
 
   const outputAssets = useMemo(() => {
     if (!massetState) return {};
-    const { address, decimals } = massetState.token;
-    return { [address]: { decimals } };
+    const { address, decimals, symbol } = massetState.token;
+    return { [address]: { decimals, symbol } };
   }, [massetState]);
 
   return (

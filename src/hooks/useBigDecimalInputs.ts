@@ -7,6 +7,7 @@ export interface InitialiserArg {
     decimals: number;
     defaultValue?: BigDecimal;
     balance?: BigDecimal;
+    symbol?: string;
   };
 }
 
@@ -15,6 +16,7 @@ interface InputValue {
   balance?: BigDecimal;
   formValue?: string;
   decimals: number;
+  symbol?: string;
 }
 
 interface InputValues {
@@ -101,10 +103,16 @@ const reducer: Reducer<State, Action> = (
 const initialise = (initialiserArg: InitialiserArg): State => {
   const values = Object.fromEntries(
     Object.entries(initialiserArg).map(
-      ([address, { decimals, defaultValue: amount, balance }]) => {
+      ([address, { decimals, defaultValue: amount, balance, symbol }]) => {
         return [
           address,
-          { decimals, amount, formValue: amount?.format(2, false), balance },
+          {
+            decimals,
+            amount,
+            formValue: amount?.format(2, false),
+            balance,
+            symbol,
+          },
         ];
       },
     ),
