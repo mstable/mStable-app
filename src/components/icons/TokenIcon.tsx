@@ -20,6 +20,12 @@ import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
 import ETH, { ReactComponent as EtherSvg } from './tokens/Ether.svg';
 import IMUSD, { ReactComponent as ImusdSvg } from './tokens/imUSD.svg';
 import VMTA, { ReactComponent as VmtaSvg } from './tokens/vMTA.svg';
+import RENBTC, { ReactComponent as RenbtcSvg } from './tokens/renBTC.svg';
+import WBTC, { ReactComponent as WbtcSvg } from './tokens/wBTC.svg';
+import SBTC, { ReactComponent as SbtcSvg } from './tokens/sBTC.svg';
+import IMUSDMTA, {
+  ReactComponent as ImusdmtaSvg,
+} from './tokens/imusd-mta.svg';
 
 interface Props {
   className?: string;
@@ -52,6 +58,10 @@ export const TOKEN_ICONS: Record<string, string> = {
   'MK-BAL': Balancer,
   IMUSD,
   VMTA,
+  RENBTC,
+  WBTC,
+  SBTC,
+  IMUSDMTA,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -76,6 +86,10 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   'MK-BAL': BalancerSvg as SvgComponent,
   IMUSD: ImusdSvg as SvgComponent,
   VMTA: VmtaSvg as SvgComponent,
+  RENBTC: RenbtcSvg as SvgComponent,
+  WBTC: WbtcSvg as SvgComponent,
+  SBTC: SbtcSvg as SvgComponent,
+  IMUSDMTA: ImusdmtaSvg as SvgComponent,
 };
 
 const Image = styled.img`

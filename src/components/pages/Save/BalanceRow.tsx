@@ -8,12 +8,9 @@ import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 import { useAccount } from '../../../context/UserProvider';
 import { ReactComponent as ExternalLinkArrow } from '../../core/external-link-arrow.svg';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
-import { ReactComponent as MUSDIcon } from '../../icons/tokens/mUSD.svg';
-import { ReactComponent as IMUSDIcon } from '../../icons/tokens/imUSD.svg';
-import { ReactComponent as IMUSDMTAIcon } from '../../icons/tokens/imusd-mta.svg';
-import { ReactComponent as MTAIcon } from '../../icons/tokens/MTA.svg';
-import { ReactComponent as VMTAIcon } from '../../icons/tokens/vMTA.svg';
+
 import { CountUp } from '../../core/CountUp';
+import { TokenIcon } from '../../icons/TokenIcon';
 
 export enum BalanceType {
   Masset,
@@ -41,7 +38,7 @@ interface RowProps {
   subtitle?: string;
   apyLabel?: string;
   info?: string | ReactElement;
-  AssetIcon: FC;
+  symbol: string;
 }
 
 export const ContainerSnippet = css`
@@ -59,10 +56,6 @@ export const ContainerSnippet = css`
       &:first-child {
         justify-content: flex-start;
         margin-bottom: 1rem;
-      }
-
-      svg {
-        margin-right: 1.25rem;
       }
     }
   }
@@ -167,17 +160,18 @@ const Interest = styled.div`
   }
 `;
 
+const AssetIcon = styled(TokenIcon)`
+  align-self: flex-start;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: auto;
+  margin-right: 1.25rem;
+`;
+
 const Asset = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-
-  > svg {
-    align-self: flex-start;
-    flex-shrink: 0;
-    width: 2.5rem;
-    height: auto;
-  }
 `;
 
 const ExchangeRate = styled(Number)`
@@ -262,7 +256,7 @@ const Tokens = new Map<number, RowProps>([
       title: 'mUSD',
       subtitle: 'mStable USD',
       info: <p>A meta-stablecoin with a native interest rate.</p>,
-      AssetIcon: MUSDIcon,
+      symbol: 'musd',
     },
   ],
   [
@@ -270,7 +264,7 @@ const Tokens = new Map<number, RowProps>([
     {
       title: 'mUSD Save',
       subtitle: 'mStable USD in Save V1',
-      AssetIcon: MUSDIcon,
+      symbol: 'musd',
     },
   ],
   [
@@ -288,7 +282,7 @@ const Tokens = new Map<number, RowProps>([
           </p>
         </>
       ),
-      AssetIcon: IMUSDIcon,
+      symbol: 'imusd',
     },
   ],
   [
@@ -310,7 +304,7 @@ const Tokens = new Map<number, RowProps>([
           </p>
         </>
       ),
-      AssetIcon: IMUSDMTAIcon,
+      symbol: 'imusdmta',
     },
   ],
   [
@@ -324,7 +318,7 @@ const Tokens = new Map<number, RowProps>([
           secure the protocol.
         </p>
       ),
-      AssetIcon: MTAIcon,
+      symbol: 'mta',
     },
   ],
   [
@@ -341,7 +335,7 @@ const Tokens = new Map<number, RowProps>([
           </p>
         </>
       ),
-      AssetIcon: VMTAIcon,
+      symbol: 'vmta',
     },
   ],
 ]);
@@ -372,7 +366,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
 
   const tokenInfo = Tokens.get(token) as RowProps;
 
-  const { title, subtitle, info, AssetIcon, apyLabel } = tokenInfo;
+  const { title, subtitle, info, symbol, apyLabel } = tokenInfo;
   const hasBorder = !hasChildren;
 
   return (
@@ -384,7 +378,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
     >
       <div>
         <Asset>
-          <AssetIcon />
+          <AssetIcon symbol={symbol} />
           <div>
             <Title>
               <div>
