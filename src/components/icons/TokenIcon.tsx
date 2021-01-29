@@ -10,7 +10,7 @@ import DAI, { ReactComponent as DaiSvg } from './tokens/DAI.svg';
 import BUSD, { ReactComponent as BusdSvg } from './tokens/BUSD.svg';
 import SUSD, { ReactComponent as SusdSvg } from './tokens/sUSD.svg';
 import CRV, { ReactComponent as CrvSvg } from './tokens/CRV.svg';
-import MUSD3CRV, { ReactComponent as Musd3CrvSvg } from './tokens/mUSD3CRV.svg';
+import MUSD3CRV, { ReactComponent as Musd3CrvSvg } from './tokens/musd3CRV.svg';
 import Curve3Pool, {
   ReactComponent as Curve3PoolSvg,
 } from './tokens/3pool.svg';
@@ -25,7 +25,7 @@ import WBTC, { ReactComponent as WbtcSvg } from './tokens/wBTC.svg';
 import SBTC, { ReactComponent as SbtcSvg } from './tokens/sBTC.svg';
 import IMUSDMTA, {
   ReactComponent as ImusdmtaSvg,
-} from './tokens/imUSD-MTA.svg';
+} from './tokens/imusd-mta.svg';
 
 interface Props {
   className?: string;
