@@ -16,6 +16,11 @@ const [
   SelectedMassetNameProvider,
 ] = createStateContext<MassetName>(defaultValue);
 
+export const useSelectedMasset = (): [
+  MassetName,
+  Dispatch<SetStateAction<MassetName>>,
+] => useSelectedMassetNameCtx();
+
 export const useSelectedMassetName = (): MassetName =>
   useSelectedMassetNameCtx()[0];
 
