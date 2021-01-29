@@ -37,8 +37,8 @@ const OptionContainer = styled(UnstyledButton)<{
 }>`
   display: flex;
   width: 100%;
-  border: ${({ theme, selected }) =>
-    selected ? `1px solid ${theme.color.accent}` : `none`};
+  background: ${({ theme, selected, active }) =>
+    selected && active ? `${theme.color.accent}` : `none`};
   text-align: left;
   padding: 0.25rem 0.5rem;
   align-items: center;

@@ -28,23 +28,17 @@ const StyledButton = styled(UnstyledButton)<{ asset: MassetName }>`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) =>
-    theme.isLight ? theme.color.offBlack : 'transparent'};
-  border: 4px solid
-    ${({ theme, asset }) =>
-      asset === 'musd' ? theme.color.blueAccent : theme.color.goldAccent};
   border-radius: 2rem;
   padding: 2rem 0;
   font-weight: bold;
-  color: white;
+  background: ${({ theme }) => theme.color.backgroundAccent};
 
   > *:not(:last-child) {
     margin-bottom: 2rem;
   }
 
   &:hover {
-    background: ${({ theme }) =>
-      theme.isLight ? theme.color.offBlackAccent : theme.color.accent};
+    background: ${({ theme }) => theme.color.accentContrast};
   }
 
   &:active {
@@ -100,10 +94,10 @@ const Buttons = styled.div`
 `;
 
 const Tagline = styled.h1`
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 3rem;
   text-align: center;
-  color: ${({ theme }) => theme.color.accentContrast};
+  color: ${({ theme }) => theme.color.bodyAccent};
   text-transform: lowercase;
   padding: 0 1rem;
 `;
@@ -150,7 +144,9 @@ export const Home: FC = () => {
     <Container>
       <Header>
         <Logo />
-        <Tagline>Unite assets into one standard</Tagline>
+        <Tagline>
+          Autonomous and non-custodial stablecoin infrastructure.
+        </Tagline>
       </Header>
       <Buttons>
         <MassetButton massetName="mbtc" />
