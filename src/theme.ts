@@ -2,11 +2,14 @@ import { DefaultTheme, css } from 'styled-components';
 
 export enum Color {
   gold = 'rgb(255,179,52)',
-  goldTransparent = 'rgb(255,179,52, 0.2)',
+  lightGold = 'rgb(255,237,209)',
+  darkGold = 'rgb(123,104,56)',
   green = 'rgb(82,204,147)',
   greenTransparent = 'rgba(82,204,147, 0.2)',
   coolMint = 'rgb(133,242,190)',
   blue = 'rgb(23,110,222)',
+  lightBlue = 'rgb(227,239,255)',
+  darkBlue = 'rgb(99,128,166)',
   coolBlue = 'rgb(74,161,255)',
   coolBlueTransparent = 'rgb(74,161,255, 0.2)',
   blueTransparent = 'rgba(0,92,222,0.2)',
@@ -21,6 +24,7 @@ export enum Color {
   blackTransparent = 'rgba(0,0,0,0.1)',
   blackTransparenter = 'rgba(0,0,0,0.06)',
   offWhite = 'rgb(249,245,242)',
+  offBlackAccent = 'rgb(63,67,77)',
   offBlack = 'rgb(37,39,45)',
   lightGrey = 'rgba(235, 235, 235, 1)',
   lighterGrey = 'rgba(248,248,248,1)',
@@ -39,6 +43,8 @@ interface ColorTheme {
   bodyTransparenter: string;
   background: string;
   backgroundAccent: string;
+  blueAccent: string;
+  goldAccent: string;
 }
 
 export const colorTheme = (theme: 'light' | 'dark'): ColorTheme => {
@@ -59,6 +65,8 @@ export const colorTheme = (theme: 'light' | 'dark'): ColorTheme => {
       : Color.whiteTransparenter,
     background: isLight ? Color.white : Color.black,
     backgroundAccent: isLight ? '#f3f3f3' : '#222',
+    blueAccent: isLight ? Color.lightBlue : Color.darkBlue,
+    goldAccent: isLight ? Color.lightGold : Color.darkGold,
   };
 };
 

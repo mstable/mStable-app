@@ -270,7 +270,7 @@ const TransactionsSpinner: FC = () => {
   return <ActivitySpinner pending={pending} />;
 };
 
-export const AppBar: FC = () => {
+export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
   const accountOpen = useAccountOpen();
   const closeAccount = useCloseAccount();
   const toggleThemeMode = useToggleThemeMode();
@@ -284,9 +284,7 @@ export const AppBar: FC = () => {
             <LogoSvg />
           </Link>
         </Logo>
-        <MassetContainer>
-          <MassetSelector />
-        </MassetContainer>
+        <MassetContainer>{!home && <MassetSelector />}</MassetContainer>
         <WalletAndSpinner>
           <ToggleButton onClick={toggleThemeMode}>
             {themeMode === 'light' ? '☀️' : '🌙'}
