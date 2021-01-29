@@ -8,7 +8,7 @@ import {
 } from '../../../../context/TokensProvider';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
 
-import { ReactComponent as IMUSDMTAIcon } from '../../../icons/tokens/imusd-mta.svg';
+import { ReactComponent as IMUSDMTAIcon } from '../../../icons/tokens/imUSD-MTA.svg';
 import { ReactComponent as IMUSDIcon } from '../../../icons/tokens/imUSD.svg';
 import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
 
