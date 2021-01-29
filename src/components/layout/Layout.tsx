@@ -130,7 +130,7 @@ const StickyHeader = styled.div`
 const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
   <>
     <StickyHeader>
-      <AppBar />
+      <AppBar home={home} />
     </StickyHeader>
     <Header home={home} />
   </>
@@ -143,7 +143,7 @@ const Container = styled.div<{ accountOpen?: boolean }>`
   min-height: calc(100vh - 182px);
 
   // Space for the footer
-  padding-bottom: 8rem;
+  padding-bottom: 4rem;
 
   background: ${({ accountOpen }) =>
     accountOpen ? Color.black : 'transparent'};

@@ -5,12 +5,51 @@ import { useHistory } from 'react-router-dom';
 import { useConnected, useConnect } from '../../context/OnboardProvider';
 import { MassetName } from '../../types';
 import { MASSETS } from '../../constants';
-import { Button } from '../core/Button';
+import { UnstyledButton } from '../core/Button';
 import { useSetSelectedMassetName } from '../../context/SelectedMassetNameProvider';
 import { TokenIcon } from '../icons/TokenIcon';
+import { ReactComponent as LogoImage } from '../icons/mstable.svg';
+import { ViewportWidth } from '../../theme';
 
 const StyledTokenIcon = styled(TokenIcon)`
-  max-width: 10rem;
+  height: 6rem;
+  width: 6rem;
+  border: 4px solid
+    ${({ theme }) =>
+      !theme.isLight ? theme.color.backgroundAccent : 'transparent'};
+  border-radius: 3rem;
+`;
+
+const StyledButton = styled(UnstyledButton)<{ asset: MassetName }>`
+  width: 100%;
+  max-width: 20rem;
+  font-size: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: ${({ theme }) =>
+    theme.isLight ? theme.color.offBlack : 'transparent'};
+  border: 4px solid
+    ${({ theme, asset }) =>
+      asset === 'musd' ? theme.color.blueAccent : theme.color.goldAccent};
+  border-radius: 2rem;
+  padding: 2rem 0;
+  font-weight: bold;
+  color: white;
+
+  > *:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+
+  &:hover {
+    background: ${({ theme }) =>
+      theme.isLight ? theme.color.offBlackAccent : theme.color.accent};
+  }
+
+  &:active {
+    background: ${({ theme }) => theme.color.accentContrast};
+  }
 `;
 
 const MassetButton: FC<{ massetName: MassetName }> = ({ massetName }) => {
@@ -22,7 +61,8 @@ const MassetButton: FC<{ massetName: MassetName }> = ({ massetName }) => {
   const { symbol, slug } = MASSETS[massetName];
 
   return (
-    <Button
+    <StyledButton
+      asset={massetName}
       onClick={() => {
         if (!connected) {
           connect();
@@ -33,33 +73,89 @@ const MassetButton: FC<{ massetName: MassetName }> = ({ massetName }) => {
     >
       <StyledTokenIcon symbol={symbol} />
       <div>{symbol}</div>
-    </Button>
+    </StyledButton>
   );
 };
 
-// TODO proper style
+const Buttons = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
+  > *:not(:last-child) {
+    margin-bottom: 1rem;
+    margin-right: 0;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    justify-content: center;
+
+    > *:not(:last-child) {
+      margin-bottom: 0;
+      margin-right: 2rem;
+    }
+  }
+`;
+
+const Tagline = styled.h1`
+  font-size: 2rem;
+  line-height: 3rem;
+  text-align: center;
+  color: ${({ theme }) => theme.color.accentContrast};
+  text-transform: lowercase;
+  padding: 0 1rem;
+`;
+
+const Logo = styled(LogoImage)`
+  width: 12rem;
+
+  path {
+    fill: ${({ theme }) => theme.color.body};
+  }
+`;
+
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > *:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+`;
+
 const Container = styled.div`
   display: flex;
-  justify-content: space-between;
-  gap: 2rem;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
 
-  ${Button} {
-    width: 100%;
-    height: 30rem;
-    font-size: 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
+  > *:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    padding: 4rem 0;
+
+    > *:not(:last-child) {
+      margin-bottom: 4rem;
+    }
   }
 `;
 
 export const Home: FC = () => {
   return (
     <Container>
-      <MassetButton massetName="mbtc" />
-      <MassetButton massetName="musd" />
+      <Header>
+        <Logo />
+        <Tagline>Unite assets into one standard</Tagline>
+      </Header>
+      <Buttons>
+        <MassetButton massetName="mbtc" />
+        <MassetButton massetName="musd" />
+      </Buttons>
     </Container>
   );
 };
