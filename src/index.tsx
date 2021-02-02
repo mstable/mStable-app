@@ -22,6 +22,7 @@ import { FAQ } from './components/pages/FAQ';
 import { Analytics } from './components/pages/Analytics';
 import { PoolPage } from './components/pages/Earn/Pool';
 import { AdminPage } from './components/pages/Earn/Admin';
+import { RenMint } from './components/pages/Mint/curvedMasset/ren';
 
 checkRequiredEnvVars();
 
@@ -49,6 +50,8 @@ const Routes: FC = () => {
       <Route exact path="/:massetName/ren" component={RenMint} />
 
       <Route exact path="/:massetName/earn" component={Earn} />
+      {/* FIXME remove */}
+      <Route exact path="/:massetName/ren" component={RenMint} />
       <Route exact path="/:massetName/earn/admin" component={AdminPage} />
       <Route
         exact
