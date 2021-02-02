@@ -60,7 +60,7 @@ const BoostBar: FC = () => {
       }
     >
       <div>
-        <ProgressBar value={boost} min={1} max={3} />
+        <ProgressBar value={boost} min={1} max={3} decimals={1} showLabel />
         <BoostBarRange>
           <div>1x</div>
           <BoostBarLine />

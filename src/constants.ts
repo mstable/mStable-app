@@ -142,13 +142,22 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     },
   },
   42: {
-    UNISWAP_ROUTER02: 'TODO',
-    WETH: 'TODO',
+    UNISWAP_ROUTER02: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
     MTA: '0xcda64b5d3ca85800ab9f7409686985b59f2b9598',
-    vMTA: 'TODO',
+    vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
+    WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
     musd: {
-      SaveWrapper: 'TODO',
+      SaveWrapper: '0xeb9201126a77dcd966c878ce81ea1146603b86ad',
     },
+    CURVE: {
+      MUSD_SWAP: '0xfad04fbdd5b12188d4fd3ba0325a22962dc00ea4',
+      '3POOL_COINS': [
+        '0x8a9447df1fb47209d36204e6d56767a33bf20f9f', // USDC
+        '0xb404c51bbc10dcbe948077f18a4b8e553d160084', // USDT
+        '0xb5e5d0f8c0cba267cd3d7035d6adc8eba7df7cdd', // DAI
+      ],
+    } as never,
+  },
     BALANCER: {
       BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },

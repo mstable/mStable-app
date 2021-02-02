@@ -4,11 +4,14 @@ import { useThemeMode } from '../../context/AppProvider';
 import { colorTheme } from '../../theme';
 
 interface Props {
+  className?: string;
+  decimals?: number;
   value?: number;
   max?: number;
   min?: number;
   hue?: number;
   lightness?: number;
+  showLabel?: boolean;
 }
 
 const HEIGHT = 5;
@@ -24,17 +27,24 @@ const Container = styled.svg`
 `;
 
 export const ProgressBar: FC<Props> = ({
+  className,
+  decimals,
   max = 1,
   min = 0,
   value = min,
   hue = 90,
   lightness = 50,
+  showLabel,
 }) => {
   const themeMode = useThemeMode();
   const scaledValue = (value - min) / (max - min);
   const progressWidth = Math.max(scaledValue * WIDTH, HEIGHT * 2);
   return (
-    <Container viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="none">
+    <Container
+      viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+      preserveAspectRatio="none"
+      className={className}
+    >
       <defs>
         <pattern
           id="hatch"
@@ -57,7 +67,7 @@ export const ProgressBar: FC<Props> = ({
             from="4"
             to="0"
             begin="0"
-            dur={`${Math.sin(value)}s`}
+            dur={`${1 - Math.sin(scaledValue || 0.01)}s`}
             repeatCount="indefinite"
             additive="sum"
           />
@@ -92,20 +102,22 @@ export const ProgressBar: FC<Props> = ({
           ry={HEIGHT / 2}
           fill="url(#hatch)"
         />
-        <g transform={`translate(${progressWidth - 2.25}, 0)`}>
-          <text
-            x={0}
-            y={HEIGHT / 2}
-            alignmentBaseline="central"
-            fontSize={3}
-            fontFamily="'DM Mono', monospace"
-            fontWeight="bold"
-            fill="white"
-            textAnchor="end"
-          >
-            {value.toFixed(1)}
-          </text>
-        </g>
+        {showLabel && (
+          <g transform={`translate(${progressWidth - 2.25}, 0)`}>
+            <text
+              x={0}
+              y={HEIGHT / 2}
+              alignmentBaseline="central"
+              fontSize={3}
+              fontFamily="'DM Mono', monospace"
+              fontWeight="bold"
+              fill="white"
+              textAnchor="end"
+            >
+              {value.toFixed(decimals)}
+            </text>
+          </g>
+        )}
       </g>
     </Container>
   );

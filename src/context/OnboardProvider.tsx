@@ -10,7 +10,7 @@ import React, {
 // eslint-disable-next-line import/no-unresolved
 import { Wallet, API } from 'bnc-onboard/dist/src/interfaces';
 import {
-  Web3Provider as EthersWeb3Provider,
+  Web3Provider,
   Provider,
   InfuraProvider,
   JsonRpcSigner,
@@ -32,7 +32,7 @@ export interface State {
   wallet?: Wallet;
   signer?: Signer;
   infuraProvider: InfuraProvider;
-  provider?: Provider;
+  provider?: Web3Provider;
   connect(): void;
   reset(): void;
   connected: boolean;
@@ -51,9 +51,7 @@ export const OnboardProvider: FC<{}> = ({ children }) => {
   const [balance, setBalance] = useState<string | undefined>(undefined);
   const [wallet, setWallet] = useState<Wallet | undefined>(undefined);
   const [signer, setSigner] = useState<JsonRpcSigner | undefined>(undefined);
-  const [provider, setProvider] = useState<EthersWeb3Provider | undefined>(
-    undefined,
-  );
+  const [provider, setProvider] = useState<Web3Provider | undefined>(undefined);
   const [connected, setConnected] = useState<boolean>(false);
 
   const addInfoNotification = useAddInfoNotification();

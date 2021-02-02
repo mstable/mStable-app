@@ -84,8 +84,8 @@ const MintLogic: FC = () => {
     const _minOutputAmount = BigDecimal.maybeParse(
       outputAmount.value && slippage.simple
         ? (outputAmount.value.simple * (1 - slippage.simple / 100)).toFixed(
-            outputAmount.value.decimals,
-          )
+        outputAmount.value.decimals,
+        )
         : undefined,
     );
 
@@ -313,11 +313,11 @@ export const Mint: FC = () => {
       Object.fromEntries(
         Object.entries(massetState?.bAssets ?? {}).map(
           ([
-            address,
-            {
-              token: { decimals },
-            },
-          ]) => [address, { decimals }],
+             address,
+             {
+               token: { decimals },
+             },
+           ]) => [address, { decimals }],
         ),
       ),
     [massetState],
