@@ -1,4 +1,5 @@
-import { BigNumber, bigNumberify } from 'ethers/utils';
+import { getUnixTime } from 'date-fns';
+import { bigNumberify } from 'ethers/utils';
 import React, { FC, useMemo, useEffect } from 'react';
 import {
   BannerMessage,
@@ -11,6 +12,7 @@ import { MultiAssetExchange } from '../../../forms/MultiAssetExchange';
 export const Mint: FC = () => {
   const massetState = useSelectedMassetState();
   const setBannerMessage = useSetBannerMessage();
+  const { invariantStartingCap, invariantStartTime } = massetState ?? {};
 
   const inputAssets = useMemo(
     () =>
@@ -34,32 +36,25 @@ export const Mint: FC = () => {
   }, [massetState]);
 
   const tvlCap = useMemo(() => {
-    const _startTime = massetState?.invariantStartTime;
-    const _startingCap = massetState?.invariantStartingCap;
+    if (!invariantStartingCap || !invariantStartTime) return;
 
-    if (!_startTime || !_startingCap) return;
+    const currentTime = getUnixTime(Date.now());
 
-    const currentTime = new BigDecimal(Math.floor(Date.now() / 1e3).toString());
-    const startingCap = new BigDecimal(_startingCap);
-    const startTime = new BigDecimal(_startTime.toString());
-
-    const weeksSinceLaunch = currentTime
-      .sub(startTime)
-      .mulTruncate((1e18).toString())
-      .divPrecisely(new BigDecimal(604800));
-
-    if (weeksSinceLaunch.exact.gt(new BigDecimal((12e18).toString()).exact))
-      return;
-
-    const maxK = startingCap.add(
-      new BigDecimal(
-        weeksSinceLaunch.exact
-          .pow(bigNumberify(2))
-          .div(new BigNumber((1e18).toString())),
-      ),
+    const weeksSinceLaunch = Math.floor(
+      (currentTime - invariantStartTime) / 604800,
     );
-    return maxK;
-  }, [massetState?.invariantStartTime, massetState?.invariantStartingCap]);
+
+    if (weeksSinceLaunch > 12) return;
+
+    const maxK = invariantStartingCap.add(
+      bigNumberify(weeksSinceLaunch)
+        .mul((1e18).toString())
+        .pow(2)
+        .div((1e18).toString()),
+    );
+
+    return new BigDecimal(maxK);
+  }, [invariantStartTime, invariantStartingCap]);
 
   useEffect(() => {
     if (!tvlCap) return;
