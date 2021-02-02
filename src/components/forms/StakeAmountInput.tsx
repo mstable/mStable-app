@@ -70,6 +70,9 @@ const InputsRow = styled.div`
   width: 100%;
 `;
 
+/**
+ * @deprecated
+ */
 export const StakeAmountInput: FC = () => {
   const {
     exit: { error, formValue },

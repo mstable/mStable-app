@@ -51,6 +51,7 @@ const Balance = styled.div`
   font-weight: normal;
   text-overflow: ellipsis;
   color: ${({ theme }) => theme.color.grey};
+  ${({ theme }) => theme.mixins.numeric}
 `;
 
 const OptionsContainer = styled.div<{ open: boolean }>`

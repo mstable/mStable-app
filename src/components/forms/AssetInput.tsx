@@ -65,8 +65,8 @@ const InputField = styled(AmountInput)`
   font-size: 1.125rem;
   padding: 0 0.75rem;
 
-  & :active,
-  :focus {
+  &:active,
+  &:focus {
     background: none;
   }
 `;
@@ -124,6 +124,11 @@ const Container = styled.div<{
     disabled && theme.color.backgroundAccent};
   height: 4.25rem;
 
+  &:focus-within {
+    border-color: ${({ theme, disabled }) =>
+      disabled ? 'transparent' : theme.color.primary};
+  }
+
   ${InputContainer} {
     flex: 1;
   }
@@ -149,9 +154,6 @@ const AssetInputContent: FC<Props> = ({
   const handleUnlockClick = (): void => {
     setUnlockState(true);
   };
-
-  // TODO: - Fix this
-  if (!address) return null;
 
   return (
     <Container error={error} disabled={disabled ?? false}>

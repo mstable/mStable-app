@@ -20,15 +20,17 @@ const Container = styled.div`
   justify-content: flex-end;
   padding-right: 0.5rem;
 
-  p {
-    font-size: 0.95rem;
-    text-align: right;
-    color: ${({ theme }) => theme.color.grey};
+  font-size: 0.95rem;
+  text-align: right;
+  color: ${({ theme }) => theme.color.grey};
 
-    span {
-      ${({ theme }) => theme.mixins.numeric};
-    }
+  span {
+    white-space: pre;
   }
+`;
+
+const Numeric = styled.span`
+  ${({ theme }) => theme.mixins.numeric};
 `;
 
 export const ExchangeRate: FC<Props> = ({
@@ -41,15 +43,15 @@ export const ExchangeRate: FC<Props> = ({
   const hasInput = inputLabel || inputToken;
   return (
     <Container>
-      <p>
-        {exchangeRate.fetching && <ThemedSkeleton height={16} width={150} />}
-        {exchangeRate.value && (
-          <span>{` ≈ ${exchangeRate.value.format(6)} ${outputLabel ??
-            outputToken?.symbol} ${
-            hasInput ? `per ${inputLabel ?? inputToken?.symbol}` : ``
-          }`}</span>
-        )}
-      </p>
+      {exchangeRate.fetching && <ThemedSkeleton height={16} width={150} />}
+      {exchangeRate.value && (
+        <>
+          <span>≈ </span>
+          <Numeric>{exchangeRate.value.format(6)}</Numeric>
+          <span> {outputLabel ?? outputToken?.symbol} </span>
+          {hasInput && <span>per {inputLabel ?? inputToken?.symbol}</span>}
+        </>
+      )}
     </Container>
   );
 };

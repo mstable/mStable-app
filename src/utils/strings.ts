@@ -41,3 +41,14 @@ export const humanizeList = (list: string[]): string =>
   list.length < 3
     ? list.join(' and ')
     : `${list.slice(0, -1).join(', ')}, and ${list[list.length - 1]}`;
+
+export const sanitizeCurvedMassetError = (error: Error): string => {
+  const message = error.message.replace('execution reverted: ', '');
+
+  switch (message) {
+    case 'Out of bounds':
+      return 'This swap would exceed hard limits to maintain diversification. Try a different pair of assets or a smaller amount.';
+    default:
+      return message;
+  }
+};

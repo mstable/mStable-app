@@ -2,38 +2,34 @@ import { Reducer, useMemo, useReducer } from 'react';
 
 import { BigDecimal } from '../web3/BigDecimal';
 
-export interface InitialiserArg {
+export interface UseBigDecimalInputsArg {
   [address: string]: {
     decimals: number;
     defaultValue?: BigDecimal;
-    balance?: BigDecimal;
-    symbol?: string;
   };
 }
 
-interface InputValue {
-  amount?: BigDecimal;
-  balance?: BigDecimal;
-  formValue?: string;
+export type BigDecimalInputValue = {
+  address: string;
   decimals: number;
-  symbol?: string;
+  formValue?: string;
+  touched?: boolean;
+  amount?: BigDecimal;
+} & ({ touched: true; amount: BigDecimal } | {});
+
+export interface BigDecimalInputValues {
+  [address: string]: BigDecimalInputValue;
 }
 
-interface InputValues {
-  [address: string]: InputValue;
-}
-
-interface InputCallbacks {
+export interface BigDecimalInputCallbacks {
   [address: string]: {
     setAmount(amount?: BigDecimal): void;
-    setMaxAmount(): void;
     setFormValue(formValue?: string): void;
   };
 }
 
 enum Actions {
   SetAmount,
-  SetMaxAmount,
   SetFormValue,
 }
 
@@ -43,46 +39,34 @@ type Action =
       payload: { address: string; amount?: BigDecimal };
     }
   | {
-      type: Actions.SetMaxAmount;
-      payload: { address: string };
-    }
-  | {
       type: Actions.SetFormValue;
       payload: { address: string; formValue?: string };
     };
 
 interface State {
-  values: InputValues;
+  values: BigDecimalInputValues;
   serializedAddresses: string;
 }
 
 const setFormValue = (
-  value: InputValue,
+  value: BigDecimalInputValue,
   { payload: { formValue } }: Extract<Action, { type: Actions.SetFormValue }>,
-): InputValue => ({
+): BigDecimalInputValue => ({
   ...value,
   amount: BigDecimal.maybeParse(formValue, value.decimals),
+  touched: !!(formValue && formValue !== '0'),
   formValue,
 });
 
 const setAmount = (
-  value: InputValue,
+  value: BigDecimalInputValue,
   { payload: { amount } }: Extract<Action, { type: Actions.SetAmount }>,
-): InputValue => ({
+): BigDecimalInputValue => ({
   ...value,
   amount,
+  touched: !!(amount?.simple && amount.simple > 0),
   formValue: amount?.simple !== 0 ? amount?.format(2, false) : undefined,
 });
-
-const setMaxAmount = (value: InputValue): InputValue => {
-  const amount = value.balance;
-  const formValue = amount?.format(2, false);
-  return {
-    ...value,
-    amount,
-    formValue,
-  };
-};
 
 const reducer: Reducer<State, Action> = (
   { values, serializedAddresses },
@@ -94,24 +78,21 @@ const reducer: Reducer<State, Action> = (
     [action.payload.address]:
       action.type === Actions.SetFormValue
         ? setFormValue(values[action.payload.address], action)
-        : action.type === Actions.SetAmount
-        ? setAmount(values[action.payload.address], action)
-        : setMaxAmount(values[action.payload.address]),
+        : setAmount(values[action.payload.address], action),
   },
 });
 
-const initialise = (initialiserArg: InitialiserArg): State => {
+const initialise = (initialiserArg: UseBigDecimalInputsArg): State => {
   const values = Object.fromEntries(
     Object.entries(initialiserArg).map(
-      ([address, { decimals, defaultValue: amount, balance, symbol }]) => {
+      ([address, { decimals, defaultValue: amount }]) => {
         return [
           address,
           {
+            address,
             decimals,
             amount,
             formValue: amount?.format(2, false),
-            balance,
-            symbol,
           },
         ];
       },
@@ -132,11 +113,11 @@ const initialise = (initialiserArg: InitialiserArg): State => {
  * @param initialiserArg: Map of addresses to decimals/default value
  */
 export const useBigDecimalInputs = (
-  initialiserArg: InitialiserArg,
-): [InputValues, InputCallbacks] => {
+  initialiserArg: UseBigDecimalInputsArg,
+): [BigDecimalInputValues, BigDecimalInputCallbacks] => {
   const [state, dispatch] = useReducer(reducer, initialiserArg, initialise);
 
-  const callbacks = useMemo<InputCallbacks>(
+  const callbacks = useMemo<BigDecimalInputCallbacks>(
     () =>
       Object.fromEntries(
         state.serializedAddresses.split(',').map(address => [
@@ -146,12 +127,6 @@ export const useBigDecimalInputs = (
               dispatch({
                 type: Actions.SetAmount,
                 payload: { address, amount },
-              });
-            },
-            setMaxAmount: () => {
-              dispatch({
-                type: Actions.SetMaxAmount,
-                payload: { address },
               });
             },
             setFormValue: formValue => {

@@ -28,8 +28,9 @@ const ButtonCss = css<Props>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   transition: 0.2s ease all;
-  border: ${({ transparent, theme }) =>
-    transparent && `1px solid ${theme.color.accentContrast}`};
+  border: 1px solid
+    ${({ transparent, theme }) =>
+      transparent ? theme.color.accentContrast : 'transparent'};
 
   svg {
     rect {
@@ -38,7 +39,8 @@ const ButtonCss = css<Props>`
     }
   }
 
-  :hover {
+  &:hover,
+  &:focus {
     ${({ disabled, theme, highlighted }) =>
       !disabled && {
         background: `${highlighted ? theme.color.gold : theme.color.accent}`,

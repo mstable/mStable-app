@@ -9,6 +9,7 @@ import { ExchangeRate } from '../core/ExchangeRate';
 import { Widget } from '../core/Widget';
 import { Tooltip } from '../core/ReactTooltip';
 import { SlippageInput } from './SlippageInput';
+import { Arrow } from '../core/Arrow';
 
 interface Props {
   addressOptions: {
@@ -30,7 +31,7 @@ interface Props {
   handleSetOutputAmount?(formValue?: string): void;
   handleSetOutputMax?(): void;
 
-  slippage?: string;
+  slippageFormValue?: string;
   handleSetSlippage?(formValue?: string): void;
 
   exchangeRate?: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
@@ -80,16 +81,6 @@ const Details = styled.div`
   }
 `;
 
-const Arrow = styled.div`
-  align-items: center;
-  display: flex;
-  font-size: 1.25rem;
-  justify-content: center;
-  padding-top: 1rem;
-  text-align: center;
-  user-select: none;
-`;
-
 const Info = styled.div`
   display: flex;
   justify-content: space-between;
@@ -121,7 +112,7 @@ const Error = styled.div`
   }
 `;
 
-export const BidirectionalAssetExchange: FC<Props> = ({
+export const AssetSwap: FC<Props> = ({
   addressOptions,
   error,
   exchangeRate,
@@ -138,7 +129,7 @@ export const BidirectionalAssetExchange: FC<Props> = ({
   minOutputAmount,
   outputAddress,
   outputFormValue,
-  slippage,
+  slippageFormValue,
 }) => {
   const inputToken = useTokenSubscription(inputAddress);
   const outputToken = useTokenSubscription(outputAddress);
@@ -161,7 +152,7 @@ export const BidirectionalAssetExchange: FC<Props> = ({
             }}
           />
         </Widget>
-        <Arrow>↓</Arrow>
+        <Arrow />
         <Widget
           title="Receive"
           boldTitle
@@ -196,7 +187,7 @@ export const BidirectionalAssetExchange: FC<Props> = ({
           <Info>
             <SlippageInput
               handleSetSlippage={handleSetSlippage}
-              slippage={slippage}
+              slippageFormValue={slippageFormValue}
             />
           </Info>
         )}
