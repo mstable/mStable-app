@@ -244,6 +244,8 @@ const transformMassetData = (
     feeRate,
     forgeValidator,
     redemptionFeeRate,
+    invariantStartTime,
+    invariantStartingCap,
     token: { decimals, address },
     token,
     basket: {
@@ -264,6 +266,10 @@ const transformMassetData = (
     address,
     failed,
     forgeValidator,
+    invariantStartTime: invariantStartTime || undefined,
+    invariantStartingCap: invariantStartingCap
+      ? bigNumberify(invariantStartingCap)
+      : undefined,
     undergoingRecol,
     token: transformTokenData(token, tokens),
     bAssets,

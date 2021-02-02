@@ -1580,6 +1580,10 @@ export type Masset = {
   basketManager?: Maybe<Scalars['Bytes']>;
   /** The address of the `ForgeValidator` or `InvariantValidator` contract */
   forgeValidator: Scalars['Bytes'];
+  /** Optional start time for `InvariantValidator` contract */
+  invariantStartTime?: Maybe<Scalars['Int']>;
+  /** Optional starting TVL cap for `InvariantValidator` contract */
+  invariantStartingCap?: Maybe<Scalars['BigInt']>;
   /** The swap fee rate */
   feeRate: Scalars['BigInt'];
   /** The redemption fee rate */
@@ -1735,6 +1739,22 @@ export type Masset_Filter = {
   forgeValidator_not_in?: Maybe<Array<Scalars['Bytes']>>;
   forgeValidator_contains?: Maybe<Scalars['Bytes']>;
   forgeValidator_not_contains?: Maybe<Scalars['Bytes']>;
+  invariantStartTime?: Maybe<Scalars['Int']>;
+  invariantStartTime_not?: Maybe<Scalars['Int']>;
+  invariantStartTime_gt?: Maybe<Scalars['Int']>;
+  invariantStartTime_lt?: Maybe<Scalars['Int']>;
+  invariantStartTime_gte?: Maybe<Scalars['Int']>;
+  invariantStartTime_lte?: Maybe<Scalars['Int']>;
+  invariantStartTime_in?: Maybe<Array<Scalars['Int']>>;
+  invariantStartTime_not_in?: Maybe<Array<Scalars['Int']>>;
+  invariantStartingCap?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_not?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_gt?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_lt?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_gte?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_lte?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_in?: Maybe<Array<Scalars['BigInt']>>;
+  invariantStartingCap_not_in?: Maybe<Array<Scalars['BigInt']>>;
   feeRate?: Maybe<Scalars['BigInt']>;
   feeRate_not?: Maybe<Scalars['BigInt']>;
   feeRate_gt?: Maybe<Scalars['BigInt']>;
@@ -1968,6 +1988,8 @@ export enum Masset_OrderBy {
   Basket = 'basket',
   BasketManager = 'basketManager',
   ForgeValidator = 'forgeValidator',
+  InvariantStartTime = 'invariantStartTime',
+  InvariantStartingCap = 'invariantStartingCap',
   FeeRate = 'feeRate',
   RedemptionFeeRate = 'redemptionFeeRate',
   TotalMints = 'totalMints',
@@ -4539,7 +4561,7 @@ export type MassetsQueryVariables = Exact<{
 
 
 export type MassetsQuery = { massets: Array<(
-    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'forgeValidator'>
+    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'forgeValidator' | 'invariantStartTime' | 'invariantStartingCap'>
     & { token: TokenAllFragment, basket: (
       Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
       & { bassets: Array<(
@@ -4697,6 +4719,8 @@ export const MassetsDocument = gql`
     feeRate
     redemptionFeeRate
     forgeValidator
+    invariantStartTime
+    invariantStartingCap
     basket {
       failed
       collateralisationRatio

@@ -1147,6 +1147,10 @@ type Masset {
   basketManager: Bytes
   """The address of the `ForgeValidator` or `InvariantValidator` contract"""
   forgeValidator: Bytes!
+  """Optional start time for `InvariantValidator` contract"""
+  invariantStartTime: Int
+  """Optional starting TVL cap for `InvariantValidator` contract"""
+  invariantStartingCap: BigInt
   """The swap fee rate"""
   feeRate: BigInt!
   """The redemption fee rate"""
@@ -3265,6 +3269,8 @@ enum Masset_orderBy {
   basket
   basketManager
   forgeValidator
+  invariantStartTime
+  invariantStartingCap
   feeRate
   redemptionFeeRate
   totalMints
@@ -3325,6 +3331,22 @@ input Masset_filter {
   forgeValidator_not_in: [Bytes!]
   forgeValidator_contains: Bytes
   forgeValidator_not_contains: Bytes
+  invariantStartTime: Int
+  invariantStartTime_not: Int
+  invariantStartTime_gt: Int
+  invariantStartTime_lt: Int
+  invariantStartTime_gte: Int
+  invariantStartTime_lte: Int
+  invariantStartTime_in: [Int!]
+  invariantStartTime_not_in: [Int!]
+  invariantStartingCap: BigInt
+  invariantStartingCap_not: BigInt
+  invariantStartingCap_gt: BigInt
+  invariantStartingCap_lt: BigInt
+  invariantStartingCap_gte: BigInt
+  invariantStartingCap_lte: BigInt
+  invariantStartingCap_in: [BigInt!]
+  invariantStartingCap_not_in: [BigInt!]
   feeRate: BigInt
   feeRate_not: BigInt
   feeRate_gt: BigInt
