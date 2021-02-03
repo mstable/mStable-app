@@ -19,16 +19,12 @@ export const Redeem: FC = () => {
       <PageHeader
         action={PageAction.Redeem}
         subtitle={`Exchange ${massetState.token.symbol} for its underlying collateral`}
-      >
-        <div>
-          Redeem exact bassets
-          <ToggleInput
-            onClick={toggleIsExactBassets}
-            checked={isExactBassets}
-          />
-        </div>
-      </PageHeader>
+      />
       {isExactBassets ? <RedeemExactBassets /> : <RedeemMasset />}
+      <div>
+        Redeem to multiple assets
+        <ToggleInput onClick={toggleIsExactBassets} checked={isExactBassets} />
+      </div>
     </div>
   ) : (
     <Skeleton height={600} />

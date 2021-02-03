@@ -34,6 +34,7 @@ import {
   BannerMessage,
   useSetBannerMessage,
 } from '../../../../context/AppProvider';
+import { PageHeader, PageAction } from '../../PageHeader';
 
 const formId = 'mint';
 
@@ -278,6 +279,10 @@ export const Mint: FC = () => {
 
   return massetState ? (
     <MultiAssetExchangeProvider assets={inputAssets}>
+      <PageHeader
+        action={PageAction.Mint}
+        subtitle={`Convert stablecoins into ${massetState.token.symbol}`}
+      />
       <MintLogic />
     </MultiAssetExchangeProvider>
   ) : null;

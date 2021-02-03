@@ -12,11 +12,11 @@ import { BigDecimal } from '../../web3/BigDecimal';
 import { useSimpleInput } from '../../hooks/useSimpleInput';
 
 import { ExchangeRate } from '../core/ExchangeRate';
-import { Arrow } from '../core/Arrow';
 
 import { AssetInput } from './AssetInput';
 import { SlippageInput } from './SlippageInput';
 import { CollapseBox } from './CollapseBox';
+import { Arrow } from '../core/Arrow';
 
 type Dispatch = [
   BigDecimalInputCallbacks, // input callbacks
@@ -85,7 +85,7 @@ interface Props {
   outputLabel?: string;
   spender?: string;
   setMaxCallbacks?: { [address: string]: () => void };
-  exchangeRate: { value?: BigDecimal; fetching?: boolean };
+  exchangeRate?: { value?: BigDecimal; fetching?: boolean };
 }
 
 export const ManyToOneAssetExchange: FC<Props & { outputAddress: string }> = ({

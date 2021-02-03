@@ -1,12 +1,19 @@
+import React, { FC } from 'react';
 import styled from 'styled-components';
 
-export const Arrow = styled.div`
+export const Container = styled.div`
   align-items: center;
   display: flex;
   font-size: 1.25rem;
   justify-content: center;
-  padding: 1rem;
+  padding: 0.75rem;
   text-align: center;
   user-select: none;
-  content: '\2193';
 `;
+
+export const Arrow: FC<{ direction?: 'up' | 'down' }> = ({
+  direction = 'down',
+}) => {
+  const arrowIcon = direction === 'up' ? '↑' : '↓';
+  return <Container>{arrowIcon}</Container>;
+};

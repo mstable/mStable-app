@@ -11,25 +11,35 @@ interface Props {
 
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
   width: 100%;
 
   > :first-child {
-    font-size: 0.8rem;
-    margin-right: 1rem;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
+    align-items: center;
+    flex-direction: row;
+
+    > :first-child {
+      margin-bottom: 0;
+      margin-right: 1rem;
+    }
   }
 
   > :last-child {
     > * {
       ${({ theme }) => theme.mixins.numeric}
-      font-size: 0.8rem;
+      font-size: 0.875rem;
       margin-bottom: 0.5rem;
       margin-right: 0.5rem;
       padding: 0.25rem;
 
       > * {
-        font-size: 0.8rem;
+        font-size: 0.875rem;
       }
 
       @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {

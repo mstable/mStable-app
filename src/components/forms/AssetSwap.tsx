@@ -6,7 +6,6 @@ import { ViewportWidth } from '../../theme';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { AssetInput } from './AssetInput';
 import { ExchangeRate } from '../core/ExchangeRate';
-import { Widget } from '../core/Widget';
 import { Tooltip } from '../core/ReactTooltip';
 import { SlippageInput } from './SlippageInput';
 import { Arrow } from '../core/Arrow';
@@ -34,7 +33,7 @@ interface Props {
   slippageFormValue?: string;
   handleSetSlippage?(formValue?: string): void;
 
-  exchangeRate?: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
+  exchangeRate: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
   fee?: BigDecimal;
   error?: string;
 }
@@ -42,7 +41,6 @@ interface Props {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 
   > div {
     display: flex;
@@ -52,32 +50,23 @@ const Container = styled.div`
 
 const Exchange = styled.div`
   flex-direction: column;
-  padding: 1rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  border-radius: 0.5rem;
 
   > * {
-    margin-bottom: 1rem;
-    &:last-child {
-      margin-bottom: 0;
-    }
+    margin: 0.5rem 0;
   }
 `;
 
 const Details = styled.div`
   flex-direction: column;
 
-  > * {
-    margin-bottom: 1rem;
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
   @media (min-width: ${ViewportWidth.l}) {
     > * {
       flex-basis: 47.5%;
     }
+  }
+
+  > * {
+    margin: 0.5rem 0;
   }
 `;
 
@@ -137,50 +126,39 @@ export const AssetSwap: FC<Props> = ({
   return (
     <Container>
       <Exchange>
-        <Widget title="Send" boldTitle>
-          <AssetInput
-            address={inputAddress}
-            addressOptions={addressOptions}
-            formValue={inputFormValue}
-            handleSetAmount={handleSetInputAmount}
-            handleSetMax={handleSetInputMax}
-            handleSetAddress={address => {
-              handleSetInputAddress?.(address);
-              if (address === outputAddress) {
-                handleSetOutputAddress?.(inputAddress);
-              }
-            }}
-          />
-        </Widget>
+        <AssetInput
+          address={inputAddress}
+          addressOptions={addressOptions}
+          formValue={inputFormValue}
+          handleSetAmount={handleSetInputAmount}
+          handleSetMax={handleSetInputMax}
+          handleSetAddress={address => {
+            handleSetInputAddress?.(address);
+            if (address === outputAddress) {
+              handleSetOutputAddress?.(inputAddress);
+            }
+          }}
+        />
         <Arrow />
-        <Widget
-          title="Receive"
-          boldTitle
-          headerContent={
-            exchangeRate && (
-              <ExchangeRate
-                exchangeRate={exchangeRate}
-                outputToken={outputToken}
-                inputToken={inputToken}
-              />
-            )
-          }
-        >
-          <AssetInput
-            address={outputAddress}
-            addressOptions={addressOptions}
-            formValue={outputFormValue}
-            amountDisabled={!handleSetOutputAmount}
-            handleSetAmount={handleSetOutputAmount}
-            handleSetMax={handleSetOutputMax}
-            handleSetAddress={address => {
-              handleSetOutputAddress?.(address);
-              if (address === inputAddress) {
-                handleSetInputAddress?.(outputAddress);
-              }
-            }}
-          />
-        </Widget>
+        <ExchangeRate
+          exchangeRate={exchangeRate}
+          outputToken={outputToken}
+          inputToken={inputToken}
+        />
+        <AssetInput
+          address={outputAddress}
+          addressOptions={addressOptions}
+          formValue={outputFormValue}
+          amountDisabled={!handleSetOutputAmount}
+          handleSetAmount={handleSetOutputAmount}
+          handleSetMax={handleSetOutputMax}
+          handleSetAddress={address => {
+            handleSetOutputAddress?.(address);
+            if (address === inputAddress) {
+              handleSetInputAddress?.(outputAddress);
+            }
+          }}
+        />
       </Exchange>
       <Details>
         {handleSetSlippage && (

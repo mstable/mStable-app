@@ -12,7 +12,7 @@ interface Props {
   outputLabel?: string;
   inputToken?: SubscribedToken;
   outputToken?: SubscribedToken;
-  exchangeRate: FetchRate;
+  exchangeRate?: FetchRate;
 }
 
 const Container = styled.div`
@@ -41,13 +41,16 @@ export const ExchangeRate: FC<Props> = ({
   outputLabel,
 }) => {
   const hasInput = inputLabel || inputToken;
+  if (!exchangeRate) return null;
+  const { fetching, value } = exchangeRate;
+  if (!fetching && !value) return null;
   return (
     <Container>
-      {exchangeRate.fetching && <ThemedSkeleton height={16} width={150} />}
-      {exchangeRate.value && (
+      {fetching && <ThemedSkeleton height={16} width={150} />}
+      {value && (
         <>
           <span>≈ </span>
-          <Numeric>{exchangeRate.value.format(6)}</Numeric>
+          <Numeric>{value.format(6)}</Numeric>
           <span> {outputLabel ?? outputToken?.symbol} </span>
           {hasInput && <span>per {inputLabel ?? inputToken?.symbol}</span>}
         </>
