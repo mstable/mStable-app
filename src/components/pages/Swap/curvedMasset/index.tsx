@@ -23,6 +23,7 @@ import { SendButton } from '../../../forms/SendButton';
 import { PageAction, PageHeader } from '../../PageHeader';
 import { sanitizeCurvedMassetError } from '../../../../utils/strings';
 import { MassetState } from '../../../../context/DataProvider/types';
+import { TransactionInfo } from '../../../core/TransactionInfo';
 
 interface SwapOutput {
   value?: BigDecimal;
@@ -30,10 +31,17 @@ interface SwapOutput {
   error?: string;
 }
 
+const Info = styled(TransactionInfo)`
+  margin-top: 0.5rem;
+`;
+
 const Form = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+
+  > div {
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const formId = 'swap';
@@ -54,14 +62,20 @@ const SwapLogic: FC = () => {
     max: 99.99,
   });
 
-  const [inputAddress, setInputAddress] = useState<string | undefined>(
-    // Select the token the user has the most of
-    (() =>
+  const assetsByBalance = useMemo(
+    () =>
       Object.values(bAssets).sort((a, b) =>
         a.balanceInMasset.exact.lt(b.balanceInMasset.exact) ? 1 : -1,
-      )?.[0]?.address)(),
+      ),
+    [bAssets],
   );
-  const [outputAddress, setOutputAddress] = useState<string | undefined>();
+
+  const [inputAddress, setInputAddress] = useState<string | undefined>(
+    assetsByBalance?.[0]?.address,
+  );
+  const [outputAddress, setOutputAddress] = useState<string | undefined>(
+    assetsByBalance?.[1]?.address,
+  );
 
   const inputToken = useTokenSubscription(inputAddress);
   const outputToken = useTokenSubscription(outputAddress);
@@ -201,20 +215,16 @@ const SwapLogic: FC = () => {
         addressOptions={addressOptions}
         error={error}
         exchangeRate={amounts.exchangeRate}
-        fee={amounts.swapFee}
         handleSetInputAddress={setInputAddress}
         handleSetInputAmount={setInputAmount}
         handleSetInputMax={(): void => {
           setInputAmount(inputToken?.balance.string);
         }}
         handleSetOutputAddress={setOutputAddress}
-        handleSetSlippage={setSlippage}
         inputAddress={inputAddress}
         inputFormValue={inputFormValue}
-        outputAddress={outputAddress}
+        outputAddress={outputAddress ?? addressOptions[0].address}
         outputFormValue={swapOutput.value?.string}
-        slippageFormValue={slippageFormValue}
-        minOutputAmount={amounts.minOutputAmount}
       />
       <SendButton
         valid={!error && !!swapOutput.value}
@@ -246,6 +256,12 @@ const SwapLogic: FC = () => {
             );
           }
         }}
+      />
+      <Info
+        fee={amounts.swapFee}
+        minOutputAmount={amounts.minOutputAmount}
+        slippageFormValue={slippageFormValue}
+        onSetSlippage={setSlippage}
       />
     </Form>
   );

@@ -21,7 +21,7 @@ const ButtonCss = css<Props>`
       ? 'transparent'
       : theme.color.accent};
   color: ${({ theme, highlighted }) =>
-    highlighted ? theme.color.white : theme.color.grey};
+    highlighted ? theme.color.white : theme.color.body};
   z-index: ${({ highlighted }) => (highlighted ? 1 : 0)};
   font-weight: 600;
   position: relative;
@@ -44,7 +44,7 @@ const ButtonCss = css<Props>`
     ${({ disabled, theme, highlighted }) =>
       !disabled && {
         background: `${highlighted ? theme.color.gold : theme.color.accent}`,
-        color: `${highlighted ? theme.color.white : theme.color.black}`,
+        color: `${highlighted ? theme.color.white : theme.color.gold}`,
       }}
   }
 `;

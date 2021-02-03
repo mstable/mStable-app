@@ -23,56 +23,12 @@ import { Interfaces } from '../../../../types';
 
 import { SendButton } from '../../../forms/SendButton';
 import { AssetInput } from '../../../forms/AssetInput';
-import { SlippageInput } from '../../../forms/SlippageInput';
-import { CollapseBox } from '../../../forms/CollapseBox';
-import { ViewportWidth } from '../../../../theme';
 import { Arrow } from '../../../core/Arrow';
 import { ErrorMessage } from '../../../core/ErrorMessage';
 import { ExchangeRate } from '../../../core/ExchangeRate';
-import { InfoBox } from '../../../forms/InfoBox';
+import { TransactionInfo } from '../../../core/TransactionInfo';
 
 const formId = 'redeem';
-
-const Exchange = styled.div`
-  flex-direction: column;
-  width: 100%;
-
-  > * {
-    margin: 0.5rem 0;
-  }
-`;
-
-const Details = styled.div`
-  flex-direction: column-reverse;
-  width: 100%;
-  align-self: center;
-
-  @media (min-width: ${ViewportWidth.l}) {
-    > * {
-      flex-basis: 47.5%;
-    }
-  }
-`;
-
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: 0.5rem 0 0.25rem;
-
-  > :last-child {
-    display: flex;
-    flex-direction: column;
-
-    > * > {
-      display: flex;
-      flex-direction: row;
-
-      * {
-        width: 100%;
-      }
-    }
-  }
-`;
 
 const Container = styled.div`
   display: flex;
@@ -193,48 +149,32 @@ export const RedeemMasset: FC = () => {
 
   return (
     <Container>
-      <Exchange>
-        <AssetInput
-          address={massetAddress}
-          addressDisabled
-          formValue={inputFormValue}
-          handleSetAddress={handleSetAddress}
-          handleSetAmount={handleSetInputFormValue}
-          handleSetMax={() => {
-            setInputAmount(massetToken?.balance);
-          }}
-        />
+      <AssetInput
+        address={massetAddress}
+        addressDisabled
+        formValue={inputFormValue}
+        handleSetAddress={handleSetAddress}
+        handleSetAmount={handleSetInputFormValue}
+        handleSetMax={() => {
+          setInputAmount(massetToken?.balance);
+        }}
+      />
+      <div>
         <Arrow />
         <ExchangeRate
           exchangeRate={exchangeRate}
           inputToken={massetToken}
           outputToken={outputToken}
         />
-        <AssetInput
-          address={outputAddress}
-          addressOptions={addressOptions}
-          amountDisabled
-          formValue={bassetAmount.value?.string}
-          handleSetAddress={handleSetAddress}
-        />
-      </Exchange>
-      <Details>
-        <Column>
-          {error && <ErrorMessage error={error} />}
-          {minOutputAmount && outputToken && (
-            <InfoBox>
-              <p>Minimum {outputToken.symbol} received</p>
-              <span>{minOutputAmount.string}</span>
-            </InfoBox>
-          )}
-        </Column>
-        <CollapseBox title="Advanced">
-          <SlippageInput
-            handleSetSlippage={handleSetSlippage}
-            slippageFormValue={slippageFormValue}
-          />
-        </CollapseBox>
-      </Details>
+      </div>
+      <AssetInput
+        address={outputAddress ?? addressOptions[0].address}
+        addressOptions={addressOptions}
+        amountDisabled
+        formValue={bassetAmount.value?.string}
+        handleSetAddress={handleSetAddress}
+      />
+      {error && <ErrorMessage error={error} />}
       <SendButton
         valid={!error}
         title="Redeem"
@@ -262,6 +202,11 @@ export const RedeemMasset: FC = () => {
             );
           }
         }}
+      />
+      <TransactionInfo
+        minOutputAmount={minOutputAmount}
+        onSetSlippage={handleSetSlippage}
+        slippageFormValue={slippageFormValue}
       />
     </Container>
   );

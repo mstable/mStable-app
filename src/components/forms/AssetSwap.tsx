@@ -25,16 +25,11 @@ interface Props {
 
   outputAddress?: string;
   outputFormValue?: string;
-  minOutputAmount?: BigDecimal;
   handleSetOutputAddress?(address?: string): void;
   handleSetOutputAmount?(formValue?: string): void;
   handleSetOutputMax?(): void;
 
-  slippageFormValue?: string;
-  handleSetSlippage?(formValue?: string): void;
-
   exchangeRate: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
-  fee?: BigDecimal;
   error?: string;
 }
 
@@ -70,19 +65,6 @@ const Details = styled.div`
   }
 `;
 
-const Info = styled.div`
-  display: flex;
-  justify-content: space-between;
-  height: fit-content;
-  padding: 0.75rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  border-radius: 0.75rem;
-
-  > span:last-child {
-    ${({ theme }) => theme.mixins.numeric}
-  }
-`;
-
 const Error = styled.div`
   display: flex;
   align-items: center;
@@ -105,20 +87,16 @@ export const AssetSwap: FC<Props> = ({
   addressOptions,
   error,
   exchangeRate,
-  fee,
   handleSetInputAddress,
   handleSetInputAmount,
   handleSetInputMax,
   handleSetOutputAddress,
   handleSetOutputAmount,
   handleSetOutputMax,
-  handleSetSlippage,
   inputAddress,
   inputFormValue,
-  minOutputAmount,
   outputAddress,
   outputFormValue,
-  slippageFormValue,
 }) => {
   const inputToken = useTokenSubscription(inputAddress);
   const outputToken = useTokenSubscription(outputAddress);
@@ -139,12 +117,14 @@ export const AssetSwap: FC<Props> = ({
             }
           }}
         />
-        <Arrow />
-        <ExchangeRate
-          exchangeRate={exchangeRate}
-          outputToken={outputToken}
-          inputToken={inputToken}
-        />
+        <div>
+          <Arrow />
+          <ExchangeRate
+            exchangeRate={exchangeRate}
+            outputToken={outputToken}
+            inputToken={inputToken}
+          />
+        </div>
         <AssetInput
           address={outputAddress}
           addressOptions={addressOptions}
@@ -161,34 +141,6 @@ export const AssetSwap: FC<Props> = ({
         />
       </Exchange>
       <Details>
-        {handleSetSlippage && (
-          <Info>
-            <SlippageInput
-              handleSetSlippage={handleSetSlippage}
-              slippageFormValue={slippageFormValue}
-            />
-          </Info>
-        )}
-        {fee && (
-          <Info>
-            <p>
-              <Tooltip tip="The received amount includes a small swap fee. Swap fees are sent directly to Savers.">
-                Swap fee
-              </Tooltip>
-            </p>
-            <span>{fee.string}</span>
-          </Info>
-        )}
-        {minOutputAmount && (
-          <Info>
-            <p>
-              <Tooltip tip="The minimum amount received (based on the estimated swap output and the selected slippage).">
-                Minimum amount received
-              </Tooltip>
-            </p>
-            <span>{minOutputAmount.string}</span>
-          </Info>
-        )}
         {error && (
           <Error>
             <p>{error}</p>

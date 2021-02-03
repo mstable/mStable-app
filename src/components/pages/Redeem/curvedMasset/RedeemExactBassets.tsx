@@ -154,42 +154,39 @@ const RedeemExactBassetsLogic: FC = () => {
         inputAddress={massetState?.address as string}
         inputLabel={massetState?.token.symbol}
         outputLabel={outputLabel}
+        maxOutputAmount={maxMassetAmount}
       >
-        {maxMassetAmount && (
-          <InfoBox>
-            <p>Maximum {massetState.token.symbol} cost</p>
-            <span>{maxMassetAmount.string}</span>
-          </InfoBox>
-        )}
-      </OneToManyAssetExchange>
-      {error && <ErrorMessage error={error} />}
-      <SendButton
-        valid={
-          !error &&
-          Object.values(bassetAmounts).filter(v => v.touched).length > 0
-        }
-        title="Redeem"
-        handleSend={() => {
-          if (curvedMasset && walletAddress && maxMassetAmount) {
-            const touched = Object.values(bassetAmounts).filter(v => v.touched);
-
-            if (touched.length === 0) return;
-
-            const addresses = touched.map(v => v.address);
-            const amounts = touched.map(v => (v.amount as BigDecimal).exact);
-
-            return propose<Interfaces.CurvedMasset, 'redeemExactBassets'>(
-              new TransactionManifest(
-                curvedMasset,
-                'redeemExactBassets',
-                [addresses, amounts, maxMassetAmount.exact, walletAddress],
-                { past: 'Redeemed', present: 'Redeeming' },
-                formId,
-              ),
-            );
+        {error && <ErrorMessage error={error} />}
+        <SendButton
+          valid={
+            !error &&
+            Object.values(bassetAmounts).filter(v => v.touched).length > 0
           }
-        }}
-      />
+          title="Redeem"
+          handleSend={() => {
+            if (curvedMasset && walletAddress && maxMassetAmount) {
+              const touched = Object.values(bassetAmounts).filter(
+                v => v.touched,
+              );
+
+              if (touched.length === 0) return;
+
+              const addresses = touched.map(v => v.address);
+              const amounts = touched.map(v => (v.amount as BigDecimal).exact);
+
+              return propose<Interfaces.CurvedMasset, 'redeemExactBassets'>(
+                new TransactionManifest(
+                  curvedMasset,
+                  'redeemExactBassets',
+                  [addresses, amounts, maxMassetAmount.exact, walletAddress],
+                  { past: 'Redeemed', present: 'Redeeming' },
+                  formId,
+                ),
+              );
+            }
+          }}
+        />
+      </OneToManyAssetExchange>
     </>
   );
 };

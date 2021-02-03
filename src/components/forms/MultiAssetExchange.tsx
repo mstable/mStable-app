@@ -14,9 +14,9 @@ import { useSimpleInput } from '../../hooks/useSimpleInput';
 import { ExchangeRate } from '../core/ExchangeRate';
 
 import { AssetInput } from './AssetInput';
-import { SlippageInput } from './SlippageInput';
-import { CollapseBox } from './CollapseBox';
 import { Arrow } from '../core/Arrow';
+import { TransactionInfo } from '../core/TransactionInfo';
+import { ErrorMessage } from '../core/ErrorMessage';
 
 type Dispatch = [
   BigDecimalInputCallbacks, // input callbacks
@@ -86,9 +86,13 @@ interface Props {
   spender?: string;
   setMaxCallbacks?: { [address: string]: () => void };
   exchangeRate?: { value?: BigDecimal; fetching?: boolean };
+  error?: string;
 }
 
-export const ManyToOneAssetExchange: FC<Props & { outputAddress: string }> = ({
+export const ManyToOneAssetExchange: FC<Props & {
+  outputAddress: string;
+  minOutputAmount?: BigDecimal;
+}> = ({
   children,
   exchangeRate,
   spender,
@@ -96,6 +100,8 @@ export const ManyToOneAssetExchange: FC<Props & { outputAddress: string }> = ({
   inputLabel = 'Input',
   outputLabel = 'Output',
   outputAddress,
+  error,
+  minOutputAmount,
 }) => {
   const [inputValues, outputAmount, slippage] = useContext(stateCtx);
   const [inputCallbacks, , setSlippage] = useContext(dispatchCtx);
@@ -129,18 +135,21 @@ export const ManyToOneAssetExchange: FC<Props & { outputAddress: string }> = ({
         addressDisabled
         formValue={outputAmount.value?.string}
       />
-      <CollapseBox title="Advanced">
-        <SlippageInput
-          handleSetSlippage={setSlippage}
-          slippageFormValue={slippage.formValue}
-        />
-      </CollapseBox>
+      {error && <ErrorMessage error={error} />}
       {children}
+      <TransactionInfo
+        onSetSlippage={setSlippage}
+        slippageFormValue={slippage.formValue}
+        minOutputAmount={minOutputAmount}
+      />
     </Container>
   );
 };
 
-export const OneToManyAssetExchange: FC<Props & { inputAddress: string }> = ({
+export const OneToManyAssetExchange: FC<Props & {
+  inputAddress: string;
+  maxOutputAmount?: BigDecimal;
+}> = ({
   children,
   exchangeRate,
   spender,
@@ -148,6 +157,8 @@ export const OneToManyAssetExchange: FC<Props & { inputAddress: string }> = ({
   inputAddress,
   inputLabel = 'Input',
   outputLabel = 'Output',
+  maxOutputAmount,
+  error,
 }) => {
   const [outputValues, inputAmount, slippage] = useContext(stateCtx);
   const [outputCallbacks, , setSlippage] = useContext(dispatchCtx);
@@ -160,12 +171,14 @@ export const OneToManyAssetExchange: FC<Props & { inputAddress: string }> = ({
         addressDisabled
         formValue={inputAmount.value?.string}
       />
-      <Arrow />
-      <ExchangeRate
-        inputLabel={inputLabel}
-        outputLabel={outputLabel}
-        exchangeRate={exchangeRate}
-      />
+      <div>
+        <Arrow />
+        <ExchangeRate
+          inputLabel={inputLabel}
+          outputLabel={outputLabel}
+          exchangeRate={exchangeRate}
+        />
+      </div>
       {Object.keys(outputValues).map(address => (
         <AssetInput
           key={address}
@@ -177,13 +190,19 @@ export const OneToManyAssetExchange: FC<Props & { inputAddress: string }> = ({
           spender={spender}
         />
       ))}
+      {error && <ErrorMessage error={error} />}
       {children}
-      <CollapseBox title="Advanced">
+      <TransactionInfo
+        onSetSlippage={setSlippage}
+        slippageFormValue={slippage.formValue}
+        maxOutputAmount={maxOutputAmount}
+      />
+      {/* <CollapseBox title="Advanced">
         <SlippageInput
           handleSetSlippage={setSlippage}
           slippageFormValue={slippage.formValue}
         />
-      </CollapseBox>
+      </CollapseBox> */}
     </Container>
   );
 };

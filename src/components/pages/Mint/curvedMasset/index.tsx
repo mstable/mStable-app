@@ -28,8 +28,6 @@ import {
 } from '../../../forms/MultiAssetExchange';
 import { SendButton } from '../../../forms/SendButton';
 import { MassetState } from '../../../../context/DataProvider/types';
-import { InfoBox } from '../../../forms/InfoBox';
-import { ErrorMessage } from '../../../core/ErrorMessage';
 import {
   BannerMessage,
   useSetBannerMessage,
@@ -168,55 +166,50 @@ const MintLogic: FC = () => {
         outputAddress={massetState.address}
         setMaxCallbacks={setMaxCallbacks}
         spender={massetState.address}
+        minOutputAmount={minOutputAmount}
+        error={error}
       >
-        {minOutputAmount && (
-          <InfoBox>
-            <p>Minimum amount received</p>
-            <span>{minOutputAmount.string}</span>
-          </InfoBox>
-        )}
-      </ManyToOneAssetExchange>
-      {error && <ErrorMessage error={error} />}
-      <SendButton
-        valid={!error}
-        title="Mint"
-        handleSend={() => {
-          if (curvedMasset && walletAddress && minOutputAmount) {
-            const touched = Object.values(inputValues).filter(v => v.touched);
+        <SendButton
+          valid={!error}
+          title="Mint"
+          handleSend={() => {
+            if (curvedMasset && walletAddress && minOutputAmount) {
+              const touched = Object.values(inputValues).filter(v => v.touched);
 
-            if (touched.length === 1) {
-              const [{ address, amount }] = touched;
-              return propose<Interfaces.CurvedMasset, 'mint'>(
+              if (touched.length === 1) {
+                const [{ address, amount }] = touched;
+                return propose<Interfaces.CurvedMasset, 'mint'>(
+                  new TransactionManifest(
+                    curvedMasset,
+                    'mint',
+                    [
+                      address,
+                      (amount as BigDecimal).exact,
+                      minOutputAmount.exact,
+                      walletAddress,
+                    ],
+                    { past: 'Minted', present: 'Minting' },
+                    formId,
+                  ),
+                );
+              }
+
+              const addresses = touched.map(v => v.address);
+              const amounts = touched.map(v => (v.amount as BigDecimal).exact);
+
+              return propose<Interfaces.CurvedMasset, 'mintMulti'>(
                 new TransactionManifest(
                   curvedMasset,
-                  'mint',
-                  [
-                    address,
-                    (amount as BigDecimal).exact,
-                    minOutputAmount.exact,
-                    walletAddress,
-                  ],
+                  'mintMulti',
+                  [addresses, amounts, minOutputAmount.exact, walletAddress],
                   { past: 'Minted', present: 'Minting' },
                   formId,
                 ),
               );
             }
-
-            const addresses = touched.map(v => v.address);
-            const amounts = touched.map(v => (v.amount as BigDecimal).exact);
-
-            return propose<Interfaces.CurvedMasset, 'mintMulti'>(
-              new TransactionManifest(
-                curvedMasset,
-                'mintMulti',
-                [addresses, amounts, minOutputAmount.exact, walletAddress],
-                { past: 'Minted', present: 'Minting' },
-                formId,
-              ),
-            );
-          }
-        }}
-      />
+          }}
+        />
+      </ManyToOneAssetExchange>
     </>
   );
 };

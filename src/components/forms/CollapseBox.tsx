@@ -15,10 +15,8 @@ const Content = styled.div<{ collapsed: boolean }>`
 `;
 
 const Container = styled.div`
-  min-height: 7rem;
-
   > div {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
     border-radius: 0.75rem;
     border: 1px ${({ theme }) => theme.color.accent} solid;
     > :first-child {
@@ -33,10 +31,14 @@ const Container = styled.div`
   }
 `;
 
-export const CollapseBox: FC<{ title: string }> = ({ children, title }) => {
+export const CollapseBox: FC<{ title: string; className?: string }> = ({
+  children,
+  title,
+  className,
+}) => {
   const [collapsed, toggleCollapsed] = useToggle(true);
   return (
-    <Container>
+    <Container className={className}>
       <div>
         <UnstyledButton onClick={toggleCollapsed}>
           <div>{title}</div>
