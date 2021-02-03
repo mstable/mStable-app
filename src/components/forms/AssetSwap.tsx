@@ -6,16 +6,11 @@ import { ViewportWidth } from '../../theme';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { AssetInput } from './AssetInput';
 import { ExchangeRate } from '../core/ExchangeRate';
-import { Tooltip } from '../core/ReactTooltip';
-import { SlippageInput } from './SlippageInput';
 import { Arrow } from '../core/Arrow';
+import { TransactionOption } from '../../types';
 
 interface Props {
-  addressOptions: {
-    address: string;
-    label?: string; // e.g. for vault label
-    balance?: BigDecimal; // e.g. for vault balance
-  }[];
+  addressOptions: TransactionOption[];
 
   inputAddress?: string;
   inputFormValue?: string;

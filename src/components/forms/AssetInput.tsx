@@ -10,13 +10,14 @@ import { ApproveContent } from './SendButton';
 import { ReactComponent as LockIcon } from '../icons/lock-open.svg';
 import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg';
 import { ApproveProvider, Mode, useApprove } from './ApproveProvider';
+import { TransactionOption } from '../../types';
 
 interface Props {
   disabled?: boolean;
   amountDisabled?: boolean;
   formValue?: string;
   address?: string;
-  addressOptions?: { address: string; balance?: BigDecimal; label?: string }[];
+  addressOptions?: TransactionOption[];
   addressDisabled?: boolean;
   error?: 'warning' | 'error';
   handleSetAmount?(formValue?: string): void;
@@ -47,15 +48,6 @@ const LockButton = styled(Button)`
   svg {
     width: 1rem;
     height: 1rem;
-  }
-`;
-
-const TokenInput = styled(SubscribedTokenInput)`
-  background: none;
-  border: none;
-
-  &:hover {
-    background: ${({ theme }) => theme.color.accent};
   }
 `;
 
@@ -171,7 +163,6 @@ const AssetInputContent: FC<Props> = ({
               <InputField
                 disabled={amountDisabled}
                 value={formValue}
-                // error={!!error} // remove for now
                 onChange={handleSetAmount}
               />
               {handleSetMax && (
@@ -187,7 +178,7 @@ const AssetInputContent: FC<Props> = ({
             </Input>
           </InputContainer>
           <TokenContainer>
-            <TokenInput
+            <SubscribedTokenInput
               disabled={addressDisabled}
               value={address}
               options={addressOptions}

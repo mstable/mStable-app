@@ -50,6 +50,7 @@ export const VaultWithdraw: FC = () => {
         label: 'imUSD Vault',
         balance: rawBalance,
         symbol: 'imUSD',
+        custom: true,
       },
     ],
     [rawBalance, vaultAddress],
