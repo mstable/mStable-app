@@ -39,6 +39,8 @@ export interface MassetState {
   failed: boolean;
   feeRate: BigNumber;
   forgeValidator: string;
+  invariantStartTime?: number;
+  invariantStartingCap?: BigNumber;
   overweightBassets: string[];
   redemptionFeeRate: BigNumber;
   token: SubscribedToken;
