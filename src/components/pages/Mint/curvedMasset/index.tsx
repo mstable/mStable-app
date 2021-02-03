@@ -1,7 +1,8 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import { useThrottleFn } from 'react-use';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber, bigNumberify } from 'ethers/utils';
 
+import { getUnixTime } from 'date-fns';
 import { useTokens } from '../../../../context/TokensProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import {
@@ -29,6 +30,10 @@ import { SendButton } from '../../../forms/SendButton';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { InfoBox } from '../../../forms/InfoBox';
 import { ErrorMessage } from '../../../core/ErrorMessage';
+import {
+  BannerMessage,
+  useSetBannerMessage,
+} from '../../../../context/AppProvider';
 
 const formId = 'mint';
 
@@ -36,8 +41,6 @@ const MintLogic: FC = () => {
   const propose = usePropose();
   const walletAddress = useWalletAddress();
   const signer = useSigner();
-   const setBannerMessage = useSetBannerMessage();
-  const { invariantStartingCap, invariantStartTime } = massetState ?? {};
 
   const massetState = useSelectedMassetState() as MassetState;
   const massetAddress = massetState.address;
@@ -217,7 +220,13 @@ const MintLogic: FC = () => {
   );
 };
 
-const tvlCap = useMemo(() => {
+export const Mint: FC = () => {
+  const massetState = useSelectedMassetState();
+  const setBannerMessage = useSetBannerMessage();
+
+  const { invariantStartingCap, invariantStartTime } = massetState ?? {};
+
+  const tvlCap = useMemo(() => {
     if (!invariantStartingCap || !invariantStartTime) return;
 
     const currentTime = getUnixTime(Date.now());
@@ -251,9 +260,6 @@ const tvlCap = useMemo(() => {
 
     setBannerMessage(message);
   }, [setBannerMessage, tvlCap]);
-
-export const Mint: FC = () => {
-  const massetState = useSelectedMassetState();
 
   const inputAssets = useMemo(
     () =>
