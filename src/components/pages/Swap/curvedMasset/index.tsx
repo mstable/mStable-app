@@ -35,15 +35,6 @@ const Info = styled(TransactionInfo)`
   margin-top: 0.5rem;
 `;
 
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  > div {
-    margin-bottom: 0.5rem;
-  }
-`;
-
 const formId = 'swap';
 
 const SwapLogic: FC = () => {
@@ -210,22 +201,21 @@ const SwapLogic: FC = () => {
   );
 
   return (
-    <Form>
-      <AssetSwap
-        addressOptions={addressOptions}
-        error={error}
-        exchangeRate={amounts.exchangeRate}
-        handleSetInputAddress={setInputAddress}
-        handleSetInputAmount={setInputAmount}
-        handleSetInputMax={(): void => {
-          setInputAmount(inputToken?.balance.string);
-        }}
-        handleSetOutputAddress={setOutputAddress}
-        inputAddress={inputAddress}
-        inputFormValue={inputFormValue}
-        outputAddress={outputAddress ?? addressOptions[0].address}
-        outputFormValue={swapOutput.value?.string}
-      />
+    <AssetSwap
+      addressOptions={addressOptions}
+      error={error}
+      exchangeRate={amounts.exchangeRate}
+      handleSetInputAddress={setInputAddress}
+      handleSetInputAmount={setInputAmount}
+      handleSetInputMax={(): void => {
+        setInputAmount(inputToken?.balance.string);
+      }}
+      handleSetOutputAddress={setOutputAddress}
+      inputAddress={inputAddress}
+      inputFormValue={inputFormValue}
+      outputAddress={outputAddress ?? addressOptions[0].address}
+      outputFormValue={swapOutput.value?.string}
+    >
       <SendButton
         valid={!error && !!swapOutput.value}
         title="Swap"
@@ -263,7 +253,7 @@ const SwapLogic: FC = () => {
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}
       />
-    </Form>
+    </AssetSwap>
   );
 };
 

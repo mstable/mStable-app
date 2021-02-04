@@ -197,12 +197,6 @@ export const OneToManyAssetExchange: FC<Props & {
         slippageFormValue={slippage.formValue}
         maxOutputAmount={maxOutputAmount}
       />
-      {/* <CollapseBox title="Advanced">
-        <SlippageInput
-          handleSetSlippage={setSlippage}
-          slippageFormValue={slippage.formValue}
-        />
-      </CollapseBox> */}
     </Container>
   );
 };

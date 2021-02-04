@@ -29,8 +29,6 @@ import {
   useMultiAssetExchangeDispatch,
   useMultiAssetExchangeState,
 } from '../../../forms/MultiAssetExchange';
-import { ErrorMessage } from '../../../core/ErrorMessage';
-import { InfoBox } from '../../../forms/InfoBox';
 
 const formId = 'redeem';
 
@@ -154,8 +152,8 @@ const RedeemExactBassetsLogic: FC = () => {
       inputLabel={massetState?.token.symbol}
       outputLabel={outputLabel}
       maxOutputAmount={maxMassetAmount}
+      error={error}
     >
-      {error && <ErrorMessage error={error} />}
       <SendButton
         valid={
           !error &&

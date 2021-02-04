@@ -31,8 +31,9 @@ import { TransactionInfo } from '../../../core/TransactionInfo';
 const formId = 'redeem';
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
+  > * {
+    margin: 0.5rem 0;
+  }
 `;
 
 export const RedeemMasset: FC = () => {
@@ -162,9 +163,9 @@ export const RedeemMasset: FC = () => {
       <div>
         <Arrow />
         <ExchangeRate
-          exchangeRate={exchangeRate}
           inputToken={massetToken}
           outputToken={outputToken}
+          exchangeRate={exchangeRate}
         />
       </div>
       <AssetInput

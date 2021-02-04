@@ -75,7 +75,7 @@ export const TransactionInfo: FC<Props> = ({
                   Minimum received
                 </Tooltip>
               </p>
-              <span>{minOutputAmount.string}</span>
+              <span>{minOutputAmount?.format(8, false)}</span>
             </Info>
           )}
           {maxOutputAmount && (
@@ -85,7 +85,7 @@ export const TransactionInfo: FC<Props> = ({
                   Maximum cost
                 </Tooltip>
               </p>
-              <span>{maxOutputAmount.string}</span>
+              <span>{maxOutputAmount?.format(8, false)}</span>
             </Info>
           )}
         </AdditionalInfo>
