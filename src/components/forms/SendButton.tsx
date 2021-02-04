@@ -158,7 +158,6 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
 
   useEffect(() => {
     if (needsApprove) return;
-
     setStep(Step.ACTION);
   }, [needsApprove]);
 

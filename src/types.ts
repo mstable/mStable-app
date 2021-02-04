@@ -119,3 +119,11 @@ export enum Fields {
   Input = 'input',
   Output = 'output',
 }
+
+export type TransactionOption = {
+  address?: string;
+  balance?: BigDecimal;
+  symbol?: string;
+  label?: string;
+  custom?: boolean;
+};

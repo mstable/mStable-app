@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { BigDecimal } from '../../web3/BigDecimal';
@@ -10,13 +10,14 @@ import { ApproveContent } from './SendButton';
 import { ReactComponent as LockIcon } from '../icons/lock-open.svg';
 import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg';
 import { ApproveProvider, Mode, useApprove } from './ApproveProvider';
+import { TransactionOption } from '../../types';
 
 interface Props {
   disabled?: boolean;
   amountDisabled?: boolean;
   formValue?: string;
   address?: string;
-  addressOptions?: { address: string; balance?: BigDecimal; label?: string }[];
+  addressOptions?: TransactionOption[];
   addressDisabled?: boolean;
   error?: 'warning' | 'error';
   handleSetAmount?(formValue?: string): void;
@@ -50,23 +51,14 @@ const LockButton = styled(Button)`
   }
 `;
 
-const TokenInput = styled(SubscribedTokenInput)`
-  background: none;
-  border: none;
-
-  &:hover {
-    background: ${({ theme }) => theme.color.accent};
-  }
-`;
-
 const InputField = styled(AmountInput)`
   border: none;
   background: none;
   font-size: 1.125rem;
   padding: 0 0.75rem;
 
-  & :active,
-  :focus {
+  &:active,
+  &:focus {
     background: none;
   }
 `;
@@ -124,6 +116,11 @@ const Container = styled.div<{
     disabled && theme.color.backgroundAccent};
   height: 4.25rem;
 
+  &:focus-within {
+    border-color: ${({ theme, disabled }) =>
+      disabled ? 'transparent' : theme.color.primary};
+  }
+
   ${InputContainer} {
     flex: 1;
   }
@@ -150,8 +147,10 @@ const AssetInputContent: FC<Props> = ({
     setUnlockState(true);
   };
 
-  // TODO: - Fix this
-  if (!address) return null;
+  useEffect(() => {
+    if (needsApprove) return;
+    setUnlockState(false);
+  }, [needsApprove]);
 
   return (
     <Container error={error} disabled={disabled ?? false}>
@@ -169,7 +168,6 @@ const AssetInputContent: FC<Props> = ({
               <InputField
                 disabled={amountDisabled}
                 value={formValue}
-                // error={!!error} // remove for now
                 onChange={handleSetAmount}
               />
               {handleSetMax && (
@@ -185,7 +183,7 @@ const AssetInputContent: FC<Props> = ({
             </Input>
           </InputContainer>
           <TokenContainer>
-            <TokenInput
+            <SubscribedTokenInput
               disabled={addressDisabled}
               value={address}
               options={addressOptions}

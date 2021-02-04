@@ -5,32 +5,8 @@ import { ViewportWidth } from '../../theme';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { AssetInput } from './AssetInput';
 import { AssetOutputWidget } from './AssetOutputWidget';
-
-interface Props {
-  inputAddress?: string;
-  inputAddressDisabled?: boolean;
-  inputAddressOptions: {
-    address: string;
-    label?: string; // e.g. for vault label
-    balance?: BigDecimal; // e.g. for vault balance
-  }[];
-
-  inputAmount?: BigDecimal;
-  inputAmountDisabled?: boolean;
-  inputLabel?: string;
-  inputFormValue?: string;
-
-  handleSetAddress?(address: string): void;
-  handleSetAmount?(formValue?: string): void;
-  handleSetMax?(): void;
-
-  outputAddress?: string;
-  outputLabel?: string;
-  outputBalance?: BigDecimal;
-  exchangeRate?: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
-  slippage?: BigDecimal;
-  error?: string;
-}
+import { ErrorMessage } from '../core/ErrorMessage';
+import { Arrow } from '../core/Arrow';
 
 const Container = styled.div`
   display: flex;
@@ -71,25 +47,6 @@ const Details = styled.div`
   }
 `;
 
-const Arrow = styled.div`
-  align-items: center;
-  display: flex;
-  font-size: 1.25rem;
-  justify-content: center;
-  padding: 1rem;
-  text-align: center;
-  user-select: none;
-`;
-
-const Info = styled.div`
-  display: flex;
-  justify-content: space-between;
-  height: fit-content;
-  padding: 0.75rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  border-radius: 0.75rem;
-`;
-
 const Column = styled.div`
   display: flex;
   flex-direction: column;
@@ -114,24 +71,30 @@ const Column = styled.div`
   }
 `;
 
-const Error = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem;
-  border-radius: 2rem;
-  margin-bottom: 0.75rem;
-  background: ${({ theme }) => theme.color.redTransparenter};
+export const AssetExchange: FC<{
+  inputAddress?: string;
+  inputAddressDisabled?: boolean;
+  inputAddressOptions: {
+    address: string;
+    label?: string; // e.g. for vault label
+    balance?: BigDecimal; // e.g. for vault balance
+  }[];
 
-  p {
-    text-align: center;
-    opacity: 0.75;
-    font-size: 0.875rem;
-    line-height: 1.75em;
-  }
-`;
+  inputAmount?: BigDecimal;
+  inputAmountDisabled?: boolean;
+  inputLabel?: string;
+  inputFormValue?: string;
 
-export const AssetExchange: FC<Props> = ({
+  handleSetAddress?(address: string): void;
+  handleSetAmount?(formValue?: string): void;
+  handleSetMax?(): void;
+
+  outputAddress?: string;
+  outputLabel?: string;
+  outputBalance?: BigDecimal;
+  exchangeRate?: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
+  error?: string;
+}> = ({
   children,
   error,
   exchangeRate,
@@ -148,7 +111,6 @@ export const AssetExchange: FC<Props> = ({
   outputAddress,
   outputBalance,
   outputLabel,
-  slippage,
 }) => {
   return (
     <Container>
@@ -163,7 +125,7 @@ export const AssetExchange: FC<Props> = ({
           handleSetAmount={handleSetAmount}
           handleSetMax={handleSetMax}
         />
-        <Arrow>↓</Arrow>
+        <Arrow />
         <AssetOutputWidget
           exchangeRate={exchangeRate}
           inputAmount={inputAmount}
@@ -176,19 +138,9 @@ export const AssetExchange: FC<Props> = ({
       </Exchange>
       <Details>
         <Column>
-          {error && (
-            <Error>
-              <p>{error}</p>
-            </Error>
-          )}
+          {error && <ErrorMessage error={error} />}
           <div>{children}</div>
         </Column>
-        {slippage && (
-          <Info>
-            <p>Slippage Tolerance</p>
-            <span>{slippage?.format(2)}%</span>
-          </Info>
-        )}
       </Details>
     </Container>
   );

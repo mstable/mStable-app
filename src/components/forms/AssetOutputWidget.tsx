@@ -57,7 +57,6 @@ export const AssetOutputWidget: FC<Props> = ({
       title={title}
       boldTitle
       headerContent={
-        exchangeRate &&
         (inputToken || inputLabel) &&
         (outputToken || outputLabel) && (
           <ExchangeRate

@@ -134,7 +134,13 @@ export const SaveDepositETH: FC<{
 
   const inputAddressOptions = useMemo(() => {
     return [
-      { address: AddressZero, balance: ethBalance, label: 'ETH', decimals: 18 },
+      {
+        address: AddressZero,
+        balance: ethBalance,
+        symbol: 'ETH',
+        decimals: 18,
+        custom: true,
+      },
     ];
   }, [ethBalance]);
 

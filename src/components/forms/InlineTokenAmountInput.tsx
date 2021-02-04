@@ -181,6 +181,9 @@ const ToggleWrapper: FC<{
     <>{children}</>
   );
 
+/**
+ * @deprecated
+ */
 export const InlineTokenAmountInput: FC<Props> = ({
   amount,
   approval,

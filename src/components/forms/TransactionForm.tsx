@@ -43,6 +43,9 @@ const useFormTransaction = (formId: string): Transaction | undefined => {
   );
 };
 
+/**
+ * @deprecated
+ */
 export const TransactionForm: FC<Props> = ({
   className,
   compact,

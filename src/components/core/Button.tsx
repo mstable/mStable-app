@@ -21,15 +21,16 @@ const ButtonCss = css<Props>`
       ? 'transparent'
       : theme.color.accent};
   color: ${({ theme, highlighted }) =>
-    highlighted ? theme.color.white : theme.color.grey};
+    highlighted ? theme.color.white : theme.color.body};
   z-index: ${({ highlighted }) => (highlighted ? 1 : 0)};
   font-weight: 600;
   position: relative;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   transition: 0.2s ease all;
-  border: ${({ transparent, theme }) =>
-    transparent && `1px solid ${theme.color.accentContrast}`};
+  border: 1px solid
+    ${({ transparent, theme }) =>
+      transparent ? theme.color.accentContrast : 'transparent'};
 
   svg {
     rect {
@@ -38,11 +39,12 @@ const ButtonCss = css<Props>`
     }
   }
 
-  :hover {
+  &:hover,
+  &:focus {
     ${({ disabled, theme, highlighted }) =>
       !disabled && {
         background: `${highlighted ? theme.color.gold : theme.color.accent}`,
-        color: `${highlighted ? theme.color.white : theme.color.black}`,
+        color: `${highlighted ? theme.color.white : theme.color.gold}`,
       }}
   }
 `;

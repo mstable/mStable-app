@@ -1,6 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useThrottleFn } from 'react-use';
 import styled from 'styled-components';
+import Skeleton from 'react-loading-skeleton';
 
 import {
   useSigner,
@@ -17,9 +18,12 @@ import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 
-import { BidirectionalAssetExchange } from '../../../forms/BidirectionalAssetExchange';
+import { AssetSwap } from '../../../forms/AssetSwap';
 import { SendButton } from '../../../forms/SendButton';
 import { PageAction, PageHeader } from '../../PageHeader';
+import { sanitizeCurvedMassetError } from '../../../../utils/strings';
+import { MassetState } from '../../../../context/DataProvider/types';
+import { TransactionInfo } from '../../../core/TransactionInfo';
 
 interface SwapOutput {
   value?: BigDecimal;
@@ -27,29 +31,15 @@ interface SwapOutput {
   error?: string;
 }
 
-const Form = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+const Info = styled(TransactionInfo)`
+  margin-top: 0.5rem;
 `;
 
 const formId = 'swap';
 
-const sanitizeError = (error: Error): string => {
-  const message = error.message.replace('execution reverted: ', '');
-
-  switch (message) {
-    case 'Out of bounds':
-      return 'This swap would exceed hard limits to maintain diversification. Try a different pair of assets or a smaller amount.';
-    default:
-      return message;
-  }
-};
-
-export const Swap: FC = () => {
-  const massetState = useSelectedMassetState();
-  const massetAddress = massetState?.address;
-  const feeRate = massetState?.feeRate;
+const SwapLogic: FC = () => {
+  const massetState = useSelectedMassetState() as MassetState;
+  const { address: massetAddress, feeRate, bAssets } = massetState;
 
   const signer = useSigner();
   const walletAddress = useWalletAddress();
@@ -63,29 +53,33 @@ export const Swap: FC = () => {
     max: 99.99,
   });
 
-  const [inputAddress, setInputAddress] = useState<string | undefined>(
-    // Select the token the user has the most of
-    (() =>
-      Object.values(massetState?.bAssets ?? {}).sort((a, b) =>
+  const assetsByBalance = useMemo(
+    () =>
+      Object.values(bAssets).sort((a, b) =>
         a.balanceInMasset.exact.lt(b.balanceInMasset.exact) ? 1 : -1,
-      )?.[0]?.address)(),
+      ),
+    [bAssets],
   );
-  const [outputAddress, setOutputAddress] = useState<string | undefined>();
+
+  const [inputAddress, setInputAddress] = useState<string | undefined>(
+    assetsByBalance?.[0]?.address,
+  );
+  const [outputAddress, setOutputAddress] = useState<string | undefined>(
+    assetsByBalance?.[1]?.address,
+  );
 
   const inputToken = useTokenSubscription(inputAddress);
   const outputToken = useTokenSubscription(outputAddress);
   const outputDecimals = outputToken?.decimals;
 
   const addressOptions = useMemo(
-    () => Object.keys(massetState?.bAssets ?? {}).map(address => ({ address })),
-    [massetState],
+    () => Object.keys(bAssets).map(address => ({ address })),
+    [bAssets],
   );
 
   const curvedMasset = useMemo(
     () =>
-      massetAddress && signer
-        ? CurvedMassetFactory.connect(massetAddress, signer)
-        : undefined,
+      signer ? CurvedMassetFactory.connect(massetAddress, signer) : undefined,
     [massetAddress, signer],
   );
 
@@ -116,7 +110,7 @@ export const Swap: FC = () => {
             })
             .catch(_error => {
               setSwapOutput({
-                error: sanitizeError(_error),
+                error: sanitizeCurvedMassetError(_error),
               });
             });
         } else {
@@ -196,7 +190,7 @@ export const Swap: FC = () => {
 
   const approve = useMemo(
     () =>
-      massetAddress && inputAddress
+      inputAddress
         ? {
             spender: massetAddress,
             address: inputAddress,
@@ -207,63 +201,71 @@ export const Swap: FC = () => {
   );
 
   return (
+    <AssetSwap
+      addressOptions={addressOptions}
+      error={error}
+      exchangeRate={amounts.exchangeRate}
+      handleSetInputAddress={setInputAddress}
+      handleSetInputAmount={setInputAmount}
+      handleSetInputMax={(): void => {
+        setInputAmount(inputToken?.balance.string);
+      }}
+      handleSetOutputAddress={setOutputAddress}
+      inputAddress={inputAddress}
+      inputFormValue={inputFormValue}
+      outputAddress={outputAddress ?? addressOptions[0].address}
+      outputFormValue={swapOutput.value?.string}
+    >
+      <SendButton
+        valid={!error && !!swapOutput.value}
+        title="Swap"
+        approve={approve}
+        handleSend={() => {
+          if (
+            curvedMasset &&
+            walletAddress &&
+            inputAmount &&
+            amounts.minOutputAmount &&
+            inputAddress &&
+            outputAddress
+          ) {
+            propose<Interfaces.CurvedMasset, 'swap'>(
+              new TransactionManifest(
+                curvedMasset,
+                'swap',
+                [
+                  inputAddress,
+                  outputAddress,
+                  inputAmount.exact,
+                  amounts.minOutputAmount.exact,
+                  walletAddress,
+                ],
+                { present: 'Swapping', past: 'Swapped' },
+                formId,
+              ),
+            );
+          }
+        }}
+      />
+      <Info
+        fee={amounts.swapFee}
+        minOutputAmount={amounts.minOutputAmount}
+        slippageFormValue={slippageFormValue}
+        onSetSlippage={setSlippage}
+      />
+    </AssetSwap>
+  );
+};
+
+export const Swap: FC = () => {
+  const massetState = useSelectedMassetState();
+  return (
     <div>
       <PageHeader
         action={PageAction.Swap}
         subtitle="Swap the underlying collateral of mBTC"
       />
-      <Form>
-        <BidirectionalAssetExchange
-          addressOptions={addressOptions}
-          error={error}
-          exchangeRate={amounts.exchangeRate}
-          fee={amounts.swapFee}
-          handleSetInputAddress={setInputAddress}
-          handleSetInputAmount={setInputAmount}
-          handleSetInputMax={(): void => {
-            setInputAmount(inputToken?.balance.string);
-          }}
-          handleSetOutputAddress={setOutputAddress}
-          handleSetSlippage={setSlippage}
-          inputAddress={inputAddress}
-          inputFormValue={inputFormValue}
-          outputAddress={outputAddress}
-          outputFormValue={swapOutput.value?.string}
-          slippage={slippageFormValue}
-          minOutputAmount={amounts.minOutputAmount}
-        />
-        <SendButton
-          valid={!error && !!swapOutput.value}
-          title="Swap"
-          approve={approve}
-          handleSend={() => {
-            if (
-              curvedMasset &&
-              walletAddress &&
-              inputAmount &&
-              amounts.minOutputAmount &&
-              inputAddress &&
-              outputAddress
-            ) {
-              propose<Interfaces.CurvedMasset, 'swap'>(
-                new TransactionManifest(
-                  curvedMasset,
-                  'swap',
-                  [
-                    inputAddress,
-                    outputAddress,
-                    inputAmount.exact,
-                    amounts.minOutputAmount.exact,
-                    walletAddress,
-                  ],
-                  { present: 'Swapping', past: 'Swapped' },
-                  formId,
-                ),
-              );
-            }
-          }}
-        />
-      </Form>
+      {massetState ? <SwapLogic /> : <Skeleton height={480} />}
     </div>
   );
 };

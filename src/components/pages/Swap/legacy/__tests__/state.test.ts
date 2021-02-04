@@ -75,6 +75,7 @@ const dataState: MassetState = {
   allBassetsNormal: true,
   blacklistedBassets: [],
   overweightBassets: [],
+  forgeValidator: '',
   failed: false,
   undergoingRecol: false,
   savingsContracts: {},
