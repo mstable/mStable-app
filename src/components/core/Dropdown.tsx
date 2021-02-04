@@ -4,8 +4,9 @@ import useOnClickOutside from 'use-onclickoutside';
 
 import { TokenIcon } from '../icons/TokenIcon';
 import { UnstyledButton } from './Button';
-import { ReactComponent as ChevronIcon } from '../icons/chevron-down.svg';
 import { TransactionOption } from '../../types';
+import { ThemedSkeleton } from './ThemedSkeleton';
+import { Chevron } from './Chevron';
 
 interface Props {
   defaultAddress?: string;
@@ -14,7 +15,7 @@ interface Props {
   disabled?: boolean;
 }
 
-const Arrow = styled.span<{ selected?: boolean; active?: boolean }>`
+const ChevronContainer = styled.span<{ selected?: boolean; active?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -126,7 +127,7 @@ const Option: FC<{
   if (!option)
     return (
       <OptionContainer active disabled>
-        Select
+        <ThemedSkeleton height={24} width={84} />
       </OptionContainer>
     );
 
@@ -147,9 +148,9 @@ const Option: FC<{
         )}
       </TokenDetails>
       {dropdownEnabled && (
-        <Arrow selected={selected} active={active}>
-          <ChevronIcon />
-        </Arrow>
+        <ChevronContainer selected={selected} active={active}>
+          <Chevron direction={active ? 'up' : 'down'} />
+        </ChevronContainer>
       )}
     </OptionContainer>
   );

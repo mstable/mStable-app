@@ -3,31 +3,35 @@ import styled from 'styled-components';
 import { useToggle } from 'react-use';
 
 import { UnstyledButton } from '../core/Button';
+import { Chevron } from '../core/Chevron';
 
 const Content = styled.div<{ collapsed: boolean }>`
   overflow: hidden;
   transition: all 0.25s ease;
   ${({ collapsed }) => `
+    padding:${collapsed ? `0 1.25rem` : `0 1.25rem 0.75rem`};
     max-height: ${collapsed ? 0 : 7}rem;
-    padding-top: ${collapsed ? 0 : 1}rem;
     opacity: ${collapsed ? 0 : 1};
   `};
 `;
 
+const Button = styled(UnstyledButton)`
+  padding: 0.75rem 1.25rem;
+`;
+
 const Container = styled.div`
-  > div {
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    border: 1px ${({ theme }) => theme.color.accent} solid;
-    > :first-child {
-      display: flex;
-      width: 100%;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0;
-      font-size: 1rem;
-      font-weight: 600;
-    }
+  display: flex;
+  flex-direction: column;
+  border-radius: 0.75rem;
+  border: 1px ${({ theme }) => theme.color.accent} solid;
+
+  > :first-child {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 600;
   }
 `;
 
@@ -39,13 +43,11 @@ export const CollapseBox: FC<{ title: string; className?: string }> = ({
   const [collapsed, toggleCollapsed] = useToggle(true);
   return (
     <Container className={className}>
-      <div>
-        <UnstyledButton onClick={toggleCollapsed}>
-          <div>{title}</div>
-          <div>{collapsed ? '▼' : '▲'}</div>
-        </UnstyledButton>
-        <Content collapsed={collapsed}>{children}</Content>
-      </div>
+      <Button onClick={toggleCollapsed}>
+        <div>{title}</div>
+        <Chevron direction={collapsed ? 'down' : 'up'} />
+      </Button>
+      <Content collapsed={collapsed}>{children}</Content>
     </Container>
   );
 };
