@@ -77,6 +77,7 @@ export const AssetSwap: FC<Props> = ({
         />
       </div>
       <AssetInput
+        disabled
         address={outputAddress}
         addressOptions={addressOptions}
         formValue={outputFormValue}
