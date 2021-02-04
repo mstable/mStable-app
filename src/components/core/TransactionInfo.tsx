@@ -71,7 +71,7 @@ export const TransactionInfo: FC<Props> = ({
           {minOutputAmount && (
             <Info>
               <p>
-                <Tooltip tip="The minimum amount received (based on the estimated swap output and the selected slippage).">
+                <Tooltip tip="The minimum amount received (based on the estimated output and the selected slippage).">
                   Minimum received
                 </Tooltip>
               </p>
@@ -81,7 +81,7 @@ export const TransactionInfo: FC<Props> = ({
           {maxOutputAmount && (
             <Info>
               <p>
-                <Tooltip tip="The maximum amount that will be sent (based on the estimated swap output and the selected slippage).">
+                <Tooltip tip="The maximum amount that will be sent (based on the estimated output and the selected slippage).">
                   Maximum cost
                 </Tooltip>
               </p>
