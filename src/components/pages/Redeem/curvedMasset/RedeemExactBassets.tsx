@@ -140,8 +140,6 @@ const RedeemExactBassetsLogic: FC = () => {
       return 'Insufficient balance';
     }
 
-    // TODO check approval
-
     return massetAmount.error;
   }, [bassetAmounts, massetAmount.error, massetBalance, maxMassetAmount]);
 

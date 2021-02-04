@@ -3,7 +3,7 @@ import { useThrottleFn } from 'react-use';
 import { BigNumber, bigNumberify } from 'ethers/utils';
 
 import { getUnixTime } from 'date-fns';
-import { useTokens } from '../../../../context/TokensProvider';
+import { useTokens, useTokensState } from '../../../../context/TokensProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import {
   useSigner,
@@ -40,6 +40,7 @@ const MintLogic: FC = () => {
   const propose = usePropose();
   const walletAddress = useWalletAddress();
   const signer = useSigner();
+  const tokenState = useTokensState();
 
   const massetState = useSelectedMassetState() as MassetState;
   const massetAddress = massetState.address;
@@ -153,64 +154,87 @@ const MintLogic: FC = () => {
   );
 
   const error = useMemo(() => {
-    // TODO validation
+    const touched = Object.keys(inputValues).find(t => inputValues[t].touched);
+
+    if (!touched) return;
+
+    const addressesBalanceTooLow = Object.keys(inputValues).filter(t =>
+      inputValues[t].amount?.exact.gt(
+        tokenState.tokens[t]?.balance?.exact ?? 0e18,
+      ),
+    );
+
+    if (addressesBalanceTooLow.length)
+      return `Insufficient ${addressesBalanceTooLow
+        .map(t => tokenState.tokens[t]?.symbol)
+        .join(', ')} balance`;
+
+    const addressesApprovalNeeded = Object.keys(inputValues).filter(t =>
+      inputValues[t].amount?.exact.gt(
+        tokenState.tokens[t]?.allowances[massetState.address]?.exact ?? 0e18,
+      ),
+    );
+
+    if (addressesApprovalNeeded.length)
+      return `Approval for ${addressesApprovalNeeded
+        .map(t => tokenState.tokens[t]?.symbol)
+        .join(', ')} needed`;
+
     return outputAmount.error;
-  }, [outputAmount.error]);
+  }, [inputValues, massetState.address, outputAmount.error, tokenState.tokens]);
 
   return (
-    <>
-      <ManyToOneAssetExchange
-        exchangeRate={exchangeRate}
-        inputLabel={inputLabel}
-        outputLabel={massetState.token.symbol}
-        outputAddress={massetState.address}
-        setMaxCallbacks={setMaxCallbacks}
-        spender={massetState.address}
-        minOutputAmount={minOutputAmount}
-        error={error}
-      >
-        <SendButton
-          valid={!error}
-          title="Mint"
-          handleSend={() => {
-            if (curvedMasset && walletAddress && minOutputAmount) {
-              const touched = Object.values(inputValues).filter(v => v.touched);
+    <ManyToOneAssetExchange
+      exchangeRate={exchangeRate}
+      inputLabel={inputLabel}
+      outputLabel={massetState.token.symbol}
+      outputAddress={massetState.address}
+      setMaxCallbacks={setMaxCallbacks}
+      spender={massetState.address}
+      minOutputAmount={minOutputAmount}
+      error={error}
+    >
+      <SendButton
+        valid={!error}
+        title="Mint"
+        handleSend={() => {
+          if (curvedMasset && walletAddress && minOutputAmount) {
+            const touched = Object.values(inputValues).filter(v => v.touched);
 
-              if (touched.length === 1) {
-                const [{ address, amount }] = touched;
-                return propose<Interfaces.CurvedMasset, 'mint'>(
-                  new TransactionManifest(
-                    curvedMasset,
-                    'mint',
-                    [
-                      address,
-                      (amount as BigDecimal).exact,
-                      minOutputAmount.exact,
-                      walletAddress,
-                    ],
-                    { past: 'Minted', present: 'Minting' },
-                    formId,
-                  ),
-                );
-              }
-
-              const addresses = touched.map(v => v.address);
-              const amounts = touched.map(v => (v.amount as BigDecimal).exact);
-
-              return propose<Interfaces.CurvedMasset, 'mintMulti'>(
+            if (touched.length === 1) {
+              const [{ address, amount }] = touched;
+              return propose<Interfaces.CurvedMasset, 'mint'>(
                 new TransactionManifest(
                   curvedMasset,
-                  'mintMulti',
-                  [addresses, amounts, minOutputAmount.exact, walletAddress],
+                  'mint',
+                  [
+                    address,
+                    (amount as BigDecimal).exact,
+                    minOutputAmount.exact,
+                    walletAddress,
+                  ],
                   { past: 'Minted', present: 'Minting' },
                   formId,
                 ),
               );
             }
-          }}
-        />
-      </ManyToOneAssetExchange>
-    </>
+
+            const addresses = touched.map(v => v.address);
+            const amounts = touched.map(v => (v.amount as BigDecimal).exact);
+
+            return propose<Interfaces.CurvedMasset, 'mintMulti'>(
+              new TransactionManifest(
+                curvedMasset,
+                'mintMulti',
+                [addresses, amounts, minOutputAmount.exact, walletAddress],
+                { past: 'Minted', present: 'Minting' },
+                formId,
+              ),
+            );
+          }
+        }}
+      />
+    </ManyToOneAssetExchange>
   );
 };
 

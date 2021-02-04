@@ -174,6 +174,7 @@ export const RedeemMasset: FC = () => {
         amountDisabled
         formValue={bassetAmount.value?.string}
         handleSetAddress={handleSetAddress}
+        disabled
       />
       {error && <ErrorMessage error={error} />}
       <SendButton

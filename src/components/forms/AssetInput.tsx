@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { BigDecimal } from '../../web3/BigDecimal';
@@ -146,6 +146,11 @@ const AssetInputContent: FC<Props> = ({
   const handleUnlockClick = (): void => {
     setUnlockState(true);
   };
+
+  useEffect(() => {
+    if (needsApprove) return;
+    setUnlockState(false);
+  }, [needsApprove]);
 
   return (
     <Container error={error} disabled={disabled ?? false}>

@@ -170,6 +170,7 @@ export const OneToManyAssetExchange: FC<Props & {
         address={inputAddress}
         addressDisabled
         formValue={inputAmount.value?.string}
+        amountDisabled
       />
       <div>
         <Arrow />
