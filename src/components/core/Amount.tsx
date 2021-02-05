@@ -23,7 +23,7 @@ export interface Props {
   commas?: boolean;
   countup?: Omit<CountUpProps, 'end' | 'suffix'>;
   decimalPlaces?: number;
-  format: NumberFormat;
+  format?: NumberFormat;
   price?: BigDecimal;
   suffix?: string;
 }
@@ -38,7 +38,7 @@ export const Amount: FC<Props> = ({
   commas,
   countup,
   decimalPlaces,
-  format,
+  format = NumberFormat.Countup,
   price,
   suffix,
 }) => {
