@@ -12,7 +12,20 @@ import {
 
 declare module 'styled-components' {
   export interface DefaultTheme {
-    color: typeof Color | ColorTheme;
+    color: ColorTheme &
+      typeof Color & {
+        // XXX issue combining these types...
+        primary: string;
+        primaryTransparent: string;
+        body: string;
+        bodyAccent: string;
+        accent: string;
+        accentContrast: string;
+        bodyTransparent: string;
+        bodyTransparenter: string;
+        background: string;
+        backgroundAccent: string;
+      };
     spacing: typeof Spacing;
     size: typeof Size;
     fontSize: typeof FontSize;
