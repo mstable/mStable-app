@@ -43,7 +43,7 @@ export const Save: FC = () => {
       <BalanceHeader />
       <BalanceRow
         apy={apy?.value}
-        token={BalanceType.SavingsContractV1}
+        token={BalanceType.SavingsDeprecated}
         balance={saveV1Balance}
         warning
       />
