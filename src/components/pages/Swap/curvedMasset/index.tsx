@@ -24,6 +24,7 @@ import { PageAction, PageHeader } from '../../PageHeader';
 import { sanitizeCurvedMassetError } from '../../../../utils/strings';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { TransactionInfo } from '../../../core/TransactionInfo';
+import { MassetPage } from '../../MassetPage';
 
 interface SwapOutput {
   value?: BigDecimal;
@@ -265,7 +266,13 @@ export const Swap: FC = () => {
         action={PageAction.Swap}
         subtitle="Swap the underlying collateral of mBTC"
       />
-      {massetState ? <SwapLogic /> : <Skeleton height={480} />}
+      {massetState ? (
+        <MassetPage>
+          <SwapLogic />
+        </MassetPage>
+      ) : (
+        <Skeleton height={480} />
+      )}
     </div>
   );
 };

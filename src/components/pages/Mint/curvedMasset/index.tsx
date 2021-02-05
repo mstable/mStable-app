@@ -33,6 +33,7 @@ import {
   useSetBannerMessage,
 } from '../../../../context/AppProvider';
 import { PageHeader, PageAction } from '../../PageHeader';
+import { MassetPage } from '../../MassetPage';
 
 const formId = 'mint';
 
@@ -160,7 +161,7 @@ const MintLogic: FC = () => {
 
     const addressesBalanceTooLow = Object.keys(inputValues).filter(t =>
       inputValues[t].amount?.exact.gt(
-        tokenState.tokens[t]?.balance?.exact ?? 0e18,
+        tokenState.tokens[t]?.balance?.exact ?? 0,
       ),
     );
 
@@ -171,7 +172,7 @@ const MintLogic: FC = () => {
 
     const addressesApprovalNeeded = Object.keys(inputValues).filter(t =>
       inputValues[t].amount?.exact.gt(
-        tokenState.tokens[t]?.allowances[massetState.address]?.exact ?? 0e18,
+        tokenState.tokens[t]?.allowances[massetState.address]?.exact ?? 0,
       ),
     );
 
@@ -298,9 +299,11 @@ export const Mint: FC = () => {
     <MultiAssetExchangeProvider assets={inputAssets}>
       <PageHeader
         action={PageAction.Mint}
-        subtitle={`Convert stablecoins into ${massetState.token.symbol}`}
+        subtitle={`Convert stable assets into ${massetState.token.symbol}`}
       />
-      <MintLogic />
+      <MassetPage>
+        <MintLogic />
+      </MassetPage>
     </MultiAssetExchangeProvider>
   ) : null;
 };
