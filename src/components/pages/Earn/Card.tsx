@@ -117,7 +117,7 @@ const Container = styled.div<{
   background-position: center center;
   background-blend-mode: soft-light;
   background-repeat: no-repeat;
-  border-radius: 4px;
+  border-radius: 1rem;
   box-shadow: ${Color.blackTransparent} 0 4px 16px;
   text-shadow: ${({ colors: { base } }) => base} 0 1px 2px;
   color: ${({ colors: { text } }) => text};

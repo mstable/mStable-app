@@ -101,6 +101,9 @@ export enum Platforms {
   Balancer = 'Balancer',
   Uniswap = 'Uniswap',
   Curve = 'Curve',
+  Cream = 'Cream',
+  Sushi = 'Sushi',
+  Badger = 'Badger',
 }
 
 export interface BlockTimestamp {

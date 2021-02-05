@@ -68,7 +68,6 @@ const Container = styled.div`
 enum Columns {
   Platform,
   Collateral,
-  // StakingApy,
   RewardsApy,
   WeeklyRewards,
 }
@@ -85,12 +84,6 @@ const COLUMNS = [
     tip:
       'The collateral contributed to the pool in order to get the staking token',
   },
-  // {
-  //   key: Columns.StakingApy,
-  //   title: 'Staking APY',
-  //   tip:
-  //     'The Annual Percentage Yield the pool is currently generating from the staking token itself',
-  // },
   {
     key: Columns.RewardsApy,
     title: 'Rewards APY',
@@ -104,20 +97,27 @@ const COLUMNS = [
   },
 ];
 
+const platformOrder: { [key in Platforms]: number } = {
+  [Platforms.Curve]: 0,
+  [Platforms.Balancer]: 1,
+  [Platforms.Uniswap]: 2,
+  [Platforms.Sushi]: 3,
+  [Platforms.Badger]: 4,
+  [Platforms.Cream]: 5,
+};
+
 export const PoolsOverview: FC<{}> = () => {
   const stakingRewardsContracts = useStakingRewardsContracts();
 
   const [activePools, otherPools, expiredPools] = useMemo(() => {
     const items = Object.values(stakingRewardsContracts)
-      .sort(a => {
-        // *teleports behind you*
-        return a.pool.platform === Platforms.Curve
-          ? -1
-          : // nothing personnel, kid
-          a.pool.platform === Platforms.Balancer
-          ? 0
-          : 1;
-      })
+      .sort((a, b) =>
+        platformOrder[a.pool.platform] < platformOrder[b.pool.platform]
+          ? -1 // *teleports behind you*
+          : platformOrder[a.pool.platform] > platformOrder[b.pool.platform]
+          ? 1 // nothing personnel, kid
+          : 0,
+      )
       .map(item => {
         const {
           address: id,
@@ -128,6 +128,7 @@ export const PoolsOverview: FC<{}> = () => {
           pool,
           earnUrl,
         } = item;
+
         const { colors, getPlatformLink, name } = PLATFORM_METADATA[
           pool.platform
         ];
@@ -179,7 +180,7 @@ export const PoolsOverview: FC<{}> = () => {
                   );
                 case Columns.RewardsApy: {
                   if (expired) {
-                    return <>N/A</>;
+                    return `N/A`;
                   }
                   return item.apy.value?.exact ? (
                     <div>
@@ -212,7 +213,7 @@ export const PoolsOverview: FC<{}> = () => {
                 }
                 case Columns.WeeklyRewards:
                   if (expired) {
-                    return <>N/A</>;
+                    return `N/A`;
                   }
                   return (
                     <>

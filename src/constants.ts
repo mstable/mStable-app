@@ -44,6 +44,15 @@ interface Addresses {
     MUSD_SWAP: string;
     '3POOL_SWAP': string;
   };
+  SUSHI: {
+    SUSHI_TOKEN: string;
+  };
+  BADGER: {
+    BADGER_TOKEN: string;
+  };
+  CREAM: {
+    CREAM_TOKEN: string;
+  };
 }
 
 type AddressesByNetwork = Record<typeof CHAIN_ID, Addresses>;
@@ -80,6 +89,16 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
       MUSD_SWAP: '0x8474ddbe98f5aa3179b3b3f5942d724afcdec9f6',
       '3POOL_SWAP': '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7',
     },
+    SUSHI: {
+      SUSHI_TOKEN: '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
+      // LP_TOKEN
+    },
+    BADGER: {
+      BADGER_TOKEN: '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
+    },
+    CREAM: {
+      CREAM_TOKEN: '0x2ba592F78dB6436527729929AAf6c908497cB200',
+    },
   },
   3: {
     UNISWAP_ROUTER02: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
@@ -97,6 +116,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
         '0xb5e5d0f8c0cba267cd3d7035d6adc8eba7df7cdd', // DAI
       ],
     } as never,
+    SUSHI: {} as never,
+    BADGER: {} as never,
+    CREAM: {} as never,
   },
   42: {
     UNISWAP_ROUTER02: 'TODO',
