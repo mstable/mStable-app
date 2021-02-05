@@ -40,4 +40,37 @@ export const PLATFORM_METADATA: Record<Platforms, PlatformMetadata> = {
     getPlatformLink: () => 'https://www.curve.fi/musd',
     slug: 'curve',
   },
+  [Platforms.Sushi]: {
+    colors: {
+      light: '#69ACE1',
+      accent: '#fa52a0',
+      base: '#69ACE1',
+      text: '#ffffff',
+    },
+    name: 'Sushi',
+    getPlatformLink: () => 'https://sushiswap.fi/',
+    slug: 'sushi',
+  },
+  [Platforms.Badger]: {
+    colors: {
+      light: '#DFA33A',
+      accent: '#ffe4b5',
+      base: '#DFA33A',
+      text: '#ffffff',
+    },
+    name: 'Badger',
+    getPlatformLink: () => 'https://app.badger.finance/',
+    slug: 'badger',
+  },
+  [Platforms.Cream]: {
+    colors: {
+      light: '#cdc5ff',
+      accent: '#8FF6F0',
+      base: '#a89fe3',
+      text: '#ffffff',
+    },
+    name: 'Cream',
+    getPlatformLink: () => 'https://app.cream.finance/',
+    slug: 'cream',
+  },
 };

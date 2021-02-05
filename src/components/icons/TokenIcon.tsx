@@ -26,6 +26,9 @@ import SBTC, { ReactComponent as SbtcSvg } from './tokens/sBTC.svg';
 import IMUSDMTA, {
   ReactComponent as ImusdmtaSvg,
 } from './tokens/imusd-mta.svg';
+import Sushi, { ReactComponent as SushiSvg } from './tokens/Sushi.svg';
+import BADGER, { ReactComponent as BadgerSvg } from './tokens/Badger.svg';
+import CREAM, { ReactComponent as CreamSvg } from './tokens/Cream.svg';
 
 interface Props {
   className?: string;
@@ -62,6 +65,10 @@ export const TOKEN_ICONS: Record<string, string> = {
   WBTC,
   SBTC,
   IMUSDMTA,
+  SUSHI: Sushi,
+  SLP: Sushi,
+  BADGER,
+  CREAM,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -90,6 +97,10 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   WBTC: WbtcSvg as SvgComponent,
   SBTC: SbtcSvg as SvgComponent,
   IMUSDMTA: ImusdmtaSvg as SvgComponent,
+  SUSHI: SushiSvg as SvgComponent,
+  SLP: SushiSvg as SvgComponent,
+  BADGER: BadgerSvg as SvgComponent,
+  CREAM: CreamSvg as SvgComponent,
 };
 
 const Image = styled.img`
