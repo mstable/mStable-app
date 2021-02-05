@@ -6,6 +6,7 @@ import { PageAction, PageHeader } from '../../PageHeader';
 import { RedeemExactBassets } from './RedeemExactBassets';
 import { RedeemMasset } from './RedeemMasset';
 import { Toggle } from '../../../core/Toggle';
+import { MassetPage } from '../../MassetPage';
 
 enum ToggleOption {
   Single = 'Single',
@@ -41,7 +42,9 @@ export const Redeem: FC = () => {
       <PageHeader action={PageAction.Redeem} subtitle={info[currentTab]}>
         <Toggle options={toggleOptions} />
       </PageHeader>
-      {isExactBassets ? <RedeemExactBassets /> : <RedeemMasset />}
+      <MassetPage>
+        {isExactBassets ? <RedeemExactBassets /> : <RedeemMasset />}
+      </MassetPage>
     </div>
   ) : (
     <Skeleton height={600} />
