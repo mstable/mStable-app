@@ -41,7 +41,9 @@ interface ColorTheme {
   backgroundAccent: string;
 }
 
-export const colorTheme = (theme: 'light' | 'dark'): ColorTheme => {
+export const colorTheme = (
+  theme: 'light' | 'dark',
+): ColorTheme & typeof Color => {
   const isLight = theme === 'light';
   return {
     ...Color,
