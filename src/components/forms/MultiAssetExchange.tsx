@@ -77,6 +77,9 @@ export const MultiAssetExchangeProvider: FC<{
 const Container = styled.div`
   > * {
     margin: 0.5rem 0;
+    &:first-child {
+      margin-top: 0;
+    }
   }
 `;
 
