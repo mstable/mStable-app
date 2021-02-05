@@ -16,6 +16,7 @@ import { Color } from '../../theme';
 import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
 import { periodFormatMapping, toK } from './utils';
 import { RechartsContainer } from './RechartsContainer';
+import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
 import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider';
 import { ThemedSkeleton } from '../core/ThemedSkeleton';
 
@@ -40,27 +41,6 @@ const colors = {
   totalSavingsV1: Color.grey,
   totalSavingsV2: Color.blue,
 };
-
-const aggregateMetrics = [
-  {
-    type: 'totalSupply',
-    enabled: true,
-    label: 'Total supply',
-    color: colors.totalSupply,
-  },
-  {
-    type: 'totalSavingsV1',
-    enabled: true,
-    label: 'Total savings (V1)',
-    color: colors.totalSavingsV1,
-  },
-  {
-    type: 'totalSavingsV2',
-    enabled: true,
-    label: 'Total savings (V2)',
-    color: colors.totalSavingsV2,
-  },
-];
 
 const nowUnix = getUnixTime(new Date());
 
@@ -137,7 +117,14 @@ const useAggregateMetrics = (): {
   }, [query.data]);
 };
 
-const Chart: FC = () => {
+const Chart: FC<{
+  aggregateMetrics: {
+    type: string;
+    enabled: boolean;
+    label: string;
+    color: string;
+  }[];
+}> = ({ aggregateMetrics }) => {
   const data = useAggregateMetrics();
   const dateFilter = useDateFilter();
   const { metrics } = useMetricsState();
@@ -240,8 +227,46 @@ const Chart: FC = () => {
   );
 };
 
-export const AggregateChart: FC = () => (
-  <Metrics metrics={aggregateMetrics} defaultDateRange={DateRange.Month}>
-    <Chart />
-  </Metrics>
-);
+export const AggregateChart: FC = () => {
+  const massetName = useSelectedMassetName();
+  const aggregateMetrics = useMemo(
+    () => [
+      {
+        type: 'totalSupply',
+        enabled: true,
+        label: 'Total supply',
+        color: colors.totalSupply,
+      },
+      ...(massetName === 'musd'
+        ? [
+            {
+              type: 'totalSavingsV1',
+              enabled: true,
+              label: 'Total savings (V1)',
+              color: colors.totalSavingsV1,
+            },
+            {
+              type: 'totalSavingsV2',
+              enabled: true,
+              label: 'Total savings (V2)',
+              color: colors.totalSavingsV2,
+            },
+          ]
+        : [
+            {
+              type: 'totalSavingsV2',
+              enabled: true,
+              label: 'Total savings',
+              color: colors.totalSavingsV2,
+            },
+          ]),
+    ],
+    [massetName],
+  );
+
+  return (
+    <Metrics metrics={aggregateMetrics} defaultDateRange={DateRange.Month}>
+      <Chart aggregateMetrics={aggregateMetrics} />
+    </Metrics>
+  );
+};
