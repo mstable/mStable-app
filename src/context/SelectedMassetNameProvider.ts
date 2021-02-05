@@ -4,6 +4,12 @@ import { createStateContext } from 'react-use';
 import { MassetName } from '../types';
 import { MASSETS } from '../constants';
 
+export const formatMassetName = (masset: MassetName): string =>
+  (({
+    musd: 'mUSD',
+    mbtc: 'mBTC',
+  } as Record<MassetName, string>)[masset]);
+
 const defaultValue: MassetName = (() => {
   const slugs = Object.keys(MASSETS);
   const slug = window.location.hash.split('/')[1];

@@ -8,6 +8,10 @@ import { VaultWithdraw } from './VaultWithdraw';
 import { VaultExit } from './VaultExit';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { ADDRESSES } from '../../../../constants';
+import {
+  formatMassetName,
+  useSelectedMassetName,
+} from '../../../../context/SelectedMassetNameProvider';
 
 enum Tabs {
   Deposit = 'Deposit',
@@ -31,19 +35,18 @@ const tabTitles: { [key in Tabs]: string } = {
   [Exit]: 'Exit',
 };
 
-const tabInfo: { [key in Tabs]: string } = {
-  [Deposit]:
-    'imUSD will be minted from your selected stablecoin & deposited into the Vault. Your imUSD can be withdrawn at any time.',
-  [DepositETH]:
-    'ETH will be traded via Uniswap V2 & Curve for mUSD. Your mUSD will then mint imUSD & be deposited into the Vault. Your imUSD can be withdrawn at any time.',
-  [Withdraw]:
-    'Withdraw an amount of imUSD from the Vault, returning imUSD to your wallet.',
-  [Exit]:
-    'Exiting the Vault will return your imUSD. You will no longer receive new MTA rewards but you will continue earning interest by holding imUSD.',
-};
+const tabInfo = (
+  formattedMasset: string,
+): { [key in Tabs]: string | undefined } => ({
+  [Deposit]: `${`i${formattedMasset}`} will be minted from your selected stablecoin & deposited into the Vault. Your ${`i${formattedMasset}`} can be withdrawn at any time.`,
+  [DepositETH]: `ETH will be traded via Uniswap V2 & Curve for ${formattedMasset}. Your ${formattedMasset} will then mint ${`i${formattedMasset}`} & be deposited into the Vault. Your ${`i${formattedMasset}`} can be withdrawn at any time.`,
+  [Withdraw]: `Withdraw an amount of ${`i${formattedMasset}`} from the Vault, returning ${`i${formattedMasset}`} to your wallet.`,
+  [Exit]: `Exiting the Vault will return your ${`i${formattedMasset}`}. You will no longer receive new MTA rewards but you will continue earning interest by holding ${`i${formattedMasset}`}.`,
+});
 
 export const VaultModal: FC = () => {
   const massetState = useSelectedMassetState();
+  const massetName = useSelectedMassetName();
   const [tab, setTab] = useState<Tabs>(Tabs.Deposit);
 
   const canDepositWithWrapper =
@@ -56,7 +59,8 @@ export const VaultModal: FC = () => {
     Exit,
   ];
 
-  const tabInfoMessage = tabInfo[tab];
+  const formattedMassetName = formatMassetName(massetName);
+  const tabInfoMessage = tabInfo(formattedMassetName)[tab];
 
   return (
     <Container>

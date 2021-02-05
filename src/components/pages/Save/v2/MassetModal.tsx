@@ -17,6 +17,10 @@ import { TabBtn, TabsContainer, Message } from '../../../core/Tabs';
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
 import { BigDecimal } from '../../../../web3/BigDecimal';
+import {
+  formatMassetName,
+  useSelectedMassetName,
+} from '../../../../context/SelectedMassetNameProvider';
 
 const formId = 'MassetModal';
 
@@ -31,6 +35,7 @@ export const MassetModal: FC = () => {
   const propose = usePropose();
 
   const massetState = useSelectedMassetState();
+  const massetName = useSelectedMassetName();
   const massetAddress = massetState?.address;
   const massetSymbol = massetState?.token.symbol;
   const savingsContract = massetState?.savingsContracts.v2;
@@ -42,6 +47,8 @@ export const MassetModal: FC = () => {
   );
 
   const inputToken = useTokenSubscription(inputAddress);
+
+  const formattedMassetName = formatMassetName(massetName);
 
   const error = useMemo<string | undefined>(() => {
     if (
@@ -97,16 +104,18 @@ export const MassetModal: FC = () => {
   return (
     <Container>
       <TabsContainer>
-        <TabBtn active>Deposit mUSD</TabBtn>
+        <TabBtn active>Deposit {formattedMassetName}</TabBtn>
       </TabsContainer>
       <Message>
         <span>
-          mUSD will be deposited and you will receive imUSD (interest-bearing
-          mUSD).
+          {formattedMassetName} will be deposited and you will receive{' '}
+          {`i${formattedMassetName}`} (interest-bearing
+          {` ${formattedMassetName}`}).
           <br />
           Deposit to the Vault to earn bonus MTA rewards.
           <br />
-          Your imUSD can be redeemed for mUSD at any time.
+          Your {`i${formattedMassetName}`} can be redeemed for{' '}
+          {formattedMassetName} at any time.
         </span>
       </Message>
       <AssetExchange
@@ -128,7 +137,7 @@ export const MassetModal: FC = () => {
       >
         <SendButton
           valid={valid}
-          title="Mint imUSD"
+          title={`Mint i${formattedMassetName}`}
           handleSend={() => {
             if (saveAddress && signer && inputAmount && massetSymbol) {
               const body = `${inputAmount.format()} ${massetSymbol}`;

@@ -19,6 +19,7 @@ import Uniswap, { ReactComponent as UniswapSvg } from './tokens/Uniswap.svg';
 import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
 import ETH, { ReactComponent as EtherSvg } from './tokens/Ether.svg';
 import IMUSD, { ReactComponent as ImusdSvg } from './tokens/imUSD.svg';
+import IMBTC, { ReactComponent as ImbtcSvg } from './tokens/imBTC.svg';
 import VMTA, { ReactComponent as VmtaSvg } from './tokens/vMTA.svg';
 import RENBTC, { ReactComponent as RenbtcSvg } from './tokens/renBTC.svg';
 import WBTC, { ReactComponent as WbtcSvg } from './tokens/wBTC.svg';
@@ -29,6 +30,9 @@ import IMUSDMTA, {
 import Sushi, { ReactComponent as SushiSvg } from './tokens/Sushi.svg';
 import BADGER, { ReactComponent as BadgerSvg } from './tokens/Badger.svg';
 import CREAM, { ReactComponent as CreamSvg } from './tokens/Cream.svg';
+import IMBTCMTA, {
+  ReactComponent as ImbtcmtaSvg,
+} from './tokens/imbtc-mta.svg';
 
 interface Props {
   className?: string;
@@ -64,11 +68,13 @@ export const TOKEN_ICONS: Record<string, string> = {
   RENBTC,
   WBTC,
   SBTC,
+  IMBTC,
   IMUSDMTA,
   SUSHI: Sushi,
   SLP: Sushi,
   BADGER,
   CREAM,
+  IMBTCMTA,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -96,11 +102,13 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   RENBTC: RenbtcSvg as SvgComponent,
   WBTC: WbtcSvg as SvgComponent,
   SBTC: SbtcSvg as SvgComponent,
+  IMBTC: ImbtcSvg as SvgComponent,
   IMUSDMTA: ImusdmtaSvg as SvgComponent,
   SUSHI: SushiSvg as SvgComponent,
   SLP: SushiSvg as SvgComponent,
   BADGER: BadgerSvg as SvgComponent,
   CREAM: CreamSvg as SvgComponent,
+  IMBTCMTA: ImbtcmtaSvg as SvgComponent,
 };
 
 const Image = styled.img`
