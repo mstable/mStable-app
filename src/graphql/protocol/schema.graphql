@@ -113,6 +113,28 @@ type Query {
     """
     block: Block_height
   ): [Basket!]!
+  ampData(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): AmpData
+  ampDatas(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: AmpData_orderBy
+    orderDirection: OrderDirection
+    where: AmpData_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [AmpData!]!
   masset(
     id: ID!
     """
@@ -1147,10 +1169,16 @@ type Masset {
   basketManager: Bytes
   """The address of the `ForgeValidator` or `InvariantValidator` contract"""
   forgeValidator: Bytes!
+  """Amplification data"""
+  ampData: AmpData
+  """Hard max weight for bAssets"""
+  hardMax: BigInt
   """Optional start time for `InvariantValidator` contract"""
   invariantStartTime: Int
   """Optional starting TVL cap for `InvariantValidator` contract"""
   invariantStartingCap: BigInt
+  """Optional cap factor for `InvariantValidator` contract"""
+  invariantCapFactor: BigInt
   """The swap fee rate"""
   feeRate: BigInt!
   """The redemption fee rate"""
@@ -1199,6 +1227,17 @@ type Masset {
   mintSingleTransactions(skip: Int = 0, first: Int = 100, orderBy: MintSingleTransaction_orderBy, orderDirection: OrderDirection, where: MintSingleTransaction_filter): [MintSingleTransaction!]!
   """All redemption transactions sent with this Masset (excluding proportional redemptions)"""
   redeemTransactions(skip: Int = 0, first: Int = 100, orderBy: RedeemTransaction_orderBy, orderDirection: OrderDirection, where: RedeemTransaction_filter): [RedeemTransaction!]!
+}
+"""
+Amplification value; amplifies the rate of change of the curve.
+Lower A = higher rate of change = higher slippage.
+"""
+type AmpData {
+  id: ID!
+  initialA: BigInt!
+  futureA: BigInt!
+  initialATime: BigInt!
+  futureATime: BigInt!
 }
 type SavingsContract {
   """Address of the SavingsContract"""
@@ -3264,13 +3303,65 @@ input Basket_filter {
   failed_in: [Boolean!]
   failed_not_in: [Boolean!]
 }
+enum AmpData_orderBy {
+  id
+  initialA
+  futureA
+  initialATime
+  futureATime
+}
+input AmpData_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  initialA: BigInt
+  initialA_not: BigInt
+  initialA_gt: BigInt
+  initialA_lt: BigInt
+  initialA_gte: BigInt
+  initialA_lte: BigInt
+  initialA_in: [BigInt!]
+  initialA_not_in: [BigInt!]
+  futureA: BigInt
+  futureA_not: BigInt
+  futureA_gt: BigInt
+  futureA_lt: BigInt
+  futureA_gte: BigInt
+  futureA_lte: BigInt
+  futureA_in: [BigInt!]
+  futureA_not_in: [BigInt!]
+  initialATime: BigInt
+  initialATime_not: BigInt
+  initialATime_gt: BigInt
+  initialATime_lt: BigInt
+  initialATime_gte: BigInt
+  initialATime_lte: BigInt
+  initialATime_in: [BigInt!]
+  initialATime_not_in: [BigInt!]
+  futureATime: BigInt
+  futureATime_not: BigInt
+  futureATime_gt: BigInt
+  futureATime_lt: BigInt
+  futureATime_gte: BigInt
+  futureATime_lte: BigInt
+  futureATime_in: [BigInt!]
+  futureATime_not_in: [BigInt!]
+}
 enum Masset_orderBy {
   id
   basket
   basketManager
   forgeValidator
+  ampData
+  hardMax
   invariantStartTime
   invariantStartingCap
+  invariantCapFactor
   feeRate
   redemptionFeeRate
   totalMints
@@ -3331,6 +3422,28 @@ input Masset_filter {
   forgeValidator_not_in: [Bytes!]
   forgeValidator_contains: Bytes
   forgeValidator_not_contains: Bytes
+  ampData: String
+  ampData_not: String
+  ampData_gt: String
+  ampData_lt: String
+  ampData_gte: String
+  ampData_lte: String
+  ampData_in: [String!]
+  ampData_not_in: [String!]
+  ampData_contains: String
+  ampData_not_contains: String
+  ampData_starts_with: String
+  ampData_not_starts_with: String
+  ampData_ends_with: String
+  ampData_not_ends_with: String
+  hardMax: BigInt
+  hardMax_not: BigInt
+  hardMax_gt: BigInt
+  hardMax_lt: BigInt
+  hardMax_gte: BigInt
+  hardMax_lte: BigInt
+  hardMax_in: [BigInt!]
+  hardMax_not_in: [BigInt!]
   invariantStartTime: Int
   invariantStartTime_not: Int
   invariantStartTime_gt: Int
@@ -3347,6 +3460,14 @@ input Masset_filter {
   invariantStartingCap_lte: BigInt
   invariantStartingCap_in: [BigInt!]
   invariantStartingCap_not_in: [BigInt!]
+  invariantCapFactor: BigInt
+  invariantCapFactor_not: BigInt
+  invariantCapFactor_gt: BigInt
+  invariantCapFactor_lt: BigInt
+  invariantCapFactor_gte: BigInt
+  invariantCapFactor_lte: BigInt
+  invariantCapFactor_in: [BigInt!]
+  invariantCapFactor_not_in: [BigInt!]
   feeRate: BigInt
   feeRate_not: BigInt
   feeRate_gt: BigInt
@@ -3830,6 +3951,28 @@ type Subscription {
     """
     block: Block_height
   ): [Basket!]!
+  ampData(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): AmpData
+  ampDatas(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: AmpData_orderBy
+    orderDirection: OrderDirection
+    where: AmpData_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [AmpData!]!
   masset(
     id: ID!
     """

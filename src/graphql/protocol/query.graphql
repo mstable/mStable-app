@@ -11,6 +11,7 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
     forgeValidator
     invariantStartTime
     invariantStartingCap
+    invariantCapFactor
     basket {
       failed
       collateralisationRatio
