@@ -136,6 +136,11 @@ const GlobalStyle = createGlobalStyle`
         margin: 0 !important;
       }
     }
+    .bn-onboard-modal-selected-wallet {
+      > *:not(:last-child) {
+        margin-bottom: 0.75rem;
+      }
+    }
     
     
     @media (min-width: ${ViewportWidth.s}) {
