@@ -41,7 +41,7 @@ export const TokenFetcher = (): null => {
       setFetched(protocolFetched);
     }
     if (ecosystemFetched.length > 0) {
-      setFetched(protocolFetched);
+      setFetched(ecosystemFetched);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [protocolFetched.length, ecosystemFetched.length]);
