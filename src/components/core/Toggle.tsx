@@ -33,7 +33,7 @@ export const Toggle: FC<Props> = ({ className, options }) => {
             onClick={onClick}
             type="button"
             highlighted={active}
-            scale={0.9}
+            scale={0.875}
           >
             {title}
           </Button>

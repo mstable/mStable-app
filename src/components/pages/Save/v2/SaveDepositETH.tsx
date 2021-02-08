@@ -98,9 +98,12 @@ export const SaveDepositETH: FC<{
 
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
+  const massetSymbol = massetState?.token.symbol;
   const savingsContract = massetState?.savingsContracts.v2;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
+  const saveWrapperAddress =
+    ADDRESSES[massetSymbol as 'mBTC' | 'mUSD']?.SaveWrapper;
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
   const [uniswapAmountOut, setUniswapAmountOut] = useState<{
@@ -240,7 +243,7 @@ export const SaveDepositETH: FC<{
                 propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
                   new TransactionManifest(
                     SaveWrapperFactory.connect(
-                      ADDRESSES.mUSD.SaveWrapper as string,
+                      saveWrapperAddress as string,
                       signer,
                     ),
                     'saveViaUniswapETH',
@@ -291,7 +294,7 @@ export const SaveDepositETH: FC<{
               propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
                 new TransactionManifest(
                   SaveWrapperFactory.connect(
-                    ADDRESSES.mUSD.SaveWrapper as string,
+                    saveWrapperAddress as string,
                     signer,
                   ),
                   'saveViaUniswapETH',

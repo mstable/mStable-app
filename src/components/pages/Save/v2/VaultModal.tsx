@@ -8,10 +8,6 @@ import { VaultWithdraw } from './VaultWithdraw';
 import { VaultExit } from './VaultExit';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { ADDRESSES } from '../../../../constants';
-import {
-  formatMassetName,
-  useSelectedMassetName,
-} from '../../../../context/SelectedMassetNameProvider';
 
 enum Tabs {
   Deposit = 'Deposit',
@@ -28,12 +24,14 @@ const Container = styled.div`
   }
 `;
 
-const tabTitles: { [key in Tabs]: string } = {
-  [Deposit]: 'Deposit via Stablecoin',
+const tabTitles = (massetSymbol?: string): { [key in Tabs]: string } => ({
+  [Deposit]: `Deposit via ${
+    massetSymbol === 'mUSD' ? 'Stablecoin' : 'Stable Asset'
+  }`,
   [DepositETH]: 'Deposit via ETH',
   [Withdraw]: 'Withdraw',
   [Exit]: 'Exit',
-};
+});
 
 const tabInfo = (
   formattedMasset: string,
@@ -46,11 +44,13 @@ const tabInfo = (
 
 export const VaultModal: FC = () => {
   const massetState = useSelectedMassetState();
-  const massetName = useSelectedMassetName();
   const [tab, setTab] = useState<Tabs>(Tabs.Deposit);
+  const massetSymbol = massetState?.token.symbol;
+  const saveWrapperAddress =
+    ADDRESSES[massetSymbol as 'mBTC' | 'mUSD']?.SaveWrapper;
 
   const canDepositWithWrapper =
-    massetState?.savingsContracts.v2?.active && !!ADDRESSES.mUSD.SaveWrapper;
+    massetState?.savingsContracts.v2?.active && !!saveWrapperAddress;
 
   const tabs = [
     Withdraw,
@@ -59,8 +59,7 @@ export const VaultModal: FC = () => {
     Exit,
   ];
 
-  const formattedMassetName = formatMassetName(massetName);
-  const tabInfoMessage = tabInfo(formattedMassetName)[tab];
+  const tabInfoMessage = massetSymbol && tabInfo(massetSymbol)[tab];
 
   return (
     <Container>
@@ -69,7 +68,7 @@ export const VaultModal: FC = () => {
           t =>
             t && (
               <TabBtn active={tab === t} onClick={() => setTab(t)} key={t}>
-                {tabTitles[t]}
+                {tabTitles(massetSymbol)[t]}
               </TabBtn>
             ),
         )}

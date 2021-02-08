@@ -133,7 +133,7 @@ export const CurveAddLiquidity: FC = () => {
         );
       }
     },
-    [valid, amount, curveContracts.musdDeposit, token],
+    [valid, amount, curveContracts, token],
   );
 
   return expired ? (

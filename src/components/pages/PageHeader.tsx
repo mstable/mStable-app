@@ -70,6 +70,7 @@ const Container = styled.div`
   p {
     padding: 0;
     font-size: 1rem;
+    color: ${({ theme }) => theme.color.bodyAccent};
   }
 `;
 

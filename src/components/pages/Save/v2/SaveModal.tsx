@@ -7,10 +7,6 @@ import { SaveDepositETH } from './SaveDepositETH';
 import { SaveRedeem } from './SaveRedeem';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { ADDRESSES } from '../../../../constants';
-import {
-  formatMassetName,
-  useSelectedMassetName,
-} from '../../../../context/SelectedMassetNameProvider';
 
 enum Tabs {
   DepositStablecoins,
@@ -37,23 +33,26 @@ const tabInfo = (
 // TODO TabbedModal
 export const SaveModal: FC = () => {
   const massetState = useSelectedMassetState();
-  const massetName = useSelectedMassetName();
+  const massetSymbol = massetState?.token.symbol;
   const isActive = massetState?.savingsContracts.v2?.active;
+  const saveWrapperAddress =
+    ADDRESSES[massetSymbol as 'mBTC' | 'mUSD']?.SaveWrapper;
 
   const [tab, setTab] = useState<Tabs>(Tabs.DepositStablecoins);
 
-  const formattedMassetName = formatMassetName(massetName);
-  const tabInfoMessage = tabInfo(formattedMassetName)[tab];
+  const tabInfoMessage = massetSymbol && tabInfo(massetSymbol)[tab];
 
   const [tabs, ActiveComponent] = useMemo(() => {
     const _tabs = [
       {
         tab: Tabs.DepositStablecoins,
-        label: 'Deposit via Stablecoin',
+        label: `Deposit via ${
+          massetSymbol === 'mUSD' ? 'Stablecoin' : 'Stable Asset'
+        }`,
         component: SaveDeposit,
         active: tab === Tabs.DepositStablecoins,
       },
-      ...(isActive && ADDRESSES.mUSD.SaveWrapper
+      ...(isActive && saveWrapperAddress
         ? [
             {
               tab: Tabs.DepositETH,
@@ -65,14 +64,14 @@ export const SaveModal: FC = () => {
         : []),
       {
         tab: Tabs.Redeem,
-        label: 'Redeem mUSD',
+        label: `Redeem ${massetSymbol}`,
         component: SaveRedeem,
         active: tab === Tabs.Redeem,
       },
     ];
     const activeComponent = _tabs.find(t => t.active)?.component as FC;
     return [_tabs, activeComponent];
-  }, [tab, isActive]);
+  }, [tab, isActive, saveWrapperAddress, massetSymbol]);
 
   return (
     <Container>

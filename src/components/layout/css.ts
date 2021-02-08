@@ -8,6 +8,6 @@ export const containerBackground = css`
   border-radius: 2rem;
 
   @media (min-width: ${ViewportWidth.s}) {
-    padding: 2rem 2.5rem;
+    padding: 2rem;
   }
 `;

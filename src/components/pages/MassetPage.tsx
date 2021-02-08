@@ -48,7 +48,7 @@ const Container = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 2rem;
     justify-content: space-between;
     align-items: flex-start;
 
