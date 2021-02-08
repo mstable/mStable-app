@@ -155,6 +155,69 @@ export enum Account_OrderBy {
   CreditBalance = 'creditBalance'
 }
 
+/**
+ * Amplification value; amplifies the rate of change of the curve.
+ * Lower A = higher rate of change = higher slippage.
+ */
+export type AmpData = {
+  id: Scalars['ID'];
+  initialA: Scalars['BigInt'];
+  futureA: Scalars['BigInt'];
+  initialATime: Scalars['BigInt'];
+  futureATime: Scalars['BigInt'];
+};
+
+export type AmpData_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  initialA?: Maybe<Scalars['BigInt']>;
+  initialA_not?: Maybe<Scalars['BigInt']>;
+  initialA_gt?: Maybe<Scalars['BigInt']>;
+  initialA_lt?: Maybe<Scalars['BigInt']>;
+  initialA_gte?: Maybe<Scalars['BigInt']>;
+  initialA_lte?: Maybe<Scalars['BigInt']>;
+  initialA_in?: Maybe<Array<Scalars['BigInt']>>;
+  initialA_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  futureA?: Maybe<Scalars['BigInt']>;
+  futureA_not?: Maybe<Scalars['BigInt']>;
+  futureA_gt?: Maybe<Scalars['BigInt']>;
+  futureA_lt?: Maybe<Scalars['BigInt']>;
+  futureA_gte?: Maybe<Scalars['BigInt']>;
+  futureA_lte?: Maybe<Scalars['BigInt']>;
+  futureA_in?: Maybe<Array<Scalars['BigInt']>>;
+  futureA_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  initialATime?: Maybe<Scalars['BigInt']>;
+  initialATime_not?: Maybe<Scalars['BigInt']>;
+  initialATime_gt?: Maybe<Scalars['BigInt']>;
+  initialATime_lt?: Maybe<Scalars['BigInt']>;
+  initialATime_gte?: Maybe<Scalars['BigInt']>;
+  initialATime_lte?: Maybe<Scalars['BigInt']>;
+  initialATime_in?: Maybe<Array<Scalars['BigInt']>>;
+  initialATime_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  futureATime?: Maybe<Scalars['BigInt']>;
+  futureATime_not?: Maybe<Scalars['BigInt']>;
+  futureATime_gt?: Maybe<Scalars['BigInt']>;
+  futureATime_lt?: Maybe<Scalars['BigInt']>;
+  futureATime_gte?: Maybe<Scalars['BigInt']>;
+  futureATime_lte?: Maybe<Scalars['BigInt']>;
+  futureATime_in?: Maybe<Array<Scalars['BigInt']>>;
+  futureATime_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum AmpData_OrderBy {
+  Id = 'id',
+  InitialA = 'initialA',
+  FutureA = 'futureA',
+  InitialATime = 'initialATime',
+  FutureATime = 'futureATime'
+}
+
 /** A Basket of Bassets (e.g. for mUSD) */
 export type Basket = {
   id: Scalars['ID'];
@@ -1580,10 +1643,16 @@ export type Masset = {
   basketManager?: Maybe<Scalars['Bytes']>;
   /** The address of the `ForgeValidator` or `InvariantValidator` contract */
   forgeValidator: Scalars['Bytes'];
+  /** Amplification data */
+  ampData?: Maybe<AmpData>;
+  /** Hard max weight for bAssets */
+  hardMax?: Maybe<Scalars['BigInt']>;
   /** Optional start time for `InvariantValidator` contract */
   invariantStartTime?: Maybe<Scalars['Int']>;
   /** Optional starting TVL cap for `InvariantValidator` contract */
   invariantStartingCap?: Maybe<Scalars['BigInt']>;
+  /** Optional cap factor for `InvariantValidator` contract */
+  invariantCapFactor?: Maybe<Scalars['BigInt']>;
   /** The swap fee rate */
   feeRate: Scalars['BigInt'];
   /** The redemption fee rate */
@@ -1739,6 +1808,28 @@ export type Masset_Filter = {
   forgeValidator_not_in?: Maybe<Array<Scalars['Bytes']>>;
   forgeValidator_contains?: Maybe<Scalars['Bytes']>;
   forgeValidator_not_contains?: Maybe<Scalars['Bytes']>;
+  ampData?: Maybe<Scalars['String']>;
+  ampData_not?: Maybe<Scalars['String']>;
+  ampData_gt?: Maybe<Scalars['String']>;
+  ampData_lt?: Maybe<Scalars['String']>;
+  ampData_gte?: Maybe<Scalars['String']>;
+  ampData_lte?: Maybe<Scalars['String']>;
+  ampData_in?: Maybe<Array<Scalars['String']>>;
+  ampData_not_in?: Maybe<Array<Scalars['String']>>;
+  ampData_contains?: Maybe<Scalars['String']>;
+  ampData_not_contains?: Maybe<Scalars['String']>;
+  ampData_starts_with?: Maybe<Scalars['String']>;
+  ampData_not_starts_with?: Maybe<Scalars['String']>;
+  ampData_ends_with?: Maybe<Scalars['String']>;
+  ampData_not_ends_with?: Maybe<Scalars['String']>;
+  hardMax?: Maybe<Scalars['BigInt']>;
+  hardMax_not?: Maybe<Scalars['BigInt']>;
+  hardMax_gt?: Maybe<Scalars['BigInt']>;
+  hardMax_lt?: Maybe<Scalars['BigInt']>;
+  hardMax_gte?: Maybe<Scalars['BigInt']>;
+  hardMax_lte?: Maybe<Scalars['BigInt']>;
+  hardMax_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMax_not_in?: Maybe<Array<Scalars['BigInt']>>;
   invariantStartTime?: Maybe<Scalars['Int']>;
   invariantStartTime_not?: Maybe<Scalars['Int']>;
   invariantStartTime_gt?: Maybe<Scalars['Int']>;
@@ -1755,6 +1846,14 @@ export type Masset_Filter = {
   invariantStartingCap_lte?: Maybe<Scalars['BigInt']>;
   invariantStartingCap_in?: Maybe<Array<Scalars['BigInt']>>;
   invariantStartingCap_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  invariantCapFactor?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_not?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_gt?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_lt?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_gte?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_lte?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_in?: Maybe<Array<Scalars['BigInt']>>;
+  invariantCapFactor_not_in?: Maybe<Array<Scalars['BigInt']>>;
   feeRate?: Maybe<Scalars['BigInt']>;
   feeRate_not?: Maybe<Scalars['BigInt']>;
   feeRate_gt?: Maybe<Scalars['BigInt']>;
@@ -1988,8 +2087,11 @@ export enum Masset_OrderBy {
   Basket = 'basket',
   BasketManager = 'basketManager',
   ForgeValidator = 'forgeValidator',
+  AmpData = 'ampData',
+  HardMax = 'hardMax',
   InvariantStartTime = 'invariantStartTime',
   InvariantStartingCap = 'invariantStartingCap',
+  InvariantCapFactor = 'invariantCapFactor',
   FeeRate = 'feeRate',
   RedemptionFeeRate = 'redemptionFeeRate',
   TotalMints = 'totalMints',
@@ -2428,6 +2530,8 @@ export type Query = {
   bassets: Array<Basset>;
   basket?: Maybe<Basket>;
   baskets: Array<Basket>;
+  ampData?: Maybe<AmpData>;
+  ampDatas: Array<AmpData>;
   masset?: Maybe<Masset>;
   massets: Array<Masset>;
   account?: Maybe<Account>;
@@ -2553,6 +2657,22 @@ export type QueryBasketsArgs = {
   orderBy?: Maybe<Basket_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Basket_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryAmpDataArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryAmpDatasArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<AmpData_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<AmpData_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -3669,6 +3789,8 @@ export type Subscription = {
   bassets: Array<Basset>;
   basket?: Maybe<Basket>;
   baskets: Array<Basket>;
+  ampData?: Maybe<AmpData>;
+  ampDatas: Array<AmpData>;
   masset?: Maybe<Masset>;
   massets: Array<Masset>;
   account?: Maybe<Account>;
@@ -3794,6 +3916,22 @@ export type SubscriptionBasketsArgs = {
   orderBy?: Maybe<Basket_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Basket_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionAmpDataArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionAmpDatasArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<AmpData_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<AmpData_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -4561,7 +4699,7 @@ export type MassetsQueryVariables = Exact<{
 
 
 export type MassetsQuery = { massets: Array<(
-    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'forgeValidator' | 'invariantStartTime' | 'invariantStartingCap'>
+    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'forgeValidator' | 'invariantStartTime' | 'invariantStartingCap' | 'invariantCapFactor'>
     & { token: TokenAllFragment, basket: (
       Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
       & { bassets: Array<(
@@ -4721,6 +4859,7 @@ export const MassetsDocument = gql`
     forgeValidator
     invariantStartTime
     invariantStartingCap
+    invariantCapFactor
     basket {
       failed
       collateralisationRatio

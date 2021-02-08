@@ -246,6 +246,7 @@ const transformMassetData = (
     redemptionFeeRate,
     invariantStartTime,
     invariantStartingCap,
+    invariantCapFactor,
     token: { decimals, address },
     token,
     basket: {
@@ -269,6 +270,9 @@ const transformMassetData = (
     invariantStartTime: invariantStartTime || undefined,
     invariantStartingCap: invariantStartingCap
       ? bigNumberify(invariantStartingCap)
+      : undefined,
+    invariantCapFactor: invariantCapFactor
+      ? bigNumberify(invariantCapFactor)
       : undefined,
     undergoingRecol,
     token: transformTokenData(token, tokens),

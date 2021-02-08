@@ -240,10 +240,12 @@ export const Mint: FC = () => {
   const massetState = useSelectedMassetState();
   const setBannerMessage = useSetBannerMessage();
 
-  const { invariantStartingCap, invariantStartTime } = massetState ?? {};
+  const { invariantStartingCap, invariantStartTime, invariantCapFactor } =
+    massetState ?? {};
 
   const tvlCap = useMemo(() => {
-    if (!invariantStartingCap || !invariantStartTime) return;
+    if (!invariantStartingCap || !invariantStartTime || !invariantCapFactor)
+      return;
 
     const currentTime = getUnixTime(Date.now());
 
@@ -254,14 +256,11 @@ export const Mint: FC = () => {
     if (weeksSinceLaunch > 12) return;
 
     const maxK = invariantStartingCap.add(
-      bigNumberify(weeksSinceLaunch)
-        .mul((1e18).toString())
-        .pow(2)
-        .div((1e18).toString()),
+      invariantCapFactor.mul(bigNumberify(weeksSinceLaunch).pow(2)),
     );
 
     return new BigDecimal(maxK);
-  }, [invariantStartTime, invariantStartingCap]);
+  }, [invariantCapFactor, invariantStartTime, invariantStartingCap]);
 
   useEffect(() => {
     if (!tvlCap) return;
