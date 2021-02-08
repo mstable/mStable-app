@@ -10,7 +10,7 @@ import { SwapProvider, useSwapState } from './SwapProvider';
 import { SwapInput } from './SwapInput';
 import { SwapConfirm } from './SwapConfirm';
 import { Interfaces } from '../../../../types';
-import { useSelectedMassetContract } from '../../../../web3/hooks';
+import { useSelectedLegacyMassetContract } from '../../../../web3/hooks';
 import { PageAction, PageHeader } from '../../PageHeader';
 
 const SwapForm: FC = () => {
@@ -20,7 +20,7 @@ const SwapForm: FC = () => {
     values: { output, input },
     massetState,
   } = useSwapState();
-  const contract = useSelectedMassetContract();
+  const contract = useSelectedLegacyMassetContract();
 
   const { address: mAssetAddress } = massetState || {};
 
@@ -30,7 +30,7 @@ const SwapForm: FC = () => {
   const createTransaction = useCallback(
     (
       formId: string,
-    ): TransactionManifest<Interfaces.Masset, 'mint' | 'swap'> | void => {
+    ): TransactionManifest<Interfaces.LegacyMasset, 'mint' | 'swap'> | void => {
       if (valid && account && contract) {
         if (isMint) {
           const body = `${output.amount.simple} ${output.token.symbol} with ${input.token.symbol}`;

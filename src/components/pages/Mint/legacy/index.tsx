@@ -1,7 +1,7 @@
 import React, { FC, useCallback } from 'react';
 import { BigNumber } from 'ethers/utils';
 
-import { useSelectedMassetContract } from '../../../../web3/hooks';
+import { useSelectedLegacyMassetContract } from '../../../../web3/hooks';
 import { useOwnAccount } from '../../../../context/UserProvider';
 import { TransactionForm } from '../../../forms/TransactionForm';
 import { Interfaces } from '../../../../types';
@@ -20,13 +20,16 @@ const MintForm: FC = () => {
     mintAmount,
     massetState,
   } = useMintState();
-  const contract = useSelectedMassetContract();
+  const contract = useSelectedLegacyMassetContract();
   const massetSymbol = massetState?.token.symbol;
 
   const createTransaction = useCallback(
     (
       formId: string,
-    ): TransactionManifest<Interfaces.Masset, 'mint' | 'mintMulti'> | void => {
+    ): TransactionManifest<
+      Interfaces.LegacyMasset,
+      'mint' | 'mintMulti'
+    > | void => {
       if (!error && contract && mintAmount.exact && account) {
         const enabled = Object.values(bAssets).filter(b => b.enabled);
         const body = `${mintAmount.format()} ${massetSymbol}`;

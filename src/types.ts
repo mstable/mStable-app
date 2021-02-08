@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers/utils';
 
 import { ISavingsContract } from './typechain/ISavingsContract.d';
 import { SaveWrapper } from './typechain/SaveWrapper.d';
-import { IMasset } from './typechain/IMasset.d';
+import { LegacyMasset } from './typechain/LegacyMasset';
 import { MusdGauge } from './typechain/MusdGauge.d';
 import { StakingRewards } from './typechain/StakingRewards.d';
 import { StakingRewardsWithPlatformToken } from './typechain/StakingRewardsWithPlatformToken.d';
@@ -11,7 +11,7 @@ import { MerkleDrop } from './typechain/MerkleDrop.d';
 import { TokenMinter as CurveTokenMinter } from './typechain/TokenMinter.d';
 import { CurveDeposit } from './typechain/CurveDeposit.d';
 import { BoostedSavingsVault } from './typechain/BoostedSavingsVault.d';
-import { CurvedMasset } from './typechain/CurvedMasset.d';
+import { Masset } from './typechain/Masset.d';
 import { BigDecimal } from './web3/BigDecimal';
 import { Erc20Detailed } from './typechain/Erc20Detailed';
 import { UniswapRouter02 } from './typechain/UniswapRouter02';
@@ -25,8 +25,8 @@ export interface Purpose {
 
 /* eslint-disable @typescript-eslint/no-shadow */
 export enum Interfaces {
+  LegacyMasset,
   Masset,
-  CurvedMasset,
   ERC20,
   SavingsContract,
   StakingRewards,
@@ -43,8 +43,8 @@ export enum Interfaces {
 /* eslint-enable @typescript-eslint/no-shadow */
 
 export interface Instances {
-  [Interfaces.Masset]: IMasset;
-  [Interfaces.CurvedMasset]: CurvedMasset;
+  [Interfaces.LegacyMasset]: LegacyMasset;
+  [Interfaces.Masset]: Masset;
   [Interfaces.ERC20]: Erc20Detailed;
   [Interfaces.SavingsContract]: ISavingsContract;
   [Interfaces.StakingRewards]: StakingRewards;

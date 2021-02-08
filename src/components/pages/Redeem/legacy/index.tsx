@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react';
 
-import { useSelectedMassetContract } from '../../../../web3/hooks';
+import { useSelectedLegacyMassetContract } from '../../../../web3/hooks';
 import { useOwnAccount } from '../../../../context/UserProvider';
 import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
@@ -14,7 +14,7 @@ import { TransactionManifest } from '../../../../web3/TransactionManifest';
 
 const RedeemForm: FC = () => {
   const account = useOwnAccount();
-  const contract = useSelectedMassetContract();
+  const contract = useSelectedLegacyMassetContract();
   const {
     amountInMasset,
     valid,
@@ -29,7 +29,7 @@ const RedeemForm: FC = () => {
     (
       formId: string,
     ): TransactionManifest<
-      Interfaces.Masset,
+      Interfaces.LegacyMasset,
       'redeemMasset' | 'redeemMulti' | 'redeem'
     > | void => {
       if (valid && account && contract && amountInMasset) {

@@ -13,14 +13,14 @@ import {
   useTokenSubscription,
 } from '../../../../context/TokensProvider';
 
-import { CurvedMassetFactory } from '../../../../typechain/CurvedMassetFactory';
-import { CurvedMasset } from '../../../../typechain/CurvedMasset';
+import { MassetFactory } from '../../../../typechain/MassetFactory';
+import { Masset } from '../../../../typechain/Masset';
 import { Interfaces } from '../../../../types';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { BigDecimalInputValues } from '../../../../hooks/useBigDecimalInputs';
-import { sanitizeCurvedMassetError } from '../../../../utils/strings';
+import { sanitizeMassetError } from '../../../../utils/strings';
 
 import { SendButton } from '../../../forms/SendButton';
 import {
@@ -46,9 +46,8 @@ const RedeemExactBassetsLogic: FC = () => {
 
   const outputTokens = useTokens(Object.keys(bassetAmounts));
 
-  const curvedMasset = useMemo(
-    () =>
-      signer ? CurvedMassetFactory.connect(massetAddress, signer) : undefined,
+  const masset = useMemo(
+    () => (signer ? MassetFactory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
@@ -83,11 +82,8 @@ const RedeemExactBassetsLogic: FC = () => {
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
-    (
-      _curvedMasset: CurvedMasset | undefined,
-      _inputValues: BigDecimalInputValues,
-    ) => {
-      if (_curvedMasset) {
+    (_masset: Masset | undefined, _inputValues: BigDecimalInputValues) => {
+      if (_masset) {
         const touched = Object.values(_inputValues).filter(v => v.touched);
 
         if (touched.length > 0) {
@@ -95,7 +91,7 @@ const RedeemExactBassetsLogic: FC = () => {
 
           const inputs = touched.map(v => v.address);
           const amounts = touched.map(v => (v.amount as BigDecimal).exact);
-          _curvedMasset
+          _masset
             .getRedeemExactBassetsOutput(inputs, amounts)
             .then(_massetAmount => {
               setMassetAmount({
@@ -104,7 +100,7 @@ const RedeemExactBassetsLogic: FC = () => {
             })
             .catch((_error: Error): void => {
               setMassetAmount({
-                error: sanitizeCurvedMassetError(_error),
+                error: sanitizeMassetError(_error),
               });
             });
         }
@@ -113,7 +109,7 @@ const RedeemExactBassetsLogic: FC = () => {
       }
     },
     1000,
-    [curvedMasset, bassetAmounts],
+    [masset, bassetAmounts],
   );
 
   const outputLabel = useMemo(
@@ -159,7 +155,7 @@ const RedeemExactBassetsLogic: FC = () => {
         }
         title="Redeem"
         handleSend={() => {
-          if (curvedMasset && walletAddress && maxMassetAmount) {
+          if (masset && walletAddress && maxMassetAmount) {
             const touched = Object.values(bassetAmounts).filter(v => v.touched);
 
             if (touched.length === 0) return;
@@ -167,9 +163,9 @@ const RedeemExactBassetsLogic: FC = () => {
             const addresses = touched.map(v => v.address);
             const amounts = touched.map(v => (v.amount as BigDecimal).exact);
 
-            return propose<Interfaces.CurvedMasset, 'redeemExactBassets'>(
+            return propose<Interfaces.Masset, 'redeemExactBassets'>(
               new TransactionManifest(
-                curvedMasset,
+                masset,
                 'redeemExactBassets',
                 [addresses, amounts, maxMassetAmount.exact, walletAddress],
                 { past: 'Redeemed', present: 'Redeeming' },

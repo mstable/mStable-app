@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 
 import { Mint as MintLegacy } from './legacy';
-import { Mint as MintCurvedMasset } from './curvedMasset';
+import { Mint as MintAMM } from './amm';
 import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
 
 export const Mint: FC = () => {
   const massetName = useSelectedMassetName();
-  return massetName === 'musd' ? <MintLegacy /> : <MintCurvedMasset />;
+  return massetName === 'musd' ? <MintLegacy /> : <MintAMM />;
 };

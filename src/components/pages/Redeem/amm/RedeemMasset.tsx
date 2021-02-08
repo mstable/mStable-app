@@ -15,10 +15,10 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import { sanitizeCurvedMassetError } from '../../../../utils/strings';
+import { sanitizeMassetError } from '../../../../utils/strings';
 
-import { CurvedMassetFactory } from '../../../../typechain/CurvedMassetFactory';
-import { CurvedMasset } from '../../../../typechain/CurvedMasset';
+import { MassetFactory } from '../../../../typechain/MassetFactory';
+import { Masset } from '../../../../typechain/Masset';
 import { Interfaces } from '../../../../types';
 
 import { SendButton } from '../../../forms/SendButton';
@@ -72,29 +72,28 @@ export const RedeemMasset: FC = () => {
   const massetToken = useTokenSubscription(massetAddress);
   const outputToken = useTokenSubscription(outputAddress);
 
-  const curvedMasset = useMemo(
-    () =>
-      signer ? CurvedMassetFactory.connect(massetAddress, signer) : undefined,
+  const masset = useMemo(
+    () => (signer ? MassetFactory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
     (
-      _curvedMasset: CurvedMasset | undefined,
+      _masset: Masset | undefined,
       _inputAmount: BigDecimal | undefined,
       _outputAddress: string | undefined,
     ) => {
-      if (_curvedMasset && _outputAddress && _inputAmount?.exact.gt(0)) {
+      if (_masset && _outputAddress && _inputAmount?.exact.gt(0)) {
         setBassetAmount({ fetching: true });
-        _curvedMasset
+        _masset
           .getRedeemOutput(_outputAddress, _inputAmount.exact)
           .then(_bassetAmount => {
             setBassetAmount({ value: new BigDecimal(_bassetAmount) });
           })
           .catch((_error: Error): void => {
             setBassetAmount({
-              error: sanitizeCurvedMassetError(_error),
+              error: sanitizeMassetError(_error),
             });
           });
       } else {
@@ -102,7 +101,7 @@ export const RedeemMasset: FC = () => {
       }
     },
     1000,
-    [curvedMasset, inputAmount, outputAddress],
+    [masset, inputAmount, outputAddress],
   );
 
   const { exchangeRate, minOutputAmount } = useMemo(() => {
@@ -185,15 +184,15 @@ export const RedeemMasset: FC = () => {
         title="Redeem"
         handleSend={() => {
           if (
-            curvedMasset &&
+            masset &&
             walletAddress &&
             inputAmount &&
             outputAddress &&
             minOutputAmount
           ) {
-            propose<Interfaces.CurvedMasset, 'redeem'>(
+            propose<Interfaces.Masset, 'redeem'>(
               new TransactionManifest(
-                curvedMasset,
+                masset,
                 'redeem',
                 [
                   outputAddress,
