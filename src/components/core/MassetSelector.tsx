@@ -18,7 +18,7 @@ export const MassetSelector: FC = () => {
         mbtc: dataState.mbtc,
         musd: dataState.musd,
       } as { [key in MassetName]: MassetState | undefined }),
-    [dataState.mbtc, dataState.musd],
+    [dataState],
   );
 
   const options = Object.values(massetStates).map(massetState => ({

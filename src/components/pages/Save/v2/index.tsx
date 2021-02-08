@@ -55,7 +55,6 @@ const Container = styled.div`
   }
 `;
 
-// TODO replace masset-specific names/icons
 export const Save: FC = () => {
   const [isCalculatorVisible, setCalculatorVisible] = useState(false);
   const massetState = useSelectedMassetState();

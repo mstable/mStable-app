@@ -24,8 +24,8 @@ export enum Color {
   offBlack = 'rgb(37,39,45)',
   lightGrey = 'rgba(235, 235, 235, 1)',
   lighterGrey = 'rgba(248,248,248,1)',
-  grey = 'rgba(121, 121, 121, 1)',
-  greyTransparent = 'rgba(127, 127, 127, 0.5)',
+  grey = 'rgba(146, 154, 162, 1)',
+  greyTransparent = 'rgba(146, 154, 162, 0.5)',
 }
 
 interface ColorTheme {

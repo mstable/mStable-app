@@ -17,10 +17,6 @@ import { TabBtn, TabsContainer, Message } from '../../../core/Tabs';
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import {
-  formatMassetName,
-  useSelectedMassetName,
-} from '../../../../context/SelectedMassetNameProvider';
 
 const formId = 'MassetModal';
 
@@ -35,7 +31,6 @@ export const MassetModal: FC = () => {
   const propose = usePropose();
 
   const massetState = useSelectedMassetState();
-  const massetName = useSelectedMassetName();
   const massetAddress = massetState?.address;
   const massetSymbol = massetState?.token.symbol;
   const savingsContract = massetState?.savingsContracts.v2;
@@ -48,7 +43,8 @@ export const MassetModal: FC = () => {
 
   const inputToken = useTokenSubscription(inputAddress);
 
-  const formattedMassetName = formatMassetName(massetName);
+  const saveWrapperAddress =
+    ADDRESSES[massetSymbol as 'mBTC' | 'mUSD']?.SaveWrapper;
 
   const error = useMemo<string | undefined>(() => {
     if (
@@ -87,11 +83,11 @@ export const MassetModal: FC = () => {
 
   const stakeApprove = useMemo(
     () => ({
-      spender: ADDRESSES.mUSD.SaveWrapper as string,
+      spender: saveWrapperAddress as string,
       amount: inputAmount,
       address: massetAddress as string,
     }),
-    [inputAmount, massetAddress],
+    [inputAmount, massetAddress, saveWrapperAddress],
   );
 
   const valid = !!(
@@ -104,18 +100,18 @@ export const MassetModal: FC = () => {
   return (
     <Container>
       <TabsContainer>
-        <TabBtn active>Deposit {formattedMassetName}</TabBtn>
+        <TabBtn active>Deposit {massetSymbol}</TabBtn>
       </TabsContainer>
       <Message>
         <span>
-          {formattedMassetName} will be deposited and you will receive{' '}
-          {`i${formattedMassetName}`} (interest-bearing
-          {` ${formattedMassetName}`}).
+          {massetSymbol} will be deposited and you will receive{' '}
+          {`i${massetSymbol}`} (interest-bearing
+          {` ${massetSymbol}`}).
           <br />
           Deposit to the Vault to earn bonus MTA rewards.
           <br />
-          Your {`i${formattedMassetName}`} can be redeemed for{' '}
-          {formattedMassetName} at any time.
+          Your {`i${massetSymbol}`} can be redeemed for {massetSymbol} at any
+          time.
         </span>
       </Message>
       <AssetExchange
@@ -137,7 +133,7 @@ export const MassetModal: FC = () => {
       >
         <SendButton
           valid={valid}
-          title={`Mint i${formattedMassetName}`}
+          title={`Mint i${massetSymbol}`}
           handleSend={() => {
             if (saveAddress && signer && inputAmount && massetSymbol) {
               const body = `${inputAmount.format()} ${massetSymbol}`;
@@ -157,7 +153,7 @@ export const MassetModal: FC = () => {
           }}
           approve={depositApprove}
         />
-        {ADDRESSES.mUSD.SaveWrapper && (
+        {saveWrapperAddress && (
           <SendButton
             valid={valid}
             title="Mint & Deposit to Vault"
@@ -167,7 +163,7 @@ export const MassetModal: FC = () => {
                 propose<Interfaces.SaveWrapper, 'saveAndStake'>(
                   new TransactionManifest(
                     SaveWrapperFactory.connect(
-                      ADDRESSES.mUSD.SaveWrapper as string,
+                      saveWrapperAddress as string,
                       signer,
                     ),
                     'saveAndStake',

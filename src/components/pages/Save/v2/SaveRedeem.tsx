@@ -22,6 +22,7 @@ export const SaveRedeem: FC = () => {
 
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
+  const massetSymbol = massetState?.token.symbol;
   const savingsContract = massetState?.savingsContracts.v2;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
@@ -77,7 +78,7 @@ export const SaveRedeem: FC = () => {
     >
       <SendButton
         valid={valid}
-        title="Redeem mUSD"
+        title={`Redeem ${massetSymbol}`}
         handleSend={() => {
           if (
             signer &&
