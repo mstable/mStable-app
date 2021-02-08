@@ -1,7 +1,5 @@
 {
-  "_format": "hh-sol-artifact-1",
-  "contractName": "CurvedMasset",
-  "sourceName": "contracts/curved-masset/CurvedMasset.sol",
+  "contractName": "Masset",
   "abi": [
     {
       "inputs": [

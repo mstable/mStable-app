@@ -14,11 +14,11 @@ import { usePropose } from '../../../../context/TransactionsProvider';
 import { BigDecimalInputValues } from '../../../../hooks/useBigDecimalInputs';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import { sanitizeCurvedMassetError } from '../../../../utils/strings';
+import { sanitizeMassetError } from '../../../../utils/strings';
 import { Interfaces } from '../../../../types';
 
-import { CurvedMassetFactory } from '../../../../typechain/CurvedMassetFactory';
-import { CurvedMasset } from '../../../../typechain/CurvedMasset';
+import { MassetFactory } from '../../../../typechain/MassetFactory';
+import { Masset } from '../../../../typechain/Masset';
 
 import {
   ManyToOneAssetExchange,
@@ -51,10 +51,10 @@ const MintLogic: FC = () => {
 
   const inputTokens = useTokens(Object.keys(inputValues));
 
-  const curvedMasset = useMemo(
+  const masset = useMemo(
     () =>
       massetAddress && signer
-        ? CurvedMassetFactory.connect(massetAddress, signer)
+        ? MassetFactory.connect(massetAddress, signer)
         : undefined,
     [massetAddress, signer],
   );
@@ -88,11 +88,8 @@ const MintLogic: FC = () => {
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
-    (
-      _curvedMasset: CurvedMasset | undefined,
-      _inputValues: BigDecimalInputValues,
-    ) => {
-      if (_curvedMasset) {
+    (_masset: Masset | undefined, _inputValues: BigDecimalInputValues) => {
+      if (_masset) {
         const touched = Object.values(_inputValues).filter(v => v.touched);
 
         if (touched.length > 0) {
@@ -101,7 +98,7 @@ const MintLogic: FC = () => {
           const promise = (() => {
             if (touched.length === 1) {
               const [{ address, amount }] = touched;
-              return _curvedMasset.getMintOutput(
+              return _masset.getMintOutput(
                 address,
                 (amount as BigDecimal).exact,
               );
@@ -109,7 +106,7 @@ const MintLogic: FC = () => {
 
             const inputs = touched.map(v => v.address);
             const amounts = touched.map(v => (v.amount as BigDecimal).exact);
-            return _curvedMasset.getMintMultiOutput(inputs, amounts);
+            return _masset.getMintMultiOutput(inputs, amounts);
           })();
 
           return promise
@@ -120,7 +117,7 @@ const MintLogic: FC = () => {
             })
             .catch((_error: Error): void => {
               setOutputAmount({
-                error: sanitizeCurvedMassetError(_error),
+                error: sanitizeMassetError(_error),
               });
             });
         }
@@ -129,7 +126,7 @@ const MintLogic: FC = () => {
       }
     },
     1000,
-    [curvedMasset, inputValues],
+    [masset, inputValues],
   );
 
   const setMaxCallbacks = useMemo(
@@ -199,14 +196,14 @@ const MintLogic: FC = () => {
         valid={!error}
         title="Mint"
         handleSend={() => {
-          if (curvedMasset && walletAddress && minOutputAmount) {
+          if (masset && walletAddress && minOutputAmount) {
             const touched = Object.values(inputValues).filter(v => v.touched);
 
             if (touched.length === 1) {
               const [{ address, amount }] = touched;
-              return propose<Interfaces.CurvedMasset, 'mint'>(
+              return propose<Interfaces.Masset, 'mint'>(
                 new TransactionManifest(
-                  curvedMasset,
+                  masset,
                   'mint',
                   [
                     address,
@@ -223,9 +220,9 @@ const MintLogic: FC = () => {
             const addresses = touched.map(v => v.address);
             const amounts = touched.map(v => (v.amount as BigDecimal).exact);
 
-            return propose<Interfaces.CurvedMasset, 'mintMulti'>(
+            return propose<Interfaces.Masset, 'mintMulti'>(
               new TransactionManifest(
-                curvedMasset,
+                masset,
                 'mintMulti',
                 [addresses, amounts, minOutputAmount.exact, walletAddress],
                 { past: 'Minted', present: 'Minting' },

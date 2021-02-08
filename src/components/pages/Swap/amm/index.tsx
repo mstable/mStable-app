@@ -11,8 +11,8 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
-import { CurvedMassetFactory } from '../../../../typechain/CurvedMassetFactory';
-import { CurvedMasset } from '../../../../typechain/CurvedMasset';
+import { MassetFactory } from '../../../../typechain/MassetFactory';
+import { Masset } from '../../../../typechain/Masset';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -21,7 +21,7 @@ import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 import { AssetSwap } from '../../../forms/AssetSwap';
 import { SendButton } from '../../../forms/SendButton';
 import { PageAction, PageHeader } from '../../PageHeader';
-import { sanitizeCurvedMassetError } from '../../../../utils/strings';
+import { sanitizeMassetError } from '../../../../utils/strings';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { MassetPage } from '../../MassetPage';
@@ -78,22 +78,21 @@ const SwapLogic: FC = () => {
     [bAssets],
   );
 
-  const curvedMasset = useMemo(
-    () =>
-      signer ? CurvedMassetFactory.connect(massetAddress, signer) : undefined,
+  const masset = useMemo(
+    () => (signer ? MassetFactory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
     (
-      _curvedMasset?: CurvedMasset,
+      _masset?: Masset,
       _inputAddress?: string,
       _inputAmount?: BigDecimal,
       _outputAddress?: string,
       _outputDecimals?: number,
     ) => {
-      if (_curvedMasset) {
+      if (_masset) {
         if (
           _inputAddress &&
           _inputAmount &&
@@ -102,7 +101,7 @@ const SwapLogic: FC = () => {
         ) {
           setSwapOutput({ fetching: true });
 
-          _curvedMasset
+          _masset
             .getSwapOutput(_inputAddress, _outputAddress, _inputAmount.exact)
             .then(_swapOutput => {
               setSwapOutput({
@@ -111,7 +110,7 @@ const SwapLogic: FC = () => {
             })
             .catch(_error => {
               setSwapOutput({
-                error: sanitizeCurvedMassetError(_error),
+                error: sanitizeMassetError(_error),
               });
             });
         } else {
@@ -120,7 +119,7 @@ const SwapLogic: FC = () => {
       }
     },
     1000,
-    [curvedMasset, inputAddress, inputAmount, outputAddress, outputDecimals],
+    [masset, inputAddress, inputAmount, outputAddress, outputDecimals],
   );
 
   // Calculate:
@@ -223,16 +222,16 @@ const SwapLogic: FC = () => {
         approve={approve}
         handleSend={() => {
           if (
-            curvedMasset &&
+            masset &&
             walletAddress &&
             inputAmount &&
             amounts.minOutputAmount &&
             inputAddress &&
             outputAddress
           ) {
-            propose<Interfaces.CurvedMasset, 'swap'>(
+            propose<Interfaces.Masset, 'swap'>(
               new TransactionManifest(
-                curvedMasset,
+                masset,
                 'swap',
                 [
                   inputAddress,

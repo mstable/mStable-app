@@ -42,7 +42,7 @@ export const humanizeList = (list: string[]): string =>
     ? list.join(' and ')
     : `${list.slice(0, -1).join(', ')}, and ${list[list.length - 1]}`;
 
-export const sanitizeCurvedMassetError = (error: Error): string => {
+export const sanitizeMassetError = (error: Error): string => {
   const message = error.message.replace('execution reverted: ', '');
 
   switch (message) {
