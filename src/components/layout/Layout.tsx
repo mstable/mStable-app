@@ -67,6 +67,10 @@ const GlobalStyle = createGlobalStyle`
   
   // Onboard.js
   aside.bn-onboard-custom {
+     z-index: 5 !important;
+     width: 100% !important;
+     height: 100% !important;
+     
     .bn-onboard-modal-content {
       position: absolute;
       left: 0;
@@ -76,7 +80,10 @@ const GlobalStyle = createGlobalStyle`
       width: inherit;
       max-width: inherit;
       box-sizing: border-box;
-      border-radius: 1rem;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
       transition: all ease-in;
     }
     .bn-onboard-modal-content-header {
@@ -113,6 +120,9 @@ const GlobalStyle = createGlobalStyle`
         box-shadow: none;
       }
     }
+    .bn-onboard-modal-content-close {
+      top: 1.5rem;
+    }
     .bn-onboard-modal-select-wallets li {
       width: 50%;
     }
@@ -147,6 +157,7 @@ const GlobalStyle = createGlobalStyle`
       .bn-onboard-modal-content {
         position: relative;
         max-width: 28rem;
+        border-radius: 1rem;
       }
     }
   }
