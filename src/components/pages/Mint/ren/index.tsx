@@ -1,10 +1,17 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { CollapseBox } from '../../../forms/CollapseBox';
 import { PageAction, PageHeader } from '../../PageHeader';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
+import { BigDecimal } from '../../../../web3/BigDecimal';
+import { Button } from '../../../core/Button';
+import {
+  RenMintOnboard as MintOnboard,
+  Props as OnboardTxDetails,
+} from './RenMintOnboard';
 
 // To index address with
 const BTC_ADDRESS = 'BTC_ADDRESS_1';
@@ -15,31 +22,52 @@ const List = styled.ol`
   border-top: 1px solid ${({ theme }) => theme.color.accent};
 `;
 
-const Exchange = styled.div`
-  width: 50%;
+const Exchange = styled(AssetExchange)`
+  > button {
+    width: 100%;
+  }
+`;
+
+const ExchangeContainer = styled.div`
+  width: 66.66%;
   margin-top: 1rem;
 `;
 
 export const RenMint: FC = () => {
   // const [outputAddress, handleSetAddress] = useState<string | undefined>();
+  const [txDetails, setTxDetails] = useState<OnboardTxDetails | undefined>();
 
   const massetState = useSelectedMassetState();
   const { address: massetAddress } = massetState ?? {};
 
+  const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
+
   const outputAddressOptions = useMemo(() => {
-    return [{ address: massetAddress }];
-  }, [massetAddress]);
+    return [{ address: massetAddress, symbol: massetState?.token.symbol }];
+  }, [massetAddress, massetState]);
 
-  // const [
-  //   inputAmount,
-  //   inputFormValue,
-  //   setInputFormValue,
-  //   setInputAmount,
-  // ] = useBigDecimalInput();
+  const exchangeRate = useMemo<{
+    fetching?: boolean;
+    value?: BigDecimal;
+  }>(() => {
+    if (!inputAmount) return {};
 
-  // const inputAddressOptions = useMemo(() => {
-  //   return [{ address: saveAddress as string }];
-  // }, [saveAddress]);
+    return { value: inputAmount };
+  }, [inputAmount]);
+
+  const inputAddress = BTC_ADDRESS;
+  const outputAddress = massetAddress;
+
+  const inputAddressOptions = [
+    {
+      address: inputAddress,
+      label: 'BTC',
+      symbol: 'BTC',
+      custom: true,
+    },
+  ];
+
+  const handleCancelClick = useCallback(() => setTxDetails(undefined), []);
 
   return (
     <div>
@@ -61,30 +89,38 @@ export const RenMint: FC = () => {
           <li>You will receive mBTC</li>
         </List>
       </CollapseBox>
-      <Exchange>
-        <AssetExchange
-          inputAddressOptions={[
-            {
-              address: BTC_ADDRESS,
-              label: 'BTC',
-              custom: true,
-            },
-          ]}
-          outputAddressOptions={outputAddressOptions}
-          inputAddress={BTC_ADDRESS}
-          // inputFormValue={inputFormValue}
-          // exchangeRate={exchangeRate}
-          // handleSetInputAmount={setInputFormValue}
-          // handleSetInputMax={(): void => {
-          //   if (inputToken) {
-          //     setInputFormValue(inputToken.balance.string);
-          //   }
-          // }}
-          outputAddress={outputAddressOptions[0].address}
-          // error={error}
-          inputAddressDisabled
-        />
-      </Exchange>
+      <ExchangeContainer>
+        {txDetails ? (
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          <MintOnboard {...txDetails} onCancelClick={handleCancelClick} />
+        ) : (
+          <Exchange
+            inputAddressOptions={inputAddressOptions}
+            outputAddressOptions={outputAddressOptions}
+            inputAddress={inputAddress}
+            inputFormValue={inputFormValue}
+            exchangeRate={exchangeRate}
+            handleSetInputAmount={setInputFormValue}
+            outputAddress={outputAddress}
+            inputAddressDisabled
+          >
+            <Button
+              highlighted
+              onClick={() =>
+                setTxDetails({
+                  inputAddress,
+                  inputFormValue,
+                  inputAddressOptions,
+                  outputAddress,
+                  outputAddressOptions,
+                })
+              }
+            >
+              Swap
+            </Button>
+          </Exchange>
+        )}
+      </ExchangeContainer>
     </div>
   );
 };

@@ -10,6 +10,8 @@ import { TransactionOption } from '../../types';
 import { ErrorMessage } from '../core/ErrorMessage';
 
 export interface Props {
+  className?: string;
+
   inputAddress?: string;
   inputAddressDisabled?: boolean;
   inputAddressOptions: TransactionOption[];
@@ -54,6 +56,7 @@ export const AssetExchange: FC<Props> = ({
   outputAddressDisabled,
   outputFormValue,
   children,
+  className,
 }) => {
   const inputToken = useTokenSubscription(inputAddress);
   const outputToken = useTokenSubscription(outputAddress);
@@ -66,7 +69,7 @@ export const AssetExchange: FC<Props> = ({
       : undefined;
 
   return (
-    <Container>
+    <Container className={className}>
       <AssetInput
         address={inputAddress}
         addressOptions={inputAddressOptions}

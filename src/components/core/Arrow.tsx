@@ -1,6 +1,8 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
+type Direction = 'up' | 'down' | 'left' | 'right';
+
 export const Container = styled.div`
   align-items: center;
   display: flex;
@@ -11,9 +13,15 @@ export const Container = styled.div`
   user-select: none;
 `;
 
-export const Arrow: FC<{ direction?: 'up' | 'down' }> = ({
+const ArrowIcon: Record<Direction, string> = {
+  up: '↑',
+  down: '↓',
+  left: '←',
+  right: '→',
+};
+
+export const Arrow: FC<{ direction?: Direction }> = ({
   direction = 'down',
 }) => {
-  const arrowIcon = direction === 'up' ? '↑' : '↓';
-  return <Container>{arrowIcon}</Container>;
+  return <Container>{ArrowIcon[direction]}</Container>;
 };
