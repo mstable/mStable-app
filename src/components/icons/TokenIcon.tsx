@@ -33,6 +33,7 @@ import CREAM, { ReactComponent as CreamSvg } from './tokens/Cream.svg';
 import IMBTCMTA, {
   ReactComponent as ImbtcmtaSvg,
 } from './tokens/imbtc-mta.svg';
+import BTC, { ReactComponent as BtcSvg } from './tokens/BTC.svg';
 
 interface Props {
   className?: string;
@@ -75,6 +76,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   BADGER,
   CREAM,
   IMBTCMTA,
+  BTC,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -109,6 +111,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   BADGER: BadgerSvg as SvgComponent,
   CREAM: CreamSvg as SvgComponent,
   IMBTCMTA: ImbtcmtaSvg as SvgComponent,
+  BTC: BtcSvg as SvgComponent,
 };
 
 const Image = styled.img`

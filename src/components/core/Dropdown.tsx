@@ -13,6 +13,7 @@ interface Props {
   options?: TransactionOption[];
   onChange?(address?: string): void;
   disabled?: boolean;
+  className?: string;
 }
 
 const ChevronContainer = styled.span<{ selected?: boolean; active?: boolean }>`
@@ -161,6 +162,7 @@ export const Dropdown: FC<Props> = ({
   options,
   onChange,
   disabled,
+  className,
 }) => {
   const [show, setShow] = useState(false);
 
@@ -185,7 +187,11 @@ export const Dropdown: FC<Props> = ({
   const isDropdown = (options?.length ?? 0) > 1;
 
   return (
-    <Container ref={container} chevronHidden={!isDropdown}>
+    <Container
+      ref={container}
+      chevronHidden={!isDropdown}
+      className={className}
+    >
       <Option
         onClick={handleToggle}
         option={selected}
