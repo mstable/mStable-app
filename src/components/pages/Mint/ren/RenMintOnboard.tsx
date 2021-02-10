@@ -1,13 +1,18 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useToggle } from 'react-use';
 import styled from 'styled-components';
 import { useAccount } from '../../../../context/UserProvider';
 
-import { TransactionOption } from '../../../../types';
 import { Arrow } from '../../../core/Arrow';
 import { Button } from '../../../core/Button';
 import { Dropdown } from '../../../core/Dropdown';
 import { ToggleInput } from '../../../forms/ToggleInput';
+import {
+  RenMintProvider,
+  useRenMintStep,
+  useRenMintState,
+} from './RenMintProvider';
+import { OnboardData } from './types';
 
 enum Step {
   Initiate,
@@ -18,11 +23,7 @@ enum Step {
 }
 
 export interface Props {
-  inputAddress?: string;
-  inputFormValue?: string;
-  inputAddressOptions: TransactionOption[];
-  outputAddress?: string;
-  outputAddressOptions: TransactionOption[];
+  onboardData: OnboardData;
   onCancelClick?: () => void;
 }
 
@@ -113,92 +114,99 @@ const Container = styled.div`
   }
 `;
 
-export const RenMintOnboard: FC<Props> = ({
-  inputFormValue,
-  inputAddressOptions,
-  inputAddress,
-  outputAddress,
-  outputAddressOptions,
-  onCancelClick,
-}) => {
-  const [step, setStep] = useState(Step.Initiate);
-
+const Initiate: FC = () => {
   const address = useAccount();
   const [toggleEnabled, setToggle] = useToggle(false);
+  const state = useRenMintState();
+  const [_, setStep] = useRenMintStep();
+
+  const {
+    inputFormValue,
+    inputAddressOptions,
+    inputAddress,
+    outputAddress,
+    outputAddressOptions,
+  } = state?.onboardData ?? {};
 
   const handleConfirmClick = (): void => {
-    switch (step) {
-      case Step.Initiate: {
-        if (!toggleEnabled) return;
-        setStep(Step.Deposit);
-        break;
-      }
-      case Step.Deposit:
-        setStep(step + 1);
-        break;
-      default:
-        break;
-    }
+    if (!toggleEnabled) return;
+    setStep(Step.Deposit);
   };
+
+  const onCancelClick = (): void => {};
+
+  return (
+    <>
+      <Input>
+        <div>
+          <Amount>{inputFormValue}</Amount>
+          <AssetBox
+            options={inputAddressOptions}
+            defaultAddress={inputAddress}
+            disabled
+          />
+        </div>
+        <Arrow direction="right" />
+        <div>
+          <Amount>{inputFormValue}</Amount>
+          <AssetBox
+            options={outputAddressOptions}
+            defaultAddress={outputAddress}
+            disabled
+          />
+        </div>
+      </Input>
+      <Address>
+        ETH Address:
+        <span>{address}</span>
+      </Address>
+      <Dialog>
+        You must have access to the above Ethereum address, else you will not be
+        able to complete the transaction
+      </Dialog>
+      <ConfirmTransaction>
+        <ToggleInput checked={toggleEnabled} onClick={setToggle} />
+        <p>I confirm I have access to the above ETH address</p>
+      </ConfirmTransaction>
+      <Buttons>
+        <Button
+          disabled={!toggleEnabled}
+          highlighted
+          onClick={handleConfirmClick}
+        >
+          Confirm
+        </Button>
+        <Button onClick={onCancelClick}>Cancel</Button>
+      </Buttons>
+    </>
+  );
+};
+
+const StepContent: Record<Step, JSX.Element> = {
+  [Step.Initiate]: <Initiate />,
+  [Step.Deposit]: <p>Hello1</p>,
+  [Step.Pending]: <p>Hello2</p>,
+  [Step.Confirm]: <p>Hello3</p>,
+  [Step.Complete]: <p>Hello4</p>,
+};
+
+export const RenMintContent: FC = () => {
+  const [step, _] = useRenMintStep();
 
   return (
     <Container>
       <Header>
         <h2>Initiate Transaction</h2>
       </Header>
-      {
-        ({
-          [Step.Initiate]: (
-            <>
-              <Input>
-                <div>
-                  <Amount>{inputFormValue}</Amount>
-                  <AssetBox
-                    options={inputAddressOptions}
-                    defaultAddress={inputAddress}
-                    disabled
-                  />
-                </div>
-                <Arrow direction="right" />
-                <div>
-                  <Amount>{inputFormValue}</Amount>
-                  <AssetBox
-                    options={outputAddressOptions}
-                    defaultAddress={outputAddress}
-                    disabled
-                  />
-                </div>
-              </Input>
-              <Address>
-                ETH Address:
-                <span>{address}</span>
-              </Address>
-              <Dialog>
-                You must have access to the above Ethereum address, else you
-                will not be able to complete the transaction
-              </Dialog>
-              <ConfirmTransaction>
-                <ToggleInput checked={toggleEnabled} onClick={setToggle} />
-                <p>I confirm I have access to the above ETH address</p>
-              </ConfirmTransaction>
-              <Buttons>
-                <Button
-                  disabled={!toggleEnabled}
-                  highlighted
-                  onClick={handleConfirmClick}
-                >
-                  Confirm
-                </Button>
-                <Button onClick={onCancelClick}>Cancel</Button>
-              </Buttons>
-            </>
-          ),
-          [Step.Deposit]: <p>Hello1</p>,
-          [Step.Pending]: <p>Hello2</p>,
-          [Step.Confirm]: <p>Hello3</p>,
-          [Step.Complete]: <p>Hello4</p>,
-        } as Record<Step, JSX.Element>)[step]
-      }
+      {StepContent[step as Step]}
     </Container>
+  );
+};
+
+export const RenMintOnboard: FC<Props> = ({ onboardData }) => {
+  return (
+    <RenMintProvider onboardData={onboardData}>
+      <RenMintContent />
+    </RenMintProvider>
   );
 };
