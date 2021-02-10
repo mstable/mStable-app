@@ -72,6 +72,10 @@ export const MassetModal: FC = () => {
     return [{ address: massetAddress as string }];
   }, [massetAddress]);
 
+  const outputAddressOptions = useMemo(() => {
+    return [{ address: saveAddress as string }];
+  }, [saveAddress]);
+
   const depositApprove = useMemo(
     () => ({
       spender: saveAddress as string,
@@ -116,19 +120,18 @@ export const MassetModal: FC = () => {
       </Message>
       <AssetExchange
         inputAddressOptions={inputAddressOptions}
+        outputAddressOptions={outputAddressOptions}
         inputAddress={inputAddress}
-        inputAddressDisabled
-        inputAmount={inputAmount}
         inputFormValue={inputFormValue}
-        outputAddress={saveAddress}
         exchangeRate={exchangeRate}
-        handleSetAddress={setInputAddress}
-        handleSetAmount={setInputFormValue}
-        handleSetMax={() => {
+        handleSetInputAddress={setInputAddress}
+        handleSetInputAmount={setInputFormValue}
+        handleSetInputMax={(): void => {
           if (inputToken) {
             setInputFormValue(inputToken.balance.string);
           }
         }}
+        outputAddress={saveAddress}
         error={error}
       >
         <SendButton

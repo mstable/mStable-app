@@ -151,22 +151,26 @@ export const SaveDeposit: FC<{
   return (
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
+      outputAddressOptions={[
+        {
+          address: saveAddress,
+          balance: isDepositingSave ? vaultBalance : undefined,
+          label: isDepositingSave ? 'imUSD Vault' : undefined,
+        },
+      ]}
       inputAddress={inputAddress}
-      inputAmount={inputAmount}
       inputFormValue={inputFormValue}
       outputAddress={saveAddress}
-      outputLabel={isDepositingSave ? 'imUSD Vault' : undefined}
-      outputBalance={isDepositingSave ? vaultBalance : undefined}
       error={error}
       exchangeRate={exchangeRate}
-      // slippage={slippage}
-      handleSetAddress={setInputAddress}
-      handleSetAmount={setInputFormValue}
-      handleSetMax={() => {
+      handleSetInputAddress={setInputAddress}
+      handleSetInputAmount={setInputFormValue}
+      handleSetInputMax={() => {
         if (inputToken) {
           setInputFormValue(inputToken.balance.string);
         }
       }}
+      outputAddressDisabled
     >
       {isDepositingSave ? (
         <SendButton
