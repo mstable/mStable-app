@@ -12,6 +12,7 @@ export type OnboardData = {
 export enum Actions {
   Data,
   SetOnboardData,
+  SetStep,
 }
 
 export type Action =
@@ -19,6 +20,10 @@ export type Action =
   | {
       type: Actions.SetOnboardData;
       payload?: OnboardData;
+    }
+  | {
+      type: Actions.SetStep;
+      payload: number;
     };
 
 export interface State {
@@ -35,4 +40,5 @@ export interface State {
 
 export interface Dispatch {
   setOnboardData(data?: OnboardData): void;
+  setStep(step: number): void;
 }

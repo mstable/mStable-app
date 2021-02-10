@@ -14,10 +14,14 @@ const initialize = (state: State): State =>
 const reduce: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case Actions.Data:
-      return { ...state, massetState: action.payload };
+      return { ...state };
 
     case Actions.SetOnboardData: {
-      return { ...state };
+      return { ...state, onboardData: action.payload };
+    }
+
+    case Actions.SetStep: {
+      return { ...state, step: action.payload };
     }
 
     default:

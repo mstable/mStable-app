@@ -8,10 +8,8 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Button } from '../../../core/Button';
-import {
-  RenMintOnboard as MintOnboard,
-  Props as OnboardTxDetails,
-} from './RenMintOnboard';
+import { RenMintOnboard as MintOnboard } from './RenMintOnboard';
+import { OnboardData } from './types';
 
 // To index address with
 const BTC_ADDRESS = 'BTC_ADDRESS_1';
@@ -35,7 +33,7 @@ const ExchangeContainer = styled.div`
 
 export const RenMint: FC = () => {
   // const [outputAddress, handleSetAddress] = useState<string | undefined>();
-  const [txDetails, setTxDetails] = useState<OnboardTxDetails | undefined>();
+  const [txDetails, setTxDetails] = useState<OnboardData | undefined>();
 
   const massetState = useSelectedMassetState();
   const { address: massetAddress } = massetState ?? {};
@@ -67,6 +65,7 @@ export const RenMint: FC = () => {
     },
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCancelClick = useCallback(() => setTxDetails(undefined), []);
 
   return (
@@ -91,8 +90,7 @@ export const RenMint: FC = () => {
       </CollapseBox>
       <ExchangeContainer>
         {txDetails ? (
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          <MintOnboard {...txDetails} onCancelClick={handleCancelClick} />
+          <MintOnboard onboardData={txDetails} />
         ) : (
           <Exchange
             inputAddressOptions={inputAddressOptions}

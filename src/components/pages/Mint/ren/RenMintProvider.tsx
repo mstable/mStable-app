@@ -7,8 +7,12 @@ import React, {
   useReducer,
 } from 'react';
 
-import { Actions, Dispatch, State } from './types';
+import { Actions, Dispatch, OnboardData, State } from './types';
 import { reducer } from './reducer';
+
+interface Props {
+  onboardData: OnboardData;
+}
 
 const initialState: State = {
   initialized: false,
@@ -18,12 +22,22 @@ const initialState: State = {
 const stateCtx = createContext<State>(initialState);
 const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
-export const MintProvider: FC = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+export const RenMintProvider: FC<Props> = ({ onboardData, children }) => {
+  const [state, dispatch] = useReducer(reducer, {
+    ...initialState,
+    onboardData,
+  });
 
   const setOnboardData = useCallback<Dispatch['setOnboardData']>(
     data => {
       dispatch({ type: Actions.SetOnboardData, payload: data });
+    },
+    [dispatch],
+  );
+
+  const setStep = useCallback<Dispatch['setStep']>(
+    step => {
+      dispatch({ type: Actions.SetStep, payload: step });
     },
     [dispatch],
   );
@@ -34,8 +48,9 @@ export const MintProvider: FC = ({ children }) => {
         value={useMemo(
           () => ({
             setOnboardData,
+            setStep,
           }),
-          [setOnboardData],
+          [setOnboardData, setStep],
         )}
       >
         {children}
@@ -47,3 +62,11 @@ export const MintProvider: FC = ({ children }) => {
 export const useRenMintState = (): State => useContext(stateCtx);
 
 export const useRenMintDispatch = (): Dispatch => useContext(dispatchCtx);
+
+export const useRenMintSetOnboardData = (): Dispatch['setOnboardData'] =>
+  useRenMintDispatch().setOnboardData;
+
+export const useRenMintStep = (): [State['step'], Dispatch['setStep']] => [
+  useRenMintState().step,
+  useRenMintDispatch().setStep,
+];
