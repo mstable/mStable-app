@@ -317,32 +317,16 @@ const transformMassetData = (
   };
 };
 
-export const transformRawData = ([data, vaultData, tokens]: [
+export const transformRawData = ([data, , tokens]: [
   MassetsQueryResult['data'],
   VaultsQueryResult['data'],
   Tokens,
 ]): DataState => {
   return Object.fromEntries(
     (data?.massets ?? []).map(masset => {
-      if (masset.savingsContractsV2?.[0]?.boostedSavingsVaults.length) {
-        return [
-          masset.token.symbol.toLowerCase() as MassetName,
-          transformMassetData(masset, tokens),
-        ];
-      }
-
-      const mergedData: typeof masset = {
-        ...masset,
-        savingsContractsV2: [
-          {
-            ...masset.savingsContractsV2[0],
-            boostedSavingsVaults: vaultData?.boostedSavingsVaults ?? [],
-          },
-        ],
-      };
       return [
         masset.token.symbol.toLowerCase() as MassetName,
-        transformMassetData(mergedData, tokens),
+        transformMassetData(masset, tokens),
       ];
     }),
   );
