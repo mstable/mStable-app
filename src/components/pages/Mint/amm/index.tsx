@@ -17,8 +17,7 @@ import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { sanitizeMassetError } from '../../../../utils/strings';
 import { Interfaces } from '../../../../types';
 
-import { MassetFactory } from '../../../../typechain/MassetFactory';
-import { Masset } from '../../../../typechain/Masset';
+import { Mbtc } from '../../../../typechain/Mbtc';
 
 import {
   ManyToOneAssetExchange,
@@ -34,6 +33,7 @@ import {
 } from '../../../../context/AppProvider';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { MassetPage } from '../../MassetPage';
+import { MbtcFactory } from '../../../../typechain/MbtcFactory';
 
 const formId = 'mint';
 
@@ -54,7 +54,7 @@ const MintLogic: FC = () => {
   const masset = useMemo(
     () =>
       massetAddress && signer
-        ? MassetFactory.connect(massetAddress, signer)
+        ? MbtcFactory.connect(massetAddress, signer)
         : undefined,
     [massetAddress, signer],
   );
@@ -88,7 +88,7 @@ const MintLogic: FC = () => {
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
-    (_masset: Masset | undefined, _inputValues: BigDecimalInputValues) => {
+    (_masset: Mbtc | undefined, _inputValues: BigDecimalInputValues) => {
       if (_masset) {
         const touched = Object.values(_inputValues).filter(v => v.touched);
 

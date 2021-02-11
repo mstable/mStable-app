@@ -11,8 +11,8 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
-import { MassetFactory } from '../../../../typechain/MassetFactory';
-import { Masset } from '../../../../typechain/Masset';
+import { MbtcFactory } from '../../../../typechain/MbtcFactory';
+import { Mbtc } from '../../../../typechain/Mbtc';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -79,14 +79,14 @@ const SwapLogic: FC = () => {
   );
 
   const masset = useMemo(
-    () => (signer ? MassetFactory.connect(massetAddress, signer) : undefined),
+    () => (signer ? MbtcFactory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
     (
-      _masset?: Masset,
+      _masset?: Mbtc,
       _inputAddress?: string,
       _inputAmount?: BigDecimal,
       _outputAddress?: string,

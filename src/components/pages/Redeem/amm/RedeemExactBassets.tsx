@@ -13,8 +13,8 @@ import {
   useTokenSubscription,
 } from '../../../../context/TokensProvider';
 
-import { MassetFactory } from '../../../../typechain/MassetFactory';
-import { Masset } from '../../../../typechain/Masset';
+import { MbtcFactory } from '../../../../typechain/MbtcFactory';
+import { Mbtc } from '../../../../typechain/Mbtc';
 import { Interfaces } from '../../../../types';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -47,7 +47,7 @@ const RedeemExactBassetsLogic: FC = () => {
   const outputTokens = useTokens(Object.keys(bassetAmounts));
 
   const masset = useMemo(
-    () => (signer ? MassetFactory.connect(massetAddress, signer) : undefined),
+    () => (signer ? MbtcFactory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
@@ -82,7 +82,7 @@ const RedeemExactBassetsLogic: FC = () => {
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
-    (_masset: Masset | undefined, _inputValues: BigDecimalInputValues) => {
+    (_masset: Mbtc | undefined, _inputValues: BigDecimalInputValues) => {
       if (_masset) {
         const touched = Object.values(_inputValues).filter(v => v.touched);
 

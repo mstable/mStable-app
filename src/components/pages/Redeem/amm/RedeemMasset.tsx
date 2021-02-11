@@ -17,8 +17,8 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { sanitizeMassetError } from '../../../../utils/strings';
 
-import { MassetFactory } from '../../../../typechain/MassetFactory';
-import { Masset } from '../../../../typechain/Masset';
+import { Mbtc } from '../../../../typechain/Mbtc';
+import { MbtcFactory } from '../../../../typechain/MbtcFactory';
 import { Interfaces } from '../../../../types';
 
 import { SendButton } from '../../../forms/SendButton';
@@ -73,14 +73,14 @@ export const RedeemMasset: FC = () => {
   const outputToken = useTokenSubscription(outputAddress);
 
   const masset = useMemo(
-    () => (signer ? MassetFactory.connect(massetAddress, signer) : undefined),
+    () => (signer ? MbtcFactory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
     (
-      _masset: Masset | undefined,
+      _masset: Mbtc | undefined,
       _inputAmount: BigDecimal | undefined,
       _outputAddress: string | undefined,
     ) => {
