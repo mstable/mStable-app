@@ -22,7 +22,6 @@ import { FAQ } from './components/pages/FAQ';
 import { Analytics } from './components/pages/Analytics';
 import { PoolPage } from './components/pages/Earn/Pool';
 import { AdminPage } from './components/pages/Earn/Admin';
-import { RenMint } from './components/pages/Mint/curvedMasset/ren';
 
 checkRequiredEnvVars();
 

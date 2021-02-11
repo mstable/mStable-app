@@ -24,6 +24,7 @@ import {
   useAddInfoNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
+import { Ethereum } from '@renproject/chains';
 
 export interface State {
   onboard: API;
