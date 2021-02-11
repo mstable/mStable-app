@@ -151,6 +151,7 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
 
   @media (min-width: ${ViewportWidth.s}) {
     font-size: ${FontSize.m};
+    min-width: 145px;
   }
 `;
 

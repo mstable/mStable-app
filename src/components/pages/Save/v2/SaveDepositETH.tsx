@@ -194,21 +194,27 @@ export const SaveDepositETH: FC<{
   return (
     <AssetExchange
       inputAddress={inputAddress}
-      inputAddressDisabled
       inputAddressOptions={inputAddressOptions}
-      inputAmount={inputAmount}
-      inputLabel="ETH"
+      outputAddressOptions={[
+        {
+          address: saveAddress,
+          balance: ethBalance,
+          label: 'ETH',
+        },
+      ]}
       inputFormValue={inputFormValue}
       outputAddress={saveAddress}
       error={error}
       exchangeRate={exchangeRate}
-      handleSetAddress={setInputAddress}
-      handleSetAmount={setInputFormValue}
-      handleSetMax={() => {
+      handleSetInputAddress={setInputAddress}
+      handleSetInputAmount={setInputFormValue}
+      handleSetInputMax={() => {
         if (ethBalance) {
           setInputFormValue(ethBalance.string);
         }
       }}
+      inputAddressDisabled
+      outputAddressDisabled
     >
       <>
         {!saveAndStake && (

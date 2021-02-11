@@ -10,7 +10,7 @@ import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { MoreInfo } from '../../../core/Tabs';
 import { SendButton } from '../../../forms/SendButton';
-import { AssetOutputWidget } from '../../../forms/AssetOutputWidget';
+import { AssetInput } from '../../../forms/AssetInput';
 
 const formId = 'VaultExit';
 
@@ -35,10 +35,11 @@ export const VaultExit: FC = () => {
 
   return (
     <Container>
-      <AssetOutputWidget
-        title="Receive"
-        outputAddress={saveAddress}
-        inputAmount={rawBalance}
+      <AssetInput
+        formValue={saveAddress}
+        addressDisabled
+        address={saveAddress}
+        addressOptions={[{ address: saveAddress }]}
       />
       <SendButton
         valid={valid}

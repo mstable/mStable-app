@@ -202,7 +202,8 @@ const SwapLogic: FC = () => {
 
   return (
     <AssetSwap
-      addressOptions={addressOptions}
+      inputAddressOptions={addressOptions}
+      outputAddressOptions={addressOptions}
       error={error}
       exchangeRate={amounts.exchangeRate}
       handleSetInputAddress={setInputAddress}

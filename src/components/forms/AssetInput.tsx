@@ -11,6 +11,7 @@ import { ReactComponent as LockIcon } from '../icons/lock-open.svg';
 import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg';
 import { ApproveProvider, Mode, useApprove } from './ApproveProvider';
 import { TransactionOption } from '../../types';
+import { ViewportWidth } from '../../theme';
 
 interface Props {
   disabled?: boolean;
@@ -48,6 +49,14 @@ const LockButton = styled(Button)`
   svg {
     width: 1rem;
     height: 1rem;
+  }
+`;
+
+const MaxButton = styled(Button)`
+  display: none;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    display: inherit;
   }
 `;
 
@@ -171,14 +180,14 @@ const AssetInputContent: FC<Props> = ({
                 onChange={handleSetAmount}
               />
               {handleSetMax && (
-                <Button
+                <MaxButton
                   type="button"
                   onClick={handleSetMax}
                   scale={0.75}
                   transparent
                 >
                   Max
-                </Button>
+                </MaxButton>
               )}
             </Input>
           </InputContainer>

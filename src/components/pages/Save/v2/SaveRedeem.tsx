@@ -62,15 +62,15 @@ export const SaveRedeem: FC = () => {
   return (
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
+      outputAddressOptions={[{ address: massetAddress }]}
       inputAddress={saveAddress}
       inputAddressDisabled
-      inputAmount={inputAmount}
       inputFormValue={inputFormValue}
       outputAddress={massetAddress}
       error={error}
       exchangeRate={exchangeRate}
-      handleSetAmount={setInputFormValue}
-      handleSetMax={() => {
+      handleSetInputAmount={setInputFormValue}
+      handleSetInputMax={() => {
         if (inputToken) {
           setInputFormValue(inputToken.balance.string);
         }
