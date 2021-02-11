@@ -1,4 +1,5 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, { FC, useMemo, useRef } from 'react';
+import { useToggle } from 'react-use';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
 
@@ -64,7 +65,6 @@ const OptionContainer = styled(UnstyledButton)<{
   padding: 0.25rem 0.5rem;
   align-items: center;
   font-size: 1rem;
-  align-items: center;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 
   border-top-left-radius: ${({ active, selected }) =>
@@ -162,7 +162,7 @@ export const Dropdown: FC<Props> = ({
   onChange,
   disabled,
 }) => {
-  const [show, setShow] = useState(false);
+  const [show, toggleShow] = useToggle(false);
 
   const selected = useMemo(
     () =>
@@ -172,22 +172,24 @@ export const Dropdown: FC<Props> = ({
     [options, defaultAddress],
   );
 
-  const handleToggle = useCallback(() => setShow(!show), [show, setShow]);
-
   const handleSelect = (address?: string): void => {
-    setShow(false);
+    toggleShow(false);
     onChange?.(address);
   };
 
   const container = useRef(null);
-  useOnClickOutside(container, () => setShow(false));
+  useOnClickOutside(container, () => {
+    toggleShow(false);
+  });
 
   const isDropdown = (options?.length ?? 0) > 1;
 
   return (
     <Container ref={container} chevronHidden={!isDropdown}>
       <Option
-        onClick={handleToggle}
+        onClick={() => {
+          if (isDropdown) toggleShow();
+        }}
         option={selected}
         selected
         active={show}
