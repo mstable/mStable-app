@@ -2,9 +2,6 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
       export interface IntrospectionResultData {
         __schema: {
@@ -72,9 +69,6 @@ export type Scalars = {
   BigDecimal: string;
   BigInt: string;
 };
-
-
-
 
 export type _Block_ = {
   /** The hash of the block */
@@ -3147,47 +3141,47 @@ export enum VolumeMetric_OrderBy {
   Type = 'type'
 }
 
-export type VolumeMetricsOfTypeQueryVariables = Exact<{
+export type VolumeMetricsOfTypeQueryVariables = {
   period: TimeMetricPeriod;
   type: TransactionType;
   from: Scalars['Int'];
   to: Scalars['Int'];
-}>;
+};
 
 
 export type VolumeMetricsOfTypeQuery = { volumeMetrics: Array<Pick<VolumeMetric, 'timestamp' | 'value'>> };
 
-export type VolumeMetricsQueryVariables = Exact<{
+export type VolumeMetricsQueryVariables = {
   period: TimeMetricPeriod;
   from: Scalars['Int'];
   to: Scalars['Int'];
-}>;
+};
 
 
 export type VolumeMetricsQuery = { volumeMetrics: Array<Pick<VolumeMetric, 'type' | 'timestamp' | 'value'>> };
 
-export type AggregateMetricsOfTypeQueryVariables = Exact<{
+export type AggregateMetricsOfTypeQueryVariables = {
   period: TimeMetricPeriod;
   type: AggregateMetricType;
   from: Scalars['Int'];
   to: Scalars['Int'];
-}>;
+};
 
 
 export type AggregateMetricsOfTypeQuery = { aggregateMetrics: Array<Pick<AggregateMetric, 'timestamp' | 'value'>> };
 
-export type AggregateMetricsQueryVariables = Exact<{
+export type AggregateMetricsQueryVariables = {
   period: TimeMetricPeriod;
   from: Scalars['Int'];
   to: Scalars['Int'];
-}>;
+};
 
 
 export type AggregateMetricsQuery = { aggregateMetrics: Array<Pick<AggregateMetric, 'type' | 'timestamp' | 'value'>> };
 
-export type MerkleDropClaimsQueryVariables = Exact<{
+export type MerkleDropClaimsQueryVariables = {
   account: Scalars['Bytes'];
-}>;
+};
 
 
 export type MerkleDropClaimsQuery = { merkleDrops: Array<(
@@ -3198,13 +3192,13 @@ export type MerkleDropClaimsQuery = { merkleDrops: Array<(
     )> }
   )> };
 
-export type ScriptRewardsQueryVariables = Exact<{
+export type ScriptRewardsQueryVariables = {
   id: Scalars['ID'];
   end: Scalars['Int'];
   block?: Maybe<Block_Height>;
   limit: Scalars['Int'];
   offset: Scalars['Int'];
-}>;
+};
 
 
 export type ScriptRewardsQuery = { stakingRewardsContracts: Array<(

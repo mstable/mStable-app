@@ -1171,6 +1171,10 @@ type Masset {
   forgeValidator: Bytes!
   """Amplification data"""
   ampData: AmpData
+  """Cache size"""
+  cacheSize: BigInt
+  """Hard min weight for bAssets"""
+  hardMin: BigInt
   """Hard max weight for bAssets"""
   hardMax: BigInt
   """Optional start time for `InvariantValidator` contract"""
@@ -1234,10 +1238,10 @@ Lower A = higher rate of change = higher slippage.
 """
 type AmpData {
   id: ID!
-  initialA: BigInt!
-  futureA: BigInt!
-  initialATime: BigInt!
-  futureATime: BigInt!
+  currentA: BigInt!
+  targetA: BigInt!
+  startTime: BigInt!
+  rampEndTime: BigInt!
 }
 type SavingsContract {
   """Address of the SavingsContract"""
@@ -3305,10 +3309,10 @@ input Basket_filter {
 }
 enum AmpData_orderBy {
   id
-  initialA
-  futureA
-  initialATime
-  futureATime
+  currentA
+  targetA
+  startTime
+  rampEndTime
 }
 input AmpData_filter {
   id: ID
@@ -3319,38 +3323,38 @@ input AmpData_filter {
   id_lte: ID
   id_in: [ID!]
   id_not_in: [ID!]
-  initialA: BigInt
-  initialA_not: BigInt
-  initialA_gt: BigInt
-  initialA_lt: BigInt
-  initialA_gte: BigInt
-  initialA_lte: BigInt
-  initialA_in: [BigInt!]
-  initialA_not_in: [BigInt!]
-  futureA: BigInt
-  futureA_not: BigInt
-  futureA_gt: BigInt
-  futureA_lt: BigInt
-  futureA_gte: BigInt
-  futureA_lte: BigInt
-  futureA_in: [BigInt!]
-  futureA_not_in: [BigInt!]
-  initialATime: BigInt
-  initialATime_not: BigInt
-  initialATime_gt: BigInt
-  initialATime_lt: BigInt
-  initialATime_gte: BigInt
-  initialATime_lte: BigInt
-  initialATime_in: [BigInt!]
-  initialATime_not_in: [BigInt!]
-  futureATime: BigInt
-  futureATime_not: BigInt
-  futureATime_gt: BigInt
-  futureATime_lt: BigInt
-  futureATime_gte: BigInt
-  futureATime_lte: BigInt
-  futureATime_in: [BigInt!]
-  futureATime_not_in: [BigInt!]
+  currentA: BigInt
+  currentA_not: BigInt
+  currentA_gt: BigInt
+  currentA_lt: BigInt
+  currentA_gte: BigInt
+  currentA_lte: BigInt
+  currentA_in: [BigInt!]
+  currentA_not_in: [BigInt!]
+  targetA: BigInt
+  targetA_not: BigInt
+  targetA_gt: BigInt
+  targetA_lt: BigInt
+  targetA_gte: BigInt
+  targetA_lte: BigInt
+  targetA_in: [BigInt!]
+  targetA_not_in: [BigInt!]
+  startTime: BigInt
+  startTime_not: BigInt
+  startTime_gt: BigInt
+  startTime_lt: BigInt
+  startTime_gte: BigInt
+  startTime_lte: BigInt
+  startTime_in: [BigInt!]
+  startTime_not_in: [BigInt!]
+  rampEndTime: BigInt
+  rampEndTime_not: BigInt
+  rampEndTime_gt: BigInt
+  rampEndTime_lt: BigInt
+  rampEndTime_gte: BigInt
+  rampEndTime_lte: BigInt
+  rampEndTime_in: [BigInt!]
+  rampEndTime_not_in: [BigInt!]
 }
 enum Masset_orderBy {
   id
@@ -3358,6 +3362,8 @@ enum Masset_orderBy {
   basketManager
   forgeValidator
   ampData
+  cacheSize
+  hardMin
   hardMax
   invariantStartTime
   invariantStartingCap
@@ -3436,6 +3442,22 @@ input Masset_filter {
   ampData_not_starts_with: String
   ampData_ends_with: String
   ampData_not_ends_with: String
+  cacheSize: BigInt
+  cacheSize_not: BigInt
+  cacheSize_gt: BigInt
+  cacheSize_lt: BigInt
+  cacheSize_gte: BigInt
+  cacheSize_lte: BigInt
+  cacheSize_in: [BigInt!]
+  cacheSize_not_in: [BigInt!]
+  hardMin: BigInt
+  hardMin_not: BigInt
+  hardMin_gt: BigInt
+  hardMin_lt: BigInt
+  hardMin_gte: BigInt
+  hardMin_lte: BigInt
+  hardMin_in: [BigInt!]
+  hardMin_not_in: [BigInt!]
   hardMax: BigInt
   hardMax_not: BigInt
   hardMax_gt: BigInt
@@ -4466,6 +4488,3 @@ enum _SubgraphErrorPolicy_ {
   """If the subgraph has indexing errors, data will be omitted. The default."""
   deny
 }
-directive @entity on OBJECT
-directive @derivedFrom(field: String) on FIELD_DEFINITION
-directive @subgraphId(id: String) on OBJECT

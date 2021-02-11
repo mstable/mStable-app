@@ -2,9 +2,6 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
       export interface IntrospectionResultData {
         __schema: {
@@ -51,9 +48,6 @@ export type Scalars = {
   BigInt: string;
   BigDecimal: string;
 };
-
-
-
 
 export type _Block_ = {
   /** The hash of the block */
@@ -1836,15 +1830,15 @@ export type StakingRewardsContractDetailsFragment = (
   ), rewardsToken: TokenDetailsFragment, platformToken?: Maybe<TokenDetailsFragment> }
 );
 
-export type AllErc20TokensQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllErc20TokensQueryVariables = {};
 
 
 export type AllErc20TokensQuery = { tokens: Array<TokenDetailsFragment> };
 
-export type StakingRewardsContractQueryVariables = Exact<{
+export type StakingRewardsContractQueryVariables = {
   id: Scalars['ID'];
   account?: Maybe<Scalars['Bytes']>;
-}>;
+};
 
 
 export type StakingRewardsContractQuery = { stakingRewardsContract?: Maybe<(
@@ -1852,11 +1846,11 @@ export type StakingRewardsContractQuery = { stakingRewardsContract?: Maybe<(
     & StakingRewardsContractDetailsFragment
   )> };
 
-export type StakingRewardsContractsQueryVariables = Exact<{
+export type StakingRewardsContractsQueryVariables = {
   account?: Maybe<Scalars['Bytes']>;
   includeHistoric: Scalars['Boolean'];
   block?: Maybe<Block_Height>;
-}>;
+};
 
 
 export type StakingRewardsContractsQuery = { current: Array<(
@@ -1867,18 +1861,18 @@ export type StakingRewardsContractsQuery = { current: Array<(
     & { address: StakingRewardsContract['id'] }
   )> };
 
-export type RewardsDistributorQueryVariables = Exact<{ [key: string]: never; }>;
+export type RewardsDistributorQueryVariables = {};
 
 
 export type RewardsDistributorQuery = { rewardsDistributors: Array<Pick<RewardsDistributor, 'id' | 'fundManagers'>> };
 
-export type ScriptRewardsQueryVariables = Exact<{
+export type ScriptRewardsQueryVariables = {
   id: Scalars['ID'];
   end: Scalars['BigInt'];
   block?: Maybe<Block_Height>;
   limit: Scalars['Int'];
   offset: Scalars['Int'];
-}>;
+};
 
 
 export type ScriptRewardsQuery = { stakingRewardsContracts: Array<(
@@ -1887,9 +1881,9 @@ export type ScriptRewardsQuery = { stakingRewardsContracts: Array<(
     & { stakingRewards: Array<Pick<StakingReward, 'amount' | 'account' | 'amountPerTokenPaid'>>, stakingBalances: Array<Pick<StakingBalance, 'amount' | 'account'>>, claimRewardTransactions: Array<Pick<StakingRewardsContractClaimRewardTransaction, 'amount' | 'sender'>> }
   )> };
 
-export type MerkleDropClaimsQueryVariables = Exact<{
+export type MerkleDropClaimsQueryVariables = {
   account: Scalars['Bytes'];
-}>;
+};
 
 
 export type MerkleDropClaimsQuery = { merkleDrops: Array<(

@@ -2,9 +2,6 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
       export interface IntrospectionResultData {
         __schema: {
@@ -78,9 +75,6 @@ export type Scalars = {
   BigInt: string;
   BigDecimal: string;
 };
-
-
-
 
 export type _Block_ = {
   /** The hash of the block */
@@ -161,10 +155,10 @@ export enum Account_OrderBy {
  */
 export type AmpData = {
   id: Scalars['ID'];
-  initialA: Scalars['BigInt'];
-  futureA: Scalars['BigInt'];
-  initialATime: Scalars['BigInt'];
-  futureATime: Scalars['BigInt'];
+  currentA: Scalars['BigInt'];
+  targetA: Scalars['BigInt'];
+  startTime: Scalars['BigInt'];
+  rampEndTime: Scalars['BigInt'];
 };
 
 export type AmpData_Filter = {
@@ -176,46 +170,46 @@ export type AmpData_Filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_in?: Maybe<Array<Scalars['ID']>>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
-  initialA?: Maybe<Scalars['BigInt']>;
-  initialA_not?: Maybe<Scalars['BigInt']>;
-  initialA_gt?: Maybe<Scalars['BigInt']>;
-  initialA_lt?: Maybe<Scalars['BigInt']>;
-  initialA_gte?: Maybe<Scalars['BigInt']>;
-  initialA_lte?: Maybe<Scalars['BigInt']>;
-  initialA_in?: Maybe<Array<Scalars['BigInt']>>;
-  initialA_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  futureA?: Maybe<Scalars['BigInt']>;
-  futureA_not?: Maybe<Scalars['BigInt']>;
-  futureA_gt?: Maybe<Scalars['BigInt']>;
-  futureA_lt?: Maybe<Scalars['BigInt']>;
-  futureA_gte?: Maybe<Scalars['BigInt']>;
-  futureA_lte?: Maybe<Scalars['BigInt']>;
-  futureA_in?: Maybe<Array<Scalars['BigInt']>>;
-  futureA_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  initialATime?: Maybe<Scalars['BigInt']>;
-  initialATime_not?: Maybe<Scalars['BigInt']>;
-  initialATime_gt?: Maybe<Scalars['BigInt']>;
-  initialATime_lt?: Maybe<Scalars['BigInt']>;
-  initialATime_gte?: Maybe<Scalars['BigInt']>;
-  initialATime_lte?: Maybe<Scalars['BigInt']>;
-  initialATime_in?: Maybe<Array<Scalars['BigInt']>>;
-  initialATime_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  futureATime?: Maybe<Scalars['BigInt']>;
-  futureATime_not?: Maybe<Scalars['BigInt']>;
-  futureATime_gt?: Maybe<Scalars['BigInt']>;
-  futureATime_lt?: Maybe<Scalars['BigInt']>;
-  futureATime_gte?: Maybe<Scalars['BigInt']>;
-  futureATime_lte?: Maybe<Scalars['BigInt']>;
-  futureATime_in?: Maybe<Array<Scalars['BigInt']>>;
-  futureATime_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  currentA?: Maybe<Scalars['BigInt']>;
+  currentA_not?: Maybe<Scalars['BigInt']>;
+  currentA_gt?: Maybe<Scalars['BigInt']>;
+  currentA_lt?: Maybe<Scalars['BigInt']>;
+  currentA_gte?: Maybe<Scalars['BigInt']>;
+  currentA_lte?: Maybe<Scalars['BigInt']>;
+  currentA_in?: Maybe<Array<Scalars['BigInt']>>;
+  currentA_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  targetA?: Maybe<Scalars['BigInt']>;
+  targetA_not?: Maybe<Scalars['BigInt']>;
+  targetA_gt?: Maybe<Scalars['BigInt']>;
+  targetA_lt?: Maybe<Scalars['BigInt']>;
+  targetA_gte?: Maybe<Scalars['BigInt']>;
+  targetA_lte?: Maybe<Scalars['BigInt']>;
+  targetA_in?: Maybe<Array<Scalars['BigInt']>>;
+  targetA_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  startTime?: Maybe<Scalars['BigInt']>;
+  startTime_not?: Maybe<Scalars['BigInt']>;
+  startTime_gt?: Maybe<Scalars['BigInt']>;
+  startTime_lt?: Maybe<Scalars['BigInt']>;
+  startTime_gte?: Maybe<Scalars['BigInt']>;
+  startTime_lte?: Maybe<Scalars['BigInt']>;
+  startTime_in?: Maybe<Array<Scalars['BigInt']>>;
+  startTime_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rampEndTime?: Maybe<Scalars['BigInt']>;
+  rampEndTime_not?: Maybe<Scalars['BigInt']>;
+  rampEndTime_gt?: Maybe<Scalars['BigInt']>;
+  rampEndTime_lt?: Maybe<Scalars['BigInt']>;
+  rampEndTime_gte?: Maybe<Scalars['BigInt']>;
+  rampEndTime_lte?: Maybe<Scalars['BigInt']>;
+  rampEndTime_in?: Maybe<Array<Scalars['BigInt']>>;
+  rampEndTime_not_in?: Maybe<Array<Scalars['BigInt']>>;
 };
 
 export enum AmpData_OrderBy {
   Id = 'id',
-  InitialA = 'initialA',
-  FutureA = 'futureA',
-  InitialATime = 'initialATime',
-  FutureATime = 'futureATime'
+  CurrentA = 'currentA',
+  TargetA = 'targetA',
+  StartTime = 'startTime',
+  RampEndTime = 'rampEndTime'
 }
 
 /** A Basket of Bassets (e.g. for mUSD) */
@@ -1645,6 +1639,10 @@ export type Masset = {
   forgeValidator: Scalars['Bytes'];
   /** Amplification data */
   ampData?: Maybe<AmpData>;
+  /** Cache size */
+  cacheSize?: Maybe<Scalars['BigInt']>;
+  /** Hard min weight for bAssets */
+  hardMin?: Maybe<Scalars['BigInt']>;
   /** Hard max weight for bAssets */
   hardMax?: Maybe<Scalars['BigInt']>;
   /** Optional start time for `InvariantValidator` contract */
@@ -1822,6 +1820,22 @@ export type Masset_Filter = {
   ampData_not_starts_with?: Maybe<Scalars['String']>;
   ampData_ends_with?: Maybe<Scalars['String']>;
   ampData_not_ends_with?: Maybe<Scalars['String']>;
+  cacheSize?: Maybe<Scalars['BigInt']>;
+  cacheSize_not?: Maybe<Scalars['BigInt']>;
+  cacheSize_gt?: Maybe<Scalars['BigInt']>;
+  cacheSize_lt?: Maybe<Scalars['BigInt']>;
+  cacheSize_gte?: Maybe<Scalars['BigInt']>;
+  cacheSize_lte?: Maybe<Scalars['BigInt']>;
+  cacheSize_in?: Maybe<Array<Scalars['BigInt']>>;
+  cacheSize_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMin?: Maybe<Scalars['BigInt']>;
+  hardMin_not?: Maybe<Scalars['BigInt']>;
+  hardMin_gt?: Maybe<Scalars['BigInt']>;
+  hardMin_lt?: Maybe<Scalars['BigInt']>;
+  hardMin_gte?: Maybe<Scalars['BigInt']>;
+  hardMin_lte?: Maybe<Scalars['BigInt']>;
+  hardMin_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMin_not_in?: Maybe<Array<Scalars['BigInt']>>;
   hardMax?: Maybe<Scalars['BigInt']>;
   hardMax_not?: Maybe<Scalars['BigInt']>;
   hardMax_gt?: Maybe<Scalars['BigInt']>;
@@ -2088,6 +2102,8 @@ export enum Masset_OrderBy {
   BasketManager = 'basketManager',
   ForgeValidator = 'forgeValidator',
   AmpData = 'ampData',
+  CacheSize = 'cacheSize',
+  HardMin = 'hardMin',
   HardMax = 'hardMax',
   InvariantStartTime = 'invariantStartTime',
   InvariantStartingCap = 'invariantStartingCap',
@@ -4692,10 +4708,10 @@ export type TransactionFieldsFragment = TransactionFields_SavingsContractDeposit
 
 export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
 
-export type MassetsQueryVariables = Exact<{
+export type MassetsQueryVariables = {
   account: Scalars['String'];
   hasAccount: Scalars['Boolean'];
-}>;
+};
 
 
 export type MassetsQuery = { massets: Array<(
@@ -4724,16 +4740,16 @@ export type MassetsQuery = { massets: Array<(
     )> }
   )> };
 
-export type V1SavingsBalanceQueryVariables = Exact<{
+export type V1SavingsBalanceQueryVariables = {
   id: Scalars['ID'];
   account: Scalars['String'];
   include: Scalars['Boolean'];
-}>;
+};
 
 
 export type V1SavingsBalanceQuery = { savingsContract?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
 
-export type AllTokensQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllTokensQueryVariables = {};
 
 
 export type AllTokensQuery = { savingsContracts: Array<(
@@ -4741,16 +4757,16 @@ export type AllTokensQuery = { savingsContracts: Array<(
     & { address: SavingsContract['id'] }
   )>, tokens: Array<TokenAllFragment> };
 
-export type TokenQueryVariables = Exact<{
+export type TokenQueryVariables = {
   id: Scalars['ID'];
-}>;
+};
 
 
 export type TokenQuery = { token?: Maybe<TokenAllFragment> };
 
-export type HistoricTransactionsQueryVariables = Exact<{
+export type HistoricTransactionsQueryVariables = {
   account?: Maybe<Scalars['Bytes']>;
-}>;
+};
 
 
 export type HistoricTransactionsQuery = { transactions: Array<(
