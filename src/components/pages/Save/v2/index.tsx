@@ -21,6 +21,7 @@ import { useMtaPrice } from '../../../../hooks/useMtaPrice';
 import { Button } from '../../../core/Button';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { SaveModalHeader } from './SaveModalHeader';
+import { ADDRESSES } from '../../../../constants';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
 
@@ -114,32 +115,37 @@ export const Save: FC = () => {
       <div />
       <Divider />
       <div />
-      <BalanceRow
-        token={BalanceType.BoostedSavingsVault}
-        apy={saveApy?.value}
-        highlight
-        rewards={<VaultROI />}
-        onClick={showVaultModal}
-        balance={vaultBalance ?? BigDecimal.ZERO}
-        dollarExchangeRate={exchangeRate}
-        masset={massetName}
-      >
-        {vaultBalance || hasRewards ? (
-          <Boost />
-        ) : (
-          <PotentialBoost>
-            {isCalculatorVisible ? (
-              <BoostCalculator
-                onBackClick={() => setCalculatorVisible(false)}
-              />
-            ) : (
-              <Button scale={0.875} onClick={() => setCalculatorVisible(true)}>
-                Calculate rewards
-              </Button>
-            )}
-          </PotentialBoost>
-        )}
-      </BalanceRow>
+      {ADDRESSES[massetName]?.SaveWrapper && (
+        <BalanceRow
+          token={BalanceType.BoostedSavingsVault}
+          apy={saveApy?.value}
+          highlight
+          rewards={<VaultROI />}
+          onClick={showVaultModal}
+          balance={vaultBalance ?? BigDecimal.ZERO}
+          dollarExchangeRate={exchangeRate}
+          masset={massetName}
+        >
+          {vaultBalance || hasRewards ? (
+            <Boost />
+          ) : (
+            <PotentialBoost>
+              {isCalculatorVisible ? (
+                <BoostCalculator
+                  onBackClick={() => setCalculatorVisible(false)}
+                />
+              ) : (
+                <Button
+                  scale={0.875}
+                  onClick={() => setCalculatorVisible(true)}
+                >
+                  Calculate rewards
+                </Button>
+              )}
+            </PotentialBoost>
+          )}
+        </BalanceRow>
+      )}
       <BalanceRow
         token={BalanceType.Meta}
         balance={metaToken?.balance}

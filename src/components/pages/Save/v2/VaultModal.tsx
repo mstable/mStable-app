@@ -25,9 +25,7 @@ const Container = styled.div`
 `;
 
 const tabTitles = (massetSymbol?: string): { [key in Tabs]: string } => ({
-  [Deposit]: `Deposit via ${
-    massetSymbol === 'mUSD' ? 'Stablecoin' : 'Stable Asset'
-  }`,
+  [Deposit]: `Deposit via ${massetSymbol === 'mUSD' ? 'Stablecoin' : 'mBTC'}`,
   [DepositETH]: 'Deposit via ETH',
   [Withdraw]: 'Withdraw',
   [Exit]: 'Exit',
@@ -47,7 +45,7 @@ export const VaultModal: FC = () => {
   const [tab, setTab] = useState<Tabs>(Tabs.Deposit);
   const massetSymbol = massetState?.token.symbol;
   const saveWrapperAddress =
-    ADDRESSES[massetSymbol as 'mBTC' | 'mUSD']?.SaveWrapper;
+    ADDRESSES[massetSymbol as 'mbtc' | 'musd']?.SaveWrapper;
 
   const canDepositWithWrapper =
     massetState?.savingsContracts.v2?.active && !!saveWrapperAddress;

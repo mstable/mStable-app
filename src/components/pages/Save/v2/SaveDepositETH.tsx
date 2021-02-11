@@ -103,7 +103,7 @@ export const SaveDepositETH: FC<{
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
   const saveWrapperAddress =
-    ADDRESSES[massetSymbol as 'mBTC' | 'mUSD']?.SaveWrapper;
+    ADDRESSES[massetSymbol as 'mbtc' | 'musd']?.SaveWrapper;
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
   const [uniswapAmountOut, setUniswapAmountOut] = useState<{

@@ -17,6 +17,7 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 const formId = 'SaveDeposit';
 
@@ -35,18 +36,17 @@ export const SaveDeposit: FC<{
 }> = ({ saveAndStake }) => {
   const signer = useSigner();
   const propose = usePropose();
+  const massetName = useSelectedMassetName();
 
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
   const savingsContract = massetState?.savingsContracts.v2;
-  const massetSymbol = massetState?.token.symbol;
   const vault = savingsContract?.boostedSavingsVault;
   const vaultAddress = vault?.address;
   const vaultBalance = vault?.account?.rawBalance ?? BigDecimal.ZERO;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
-  const saveWrapperAddress =
-    ADDRESSES[massetSymbol as 'mBTC' | 'mUSD']?.SaveWrapper;
+  const saveWrapperAddress = ADDRESSES[massetName]?.SaveWrapper;
   const canDepositWithWrapper = !!(
     savingsContract?.active && !!saveWrapperAddress
   );
@@ -87,10 +87,12 @@ export const SaveDeposit: FC<{
   const inputAddressOptions = useMemo(() => {
     return [
       { address: massetAddress as string },
-      { address: saveAddress as string },
+      ...(ADDRESSES[massetName]?.SaveWrapper
+        ? [{ address: saveAddress as string }]
+        : []),
       ...bassets.map(address => ({ address })),
     ];
-  }, [massetAddress, saveAddress, bassets]);
+  }, [massetAddress, massetName, saveAddress, bassets]);
 
   const exchangeRate = useMemo<{
     fetching?: boolean;

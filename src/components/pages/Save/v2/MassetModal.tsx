@@ -17,6 +17,7 @@ import { TabBtn, TabsContainer, Message } from '../../../core/Tabs';
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
 import { BigDecimal } from '../../../../web3/BigDecimal';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 const formId = 'MassetModal';
 
@@ -30,11 +31,13 @@ export const MassetModal: FC = () => {
   const signer = useSigner();
   const propose = usePropose();
 
+  const massetName = useSelectedMassetName();
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
   const massetSymbol = massetState?.token.symbol;
   const savingsContract = massetState?.savingsContracts.v2;
   const saveAddress = savingsContract?.address;
+  const boostedSavingsVault = savingsContract?.boostedSavingsVault;
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
   const [inputAddress, setInputAddress] = useState<string | undefined>(
@@ -43,8 +46,7 @@ export const MassetModal: FC = () => {
 
   const inputToken = useTokenSubscription(inputAddress);
 
-  const saveWrapperAddress =
-    ADDRESSES[massetSymbol as 'mBTC' | 'mUSD']?.SaveWrapper;
+  const saveWrapperAddress = ADDRESSES[massetName]?.SaveWrapper;
 
   const error = useMemo<string | undefined>(() => {
     if (
@@ -112,8 +114,12 @@ export const MassetModal: FC = () => {
           {`i${massetSymbol}`} (interest-bearing
           {` ${massetSymbol}`}).
           <br />
-          Deposit to the Vault to earn bonus MTA rewards.
-          <br />
+          {!!boostedSavingsVault && (
+            <>
+              Deposit to the Vault to earn bonus MTA rewards.
+              <br />
+            </>
+          )}
           Your {`i${massetSymbol}`} can be redeemed for {massetSymbol} at any
           time.
         </span>
