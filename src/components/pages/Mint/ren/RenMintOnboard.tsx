@@ -13,6 +13,10 @@ import {
   useRenMintState,
 } from './RenMintProvider';
 import { OnboardData } from './types';
+import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
+import { Bitcoin, Ethereum } from '@renproject/chains';
+import { ADDRESSES } from '../../../../constants';
+import { useWeb3Provider } from '../../../../context/OnboardProvider';
 
 enum Step {
   Initiate,
@@ -116,9 +120,13 @@ const Container = styled.div`
 
 const Initiate: FC = () => {
   const address = useAccount();
+  const provider = useWeb3Provider();
   const [toggleEnabled, setToggle] = useToggle(false);
   const state = useRenMintState();
   const [_, setStep] = useRenMintStep();
+
+  const { start, remove, restore } = useRenDispatch();
+  const { current, lockAndMint, storage, fees } = useRenState();
 
   const {
     inputFormValue,
@@ -129,7 +137,28 @@ const Initiate: FC = () => {
   } = state?.onboardData ?? {};
 
   const handleConfirmClick = (): void => {
-    if (!toggleEnabled) return;
+    if (!toggleEnabled || !provider || !address) return;
+
+    const id = Math.random().toString();
+
+    const params = {
+      asset: 'BTC',
+      from: Bitcoin(),
+      to: Ethereum(provider).Contract({
+        sendTo: ADDRESSES.mBTC?.SaveWrapper as string,
+        contractFn: 'mintAndSaveViaRen',
+        contractParams: [
+          {
+            type: 'address',
+            name: 'recipient',
+            value: address,
+          },
+          // TODO
+        ],
+      }),
+    };
+
+    start(id, params);
     setStep(Step.Deposit);
   };
 

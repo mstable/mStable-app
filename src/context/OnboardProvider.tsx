@@ -23,6 +23,7 @@ import {
   useAddInfoNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
+import { Ethereum } from '@renproject/chains';
 
 export interface State {
   onboard: API;
@@ -184,6 +185,15 @@ export const useWallet = (): State['wallet'] => useContext(context).wallet;
 
 export const useProvider = (): State['provider'] =>
   useContext(context).provider;
+
+export const useWeb3Provider = ():
+  | Parameters<typeof Ethereum>[0]
+  | undefined => {
+  const provider = useProvider();
+  return ((provider as unknown) as {
+    _web3Provider?: Parameters<typeof Ethereum>[0];
+  })?._web3Provider;
+};
 
 export const useWalletAddress = (): State['address'] =>
   useContext(context).address?.toLowerCase();

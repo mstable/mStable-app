@@ -12,6 +12,7 @@ import { DataProvider } from './DataProvider/DataProvider';
 import { ApolloProvider } from './ApolloProvider';
 import { SelectedSaveVersionProvider } from './SelectedSaveVersionProvider';
 import { EthProvider } from './EthProvider';
+import { RenProvider } from './RenProvider';
 
 export const Providers: FC = ({ children }) => (
   <NotificationsProvider>
@@ -23,13 +24,15 @@ export const Providers: FC = ({ children }) => (
               <SelectedMassetNameProvider>
                 <TokensProvider>
                   <DataProvider>
-                    <AppProvider>
-                      <ThemeProvider>
-                        <SelectedSaveVersionProvider>
-                          {children}
-                        </SelectedSaveVersionProvider>
-                      </ThemeProvider>
-                    </AppProvider>
+                    <RenProvider>
+                      <AppProvider>
+                        <ThemeProvider>
+                          <SelectedSaveVersionProvider>
+                            {children}
+                          </SelectedSaveVersionProvider>
+                        </ThemeProvider>
+                      </AppProvider>
+                    </RenProvider>
                   </DataProvider>
                 </TokensProvider>
               </SelectedMassetNameProvider>

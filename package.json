@@ -38,7 +38,7 @@
     "apollo-link-error": "^1.1.13",
     "apollo-utilities": "^1.3.4",
     "bignumber.js": "^9.0.0",
-    "bnc-onboard": "^1.18.0",
+    "bnc-onboard": "1.18.0",
     "date-fns": "^2.14.0",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",

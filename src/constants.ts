@@ -140,7 +140,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     REN: {
       renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
     },
-  },
+  } as never,
   42: {
     UNISWAP_ROUTER02: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
     MTA: '0xcda64b5d3ca85800ab9f7409686985b59f2b9598',
@@ -157,7 +157,6 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
         '0xb5e5d0f8c0cba267cd3d7035d6adc8eba7df7cdd', // DAI
       ],
     } as never,
-  },
     BALANCER: {
       BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },

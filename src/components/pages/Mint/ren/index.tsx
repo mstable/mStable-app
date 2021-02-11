@@ -10,6 +10,7 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Button } from '../../../core/Button';
 import { RenMintOnboard as MintOnboard } from './RenMintOnboard';
 import { OnboardData } from './types';
+// import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
 
 // To index address with
 const BTC_ADDRESS = 'BTC_ADDRESS_1';
@@ -33,6 +34,10 @@ const ExchangeContainer = styled.div`
 
 export const RenMint: FC = () => {
   // const [outputAddress, handleSetAddress] = useState<string | undefined>();
+
+  // const { start, remove, restore } = useRenDispatch();
+  // const { current, lockAndMint, storage, fees } = useRenState();
+
   const [txDetails, setTxDetails] = useState<OnboardData | undefined>();
 
   const massetState = useSelectedMassetState();

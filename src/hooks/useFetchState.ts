@@ -1,8 +1,8 @@
 import { Dispatch, useMemo, useState } from 'react';
 
-interface FetchState<Value extends unknown> {
+export interface FetchState<Value extends unknown> {
   value?: Value;
-  fetching: boolean;
+  fetching?: boolean;
   error?: string;
 }
 

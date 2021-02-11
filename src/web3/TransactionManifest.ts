@@ -1,6 +1,7 @@
 import { Contract } from 'ethers';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber, BigNumberish } from 'ethers/utils';
 import { TransactionResponse } from 'ethers/providers';
+import { PromiEvent } from '@renproject/interfaces';
 
 import { Instances, Interfaces, Purpose } from '../types';
 import { TransactionOverrides } from '../typechain';
@@ -146,5 +147,50 @@ export class TransactionManifest<
       : this.args;
 
     return [...argsWithoutOverrides, overrides];
+  }
+}
+
+type RenSendTransaction = (overrides: {
+  gasLimit?: BigNumberish;
+  gasPrice?: BigNumberish;
+}) => PromiEvent<TransactionResponse>;
+
+type RenEstimateGas = () => Promise<BigNumber>;
+
+export class RenTransactionManifest {
+  readonly id: string;
+
+  readonly purpose: Purpose;
+
+  readonly createdAt: number;
+
+  readonly fn: undefined;
+
+  readonly args: undefined;
+
+  readonly formId: undefined;
+
+  readonly sendTransaction: RenSendTransaction;
+
+  readonly estimate: RenEstimateGas;
+
+  constructor(
+    id: string,
+    purpose: Purpose,
+    sendTransaction: RenSendTransaction,
+    estimateGas: RenEstimateGas,
+  ) {
+    this.id = id;
+    this.purpose = purpose;
+    this.sendTransaction = sendTransaction;
+    this.estimate = estimateGas;
+    this.createdAt = Date.now();
+  }
+
+  async send(
+    gasLimit?: BigNumberish,
+    gasPrice?: BigNumberish,
+  ): Promise<TransactionResponse> {
+    return this.sendTransaction({ gasPrice, gasLimit });
   }
 }

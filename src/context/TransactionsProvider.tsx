@@ -15,6 +15,7 @@ import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
 import {
   TransactionManifest,
   TransactionStatus,
+  RenTransactionManifest,
 } from '../web3/TransactionManifest';
 import { Instances, Interfaces } from '../types';
 import {
@@ -30,13 +31,14 @@ enum Actions {
   Error,
   Finalize,
   Propose,
+  ProposeRen,
   Reset,
   Response,
   Send,
 }
 
 export interface Transaction {
-  manifest: TransactionManifest<any, any>;
+  manifest: TransactionManifest<any, any> | RenTransactionManifest;
 
   status: TransactionStatus;
 
@@ -61,7 +63,7 @@ interface Dispatch {
   check(id: string, blockNumber: number): void;
 
   finalize(
-    manifest: TransactionManifest<any, any>,
+    manifest: TransactionManifest<any, any> | RenTransactionManifest,
     receipt: TransactionReceipt,
   ): void;
 
@@ -72,10 +74,12 @@ interface Dispatch {
     manifest: TransactionManifest<TIface, TFn>,
   ): void;
 
+  proposeRen(manifest: RenTransactionManifest): void;
+
   reset(): void;
 
   send(
-    manifest: TransactionManifest<never, never>,
+    manifest: State[string]['manifest'],
     gasLimit: BigNumber,
     gasPrice: number,
   ): void;
@@ -87,6 +91,10 @@ type Action =
       type: Actions.Propose;
       payload: TransactionManifest<never, never>;
     }
+  | {
+      type: Actions.ProposeRen;
+      payload: RenTransactionManifest;
+    }
   | { type: Actions.Send; payload: { id: string } }
   | { type: Actions.Check; payload: { id: string; blockNumber: number } }
   | {
@@ -95,7 +103,10 @@ type Action =
     }
   | {
       type: Actions.Response;
-      payload: { id: string; response: TransactionResponse };
+      payload: {
+        id: string;
+        response: { hash: string; to: string; blockNumber: number };
+      };
     }
   | { type: Actions.Error; payload: { id: string; error: string } }
   | { type: Actions.Cancel; payload: { id: string } };
@@ -153,6 +164,16 @@ const transactionsCtxReducer: Reducer<State, Action> = (state, action) => {
       return {
         ...state,
         [action.payload.id]: {
+          manifest: action.payload,
+          status: TransactionStatus.Pending,
+        },
+      };
+    }
+
+    case Actions.ProposeRen: {
+      return {
+        ...state,
+        [action.payload.id]: {
           status: TransactionStatus.Pending,
           manifest: action.payload,
         },
@@ -206,6 +227,9 @@ export const useTransactionsDispatch = (): Dispatch => useContext(dispatchCtx);
 export const usePropose = (): Dispatch['propose'] =>
   useContext(dispatchCtx).propose;
 
+export const useProposeRen = (): Dispatch['proposeRen'] =>
+  useContext(dispatchCtx).proposeRen;
+
 export const useOrderedCurrentTransactions = (): Transaction[] => {
   const state = useTransactionsState();
   return useMemo(() => {
@@ -244,6 +268,13 @@ export const TransactionsProvider: FC = ({ children }) => {
     },
     [dispatch],
   );
+
+  const proposeRen = useCallback<Dispatch['proposeRen']>(tx => {
+    dispatch({
+      type: Actions.ProposeRen,
+      payload: tx,
+    });
+  }, []);
 
   const reset = useCallback<Dispatch['reset']>(() => {
     dispatch({ type: Actions.Reset });
@@ -293,13 +324,20 @@ export const TransactionsProvider: FC = ({ children }) => {
 
       manifest
         .send(gasLimit, gasPrice)
-        .then(response => {
+        .then(({ hash: _hash, blockNumber, to }: TransactionResponse) => {
           dispatch({
             type: Actions.Response,
-            payload: { id, response },
+            payload: {
+              id,
+              response: {
+                hash: _hash as string,
+                blockNumber: blockNumber as number,
+                to: to as string,
+              },
+            },
           });
 
-          hash = response.hash as string;
+          hash = _hash as string;
 
           addInfoNotification(
             'Transaction awaiting confirmation',
@@ -331,10 +369,11 @@ export const TransactionsProvider: FC = ({ children }) => {
           check,
           finalize,
           propose,
+          proposeRen,
           reset,
           send,
         }),
-        [reset, cancel, propose, send, finalize, check],
+        [reset, cancel, propose, proposeRen, send, finalize, check],
       )}
     >
       <stateCtx.Provider value={state}>{children}</stateCtx.Provider>
