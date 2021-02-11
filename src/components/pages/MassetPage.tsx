@@ -11,6 +11,7 @@ const MassetAsideContainer = styled.aside`
   border-radius: 0.75rem;
   flex-shrink: 1;
   height: auto;
+
   ${({ theme }) => `
     background: ${theme.color.backgroundAccent};
   `}
@@ -44,6 +45,18 @@ const MassetAside: FC = () => {
   );
 };
 
+const Separator = styled.div`
+  height: 1rem;
+  border-bottom: 1px solid ${({ theme }) => theme.color.accent};
+  width: 100%;
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+    display: none;
+  }
+`;
+
 const Container = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     display: flex;
@@ -67,6 +80,7 @@ export const MassetPage: FC = ({ children }) => {
   return (
     <Container>
       <div>{children}</div>
+      <Separator />
       <MassetAside />
     </Container>
   );

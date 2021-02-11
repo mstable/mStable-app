@@ -10,7 +10,7 @@ const Content = styled.div<{ collapsed: boolean }>`
   transition: all 0.25s ease;
   ${({ collapsed }) => `
     padding:${collapsed ? `0 1.25rem` : `0 1.25rem 0.75rem`};
-    max-height: ${collapsed ? 0 : 7}rem;
+    max-height: ${collapsed ? 0 : `auto`};
     opacity: ${collapsed ? 0 : 1};
   `};
 `;

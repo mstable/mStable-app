@@ -20,7 +20,7 @@ import { PendingTransactions } from '../wallet/PendingTransactions';
 
 const Main = styled.main<{ marginTop?: boolean }>`
   padding: 0 1rem;
-  margin-top: ${({ marginTop }) => marginTop && `4rem`};
+  margin-top: ${({ marginTop }) => marginTop && `2rem`};
 `;
 
 const BackgroundContainer = styled.div`
