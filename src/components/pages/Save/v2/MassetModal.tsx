@@ -162,7 +162,7 @@ export const MassetModal: FC = () => {
           }}
           approve={depositApprove}
         />
-        {saveWrapperAddress && (
+        {!!boostedSavingsVault && (
           <SendButton
             valid={valid}
             title="Mint & Deposit to Vault"

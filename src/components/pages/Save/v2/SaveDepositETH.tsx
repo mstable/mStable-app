@@ -100,6 +100,7 @@ export const SaveDepositETH: FC<{
   const massetAddress = massetState?.address;
   const massetSymbol = massetState?.token.symbol;
   const savingsContract = massetState?.savingsContracts.v2;
+  const saveTokenSymbol = savingsContract?.token?.symbol ?? '';
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
   const saveWrapperAddress =
@@ -220,7 +221,7 @@ export const SaveDepositETH: FC<{
         {!saveAndStake && (
           <SendButton
             valid={valid}
-            title="Mint imUSD"
+            title={`Mint ${saveTokenSymbol}`}
             handleSend={async () => {
               if (
                 signer &&

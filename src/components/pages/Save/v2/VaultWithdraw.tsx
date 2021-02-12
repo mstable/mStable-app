@@ -28,6 +28,7 @@ export const VaultWithdraw: FC = () => {
 
   const massetState = useSelectedMassetState();
   const savingsContract = massetState?.savingsContracts.v2;
+  const saveTokenSymbol = savingsContract?.token?.symbol ?? '';
   const vault = savingsContract?.boostedSavingsVault;
   const vaultAddress = vault?.address;
   const account = vault?.account;
@@ -47,13 +48,13 @@ export const VaultWithdraw: FC = () => {
     () => [
       {
         address: vaultAddress as string,
-        label: 'imUSD Vault',
+        label: `${saveTokenSymbol} Vault`,
         balance: rawBalance,
-        symbol: 'imUSD',
+        symbol: saveTokenSymbol,
         custom: true,
       },
     ],
-    [rawBalance, vaultAddress],
+    [rawBalance, saveTokenSymbol, vaultAddress],
   );
 
   const valid = !!(inputAmount && inputAmount.simple > 0 && !error);
@@ -86,7 +87,7 @@ export const VaultWithdraw: FC = () => {
                 [inputAmount.exact],
                 {
                   present: `Withdrawing ${body}`,
-                  past: `Withdrawing ${body}`,
+                  past: `Withdrew ${body}`,
                 },
                 formId,
               ),
