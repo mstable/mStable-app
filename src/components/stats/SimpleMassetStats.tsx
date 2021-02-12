@@ -56,12 +56,14 @@ export const SimpleMassetStats: FC = () => {
           <div>
             <Amount amount={b.totalVaultInMasset} />
             <div>
-              {(
-                (b.totalVaultInMasset.simple /
-                  masset.token.totalSupply.simple) *
-                100
-              ).toFixed(2)}
-              %
+              {b.totalVaultInMasset.simple > 0 &&
+              masset.token.totalSupply.simple > 0
+                ? `${(
+                    (b.totalVaultInMasset.simple /
+                      masset.token.totalSupply.simple) *
+                    100
+                  ).toFixed(2)}%`
+                : null}
             </div>
           </div>
         </AssetRow>
