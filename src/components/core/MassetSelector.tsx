@@ -1,8 +1,7 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { useDataState } from '../../context/DataProvider/DataProvider';
-import { MassetState } from '../../context/DataProvider/types';
 import { useSelectedMasset } from '../../context/SelectedMassetNameProvider';
 import { MassetName } from '../../types';
 import { Dropdown } from './Dropdown';
@@ -12,18 +11,9 @@ export const MassetSelector: FC = () => {
   const history = useHistory();
   const [selected, setMassetName] = useSelectedMasset();
 
-  const massetStates = useMemo(
-    () =>
-      ({
-        mbtc: dataState.mbtc,
-        musd: dataState.musd,
-      } as { [key in MassetName]: MassetState | undefined }),
-    [dataState],
-  );
-
-  const options = Object.values(massetStates).map(massetState => ({
-    address: massetState?.token?.address,
-    symbol: massetState?.token?.symbol,
+  const options = Object.values(dataState).map(massetState => ({
+    address: massetState.token.address,
+    symbol: massetState.token.symbol,
   }));
 
   const handleSelect = (selectedAddress?: string): void => {
@@ -43,7 +33,7 @@ export const MassetSelector: FC = () => {
     <Dropdown
       onChange={handleSelect}
       options={options}
-      defaultAddress={massetStates[selected]?.token?.address}
+      defaultAddress={dataState[selected]?.token?.address}
     />
   );
 };
