@@ -173,13 +173,10 @@ const RedeemExactBassetsLogic: FC = () => {
       inputLabel={massetState?.token.symbol}
       outputLabel={outputLabel}
       maxOutputAmount={maxMassetAmount}
-      error={slippageWarning}
+      error={error ?? slippageWarning}
     >
       <SendButton
-        valid={
-          !error &&
-          Object.values(bassetAmounts).filter(v => v.touched).length > 0
-        }
+        valid={!error && Object.values(bassetAmounts).some(v => v.touched)}
         slippageWarning={!!slippageWarning}
         title="Redeem"
         handleSend={() => {

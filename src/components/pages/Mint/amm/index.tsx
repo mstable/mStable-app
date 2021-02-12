@@ -135,9 +135,8 @@ const MintLogic: FC = () => {
               });
             });
         }
-      } else {
-        setOutputAmount({});
       }
+      setOutputAmount({});
     },
     1000,
     [masset, inputValues],
@@ -225,7 +224,7 @@ const MintLogic: FC = () => {
       error={error ?? slippageWarning}
     >
       <SendButton
-        valid={!error}
+        valid={!error && Object.values(inputValues).some(v => v.touched)}
         slippageWarning={!!slippageWarning}
         title="Mint"
         handleSend={() => {
