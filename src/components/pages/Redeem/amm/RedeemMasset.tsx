@@ -71,6 +71,7 @@ export const RedeemMasset: FC = () => {
 
   const massetToken = useTokenSubscription(massetAddress);
   const outputToken = useTokenSubscription(outputAddress);
+  const outputDecimals = outputToken?.decimals;
 
   const masset = useMemo(
     () => (signer ? MbtcFactory.connect(massetAddress, signer) : undefined),
@@ -83,13 +84,16 @@ export const RedeemMasset: FC = () => {
       _masset: Mbtc | undefined,
       _inputAmount: BigDecimal | undefined,
       _outputAddress: string | undefined,
+      _outputDecimals: number | undefined,
     ) => {
       if (_masset && _outputAddress && _inputAmount?.exact.gt(0)) {
         setBassetAmount({ fetching: true });
         _masset
           .getRedeemOutput(_outputAddress, _inputAmount.exact)
           .then(_bassetAmount => {
-            setBassetAmount({ value: new BigDecimal(_bassetAmount) });
+            setBassetAmount({
+              value: new BigDecimal(_bassetAmount, _outputDecimals),
+            });
           })
           .catch((_error: Error): void => {
             setBassetAmount({
@@ -101,7 +105,7 @@ export const RedeemMasset: FC = () => {
       }
     },
     1000,
-    [masset, inputAmount, outputAddress],
+    [masset, inputAmount, outputAddress, outputDecimals],
   );
 
   const { exchangeRate, minOutputAmount } = useMemo(() => {

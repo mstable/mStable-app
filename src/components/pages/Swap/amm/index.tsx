@@ -156,6 +156,7 @@ const SwapLogic: FC = () => {
             swapOutput.value.decimals,
           )
         : undefined,
+      outputDecimals,
     );
 
     return {
@@ -169,6 +170,7 @@ const SwapLogic: FC = () => {
     slippageSimple,
     swapOutput.fetching,
     swapOutput.value,
+    outputDecimals,
   ]);
 
   // Calling `getSwapOutput` performs the complex validation;
