@@ -26,10 +26,12 @@ interface Props {
   slippageWarning?: boolean;
 }
 
-const StyledButton = styled(Button)`
+const StyledButton = styled(Button)<{ slippageWarning?: boolean }>`
   width: 100%;
   height: 3.75rem;
   border-radius: 2rem;
+  background: ${({ slippageWarning, theme }) =>
+    slippageWarning && theme.color.red};
 `;
 
 const CloseButton = styled(UnstyledButton)`
@@ -169,6 +171,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
     <Container className={className}>
       {step === Step.ACTION ? (
         <StyledButton
+          slippageWarning={slippageWarning}
           highlighted={valid}
           disabled={!valid}
           onClick={async () => {
@@ -199,7 +202,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
             }
           }}
         >
-          {title}
+          {`${title} ${slippageWarning && valid ? 'Anyway' : ''}`}
         </StyledButton>
       ) : (
         <ApproveContent

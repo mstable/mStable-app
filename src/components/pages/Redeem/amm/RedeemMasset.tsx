@@ -164,7 +164,7 @@ export const RedeemMasset: FC = () => {
       minOutputAmount.simple < amountMinBound ||
       minOutputAmount.simple > amountMaxBound
     ) {
-      return 'WARNING: High slippage';
+      return 'WARNING: High slippage. 1% slippage protection';
     }
   }, [minOutputAmount, inputAmount]);
 
@@ -201,7 +201,7 @@ export const RedeemMasset: FC = () => {
       )}
       <SendButton
         valid={!error}
-        title={slippageWarning ? 'Redeem Anyway' : 'Redeem'}
+        title="Redeem"
         slippageWarning={!!slippageWarning}
         handleSend={() => {
           if (

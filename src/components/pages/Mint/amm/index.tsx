@@ -195,6 +195,24 @@ const MintLogic: FC = () => {
     return outputAmount.error;
   }, [inputValues, massetState.address, outputAmount.error, tokenState.tokens]);
 
+  const slippageWarning = useMemo<string | undefined>(() => {
+    if (!minOutputAmount) return;
+
+    const inputAmount = Object.keys(inputValues)
+      .map(address => inputValues[address].amount?.simple ?? 0)
+      .reduce((a, b) => a + b);
+
+    const amountMinBound = inputAmount * 0.95;
+    const amountMaxBound = inputAmount * 1.05;
+
+    if (
+      minOutputAmount.simple < amountMinBound ||
+      minOutputAmount.simple > amountMaxBound
+    ) {
+      return 'WARNING: High slippage. 1% slippage protection';
+    }
+  }, [inputValues, minOutputAmount]);
+
   return (
     <ManyToOneAssetExchange
       exchangeRate={exchangeRate}
@@ -204,10 +222,11 @@ const MintLogic: FC = () => {
       setMaxCallbacks={setMaxCallbacks}
       spender={massetState.address}
       minOutputAmount={minOutputAmount}
-      error={error}
+      error={error ?? slippageWarning}
     >
       <SendButton
         valid={!error}
+        slippageWarning={!!slippageWarning}
         title="Mint"
         handleSend={() => {
           if (masset && walletAddress && minOutputAmount) {
