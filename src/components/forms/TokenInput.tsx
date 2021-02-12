@@ -126,7 +126,7 @@ const Option: FC<TokenOptionProps> = ({
   );
 };
 
-const placeholderText = 'Select a token';
+const placeholderText = 'Select';
 
 const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};

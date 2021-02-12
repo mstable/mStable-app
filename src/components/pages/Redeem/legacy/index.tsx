@@ -1,4 +1,5 @@
 import React, { FC, useCallback } from 'react';
+import Skeleton from 'react-loading-skeleton';
 
 import { useSelectedLegacyMassetContract } from '../../../../web3/hooks';
 import { useOwnAccount } from '../../../../context/UserProvider';
@@ -11,6 +12,8 @@ import { RedeemProvider, useRedeemState } from './RedeemProvider';
 import { Mode } from './types';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import { MassetPage } from '../../MassetPage';
 
 const RedeemForm: FC = () => {
   const account = useOwnAccount();
@@ -88,12 +91,19 @@ const RedeemForm: FC = () => {
   );
 };
 
-export const Redeem: FC = () => (
-  <RedeemProvider>
-    <PageHeader
-      action={PageAction.Redeem}
-      subtitle="Exchange mUSD for its underlying collateral"
-    />
-    <RedeemForm />
-  </RedeemProvider>
-);
+export const Redeem: FC = () => {
+  const massetState = useSelectedMassetState();
+  return massetState ? (
+    <RedeemProvider>
+      <PageHeader
+        action={PageAction.Redeem}
+        subtitle="Exchange mUSD for its underlying collateral"
+      />
+      <MassetPage>
+        <RedeemForm />
+      </MassetPage>
+    </RedeemProvider>
+  ) : (
+    <Skeleton height={400} />
+  );
+};

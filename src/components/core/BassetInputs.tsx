@@ -44,7 +44,7 @@ const Labels = styled.div`
     grid-area: 1 / 5 / 2 / 9;
   }
 
-  @media (min-width: ${ViewportWidth.m}) {
+  @media (min-width: ${ViewportWidth.l}) {
     ${AssetLabel} {
       grid-area: 1 / 1 / 3 / 3;
     }

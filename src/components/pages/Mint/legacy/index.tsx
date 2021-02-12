@@ -1,5 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { BigNumber } from 'ethers/utils';
+import Skeleton from 'react-loading-skeleton';
 
 import { useSelectedLegacyMassetContract } from '../../../../web3/hooks';
 import { useOwnAccount } from '../../../../context/UserProvider';
@@ -10,6 +11,8 @@ import { MintInput } from './MintInput';
 import { MassetStats } from '../../../stats/MassetStats';
 import { PageAction, PageHeader } from '../../PageHeader';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import { MassetPage } from '../../MassetPage';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 
 const MintForm: FC = () => {
   const account = useOwnAccount();
@@ -80,13 +83,20 @@ const MintForm: FC = () => {
   );
 };
 
-export const Mint: FC = () => (
-  <MintProvider>
-    <PageHeader
-      action={PageAction.Mint}
-      subtitle="Convert stablecoins into mUSD"
-    />
-    <MintForm />
-    <MassetStats />
-  </MintProvider>
-);
+export const Mint: FC = () => {
+  const massetState = useSelectedMassetState();
+  return massetState ? (
+    <MintProvider>
+      <PageHeader
+        action={PageAction.Mint}
+        subtitle="Convert stablecoins into mUSD"
+      />
+      <MassetPage>
+        <MintForm />
+      </MassetPage>
+      <MassetStats />
+    </MintProvider>
+  ) : (
+    <Skeleton height={400} />
+  );
+};

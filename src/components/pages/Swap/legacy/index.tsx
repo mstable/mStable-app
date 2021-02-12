@@ -1,17 +1,19 @@
 import React, { FC, useCallback } from 'react';
 import { BigNumber } from 'ethers/utils';
+import Skeleton from 'react-loading-skeleton';
 
 import { MassetStats } from '../../../stats/MassetStats';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useOwnAccount } from '../../../../context/UserProvider';
 import { TransactionForm } from '../../../forms/TransactionForm';
-import { P } from '../../../core/Typography';
 import { SwapProvider, useSwapState } from './SwapProvider';
 import { SwapInput } from './SwapInput';
 import { SwapConfirm } from './SwapConfirm';
 import { Interfaces } from '../../../../types';
 import { useSelectedLegacyMassetContract } from '../../../../web3/hooks';
 import { PageAction, PageHeader } from '../../PageHeader';
+import { MassetPage } from '../../MassetPage';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 
 const SwapForm: FC = () => {
   const account = useOwnAccount();
@@ -91,15 +93,20 @@ const SwapForm: FC = () => {
   );
 };
 
-export const Swap: FC = () => (
-  <SwapProvider>
-    <PageHeader
-      action={PageAction.Swap}
-      subtitle="Exchange stablecoins with mStable"
-    >
-      <P>mStable offers zero-slippage 1:1 stablecoin swaps.</P>
-    </PageHeader>
-    <SwapForm />
-    <MassetStats />
-  </SwapProvider>
-);
+export const Swap: FC = () => {
+  const massetState = useSelectedMassetState();
+  return massetState ? (
+    <SwapProvider>
+      <PageHeader
+        action={PageAction.Swap}
+        subtitle="Exchange stablecoins with zero-slippage 1:1 swaps"
+      />
+      <MassetPage>
+        <SwapForm />
+      </MassetPage>
+      <MassetStats />
+    </SwapProvider>
+  ) : (
+    <Skeleton height={400} />
+  );
+};

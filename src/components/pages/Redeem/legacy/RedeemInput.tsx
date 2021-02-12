@@ -43,7 +43,7 @@ const CurveProtip = styled(Protip)`
   box-shadow: 0 0 0 3px #3465a4, 1em 1em 3px 0 rgba(0, 0, 0, 0.5);
   margin-top: 1rem;
   margin-bottom: 32px;
-  max-height: 7rem;
+  max-height: 9rem;
   display: flex;
   flex-direction: column;
 
@@ -62,12 +62,13 @@ const BasketImpact = styled.div`
     padding: 2rem 0;
   }
 
-  @media (min-width: ${ViewportWidth.m}) {
+  @media (min-width: ${ViewportWidth.l}) {
     flex-direction: row;
     justify-content: space-between;
+    gap: 1rem;
 
     > div {
-      flex-basis: calc(50% - 5%);
+      width: 100%;
       border: none;
 
       > div {
