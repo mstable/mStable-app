@@ -66,6 +66,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     musd: {
       SaveWrapper: '0xD7c346C228bDdd8a6a4c1a69E6cC82292909dcAD',
     },
+    mbtc: {
+      SaveWrapper: '0x7CB1576dcC0D8FCb32eBD21204899ef6C0270Eb9',
+    },
     CURVE: {
       CURVE_V2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',
       GAUGE_CONTROLLER: '0x2f50d538606fa9edd2b11e2446beb18c9d5846bb',
