@@ -21,7 +21,7 @@ import {
   useTransactionsState,
 } from '../../../../context/TransactionsProvider';
 import {
-  useSelectedMassetContract,
+  useSelectedLegacyMassetContract,
   useSelectedSaveV1Contract,
 } from '../../../../web3/hooks';
 import {
@@ -77,7 +77,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const v2Address = massetState?.savingsContracts.v2?.address;
 
   const savingsContractV1 = useSelectedSaveV1Contract();
-  const massetContract = useSelectedMassetContract();
+  const massetContract = useSelectedLegacyMassetContract();
 
   const allowance = useTokenAllowance(massetState?.address, v2Address);
 

@@ -27,9 +27,9 @@ generates:
     config:
       includeDirectives: true
 
-  ./src/graphql/vault/schema.graphql:
+  ./src/graphql/mbtc/schema.graphql:
     overwrite: true
-    schema: https://api.thegraph.com/subgraphs/name/jameslefrere/boosted-savings-vault
+    schema: https://api.thegraph.com/subgraphs/name/jameslefrere/mbtc-deployment
     plugins:
       - 'schema-ast'
     config:
@@ -87,10 +87,10 @@ generates:
       - 'typescript-operations'
       - 'typescript-react-apollo'
 
-  ./src/graphql/vault.tsx:
+  ./src/graphql/mbtc.tsx:
     overwrite: true
-    schema: https://api.thegraph.com/subgraphs/name/jameslefrere/boosted-savings-vault
-    documents: 'src/graphql/vault/*.graphql'
+    schema: https://api.thegraph.com/subgraphs/name/jameslefrere/mbtc-deployment
+    documents: 'src/graphql/mbtc/*.graphql'
     plugins:
       - 'fragment-matcher'
       - 'typescript'

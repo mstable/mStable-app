@@ -98,6 +98,30 @@ const initialState: State = {
       allowances: {},
       totalSupply: new BigDecimal(0, 18),
     },
+    [ADDRESSES.SUSHI.SUSHI_TOKEN]: {
+      symbol: 'SUSHI',
+      address: ADDRESSES.SUSHI.SUSHI_TOKEN,
+      decimals: 18,
+      balance: new BigDecimal(0, 18),
+      allowances: {},
+      totalSupply: new BigDecimal(0, 18),
+    },
+    [ADDRESSES.BADGER.BADGER_TOKEN]: {
+      symbol: 'BADGER',
+      address: ADDRESSES.BADGER.BADGER_TOKEN,
+      decimals: 18,
+      balance: new BigDecimal(0, 18),
+      allowances: {},
+      totalSupply: new BigDecimal(0, 18),
+    },
+    [ADDRESSES.CREAM.CREAM_TOKEN]: {
+      symbol: 'CREAM',
+      address: ADDRESSES.CREAM.CREAM_TOKEN,
+      decimals: 18,
+      balance: new BigDecimal(0, 18),
+      allowances: {},
+      totalSupply: new BigDecimal(0, 18),
+    },
     [AddressZero as string]: {
       symbol: 'ETH',
       address: AddressZero,
@@ -418,24 +442,6 @@ export const useTokens = (tokenAddresses: string[]): SubscribedToken[] => {
         .map(address => state.tokens[address])
         .filter(Boolean) as SubscribedToken[],
     [state.tokens, tokenAddresses],
-  );
-};
-
-export const useTokenSubscriptionsSerialized = (): string => {
-  const { subscriptions } = useTokensState();
-  return useMemo(
-    () =>
-      JSON.stringify(
-        Object.keys(subscriptions).filter(
-          // Either subscribed for balance or allowance
-          address =>
-            subscriptions[address]?.balance?.size ||
-            Object.keys(subscriptions[address]?.allowances || {}).some(
-              spender => subscriptions[address]?.allowances[spender]?.size,
-            ),
-        ),
-      ),
-    [subscriptions],
   );
 };
 

@@ -8,17 +8,16 @@ import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 import { useAccount } from '../../../context/UserProvider';
 import { ReactComponent as ExternalLinkArrow } from '../../core/external-link-arrow.svg';
 import { ReactComponent as WarningBadge } from '../../icons/badges/warning.svg';
-import { ReactComponent as MUSDIcon } from '../../icons/tokens/mUSD.svg';
-import { ReactComponent as IMUSDIcon } from '../../icons/tokens/imUSD.svg';
-import { ReactComponent as IMUSDMTAIcon } from '../../icons/tokens/imusd-mta.svg';
-import { ReactComponent as MTAIcon } from '../../icons/tokens/MTA.svg';
-import { ReactComponent as VMTAIcon } from '../../icons/tokens/vMTA.svg';
+
 import { CountUp } from '../../core/CountUp';
+import { TokenIcon } from '../../icons/TokenIcon';
+import { formatMassetName } from '../../../context/SelectedMassetNameProvider';
+import { MassetName } from '../../../types';
 
 export enum BalanceType {
   Masset,
-  SavingsContractV1,
-  SavingsContractV2,
+  SavingsDeprecated,
+  Savings,
   BoostedSavingsVault,
   Meta,
   VMeta,
@@ -26,6 +25,7 @@ export enum BalanceType {
 
 interface Props {
   token: BalanceType;
+  masset?: MassetName;
   balance?: BigDecimal;
   rewards?: ReactElement;
   dollarExchangeRate?: number;
@@ -41,7 +41,7 @@ interface RowProps {
   subtitle?: string;
   apyLabel?: string;
   info?: string | ReactElement;
-  AssetIcon: FC;
+  symbol: string;
 }
 
 export const ContainerSnippet = css`
@@ -59,10 +59,6 @@ export const ContainerSnippet = css`
       &:first-child {
         justify-content: flex-start;
         margin-bottom: 1rem;
-      }
-
-      svg {
-        margin-right: 1.25rem;
       }
     }
   }
@@ -167,17 +163,18 @@ const Interest = styled.div`
   }
 `;
 
+const AssetIcon = styled(TokenIcon)`
+  align-self: flex-start;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: auto;
+  margin-right: 1.25rem;
+`;
+
 const Asset = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-
-  > svg {
-    align-self: flex-start;
-    flex-shrink: 0;
-    width: 2.5rem;
-    height: auto;
-  }
 `;
 
 const ExchangeRate = styled(Number)`
@@ -255,67 +252,58 @@ const DefaultContainer = styled(WidgetButton)<{ highlight?: boolean }>`
   }
 `;
 
-const Tokens = new Map<number, RowProps>([
-  [
-    BalanceType.Masset,
-    {
-      title: 'mUSD',
-      subtitle: 'mStable USD',
+const getRow = (masset: MassetName): Record<BalanceType, RowProps> => {
+  const formattedMasset = formatMassetName(masset);
+  return {
+    [BalanceType.Masset]: {
+      title: `${formattedMasset}`,
+      subtitle: `mStable ${formattedMasset}`,
       info: <p>A meta-stablecoin with a native interest rate.</p>,
-      AssetIcon: MUSDIcon,
+      symbol: masset,
     },
-  ],
-  [
-    BalanceType.SavingsContractV1,
-    {
-      title: 'mUSD Save',
-      subtitle: 'mStable USD in Save V1',
-      AssetIcon: MUSDIcon,
+    [BalanceType.SavingsDeprecated]: {
+      title: `${formattedMasset} Save`,
+      subtitle: `mStable ${formattedMasset} in Save V1`,
+      symbol: masset,
     },
-  ],
-  [
-    BalanceType.SavingsContractV2,
-    {
-      title: 'imUSD',
-      subtitle: 'Interest-bearing mUSD',
+    [BalanceType.Savings]: {
+      title: `i${formattedMasset}`,
+      subtitle: `Interest-bearing ${formattedMasset}`,
       info: (
         <>
-          <p>imUSD is a token that is redeemable for mUSD.</p>
+          <p>
+            {`i${formattedMasset}`} is a token that is redeemable for{' '}
+            {formattedMasset}.
+          </p>
           <p>
             It passively gains interest while holding it, such that it is
-            redeemable for a greater amount of mUSD as interest accrues over
-            time.
+            redeemable for a greater amount of {formattedMasset} as interest
+            accrues over time.
           </p>
         </>
       ),
-      AssetIcon: IMUSDIcon,
+      symbol: `i${masset}`,
     },
-  ],
-  [
-    BalanceType.BoostedSavingsVault,
-    {
-      title: 'imUSD Vault',
+    [BalanceType.BoostedSavingsVault]: {
+      title: `i${formattedMasset} Vault`,
       subtitle: 'Interest and MTA rewards',
-      apyLabel: 'APY (imUSD only)',
+      apyLabel: `APY (i${formattedMasset} only)`,
       info: (
         <>
           <p>
-            Optionally, deposit imUSD and get MTA rewards on top of imUSD's
-            interest rate.
+            Optionally, deposit {`i${formattedMasset}`} and get MTA rewards on
+            top of {`i${formattedMasset}`}'s interest rate.
           </p>
           <p>The rewards earned can be multiplied by staking MTA.</p>
           <p>
-            imUSD can be withdrawn at any time, and claimed MTA rewards are
-            streamed after a lockup time.
+            {`i${formattedMasset}`} can be withdrawn at any time, and claimed
+            MTA rewards are streamed after a lockup time.
           </p>
         </>
       ),
-      AssetIcon: IMUSDMTAIcon,
+      symbol: `i${masset}mta`,
     },
-  ],
-  [
-    BalanceType.Meta,
-    {
+    [BalanceType.Meta]: {
       title: 'MTA',
       subtitle: 'mStable Meta',
       info: (
@@ -324,12 +312,9 @@ const Tokens = new Map<number, RowProps>([
           secure the protocol.
         </p>
       ),
-      AssetIcon: MTAIcon,
+      symbol: 'mta',
     },
-  ],
-  [
-    BalanceType.VMeta,
-    {
+    [BalanceType.VMeta]: {
       title: 'vMTA',
       subtitle: 'Voting escrow MTA',
       info: (
@@ -341,10 +326,10 @@ const Tokens = new Map<number, RowProps>([
           </p>
         </>
       ),
-      AssetIcon: VMTAIcon,
+      symbol: 'vmta',
     },
-  ],
-]);
+  };
+};
 
 export const BalanceHeader: FC = () => {
   return (
@@ -367,12 +352,13 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
   rewards,
   token,
   warning = false,
+  masset = 'musd',
 }) => {
   const account = useAccount();
 
-  const tokenInfo = Tokens.get(token) as RowProps;
+  const tokenInfo = getRow(masset)[token] as RowProps;
 
-  const { title, subtitle, info, AssetIcon, apyLabel } = tokenInfo;
+  const { title, subtitle, info, symbol, apyLabel } = tokenInfo;
   const hasBorder = !hasChildren;
 
   return (
@@ -384,7 +370,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
     >
       <div>
         <Asset>
-          <AssetIcon />
+          <AssetIcon symbol={symbol} />
           <div>
             <Title>
               <div>
@@ -455,6 +441,7 @@ export const BalanceRow: FC<Props> = ({
   rewards,
   token,
   warning,
+  masset,
 }) => {
   return children ? (
     <VaultContainer highlight={highlight}>
@@ -468,6 +455,7 @@ export const BalanceRow: FC<Props> = ({
         rewards={rewards}
         token={token}
         warning={warning}
+        masset={masset}
       />
       {children}
     </VaultContainer>
@@ -482,6 +470,7 @@ export const BalanceRow: FC<Props> = ({
       rewards={rewards}
       token={token}
       warning={warning}
+      masset={masset}
     />
   );
 };

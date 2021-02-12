@@ -2,6 +2,8 @@ import React, { FC, useLayoutEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import { useLocation } from 'react-router-dom';
+import { TransitionGroup } from 'react-transition-group';
+import { ModalProvider } from 'react-modal-hook';
 
 import { ReactTooltip, Tooltip } from '../core/ReactTooltip';
 import { Header } from './Header';
@@ -12,16 +14,17 @@ import { Background } from './Background';
 import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
 import { containerBackground } from './css';
-import { Color } from '../../theme';
+import { Color, ViewportWidth } from '../../theme';
 import { BannerMessage } from './BannerMessage';
 import { PendingTransactions } from '../wallet/PendingTransactions';
 
 const Main = styled.main<{ marginTop?: boolean }>`
   padding: 0 1rem;
-  margin-top: ${({ marginTop }) => marginTop && `4rem`};
+  margin-top: ${({ marginTop }) => marginTop && `2rem`};
 `;
 
 const BackgroundContainer = styled.div`
+  min-height: 70vh;
   ${containerBackground}
 `;
 
@@ -61,61 +64,104 @@ const GlobalStyle = createGlobalStyle`
     color: ${({ theme }) => theme.color.body};
     line-height: 1.3rem;
   }
+  
   // Onboard.js
   aside.bn-onboard-custom {
-    color: ${({ theme }) => theme.color.black};
-    z-index: 1;
-    > section {
-      font-family: 'Poppins', sans-serif !important;
-      border-radius: 1rem;
+     z-index: 5 !important;
+     width: 100% !important;
+     height: 100% !important;
+     
+    .bn-onboard-modal-content {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+      width: inherit;
+      max-width: inherit;
+      box-sizing: border-box;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      transition: all ease-in;
     }
     .bn-onboard-modal-content-header {
-      > :first-child {
-        display: none;
-      }
-      > h3 {
-        margin-left: 0;
-        font-weight: 600;
-        color: ${({ theme }) => theme.color.black};
-      }
+      font-family: 'Poppins', sans-serif !important;
+      color: ${({ theme }) => theme.color.offBlack};
+      justify-content: center;
     }
+    h3 {
+      font-family: 'Poppins', sans-serif !important;
+      color: ${({ theme }) => theme.color.offBlack};
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+    .bn-onboard-modal-content-header-icon,
     .bn-onboard-select-description {
       display: none;
     }
     .bn-onboard-icon-button {
       font-weight: normal;
-      padding: 4px 16px;
+      padding: 0.5rem 1rem;
+      width: 100%;
       border: 1px ${Color.blackTransparent} solid;
       border-radius: 0.5rem;
       > :first-child {
         min-width: 32px;
       }
       > span {
-        font-weight: normal;
-        font-size: 16px;
-        color: ${({ theme }) => theme.color.black};
+        font-weight: 500;
+        font-size: 1rem;
+        color: ${({ theme }) => theme.color.offBlack};
       }
       &:hover {
+        border: 1px solid ${({ theme }) => theme.color.offBlack};
         box-shadow: none;
       }
     }
-    .bn-onboard-prepare-button {
-      appearance: none;
-      outline: none;
-      background: transparent;
-      user-select: none;
-      text-transform: uppercase;
-      font-weight: 600;
-      font-size: 12px;
-      padding: 8px 16px;
-      border: 1px ${Color.blackTransparent} solid;
-      border-radius: 0.5rem;
-      color: ${Color.black};
-      &:hover {
-        background: white;
+    .bn-onboard-modal-content-close {
+      top: 1.5rem;
+    }
+    .bn-onboard-modal-select-wallets li {
+      width: 50%;
+    }
+    .bn-onboard-modal-select-wallets {
+      .bn-onboard-prepare-button { 
+        color: 1px solid ${({ theme }) => theme.color.offBlack} !important;
+        border: 1px ${Color.blackTransparent} solid !important;
+      }
+    }
+    .bn-onboard-select-info-container  {
+      justify-content: center !important;
+      
+      .bn-onboard-prepare-button { 
+        display: none;
+      }
+      
+      span {
+        text-align: center;
+        color: ${({ theme }) => theme.color.bodyAccent};
+        font-size: 0.875rem !important;
+        margin: 0 !important;
+      }
+    }
+    .bn-onboard-modal-selected-wallet {
+      > *:not(:last-child) {
+        margin-bottom: 0.75rem;
+      }
+    }
+    
+    
+    @media (min-width: ${ViewportWidth.s}) {
+      .bn-onboard-modal-content {
+        position: relative;
+        max-width: 28rem;
+        border-radius: 1rem;
       }
     }
   }
+  
 `;
 
 const StickyHeader = styled.div`
@@ -128,7 +174,7 @@ const StickyHeader = styled.div`
 const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
   <>
     <StickyHeader>
-      <AppBar />
+      <AppBar home={home} />
     </StickyHeader>
     <Header home={home} />
   </>
@@ -141,7 +187,7 @@ const Container = styled.div<{ accountOpen?: boolean }>`
   min-height: calc(100vh - 182px);
 
   // Space for the footer
-  padding-bottom: 8rem;
+  padding-bottom: 4rem;
 
   background: ${({ accountOpen }) =>
     accountOpen ? Color.black : 'transparent'};
@@ -168,7 +214,7 @@ export const Layout: FC = ({ children }) => {
   }, [accountOpen]);
 
   return (
-    <>
+    <ModalProvider rootComponent={TransitionGroup}>
       <Background home={home} accountOpen={accountOpen} />
       <HeaderGroup home={home} />
       <Container>
@@ -189,6 +235,6 @@ export const Layout: FC = ({ children }) => {
       <Tooltip tip="" hideIcon />
       <ReactTooltip id="global" place="top" />
       <GlobalStyle />
-    </>
+    </ModalProvider>
   );
 };

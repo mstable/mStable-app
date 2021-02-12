@@ -19,10 +19,10 @@ interface Addresses {
   WETH: string;
   MTA: string;
   vMTA: string;
-  mUSD: {
+  musd: {
     SaveWrapper?: string;
   };
-  mBTC?: {
+  mbtc?: {
     SaveWrapper: string;
   };
   CURVE: {
@@ -44,6 +44,15 @@ interface Addresses {
     MUSD_SWAP: string;
     '3POOL_SWAP': string;
   };
+  SUSHI: {
+    SUSHI_TOKEN: string;
+  };
+  BADGER: {
+    BADGER_TOKEN: string;
+  };
+  CREAM: {
+    CREAM_TOKEN: string;
+  };
 }
 
 type AddressesByNetwork = Record<typeof CHAIN_ID, Addresses>;
@@ -54,8 +63,11 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     MTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
     vMTA: '0xae8bc96da4f9a9613c323478be181fdb2aa0e1bf',
-    mUSD: {
+    musd: {
       SaveWrapper: '0xD7c346C228bDdd8a6a4c1a69E6cC82292909dcAD',
+    },
+    mbtc: {
+      SaveWrapper: '0x7CB1576dcC0D8FCb32eBD21204899ef6C0270Eb9',
     },
     CURVE: {
       CURVE_V2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',
@@ -80,13 +92,23 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
       MUSD_SWAP: '0x8474ddbe98f5aa3179b3b3f5942d724afcdec9f6',
       '3POOL_SWAP': '0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7',
     },
+    SUSHI: {
+      SUSHI_TOKEN: '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
+      // LP_TOKEN
+    },
+    BADGER: {
+      BADGER_TOKEN: '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
+    },
+    CREAM: {
+      CREAM_TOKEN: '0x2ba592F78dB6436527729929AAf6c908497cB200',
+    },
   },
   3: {
     UNISWAP_ROUTER02: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
     WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
-    mUSD: {
+    musd: {
       SaveWrapper: '0xeb9201126a77dcd966c878ce81ea1146603b86ad',
     },
     CURVE: {
@@ -97,19 +119,35 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
         '0xb5e5d0f8c0cba267cd3d7035d6adc8eba7df7cdd', // DAI
       ],
     } as never,
+    SUSHI: {} as never,
+    BADGER: {} as never,
+    CREAM: {} as never,
   },
   42: {
     UNISWAP_ROUTER02: 'TODO',
     WETH: 'TODO',
     MTA: '0xcda64b5d3ca85800ab9f7409686985b59f2b9598',
     vMTA: 'TODO',
-    mUSD: {
+    musd: {
       SaveWrapper: 'TODO',
     },
   } as never,
 });
 
 export const ADDRESSES: Addresses = ADDRESSES_BY_NETWORK[CHAIN_ID];
+
+export const MASSETS = {
+  musd: {
+    name: 'mStable USD',
+    symbol: 'mUSD',
+    slug: 'musd',
+  },
+  mbtc: {
+    name: 'mStable BTC',
+    symbol: 'mBTC',
+    slug: 'mbtc',
+  },
+};
 
 export const EMOJIS = {
   error: '❌',

@@ -1,13 +1,17 @@
 # import './fragments.graphql'
 
-query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
-  massets {
+query MUSD($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
+  masset(id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5") {
     id
     token {
       ...TokenAll
     }
     feeRate
     redemptionFeeRate
+    forgeValidator
+    invariantStartTime
+    invariantStartingCap
+    invariantCapFactor
     basket {
       failed
       collateralisationRatio
@@ -45,16 +49,7 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
       }
     }
     # TODO remove me: Exclude outdated Ropsten SavingsContract
-    savingsContractsV2: savingsContracts(
-      where: {
-        version: 2
-        id_not_in: [
-          "0x478e379d5f3e2f949a94f1ccfb7217fb35916615"
-          "0x5b7f01dae6bce656c9ca4175eb3e406adc6c7957"
-          "0x06F1711b04011f2f0acD0370B24D9A7e23516255"
-        ]
-      }
-    ) {
+    savingsContractsV2: savingsContracts(where: { version: 2 }) {
       ...SavingsContractAll
       token {
         ...TokenAll

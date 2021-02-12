@@ -383,7 +383,7 @@ const EarnContent: FC = () => {
                 action={PageAction.Earn}
                 subtitle="Ecosystem rewards with mStable"
               >
-                <Button onClick={toggleOnboardingVisible}>
+                <Button onClick={toggleOnboardingVisible} scale={0.875}>
                   View introduction
                 </Button>
               </PageHeader>

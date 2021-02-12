@@ -1,8 +1,10 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-alert */
 import React, { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import { BigDecimal } from '../../web3/BigDecimal';
-import { ApproveProvider, useApprove } from './ApproveProvider';
+import { ApproveProvider, useApprove, Mode } from './ApproveProvider';
 import { Button, UnstyledButton } from '../core/Button';
 import { Tooltip } from '../core/ReactTooltip';
 
@@ -21,11 +23,12 @@ interface Props {
     address: string;
     amount?: BigDecimal;
   };
+  slippageWarning?: boolean;
 }
 
 const StyledButton = styled(Button)`
   width: 100%;
-  height: 4rem;
+  height: 3.75rem;
   border-radius: 2rem;
 `;
 
@@ -67,11 +70,86 @@ const SendButtonContent: FC<Omit<Props, 'approve'>> = ({
   </Container>
 );
 
+export const ApproveContent: FC<{
+  onApproveClick: (mode: Mode) => void;
+  mode: Mode;
+  onCloseClick: () => void;
+  hasPendingApproval: boolean;
+  isApproveEdgeCase?: boolean;
+  className?: string;
+}> = ({
+  onApproveClick,
+  mode,
+  onCloseClick,
+  hasPendingApproval,
+  isApproveEdgeCase,
+  className,
+}) => (
+  <ApproveContainer className={className}>
+    {isApproveEdgeCase ? (
+      <StyledButton
+        highlighted
+        disabled={hasPendingApproval}
+        scale={0.875}
+        onClick={() => onApproveClick('zero')}
+      >
+        <Tooltip
+          tip="The approved amount is less than the required amount, but this token requires resetting the approved amount first."
+          hideIcon
+        >
+          <div>
+            {hasPendingApproval && mode === 'zero' ? 'Resetting' : 'Reset'}
+          </div>
+        </Tooltip>
+      </StyledButton>
+    ) : (
+      <>
+        <StyledButton
+          highlighted
+          disabled={hasPendingApproval}
+          scale={0.875}
+          onClick={() => onApproveClick('exact')}
+        >
+          <Tooltip
+            tip="Approve this contract to spend enough for this transaction"
+            hideIcon
+          >
+            <div>
+              {hasPendingApproval && mode === 'exact' ? 'Approving' : 'Approve'}
+            </div>
+            <div>Exact</div>
+          </Tooltip>
+        </StyledButton>
+        <StyledButton
+          highlighted
+          disabled={hasPendingApproval}
+          scale={0.875}
+          onClick={() => onApproveClick('infinite')}
+        >
+          <Tooltip
+            tip="Approve this contract to spend an infinite amount"
+            hideIcon
+          >
+            <div>
+              {hasPendingApproval && mode === 'infinite'
+                ? 'Approving'
+                : 'Approve'}
+            </div>
+            <div>∞</div>
+          </Tooltip>
+        </StyledButton>
+      </>
+    )}
+    <CloseButton onClick={onCloseClick}>✕</CloseButton>
+  </ApproveContainer>
+);
+
 const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
   className,
   valid,
   title,
   handleSend,
+  slippageWarning,
 }) => {
   const [sendError, setSendError] = useState<string | undefined>();
 
@@ -84,7 +162,6 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
 
   useEffect(() => {
     if (needsApprove) return;
-
     setStep(Step.ACTION);
   }, [needsApprove]);
 
@@ -105,6 +182,16 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
               return setStep(Step.APPROVE);
             }
 
+            if (slippageWarning) {
+              if (
+                !confirm(
+                  'This transaction has a price impact of at least 5%. Please confirm you would like to continue',
+                )
+              ) {
+                return;
+              }
+            }
+
             try {
               await handleSend();
             } catch (error) {
@@ -115,67 +202,13 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
           {title}
         </StyledButton>
       ) : (
-        <ApproveContainer>
-          {isApproveEdgeCase ? (
-            <StyledButton
-              highlighted
-              disabled={hasPendingApproval}
-              scale={0.875}
-              onClick={() => handleApprove('zero')}
-            >
-              <Tooltip
-                tip="The approved amount is less than the required amount, but this token requires resetting the approved amount first."
-                hideIcon
-              >
-                <div>
-                  {hasPendingApproval && mode === 'zero'
-                    ? 'Resetting'
-                    : 'Reset'}
-                </div>
-              </Tooltip>
-            </StyledButton>
-          ) : (
-            <>
-              <StyledButton
-                highlighted
-                disabled={hasPendingApproval}
-                scale={0.875}
-                onClick={() => handleApprove('exact')}
-              >
-                <Tooltip
-                  tip="Approve this contract to spend enough for this transaction"
-                  hideIcon
-                >
-                  <div>
-                    {hasPendingApproval && mode === 'exact'
-                      ? 'Approving'
-                      : 'Approve'}
-                  </div>
-                  <div>Exact</div>
-                </Tooltip>
-              </StyledButton>
-              <StyledButton
-                highlighted
-                disabled={hasPendingApproval}
-                scale={0.875}
-                onClick={() => handleApprove('infinite')}
-              >
-                <Tooltip
-                  tip="Approve this contract to spend an infinite amount"
-                  hideIcon
-                >
-                  <div>
-                    {hasPendingApproval && mode === 'infinite'
-                      ? 'Approving'
-                      : 'Approve'}
-                  </div>
-                  <div>∞</div>
-                </Tooltip>
-              </StyledButton>
-            </>
-          )}
-          <CloseButton onClick={() => setStep(Step.ACTION)}>✕</CloseButton>
-        </ApproveContainer>
+        <ApproveContent
+          mode={mode}
+          onApproveClick={handleApprove}
+          onCloseClick={() => setStep(Step.ACTION)}
+          hasPendingApproval={hasPendingApproval}
+          isApproveEdgeCase={isApproveEdgeCase}
+        />
       )}
     </Container>
   );
@@ -187,6 +220,7 @@ export const SendButton: FC<Props> = ({
   handleSend,
   title,
   valid,
+  slippageWarning,
 }) =>
   approve ? (
     <ApproveProvider
@@ -199,6 +233,7 @@ export const SendButton: FC<Props> = ({
         valid={valid}
         title={title}
         handleSend={handleSend}
+        slippageWarning={slippageWarning}
       />
     </ApproveProvider>
   ) : (
@@ -207,5 +242,6 @@ export const SendButton: FC<Props> = ({
       valid={valid}
       title={title}
       handleSend={handleSend}
+      slippageWarning={slippageWarning}
     />
   );

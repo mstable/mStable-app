@@ -50,6 +50,7 @@ export const VaultWithdraw: FC = () => {
         label: 'imUSD Vault',
         balance: rawBalance,
         symbol: 'imUSD',
+        custom: true,
       },
     ],
     [rawBalance, vaultAddress],
@@ -70,7 +71,7 @@ export const VaultWithdraw: FC = () => {
             setInputFormValue(rawBalance.string);
           }
         }}
-        error={!!error}
+        error={error ? 'error' : undefined}
       />
       <SendButton
         valid={valid}

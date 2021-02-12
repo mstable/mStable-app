@@ -22,32 +22,35 @@ const Container = styled.div`
   }
 `;
 
-const tabInfo: { [key in Tabs]: string | undefined } = {
-  [DepositStablecoins]:
-    'Interest-bearing mUSD (imUSD) will be minted from your selected stablecoin. Your imUSD can be redeemed for mUSD at any time.',
-  [DepositETH]:
-    'ETH will be automatically traded via Uniswap V2 & Curve for mUSD. Your mUSD will then be deposited for imUSD (interest-bearing mUSD). Your imUSD can be redeemed for mUSD at any time.',
-  [Redeem]: 'Redeem an amount of imUSD for mUSD.',
-};
+const tabInfo = (
+  formattedMasset: string,
+): { [key in Tabs]: string | undefined } => ({
+  [DepositStablecoins]: `Interest-bearing ${formattedMasset} (${`i${formattedMasset}`}) will be minted from your selected stablecoin. Your ${`i${formattedMasset}`} can be redeemed for ${formattedMasset} at any time.`,
+  [DepositETH]: `ETH will be automatically traded via Uniswap V2 & Curve for ${formattedMasset}. Your ${formattedMasset} will then be deposited for ${`i${formattedMasset}`} (interest-bearing ${formattedMasset}). Your ${`i${formattedMasset}`} can be redeemed for ${formattedMasset} at any time.`,
+  [Redeem]: `Redeem an amount of ${`i${formattedMasset}`} for ${formattedMasset}.`,
+});
 
 // TODO TabbedModal
 export const SaveModal: FC = () => {
   const massetState = useSelectedMassetState();
+  const massetSymbol = massetState?.token.symbol;
   const isActive = massetState?.savingsContracts.v2?.active;
+  const saveWrapperAddress =
+    ADDRESSES[massetSymbol as 'mbtc' | 'musd']?.SaveWrapper;
 
   const [tab, setTab] = useState<Tabs>(Tabs.DepositStablecoins);
 
-  const tabInfoMessage = tabInfo[tab];
+  const tabInfoMessage = massetSymbol && tabInfo(massetSymbol)[tab];
 
   const [tabs, ActiveComponent] = useMemo(() => {
     const _tabs = [
       {
         tab: Tabs.DepositStablecoins,
-        label: 'Deposit via Stablecoin',
+        label: `Deposit via ${massetSymbol === 'mUSD' ? 'Stablecoin' : 'mBTC'}`,
         component: SaveDeposit,
         active: tab === Tabs.DepositStablecoins,
       },
-      ...(isActive && ADDRESSES.mUSD.SaveWrapper
+      ...(isActive && saveWrapperAddress
         ? [
             {
               tab: Tabs.DepositETH,
@@ -59,14 +62,14 @@ export const SaveModal: FC = () => {
         : []),
       {
         tab: Tabs.Redeem,
-        label: 'Redeem mUSD',
+        label: `Redeem ${massetSymbol}`,
         component: SaveRedeem,
         active: tab === Tabs.Redeem,
       },
     ];
     const activeComponent = _tabs.find(t => t.active)?.component as FC;
     return [_tabs, activeComponent];
-  }, [tab, isActive]);
+  }, [tab, isActive, saveWrapperAddress, massetSymbol]);
 
   return (
     <Container>

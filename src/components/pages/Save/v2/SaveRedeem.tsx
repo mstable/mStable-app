@@ -22,6 +22,7 @@ export const SaveRedeem: FC = () => {
 
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
+  const massetSymbol = massetState?.token.symbol;
   const savingsContract = massetState?.savingsContracts.v2;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
@@ -61,15 +62,15 @@ export const SaveRedeem: FC = () => {
   return (
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
+      outputAddressOptions={[{ address: massetAddress }]}
       inputAddress={saveAddress}
       inputAddressDisabled
-      inputAmount={inputAmount}
       inputFormValue={inputFormValue}
       outputAddress={massetAddress}
       error={error}
       exchangeRate={exchangeRate}
-      handleSetAmount={setInputFormValue}
-      handleSetMax={() => {
+      handleSetInputAmount={setInputFormValue}
+      handleSetInputMax={() => {
         if (inputToken) {
           setInputFormValue(inputToken.balance.string);
         }
@@ -77,7 +78,7 @@ export const SaveRedeem: FC = () => {
     >
       <SendButton
         valid={valid}
-        title="Redeem mUSD"
+        title={`Redeem ${massetSymbol}`}
         handleSend={() => {
           if (
             signer &&

@@ -24,30 +24,31 @@ const Container = styled.div`
   }
 `;
 
-const tabTitles: { [key in Tabs]: string } = {
-  [Deposit]: 'Deposit via Stablecoin',
+const tabTitles = (massetSymbol?: string): { [key in Tabs]: string } => ({
+  [Deposit]: `Deposit via ${massetSymbol === 'mUSD' ? 'Stablecoin' : 'mBTC'}`,
   [DepositETH]: 'Deposit via ETH',
   [Withdraw]: 'Withdraw',
   [Exit]: 'Exit',
-};
+});
 
-const tabInfo: { [key in Tabs]: string } = {
-  [Deposit]:
-    'imUSD will be minted from your selected stablecoin & deposited into the Vault. Your imUSD can be withdrawn at any time.',
-  [DepositETH]:
-    'ETH will be traded via Uniswap V2 & Curve for mUSD. Your mUSD will then mint imUSD & be deposited into the Vault. Your imUSD can be withdrawn at any time.',
-  [Withdraw]:
-    'Withdraw an amount of imUSD from the Vault, returning imUSD to your wallet.',
-  [Exit]:
-    'Exiting the Vault will return your imUSD. You will no longer receive new MTA rewards but you will continue earning interest by holding imUSD.',
-};
+const tabInfo = (
+  formattedMasset: string,
+): { [key in Tabs]: string | undefined } => ({
+  [Deposit]: `${`i${formattedMasset}`} will be minted from your selected stablecoin & deposited into the Vault. Your ${`i${formattedMasset}`} can be withdrawn at any time.`,
+  [DepositETH]: `ETH will be traded via Uniswap V2 & Curve for ${formattedMasset}. Your ${formattedMasset} will then mint ${`i${formattedMasset}`} & be deposited into the Vault. Your ${`i${formattedMasset}`} can be withdrawn at any time.`,
+  [Withdraw]: `Withdraw an amount of ${`i${formattedMasset}`} from the Vault, returning ${`i${formattedMasset}`} to your wallet.`,
+  [Exit]: `Exiting the Vault will return your ${`i${formattedMasset}`}. You will no longer receive new MTA rewards but you will continue earning interest by holding ${`i${formattedMasset}`}.`,
+});
 
 export const VaultModal: FC = () => {
   const massetState = useSelectedMassetState();
   const [tab, setTab] = useState<Tabs>(Tabs.Deposit);
+  const massetSymbol = massetState?.token.symbol;
+  const saveWrapperAddress =
+    ADDRESSES[massetSymbol as 'mbtc' | 'musd']?.SaveWrapper;
 
   const canDepositWithWrapper =
-    massetState?.savingsContracts.v2?.active && !!ADDRESSES.mUSD.SaveWrapper;
+    massetState?.savingsContracts.v2?.active && !!saveWrapperAddress;
 
   const tabs = [
     Withdraw,
@@ -56,7 +57,7 @@ export const VaultModal: FC = () => {
     Exit,
   ];
 
-  const tabInfoMessage = tabInfo[tab];
+  const tabInfoMessage = massetSymbol && tabInfo(massetSymbol)[tab];
 
   return (
     <Container>
@@ -65,7 +66,7 @@ export const VaultModal: FC = () => {
           t =>
             t && (
               <TabBtn active={tab === t} onClick={() => setTab(t)} key={t}>
-                {tabTitles[t]}
+                {tabTitles(massetSymbol)[t]}
               </TabBtn>
             ),
         )}

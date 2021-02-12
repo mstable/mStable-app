@@ -8,10 +8,6 @@ import {
 } from '../../../../context/TokensProvider';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
 
-import { ReactComponent as IMUSDMTAIcon } from '../../../icons/tokens/imusd-mta.svg';
-import { ReactComponent as IMUSDIcon } from '../../../icons/tokens/imUSD.svg';
-import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
-
 import { BalanceRow, BalanceType, BalanceHeader } from '../BalanceRow';
 import { Boost, BoostCalculator } from './Boost';
 import { MassetModal } from './MassetModal';
@@ -23,19 +19,11 @@ import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
 import { VaultROI } from './VaultROI';
 import { useMtaPrice } from '../../../../hooks/useMtaPrice';
 import { Button } from '../../../core/Button';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
+import { SaveModalHeader } from './SaveModalHeader';
+import { ADDRESSES } from '../../../../constants';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
-
-const ModalTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  > svg {
-    width: 2rem;
-    height: auto;
-  }
-`;
 
 const PotentialBoost = styled.div`
   border-top: 1px solid ${({ theme }) => theme.color.accent};
@@ -68,10 +56,10 @@ const Container = styled.div`
   }
 `;
 
-// TODO replace masset-specific names/icons
 export const Save: FC = () => {
   const [isCalculatorVisible, setCalculatorVisible] = useState(false);
   const massetState = useSelectedMassetState();
+  const massetName = useSelectedMassetName();
   const mtaPrice = useMtaPrice();
 
   const savingsContract = massetState?.savingsContracts?.v2;
@@ -85,31 +73,16 @@ export const Save: FC = () => {
   const vMetaToken = useTokenSubscription(vault?.stakingContract);
 
   const [showMassetModal] = useModalComponent({
-    title: (
-      <ModalTitle>
-        <MUSDIcon />
-        mUSD
-      </ModalTitle>
-    ),
+    title: <SaveModalHeader masset={massetName} type="masset" />,
     children: <MassetModal />,
   });
   const [showSaveModal] = useModalComponent({
-    title: (
-      <ModalTitle>
-        <IMUSDIcon />
-        imUSD
-      </ModalTitle>
-    ),
+    title: <SaveModalHeader masset={massetName} type="imasset" />,
     children: <SaveModal />,
   });
 
   const [showVaultModal] = useModalComponent({
-    title: (
-      <ModalTitle>
-        <IMUSDMTAIcon />
-        imUSD Vault
-      </ModalTitle>
-    ),
+    title: <SaveModalHeader masset={massetName} type="vault" />,
     children: <VaultModal />,
   });
 
@@ -129,46 +102,55 @@ export const Save: FC = () => {
         token={BalanceType.Masset}
         onClick={showMassetModal}
         balance={massetToken?.balance}
+        masset={massetName}
       />
       <BalanceRow
-        token={BalanceType.SavingsContractV2}
+        token={BalanceType.Savings}
         apy={saveApy?.value}
         onClick={showSaveModal}
         balance={saveToken?.balance}
         dollarExchangeRate={exchangeRate}
+        masset={massetName}
       />
       <div />
       <Divider />
       <div />
-      <BalanceRow
-        token={BalanceType.BoostedSavingsVault}
-        apy={saveApy?.value}
-        highlight
-        rewards={<VaultROI />}
-        onClick={showVaultModal}
-        balance={vaultBalance ?? BigDecimal.ZERO}
-        dollarExchangeRate={exchangeRate}
-      >
-        {vaultBalance || hasRewards ? (
-          <Boost />
-        ) : (
-          <PotentialBoost>
-            {isCalculatorVisible ? (
-              <BoostCalculator
-                onBackClick={() => setCalculatorVisible(false)}
-              />
-            ) : (
-              <Button scale={0.875} onClick={() => setCalculatorVisible(true)}>
-                Calculate rewards
-              </Button>
-            )}
-          </PotentialBoost>
-        )}
-      </BalanceRow>
+      {ADDRESSES[massetName]?.SaveWrapper && massetName === 'musd' && (
+        <BalanceRow
+          token={BalanceType.BoostedSavingsVault}
+          apy={saveApy?.value}
+          highlight
+          rewards={<VaultROI />}
+          onClick={showVaultModal}
+          balance={vaultBalance ?? BigDecimal.ZERO}
+          dollarExchangeRate={exchangeRate}
+          masset={massetName}
+        >
+          {vaultBalance || hasRewards ? (
+            <Boost />
+          ) : (
+            <PotentialBoost>
+              {isCalculatorVisible ? (
+                <BoostCalculator
+                  onBackClick={() => setCalculatorVisible(false)}
+                />
+              ) : (
+                <Button
+                  scale={0.875}
+                  onClick={() => setCalculatorVisible(true)}
+                >
+                  Calculate rewards
+                </Button>
+              )}
+            </PotentialBoost>
+          )}
+        </BalanceRow>
+      )}
       <BalanceRow
         token={BalanceType.Meta}
         balance={metaToken?.balance}
         dollarExchangeRate={mtaPrice}
+        masset={massetName}
       />
       <BalanceRow
         token={BalanceType.VMeta}
@@ -176,6 +158,7 @@ export const Save: FC = () => {
         onClick={navigateToGovernance}
         apy="Variable APY"
         external
+        masset={massetName}
       />
     </Container>
   );

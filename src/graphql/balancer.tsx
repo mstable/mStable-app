@@ -2,9 +2,6 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
       export interface IntrospectionResultData {
         __schema: {
@@ -35,9 +32,6 @@ export type Scalars = {
   BigInt: string;
   BigDecimal: string;
 };
-
-
-
 
 export type _Block_ = {
   /** The hash of the block */
@@ -1452,25 +1446,25 @@ export type TokenPriceDetailsFragment = (
   & { address: TokenPrice['id'] }
 );
 
-export type PoolsQueryVariables = Exact<{
-  ids: Array<Scalars['ID']> | Scalars['ID'];
+export type PoolsQueryVariables = {
+  ids: Array<Scalars['ID']>;
   includeHistoric: Scalars['Boolean'];
   block?: Maybe<Block_Height>;
-}>;
+};
 
 
 export type PoolsQuery = { current: Array<PoolDetailsFragment>, historic: Array<PoolDetailsFragment> };
 
-export type TokenPricesQueryVariables = Exact<{
-  tokens: Array<Scalars['ID']> | Scalars['ID'];
-}>;
+export type TokenPricesQueryVariables = {
+  tokens: Array<Scalars['ID']>;
+};
 
 
 export type TokenPricesQuery = { tokenPrices: Array<TokenPriceDetailsFragment> };
 
-export type TokenPriceQueryVariables = Exact<{
+export type TokenPriceQueryVariables = {
   token: Scalars['ID'];
-}>;
+};
 
 
 export type TokenPriceQuery = { tokenPrice?: Maybe<TokenPriceDetailsFragment> };

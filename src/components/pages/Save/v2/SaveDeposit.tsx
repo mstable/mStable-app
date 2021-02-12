@@ -17,6 +17,7 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 const formId = 'SaveDeposit';
 
@@ -35,6 +36,7 @@ export const SaveDeposit: FC<{
 }> = ({ saveAndStake }) => {
   const signer = useSigner();
   const propose = usePropose();
+  const massetName = useSelectedMassetName();
 
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
@@ -44,8 +46,9 @@ export const SaveDeposit: FC<{
   const vaultBalance = vault?.account?.rawBalance ?? BigDecimal.ZERO;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
+  const saveWrapperAddress = ADDRESSES[massetName]?.SaveWrapper;
   const canDepositWithWrapper = !!(
-    savingsContract?.active && !!ADDRESSES.mUSD.SaveWrapper
+    savingsContract?.active && !!saveWrapperAddress
   );
 
   const bassets = useMemo(
@@ -84,10 +87,12 @@ export const SaveDeposit: FC<{
   const inputAddressOptions = useMemo(() => {
     return [
       { address: massetAddress as string },
-      { address: saveAddress as string },
+      ...(ADDRESSES[massetName]?.SaveWrapper
+        ? [{ address: saveAddress as string }]
+        : []),
       ...bassets.map(address => ({ address })),
     ];
-  }, [massetAddress, saveAddress, bassets]);
+  }, [massetAddress, massetName, saveAddress, bassets]);
 
   const exchangeRate = useMemo<{
     fetching?: boolean;
@@ -112,23 +117,35 @@ export const SaveDeposit: FC<{
   const depositApprove = useMemo(
     () => ({
       spender: isDepositingBasset
-        ? (ADDRESSES.mUSD.SaveWrapper as string)
+        ? (saveWrapperAddress as string)
         : (saveAddress as string),
       amount: scaledInputAmount,
       address: inputAddress as string,
     }),
-    [isDepositingBasset, saveAddress, scaledInputAmount, inputAddress],
+    [
+      isDepositingBasset,
+      saveWrapperAddress,
+      saveAddress,
+      scaledInputAmount,
+      inputAddress,
+    ],
   );
 
   const stakeApprove = useMemo(
     () => ({
       spender: isDepositingSave
         ? (vaultAddress as string)
-        : (ADDRESSES.mUSD.SaveWrapper as string),
+        : (saveWrapperAddress as string),
       amount: scaledInputAmount,
       address: inputAddress as string,
     }),
-    [scaledInputAmount, inputAddress, isDepositingSave, vaultAddress],
+    [
+      isDepositingSave,
+      vaultAddress,
+      saveWrapperAddress,
+      scaledInputAmount,
+      inputAddress,
+    ],
   );
 
   const valid = !!(!error && inputAmount && inputAmount.simple > 0);
@@ -136,22 +153,26 @@ export const SaveDeposit: FC<{
   return (
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
+      outputAddressOptions={[
+        {
+          address: saveAddress,
+          balance: isDepositingSave ? vaultBalance : undefined,
+          label: isDepositingSave ? 'imUSD Vault' : undefined,
+        },
+      ]}
       inputAddress={inputAddress}
-      inputAmount={inputAmount}
       inputFormValue={inputFormValue}
       outputAddress={saveAddress}
-      outputLabel={isDepositingSave ? 'imUSD Vault' : undefined}
-      outputBalance={isDepositingSave ? vaultBalance : undefined}
       error={error}
       exchangeRate={exchangeRate}
-      // slippage={slippage}
-      handleSetAddress={setInputAddress}
-      handleSetAmount={setInputFormValue}
-      handleSetMax={() => {
+      handleSetInputAddress={setInputAddress}
+      handleSetInputAmount={setInputFormValue}
+      handleSetInputMax={() => {
         if (inputToken) {
           setInputFormValue(inputToken.balance.string);
         }
       }}
+      outputAddressDisabled
     >
       {isDepositingSave ? (
         <SendButton
@@ -219,7 +240,7 @@ export const SaveDeposit: FC<{
                     return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
                       new TransactionManifest(
                         SaveWrapperFactory.connect(
-                          ADDRESSES.mUSD.SaveWrapper as string,
+                          saveWrapperAddress as string,
                           signer,
                         ),
                         'saveViaMint',
@@ -253,7 +274,7 @@ export const SaveDeposit: FC<{
                     return propose<Interfaces.SaveWrapper, 'saveAndStake'>(
                       new TransactionManifest(
                         SaveWrapperFactory.connect(
-                          ADDRESSES.mUSD.SaveWrapper as string,
+                          saveWrapperAddress as string,
                           signer,
                         ),
                         'saveAndStake',
@@ -268,7 +289,7 @@ export const SaveDeposit: FC<{
                     return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
                       new TransactionManifest(
                         SaveWrapperFactory.connect(
-                          ADDRESSES.mUSD.SaveWrapper as string,
+                          saveWrapperAddress as string,
                           signer,
                         ),
                         'saveViaMint',

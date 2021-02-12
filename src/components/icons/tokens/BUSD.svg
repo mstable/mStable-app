@@ -1,9 +1,1 @@
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0" y="0" viewBox="0 0 500 500" xml:space="preserve">
-<style>
-.busd-st0{fill:#f0b90a}
-</style>
-<path transform="rotate(45 66 250)" class="busd-st0" d="M24 208h84v84H24z"/>
-<path transform="rotate(45 203 113)" class="busd-st0" d="M161 5h84v216h-84z"/>
-<path transform="rotate(45 249 250)" class="busd-st0" d="M207 77h84v346h-84z"/>
-<path transform="rotate(45 341 342)" class="busd-st0" d="M299 170h84v345h-84z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500"><style>.busd-st0{fill:#f0b90a}</style><path class="busd-st0" d="M66 190.603L125.397 250 66 309.397 6.603 250zM249.669 6.934l59.397 59.397-152.735 152.735-59.397-59.397zM341.631 97.972l59.397 59.397-244.659 244.659-59.397-59.397zM432.924 190.68l59.397 59.396-243.952 243.952-59.397-59.397z"/></svg>

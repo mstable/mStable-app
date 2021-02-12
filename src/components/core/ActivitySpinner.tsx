@@ -52,14 +52,11 @@ const Container = styled.div<Props>`
   }
 `;
 
-export const ActivitySpinner: FC<Props> = ({
-  pending,
-  className,
-  size = 20,
-}) => (
-  <Container className={className} size={size}>
-    <Spinner viewBox={`0 0 ${size} ${size}`} size={size}>
-      {pending && <circle cx={size / 2} cy={size / 2} r={(size / 2) * 0.8} />}
-    </Spinner>
-  </Container>
-);
+export const ActivitySpinner: FC<Props> = ({ pending, className, size = 20 }) =>
+  pending ? (
+    <Container className={className} size={size}>
+      <Spinner viewBox={`0 0 ${size} ${size}`} size={size}>
+        <circle cx={size / 2} cy={size / 2} r={(size / 2) * 0.8} />
+      </Spinner>
+    </Container>
+  ) : null;

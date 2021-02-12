@@ -98,9 +98,12 @@ export const SaveDepositETH: FC<{
 
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
+  const massetSymbol = massetState?.token.symbol;
   const savingsContract = massetState?.savingsContracts.v2;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
+  const saveWrapperAddress =
+    ADDRESSES[massetSymbol as 'mbtc' | 'musd']?.SaveWrapper;
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
   const [uniswapAmountOut, setUniswapAmountOut] = useState<{
@@ -134,7 +137,13 @@ export const SaveDepositETH: FC<{
 
   const inputAddressOptions = useMemo(() => {
     return [
-      { address: AddressZero, balance: ethBalance, label: 'ETH', decimals: 18 },
+      {
+        address: AddressZero,
+        balance: ethBalance,
+        symbol: 'ETH',
+        decimals: 18,
+        custom: true,
+      },
     ];
   }, [ethBalance]);
 
@@ -185,21 +194,27 @@ export const SaveDepositETH: FC<{
   return (
     <AssetExchange
       inputAddress={inputAddress}
-      inputAddressDisabled
       inputAddressOptions={inputAddressOptions}
-      inputAmount={inputAmount}
-      inputLabel="ETH"
+      outputAddressOptions={[
+        {
+          address: saveAddress,
+          balance: ethBalance,
+          label: 'ETH',
+        },
+      ]}
       inputFormValue={inputFormValue}
       outputAddress={saveAddress}
       error={error}
       exchangeRate={exchangeRate}
-      handleSetAddress={setInputAddress}
-      handleSetAmount={setInputFormValue}
-      handleSetMax={() => {
+      handleSetInputAddress={setInputAddress}
+      handleSetInputAmount={setInputFormValue}
+      handleSetInputMax={() => {
         if (ethBalance) {
           setInputFormValue(ethBalance.string);
         }
       }}
+      inputAddressDisabled
+      outputAddressDisabled
     >
       <>
         {!saveAndStake && (
@@ -234,7 +249,7 @@ export const SaveDepositETH: FC<{
                 propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
                   new TransactionManifest(
                     SaveWrapperFactory.connect(
-                      ADDRESSES.mUSD.SaveWrapper as string,
+                      saveWrapperAddress as string,
                       signer,
                     ),
                     'saveViaUniswapETH',
@@ -285,7 +300,7 @@ export const SaveDepositETH: FC<{
               propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
                 new TransactionManifest(
                   SaveWrapperFactory.connect(
-                    ADDRESSES.mUSD.SaveWrapper as string,
+                    saveWrapperAddress as string,
                     signer,
                   ),
                   'saveViaUniswapETH',

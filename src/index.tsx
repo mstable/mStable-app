@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { render } from 'react-dom';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
 import useEffectOnce from 'react-use/lib/useEffectOnce';
 
@@ -10,7 +10,7 @@ import { DAPP_VERSION } from './constants';
 import { Providers } from './context';
 import { Updaters } from './updaters';
 import { Layout } from './components/layout/Layout';
-import { Home } from './components/pages/Home';
+import { Home } from './components/pages';
 import { Swap } from './components/pages/Swap';
 import { Mint } from './components/pages/Mint';
 import { Earn } from './components/pages/Earn';
@@ -44,7 +44,6 @@ const Routes: FC = () => {
   return (
     <Switch>
       <Route exact path="/" component={Home} />
-      <Route exact path="/analytics" component={Analytics} />
       <Route exact path="/earn" component={Earn} />
       <Route exact path="/earn/admin" component={AdminPage} />
       <Route exact path="/earn/:slugOrAddress" component={PoolPage} />
@@ -54,10 +53,16 @@ const Routes: FC = () => {
         component={PoolPage}
       />
       <Route exact path="/faq" component={FAQ} />
-      <Route exact path="/mint" component={Mint} />
-      <Route exact path="/redeem" component={Redeem} />
-      <Route exact path="/save" component={Save} />
-      <Route exact path="/swap" component={Swap} />
+      <Route exact path="/:massetName/analytics" component={Analytics} />
+      <Route exact path="/:massetName/mint" component={Mint} />
+      <Route exact path="/:massetName/redeem" component={Redeem} />
+      <Route exact path="/:massetName/save" component={Save} />
+      <Route exact path="/:massetName/swap" component={Swap} />
+      <Redirect exact path="/analytics" to="/musd/analytics" />
+      <Redirect exact path="/mint" to="/musd/mint" />
+      <Redirect exact path="/redeem" to="/musd/redeem" />
+      <Redirect exact path="/save" to="/musd/save" />
+      <Redirect exact path="/swap" to="/musd/swap" />
       <Route component={NotFound} />
     </Switch>
   );

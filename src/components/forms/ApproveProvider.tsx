@@ -24,7 +24,7 @@ import {
 } from '../../context/TokensProvider';
 import { Interfaces } from '../../types';
 
-type Mode = 'exact' | 'infinite' | 'zero';
+export type Mode = 'exact' | 'infinite' | 'zero';
 
 type HandleApprove = (mode: Mode) => void;
 

@@ -1,192 +1,102 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { ViewportWidth } from '../../theme';
+import { useTokenSubscription } from '../../context/TokensProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { AssetInput } from './AssetInput';
-import { AssetOutputWidget } from './AssetOutputWidget';
+import { ExchangeRate } from '../core/ExchangeRate';
+import { Arrow } from '../core/Arrow';
+import { TransactionOption } from '../../types';
+import { ErrorMessage } from '../core/ErrorMessage';
 
-interface Props {
+export interface Props {
   inputAddress?: string;
   inputAddressDisabled?: boolean;
-  inputAddressOptions: {
-    address: string;
-    label?: string; // e.g. for vault label
-    balance?: BigDecimal; // e.g. for vault balance
-  }[];
-
-  inputAmount?: BigDecimal;
-  inputAmountDisabled?: boolean;
-  inputLabel?: string;
+  inputAddressOptions: TransactionOption[];
   inputFormValue?: string;
-
-  handleSetAddress?(address: string): void;
-  handleSetAmount?(formValue?: string): void;
-  handleSetMax?(): void;
+  handleSetInputAddress?(address?: string): void;
+  handleSetInputAmount?(formValue?: string): void;
+  handleSetInputMax?(): void;
 
   outputAddress?: string;
-  outputLabel?: string;
-  outputBalance?: BigDecimal;
+  outputAddressDisabled?: boolean;
+  outputAddressOptions: TransactionOption[];
+  outputFormValue?: string;
+  handleSetOutputAddress?(address?: string): void;
+  handleSetOutputAmount?(formValue?: string): void;
+  handleSetOutputMax?(): void;
+
   exchangeRate?: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
-  slippage?: BigDecimal;
   error?: string;
 }
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-
-  > div {
-    display: flex;
-    justify-content: space-between;
-  }
-`;
-
-const Exchange = styled.div`
-  flex-direction: column;
-  padding: 1rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  border-radius: 0.5rem;
-
-  > div:first-child {
-    margin-bottom: 1rem;
-  }
-`;
-
-const Details = styled.div`
-  flex-direction: column-reverse;
-
   > * {
-    margin-top: 0.75rem;
-  }
-
-  @media (min-width: ${ViewportWidth.l}) {
-    > * {
-      flex-basis: 47.5%;
-    }
-  }
-`;
-
-const Arrow = styled.div`
-  align-items: center;
-  display: flex;
-  font-size: 1.25rem;
-  justify-content: center;
-  padding: 1rem;
-  text-align: center;
-  user-select: none;
-`;
-
-const Info = styled.div`
-  display: flex;
-  justify-content: space-between;
-  height: fit-content;
-  padding: 0.75rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  border-radius: 0.75rem;
-`;
-
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-
-  > :last-child {
-    display: flex;
-    flex-direction: column;
-
-    > div {
-      margin: 0.5rem 0;
-    }
-
-    > * > {
-      display: flex;
-      flex-direction: row;
-
-      * {
-        width: 100%;
-      }
-    }
-  }
-`;
-
-const Error = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem;
-  border-radius: 2rem;
-  margin-bottom: 0.75rem;
-  background: ${({ theme }) => theme.color.redTransparenter};
-
-  p {
-    text-align: center;
-    opacity: 0.75;
-    font-size: 0.875rem;
-    line-height: 1.75em;
+    margin: 0.5rem 0;
   }
 `;
 
 export const AssetExchange: FC<Props> = ({
-  children,
+  inputAddressOptions,
+  outputAddressOptions,
   error,
   exchangeRate,
-  handleSetAddress,
-  handleSetAmount,
-  handleSetMax,
+  handleSetInputAddress,
+  handleSetInputAmount,
+  handleSetInputMax,
+  handleSetOutputAddress,
+  handleSetOutputAmount,
+  handleSetOutputMax,
   inputAddress,
   inputAddressDisabled,
-  inputAddressOptions,
-  inputAmount,
-  inputAmountDisabled,
-  inputLabel,
   inputFormValue,
   outputAddress,
-  outputBalance,
-  outputLabel,
-  slippage,
+  outputAddressDisabled,
+  outputFormValue,
+  children,
 }) => {
+  const inputToken = useTokenSubscription(inputAddress);
+  const outputToken = useTokenSubscription(outputAddress);
+
+  const conversionFormValue =
+    inputFormValue && exchangeRate?.value && !outputFormValue
+      ? BigDecimal.parse(inputFormValue ?? '0').mulTruncate(
+          exchangeRate.value.exact,
+        ).string
+      : undefined;
+
   return (
     <Container>
-      <Exchange>
-        <AssetInput
-          address={inputAddress}
-          addressDisabled={inputAddressDisabled}
-          addressOptions={inputAddressOptions}
-          amountDisabled={inputAmountDisabled}
-          formValue={inputFormValue}
-          handleSetAddress={handleSetAddress}
-          handleSetAmount={handleSetAmount}
-          handleSetMax={handleSetMax}
-        />
-        <Arrow>↓</Arrow>
-        <AssetOutputWidget
+      <AssetInput
+        address={inputAddress}
+        addressOptions={inputAddressOptions}
+        formValue={inputFormValue}
+        handleSetAmount={handleSetInputAmount}
+        handleSetMax={handleSetInputMax}
+        handleSetAddress={handleSetInputAddress}
+        addressDisabled={inputAddressDisabled}
+      />
+      <div>
+        <Arrow />
+        <ExchangeRate
           exchangeRate={exchangeRate}
-          inputAmount={inputAmount}
-          inputAddress={inputAddress}
-          inputLabel={inputLabel}
-          outputAddress={outputAddress}
-          outputBalance={outputBalance}
-          outputLabel={outputLabel}
+          outputToken={outputToken}
+          inputToken={inputToken}
         />
-      </Exchange>
-      <Details>
-        <Column>
-          {error && (
-            <Error>
-              <p>{error}</p>
-            </Error>
-          )}
-          <div>{children}</div>
-        </Column>
-        {slippage && (
-          <Info>
-            <p>Slippage Tolerance</p>
-            <span>{slippage?.format(2)}%</span>
-          </Info>
-        )}
-      </Details>
+      </div>
+      <AssetInput
+        disabled
+        address={outputAddress}
+        addressOptions={outputAddressOptions}
+        formValue={conversionFormValue ?? outputFormValue}
+        amountDisabled={!handleSetOutputAmount}
+        handleSetAmount={handleSetOutputAmount}
+        handleSetMax={handleSetOutputMax}
+        handleSetAddress={handleSetOutputAddress}
+        addressDisabled={outputAddressDisabled}
+      />
+      {error && <ErrorMessage error={error} />}
+      {children}
     </Container>
   );
 };

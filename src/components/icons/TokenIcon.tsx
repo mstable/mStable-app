@@ -2,6 +2,7 @@ import React, { FC, SVGProps } from 'react';
 import styled from 'styled-components';
 import mUSDTransparent from './tokens/mUSD-transparent.svg';
 import MUSD, { ReactComponent as MusdSvg } from './tokens/mUSD.svg';
+import MBTC, { ReactComponent as MbtcSvg } from './tokens/mBTC.svg';
 import TUSD, { ReactComponent as TusdSvg } from './tokens/TUSD.svg';
 import USDT, { ReactComponent as UsdtSvg } from './tokens/USDT.svg';
 import USDC, { ReactComponent as UsdcSvg } from './tokens/USDC.svg';
@@ -18,7 +19,20 @@ import Uniswap, { ReactComponent as UniswapSvg } from './tokens/Uniswap.svg';
 import Balancer, { ReactComponent as BalancerSvg } from './tokens/Balancer.svg';
 import ETH, { ReactComponent as EtherSvg } from './tokens/Ether.svg';
 import IMUSD, { ReactComponent as ImusdSvg } from './tokens/imUSD.svg';
+import IMBTC, { ReactComponent as ImbtcSvg } from './tokens/imBTC.svg';
 import VMTA, { ReactComponent as VmtaSvg } from './tokens/vMTA.svg';
+import RENBTC, { ReactComponent as RenbtcSvg } from './tokens/renBTC.svg';
+import WBTC, { ReactComponent as WbtcSvg } from './tokens/wBTC.svg';
+import SBTC, { ReactComponent as SbtcSvg } from './tokens/sBTC.svg';
+import IMUSDMTA, {
+  ReactComponent as ImusdmtaSvg,
+} from './tokens/imusd-mta.svg';
+import Sushi, { ReactComponent as SushiSvg } from './tokens/Sushi.svg';
+import BADGER, { ReactComponent as BadgerSvg } from './tokens/Badger.svg';
+import CREAM, { ReactComponent as CreamSvg } from './tokens/Cream.svg';
+import IMBTCMTA, {
+  ReactComponent as ImbtcmtaSvg,
+} from './tokens/imbtc-mta.svg';
 
 interface Props {
   className?: string;
@@ -33,6 +47,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   ETH,
   WETH: ETH,
   MUSD,
+  MBTC,
   TUSD,
   USDT,
   USDC,
@@ -50,12 +65,23 @@ export const TOKEN_ICONS: Record<string, string> = {
   'MK-BAL': Balancer,
   IMUSD,
   VMTA,
+  RENBTC,
+  WBTC,
+  SBTC,
+  IMBTC,
+  IMUSDMTA,
+  SUSHI: Sushi,
+  SLP: Sushi,
+  BADGER,
+  CREAM,
+  IMBTCMTA,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
   ETH: EtherSvg as SvgComponent,
   WETH: EtherSvg as SvgComponent,
   MUSD: MusdSvg as SvgComponent,
+  MBTC: MbtcSvg as SvgComponent,
   TUSD: TusdSvg as SvgComponent,
   USDT: UsdtSvg as SvgComponent,
   USDC: UsdcSvg as SvgComponent,
@@ -73,6 +99,16 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   'MK-BAL': BalancerSvg as SvgComponent,
   IMUSD: ImusdSvg as SvgComponent,
   VMTA: VmtaSvg as SvgComponent,
+  RENBTC: RenbtcSvg as SvgComponent,
+  WBTC: WbtcSvg as SvgComponent,
+  SBTC: SbtcSvg as SvgComponent,
+  IMBTC: ImbtcSvg as SvgComponent,
+  IMUSDMTA: ImusdmtaSvg as SvgComponent,
+  SUSHI: SushiSvg as SvgComponent,
+  SLP: SushiSvg as SvgComponent,
+  BADGER: BadgerSvg as SvgComponent,
+  CREAM: CreamSvg as SvgComponent,
+  IMBTCMTA: ImbtcmtaSvg as SvgComponent,
 };
 
 const Image = styled.img`

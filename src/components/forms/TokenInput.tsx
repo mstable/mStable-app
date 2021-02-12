@@ -38,6 +38,7 @@ const Balance = styled.div`
   font-size: ${FontSize.s};
   font-weight: normal;
   text-overflow: ellipsis;
+  color: ${({ theme }) => theme.color.grey};
 `;
 
 const OptionsContainer = styled.div<{ open: boolean }>`
@@ -125,7 +126,7 @@ const Option: FC<TokenOptionProps> = ({
   );
 };
 
-const placeholderText = 'Select a token';
+const placeholderText = 'Select';
 
 const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
@@ -149,8 +150,8 @@ const Container = styled.div<Pick<Props, 'error' | 'disabled'>>`
   min-width: 100px;
 
   @media (min-width: ${ViewportWidth.s}) {
-    min-width: 145px;
     font-size: ${FontSize.m};
+    min-width: 145px;
   }
 `;
 

@@ -134,6 +134,10 @@ export class BigDecimal {
     return `${formatted}${suffix ? ` ${suffix}` : ''}`;
   }
 
+  toFixed(decimalPlaces = 2): string {
+    return this.format(decimalPlaces);
+  }
+
   get abbreviated(): string {
     return toK(this.simple);
   }

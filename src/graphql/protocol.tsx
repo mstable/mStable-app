@@ -2,9 +2,6 @@ import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
       export interface IntrospectionResultData {
         __schema: {
@@ -79,9 +76,6 @@ export type Scalars = {
   BigDecimal: string;
 };
 
-
-
-
 export type _Block_ = {
   /** The hash of the block */
   hash?: Maybe<Scalars['Bytes']>;
@@ -155,13 +149,76 @@ export enum Account_OrderBy {
   CreditBalance = 'creditBalance'
 }
 
+/**
+ * Amplification value; amplifies the rate of change of the curve.
+ * Lower A = higher rate of change = higher slippage.
+ */
+export type AmpData = {
+  id: Scalars['ID'];
+  currentA: Scalars['BigInt'];
+  targetA: Scalars['BigInt'];
+  startTime: Scalars['BigInt'];
+  rampEndTime: Scalars['BigInt'];
+};
+
+export type AmpData_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  currentA?: Maybe<Scalars['BigInt']>;
+  currentA_not?: Maybe<Scalars['BigInt']>;
+  currentA_gt?: Maybe<Scalars['BigInt']>;
+  currentA_lt?: Maybe<Scalars['BigInt']>;
+  currentA_gte?: Maybe<Scalars['BigInt']>;
+  currentA_lte?: Maybe<Scalars['BigInt']>;
+  currentA_in?: Maybe<Array<Scalars['BigInt']>>;
+  currentA_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  targetA?: Maybe<Scalars['BigInt']>;
+  targetA_not?: Maybe<Scalars['BigInt']>;
+  targetA_gt?: Maybe<Scalars['BigInt']>;
+  targetA_lt?: Maybe<Scalars['BigInt']>;
+  targetA_gte?: Maybe<Scalars['BigInt']>;
+  targetA_lte?: Maybe<Scalars['BigInt']>;
+  targetA_in?: Maybe<Array<Scalars['BigInt']>>;
+  targetA_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  startTime?: Maybe<Scalars['BigInt']>;
+  startTime_not?: Maybe<Scalars['BigInt']>;
+  startTime_gt?: Maybe<Scalars['BigInt']>;
+  startTime_lt?: Maybe<Scalars['BigInt']>;
+  startTime_gte?: Maybe<Scalars['BigInt']>;
+  startTime_lte?: Maybe<Scalars['BigInt']>;
+  startTime_in?: Maybe<Array<Scalars['BigInt']>>;
+  startTime_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  rampEndTime?: Maybe<Scalars['BigInt']>;
+  rampEndTime_not?: Maybe<Scalars['BigInt']>;
+  rampEndTime_gt?: Maybe<Scalars['BigInt']>;
+  rampEndTime_lt?: Maybe<Scalars['BigInt']>;
+  rampEndTime_gte?: Maybe<Scalars['BigInt']>;
+  rampEndTime_lte?: Maybe<Scalars['BigInt']>;
+  rampEndTime_in?: Maybe<Array<Scalars['BigInt']>>;
+  rampEndTime_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum AmpData_OrderBy {
+  Id = 'id',
+  CurrentA = 'currentA',
+  TargetA = 'targetA',
+  StartTime = 'startTime',
+  RampEndTime = 'rampEndTime'
+}
+
 /** A Basket of Bassets (e.g. for mUSD) */
 export type Basket = {
   id: Scalars['ID'];
   /** The Bassets in the Basket */
   bassets: Array<Basset>;
-  /** The collateralisation ratio of the Basket */
-  collateralisationRatio: Scalars['BigInt'];
+  /** The collateralisation ratio of the Basket (mUSD only) */
+  collateralisationRatio?: Maybe<Scalars['BigInt']>;
   /** Max number of Bassets that can be present in the Basket */
   maxBassets: Scalars['Int'];
   /** Flag for whether the Basket has failed */
@@ -237,8 +294,8 @@ export type Basset = {
   id: Scalars['ID'];
   /** Basket the Basset is contained in */
   basket: Basket;
-  /** Target weight of the Basset */
-  maxWeight: Scalars['BigInt'];
+  /** Target weight of the Basset (mUSD only) */
+  maxWeight?: Maybe<Scalars['BigInt']>;
   /** Basset to Masset ratio for quantity conversion */
   ratio: Scalars['BigInt'];
   /** Flag that is set when the bAsset is removed from the basket (and unset when added) */
@@ -1576,8 +1633,24 @@ export type Masset = {
   id: Scalars['ID'];
   /** The Basket of Bassets for this Masset */
   basket: Basket;
-  /** The address of the `BasketManager` contract for this Masset */
-  basketManager: Scalars['Bytes'];
+  /** The address of the `BasketManager` contract for this Masset (mUSD only) */
+  basketManager?: Maybe<Scalars['Bytes']>;
+  /** The address of the `ForgeValidator` or `InvariantValidator` contract */
+  forgeValidator: Scalars['Bytes'];
+  /** Amplification data */
+  ampData?: Maybe<AmpData>;
+  /** Cache size */
+  cacheSize?: Maybe<Scalars['BigInt']>;
+  /** Hard min weight for bAssets */
+  hardMin?: Maybe<Scalars['BigInt']>;
+  /** Hard max weight for bAssets */
+  hardMax?: Maybe<Scalars['BigInt']>;
+  /** Optional start time for `InvariantValidator` contract */
+  invariantStartTime?: Maybe<Scalars['Int']>;
+  /** Optional starting TVL cap for `InvariantValidator` contract */
+  invariantStartingCap?: Maybe<Scalars['BigInt']>;
+  /** Optional cap factor for `InvariantValidator` contract */
+  invariantCapFactor?: Maybe<Scalars['BigInt']>;
   /** The swap fee rate */
   feeRate: Scalars['BigInt'];
   /** The redemption fee rate */
@@ -1727,6 +1800,74 @@ export type Masset_Filter = {
   basketManager_not_in?: Maybe<Array<Scalars['Bytes']>>;
   basketManager_contains?: Maybe<Scalars['Bytes']>;
   basketManager_not_contains?: Maybe<Scalars['Bytes']>;
+  forgeValidator?: Maybe<Scalars['Bytes']>;
+  forgeValidator_not?: Maybe<Scalars['Bytes']>;
+  forgeValidator_in?: Maybe<Array<Scalars['Bytes']>>;
+  forgeValidator_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  forgeValidator_contains?: Maybe<Scalars['Bytes']>;
+  forgeValidator_not_contains?: Maybe<Scalars['Bytes']>;
+  ampData?: Maybe<Scalars['String']>;
+  ampData_not?: Maybe<Scalars['String']>;
+  ampData_gt?: Maybe<Scalars['String']>;
+  ampData_lt?: Maybe<Scalars['String']>;
+  ampData_gte?: Maybe<Scalars['String']>;
+  ampData_lte?: Maybe<Scalars['String']>;
+  ampData_in?: Maybe<Array<Scalars['String']>>;
+  ampData_not_in?: Maybe<Array<Scalars['String']>>;
+  ampData_contains?: Maybe<Scalars['String']>;
+  ampData_not_contains?: Maybe<Scalars['String']>;
+  ampData_starts_with?: Maybe<Scalars['String']>;
+  ampData_not_starts_with?: Maybe<Scalars['String']>;
+  ampData_ends_with?: Maybe<Scalars['String']>;
+  ampData_not_ends_with?: Maybe<Scalars['String']>;
+  cacheSize?: Maybe<Scalars['BigInt']>;
+  cacheSize_not?: Maybe<Scalars['BigInt']>;
+  cacheSize_gt?: Maybe<Scalars['BigInt']>;
+  cacheSize_lt?: Maybe<Scalars['BigInt']>;
+  cacheSize_gte?: Maybe<Scalars['BigInt']>;
+  cacheSize_lte?: Maybe<Scalars['BigInt']>;
+  cacheSize_in?: Maybe<Array<Scalars['BigInt']>>;
+  cacheSize_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMin?: Maybe<Scalars['BigInt']>;
+  hardMin_not?: Maybe<Scalars['BigInt']>;
+  hardMin_gt?: Maybe<Scalars['BigInt']>;
+  hardMin_lt?: Maybe<Scalars['BigInt']>;
+  hardMin_gte?: Maybe<Scalars['BigInt']>;
+  hardMin_lte?: Maybe<Scalars['BigInt']>;
+  hardMin_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMin_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMax?: Maybe<Scalars['BigInt']>;
+  hardMax_not?: Maybe<Scalars['BigInt']>;
+  hardMax_gt?: Maybe<Scalars['BigInt']>;
+  hardMax_lt?: Maybe<Scalars['BigInt']>;
+  hardMax_gte?: Maybe<Scalars['BigInt']>;
+  hardMax_lte?: Maybe<Scalars['BigInt']>;
+  hardMax_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMax_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  invariantStartTime?: Maybe<Scalars['Int']>;
+  invariantStartTime_not?: Maybe<Scalars['Int']>;
+  invariantStartTime_gt?: Maybe<Scalars['Int']>;
+  invariantStartTime_lt?: Maybe<Scalars['Int']>;
+  invariantStartTime_gte?: Maybe<Scalars['Int']>;
+  invariantStartTime_lte?: Maybe<Scalars['Int']>;
+  invariantStartTime_in?: Maybe<Array<Scalars['Int']>>;
+  invariantStartTime_not_in?: Maybe<Array<Scalars['Int']>>;
+  invariantStartingCap?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_not?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_gt?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_lt?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_gte?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_lte?: Maybe<Scalars['BigInt']>;
+  invariantStartingCap_in?: Maybe<Array<Scalars['BigInt']>>;
+  invariantStartingCap_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  invariantCapFactor?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_not?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_gt?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_lt?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_gte?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_lte?: Maybe<Scalars['BigInt']>;
+  invariantCapFactor_in?: Maybe<Array<Scalars['BigInt']>>;
+  invariantCapFactor_not_in?: Maybe<Array<Scalars['BigInt']>>;
   feeRate?: Maybe<Scalars['BigInt']>;
   feeRate_not?: Maybe<Scalars['BigInt']>;
   feeRate_gt?: Maybe<Scalars['BigInt']>;
@@ -1959,6 +2100,14 @@ export enum Masset_OrderBy {
   Id = 'id',
   Basket = 'basket',
   BasketManager = 'basketManager',
+  ForgeValidator = 'forgeValidator',
+  AmpData = 'ampData',
+  CacheSize = 'cacheSize',
+  HardMin = 'hardMin',
+  HardMax = 'hardMax',
+  InvariantStartTime = 'invariantStartTime',
+  InvariantStartingCap = 'invariantStartingCap',
+  InvariantCapFactor = 'invariantCapFactor',
   FeeRate = 'feeRate',
   RedemptionFeeRate = 'redemptionFeeRate',
   TotalMints = 'totalMints',
@@ -2397,6 +2546,8 @@ export type Query = {
   bassets: Array<Basset>;
   basket?: Maybe<Basket>;
   baskets: Array<Basket>;
+  ampData?: Maybe<AmpData>;
+  ampDatas: Array<AmpData>;
   masset?: Maybe<Masset>;
   massets: Array<Masset>;
   account?: Maybe<Account>;
@@ -2522,6 +2673,22 @@ export type QueryBasketsArgs = {
   orderBy?: Maybe<Basket_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Basket_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryAmpDataArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryAmpDatasArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<AmpData_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<AmpData_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -3638,6 +3805,8 @@ export type Subscription = {
   bassets: Array<Basset>;
   basket?: Maybe<Basket>;
   baskets: Array<Basket>;
+  ampData?: Maybe<AmpData>;
+  ampDatas: Array<AmpData>;
   masset?: Maybe<Masset>;
   massets: Array<Masset>;
   account?: Maybe<Account>;
@@ -3763,6 +3932,22 @@ export type SubscriptionBasketsArgs = {
   orderBy?: Maybe<Basket_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<Basket_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionAmpDataArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionAmpDatasArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<AmpData_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<AmpData_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -4523,14 +4708,14 @@ export type TransactionFieldsFragment = TransactionFields_SavingsContractDeposit
 
 export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
 
-export type MassetsQueryVariables = Exact<{
+export type MusdQueryVariables = {
   account: Scalars['String'];
   hasAccount: Scalars['Boolean'];
-}>;
+};
 
 
-export type MassetsQuery = { massets: Array<(
-    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate'>
+export type MusdQuery = { masset?: Maybe<(
+    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'forgeValidator' | 'invariantStartTime' | 'invariantStartingCap' | 'invariantCapFactor'>
     & { token: TokenAllFragment, basket: (
       Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
       & { bassets: Array<(
@@ -4555,16 +4740,16 @@ export type MassetsQuery = { massets: Array<(
     )> }
   )> };
 
-export type V1SavingsBalanceQueryVariables = Exact<{
+export type V1SavingsBalanceQueryVariables = {
   id: Scalars['ID'];
   account: Scalars['String'];
   include: Scalars['Boolean'];
-}>;
+};
 
 
 export type V1SavingsBalanceQuery = { savingsContract?: Maybe<{ creditBalances: Array<Pick<CreditBalance, 'amount'>> }> };
 
-export type AllTokensQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllTokensQueryVariables = {};
 
 
 export type AllTokensQuery = { savingsContracts: Array<(
@@ -4572,16 +4757,16 @@ export type AllTokensQuery = { savingsContracts: Array<(
     & { address: SavingsContract['id'] }
   )>, tokens: Array<TokenAllFragment> };
 
-export type TokenQueryVariables = Exact<{
+export type TokenQueryVariables = {
   id: Scalars['ID'];
-}>;
+};
 
 
 export type TokenQuery = { token?: Maybe<TokenAllFragment> };
 
-export type HistoricTransactionsQueryVariables = Exact<{
+export type HistoricTransactionsQueryVariables = {
   account?: Maybe<Scalars['Bytes']>;
-}>;
+};
 
 
 export type HistoricTransactionsQuery = { transactions: Array<(
@@ -4678,15 +4863,19 @@ export const TransactionFieldsFragmentDoc = gql`
   sender
 }
     `;
-export const MassetsDocument = gql`
-    query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
-  massets {
+export const MusdDocument = gql`
+    query MUSD($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
+  masset(id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5") {
     id
     token {
       ...TokenAll
     }
     feeRate
     redemptionFeeRate
+    forgeValidator
+    invariantStartTime
+    invariantStartingCap
+    invariantCapFactor
     basket {
       failed
       collateralisationRatio
@@ -4723,7 +4912,7 @@ export const MassetsDocument = gql`
         amount
       }
     }
-    savingsContractsV2: savingsContracts(where: {version: 2, id_not_in: ["0x478e379d5f3e2f949a94f1ccfb7217fb35916615", "0x5b7f01dae6bce656c9ca4175eb3e406adc6c7957", "0x06F1711b04011f2f0acD0370B24D9A7e23516255"]}) {
+    savingsContractsV2: savingsContracts(where: {version: 2}) {
       ...SavingsContractAll
       token {
         ...TokenAll
@@ -4766,31 +4955,31 @@ ${MetricFieldsFragmentDoc}
 ${SavingsContractAllFragmentDoc}`;
 
 /**
- * __useMassetsQuery__
+ * __useMusdQuery__
  *
- * To run a query within a React component, call `useMassetsQuery` and pass it any options that fit your needs.
- * When your component renders, `useMassetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useMusdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMusdQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useMassetsQuery({
+ * const { data, loading, error } = useMusdQuery({
  *   variables: {
  *      account: // value for 'account'
  *      hasAccount: // value for 'hasAccount'
  *   },
  * });
  */
-export function useMassetsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MassetsQuery, MassetsQueryVariables>) {
-        return ApolloReactHooks.useQuery<MassetsQuery, MassetsQueryVariables>(MassetsDocument, baseOptions);
+export function useMusdQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MusdQuery, MusdQueryVariables>) {
+        return ApolloReactHooks.useQuery<MusdQuery, MusdQueryVariables>(MusdDocument, baseOptions);
       }
-export function useMassetsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MassetsQuery, MassetsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<MassetsQuery, MassetsQueryVariables>(MassetsDocument, baseOptions);
+export function useMusdLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MusdQuery, MusdQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<MusdQuery, MusdQueryVariables>(MusdDocument, baseOptions);
         }
-export type MassetsQueryHookResult = ReturnType<typeof useMassetsQuery>;
-export type MassetsLazyQueryHookResult = ReturnType<typeof useMassetsLazyQuery>;
-export type MassetsQueryResult = ApolloReactCommon.QueryResult<MassetsQuery, MassetsQueryVariables>;
+export type MusdQueryHookResult = ReturnType<typeof useMusdQuery>;
+export type MusdLazyQueryHookResult = ReturnType<typeof useMusdLazyQuery>;
+export type MusdQueryResult = ApolloReactCommon.QueryResult<MusdQuery, MusdQueryVariables>;
 export const V1SavingsBalanceDocument = gql`
     query V1SavingsBalance($id: ID!, $account: String!, $include: Boolean!) @api(name: protocol) {
   savingsContract(id: $id) @include(if: $include) {

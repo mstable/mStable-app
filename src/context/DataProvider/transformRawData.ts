@@ -2,7 +2,7 @@ import { BigNumber, bigNumberify } from 'ethers/utils';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { MassetName, SubscribedToken } from '../../types';
-import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol';
+import { MusdQueryResult, TokenAllFragment } from '../../graphql/protocol';
 import {
   BassetStatus,
   BoostedSavingsVaultState,
@@ -11,20 +11,20 @@ import {
   SavingsContractState,
 } from './types';
 import { Tokens } from '../TokensProvider';
-import { VaultsQueryResult } from '../../graphql/vault';
+import { MbtcQueryResult } from '../../graphql/mbtc';
 
-type SavingsContractV1QueryResult = NonNullable<
-  MassetsQueryResult['data']
->['massets'][number]['savingsContractsV1'][number];
+type NonNullableMasset = NonNullable<
+  NonNullable<MusdQueryResult['data']>['masset']
+>;
 
-type SavingsContractV2QueryResult = NonNullable<
-  MassetsQueryResult['data']
->['massets'][number]['savingsContractsV2'][number];
+type SavingsContractV1QueryResult = NonNullableMasset['savingsContractsV1'][number];
+
+type SavingsContractV2QueryResult = NonNullableMasset['savingsContractsV2'][number];
 
 const transformBassets = (
   bassets: NonNullable<
-    MassetsQueryResult['data']
-  >['massets'][number]['basket']['bassets'],
+    NonNullable<MusdQueryResult['data']>['masset']
+  >['basket']['bassets'],
   massetDecimals: number,
   tokens: Tokens,
 ): MassetState['bAssets'] => {
@@ -43,7 +43,7 @@ const transformBassets = (
           {
             address,
             isTransferFeeCharged,
-            maxWeight: bigNumberify(maxWeight),
+            maxWeight: maxWeight ? bigNumberify(maxWeight) : undefined,
             ratio: bigNumberify(ratio),
             status: status as BassetStatus,
             totalVault: BigDecimal.fromMetric(vaultBalance),
@@ -242,7 +242,11 @@ const transformMassetData = (
   {
     // currentSavingsContract,
     feeRate,
+    forgeValidator,
     redemptionFeeRate,
+    invariantStartTime,
+    invariantStartingCap,
+    invariantCapFactor,
     token: { decimals, address },
     token,
     basket: {
@@ -254,7 +258,7 @@ const transformMassetData = (
     },
     savingsContractsV1: [savingsContractV1],
     savingsContractsV2: [savingsContractV2],
-  }: NonNullable<MassetsQueryResult['data']>['massets'][number],
+  }: NonNullableMasset,
   tokens: Tokens,
 ): MassetState => {
   const bAssets = transformBassets(_bassets, decimals, tokens);
@@ -262,6 +266,14 @@ const transformMassetData = (
   return {
     address,
     failed,
+    forgeValidator,
+    invariantStartTime: invariantStartTime || undefined,
+    invariantStartingCap: invariantStartingCap
+      ? bigNumberify(invariantStartingCap)
+      : undefined,
+    invariantCapFactor: invariantCapFactor
+      ? bigNumberify(invariantCapFactor)
+      : undefined,
     undergoingRecol,
     token: transformTokenData(token, tokens),
     bAssets,
@@ -271,7 +283,9 @@ const transformMassetData = (
         transformTokenData(b.token, tokens),
       ]),
     ),
-    collateralisationRatio: bigNumberify(collateralisationRatio),
+    collateralisationRatio: collateralisationRatio
+      ? bigNumberify(collateralisationRatio)
+      : undefined,
     feeRate: bigNumberify(feeRate),
     redemptionFeeRate: bigNumberify(redemptionFeeRate),
     savingsContracts: {
@@ -303,33 +317,24 @@ const transformMassetData = (
   };
 };
 
-export const transformRawData = ([data, vaultData, tokens]: [
-  MassetsQueryResult['data'],
-  VaultsQueryResult['data'],
+export const transformRawData = ([musd, mbtc, tokens]: [
+  MusdQueryResult['data'],
+  MbtcQueryResult['data'],
   Tokens,
 ]): DataState => {
   return Object.fromEntries(
-    (data?.massets ?? []).map(masset => {
-      if (masset.savingsContractsV2?.[0]?.boostedSavingsVaults.length) {
-        return [
-          masset.token.symbol as MassetName,
-          transformMassetData(masset, tokens),
-        ];
-      }
-
-      const mergedData: typeof masset = {
-        ...masset,
-        savingsContractsV2: [
-          {
-            ...masset.savingsContractsV2[0],
-            boostedSavingsVaults: vaultData?.boostedSavingsVaults ?? [],
-          },
-        ],
-      };
-      return [
-        masset.token.symbol as MassetName,
-        transformMassetData(mergedData, tokens),
-      ];
-    }),
+    [musd, mbtc]
+      .filter(data => data?.masset)
+      .map(data => [
+        (data as {
+          masset: NonNullableMasset;
+        }).masset.token.symbol.toLowerCase() as MassetName,
+        transformMassetData(
+          (data as {
+            masset: NonNullableMasset;
+          }).masset,
+          tokens,
+        ),
+      ]),
   );
 };

@@ -62,7 +62,7 @@ const recalculateBassets = (masset: MassetState): MassetState['bAssets'] =>
 
       const maxWeightInMasset =
         masset.token.totalSupply
-          .mulTruncate(basset.maxWeight)
+          .mulTruncate(basset.maxWeight ?? '0')
           .setDecimals(massetDecimals) ?? new BigDecimal(0);
 
       const totalVaultInMasset = basset.totalVault

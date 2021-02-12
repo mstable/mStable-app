@@ -135,7 +135,7 @@ const Grid = styled.div<{ enabled?: boolean }>`
     grid-area: 1 / 5 / 2 / 9;
   }
 
-  @media (min-width: ${ViewportWidth.m}) {
+  @media (min-width: ${ViewportWidth.l}) {
     ${TokenContainer} {
       grid-area: 1 / 1 / 3 / 3;
     }
@@ -181,6 +181,9 @@ const ToggleWrapper: FC<{
     <>{children}</>
   );
 
+/**
+ * @deprecated
+ */
 export const InlineTokenAmountInput: FC<Props> = ({
   amount,
   approval,

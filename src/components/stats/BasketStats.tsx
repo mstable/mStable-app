@@ -170,7 +170,7 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
         }) => {
           const basketShareAsPercentage = basketShare.toPercent();
           const maxWeightAsPercentage = new BigDecimal(
-            maxWeight,
+            maxWeight ?? '0',
             18,
           ).toPercent();
 
@@ -201,7 +201,7 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
   return (
     <Container>
       {data && data.length ? (
-        <ResponsiveContainer aspect={1.8}>
+        <ResponsiveContainer aspect={1.5} width={320}>
           <BarChart
             layout="vertical"
             margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
