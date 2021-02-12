@@ -1,8 +1,5 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
-import {
-  ApolloProvider as ApolloReactProvider,
-  Reference,
-} from '@apollo/react-hooks';
+import { ApolloProvider as ApolloReactProvider } from '@apollo/react-hooks';
 import { MultiAPILink } from '@habx/apollo-multi-endpoint-link';
 import {
   ApolloClient,
@@ -29,8 +26,7 @@ const ENDPOINTS = {
   balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
   uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
   blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,
-  vault:
-    'https://api.thegraph.com/subgraphs/name/jameslefrere/boosted-savings-vault',
+  mbtc: 'https://api.thegraph.com/subgraphs/name/jameslefrere/mbtc-deployment',
 };
 
 const cache = new InMemoryCache({
@@ -50,19 +46,19 @@ const cache = new InMemoryCache({
       // subgraphs; `totalSupply` is an ID that will be unique
       keyFields: ['id', 'totalSupply'],
     },
-    Query: {
-      fields: {
-        tokens: {
-          merge(existing: Reference[] = [], incoming: Reference[] = []) {
-            const existingRefs = new Set(existing.map(item => item.__ref));
-            return [
-              ...existing,
-              ...incoming.filter(item => !existingRefs.has(item.__ref)),
-            ];
-          },
-        },
-      },
-    },
+    // Query: {
+    //   fields: {
+    //     tokens: {
+    //       merge(existing: Reference[] = [], incoming: Reference[] = []) {
+    //         const existingRefs = new Set(existing.map(item => item.__ref));
+    //         return [
+    //           ...existing,
+    //           ...incoming.filter(item => !existingRefs.has(item.__ref)),
+    //         ];
+    //       },
+    //     },
+    //   },
+    // },
   },
 });
 

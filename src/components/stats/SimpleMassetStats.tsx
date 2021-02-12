@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 import { MassetState } from '../../context/DataProvider/types';
-
 import { Amount } from '../core/Amount';
 
 const Label = styled.div`

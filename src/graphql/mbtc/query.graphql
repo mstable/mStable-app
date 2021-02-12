@@ -1,7 +1,5 @@
-# import './fragments.graphql'
-
-query MUSD($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
-  masset(id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5") {
+query MBTC($account: String!, $hasAccount: Boolean!) @api(name: mbtc) {
+  masset(id: "0x945facb997494cc2570096c74b5f66a3507330a1") {
     id
     token {
       ...TokenAll

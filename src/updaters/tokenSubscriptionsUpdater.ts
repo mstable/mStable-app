@@ -1,4 +1,4 @@
-import { Reducer, useEffect, useReducer } from 'react';
+import { useEffect } from 'react';
 import { usePrevious } from 'react-use';
 import { Interface } from 'ethers/utils/interface';
 import { Provider } from 'ethers/providers';
@@ -11,40 +11,8 @@ import {
   useTokensDispatch,
 } from '../context/TokensProvider';
 import { useSigner } from '../context/OnboardProvider';
-import {
-  Erc20Detailed,
-  Erc20DetailedInterface,
-} from '../typechain/Erc20Detailed.d';
+import { Erc20DetailedInterface } from '../typechain/Erc20Detailed.d';
 import { BigDecimal } from '../web3/BigDecimal';
-
-interface State {
-  [tokenAddress: string]: Erc20Detailed;
-}
-
-enum Actions {
-  SetContracts,
-  Reset,
-}
-
-type Action =
-  | {
-      type: Actions.SetContracts;
-      payload: Record<string, Erc20Detailed>;
-    }
-  | { type: Actions.Reset };
-
-const initialState: State = {};
-
-const reducer: Reducer<State, Action> = (state, action) => {
-  switch (action.type) {
-    case Actions.SetContracts:
-      return { ...state, ...action.payload };
-    case Actions.Reset:
-      return {};
-    default:
-      throw new Error('Unhandled action type');
-  }
-};
 
 const contractInterface = (() => {
   const abi = [
@@ -107,8 +75,6 @@ export const TokenSubscriptionsUpdater = (): null => {
   const { reset, updateBalances, updateAllowances } = useTokensDispatch();
   const signer = useSigner();
 
-  const [contracts, dispatch] = useReducer(reducer, initialState);
-
   const account = useAccount();
   const prevAccount = usePrevious(account);
   const blockNumber = useBlockNumber();
@@ -119,7 +85,6 @@ export const TokenSubscriptionsUpdater = (): null => {
   // Clear all contracts and tokens if the account changes.
   useEffect(() => {
     if (prevAccount !== account || !account) {
-      dispatch({ type: Actions.Reset });
       reset();
     }
   }, [account, prevAccount, reset]);
@@ -171,7 +136,6 @@ export const TokenSubscriptionsUpdater = (): null => {
     account,
     allowanceSubscriptionsSerialized,
     blockNumber,
-    contracts,
     signer,
     updateAllowances,
   ]);
@@ -201,7 +165,6 @@ export const TokenSubscriptionsUpdater = (): null => {
     account,
     balanceSubscriptionsSerialized,
     blockNumber,
-    contracts,
     signer,
     updateBalances,
   ]);

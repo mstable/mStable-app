@@ -14,41 +14,40 @@ import { transformRawData } from './transformRawData';
 import { useBlockPollingSubscription } from './subscriptions';
 import { useAccount } from '../UserProvider';
 import { useBlockNumber } from '../BlockProvider';
-import {
-  MassetsQueryResult,
-  useMassetsLazyQuery,
-} from '../../graphql/protocol';
+import { MusdQueryResult, useMusdLazyQuery } from '../../graphql/protocol';
+import { MbtcQueryResult, useMbtcLazyQuery } from '../../graphql/mbtc';
 import { useSelectedMassetName } from '../SelectedMassetNameProvider';
-import { useVaultsLazyQuery, VaultsQueryResult } from '../../graphql/vault';
 
 const dataStateCtx = createContext<DataState>({});
 
 const useRawData = (): [
-  MassetsQueryResult['data'],
-  VaultsQueryResult['data'],
+  MusdQueryResult['data'],
+  MbtcQueryResult['data'],
   Tokens,
 ] => {
   const blockNumber = useBlockNumber();
   const { tokens } = useTokensState();
 
   const account = useAccount();
-  const subscription = useBlockPollingSubscription(useMassetsLazyQuery, {
-    variables: { account: account ?? '', hasAccount: !!account },
-  });
+  const baseOptions = useMemo(
+    () => ({
+      variables: { account: account ?? '', hasAccount: !!account },
+    }),
+    [account],
+  );
 
-  const vaultSub = useBlockPollingSubscription(useVaultsLazyQuery, {
-    variables: { account: account ?? '', hasAccount: !!account },
-  });
+  const musdSub = useBlockPollingSubscription(useMusdLazyQuery, baseOptions);
+  const mbtcSub = useBlockPollingSubscription(useMbtcLazyQuery, baseOptions);
 
   // Intentionally limit updates.
   // Given that the blockNumber and the subscription's loading state are what
   // drive updates to both the tokens state and the DataState, use these
   // as the deps to prevent creating new objects with the same underlying data.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => [subscription.data, vaultSub.data, tokens], [
+  return useMemo(() => [musdSub.data, mbtcSub.data, tokens], [
     blockNumber,
-    subscription.loading,
-    vaultSub.loading,
+    musdSub.loading,
+    mbtcSub.loading,
     tokens,
   ]);
 };

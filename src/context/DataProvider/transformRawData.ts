@@ -2,7 +2,7 @@ import { BigNumber, bigNumberify } from 'ethers/utils';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { MassetName, SubscribedToken } from '../../types';
-import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol';
+import { MusdQueryResult, TokenAllFragment } from '../../graphql/protocol';
 import {
   BassetStatus,
   BoostedSavingsVaultState,
@@ -11,20 +11,20 @@ import {
   SavingsContractState,
 } from './types';
 import { Tokens } from '../TokensProvider';
-import { VaultsQueryResult } from '../../graphql/vault';
+import { MbtcQueryResult } from '../../graphql/mbtc';
 
-type SavingsContractV1QueryResult = NonNullable<
-  MassetsQueryResult['data']
->['massets'][number]['savingsContractsV1'][number];
+type NonNullableMasset = NonNullable<
+  NonNullable<MusdQueryResult['data']>['masset']
+>;
 
-type SavingsContractV2QueryResult = NonNullable<
-  MassetsQueryResult['data']
->['massets'][number]['savingsContractsV2'][number];
+type SavingsContractV1QueryResult = NonNullableMasset['savingsContractsV1'][number];
+
+type SavingsContractV2QueryResult = NonNullableMasset['savingsContractsV2'][number];
 
 const transformBassets = (
   bassets: NonNullable<
-    MassetsQueryResult['data']
-  >['massets'][number]['basket']['bassets'],
+    NonNullable<MusdQueryResult['data']>['masset']
+  >['basket']['bassets'],
   massetDecimals: number,
   tokens: Tokens,
 ): MassetState['bAssets'] => {
@@ -258,7 +258,7 @@ const transformMassetData = (
     },
     savingsContractsV1: [savingsContractV1],
     savingsContractsV2: [savingsContractV2],
-  }: NonNullable<MassetsQueryResult['data']>['massets'][number],
+  }: NonNullableMasset,
   tokens: Tokens,
 ): MassetState => {
   const bAssets = transformBassets(_bassets, decimals, tokens);
@@ -317,17 +317,24 @@ const transformMassetData = (
   };
 };
 
-export const transformRawData = ([data, , tokens]: [
-  MassetsQueryResult['data'],
-  VaultsQueryResult['data'],
+export const transformRawData = ([musd, mbtc, tokens]: [
+  MusdQueryResult['data'],
+  MbtcQueryResult['data'],
   Tokens,
 ]): DataState => {
   return Object.fromEntries(
-    (data?.massets ?? []).map(masset => {
-      return [
-        masset.token.symbol.toLowerCase() as MassetName,
-        transformMassetData(masset, tokens),
-      ];
-    }),
+    [musd, mbtc]
+      .filter(data => data?.masset)
+      .map(data => [
+        (data as {
+          masset: NonNullableMasset;
+        }).masset.token.symbol.toLowerCase() as MassetName,
+        transformMassetData(
+          (data as {
+            masset: NonNullableMasset;
+          }).masset,
+          tokens,
+        ),
+      ]),
   );
 };
