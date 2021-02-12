@@ -65,7 +65,7 @@ const setAmount = (
   ...value,
   amount,
   touched: !!(amount?.simple && amount.simple > 0),
-  formValue: amount?.simple !== 0 ? amount?.format(2, false) : undefined,
+  formValue: amount?.simple !== 0 ? amount?.string : undefined,
 });
 
 const reducer: Reducer<State, Action> = (
@@ -92,7 +92,7 @@ const initialise = (initialiserArg: UseBigDecimalInputsArg): State => {
             address,
             decimals,
             amount,
-            formValue: amount?.format(2, false),
+            formValue: amount?.string,
           },
         ];
       },
