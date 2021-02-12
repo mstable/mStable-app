@@ -135,7 +135,10 @@ const SwapLogic: FC = () => {
   // - min output amount
   const amounts = useMemo(() => {
     const exchangeRate =
-      inputAmount && swapOutput.value
+      inputAmount &&
+      inputAmount.simple > 0 &&
+      swapOutput.value &&
+      swapOutput.value.simple > 0
         ? { value: swapOutput.value.divPrecisely(inputAmount) }
         : { fetching: swapOutput.fetching };
 
