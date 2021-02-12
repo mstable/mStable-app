@@ -44,7 +44,13 @@ export const BannerMessage: FC = () => {
         {bannerMessage.subtitle && ` ${bannerMessage.subtitle} `}{' '}
         {bannerMessage.url &&
           (bannerMessage.url.startsWith('http') ? (
-            <a href={bannerMessage.url}>Learn more</a>
+            <a
+              href={bannerMessage.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Learn more
+            </a>
           ) : (
             <Link to={bannerMessage.url}>Learn more</Link>
           ))}

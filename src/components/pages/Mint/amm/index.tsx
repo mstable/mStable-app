@@ -297,12 +297,11 @@ export const Mint: FC = () => {
   useEffect(() => {
     if (!tvlCap) return;
 
-    // TODO: - Add URL for TVL cap
     const message: BannerMessage = {
       title: `Current TVL cap is ${tvlCap.format(2, false)} mBTC. `,
       emoji: '⚠️',
       visible: true,
-      url: '#',
+      url: 'https://medium.com/mstable/mstable-launches-mbtc-e26a246dc0bb',
     };
 
     setBannerMessage(message);
