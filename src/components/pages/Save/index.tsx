@@ -1,7 +1,8 @@
 import React, { FC } from 'react';
+import Skeleton from 'react-loading-skeleton';
 
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { useSelectedSaveVersion } from '../../../context/SelectedSaveVersionProvider';
-import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
 import { PageAction, PageHeader } from '../PageHeader';
 import { ToggleSave } from './ToggleSave';
 import { WeeklySaveAPY } from './WeeklySaveAPY';
@@ -10,18 +11,20 @@ import { Save as SaveV2 } from './v2';
 
 export const Save: FC = () => {
   const [selectedSaveVersion] = useSelectedSaveVersion();
-  const selectedMassetName = useSelectedMassetName();
+  const massetState = useSelectedMassetState();
 
-  return (
+  return massetState ? (
     <>
       <PageHeader
         action={PageAction.Save}
-        subtitle={`Earn interest on your deposited ${selectedMassetName}`}
+        subtitle={`Earn interest on your deposited ${massetState.token.symbol}`}
       >
         <ToggleSave />
         <WeeklySaveAPY />
       </PageHeader>
       {selectedSaveVersion === 1 ? <SaveV1 /> : <SaveV2 />}
     </>
+  ) : (
+    <Skeleton height={400} />
   );
 };
