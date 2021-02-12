@@ -54,7 +54,15 @@ const RedeemExactBassetsLogic: FC = () => {
   const { exchangeRate, maxMassetAmount } = useMemo(() => {
     const outputAmount = Object.values(bassetAmounts)
       .filter(v => v.touched)
-      .reduce((prev, v) => (v.amount as BigDecimal).add(prev), BigDecimal.ZERO);
+      .reduce(
+        (prev, v) =>
+          prev.add(
+            (v.amount as BigDecimal).mulRatioTruncate(
+              massetState.bAssets[v.address].ratio,
+            ),
+          ),
+        BigDecimal.ZERO,
+      );
 
     const _exchangeRate: { value?: BigDecimal; fetching?: boolean } =
       outputAmount && massetAmount.value && outputAmount.exact.gt(0)
@@ -75,6 +83,7 @@ const RedeemExactBassetsLogic: FC = () => {
     };
   }, [
     bassetAmounts,
+    massetState.bAssets,
     massetAmount.fetching,
     massetAmount.value,
     slippage.simple,
