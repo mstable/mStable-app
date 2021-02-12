@@ -23,6 +23,7 @@ export type RawPairData = NonNullable<
 export interface RawPlatformPools {
   [Platforms.Balancer]: { current: RawPoolData[]; historic: RawPoolData[] };
   [Platforms.Uniswap]: { current: RawPairData[]; historic: RawPairData[] };
+  [Platforms.Sushi]: { current: RawPairData[]; historic: RawPairData[] };
   // [Platforms.Curve]: RawCurvePoolsData;
 }
 

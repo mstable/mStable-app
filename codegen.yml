@@ -51,6 +51,14 @@ generates:
     config:
       includeDirectives: true
 
+  ./src/graphql/sushi/schema.graphql:
+    overwrite: true
+    schema: https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
   ./src/graphql/balancer/schema.graphql:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_BALANCER}
@@ -111,6 +119,16 @@ generates:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_UNISWAP}
     documents: 'src/graphql/uniswap/*.graphql'
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+
+  ./src/graphql/sushi.tsx:
+    overwrite: true
+    schema: https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork
+    documents: 'src/graphql/sushi/*.graphql'
     plugins:
       - 'fragment-matcher'
       - 'typescript'

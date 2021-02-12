@@ -6,6 +6,7 @@ import { usePoolsQuery as useBalancerPoolsQuery } from '../../graphql/balancer';
 // import { usePoolsQuery as useCurvePoolsQuery } from '../../graphql/curve';
 import { useStakingRewardsContractsQuery } from '../../graphql/ecosystem';
 import { usePairsQuery } from '../../graphql/uniswap';
+import { useSushiPairsQuery } from '../../graphql/sushi';
 import { useBlockTimestampQuery } from '../../graphql/blocks';
 import { BlockTimestamp, Platforms } from '../../types';
 import {
@@ -96,6 +97,15 @@ const getUniqueTokens = (
     {},
   );
 
+  const sushiTokens = rawPlatformsData.Uniswap.current.reduce(
+    (_tokens, { token0, token1 }) => ({
+      ..._tokens,
+      [token0.address.toLowerCase()]: parseInt(token0.decimals, 10),
+      [token1.address.toLowerCase()]: parseInt(token1.decimals, 10),
+    }),
+    {},
+  );
+
   return {
     // MTA/BAL/CRV
     '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2': 18,
@@ -104,6 +114,7 @@ const getUniqueTokens = (
     ...tokens,
     ...balancerTokens,
     ...uniswapTokens,
+    ...sushiTokens,
   };
 };
 
@@ -203,6 +214,30 @@ const normalizeUniswapPool = ({
   return {
     address,
     platform: Platforms.Uniswap,
+    totalSupply: BigDecimal.parse(totalSupply, 18),
+    reserveUSD: BigDecimal.parse(reserveUSD, 18),
+    tokens,
+    onlyStablecoins: tokens.every(token =>
+      STABLECOIN_SYMBOLS.includes(token.symbol),
+    ),
+  };
+};
+const normalizeSushiPool = ({
+  address,
+  totalSupply,
+  reserveUSD,
+  reserve0,
+  reserve1,
+  token0,
+  token1,
+}: RawPairData): NormalizedPool => {
+  const tokens = [
+    normalizeUniswapToken(token0, reserve0),
+    normalizeUniswapToken(token1, reserve1),
+  ];
+  return {
+    address,
+    platform: Platforms.Sushi,
     totalSupply: BigDecimal.parse(totalSupply, 18),
     reserveUSD: BigDecimal.parse(reserveUSD, 18),
     tokens,
@@ -312,6 +347,14 @@ const useRawPlatformPools = (
   const pairsQuery = usePairsQuery(
     options as Parameters<typeof usePairsQuery>[0],
   );
+  const sushiPairsQuery = useSushiPairsQuery({
+    variables: {
+      ids: ['0xf5a434fbaa1c00b33ea141122603c43de86cc9fe'],
+      block,
+      includeHistoric,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
 
   // TODO later: include when the subgraph works
   // const curveQuery = useCurvePoolsQuery({
@@ -330,6 +373,10 @@ const useRawPlatformPools = (
     [Platforms.Uniswap]: {
       current: pairsQuery.data?.current || [],
       historic: pairsQuery.data?.historic || [],
+    },
+    [Platforms.Sushi]: {
+      current: sushiPairsQuery.data?.current || [],
+      historic: sushiPairsQuery.data?.historic || [],
     },
     // [Platforms.Curve]: curveQuery.data,
   };
@@ -356,6 +403,7 @@ const getPools = ({
   rawPlatformPools: {
     [Platforms.Balancer]: balancer,
     [Platforms.Uniswap]: uniswap,
+    [Platforms.Sushi]: sushi,
   },
   curveJsonData,
   tokenPrices,
@@ -367,11 +415,13 @@ const getPools = ({
   const current = [
     ...balancer.current.map(normalizeBalancerPool),
     ...uniswap.current.map(normalizeUniswapPool),
+    ...sushi.current.map(normalizeSushiPool),
     ...curvePools,
   ];
   const historic = [
     ...balancer.historic.map(normalizeBalancerPool),
     ...uniswap.historic.map(normalizeUniswapPool),
+    ...sushi.historic.map(normalizeSushiPool),
   ];
 
   return {

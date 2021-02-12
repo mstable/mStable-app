@@ -26,6 +26,8 @@ const ENDPOINTS = {
   balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
   uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
   blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,
+  sushi:
+    'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork',
   mbtc: 'https://api.thegraph.com/subgraphs/name/jameslefrere/mbtc-deployment',
 };
 
