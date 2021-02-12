@@ -100,7 +100,7 @@ const RedeemExactBassetsLogic: FC = () => {
 
           const inputs = touched.map(v => v.address);
           const amounts = touched.map(v => (v.amount as BigDecimal).exact);
-          _masset
+          return _masset
             .getRedeemExactBassetsOutput(inputs, amounts)
             .then(_massetAmount => {
               setMassetAmount({
@@ -113,9 +113,8 @@ const RedeemExactBassetsLogic: FC = () => {
               });
             });
         }
-      } else {
-        setMassetAmount({});
       }
+      setMassetAmount({});
     },
     1000,
     [masset, bassetAmounts],
