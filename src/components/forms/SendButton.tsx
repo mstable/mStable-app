@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-alert */
 import React, { FC, useState, useEffect } from 'react';
 import styled from 'styled-components';
 
@@ -21,6 +23,7 @@ interface Props {
     address: string;
     amount?: BigDecimal;
   };
+  slippageWarning?: boolean;
 }
 
 const StyledButton = styled(Button)`
@@ -146,6 +149,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
   valid,
   title,
   handleSend,
+  slippageWarning,
 }) => {
   const [sendError, setSendError] = useState<string | undefined>();
 
@@ -178,6 +182,16 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
               return setStep(Step.APPROVE);
             }
 
+            if (slippageWarning) {
+              if (
+                !confirm(
+                  'This transaction has a price impact of at least 5%. Please confirm you would like to continue',
+                )
+              ) {
+                return;
+              }
+            }
+
             try {
               await handleSend();
             } catch (error) {
@@ -206,6 +220,7 @@ export const SendButton: FC<Props> = ({
   handleSend,
   title,
   valid,
+  slippageWarning,
 }) =>
   approve ? (
     <ApproveProvider
@@ -218,6 +233,7 @@ export const SendButton: FC<Props> = ({
         valid={valid}
         title={title}
         handleSend={handleSend}
+        slippageWarning={slippageWarning}
       />
     </ApproveProvider>
   ) : (
@@ -226,5 +242,6 @@ export const SendButton: FC<Props> = ({
       valid={valid}
       title={title}
       handleSend={handleSend}
+      slippageWarning={slippageWarning}
     />
   );

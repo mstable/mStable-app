@@ -150,6 +150,20 @@ export const RedeemMasset: FC = () => {
     return bassetAmount.error;
   }, [bassetAmount.error, inputAmount, massetToken, outputAddress]);
 
+  const slippageWarning = useMemo<string | undefined>(() => {
+    if (!minOutputAmount || !inputAmount) return;
+
+    const amountMinBound = inputAmount.simple * 0.95;
+    const amountMaxBound = inputAmount.simple * 1.05;
+
+    if (
+      minOutputAmount.simple < amountMinBound ||
+      minOutputAmount.simple > amountMaxBound
+    ) {
+      return 'WARNING: High slippage';
+    }
+  }, [minOutputAmount, inputAmount]);
+
   return (
     <Container>
       <AssetInput
@@ -178,10 +192,13 @@ export const RedeemMasset: FC = () => {
         handleSetAddress={handleSetAddress}
         disabled
       />
-      {error && <ErrorMessage error={error} />}
+      {(error || slippageWarning) && (
+        <ErrorMessage error={error ?? slippageWarning ?? ''} />
+      )}
       <SendButton
         valid={!error}
-        title="Redeem"
+        title={slippageWarning ? 'Redeem Anyway' : 'Redeem'}
+        slippageWarning={!!slippageWarning}
         handleSend={() => {
           if (
             masset &&

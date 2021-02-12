@@ -3,6 +3,7 @@ import { useThrottleFn } from 'react-use';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
+import { BigNumber, bigNumberify } from 'ethers/utils';
 import {
   useSigner,
   useWalletAddress,
@@ -188,6 +189,21 @@ const SwapLogic: FC = () => {
     }
   }, [swapOutput.error, inputAmount, inputToken, outputToken]);
 
+  const slippageWarning = useMemo<string | undefined>(() => {
+    if (!amounts?.minOutputAmount || !inputAmount) return;
+    const { minOutputAmount } = amounts;
+
+    const amountMinBound = inputAmount.simple * 0.95;
+    const amountMaxBound = inputAmount.simple * 1.05;
+
+    if (
+      minOutputAmount.simple < amountMinBound ||
+      minOutputAmount.simple > amountMaxBound
+    ) {
+      return 'WARNING: High slippage';
+    }
+  }, [amounts, inputAmount]);
+
   const approve = useMemo(
     () =>
       inputAddress
@@ -204,7 +220,7 @@ const SwapLogic: FC = () => {
     <AssetSwap
       inputAddressOptions={addressOptions}
       outputAddressOptions={addressOptions}
-      error={error}
+      error={error ?? slippageWarning}
       exchangeRate={amounts.exchangeRate}
       handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputAmount}
@@ -219,8 +235,9 @@ const SwapLogic: FC = () => {
     >
       <SendButton
         valid={!error && !!swapOutput.value}
-        title="Swap"
+        title={slippageWarning ? 'Swap Anyway' : 'Swap'}
         approve={approve}
+        slippageWarning={!!slippageWarning}
         handleSend={() => {
           if (
             masset &&
