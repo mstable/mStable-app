@@ -101,7 +101,7 @@ const SwapLogic: FC = () => {
           _outputDecimals
         ) {
           setSwapOutput({ fetching: true });
-
+          console.log('NUM', _inputAmount.exact);
           _masset
             .getSwapOutput(_inputAddress, _outputAddress, _inputAmount.exact)
             .then(_swapOutput => {
