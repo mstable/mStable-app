@@ -72,6 +72,12 @@ const SwapLogic: FC = () => {
   const outputDecimals = outputToken?.decimals;
   const inputToken = useTokenSubscription(inputAddress);
   const inputDecimals = inputToken?.decimals;
+  const inputRatio = inputAddress
+    ? massetState.bAssets[inputAddress].ratio
+    : undefined;
+  const outputRatio = outputAddress
+    ? massetState.bAssets[outputAddress].ratio
+    : undefined;
 
   const [inputAmount, inputFormValue, setInputAmount] = useBigDecimalInput(
     '0',
@@ -134,12 +140,18 @@ const SwapLogic: FC = () => {
   // - swap fee
   // - min output amount
   const amounts = useMemo(() => {
+    const scaledInputAmount =
+      inputRatio && inputAmount && inputAmount.exact.gt(0)
+        ? inputAmount.mulRatioTruncate(inputRatio).setDecimals(18)
+        : undefined;
+    const scaledOutputAmount =
+      outputRatio && swapOutput.value && swapOutput.value.exact.gt(0)
+        ? swapOutput.value.mulRatioTruncate(outputRatio).setDecimals(18)
+        : undefined;
+
     const exchangeRate =
-      inputAmount &&
-      inputAmount.simple > 0 &&
-      swapOutput.value &&
-      swapOutput.value.simple > 0
-        ? { value: swapOutput.value.divPrecisely(inputAmount) }
+      scaledInputAmount && scaledOutputAmount
+        ? { value: scaledOutputAmount.divPrecisely(scaledInputAmount) }
         : { fetching: swapOutput.fetching };
 
     const feeRateSimple = feeRate
@@ -174,6 +186,8 @@ const SwapLogic: FC = () => {
     swapOutput.fetching,
     swapOutput.value,
     outputDecimals,
+    inputRatio,
+    outputRatio,
   ]);
 
   // Calling `getSwapOutput` performs the complex validation;
