@@ -41,6 +41,7 @@ export const SaveDeposit: FC<{
   const massetState = useSelectedMassetState();
   const massetAddress = massetState?.address;
   const savingsContract = massetState?.savingsContracts.v2;
+  const saveTokenSymbol = savingsContract?.token?.symbol ?? '';
   const vault = savingsContract?.boostedSavingsVault;
   const vaultAddress = vault?.address;
   const vaultBalance = vault?.account?.rawBalance ?? BigDecimal.ZERO;
@@ -157,7 +158,7 @@ export const SaveDeposit: FC<{
         {
           address: saveAddress,
           balance: isDepositingSave ? vaultBalance : undefined,
-          label: isDepositingSave ? 'imUSD Vault' : undefined,
+          label: isDepositingSave ? `${saveTokenSymbol} Vault` : undefined,
         },
       ]}
       inputAddress={inputAddress}
@@ -207,7 +208,7 @@ export const SaveDeposit: FC<{
           {!saveAndStake && (
             <SendButton
               valid={valid}
-              title="Mint imUSD"
+              title={`Mint ${saveTokenSymbol}`}
               handleSend={async () => {
                 if (
                   signer &&
@@ -257,7 +258,7 @@ export const SaveDeposit: FC<{
               approve={depositApprove}
             />
           )}
-          {canDepositWithWrapper && (
+          {!!vault && (
             <SendButton
               valid={valid}
               title="Mint & Deposit to Vault"

@@ -322,7 +322,7 @@ const getRow = (masset: MassetName): Record<BalanceType, RowProps> => {
           <p>Locking up MTA to create a stake creates vMTA.</p>
           <p>
             vMTA confers power to vote on proposals, earn staking rewards, and
-            get multiplied rewards (via the imUSD Vault).
+            get multiplied rewards (e.g. via the imUSD Vault).
           </p>
         </>
       ),
