@@ -210,7 +210,7 @@ const SwapLogic: FC = () => {
       minOutputAmount.simple < amountMinBound ||
       minOutputAmount.simple > amountMaxBound
     ) {
-      return 'WARNING: High slippage';
+      return 'WARNING: High slippage. 1% slippage protection';
     }
   }, [amounts, inputAmount]);
 
@@ -245,7 +245,7 @@ const SwapLogic: FC = () => {
     >
       <SendButton
         valid={!error && !!swapOutput.value}
-        title={slippageWarning ? 'Swap Anyway' : 'Swap'}
+        title="Swap"
         approve={approve}
         slippageWarning={!!slippageWarning}
         handleSend={() => {

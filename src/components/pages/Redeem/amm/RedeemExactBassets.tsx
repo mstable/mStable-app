@@ -139,6 +139,24 @@ const RedeemExactBassetsLogic: FC = () => {
     return massetAmount.error;
   }, [bassetAmounts, massetAmount.error, massetBalance, maxMassetAmount]);
 
+  const slippageWarning = useMemo<string | undefined>(() => {
+    if (!maxMassetAmount) return;
+
+    const inputAmount = Object.keys(bassetAmounts)
+      .map(address => bassetAmounts[address].amount?.simple ?? 0)
+      .reduce((a, b) => a + b);
+
+    const amountMinBound = inputAmount * 0.95;
+    const amountMaxBound = inputAmount * 1.05;
+
+    if (
+      maxMassetAmount.simple < amountMinBound ||
+      maxMassetAmount.simple > amountMaxBound
+    ) {
+      return 'WARNING: High slippage. 1% slippage protection';
+    }
+  }, [bassetAmounts, maxMassetAmount]);
+
   return (
     <OneToManyAssetExchange
       exchangeRate={exchangeRate}
@@ -146,13 +164,14 @@ const RedeemExactBassetsLogic: FC = () => {
       inputLabel={massetState?.token.symbol}
       outputLabel={outputLabel}
       maxOutputAmount={maxMassetAmount}
-      error={error}
+      error={slippageWarning}
     >
       <SendButton
         valid={
           !error &&
           Object.values(bassetAmounts).filter(v => v.touched).length > 0
         }
+        slippageWarning={!!slippageWarning}
         title="Redeem"
         handleSend={() => {
           if (masset && walletAddress && maxMassetAmount) {
