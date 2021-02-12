@@ -115,7 +115,7 @@ export const Save: FC = () => {
       <div />
       <Divider />
       <div />
-      {ADDRESSES[massetName]?.SaveWrapper && (
+      {ADDRESSES[massetName]?.SaveWrapper && massetName === 'musd' && (
         <BalanceRow
           token={BalanceType.BoostedSavingsVault}
           apy={saveApy?.value}
