@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 
+import { useDataState } from '../../context/DataProvider/DataProvider';
 import { useConnected, useConnect } from '../../context/OnboardProvider';
 import { MassetName } from '../../types';
 import { MASSETS } from '../../constants';
@@ -140,6 +141,7 @@ const Container = styled.div`
 `;
 
 export const Home: FC = () => {
+  const dataState = useDataState();
   return (
     <Container>
       <Header>
@@ -149,7 +151,7 @@ export const Home: FC = () => {
         </Tagline>
       </Header>
       <Buttons>
-        <MassetButton massetName="mbtc" />
+        {dataState.mbtc && <MassetButton massetName="mbtc" />}
         <MassetButton massetName="musd" />
       </Buttons>
     </Container>
