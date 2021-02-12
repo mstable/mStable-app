@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { usePrevious } from 'react-use';
 
 import { BigDecimal } from '../web3/BigDecimal';
 
@@ -20,6 +21,7 @@ export const useBigDecimalInput = (
 ] => {
   const decimals =
     (typeof options === 'number' ? options : options?.decimals) ?? 18;
+  const prevDecimals = usePrevious(decimals);
 
   const [value, setValue] = useState<BigDecimal | undefined>(
     initialValue instanceof BigDecimal
@@ -50,6 +52,12 @@ export const useBigDecimalInput = (
     },
     [decimals, options],
   );
+
+  useEffect(() => {
+    if (decimals !== prevDecimals) {
+      setValue(BigDecimal.maybeParse(formValue, decimals));
+    }
+  }, [decimals, formValue, prevDecimals]);
 
   return [value, formValue, onChange, setValue];
 };

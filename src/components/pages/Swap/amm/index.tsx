@@ -3,7 +3,6 @@ import { useThrottleFn } from 'react-use';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
-import { BigNumber, bigNumberify } from 'ethers/utils';
 import {
   useSigner,
   useWalletAddress,
@@ -47,7 +46,6 @@ const SwapLogic: FC = () => {
   const walletAddress = useWalletAddress();
   const propose = usePropose();
 
-  const [inputAmount, inputFormValue, setInputAmount] = useBigDecimalInput();
   const [swapOutput, setSwapOutput] = useState<SwapOutput>({});
 
   const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
@@ -70,9 +68,17 @@ const SwapLogic: FC = () => {
     assetsByBalance?.[1]?.address,
   );
 
-  const inputToken = useTokenSubscription(inputAddress);
   const outputToken = useTokenSubscription(outputAddress);
   const outputDecimals = outputToken?.decimals;
+  const inputToken = useTokenSubscription(inputAddress);
+  const inputDecimals = inputToken?.decimals;
+
+  const [inputAmount, inputFormValue, setInputAmount] = useBigDecimalInput(
+    '0',
+    {
+      decimals: inputDecimals,
+    },
+  );
 
   const addressOptions = useMemo(
     () => Object.keys(bAssets).map(address => ({ address })),
@@ -101,7 +107,6 @@ const SwapLogic: FC = () => {
           _outputDecimals
         ) {
           setSwapOutput({ fetching: true });
-          console.log('NUM', _inputAmount.exact);
           _masset
             .getSwapOutput(_inputAddress, _outputAddress, _inputAmount.exact)
             .then(_swapOutput => {
