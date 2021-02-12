@@ -62,7 +62,15 @@ const MintLogic: FC = () => {
   const { exchangeRate, minOutputAmount } = useMemo(() => {
     const totalInputAmount = Object.values(inputValues)
       .filter(v => v.touched)
-      .reduce((prev, v) => (v.amount as BigDecimal).add(prev), BigDecimal.ZERO);
+      .reduce(
+        (prev, v) =>
+          prev.add(
+            (v.amount as BigDecimal).mulRatioTruncate(
+              massetState.bAssets[v.address].ratio,
+            ),
+          ),
+        BigDecimal.ZERO,
+      );
 
     const _exchangeRate: { value?: BigDecimal; fetching?: boolean } =
       totalInputAmount &&
@@ -84,7 +92,13 @@ const MintLogic: FC = () => {
       exchangeRate: _exchangeRate,
       minOutputAmount: _minOutputAmount,
     };
-  }, [inputValues, outputAmount.fetching, outputAmount.value, slippage.simple]);
+  }, [
+    inputValues,
+    massetState.bAssets,
+    outputAmount.fetching,
+    outputAmount.value,
+    slippage.simple,
+  ]);
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
@@ -295,7 +309,7 @@ export const Mint: FC = () => {
     <MultiAssetExchangeProvider assets={inputAssets}>
       <PageHeader
         action={PageAction.Mint}
-        subtitle={`Convert stable assets into ${massetState.token.symbol}`}
+        subtitle={`Convert into ${massetState.token.symbol}`}
       />
       <MassetPage>
         <MintLogic />
