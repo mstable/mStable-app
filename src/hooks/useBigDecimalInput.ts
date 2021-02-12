@@ -30,7 +30,7 @@ export const useBigDecimalInput = (
   );
 
   const [formValue, setFormValue] = useState<string | undefined>(
-    value?.simple !== 0 ? value?.format(2, false) : undefined,
+    value?.simple !== 0 ? value?.string : undefined,
   );
 
   const onChange = useCallback(
