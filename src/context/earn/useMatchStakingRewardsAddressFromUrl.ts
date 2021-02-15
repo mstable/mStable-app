@@ -21,8 +21,8 @@ export const useMatchStakingRewardsAddressFromUrl = (
       return undefined;
     }
 
-    const found = Object.values(stakingRewardsContracts).find(
-      item => item.earnUrl === `/earn/${slugOrAddress}`,
+    const found = Object.values(stakingRewardsContracts).find(item =>
+      item.earnUrl.includes(slugOrAddress),
     );
 
     return found?.address ?? false;

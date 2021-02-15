@@ -12,6 +12,7 @@ import { EtherscanLink } from '../../../core/EtherscanLink';
 import { Button } from '../../../core/Button';
 import { AddressInput } from './AddressInput';
 import { useCurrentStakingRewardsContract } from '../StakingRewardsContractProvider';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 const Input = styled.div`
   display: flex;
@@ -50,6 +51,7 @@ export const ViewAs: FC<{}> = () => {
   const { pathname } = useLocation();
   const history = useHistory();
   const [address, setAddress] = useState<string | undefined>();
+  const massetName = useSelectedMassetName();
 
   const earnUrl = stakingRewards?.earnUrl;
 
@@ -74,9 +76,9 @@ export const ViewAs: FC<{}> = () => {
 
   const handleShare = useCallback(() => {
     if (earnUrl && account) {
-      copy(`${window.location.host}${earnUrl}/${account}`);
+      copy(`${window.location.host}/${massetName}${earnUrl}/${account}`);
     }
-  }, [account, copy, earnUrl]);
+  }, [account, copy, earnUrl, massetName]);
 
   return (
     <Container>

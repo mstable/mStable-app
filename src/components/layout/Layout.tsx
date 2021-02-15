@@ -24,7 +24,6 @@ const Main = styled.main<{ marginTop?: boolean }>`
 `;
 
 const BackgroundContainer = styled.div`
-  min-height: 70vh;
   ${containerBackground}
 `;
 
@@ -206,7 +205,6 @@ export const Layout: FC = ({ children }) => {
   const accountOpen = useAccountOpen();
   const { pathname } = useLocation();
   const home = pathname === '/';
-  const earn = pathname === '/earn';
 
   useLayoutEffect(() => {
     // Scroll to the top when the account view is toggled
@@ -220,8 +218,6 @@ export const Layout: FC = ({ children }) => {
       <Container>
         {accountOpen ? (
           <Account />
-        ) : earn ? (
-          <>{children}</>
         ) : (
           <Main marginTop={home}>
             {!home && <BannerMessage />}

@@ -7,6 +7,7 @@ import { PoolForms } from './PoolForms';
 import { PoolBalances } from './PoolBalances';
 import { ImpermanentLossWarning } from './ImpermanentLossWarning';
 import { useIsMasquerading } from '../../../../context/UserProvider';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 const BackLink = styled(ButtonLink)`
   display: inline-block;
@@ -33,9 +34,10 @@ const StyledCard = styled(Card)`
 
 export const PoolContent: FC<{ address: string }> = ({ address }) => {
   const isMasquerading = useIsMasquerading();
+  const massetName = useSelectedMassetName();
   return (
     <Container>
-      <BackLink to="/earn">Back</BackLink>
+      <BackLink to={`/${massetName}/earn`}>Back</BackLink>
       <CardContainer>
         <StyledCard address={address} />
       </CardContainer>
