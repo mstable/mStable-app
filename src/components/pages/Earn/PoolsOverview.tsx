@@ -184,10 +184,20 @@ export const PoolsOverview: FC<{}> = () => {
                   }
                   return item.apy.value?.exact ? (
                     <div>
-                      <MtaApyAmount
-                        amount={item.apy.value}
-                        format={NumberFormat.CountupPercentage}
-                      />
+                      {item.address ===
+                      '0x6de3a957b0344e6adeeab4648b02108f35651fb5' ? (
+                        <Tooltip tip="This value is prone to fluctuate as it reflects the prices of multiple volatile tokens.">
+                          <MtaApyAmount
+                            amount={item.apy.value}
+                            format={NumberFormat.CountupPercentage}
+                          />
+                        </Tooltip>
+                      ) : (
+                        <MtaApyAmount
+                          amount={item.apy.value}
+                          format={NumberFormat.CountupPercentage}
+                        />
+                      )}
                       <ApyNote>
                         + Yield
                         {item.apy.yieldApy && (
