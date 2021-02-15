@@ -107,10 +107,10 @@ const getUniqueTokens = (
   );
 
   return {
-    // MTA/BAL/CRV
-    '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2': 18,
-    '0xba100000625a3754423978a60c9317c58a424e3d': 18,
+    [ADDRESSES.MTA]: 18,
+    [ADDRESSES.BALANCER.BAL]: 18,
     [ADDRESSES.CURVE.CRV_TOKEN]: 18,
+    [ADDRESSES.REN.renBTC]: 8,
     ...tokens,
     ...balancerTokens,
     ...uniswapTokens,
@@ -391,10 +391,20 @@ const addPricesToPools = (
       pool.address,
       {
         ...pool,
-        tokens: pool.tokens.map(token => ({
-          ...token,
-          price: token.price || tokenPricesMap[token.address],
-        })),
+        tokens: pool.tokens.map(token => {
+          let price = token.price ?? tokenPricesMap[token.address];
+
+          // Currently, mBTC's price is not tracked; use renBTC
+          // (small differences shouldn't matter for these purposes)
+          if (token.symbol === 'mBTC' && !price) {
+            price = tokenPricesMap[ADDRESSES.REN.renBTC];
+          }
+
+          return {
+            ...token,
+            price,
+          };
+        }),
       },
     ]),
   );
