@@ -25,6 +25,9 @@ interface Addresses {
   mbtc?: {
     SaveWrapper: string;
   };
+  BALANCER: {
+    BAL: string;
+  };
   CURVE: {
     CURVE_V2: string;
     GAUGE_CONTROLLER: string;
@@ -53,6 +56,9 @@ interface Addresses {
   CREAM: {
     CREAM_TOKEN: string;
   };
+  REN: {
+    renBTC: string;
+  };
 }
 
 type AddressesByNetwork = Record<typeof CHAIN_ID, Addresses>;
@@ -68,6 +74,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     },
     mbtc: {
       SaveWrapper: '0x7CB1576dcC0D8FCb32eBD21204899ef6C0270Eb9',
+    },
+    BALANCER: {
+      BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },
     CURVE: {
       CURVE_V2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',
@@ -102,6 +111,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     CREAM: {
       CREAM_TOKEN: '0x2ba592F78dB6436527729929AAf6c908497cB200',
     },
+    REN: {
+      renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
+    },
   },
   3: {
     UNISWAP_ROUTER02: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
@@ -110,6 +122,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
     musd: {
       SaveWrapper: '0xeb9201126a77dcd966c878ce81ea1146603b86ad',
+    },
+    BALANCER: {
+      BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },
     CURVE: {
       MUSD_SWAP: '0xfad04fbdd5b12188d4fd3ba0325a22962dc00ea4',
@@ -122,6 +137,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     SUSHI: {} as never,
     BADGER: {} as never,
     CREAM: {} as never,
+    REN: {
+      renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
+    },
   },
   42: {
     UNISWAP_ROUTER02: 'TODO',
@@ -130,6 +148,12 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     vMTA: 'TODO',
     musd: {
       SaveWrapper: 'TODO',
+    },
+    BALANCER: {
+      BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
+    },
+    REN: {
+      renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
     },
   } as never,
 });
