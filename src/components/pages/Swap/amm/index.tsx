@@ -110,7 +110,8 @@ const SwapLogic: FC = () => {
           _inputAddress &&
           _inputAmount &&
           _outputAddress &&
-          _outputDecimals
+          _outputDecimals &&
+          !!_inputAmount.simple
         ) {
           setSwapOutput({ fetching: true });
           _masset
@@ -193,6 +194,8 @@ const SwapLogic: FC = () => {
   // Calling `getSwapOutput` performs the complex validation;
   // this validation is trivial.
   const error = useMemo<string | undefined>(() => {
+    if (!inputAmount?.simple) return;
+
     if (swapOutput.error) return swapOutput.error;
 
     if (inputAmount) {
