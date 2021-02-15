@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo } from 'react';
 import { useThrottleFn } from 'react-use';
-import { BigNumber, parseUnits } from 'ethers/utils';
+import { BigNumber } from 'ethers/utils';
 
 import { getUnixTime } from 'date-fns';
 import { useTokens, useTokensState } from '../../../../context/TokensProvider';
@@ -34,6 +34,7 @@ import {
 import { PageHeader, PageAction } from '../../PageHeader';
 import { MassetPage } from '../../MassetPage';
 import { MbtcFactory } from '../../../../typechain/MbtcFactory';
+import { SCALE } from '../../../../constants';
 
 const formId = 'mint';
 
@@ -280,15 +281,15 @@ export const Mint: FC = () => {
       return;
 
     const currentTime = getUnixTime(Date.now());
-    const weeksSinceLaunch = (currentTime - invariantStartTime) / 604800;
+    const weeksSinceLaunch = new BigNumber(currentTime)
+      .sub(invariantStartTime)
+      .mul(SCALE)
+      .div(604800);
 
-    if (weeksSinceLaunch > 12) return;
+    if (weeksSinceLaunch.gt(SCALE.mul(7))) return;
 
     const maxK = invariantStartingCap.add(
-      invariantCapFactor
-        .mul(parseUnits(weeksSinceLaunch.toString()).pow(2))
-        .div((1e18).toString())
-        .div((1e18).toString()),
+      invariantCapFactor.mul(weeksSinceLaunch.pow(2)).div(SCALE.pow(2)),
     );
 
     return new BigDecimal(maxK);
@@ -298,7 +299,7 @@ export const Mint: FC = () => {
     if (!tvlCap) return;
 
     const message: BannerMessage = {
-      title: `Current TVL cap is ${tvlCap.format(2, false)} mBTC. `,
+      title: `Current TVL cap is ${tvlCap.format(4, false)} mBTC. `,
       emoji: '⚠️',
       visible: true,
       url: 'https://medium.com/mstable/mstable-launches-mbtc-e26a246dc0bb',
