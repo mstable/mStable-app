@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo } from 'react';
 import { useThrottleFn } from 'react-use';
-import { BigNumber, bigNumberify } from 'ethers/utils';
+import { BigNumber, parseUnits } from 'ethers/utils';
 
 import { getUnixTime } from 'date-fns';
 import { useTokens, useTokensState } from '../../../../context/TokensProvider';
@@ -280,15 +280,15 @@ export const Mint: FC = () => {
       return;
 
     const currentTime = getUnixTime(Date.now());
-
-    const weeksSinceLaunch = Math.floor(
-      (currentTime - invariantStartTime) / 604800,
-    );
+    const weeksSinceLaunch = (currentTime - invariantStartTime) / 604800;
 
     if (weeksSinceLaunch > 12) return;
 
     const maxK = invariantStartingCap.add(
-      invariantCapFactor.mul(bigNumberify(weeksSinceLaunch).pow(2)),
+      invariantCapFactor
+        .mul(parseUnits(weeksSinceLaunch.toString()).pow(2))
+        .div((1e18).toString())
+        .div((1e18).toString()),
     );
 
     return new BigDecimal(maxK);
