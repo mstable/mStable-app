@@ -9,7 +9,6 @@ import { Color } from '../../theme';
 interface NavItem {
   title: string;
   path: string;
-  masset?: boolean;
 }
 
 const List = styled.div`
@@ -17,11 +16,11 @@ const List = styled.div`
 `;
 
 const navItems: NavItem[] = [
-  { title: 'Mint', path: '/mint', masset: true },
-  { title: 'Save', path: '/save', masset: true },
+  { title: 'Mint', path: '/mint' },
+  { title: 'Save', path: '/save' },
   { title: 'Earn', path: '/earn' },
-  { title: 'Swap', path: '/swap', masset: true },
-  { title: 'Redeem', path: '/redeem', masset: true },
+  { title: 'Swap', path: '/swap' },
+  { title: 'Redeem', path: '/redeem' },
 ];
 
 const StyledNavLink = styled(NavLink)`
@@ -41,12 +40,12 @@ export const Navigation: FC = () => {
   return (
     <nav>
       <List>
-        {navItems.map(({ title, path, masset }) => (
+        {navItems.map(({ title, path }) => (
           <StyledNavLink
             activeStyle={{ color: Color.blue }}
             key={title}
             onClick={collapseWallet}
-            to={masset ? `/${massetName}${path}` : path}
+            to={`/${massetName}${path}`}
           >
             {title}
           </StyledNavLink>

@@ -15,6 +15,7 @@ import { ViewAs } from './ViewAs';
 import { P } from '../../../core/Typography';
 import { Protip } from '../../../core/Protip';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 interface Props {
   className?: string;
@@ -86,6 +87,7 @@ export const PoolBalances: FC<Props> = () => {
   const rewardsToken = useCurrentRewardsToken();
   const stakingToken = useCurrentStakingToken();
   const platformToken = useCurrentPlatformToken();
+  const massetName = useSelectedMassetName();
 
   return (
     <div>
@@ -118,7 +120,7 @@ export const PoolBalances: FC<Props> = () => {
                     <StyledProtip emoji="💰" title="Claim BAL">
                       <P>
                         You can now claim any BAL earned directly from the{' '}
-                        <Link to="/earn">EARN dashboard.</Link>
+                        <Link to={`/${massetName}/earn`}>EARN dashboard.</Link>
                       </P>
                     </StyledProtip>
                   </ProtipContainer>

@@ -14,7 +14,6 @@ import { Button } from '../../core/Button';
 import { ExternalLink } from '../../core/ExternalLink';
 import { Color, FontSize, ViewportWidth } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
-import { containerBackground } from '../../layout/css';
 import { PageAction, PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
@@ -306,12 +305,15 @@ const SliderContainer = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
+  border-radius: 1rem;
   background: linear-gradient(to top right, #040a10, #131212);
   flex: 1;
   > * {
     flex: 1;
   }
-  margin-top: 20px;
+  > div > div {
+    position: relative;
+  }
 `;
 
 const PageHeaderContainer = styled.div`
@@ -328,7 +330,6 @@ const PageHeaderContainer = styled.div`
 
 const Content = styled.div`
   width: 100%;
-  padding: 0 1rem;
 `;
 
 const Container = styled.div`
@@ -338,10 +339,6 @@ const Container = styled.div`
   flex: 1;
   width: 100%;
   height: 100%;
-`;
-
-const BackgroundContainer = styled.div`
-  ${containerBackground}
 `;
 
 const EarnSlider: FC<{
@@ -377,20 +374,18 @@ const EarnContent: FC = () => {
         </SwipeDisabledProvider>
       ) : (
         <Content>
-          <BackgroundContainer>
-            <PageHeaderContainer>
-              <PageHeader
-                action={PageAction.Earn}
-                subtitle="Ecosystem rewards with mStable"
-              >
-                <Button onClick={toggleOnboardingVisible} scale={0.875}>
-                  View introduction
-                </Button>
-              </PageHeader>
-              <MerkleDropClaims />
-            </PageHeaderContainer>
-            <PoolsOverview />
-          </BackgroundContainer>
+          <PageHeaderContainer>
+            <PageHeader
+              action={PageAction.Earn}
+              subtitle="Ecosystem rewards with mStable"
+            >
+              <Button onClick={toggleOnboardingVisible} scale={0.875}>
+                View introduction
+              </Button>
+            </PageHeader>
+            <MerkleDropClaims />
+          </PageHeaderContainer>
+          <PoolsOverview />
         </Content>
       )}
     </Container>

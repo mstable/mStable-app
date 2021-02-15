@@ -14,6 +14,8 @@ import { ExternalLink } from '../../core/ExternalLink';
 import { AccentColors, Platforms } from '../../../types';
 import { Tooltip } from '../../core/ReactTooltip';
 import { ThemedSkeleton } from '../../core/ThemedSkeleton';
+import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
+import { ADDRESSES } from '../../../constants';
 
 const ApyAmount = styled(Amount)`
   font-size: ${FontSize.m};
@@ -108,9 +110,17 @@ const platformOrder: { [key in Platforms]: number } = {
 
 export const PoolsOverview: FC<{}> = () => {
   const stakingRewardsContracts = useStakingRewardsContracts();
+  const massetName = useSelectedMassetName();
 
   const [activePools, otherPools, expiredPools] = useMemo(() => {
     const items = Object.values(stakingRewardsContracts)
+      .filter(item =>
+        item.pool.tokens.find(
+          token =>
+            token.address === ADDRESSES.MTA ||
+            token.symbol.toLowerCase() === massetName,
+        ),
+      )
       .sort((a, b) =>
         platformOrder[a.pool.platform] < platformOrder[b.pool.platform]
           ? -1 // *teleports behind you*
@@ -263,7 +273,7 @@ export const PoolsOverview: FC<{}> = () => {
           },
           {
             id,
-            url: earnUrl,
+            url: earnUrl.substring(1), // remove leading '/'
             colors,
             data: {},
             hasStaked: false,
@@ -276,7 +286,7 @@ export const PoolsOverview: FC<{}> = () => {
       items.filter(item => !item.expired && !item.hasStaked),
       items.filter(item => item.expired),
     ];
-  }, [stakingRewardsContracts]);
+  }, [massetName, stakingRewardsContracts]);
 
   return (
     <Container>

@@ -21,7 +21,6 @@ import { useMtaPrice } from '../../../../hooks/useMtaPrice';
 import { Button } from '../../../core/Button';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { SaveModalHeader } from './SaveModalHeader';
-import { ADDRESSES } from '../../../../constants';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
 
@@ -112,54 +111,56 @@ export const Save: FC = () => {
         dollarExchangeRate={exchangeRate}
         masset={massetName}
       />
-      <div />
-      <Divider />
-      <div />
-      {ADDRESSES[massetName]?.SaveWrapper && massetName === 'musd' && (
-        <BalanceRow
-          token={BalanceType.BoostedSavingsVault}
-          apy={saveApy?.value}
-          highlight
-          rewards={<VaultROI />}
-          onClick={showVaultModal}
-          balance={vaultBalance ?? BigDecimal.ZERO}
-          dollarExchangeRate={exchangeRate}
-          masset={massetName}
-        >
-          {vaultBalance || hasRewards ? (
-            <Boost />
-          ) : (
-            <PotentialBoost>
-              {isCalculatorVisible ? (
-                <BoostCalculator
-                  onBackClick={() => setCalculatorVisible(false)}
-                />
-              ) : (
-                <Button
-                  scale={0.875}
-                  onClick={() => setCalculatorVisible(true)}
-                >
-                  Calculate rewards
-                </Button>
-              )}
-            </PotentialBoost>
-          )}
-        </BalanceRow>
+      {vault && (
+        <>
+          <div />
+          <Divider />
+          <div />
+          <BalanceRow
+            token={BalanceType.BoostedSavingsVault}
+            apy={saveApy?.value}
+            highlight
+            rewards={<VaultROI />}
+            onClick={showVaultModal}
+            balance={vaultBalance ?? BigDecimal.ZERO}
+            dollarExchangeRate={exchangeRate}
+            masset={massetName}
+          >
+            {vaultBalance || hasRewards ? (
+              <Boost />
+            ) : (
+              <PotentialBoost>
+                {isCalculatorVisible ? (
+                  <BoostCalculator
+                    onBackClick={() => setCalculatorVisible(false)}
+                  />
+                ) : (
+                  <Button
+                    scale={0.875}
+                    onClick={() => setCalculatorVisible(true)}
+                  >
+                    Calculate rewards
+                  </Button>
+                )}
+              </PotentialBoost>
+            )}
+          </BalanceRow>
+          <BalanceRow
+            token={BalanceType.Meta}
+            balance={metaToken?.balance}
+            dollarExchangeRate={mtaPrice}
+            masset={massetName}
+          />
+          <BalanceRow
+            token={BalanceType.VMeta}
+            balance={vMetaToken?.balance}
+            onClick={navigateToGovernance}
+            apy="Variable APY"
+            external
+            masset={massetName}
+          />
+        </>
       )}
-      <BalanceRow
-        token={BalanceType.Meta}
-        balance={metaToken?.balance}
-        dollarExchangeRate={mtaPrice}
-        masset={massetName}
-      />
-      <BalanceRow
-        token={BalanceType.VMeta}
-        balance={vMetaToken?.balance}
-        onClick={navigateToGovernance}
-        apy="Variable APY"
-        external
-        masset={massetName}
-      />
     </Container>
   );
 };

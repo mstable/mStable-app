@@ -44,12 +44,16 @@ const Routes: FC = () => {
   return (
     <Switch>
       <Route exact path="/" component={Home} />
-      <Route exact path="/earn" component={Earn} />
-      <Route exact path="/earn/admin" component={AdminPage} />
-      <Route exact path="/earn/:slugOrAddress" component={PoolPage} />
+      <Route exact path="/:massetName/earn" component={Earn} />
+      <Route exact path="/:massetName/earn/admin" component={AdminPage} />
       <Route
         exact
-        path="/earn/:slugOrAddress/:userAddress"
+        path="/:massetName/earn/:slugOrAddress"
+        component={PoolPage}
+      />
+      <Route
+        exact
+        path="/:massetName/earn/:slugOrAddress/:userAddress"
         component={PoolPage}
       />
       <Route exact path="/faq" component={FAQ} />
@@ -63,6 +67,9 @@ const Routes: FC = () => {
       <Redirect exact path="/redeem" to="/musd/redeem" />
       <Redirect exact path="/save" to="/musd/save" />
       <Redirect exact path="/swap" to="/musd/swap" />
+      <Redirect exact path="/earn" to="/musd/earn" />
+      <Redirect exact path="/musd" to="/musd/mint" />
+      <Redirect exact path="/mbtc" to="/mbtc/mint" />
       <Route component={NotFound} />
     </Switch>
   );
