@@ -33,6 +33,9 @@ const useDailyApysDocument = (
           utilisationRate {
               simple
           }
+          latestExchangeRate {
+              rate
+          }
       }
       query DailyApys @api(name: protocol) {
           ${currentApy}
@@ -52,18 +55,45 @@ export const useDailyApysForBlockTimes = (
       {
         dailyAPY: string;
         utilisationRate: { simple: string };
+        latestExchangeRate: { rate: string };
       },
     ];
   }>(apysDoc, { fetchPolicy: 'cache-first', nextFetchPolicy: 'cache-only' });
 
   return Object.entries(apysQuery.data || {})
     .filter(([, value]) => !!value?.[0]?.dailyAPY)
-    .map(([key, [{ dailyAPY, utilisationRate }]]) => ({
-      timestamp: getKeyTimestamp(key),
-      dailyAPY: parseFloat(parseFloat(dailyAPY).toFixed(2)),
-      utilisationRate: parseFloat(
-        parseFloat(utilisationRate.simple).toFixed(2),
-      ),
-    }))
+    .map(
+      ([
+        key,
+        [
+          {
+            dailyAPY: _dailyAPY,
+            utilisationRate: _utilisationRate,
+            latestExchangeRate: { rate } = { rate: '0.1' },
+          },
+        ],
+      ]) => {
+        // FIXME revert this once the subgraph sets utilisationRate properly
+        const baseUtilisationRate = parseFloat(_utilisationRate.simple);
+        const multiplier =
+          baseUtilisationRate < 100 ||
+          savingsContractAddress ===
+            '0xcf3f73290803fc04425bee135a4caeb2bab2c2a1'
+            ? 1
+            : parseFloat(rate);
+
+        const utilisationRate = parseFloat(
+          (baseUtilisationRate * multiplier).toFixed(2),
+        );
+
+        const dailyAPY = parseFloat(parseFloat(_dailyAPY).toFixed(2));
+
+        return {
+          timestamp: getKeyTimestamp(key),
+          dailyAPY,
+          utilisationRate,
+        };
+      },
+    )
     .sort((a, b) => (a.timestamp > b.timestamp ? 1 : -1));
 };
