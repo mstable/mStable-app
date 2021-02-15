@@ -15,6 +15,7 @@ import { AccentColors, Platforms } from '../../../types';
 import { Tooltip } from '../../core/ReactTooltip';
 import { ThemedSkeleton } from '../../core/ThemedSkeleton';
 import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
+import { ADDRESSES } from '../../../constants';
 
 const ApyAmount = styled(Amount)`
   font-size: ${FontSize.m};
@@ -116,7 +117,8 @@ export const PoolsOverview: FC<{}> = () => {
       .filter(item =>
         item.pool.tokens.find(
           token =>
-            token.symbol === 'MTA' || token.symbol.toLowerCase() === massetName,
+            token.address === ADDRESSES.MTA ||
+            token.symbol.toLowerCase() === massetName,
         ),
       )
       .sort((a, b) =>

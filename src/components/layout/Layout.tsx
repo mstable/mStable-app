@@ -25,6 +25,7 @@ const Main = styled.main<{ marginTop?: boolean }>`
 
 const BackgroundContainer = styled.div`
   ${containerBackground}
+  min-height: 50vh;
 `;
 
 const GlobalStyle = createGlobalStyle`
