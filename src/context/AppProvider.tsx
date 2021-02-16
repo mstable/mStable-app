@@ -13,6 +13,7 @@ import { configureScope } from '@sentry/react';
 import { CHAIN_ID } from '../constants';
 import { useAddErrorNotification } from './NotificationsProvider';
 import { useWalletAddress, useConnected, useWallet } from './OnboardProvider';
+import { LocalStorage } from '../localStorage';
 
 export interface BannerMessage {
   title: string;
@@ -22,7 +23,7 @@ export interface BannerMessage {
   visible: boolean;
 }
 
-type ThemeMode = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark';
 
 enum Actions {
   SupportedChainSelected,
@@ -87,12 +88,16 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return { ...state, bannerMessage: action.payload };
     case Actions.SetThemeMode: {
       if (action.payload === null) {
+        const themeMode = state.themeMode === 'light' ? 'dark' : 'light';
+        LocalStorage.set('themeMode', themeMode);
         return {
           ...state,
-          themeMode: state.themeMode === 'light' ? 'dark' : 'light',
+          themeMode,
         };
       }
-      return { ...state, theme: action.payload ?? 'light' };
+      const themeMode = action.payload ?? 'light';
+      LocalStorage.set('themeMode', themeMode);
+      return { ...state, themeMode };
     }
     default:
       return state;
@@ -120,6 +125,11 @@ export const AppProvider: FC = ({ children }) => {
   const wallet = useWallet();
   const connected = useConnected();
   const status = connected ? 'connected' : 'connecting';
+
+  useEffect(() => {
+    const themeMode = (LocalStorage.get('themeMode') as ThemeMode) ?? 'light';
+    dispatch({ type: Actions.SetThemeMode, payload: themeMode });
+  }, []);
 
   const setBannerMessage = useCallback<Dispatch['setBannerMessage']>(
     message => {
@@ -292,3 +302,8 @@ export const useThemeMode = (): State['themeMode'] => useAppState().themeMode;
 
 export const useToggleThemeMode = (): Dispatch['toggleThemeMode'] =>
   useAppDispatch().toggleThemeMode;
+
+export const useTheme = (): [State['themeMode'], Dispatch['setThemeMode']] => [
+  useAppState().themeMode,
+  useAppDispatch().setThemeMode,
+];

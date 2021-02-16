@@ -3,7 +3,7 @@
 import { CONNECTORS } from './constants';
 
 const STORAGE_PREFIX = '__mStable-app__';
-const STORAGE_VERSION = 3;
+const STORAGE_VERSION = 4;
 
 type VersionedStorage<V extends number, T> = {
   version: V;
@@ -25,10 +25,15 @@ export interface StorageV3 extends VersionedStorage<3, StorageV2> {
   walletName?: string;
 }
 
+export interface StorageV4 extends VersionedStorage<3, StorageV3> {
+  themeMode?: string;
+}
+
 export type AllStorage = { version: number } & Omit<StorageV0, 'version'> &
   Omit<StorageV1, 'version'> &
   Omit<StorageV2, 'version'> &
-  Omit<StorageV3, 'version'>;
+  Omit<StorageV3, 'version'> &
+  Omit<StorageV4, 'version'>;
 
 const getStorageKey = (key: string): string => `${STORAGE_PREFIX}.${key}`;
 
