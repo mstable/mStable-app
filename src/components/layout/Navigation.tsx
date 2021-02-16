@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 
 import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
-import { useCloseAccount } from '../../context/AppProvider';
-import { Color } from '../../theme';
+import { useCloseAccount, useThemeMode } from '../../context/AppProvider';
+import { colorTheme } from '../../theme';
 
 interface NavItem {
   title: string;
@@ -36,13 +36,14 @@ const StyledNavLink = styled(NavLink)`
 export const Navigation: FC = () => {
   const collapseWallet = useCloseAccount();
   const massetName = useSelectedMassetName();
+  const themeMode = useThemeMode();
 
   return (
     <nav>
       <List>
         {navItems.map(({ title, path }) => (
           <StyledNavLink
-            activeStyle={{ color: Color.blue }}
+            activeStyle={{ color: colorTheme(themeMode).primary }}
             key={title}
             onClick={collapseWallet}
             to={`/${massetName}${path}`}

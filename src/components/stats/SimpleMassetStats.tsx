@@ -13,8 +13,7 @@ const AssetRow = styled.div`
   display: flex;
   gap: 1rem;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.25rem;
+  padding: 0.75rem 0;
   border-bottom: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
 
   &:last-of-type {
@@ -32,10 +31,9 @@ const AssetRow = styled.div`
 `;
 
 const Container = styled.div`
-  font-size: 0.85rem;
+  font-size: 0.875rem;
 
   > :first-child {
-    padding-top: 0.25rem;
     border-top: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
   }
 `;

@@ -11,7 +11,7 @@ const SaveAPYContainer = styled.div`
   margin-top: 2rem;
   text-align: center;
 
-  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
+  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     margin: 0;
     text-align: right;
     justify-content: flex-end;
@@ -73,7 +73,7 @@ export const WeeklySaveAPY: FC = () => {
               rel="noopener noreferrer"
             >
               {apy.type === 'average'
-                ? 'Average daily APY over the last 7 days'
+                ? 'Average APY over the last 7 days'
                 : 'Live APY (unstable)'}
             </a>
           </InfoMsg>

@@ -22,7 +22,7 @@ const MassetAsideContainer = styled.aside`
     margin-bottom: 0.5rem;
   }
   > p {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     line-height: 1.2rem;
     margin-bottom: 1rem;
   }
@@ -59,7 +59,7 @@ const Separator = styled.div`
 `;
 
 const Container = styled.div`
-  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+  @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
     display: flex;
     flex-direction: row;
     gap: 2rem;
@@ -67,11 +67,11 @@ const Container = styled.div`
     align-items: flex-start;
 
     > :first-child {
-      flex-basis: 75%;
+      flex-basis: 70%;
     }
 
     > :last-child {
-      flex-basis: 25%;
+      flex-basis: 30%;
       min-width: 12rem;
     }
   }
