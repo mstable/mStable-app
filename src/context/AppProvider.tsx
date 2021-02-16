@@ -88,16 +88,12 @@ const reducer: Reducer<State, Action> = (state, action) => {
       return { ...state, bannerMessage: action.payload };
     case Actions.SetThemeMode: {
       if (action.payload === null) {
-        const themeMode = state.themeMode === 'light' ? 'dark' : 'light';
-        LocalStorage.set('themeMode', themeMode);
         return {
           ...state,
-          themeMode,
+          themeMode: state.themeMode === 'light' ? 'dark' : 'light',
         };
       }
-      const themeMode = action.payload ?? 'light';
-      LocalStorage.set('themeMode', themeMode);
-      return { ...state, themeMode };
+      return { ...state, themeMode: action.payload ?? 'light' };
     }
     default:
       return state;
