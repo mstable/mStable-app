@@ -10,6 +10,7 @@ const CloseAccountContainer = styled.div`
   display: flex;
   width: 100%;
   justify-content: center;
+  padding: 1rem 0;
 `;
 
 const CloseAccountBtn = styled(UnstyledButton)`

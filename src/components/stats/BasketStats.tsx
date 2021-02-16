@@ -201,7 +201,7 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
   return (
     <Container>
       {data && data.length ? (
-        <ResponsiveContainer aspect={1.5} width={320}>
+        <ResponsiveContainer aspect={1.5} width={250}>
           <BarChart
             layout="vertical"
             margin={{ top: 0, right: 0, bottom: 0, left: 0 }}

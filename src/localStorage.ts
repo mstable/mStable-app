@@ -23,6 +23,7 @@ export interface StorageV2 extends VersionedStorage<2, StorageV1> {
 
 export interface StorageV3 extends VersionedStorage<3, StorageV2> {
   walletName?: string;
+  themeMode?: string;
 }
 
 export type AllStorage = { version: number } & Omit<StorageV0, 'version'> &

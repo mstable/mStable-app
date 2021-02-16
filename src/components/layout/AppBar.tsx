@@ -34,6 +34,7 @@ import { ReactComponent as CoinbaseIcon } from '../icons/wallets/coinbase.svg';
 import { ReactComponent as MeetOneIcon } from '../icons/wallets/meetone.svg';
 import { Idle } from '../icons/Idle';
 import { MassetSelector } from '../core/MassetSelector';
+import { LocalStorage } from '../../localStorage';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -276,6 +277,11 @@ export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
   const toggleThemeMode = useToggleThemeMode();
   const themeMode = useThemeMode();
 
+  const handleThemeToggle = (): void => {
+    LocalStorage.set('themeMode', themeMode === 'light' ? 'dark' : 'light');
+    toggleThemeMode();
+  };
+
   return (
     <Container inverted={accountOpen}>
       <Inner>
@@ -286,7 +292,7 @@ export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
         </Logo>
         <MassetContainer>{!home && <MassetSelector />}</MassetContainer>
         <WalletAndSpinner>
-          <ToggleButton onClick={toggleThemeMode}>
+          <ToggleButton onClick={handleThemeToggle}>
             {themeMode === 'light' ? '☀️' : '🌙'}
           </ToggleButton>
           <TransactionsSpinner />

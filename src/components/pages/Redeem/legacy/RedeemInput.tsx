@@ -68,7 +68,7 @@ const BasketImpact = styled.div`
     gap: 1rem;
 
     > div {
-      width: 100%;
+      /* width: 100%; */
       border: none;
 
       > div {
@@ -83,6 +83,12 @@ const MassetInputGroup = styled.div`
   > * {
     margin-bottom: 8px;
   }
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-basis: 50%;
 `;
 
 export const RedeemInput: FC<{}> = () => {
@@ -106,7 +112,7 @@ export const RedeemInput: FC<{}> = () => {
   } = useRedeemDispatch();
 
   return (
-    <>
+    <Container>
       <CurveProtip>
         <CurveToken symbol="CRV" />
         <P>
@@ -210,6 +216,6 @@ export const RedeemInput: FC<{}> = () => {
           </BasketImpact>
         </div>
       </FormRow>
-    </>
+    </Container>
   );
 };
