@@ -58,6 +58,7 @@ interface Addresses {
   };
   REN: {
     renBTC: string;
+    gatewayRegistry: string;
   };
 }
 
@@ -113,6 +114,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     },
     REN: {
       renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
+      gatewayRegistry: 'TODO',
     },
   },
   3: {
@@ -139,6 +141,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     CREAM: {} as never,
     REN: {
       renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
+      gatewayRegistry: 'TODO',
     },
   },
   42: {
@@ -149,6 +152,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     musd: {
       SaveWrapper: '0xeb9201126a77dcd966c878ce81ea1146603b86ad',
     },
+    mbtc: {
+      SaveWrapper: '0x5E0FB1939226c0a9b9244a3b31A4c7454aA4B55B',
+    },
     CURVE: {
       MUSD_SWAP: '0xfad04fbdd5b12188d4fd3ba0325a22962dc00ea4',
       '3POOL_COINS': [
@@ -157,13 +163,15 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
         '0xb5e5d0f8c0cba267cd3d7035d6adc8eba7df7cdd', // DAI
       ],
     } as never,
-    BALANCER: {
-      BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
-    },
+    SUSHI: {} as never,
+    BADGER: {} as never,
+    CREAM: {} as never,
+    BALANCER: {} as never,
     REN: {
-      renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
+      renBTC: '0x0a9add98c076448cbcfacf5e457da12ddbef4a8f',
+      gatewayRegistry: '0x9150683833D52bB657f11dbef473C6B992C23532',
     },
-  } as never,
+  },
 });
 
 export const ADDRESSES: Addresses = ADDRESSES_BY_NETWORK[CHAIN_ID];
