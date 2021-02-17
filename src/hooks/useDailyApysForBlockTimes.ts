@@ -55,10 +55,10 @@ export const useDailyApysForBlockTimes = (
       {
         dailyAPY: string;
         utilisationRate: { simple: string };
-        latestExchangeRate: { rate: string };
+        latestExchangeRate?: { rate: string };
       },
     ];
-  }>(apysDoc, { fetchPolicy: 'cache-first', nextFetchPolicy: 'cache-only' });
+  }>(apysDoc, { fetchPolicy: 'network-only' });
 
   return Object.entries(apysQuery.data || {})
     .filter(([, value]) => !!value?.[0]?.dailyAPY)
@@ -69,10 +69,11 @@ export const useDailyApysForBlockTimes = (
           {
             dailyAPY: _dailyAPY,
             utilisationRate: _utilisationRate,
-            latestExchangeRate: { rate } = { rate: '0.1' },
+            latestExchangeRate,
           },
         ],
       ]) => {
+        const rate = latestExchangeRate?.rate ?? '0.1';
         // FIXME revert this once the subgraph sets utilisationRate properly
         const baseUtilisationRate = parseFloat(_utilisationRate.simple);
         const multiplier =
