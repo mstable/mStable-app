@@ -104,7 +104,7 @@ export const RenMintInitiate: FC = () => {
       asset: 'BTC',
       from: Bitcoin(),
       to: Ethereum(provider).Contract({
-        sendTo: ADDRESSES.mBTC?.SaveWrapper as string,
+        sendTo: ADDRESSES.mbtc?.SaveWrapper as string,
         contractFn: 'mintAndSaveViaRen',
         contractParams: [
           {
