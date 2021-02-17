@@ -1,62 +1,51 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import { useToggle } from 'react-use';
 import styled from 'styled-components';
-
 import { Bitcoin, Ethereum } from '@renproject/chains';
-import QRCode from 'react-qr-code';
+
 import { useAccount } from '../../../../context/UserProvider';
+import { Button } from '../../../core/Button';
 import { useRenMintStep, useRenMintState } from './RenMintProvider';
 import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
 import { ADDRESSES } from '../../../../constants';
 import { useWeb3Provider } from '../../../../context/OnboardProvider';
 import { Step } from './types';
 import { useThemeMode } from '../../../../context/AppProvider';
-import { getColorTheme } from '../../../../theme';
-import { Tooltip } from '../../../core/ReactTooltip';
+import { getBlockchairLink, getEtherscanLink } from '../../../../utils/strings';
+import { ExternalLink } from '../../../core/ExternalLink';
 
-const Address = styled.span`
-  font-size: 0.875rem;
+const Address = styled.div`
   padding: 0 1.75rem;
   word-break: break-all;
+  border: 1px solid ${({ theme }) => theme.color.accent};
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
   text-align: center;
+  justify-content: center;
+  ${({ theme }) => theme.mixins.numeric};
+
+  a {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
 `;
 
-const TransactionBox = styled.div`
+const Confirmation = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 1rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  border-radius: 0.75rem;
-  width: 18rem;
-  align-self: center;
-  align-items: center;
 
-  p {
-    line-height: 1.5rem;
-    text-align: center;
-  }
-
-  span {
-    ${({ theme }) => theme.mixins.numeric};
-  }
-
-  > *:not(:last-child) {
-    margin-bottom: 1rem;
+  > *:not(:first-child) {
+    line-height: 1rem;
+    align-items: center;
+    display: flex;
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
   }
 `;
 
-const TransactionStatus = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  text-align: center;
-  color: ${({ theme }) => theme.color.bodyAccent};
-`;
-
-export const RenMintDeposit: FC = () => {
+export const RenMintConfirm: FC = () => {
   const address = useAccount();
   const provider = useWeb3Provider();
-  const themeMode = useThemeMode();
   const [toggleEnabled, setToggle] = useToggle(false);
   const state = useRenMintState();
   const [_, setStep] = useRenMintStep();
@@ -101,25 +90,32 @@ export const RenMintDeposit: FC = () => {
   const onCancelClick = (): void => {};
 
   const btcAddress = '12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX';
+  const ethAddress = '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f';
 
   return (
     <>
-      <TransactionStatus>
-        Deposit not yet received
-        <Tooltip tip="Your transaction will show after 1 confirmation" />
-      </TransactionStatus>
-      <TransactionBox>
+      <Confirmation>
+        <p>Sucessfully deposited 1.0231 BTC to:</p>
+        <Address>
+          <ExternalLink href={getBlockchairLink(btcAddress, 'address')}>
+            {btcAddress}
+          </ExternalLink>
+        </Address>
+      </Confirmation>
+      <Confirmation>
         <p>
-          Deposit exactly <span>1.0231</span> BTC to the following BTC address:{' '}
+          To finalize, you will need to send a transaction from the following
+          Ethereum address:
         </p>
-        <QRCode
-          value={btcAddress}
-          size={128}
-          bgColor={getColorTheme(themeMode).background}
-          fgColor={getColorTheme(themeMode).body}
-        />
-        <Address>{btcAddress}</Address>
-      </TransactionBox>
+        <Address>
+          <ExternalLink href={getEtherscanLink(ethAddress, 'address')}>
+            {ethAddress}
+          </ExternalLink>
+        </Address>
+      </Confirmation>
+      <Button highlighted onClick={handleConfirmClick}>
+        Finalize
+      </Button>
     </>
   );
 };

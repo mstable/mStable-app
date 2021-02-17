@@ -4,15 +4,15 @@ import styled from 'styled-components';
 import { Bitcoin, Ethereum } from '@renproject/chains';
 import { useAccount } from '../../../../context/UserProvider';
 
+import { Step } from './types';
+import { useWeb3Provider } from '../../../../context/OnboardProvider';
+import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
+import { useRenMintStep, useRenMintState } from './RenMintProvider';
 import { Arrow } from '../../../core/Arrow';
 import { Button } from '../../../core/Button';
 import { Dropdown } from '../../../core/Dropdown';
 import { ToggleInput } from '../../../forms/ToggleInput';
-import { useRenMintStep, useRenMintState } from './RenMintProvider';
-import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
 import { ADDRESSES } from '../../../../constants';
-import { useWeb3Provider } from '../../../../context/OnboardProvider';
-import { RenStep } from './RenMintOnboard';
 
 const AssetBox = styled(Dropdown)`
   border: 1px solid ${({ theme }) => theme.color.accent};
@@ -118,7 +118,7 @@ export const RenMintInitiate: FC = () => {
     };
 
     start(id, params);
-    setStep(RenStep.Deposit);
+    setStep(Step.Deposit);
   };
 
   const onCancelClick = (): void => {};

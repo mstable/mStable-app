@@ -1,20 +1,14 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
+import { OnboardData, Step } from './types';
 import { RenMintProvider, useRenMintStep } from './RenMintProvider';
 import { RenMintInitiate as InitiateStep } from './RenMintInitiate';
 import { RenMintDeposit as DepositStep } from './RenMintDeposit';
-import { OnboardData } from './types';
+import { RenMintPending as PendingStep } from './RenMintPending';
+import { RenMintConfirm as ConfirmStep } from './RenMintConfirm';
 
-export enum RenStep {
-  Initiate,
-  Deposit,
-  Pending,
-  Confirm,
-  Complete,
-}
-
-const { Initiate, Deposit, Pending, Confirm, Complete } = RenStep;
+const { Initiate, Deposit, Pending, Confirm, Complete } = Step;
 
 export interface Props {
   onboardData: OnboardData;
@@ -45,15 +39,15 @@ const Container = styled.div`
   }
 `;
 
-const StepContent: Record<RenStep, JSX.Element> = {
+const StepContent: Record<Step, JSX.Element> = {
   [Initiate]: <InitiateStep />,
   [Deposit]: <DepositStep />,
-  [Pending]: <p>Hello2</p>,
-  [Confirm]: <p>Hello3</p>,
-  [Complete]: <p>Hello4</p>,
+  [Pending]: <PendingStep />,
+  [Confirm]: <ConfirmStep />,
+  [Complete]: <p>Complete</p>,
 };
 
-const getStepTitle: Record<RenStep, string> = {
+const getStepTitle: Record<Step, string> = {
   [Initiate]: 'Initiate Transaction',
   [Deposit]: 'Deposit BTC',
   [Pending]: 'Pending Confirmation',
@@ -63,14 +57,14 @@ const getStepTitle: Record<RenStep, string> = {
 
 export const RenMintContent: FC = () => {
   const [step, _] = useRenMintStep();
-  const stepTitle = getStepTitle[step as RenStep];
+  const stepTitle = getStepTitle[step as Step];
 
   return (
     <Container>
       <Header>
         <h2>{stepTitle}</h2>
       </Header>
-      {StepContent[step as RenStep]}
+      {StepContent[step as Step]}
     </Container>
   );
 };

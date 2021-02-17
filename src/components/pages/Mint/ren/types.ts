@@ -42,3 +42,11 @@ export interface Dispatch {
   setOnboardData(data?: OnboardData): void;
   setStep(step: number): void;
 }
+
+export enum Step {
+  Initiate,
+  Deposit,
+  Pending,
+  Confirm,
+  Complete,
+}

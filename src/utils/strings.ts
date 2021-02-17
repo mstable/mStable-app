@@ -8,6 +8,20 @@ const ETHERSCAN_PREFIXES = {
   42: 'kovan.',
 };
 
+export const getBlockchairLink = (
+  data: string,
+  type?: 'address' | 'transaction',
+): string => {
+  const prefix = `https://blockchair.com/bitcoin/`;
+  switch (type) {
+    case 'transaction':
+      return `${prefix}/transaction/${data}`;
+    case 'address':
+    default:
+      return `${prefix}/address/${data}`;
+  }
+};
+
 export const getEtherscanLink = (
   data: string,
   type?: 'account' | 'transaction' | 'address' | 'token',
