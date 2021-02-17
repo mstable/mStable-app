@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 import { useThemeMode } from '../../context/AppProvider';
-import { colorTheme } from '../../theme';
+import { getColorTheme } from '../../theme';
 
 interface Props {
   className?: string;
@@ -91,7 +91,7 @@ export const ProgressBar: FC<Props> = ({
           y={0}
           rx={HEIGHT / 2}
           ry={HEIGHT / 2}
-          fill={colorTheme(themeMode).accent}
+          fill={getColorTheme(themeMode).accent}
         />
         <rect
           width={progressWidth}

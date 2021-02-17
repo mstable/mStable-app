@@ -41,7 +41,7 @@ interface ColorTheme {
   backgroundAccent: string;
 }
 
-export const colorTheme = (
+export const getColorTheme = (
   theme: 'light' | 'dark',
 ): ColorTheme & typeof Color => {
   const isLight = theme === 'light';
@@ -165,7 +165,7 @@ export const mixins = {
 };
 
 export const lightTheme: DefaultTheme = {
-  color: colorTheme('light'),
+  color: getColorTheme('light'),
   spacing: Spacing,
   size: Size,
   fontSize: FontSize,
@@ -176,7 +176,7 @@ export const lightTheme: DefaultTheme = {
 
 export const darkTheme: DefaultTheme = {
   ...lightTheme,
-  color: colorTheme('dark'),
+  color: getColorTheme('dark'),
   isLight: false,
 };
 
