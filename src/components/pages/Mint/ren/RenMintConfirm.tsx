@@ -5,12 +5,11 @@ import { Bitcoin, Ethereum } from '@renproject/chains';
 
 import { useAccount } from '../../../../context/UserProvider';
 import { Button } from '../../../core/Button';
-import { useRenMintStep, useRenMintState } from './RenMintProvider';
-import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
+import { useRenMintStep } from './RenMintProvider';
+import { useRenDispatch } from '../../../../context/RenProvider';
 import { ADDRESSES } from '../../../../constants';
 import { useWeb3Provider } from '../../../../context/OnboardProvider';
 import { Step } from './types';
-import { useThemeMode } from '../../../../context/AppProvider';
 import { getBlockchairLink, getEtherscanLink } from '../../../../utils/strings';
 import { ExternalLink } from '../../../core/ExternalLink';
 
@@ -46,20 +45,10 @@ const Confirmation = styled.div`
 export const RenMintConfirm: FC = () => {
   const address = useAccount();
   const provider = useWeb3Provider();
-  const [toggleEnabled, setToggle] = useToggle(false);
-  const state = useRenMintState();
+  const [toggleEnabled] = useToggle(false);
   const [_, setStep] = useRenMintStep();
 
-  const { start, remove, restore } = useRenDispatch();
-  const { current, lockAndMint, storage, fees } = useRenState();
-
-  const {
-    inputFormValue,
-    inputAddressOptions,
-    inputAddress,
-    outputAddress,
-    outputAddressOptions,
-  } = state?.onboardData ?? {};
+  const { start } = useRenDispatch();
 
   const handleConfirmClick = (): void => {
     if (!toggleEnabled || !provider || !address) return;
@@ -86,8 +75,6 @@ export const RenMintConfirm: FC = () => {
     start(id, params);
     setStep(Step.Deposit);
   };
-
-  const onCancelClick = (): void => {};
 
   const btcAddress = '12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX';
   const ethAddress = '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f';

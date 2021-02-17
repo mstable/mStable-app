@@ -33,11 +33,7 @@ import { FetchState } from '../hooks/useFetchState';
 import { RenTransactionManifest } from '../web3/TransactionManifest';
 
 import { useProposeRen } from './TransactionsProvider';
-import {
-  useProvider,
-  useWalletAddress,
-  useWeb3Provider,
-} from './OnboardProvider';
+import { useWalletAddress, useWeb3Provider } from './OnboardProvider';
 
 interface RenFees {
   lock?: BigDecimal;

@@ -6,7 +6,7 @@ import { useAccount } from '../../../../context/UserProvider';
 
 import { Step } from './types';
 import { useWeb3Provider } from '../../../../context/OnboardProvider';
-import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
+import { useRenDispatch } from '../../../../context/RenProvider';
 import { useRenMintStep, useRenMintState } from './RenMintProvider';
 import { Arrow } from '../../../core/Arrow';
 import { Button } from '../../../core/Button';
@@ -84,8 +84,7 @@ export const RenMintInitiate: FC = () => {
   const state = useRenMintState();
   const [_, setStep] = useRenMintStep();
 
-  const { start, remove, restore } = useRenDispatch();
-  const { current, lockAndMint, storage, fees } = useRenState();
+  const { start } = useRenDispatch();
 
   const {
     inputFormValue,

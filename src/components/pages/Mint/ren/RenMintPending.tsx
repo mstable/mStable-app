@@ -1,12 +1,6 @@
 import React, { FC } from 'react';
-import { useToggle } from 'react-use';
 import styled from 'styled-components';
 
-import { Step } from './types';
-import { useRenMintStep, useRenMintState } from './RenMintProvider';
-import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
-import { ADDRESSES } from '../../../../constants';
-import { useThemeMode } from '../../../../context/AppProvider';
 import { Tooltip } from '../../../core/ReactTooltip';
 import { getEtherscanLink, truncateAddress } from '../../../../utils/strings';
 import { ExternalLink } from '../../../core/ExternalLink';
@@ -67,22 +61,6 @@ const Confirmation = styled.div`
 `;
 
 export const RenMintPending: FC = () => {
-  const state = useRenMintState();
-  const [_, setStep] = useRenMintStep();
-
-  const { start, remove, restore } = useRenDispatch();
-  const { current, lockAndMint, storage, fees } = useRenState();
-
-  const {
-    inputFormValue,
-    inputAddressOptions,
-    inputAddress,
-    outputAddress,
-    outputAddressOptions,
-  } = state?.onboardData ?? {};
-
-  const onCancelClick = (): void => {};
-
   const txAddress =
     '0x79ee804f27c9724fcb4181b0e43de8ad1dbca198b1323a21156336eae23cba32';
 

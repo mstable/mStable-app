@@ -16,6 +16,7 @@ import {
   JsonRpcSigner,
 } from 'ethers/providers';
 import { Signer, providers, ethers } from 'ethers';
+import { Ethereum } from '@renproject/chains';
 import { CHAIN_ID } from '../constants';
 import { initOnboard } from './onboardUtils';
 import { LocalStorage } from '../localStorage';
@@ -23,7 +24,6 @@ import {
   useAddInfoNotification,
   useAddErrorNotification,
 } from './NotificationsProvider';
-import { Ethereum } from '@renproject/chains';
 
 export interface State {
   onboard: API;

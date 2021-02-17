@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import { Contract } from 'ethers';
 import { BigNumber, BigNumberish } from 'ethers/utils';
 import { TransactionResponse } from 'ethers/providers';

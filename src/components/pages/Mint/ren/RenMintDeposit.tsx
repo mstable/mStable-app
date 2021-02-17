@@ -1,15 +1,7 @@
-import React, { FC, useEffect } from 'react';
-import { useToggle } from 'react-use';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { Bitcoin, Ethereum } from '@renproject/chains';
 import QRCode from 'react-qr-code';
-import { useAccount } from '../../../../context/UserProvider';
-import { useRenMintStep, useRenMintState } from './RenMintProvider';
-import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
-import { ADDRESSES } from '../../../../constants';
-import { useWeb3Provider } from '../../../../context/OnboardProvider';
-import { Step } from './types';
 import { useThemeMode } from '../../../../context/AppProvider';
 import { getColorTheme } from '../../../../theme';
 import { Tooltip } from '../../../core/ReactTooltip';
@@ -54,51 +46,7 @@ const TransactionStatus = styled.div`
 `;
 
 export const RenMintDeposit: FC = () => {
-  const address = useAccount();
-  const provider = useWeb3Provider();
   const themeMode = useThemeMode();
-  const [toggleEnabled, setToggle] = useToggle(false);
-  const state = useRenMintState();
-  const [_, setStep] = useRenMintStep();
-
-  const { start, remove, restore } = useRenDispatch();
-  const { current, lockAndMint, storage, fees } = useRenState();
-
-  const {
-    inputFormValue,
-    inputAddressOptions,
-    inputAddress,
-    outputAddress,
-    outputAddressOptions,
-  } = state?.onboardData ?? {};
-
-  const handleConfirmClick = (): void => {
-    if (!toggleEnabled || !provider || !address) return;
-
-    const id = Math.random().toString();
-
-    const params = {
-      asset: 'BTC',
-      from: Bitcoin(),
-      to: Ethereum(provider).Contract({
-        sendTo: ADDRESSES.mbtc?.SaveWrapper as string,
-        contractFn: 'mintAndSaveViaRen',
-        contractParams: [
-          {
-            type: 'address',
-            name: 'recipient',
-            value: address,
-          },
-          // TODO
-        ],
-      }),
-    };
-
-    start(id, params);
-    setStep(Step.Deposit);
-  };
-
-  const onCancelClick = (): void => {};
 
   const btcAddress = '12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX';
 
