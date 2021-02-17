@@ -44,15 +44,17 @@ export const useAvailableSaveApy = (): {
       return { value, v1Apy, type: 'inactive' };
     }
 
+    const nonZeroApys = dailyApys.filter(v => v.dailyAPY > 0);
+
     // Not enough data to sample an average
-    const useLive = dailyApys.length < 2;
+    const useLive = nonZeroApys.length < 2;
 
     if (useLive) {
       value = liveAPY ?? value;
     } else {
       value =
-        dailyApys.reduce((prev, { dailyAPY }) => prev + dailyAPY, 0) /
-        dailyApys.length;
+        nonZeroApys.reduce((prev, { dailyAPY }) => prev + dailyAPY, 0) /
+        nonZeroApys.length;
     }
 
     // It's possible to get misleading APYs during boostrapping
