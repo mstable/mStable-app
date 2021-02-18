@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import { useToggle } from 'react-use';
 import styled from 'styled-components';
 import { Bitcoin, Ethereum } from '@renproject/chains';
@@ -7,7 +7,7 @@ import { useAccount } from '../../../../context/UserProvider';
 import { Step } from './types';
 import { useWeb3Provider } from '../../../../context/OnboardProvider';
 import { useRenDispatch } from '../../../../context/RenProvider';
-import { useRenMintStep, useRenMintState } from './RenMintProvider';
+import { useRenMintStep, useRenMintOnboardData } from './RenMintProvider';
 import { Arrow } from '../../../core/Arrow';
 import { Button } from '../../../core/Button';
 import { Dropdown } from '../../../core/Dropdown';
@@ -81,8 +81,8 @@ export const RenMintInitiate: FC = () => {
   const address = useAccount();
   const provider = useWeb3Provider();
   const [toggleEnabled, setToggle] = useToggle(false);
-  const state = useRenMintState();
   const [_, setStep] = useRenMintStep();
+  const [onboardData, setOnboardData] = useRenMintOnboardData();
 
   const { start } = useRenDispatch();
 
@@ -92,7 +92,7 @@ export const RenMintInitiate: FC = () => {
     inputAddress,
     outputAddress,
     outputAddressOptions,
-  } = state?.onboardData ?? {};
+  } = onboardData ?? {};
 
   const handleConfirmClick = (): void => {
     if (!toggleEnabled || !provider || !address) return;
@@ -120,7 +120,9 @@ export const RenMintInitiate: FC = () => {
     setStep(Step.Deposit);
   };
 
-  const onCancelClick = (): void => {};
+  const onCancelClick = useCallback(() => setOnboardData(undefined), [
+    setOnboardData,
+  ]);
 
   return (
     <>

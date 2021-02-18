@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -10,12 +10,12 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { Button } from '../../../core/Button';
 import { RenMintOnboard as MintOnboard } from './RenMintOnboard';
-import { OnboardData } from './types';
 import { MassetPage } from '../../MassetPage';
 import { getBlockchairLink, getEtherscanLink } from '../../../../utils/strings';
 import { ExternalLink } from '../../../core/ExternalLink';
 import { ActivitySpinner } from '../../../core/ActivitySpinner';
-// import { useRenDispatch, useRenState } from '../../../../context/RenProvider';
+import { useRenState } from '../../../../context/RenProvider';
+import { RenMintProvider, useRenMintOnboardData } from './RenMintProvider';
 
 // To index address with
 const BTC_ADDRESS = 'BTC_ADDRESS_1';
@@ -44,7 +44,7 @@ const TransactionStatus = styled.div`
   }
 `;
 
-const StyledTransactionRow = styled.div<{ complete?: boolean }>`
+const StyledTransactionRow = styled.div`
   display: flex;
   width: 100%;
   background: ${({ theme }) => theme.color.backgroundAccent};
@@ -52,7 +52,6 @@ const StyledTransactionRow = styled.div<{ complete?: boolean }>`
   border-radius: 0.75rem;
   font-size: 0.875rem;
   align-items: center;
-  opacity: ${({ complete }) => (complete ? 0.75 : 1)};
 
   span {
     ${({ theme }) => theme.mixins.numeric};
@@ -68,53 +67,36 @@ const StyledTransactionRow = styled.div<{ complete?: boolean }>`
 
 const TransactionRow: FC<{
   date: number;
-  amount: number;
+  amount: string;
   etherscanTx?: string;
   bitcoinTx?: string;
 }> = ({ date, amount, etherscanTx, bitcoinTx }) => {
   const formattedTime = formatDistanceToNow(date, { addSuffix: true });
-  const formattedAmount = amount.toFixed(4);
+  const formattedAmount = amount;
   const etherscanUrl =
     etherscanTx && getEtherscanLink(etherscanTx, 'transaction');
   const bitcoinUrl = bitcoinTx && getBlockchairLink(bitcoinTx, 'transaction');
-
-  const pastActiveThreshold = (Date.now() - date) / 86400000 > 1;
-  const expiredWithNoDeposit = pastActiveThreshold && !bitcoinTx;
-  const completed = pastActiveThreshold && !!bitcoinTx && !!etherscanTx;
-
   return (
-    <StyledTransactionRow complete={completed}>
-      <div>{expiredWithNoDeposit ? `Expired` : formattedTime}</div>
+    <StyledTransactionRow>
+      <div>{formattedTime}</div>
       <div>
         Mint <span>{formattedAmount}</span> mBTC
       </div>
       <TransactionStatus>
         <div>
-          {!expiredWithNoDeposit && bitcoinUrl ? (
-            <ExternalLink href={bitcoinUrl}>BTC TX</ExternalLink>
-          ) : (
-            !expiredWithNoDeposit && (
-              <Pending>
-                Pending BTC TX <ActivitySpinner size={12} pending />
-              </Pending>
-            )
-          )}
-          {!expiredWithNoDeposit && etherscanUrl ? (
+          {etherscanUrl ? (
             <ExternalLink href={etherscanUrl}>ETH TX</ExternalLink>
           ) : (
-            !expiredWithNoDeposit && (
-              <Pending>
-                Pending ETH TX <ActivitySpinner size={12} pending />
-              </Pending>
-            )
+            <Pending>
+              ETH TX <ActivitySpinner size={12} pending />
+            </Pending>
           )}
+          {bitcoinUrl && <ExternalLink href={bitcoinUrl}>BTC TX</ExternalLink>}
         </div>
         <div>
-          {!pastActiveThreshold && (
-            <Button highlighted scale={0.875} onClick={() => {}}>
-              Resume
-            </Button>
-          )}
+          <Button highlighted scale={0.875} onClick={() => {}}>
+            Resume
+          </Button>
         </div>
       </TransactionStatus>
     </StyledTransactionRow>
@@ -148,27 +130,24 @@ const TransactionHeader = styled.div`
 `;
 
 const Transactions = styled.div`
-  > div {
-    margin: 1rem 0;
-  }
+  margin: 1rem 0;
 `;
 
 const ExchangeContainer = styled.div`
   margin-top: 1rem;
 `;
 
-export const RenMint: FC = () => {
-  // const [outputAddress, handleSetAddress] = useState<string | undefined>();
-
-  // const { start, remove, restore } = useRenDispatch();
-  // const { current, lockAndMint, storage, fees } = useRenState();
-
-  const [txDetails, setTxDetails] = useState<OnboardData | undefined>();
-
+const RenMintContent: FC = () => {
+  const [onboardData, setOnboardData] = useRenMintOnboardData();
   const massetState = useSelectedMassetState();
+  const [_, inputFormValue, setInputFormValue] = useBigDecimalInput();
+  const { storage } = useRenState();
+
   const { address: massetAddress } = massetState ?? {};
 
-  const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
+  const pastTransactions = useMemo(() => {
+    return Object.keys(storage).map(id => storage[id]);
+  }, [storage]);
 
   const outputAddressOptions = useMemo(() => {
     return [{ address: massetAddress, symbol: massetState?.token.symbol }];
@@ -178,10 +157,8 @@ export const RenMint: FC = () => {
     fetching?: boolean;
     value?: BigDecimal;
   }>(() => {
-    if (!inputAmount) return {};
-
-    return { value: inputAmount };
-  }, [inputAmount]);
+    return { value: new BigDecimal((1e18).toString()) };
+  }, []);
 
   const inputAddress = BTC_ADDRESS;
   const outputAddress = massetAddress;
@@ -194,13 +171,6 @@ export const RenMint: FC = () => {
       custom: true,
     },
   ];
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleCancelClick = useCallback(() => setTxDetails(undefined), []);
-
-  const amount = 0.1232;
-  const bitcoinTx = '0x01231230x0s1313';
-  const etherscanTx = '0x01231230x0s1313';
 
   return (
     <div>
@@ -224,8 +194,8 @@ export const RenMint: FC = () => {
           </List>
         </CollapseBox>
         <ExchangeContainer>
-          {txDetails ? (
-            <MintOnboard onboardData={txDetails} />
+          {onboardData ? (
+            <MintOnboard />
           ) : (
             <Exchange
               inputAddressOptions={inputAddressOptions}
@@ -240,7 +210,7 @@ export const RenMint: FC = () => {
               <Button
                 highlighted
                 onClick={() =>
-                  setTxDetails({
+                  setOnboardData({
                     inputAddress,
                     inputFormValue,
                     inputAddressOptions,
@@ -255,32 +225,31 @@ export const RenMint: FC = () => {
           )}
         </ExchangeContainer>
       </MassetPage>
-      <Transactions>
-        <TransactionHeader>
-          <h3>Date</h3>
-          <h3>Action</h3>
-          <h3>Transaction</h3>
-        </TransactionHeader>
-        <TransactionRow
-          date={Date.now() - 9223000}
-          amount={amount}
-          bitcoinTx={bitcoinTx}
-          // etherscanTx={etherscanTx}
-        />
-        <TransactionRow date={Date.now() - 232223000} amount={amount} />
-        <TransactionRow
-          date={Date.now() - 232223000}
-          amount={amount}
-          bitcoinTx={bitcoinTx}
-          etherscanTx={etherscanTx}
-        />
-        <TransactionRow
-          date={Date.now() - 232223000}
-          amount={amount}
-          bitcoinTx={bitcoinTx}
-          etherscanTx={etherscanTx}
-        />
-      </Transactions>
+      {pastTransactions.length !== 0 && (
+        <Transactions>
+          <TransactionHeader>
+            <h3>Date</h3>
+            <h3>Action</h3>
+            <h3>Transaction</h3>
+          </TransactionHeader>
+          {pastTransactions.map(({ createdAt, depositDetails }) => {
+            return (
+              <TransactionRow
+                date={createdAt}
+                amount={depositDetails.amount}
+                bitcoinTx={depositDetails.transaction.txHash}
+                // etherscanTx={etherscanTx}
+              />
+            );
+          })}
+        </Transactions>
+      )}
     </div>
   );
 };
+
+export const RenMint: FC = () => (
+  <RenMintProvider>
+    <RenMintContent />
+  </RenMintProvider>
+);

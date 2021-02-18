@@ -7,12 +7,8 @@ import React, {
   useReducer,
 } from 'react';
 
-import { Actions, Dispatch, OnboardData, State } from './types';
+import { Actions, Dispatch, State } from './types';
 import { reducer } from './reducer';
-
-interface Props {
-  onboardData: OnboardData;
-}
 
 const initialState: State = {
   initialized: false,
@@ -22,11 +18,8 @@ const initialState: State = {
 const stateCtx = createContext<State>(initialState);
 const dispatchCtx = createContext<Dispatch>({} as Dispatch);
 
-export const RenMintProvider: FC<Props> = ({ onboardData, children }) => {
-  const [state, dispatch] = useReducer(reducer, {
-    ...initialState,
-    onboardData,
-  });
+export const RenMintProvider: FC = ({ children }) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const setOnboardData = useCallback<Dispatch['setOnboardData']>(
     data => {
@@ -63,8 +56,10 @@ export const useRenMintState = (): State => useContext(stateCtx);
 
 export const useRenMintDispatch = (): Dispatch => useContext(dispatchCtx);
 
-export const useRenMintSetOnboardData = (): Dispatch['setOnboardData'] =>
-  useRenMintDispatch().setOnboardData;
+export const useRenMintOnboardData = (): [
+  State['onboardData'],
+  Dispatch['setOnboardData'],
+] => [useRenMintState().onboardData, useRenMintDispatch().setOnboardData];
 
 export const useRenMintStep = (): [State['step'], Dispatch['setStep']] => [
   useRenMintState().step,

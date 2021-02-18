@@ -1,19 +1,14 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { OnboardData, Step } from './types';
-import { RenMintProvider, useRenMintStep } from './RenMintProvider';
+import { Step } from './types';
+import { useRenMintStep } from './RenMintProvider';
 import { RenMintInitiate as InitiateStep } from './RenMintInitiate';
 import { RenMintDeposit as DepositStep } from './RenMintDeposit';
 import { RenMintPending as PendingStep } from './RenMintPending';
 import { RenMintConfirm as ConfirmStep } from './RenMintConfirm';
 
 const { Initiate, Deposit, Pending, Confirm, Complete } = Step;
-
-export interface Props {
-  onboardData: OnboardData;
-  onCancelClick?: () => void;
-}
 
 const Header = styled.div`
   padding: 1rem 0;
@@ -55,7 +50,7 @@ const getStepTitle: Record<Step, string> = {
   [Complete]: 'Transaction Confirmed',
 };
 
-export const RenMintContent: FC = () => {
+export const RenMintOnboard: FC = () => {
   const [step, _] = useRenMintStep();
   const stepTitle = getStepTitle[step as Step];
 
@@ -66,13 +61,5 @@ export const RenMintContent: FC = () => {
       </Header>
       {StepContent[step as Step]}
     </Container>
-  );
-};
-
-export const RenMintOnboard: FC<Props> = ({ onboardData }) => {
-  return (
-    <RenMintProvider onboardData={onboardData}>
-      <RenMintContent />
-    </RenMintProvider>
   );
 };

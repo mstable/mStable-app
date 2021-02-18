@@ -1,10 +1,13 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-
 import QRCode from 'react-qr-code';
+
+import { Step } from './types';
 import { useThemeMode } from '../../../../context/AppProvider';
 import { getColorTheme } from '../../../../theme';
 import { Tooltip } from '../../../core/ReactTooltip';
+import { useRenMintStep } from './RenMintProvider';
+import { useRenState } from '../../../../context/RenProvider';
 
 const Address = styled.span`
   font-size: 0.875rem;
@@ -47,8 +50,26 @@ const TransactionStatus = styled.div`
 
 export const RenMintDeposit: FC = () => {
   const themeMode = useThemeMode();
+  const { current, storage } = useRenState();
+  const [_, setStep] = useRenMintStep();
 
-  const btcAddress = '12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX';
+  const currentId = current?.id;
+  const currentTransaction = (currentId && storage[currentId]) || undefined;
+
+  // FIXME: - Remove mock data fallback
+  const btcGatewayAddress =
+    currentTransaction?.gatewayAddress ?? '12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX';
+  const btcDepositAmount =
+    currentTransaction?.depositDetails.amount ?? '1.0231';
+
+  const btcConfirmations = useMemo(() => currentTransaction?.btcConfirmations, [
+    currentTransaction,
+  ]);
+
+  useEffect(() => {
+    if (!btcConfirmations) return;
+    setStep(Step.Pending);
+  }, [btcConfirmations, setStep]);
 
   return (
     <>
@@ -58,15 +79,16 @@ export const RenMintDeposit: FC = () => {
       </TransactionStatus>
       <TransactionBox>
         <p>
-          Deposit exactly <span>1.0231</span> BTC to the following BTC address:{' '}
+          Deposit exactly <span>{btcDepositAmount}</span> BTC to the following
+          BTC address:
         </p>
         <QRCode
-          value={btcAddress}
+          value={btcGatewayAddress}
           size={128}
           bgColor={getColorTheme(themeMode).background}
           fgColor={getColorTheme(themeMode).body}
         />
-        <Address>{btcAddress}</Address>
+        <Address>{btcGatewayAddress}</Address>
       </TransactionBox>
     </>
   );
