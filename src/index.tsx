@@ -46,7 +46,8 @@ const Routes: FC = () => {
     <Switch>
       <Route exact path="/" component={Home} />
       {/* FIXME remove */}
-      <Route exact path="/ren/mint" component={RenMint} />
+      <Route exact path="/:massetName/ren" component={RenMint} />
+
       <Route exact path="/:massetName/earn" component={Earn} />
       <Route exact path="/:massetName/earn/admin" component={AdminPage} />
       <Route

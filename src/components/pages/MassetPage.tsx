@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { MassetState } from '../../context/DataProvider/types';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 
 import { SimpleMassetStats } from '../stats/SimpleMassetStats';
@@ -36,7 +35,8 @@ const description = {
 };
 
 const MassetAside: FC = () => {
-  const massetState = useSelectedMassetState() as MassetState;
+  const massetState = useSelectedMassetState();
+  if (!massetState) return null;
   return (
     <MassetAsideContainer>
       <h3>About {massetState.token.symbol}</h3>
@@ -53,7 +53,7 @@ const Separator = styled.div`
   padding-bottom: 2rem;
   margin-bottom: 2rem;
 
-  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+  @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
     display: none;
   }
 `;

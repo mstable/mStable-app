@@ -12,7 +12,7 @@ export const getBlockchairLink = (
   data: string,
   type?: 'address' | 'transaction',
 ): string => {
-  const prefix = `https://blockchair.com/bitcoin/`;
+  const prefix = `https://blockchair.com/bitcoin`;
   switch (type) {
     case 'transaction':
       return `${prefix}/transaction/${data}`;
