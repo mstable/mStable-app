@@ -34,7 +34,6 @@ import { RenTransactionManifest } from '../web3/TransactionManifest';
 
 import { useProposeRen } from './TransactionsProvider';
 import {
-  useProvider,
   useWalletAddress,
   useWeb3Provider,
 } from './OnboardProvider';
