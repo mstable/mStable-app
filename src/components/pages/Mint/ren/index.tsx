@@ -44,7 +44,7 @@ const TransactionStatus = styled.div`
   }
 `;
 
-const StyledTransactionRow = styled.div`
+const StyledTransactionRow = styled.div<{ complete?: boolean }>`
   display: flex;
   width: 100%;
   background: ${({ theme }) => theme.color.backgroundAccent};
@@ -52,6 +52,7 @@ const StyledTransactionRow = styled.div`
   border-radius: 0.75rem;
   font-size: 0.875rem;
   align-items: center;
+  opacity: ${({ complete }) => (complete ? 0.75 : 1)};
 
   span {
     ${({ theme }) => theme.mixins.numeric};
@@ -76,27 +77,44 @@ const TransactionRow: FC<{
   const etherscanUrl =
     etherscanTx && getEtherscanLink(etherscanTx, 'transaction');
   const bitcoinUrl = bitcoinTx && getBlockchairLink(bitcoinTx, 'transaction');
+
+  const pastActiveThreshold = (Date.now() - date) / 86400000 > 1;
+  const expiredWithNoDeposit = pastActiveThreshold && !bitcoinTx;
+  const completed = pastActiveThreshold && !!bitcoinTx && !!etherscanTx;
+
   return (
-    <StyledTransactionRow>
-      <div>{formattedTime}</div>
+    <StyledTransactionRow complete={completed}>
+      <div>{expiredWithNoDeposit ? `Expired` : formattedTime}</div>
       <div>
         Mint <span>{formattedAmount}</span> mBTC
       </div>
       <TransactionStatus>
         <div>
-          {etherscanUrl ? (
+          {!expiredWithNoDeposit && bitcoinUrl ? (
+            <ExternalLink href={bitcoinUrl}>BTC TX</ExternalLink>
+          ) : (
+            !expiredWithNoDeposit && (
+              <Pending>
+                Pending BTC TX <ActivitySpinner size={12} pending />
+              </Pending>
+            )
+          )}
+          {!expiredWithNoDeposit && etherscanUrl ? (
             <ExternalLink href={etherscanUrl}>ETH TX</ExternalLink>
           ) : (
-            <Pending>
-              ETH TX <ActivitySpinner size={12} pending />
-            </Pending>
+            !expiredWithNoDeposit && (
+              <Pending>
+                Pending ETH TX <ActivitySpinner size={12} pending />
+              </Pending>
+            )
           )}
-          {bitcoinUrl && <ExternalLink href={bitcoinUrl}>BTC TX</ExternalLink>}
         </div>
         <div>
-          <Button highlighted scale={0.875} onClick={() => {}}>
-            Resume
-          </Button>
+          {!pastActiveThreshold && (
+            <Button highlighted scale={0.875} onClick={() => {}}>
+              Resume
+            </Button>
+          )}
         </div>
       </TransactionStatus>
     </StyledTransactionRow>
@@ -130,7 +148,9 @@ const TransactionHeader = styled.div`
 `;
 
 const Transactions = styled.div`
-  margin: 1rem 0;
+  > div {
+    margin: 1rem 0;
+  }
 `;
 
 const ExchangeContainer = styled.div`
@@ -180,7 +200,7 @@ export const RenMint: FC = () => {
 
   const amount = 0.1232;
   const bitcoinTx = '0x01231230x0s1313';
-  // const etherscanTx = '0x01231230x0s1313';
+  const etherscanTx = '0x01231230x0s1313';
 
   return (
     <div>
@@ -246,6 +266,19 @@ export const RenMint: FC = () => {
           amount={amount}
           bitcoinTx={bitcoinTx}
           // etherscanTx={etherscanTx}
+        />
+        <TransactionRow date={Date.now() - 232223000} amount={amount} />
+        <TransactionRow
+          date={Date.now() - 232223000}
+          amount={amount}
+          bitcoinTx={bitcoinTx}
+          etherscanTx={etherscanTx}
+        />
+        <TransactionRow
+          date={Date.now() - 232223000}
+          amount={amount}
+          bitcoinTx={bitcoinTx}
+          etherscanTx={etherscanTx}
         />
       </Transactions>
     </div>
