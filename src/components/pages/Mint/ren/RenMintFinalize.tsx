@@ -4,12 +4,11 @@ import styled from 'styled-components';
 
 import { useAccount } from '../../../../context/UserProvider';
 import { Button } from '../../../core/Button';
-import { useRenMintStep } from './RenMintProvider';
 import { useRenState } from '../../../../context/RenProvider';
-import { useWeb3Provider } from '../../../../context/OnboardProvider';
-import { Step } from './types';
 import { getBlockchairLink, getEtherscanLink } from '../../../../utils/strings';
 import { ExternalLink } from '../../../core/ExternalLink';
+import { AnimatedTick } from '../../../core/AnimatedTick';
+import { useRenMintDispatch } from './RenMintProvider';
 
 const Address = styled.div`
   ${({ theme }) => theme.mixins.numeric};
@@ -40,12 +39,12 @@ const Confirmation = styled.div`
   }
 `;
 
-export const RenMintConfirm: FC = () => {
+export const RenMintFinalize: FC = () => {
   const address = useAccount();
-  const provider = useWeb3Provider();
-  const [toggleEnabled] = useToggle(false);
-  const [_, setStep] = useRenMintStep();
   const { current, storage } = useRenState();
+  const { setOnboardData } = useRenMintDispatch();
+
+  const [tickShouldAppear, toggleTickAnimation] = useToggle(false);
 
   const currentId = current?.id;
   const currentTransaction = (currentId && storage[currentId]) || undefined;
@@ -58,14 +57,17 @@ export const RenMintConfirm: FC = () => {
   const ethAddress = address ?? '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f';
 
   const handleConfirmClick = (): void => {
-    if (!toggleEnabled || !provider || !address) return;
+    // TODO: - Can be replaced with callback on eth tx hash
+    toggleTickAnimation();
 
-    // TODO: - Might have to skip this if no way to Finalize manually
-
-    setStep(Step.Complete);
+    setTimeout(() => {
+      setOnboardData(undefined);
+    }, 5000);
   };
 
-  return (
+  return tickShouldAppear ? (
+    <AnimatedTick size={100} />
+  ) : (
     <>
       <Confirmation>
         <p>

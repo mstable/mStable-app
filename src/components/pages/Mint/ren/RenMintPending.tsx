@@ -80,7 +80,7 @@ export const RenMintPending: FC = () => {
 
   useEffect(() => {
     if ((btcConfirmations ?? 0) < 2) return;
-    setStep(Step.Confirm);
+    setStep(Step.Finalize);
   }, [btcConfirmations, setStep]);
 
   return (

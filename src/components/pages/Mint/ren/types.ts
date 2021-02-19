@@ -47,6 +47,5 @@ export enum Step {
   Initiate,
   Deposit,
   Pending,
-  Confirm,
-  Complete,
+  Finalize,
 }

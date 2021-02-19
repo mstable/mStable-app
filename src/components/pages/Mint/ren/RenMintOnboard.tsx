@@ -6,9 +6,9 @@ import { useRenMintStep } from './RenMintProvider';
 import { RenMintInitiate as InitiateStep } from './RenMintInitiate';
 import { RenMintDeposit as DepositStep } from './RenMintDeposit';
 import { RenMintPending as PendingStep } from './RenMintPending';
-import { RenMintConfirm as ConfirmStep } from './RenMintConfirm';
+import { RenMintFinalize as FinalizeStep } from './RenMintFinalize';
 
-const { Initiate, Deposit, Pending, Confirm, Complete } = Step;
+const { Initiate, Deposit, Pending, Finalize } = Step;
 
 const Header = styled.div`
   padding: 1rem 0;
@@ -38,16 +38,14 @@ const StepContent: Record<Step, JSX.Element> = {
   [Initiate]: <InitiateStep />,
   [Deposit]: <DepositStep />,
   [Pending]: <PendingStep />,
-  [Confirm]: <ConfirmStep />,
-  [Complete]: <p>Complete</p>,
+  [Finalize]: <FinalizeStep />,
 };
 
 const getStepTitle: Record<Step, string> = {
   [Initiate]: 'Initiate Transaction',
   [Deposit]: 'Deposit BTC',
   [Pending]: 'Pending Confirmation',
-  [Confirm]: 'Confirm Transaction',
-  [Complete]: 'Transaction Confirmed',
+  [Finalize]: 'Finalize Transaction',
 };
 
 export const RenMintOnboard: FC = () => {
