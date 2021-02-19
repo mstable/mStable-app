@@ -16,6 +16,7 @@ import { ExternalLink } from '../../../core/ExternalLink';
 import { ActivitySpinner } from '../../../core/ActivitySpinner';
 import { useRenState } from '../../../../context/RenProvider';
 import { RenMintProvider, useRenMintOnboardData } from './RenMintProvider';
+import { ViewportWidth } from '../../../../theme';
 
 // To index address with
 const BTC_ADDRESS = 'BTC_ADDRESS_1';
@@ -30,38 +31,77 @@ const Pending = styled.div`
 
 const TransactionStatus = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
 
   > div {
     display: flex;
   }
 
   > div:first-child {
+    margin-bottom: 0.5rem;
+
     > *:not(:first-child) {
       margin-left: 1rem;
     }
   }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+
+    > div:first-child {
+      margin-bottom: 0;
+    }
+  }
 `;
 
-const StyledTransactionRow = styled.div`
+const StyledTransactionRow = styled.div<{ complete?: boolean }>`
   display: flex;
+  flex-direction: column;
   width: 100%;
   background: ${({ theme }) => theme.color.backgroundAccent};
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   font-size: 0.875rem;
-  align-items: center;
+  opacity: ${({ complete }) => (complete ? 0.75 : 1)};
+
+  h3 {
+    font-weight: 600;
+  }
 
   span {
     ${({ theme }) => theme.mixins.numeric};
   }
 
-  > div:not(:last-child) {
-    flex-basis: 25%;
+  > div {
+    display: flex;
+    justify-content: space-between;
   }
-  > div:last-child {
-    flex-basis: 50%;
+
+  > div:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    align-items: center;
+
+    h3 {
+      display: none;
+    }
+
+    > div:not(:last-child) {
+      flex-basis: 25%;
+      margin-bottom: 0;
+    }
+
+    > div:last-child {
+      flex-basis: 50%;
+    }
   }
 `;
 
@@ -76,29 +116,56 @@ const TransactionRow: FC<{
   const etherscanUrl =
     etherscanTx && getEtherscanLink(etherscanTx, 'transaction');
   const bitcoinUrl = bitcoinTx && getBlockchairLink(bitcoinTx, 'transaction');
+
+  const pastActiveThreshold = (Date.now() - date) / 86400000 > 1;
+  const expiredWithNoDeposit = pastActiveThreshold && !bitcoinTx;
+
   return (
-    <StyledTransactionRow>
-      <div>{formattedTime}</div>
+    <StyledTransactionRow complete={pastActiveThreshold}>
       <div>
-        Mint <span>{formattedAmount}</span> mBTC
+        <h3>Date:</h3>
+        <p>{expiredWithNoDeposit ? `Expired` : formattedTime}</p>
       </div>
-      <TransactionStatus>
+      <div>
+        <h3>Action:</h3>
+        <p>
+          Mint <span>{formattedAmount}</span> mBTC
+        </p>
+      </div>
+      {!expiredWithNoDeposit && (bitcoinUrl || etherscanUrl) && (
         <div>
-          {etherscanUrl ? (
-            <ExternalLink href={etherscanUrl}>ETH TX</ExternalLink>
-          ) : (
-            <Pending>
-              ETH TX <ActivitySpinner size={12} pending />
-            </Pending>
-          )}
-          {bitcoinUrl && <ExternalLink href={bitcoinUrl}>BTC TX</ExternalLink>}
+          <h3>Transaction:</h3>
+          <TransactionStatus>
+            <div>
+              {!expiredWithNoDeposit && bitcoinUrl ? (
+                <ExternalLink href={bitcoinUrl}>BTC TX</ExternalLink>
+              ) : (
+                !expiredWithNoDeposit && (
+                  <Pending>
+                    BTC TX <ActivitySpinner size={12} pending />
+                  </Pending>
+                )
+              )}
+              {!expiredWithNoDeposit && etherscanUrl ? (
+                <ExternalLink href={etherscanUrl}>ETH TX</ExternalLink>
+              ) : (
+                !expiredWithNoDeposit && (
+                  <Pending>
+                    ETH TX <ActivitySpinner size={12} pending />
+                  </Pending>
+                )
+              )}
+            </div>
+            <div>
+              {!pastActiveThreshold && (
+                <Button highlighted scale={0.875} onClick={() => {}}>
+                  Resume
+                </Button>
+              )}
+            </div>
+          </TransactionStatus>
         </div>
-        <div>
-          <Button highlighted scale={0.875} onClick={() => {}}>
-            Resume
-          </Button>
-        </div>
-      </TransactionStatus>
+      )}
     </StyledTransactionRow>
   );
 };
@@ -116,21 +183,42 @@ const Exchange = styled(AssetExchange)`
 `;
 
 const TransactionHeader = styled.div`
-  display: flex;
   padding: 0 1rem;
   margin-bottom: 0.5rem;
-  font-size: 0.875rem;
 
-  > *:not(:last-child) {
-    flex-basis: 25%;
+  > div:last-child {
+    display: none;
   }
-  > *:last-child {
-    flex-basis: 50%;
+
+  h3 {
+    font-weight: 600;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    > div:first-child {
+      display: none;
+    }
+
+    > div:last-child {
+      display: flex;
+      font-size: 0.875rem;
+
+      > *:not(:last-child) {
+        flex-basis: 25%;
+      }
+      > *:last-child {
+        flex-basis: 50%;
+      }
+    }
   }
 `;
 
 const Transactions = styled.div`
-  margin: 1rem 0;
+  margin-top: 1.5rem;
+
+  > div {
+    margin-top: 0.5rem;
+  }
 `;
 
 const ExchangeContainer = styled.div`
@@ -223,27 +311,32 @@ const RenMintContent: FC = () => {
               </Button>
             </Exchange>
           )}
+          {pastTransactions.length !== 0 && (
+            <Transactions>
+              <TransactionHeader>
+                <div>
+                  <h3>Transaction History</h3>
+                </div>
+                <div>
+                  <h3>Date</h3>
+                  <h3>Action</h3>
+                  <h3>Transaction</h3>
+                </div>
+              </TransactionHeader>
+              {pastTransactions.map(({ createdAt, depositDetails }) => {
+                return (
+                  <TransactionRow
+                    date={createdAt}
+                    amount={depositDetails.amount}
+                    bitcoinTx={depositDetails.transaction.txHash}
+                    // etherscanTx={etherscanTx}
+                  />
+                );
+              })}
+            </Transactions>
+          )}
         </ExchangeContainer>
       </MassetPage>
-      {pastTransactions.length !== 0 && (
-        <Transactions>
-          <TransactionHeader>
-            <h3>Date</h3>
-            <h3>Action</h3>
-            <h3>Transaction</h3>
-          </TransactionHeader>
-          {pastTransactions.map(({ createdAt, depositDetails }) => {
-            return (
-              <TransactionRow
-                date={createdAt}
-                amount={depositDetails.amount}
-                bitcoinTx={depositDetails.transaction.txHash}
-                // etherscanTx={etherscanTx}
-              />
-            );
-          })}
-        </Transactions>
-      )}
     </div>
   );
 };
