@@ -10,7 +10,6 @@ import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { MoreInfo } from '../../../core/Tabs';
 import { SendButton } from '../../../forms/SendButton';
-import { AssetInput } from '../../../forms/AssetInput';
 
 const formId = 'VaultExit';
 
@@ -26,7 +25,6 @@ export const VaultExit: FC = () => {
 
   const massetState = useSelectedMassetState();
   const savingsContract = massetState?.savingsContracts.v2;
-  const saveAddress = savingsContract?.address;
   const vault = savingsContract?.boostedSavingsVault;
   const vaultAddress = vault?.address;
   const rawBalance = vault?.account?.rawBalance;
@@ -35,12 +33,6 @@ export const VaultExit: FC = () => {
 
   return (
     <Container>
-      <AssetInput
-        formValue={saveAddress}
-        addressDisabled
-        address={saveAddress}
-        addressOptions={[{ address: saveAddress }]}
-      />
       <SendButton
         valid={valid}
         title="Exit"
