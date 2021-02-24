@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers/utils';
-import { BlockTimestamp, Platforms, Token } from '../../types';
+import { Platforms, Token } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import {
   StakingRewardsContractsQueryResult,
@@ -12,18 +12,18 @@ import { CurveBalances, CurveJsonData } from './CurveProvider';
 
 export type RawPoolData = NonNullable<
   BalancerPoolsQueryResult['data']
->['current'][number];
+>['pools'][number];
 
 export type RawPairData = NonNullable<
   PairsQueryResult['data']
->['current'][number];
+>['pairs'][number];
 
 // export type RawCurvePoolsData = CurvePoolsQueryResult['data'];
 
 export interface RawPlatformPools {
-  [Platforms.Balancer]: { current: RawPoolData[]; historic: RawPoolData[] };
-  [Platforms.Uniswap]: { current: RawPairData[]; historic: RawPairData[] };
-  [Platforms.Sushi]: { current: RawPairData[]; historic: RawPairData[] };
+  [Platforms.Balancer]: RawPoolData[];
+  [Platforms.Uniswap]: RawPairData[];
+  [Platforms.Sushi]: RawPairData[];
   // [Platforms.Curve]: RawCurvePoolsData;
 }
 
@@ -38,7 +38,6 @@ export interface NormalizedPoolsMap {
 export type RawStakingRewardsContracts = StakingRewardsContractsQueryResult['data'];
 
 export interface RawSyncedEarnData {
-  block24hAgo?: BlockTimestamp;
   tokenPrices: TokenPricesMap;
   rawPlatformPools: RawPlatformPools;
   merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
@@ -47,11 +46,7 @@ export interface RawSyncedEarnData {
 }
 
 export interface SyncedEarnData {
-  block24hAgo?: BlockTimestamp;
-  pools: {
-    current: NormalizedPoolsMap;
-    historic: NormalizedPoolsMap;
-  };
+  pools: NormalizedPoolsMap;
   tokenPrices: TokenPricesMap;
   merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
   curveJsonData?: CurveJsonData;
@@ -67,7 +62,6 @@ export interface SyncedEarnData {
 // }
 
 export interface RawEarnData {
-  block24hAgo?: BlockTimestamp;
   curveBalances: CurveBalances;
   rawStakingRewardsContracts: RawStakingRewardsContracts;
 }
@@ -111,14 +105,12 @@ export interface StakingRewardsContract {
     platformRewardsEarned?: BigDecimal;
   };
   pool: NormalizedPool;
-  pool24hAgo?: NormalizedPool;
   duration: number;
   lastUpdateTime: number;
   periodFinish: number;
   expired: boolean;
   rewardRate: BigNumber;
   rewardPerTokenStoredNow: BigNumber;
-  rewardPerTokenStored24hAgo?: BigNumber;
   rewardsToken: Token & { price?: BigDecimal };
   stakingBalance: BigDecimal;
   stakingBalancePercentage: BigDecimal;
@@ -135,7 +127,6 @@ export interface StakingRewardsContract {
   };
   platformRewards?: {
     platformRewardPerTokenStoredNow: BigNumber;
-    platformRewardPerTokenStored24hAgo?: BigNumber;
     platformRewardRate: BigNumber;
     platformReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal };
     platformToken: Token & { price?: BigDecimal };
@@ -164,7 +155,6 @@ export interface MerkleDropsMap {
 }
 
 export interface EarnData {
-  block24hAgo?: BlockTimestamp;
   stakingRewardsContractsMap: StakingRewardsContractsMap;
   tokenPricesMap: TokenPricesMap;
   merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };

@@ -1,19 +1,16 @@
 import { useBlockPollingSubscription } from '../DataProvider/subscriptions';
 import { useAccount } from '../UserProvider';
 import { useStakingRewardsContractsLazyQuery } from '../../graphql/ecosystem';
-import { RawEarnData, SyncedEarnData } from './types';
+import { RawEarnData } from './types';
 import { useCurveBalances } from './CurveProvider';
 
-export const useRawEarnData = ({
-  block24hAgo,
-}: SyncedEarnData): RawEarnData => {
+export const useRawEarnData = (): RawEarnData => {
   const account = useAccount();
-  const block = { number: block24hAgo?.blockNumber ?? 0 };
 
   const stakingRewardsContractsSub = useBlockPollingSubscription(
     useStakingRewardsContractsLazyQuery,
     {
-      variables: { account: account ?? null, includeHistoric: !!block, block },
+      variables: { account: account ?? null },
       fetchPolicy: 'cache-and-network',
     },
   );
@@ -21,7 +18,6 @@ export const useRawEarnData = ({
   const curveBalances = useCurveBalances();
 
   return {
-    block24hAgo,
     curveBalances,
     rawStakingRewardsContracts: stakingRewardsContractsSub.data,
   };

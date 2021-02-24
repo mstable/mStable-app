@@ -49,12 +49,8 @@ query StakingRewardsContract($id: ID!, $account: Bytes) @api(name: ecosystem) {
   }
 }
 
-query StakingRewardsContracts(
-  $account: Bytes
-  $includeHistoric: Boolean!
-  $block: Block_height
-) @api(name: ecosystem) {
-  current: stakingRewardsContracts {
+query StakingRewardsContracts($account: Bytes) @api(name: ecosystem) {
+  stakingRewardsContracts {
     ...StakingRewardsContractDetails
     stakingBalances(where: { account: $account }) {
       amount
@@ -69,14 +65,6 @@ query StakingRewardsContracts(
       amount
       amountPerTokenPaid
     }
-  }
-  historic: stakingRewardsContracts(block: $block)
-    @include(if: $includeHistoric) {
-    address: id
-    id
-    lastUpdateTime
-    rewardPerTokenStored
-    platformRewardPerTokenStored
   }
 }
 

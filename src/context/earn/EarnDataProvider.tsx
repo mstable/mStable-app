@@ -26,7 +26,7 @@ export const EarnDataProvider: FC<{}> = ({ children }) => {
   // Data that we subscribe to on each block:
   // - Staking rewards contracts
   // - Curve pool balances (if available)
-  const rawEarnData = useRawEarnData(syncedEarnData);
+  const rawEarnData = useRawEarnData();
 
   const earnData = useMemo(
     () => transformEarnData(syncedEarnData, rawEarnData),

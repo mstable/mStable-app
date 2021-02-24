@@ -1448,12 +1448,10 @@ export type TokenPriceDetailsFragment = (
 
 export type PoolsQueryVariables = {
   ids: Array<Scalars['ID']>;
-  includeHistoric: Scalars['Boolean'];
-  block?: Maybe<Block_Height>;
 };
 
 
-export type PoolsQuery = { current: Array<PoolDetailsFragment>, historic: Array<PoolDetailsFragment> };
+export type PoolsQuery = { pools: Array<PoolDetailsFragment> };
 
 export type TokenPricesQueryVariables = {
   tokens: Array<Scalars['ID']>;
@@ -1493,11 +1491,8 @@ export const TokenPriceDetailsFragmentDoc = gql`
 }
     `;
 export const PoolsDocument = gql`
-    query Pools($ids: [ID!]!, $includeHistoric: Boolean!, $block: Block_height) @api(name: balancer) {
-  current: pools(where: {id_in: $ids}) {
-    ...PoolDetails
-  }
-  historic: pools(where: {id_in: $ids}, block: $block) @include(if: $includeHistoric) {
+    query Pools($ids: [ID!]!) @api(name: balancer) {
+  pools(where: {id_in: $ids}) {
     ...PoolDetails
   }
 }
@@ -1516,8 +1511,6 @@ export const PoolsDocument = gql`
  * const { data, loading, error } = usePoolsQuery({
  *   variables: {
  *      ids: // value for 'ids'
- *      includeHistoric: // value for 'includeHistoric'
- *      block: // value for 'block'
  *   },
  * });
  */

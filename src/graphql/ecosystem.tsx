@@ -1848,17 +1848,12 @@ export type StakingRewardsContractQuery = { stakingRewardsContract?: Maybe<(
 
 export type StakingRewardsContractsQueryVariables = {
   account?: Maybe<Scalars['Bytes']>;
-  includeHistoric: Scalars['Boolean'];
-  block?: Maybe<Block_Height>;
 };
 
 
-export type StakingRewardsContractsQuery = { current: Array<(
+export type StakingRewardsContractsQuery = { stakingRewardsContracts: Array<(
     { stakingBalances: Array<Pick<StakingBalance, 'amount'>>, stakingRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>>, platformRewards: Array<Pick<StakingReward, 'amount' | 'amountPerTokenPaid'>> }
     & StakingRewardsContractDetailsFragment
-  )>, historic: Array<(
-    Pick<StakingRewardsContract, 'id' | 'lastUpdateTime' | 'rewardPerTokenStored' | 'platformRewardPerTokenStored'>
-    & { address: StakingRewardsContract['id'] }
   )> };
 
 export type RewardsDistributorQueryVariables = {};
@@ -2012,8 +2007,8 @@ export type StakingRewardsContractQueryHookResult = ReturnType<typeof useStaking
 export type StakingRewardsContractLazyQueryHookResult = ReturnType<typeof useStakingRewardsContractLazyQuery>;
 export type StakingRewardsContractQueryResult = ApolloReactCommon.QueryResult<StakingRewardsContractQuery, StakingRewardsContractQueryVariables>;
 export const StakingRewardsContractsDocument = gql`
-    query StakingRewardsContracts($account: Bytes, $includeHistoric: Boolean!, $block: Block_height) @api(name: ecosystem) {
-  current: stakingRewardsContracts {
+    query StakingRewardsContracts($account: Bytes) @api(name: ecosystem) {
+  stakingRewardsContracts {
     ...StakingRewardsContractDetails
     stakingBalances(where: {account: $account}) {
       amount
@@ -2026,13 +2021,6 @@ export const StakingRewardsContractsDocument = gql`
       amount
       amountPerTokenPaid
     }
-  }
-  historic: stakingRewardsContracts(block: $block) @include(if: $includeHistoric) {
-    address: id
-    id
-    lastUpdateTime
-    rewardPerTokenStored
-    platformRewardPerTokenStored
   }
 }
     ${StakingRewardsContractDetailsFragmentDoc}`;
@@ -2050,8 +2038,6 @@ export const StakingRewardsContractsDocument = gql`
  * const { data, loading, error } = useStakingRewardsContractsQuery({
  *   variables: {
  *      account: // value for 'account'
- *      includeHistoric: // value for 'includeHistoric'
- *      block: // value for 'block'
  *   },
  * });
  */

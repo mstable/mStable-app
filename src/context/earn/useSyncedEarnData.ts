@@ -7,8 +7,7 @@ import { usePoolsQuery as useBalancerPoolsQuery } from '../../graphql/balancer';
 import { useStakingRewardsContractsQuery } from '../../graphql/ecosystem';
 import { usePairsQuery } from '../../graphql/uniswap';
 import { useSushiPairsQuery } from '../../graphql/sushi';
-import { useBlockTimestampQuery } from '../../graphql/blocks';
-import { BlockTimestamp, Platforms } from '../../types';
+import { Platforms } from '../../types';
 import {
   NormalizedPool,
   NormalizedPoolsMap,
@@ -28,39 +27,13 @@ import { STABLECOIN_SYMBOLS, ADDRESSES } from '../../constants';
 import { useMerkleDrops } from './useMerkleDrops';
 import { CurveJsonData, useCurveJsonData } from './CurveProvider';
 
-const START = Math.floor(Date.now() / 1e3) - 24 * 60 * 60;
-
-const useBlockTimestamp24hAgo = (): BlockTimestamp | undefined => {
-  const query = useBlockTimestampQuery({
-    variables: {
-      start: START.toString(),
-      // Adding a small window speeds up the query a lot
-      end: (START + 60e3).toString(),
-    },
-    fetchPolicy: 'cache-and-network',
-  });
-
-  const data = query.data?.blocks[0];
-
-  return useMemo(
-    () =>
-      data
-        ? {
-            timestamp: parseInt(data.timestamp, 10),
-            blockNumber: parseInt(data.number, 10),
-          }
-        : undefined,
-    [data],
-  );
-};
-
 const getUniqueTokens = (
   rawStakingContractsData: RawStakingRewardsContracts,
   rawPlatformsData: RawPlatformPools,
 ): { [address: string]: number } => {
   // Get unique tokens: rewards tokens, platform tokens,
   // and pool tokens.
-  const tokens = (rawStakingContractsData?.current || []).reduce(
+  const tokens = rawStakingContractsData?.stakingRewardsContracts.reduce(
     (_tokens, { rewardsToken, platformToken, stakingToken }) => ({
       ..._tokens,
       [rewardsToken.address.toLowerCase()]: rewardsToken.decimals,
@@ -74,7 +47,7 @@ const getUniqueTokens = (
     {},
   );
 
-  const balancerTokens = rawPlatformsData.Balancer.current.reduce(
+  const balancerTokens = rawPlatformsData.Balancer.reduce(
     (_balancerTokens, currentPlatform) => ({
       ..._balancerTokens,
       ...(currentPlatform.tokens || []).reduce(
@@ -88,7 +61,7 @@ const getUniqueTokens = (
     {},
   );
 
-  const uniswapTokens = rawPlatformsData.Uniswap.current.reduce(
+  const uniswapTokens = rawPlatformsData.Uniswap.reduce(
     (_tokens, { token0, token1 }) => ({
       ..._tokens,
       [token0.address.toLowerCase()]: parseInt(token0.decimals, 10),
@@ -97,7 +70,7 @@ const getUniqueTokens = (
     {},
   );
 
-  const sushiTokens = rawPlatformsData.Uniswap.current.reduce(
+  const sushiTokens = rawPlatformsData.Sushi.reduce(
     (_tokens, { token0, token1 }) => ({
       ..._tokens,
       [token0.address.toLowerCase()]: parseInt(token0.decimals, 10),
@@ -322,22 +295,14 @@ const normalizeBalancerPool = ({
 
 const useRawPlatformPools = (
   rawStakingRewardsContracts: RawStakingRewardsContracts,
-  block24hAgo?: BlockTimestamp,
 ): RawPlatformPools => {
-  const block = { number: block24hAgo?.blockNumber ?? 0 };
-  const includeHistoric = !!block;
-
-  const ids = (rawStakingRewardsContracts?.current || []).map(
+  const ids = rawStakingRewardsContracts?.stakingRewardsContracts.map(
     item => item.stakingToken.address,
   );
 
   const options = {
-    variables: {
-      ids,
-      block,
-      includeHistoric,
-    },
-    skip: ids.length === 0,
+    variables: { ids },
+    skip: !ids || ids.length === 0,
     fetchPolicy: 'cache-and-network',
   };
 
@@ -350,8 +315,6 @@ const useRawPlatformPools = (
   const sushiPairsQuery = useSushiPairsQuery({
     variables: {
       ids: ['0xf5a434fbaa1c00b33ea141122603c43de86cc9fe'],
-      block,
-      includeHistoric,
     },
     fetchPolicy: 'cache-and-network',
   });
@@ -366,18 +329,9 @@ const useRawPlatformPools = (
   // });
 
   return {
-    [Platforms.Balancer]: {
-      current: poolsQuery.data?.current || [],
-      historic: poolsQuery.data?.historic || [],
-    },
-    [Platforms.Uniswap]: {
-      current: pairsQuery.data?.current || [],
-      historic: pairsQuery.data?.historic || [],
-    },
-    [Platforms.Sushi]: {
-      current: sushiPairsQuery.data?.current || [],
-      historic: sushiPairsQuery.data?.historic || [],
-    },
+    [Platforms.Balancer]: poolsQuery.data?.pools ?? [],
+    [Platforms.Uniswap]: pairsQuery.data?.pairs ?? [],
+    [Platforms.Sushi]: sushiPairsQuery.data?.pairs ?? [],
     // [Platforms.Curve]: curveQuery.data,
   };
 };
@@ -417,35 +371,24 @@ const getPools = ({
   },
   curveJsonData,
   tokenPrices,
-}: RawSyncedEarnData): {
-  current: NormalizedPoolsMap;
-  historic: NormalizedPoolsMap;
-} => {
+}: RawSyncedEarnData): NormalizedPoolsMap => {
   const curvePools = normalizeCurvePools(curveJsonData);
-  const current = [
-    ...balancer.current.map(normalizeBalancerPool),
-    ...uniswap.current.map(normalizeUniswapPool),
-    ...sushi.current.map(normalizeSushiPool),
+
+  const pools = [
+    ...balancer.map(normalizeBalancerPool),
+    ...uniswap.map(normalizeUniswapPool),
+    ...sushi.map(normalizeSushiPool),
     ...curvePools,
   ];
-  const historic = [
-    ...balancer.historic.map(normalizeBalancerPool),
-    ...uniswap.historic.map(normalizeUniswapPool),
-    ...sushi.historic.map(normalizeSushiPool),
-  ];
 
-  return {
-    current: addPricesToPools(current, tokenPrices),
-    historic: addPricesToPools(historic, tokenPrices),
-  };
+  return addPricesToPools(pools, tokenPrices);
 };
 
-const getStakingTokenPrices = (normalizedPools: {
-  current: NormalizedPoolsMap;
-  historic: NormalizedPoolsMap;
-}): TokenPricesMap => {
+const getStakingTokenPrices = (
+  normalizedPools: NormalizedPoolsMap,
+): TokenPricesMap => {
   return Object.fromEntries(
-    Object.values(normalizedPools.current)
+    Object.values(normalizedPools)
       .filter(
         pool =>
           pool.totalSupply?.exact.gt(0) &&
@@ -476,19 +419,13 @@ const getStakingTokenPrices = (normalizedPools: {
 const transformRawSyncedEarnData = (
   rawSyncedEarnData: RawSyncedEarnData,
 ): SyncedEarnData => {
-  const {
-    block24hAgo,
-    tokenPrices,
-    curveJsonData,
-    merkleDrops,
-  } = rawSyncedEarnData;
+  const { tokenPrices, curveJsonData, merkleDrops } = rawSyncedEarnData;
 
   const pools = getPools(rawSyncedEarnData);
 
   const stakingTokensPrices = getStakingTokenPrices(pools);
 
   return {
-    block24hAgo,
     curveJsonData,
     pools,
     tokenPrices: {
@@ -501,14 +438,9 @@ const transformRawSyncedEarnData = (
 
 export const useSyncedEarnData = (): SyncedEarnData => {
   const account = useAccount();
-  const block24hAgo = useBlockTimestamp24hAgo();
 
   const stakingRewardsContractsQuery = useStakingRewardsContractsQuery({
-    variables: {
-      account: account ?? null,
-      includeHistoric: false,
-      block: { number: 0 },
-    },
+    variables: { account: account ?? null },
     fetchPolicy: 'cache-and-network',
   });
 
@@ -516,7 +448,6 @@ export const useSyncedEarnData = (): SyncedEarnData => {
 
   const rawPlatformPools = useRawPlatformPools(
     stakingRewardsContractsQuery.data,
-    block24hAgo,
   );
 
   const curveJsonData = useCurveJsonData();
@@ -529,13 +460,11 @@ export const useSyncedEarnData = (): SyncedEarnData => {
   return useMemo(
     () =>
       transformRawSyncedEarnData({
-        block24hAgo,
         rawPlatformPools,
         tokenPrices,
         merkleDrops,
         curveJsonData,
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [rawPlatformPools, tokenPrices, merkleDrops],
+    [rawPlatformPools, tokenPrices, merkleDrops, curveJsonData],
   );
 };

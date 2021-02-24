@@ -2393,12 +2393,10 @@ export type PairDetailsFragment = (
 
 export type SushiPairsQueryVariables = {
   ids: Array<Scalars['ID']>;
-  includeHistoric: Scalars['Boolean'];
-  block?: Maybe<Block_Height>;
 };
 
 
-export type SushiPairsQuery = { current: Array<PairDetailsFragment>, historic: Array<PairDetailsFragment> };
+export type SushiPairsQuery = { pairs: Array<PairDetailsFragment> };
 
 export const PairDetailsFragmentDoc = gql`
     fragment PairDetails on Pair {
@@ -2422,11 +2420,8 @@ export const PairDetailsFragmentDoc = gql`
 }
     `;
 export const SushiPairsDocument = gql`
-    query SushiPairs($ids: [ID!]!, $includeHistoric: Boolean!, $block: Block_height) @api(name: sushi) {
-  current: pairs(where: {id_in: $ids}) {
-    ...PairDetails
-  }
-  historic: pairs(where: {id_in: $ids}, block: $block) @include(if: $includeHistoric) {
+    query SushiPairs($ids: [ID!]!) @api(name: sushi) {
+  pairs(where: {id_in: $ids}) {
     ...PairDetails
   }
 }
@@ -2445,8 +2440,6 @@ export const SushiPairsDocument = gql`
  * const { data, loading, error } = useSushiPairsQuery({
  *   variables: {
  *      ids: // value for 'ids'
- *      includeHistoric: // value for 'includeHistoric'
- *      block: // value for 'block'
  *   },
  * });
  */
