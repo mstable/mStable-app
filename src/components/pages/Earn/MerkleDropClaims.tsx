@@ -134,7 +134,7 @@ const MerkleDropClaimForm: FC<{ merkleDrop: MerkleDrop }> = ({
   );
 };
 
-export const MerkleDropClaims: FC = () => {
+export const MerkleDropClaims: FC<{ className?: string }> = ({ className }) => {
   const account = useAccount();
   const { merkleDrops } = useMerkleDrops();
 
@@ -147,7 +147,7 @@ export const MerkleDropClaims: FC = () => {
   );
 
   return (
-    <Container>
+    <Container className={className}>
       <Tooltip tip="Platform rewards (e.g. BAL) can be earned in some pools. When available, these rewards can be claimed here.">
         <H3>Claim rewards</H3>
       </Tooltip>

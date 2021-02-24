@@ -6,12 +6,12 @@ import { useBannerMessage } from '../../context/AppProvider';
 
 const Container = styled.div`
   display: flex;
-  background: ${({ theme }) => theme.color.backgroundAccent};
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   border-radius: 2rem;
   align-items: center;
   padding: 1rem 1.5rem;
   line-height: 1.5rem;
+  border: 1px solid ${({ theme }) => theme.color.accent};
 
   a {
     border: none;

@@ -27,8 +27,7 @@ const StyledNavLink = styled(NavLink)`
   margin: 0 0.5rem;
   position: relative;
   font-weight: 600;
-  font-size: 1.4rem;
-  padding: 3rem 0;
+  font-size: 1.25rem;
   color: ${({ theme }) => theme.color.body};
   white-space: nowrap;
 `;

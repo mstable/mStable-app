@@ -14,7 +14,7 @@ const ToggleContainer = styled.div`
   display: flex;
 `;
 
-export const ToggleSave: FC = () => {
+export const ToggleSave: FC<{ className?: string }> = ({ className }) => {
   const [
     selectedSaveVersion,
     setSelectedSaveVersion,
@@ -46,7 +46,7 @@ export const ToggleSave: FC = () => {
   );
 
   return (
-    <ToggleContainer>
+    <ToggleContainer className={className}>
       <Toggle options={options} />
     </ToggleContainer>
   );
