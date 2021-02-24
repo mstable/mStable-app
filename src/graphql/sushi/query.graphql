@@ -18,16 +18,8 @@ fragment PairDetails on Pair {
   }
 }
 
-query SushiPairs(
-  $ids: [ID!]!
-  $includeHistoric: Boolean!
-  $block: Block_height
-) @api(name: sushi) {
-  current: pairs(where: { id_in: $ids }) {
-    ...PairDetails
-  }
-  historic: pairs(where: { id_in: $ids }, block: $block)
-    @include(if: $includeHistoric) {
+query SushiPairs($ids: [ID!]!) @api(name: sushi) {
+  pairs(where: { id_in: $ids }) {
     ...PairDetails
   }
 }

@@ -24,6 +24,7 @@ const realConfig = {
     '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/naming-convention': 'off',
     'arrow-body-style': 'off',
+    radix: 'off',
     'no-underscore-dangle': 'off',
     'no-console': ['error', { allow: ['warn', 'error'] }],
     'react/no-unescaped-entities': 'off',

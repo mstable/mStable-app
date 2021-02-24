@@ -2511,12 +2511,10 @@ export type PairDetailsFragment = (
 
 export type PairsQueryVariables = {
   ids: Array<Scalars['ID']>;
-  includeHistoric: Scalars['Boolean'];
-  block?: Maybe<Block_Height>;
 };
 
 
-export type PairsQuery = { current: Array<PairDetailsFragment>, historic: Array<PairDetailsFragment> };
+export type PairsQuery = { pairs: Array<PairDetailsFragment> };
 
 export const PairDetailsFragmentDoc = gql`
     fragment PairDetails on Pair {
@@ -2540,11 +2538,8 @@ export const PairDetailsFragmentDoc = gql`
 }
     `;
 export const PairsDocument = gql`
-    query Pairs($ids: [ID!]!, $includeHistoric: Boolean!, $block: Block_height) @api(name: uniswap) {
-  current: pairs(where: {id_in: $ids}) {
-    ...PairDetails
-  }
-  historic: pairs(where: {id_in: $ids}, block: $block) @include(if: $includeHistoric) {
+    query Pairs($ids: [ID!]!) @api(name: uniswap) {
+  pairs(where: {id_in: $ids}) {
     ...PairDetails
   }
 }
@@ -2563,8 +2558,6 @@ export const PairsDocument = gql`
  * const { data, loading, error } = usePairsQuery({
  *   variables: {
  *      ids: // value for 'ids'
- *      includeHistoric: // value for 'includeHistoric'
- *      block: // value for 'block'
  *   },
  * });
  */
