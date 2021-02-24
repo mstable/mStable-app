@@ -46,9 +46,8 @@ const TabButton: FC<{ tab: Tabs }> = ({ tab }) => {
 };
 
 const Container = styled.div`
-  background: ${Color.white};
   border-radius: 0 0 2px 2px;
-  padding: 16px 0 32px 0;
+  padding: 1rem 0 2rem 0;
   text-align: left;
 
   > div:not(:last-child) {
