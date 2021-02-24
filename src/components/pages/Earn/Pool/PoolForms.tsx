@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { TabsContainer, TabBtn } from '../../../core/Tabs';
-import { Color } from '../../../../theme';
 import { Tabs } from '../types';
 import {
   useStakingRewardContractDispatch,
