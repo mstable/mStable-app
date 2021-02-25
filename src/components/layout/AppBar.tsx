@@ -316,7 +316,13 @@ export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
           </Link>
           <MassetContainer>{!home && <MassetSelector />}</MassetContainer>
         </LogoAndMasset>
-        {accountOpen ? <CloseAccount /> : <Navigation />}
+        {home ? (
+          accountOpen && <CloseAccount />
+        ) : accountOpen ? (
+          <CloseAccount />
+        ) : (
+          <Navigation />
+        )}
         <WalletAndSpinner>
           <ToggleButton onClick={handleThemeToggle}>
             {themeMode === 'light' ? '☀️' : '🌙'}

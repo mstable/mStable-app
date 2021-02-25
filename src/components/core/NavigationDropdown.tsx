@@ -22,7 +22,7 @@ export const NavigationDropdown: FC<Props> = ({ items, massetName }) => {
   const tab = window.location.hash.split('/')[2];
 
   const defaultOption = options.find(
-    option => option.toLowerCase() === tab.toLowerCase(),
+    option => option?.toLowerCase() === tab?.toLowerCase(),
   );
 
   const handleSelect = (selectedTitle?: string): void => {
@@ -34,11 +34,13 @@ export const NavigationDropdown: FC<Props> = ({ items, massetName }) => {
     history.push(`/${massetName}${path}`);
   };
 
-  return (
+  const option = selected ?? defaultOption;
+
+  return option ? (
     <Dropdown
       onChange={handleSelect}
       options={options}
-      defaultOption={selected ?? defaultOption}
+      defaultOption={option}
     />
-  );
+  ) : null;
 };
