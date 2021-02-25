@@ -1,4 +1,5 @@
 import React, { FC, useState } from 'react';
+import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
@@ -25,6 +26,12 @@ const info: { [key in ToggleOption]: string } = {
   [Multiple]: 'Redeem mBTC for an exact amount of its underlying collateral',
 };
 
+const ToggleContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+`;
+
 export const Redeem: FC = () => {
   const massetState = useSelectedMassetState();
   const [currentTab, setSelectedTab] = useState(Single);
@@ -39,9 +46,10 @@ export const Redeem: FC = () => {
 
   return massetState ? (
     <div>
-      <PageHeader action={PageAction.Redeem} subtitle={info[currentTab]}>
+      <PageHeader action={PageAction.Redeem} subtitle={info[currentTab]} />
+      <ToggleContainer>
         <Toggle options={toggleOptions} />
-      </PageHeader>
+      </ToggleContainer>
       <MassetPage>
         {isExactBassets ? <RedeemExactBassets /> : <RedeemMasset />}
       </MassetPage>

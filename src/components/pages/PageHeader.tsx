@@ -1,8 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { H2, P } from '../core/Typography';
-import { FontSize } from '../../theme';
 import { ReactComponent as SaveIcon } from '../icons/circle/save.svg';
 import { ReactComponent as MintIcon } from '../icons/circle/mint.svg';
 import { ReactComponent as EarnIcon } from '../icons/circle/earn.svg';
@@ -10,6 +8,8 @@ import { ReactComponent as SwapIcon } from '../icons/circle/swap.svg';
 import { ReactComponent as RedeemIcon } from '../icons/circle/redeem.svg';
 import { ReactComponent as AnalyticsIcon } from '../icons/circle/analytics.svg';
 import { ReactComponent as AccountIcon } from '../icons/circle/account.svg';
+import { useAccountOpen, useBannerMessage } from '../../context/AppProvider';
+import { BannerMessage } from '../layout/BannerMessage';
 
 export enum PageAction {
   Save = 'Save',
@@ -23,7 +23,7 @@ export enum PageAction {
 
 interface Props {
   action: PageAction;
-  subtitle: string;
+  subtitle?: string;
 }
 
 const ActionIcons: { [action: string]: JSX.Element } = {
@@ -37,14 +37,13 @@ const ActionIcons: { [action: string]: JSX.Element } = {
 };
 
 const Icon = styled.div<{ inverted?: boolean }>`
-  padding: 0;
   display: flex;
+  margin-right: 0.5rem;
 
   img,
   svg {
-    width: 64px;
-    height: 64px;
-    margin-right: 16px;
+    width: 2.5rem;
+    height: 2.5rem;
 
     * {
       fill: ${({ theme }) => theme.color.body};
@@ -56,20 +55,28 @@ const Icon = styled.div<{ inverted?: boolean }>`
   }
 `;
 
-const Container = styled.div`
+const Container = styled.div<{
+  accountOpen?: boolean;
+  messageVisible?: boolean;
+}>`
   display: flex;
-  align-items: flex-start;
   flex-direction: column;
-  padding-bottom: 1rem;
+  align-items: center;
+  padding: 3rem 0;
+  border-bottom: ${({ theme, accountOpen, messageVisible }) =>
+    messageVisible
+      ? `none`
+      : `1px solid ${accountOpen ? '#222' : theme.color.accent}`};
+  margin-bottom: ${({ messageVisible }) => (messageVisible ? `0` : `2rem`)};
 
   h2 {
-    font-size: ${FontSize.xl};
+    font-size: 2rem;
     font-weight: 600;
   }
 
   p {
     padding: 0;
-    font-size: 1rem;
+    font-size: 1.125rem;
     color: ${({ theme }) => theme.color.bodyAccent};
   }
 `;
@@ -77,11 +84,8 @@ const Container = styled.div`
 const Row = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const Column = styled.div`
-  display: flex;
-  flex-direction: column;
+  margin-bottom: 0.5rem;
+  padding-right: 1rem;
 `;
 
 const ChildrenRow = styled.div`
@@ -90,7 +94,6 @@ const ChildrenRow = styled.div`
   justify-content: space-between;
   flex-direction: column;
   align-items: center;
-  margin-top: 1rem;
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
     flex-direction: row;
@@ -98,18 +101,21 @@ const ChildrenRow = styled.div`
 `;
 
 export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
+  const accountOpen = useAccountOpen();
+  const { visible } = useBannerMessage() ?? {};
   const icon = ActionIcons[action];
 
   return (
-    <Container>
-      <Row>
-        <Icon inverted>{icon}</Icon>
-        <Column>
-          <H2>{action}</H2>
-          <P>{subtitle}</P>
-        </Column>
-      </Row>
-      {children && <ChildrenRow>{children}</ChildrenRow>}
-    </Container>
+    <div>
+      <Container accountOpen={accountOpen} messageVisible={visible}>
+        <Row>
+          <Icon inverted>{icon}</Icon>
+          <h2>{action}</h2>
+        </Row>
+        {subtitle && <p>{subtitle}</p>}
+        {children && <ChildrenRow>{children}</ChildrenRow>}
+      </Container>
+      {visible && <BannerMessage />}
+    </div>
   );
 };

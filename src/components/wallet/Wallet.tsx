@@ -31,11 +31,15 @@ const Container = styled.div`
 
 const Rows = styled.div`
   width: 100%;
+
+  > div:not(:first-child) {
+    border-top: 1px ${({ theme }) => theme.color.whiteTransparent} solid;
+    padding-top: 1rem;
+  }
 `;
 
 const Row = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing.xl};
-  border-top: 1px ${({ theme }) => theme.color.whiteTransparent} solid;
 `;
 
 const DisconnectButton = styled(Button)`

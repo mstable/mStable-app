@@ -6,7 +6,6 @@ import { TransitionGroup } from 'react-transition-group';
 import { ModalProvider } from 'react-modal-hook';
 
 import { ReactTooltip, Tooltip } from '../core/ReactTooltip';
-import { Header } from './Header';
 import { Footer } from './Footer';
 import { Account } from './Account';
 import { useAccountOpen } from '../../context/AppProvider';
@@ -15,7 +14,6 @@ import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
 import { containerBackground } from './css';
 import { Color, ViewportWidth } from '../../theme';
-import { BannerMessage } from './BannerMessage';
 import { PendingTransactions } from '../wallet/PendingTransactions';
 
 const Main = styled.main<{ marginTop?: boolean }>`
@@ -176,7 +174,6 @@ const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
     <StickyHeader>
       <AppBar home={home} />
     </StickyHeader>
-    <Header home={home} />
   </>
 );
 
@@ -221,7 +218,6 @@ export const Layout: FC = ({ children }) => {
           <Account />
         ) : (
           <Main marginTop={home}>
-            {!home && <BannerMessage />}
             <BackgroundContainer>{children}</BackgroundContainer>
           </Main>
         )}

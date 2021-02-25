@@ -35,6 +35,7 @@ import { ReactComponent as MeetOneIcon } from '../icons/wallets/meetone.svg';
 import { Idle } from '../icons/Idle';
 import { MassetSelector } from '../core/MassetSelector';
 import { LocalStorage } from '../../localStorage';
+import { Navigation } from './Navigation';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -49,24 +50,24 @@ const statusWarnings: Record<
   },
 };
 
-const Logo = styled.div<{ inverted?: boolean }>`
+const Logo = styled(LogoSvg)<{ inverted?: boolean }>`
+  width: 20px;
+  height: 24px;
+  padding-top: 2px;
+
+  path,
+  rect {
+    fill: ${({ theme, inverted }) =>
+      inverted ? theme.color.white : theme.color.body};
+  }
+`;
+
+const LogoAndMasset = styled.div`
   display: flex;
   align-items: center;
 
   a {
     border-bottom: 0;
-  }
-
-  svg {
-    width: 20px;
-    height: 24px;
-    padding-top: 2px;
-
-    path,
-    rect {
-      fill: ${({ theme, inverted }) =>
-        inverted ? theme.color.white : theme.color.body};
-    }
   }
 `;
 
@@ -122,8 +123,13 @@ const ToggleButton = styled(UnstyledButton)`
 `;
 
 const TruncatedAddress = styled.span`
-  font-family: 'DM Mono', monospace;
-  text-transform: none;
+  display: none;
+
+  @media (min-width: ${ViewportWidth.s}) {
+    font-family: 'DM Mono', monospace;
+    text-transform: none;
+    display: inherit;
+  }
 `;
 
 const Inner = styled.div`
@@ -131,6 +137,7 @@ const Inner = styled.div`
   width: 100%;
   height: 100%;
   align-items: center;
+  justify-content: space-between;
   padding: 0 1rem;
 
   > div {
@@ -142,6 +149,7 @@ const MassetContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-left: 1rem;
 `;
 
 const Container = styled.div<{ inverted: boolean }>`
@@ -150,6 +158,7 @@ const Container = styled.div<{ inverted: boolean }>`
   height: 56px;
   display: flex;
   justify-content: center;
+
   padding-top: 2px;
   border-bottom: 1px solid ${({ theme }) => theme.color.bodyTransparenter};
 
@@ -211,6 +220,22 @@ const StatusWarningsRowContainer = styled.div`
     margin-right: 16px;
   }
 `;
+
+const CloseAccountBtn = styled(UnstyledButton)`
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  font-size: 1.25rem;
+`;
+
+const CloseAccount: FC = () => {
+  const closeAccount = useCloseAccount();
+  return (
+    <CloseAccountBtn type="button" onClick={closeAccount}>
+      Back to App
+    </CloseAccountBtn>
+  );
+};
 
 const StatusWarningsRow: FC = () => {
   const warnings = useAppStatusWarnings();
@@ -285,12 +310,13 @@ export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
   return (
     <Container inverted={accountOpen}>
       <Inner>
-        <Logo inverted={accountOpen}>
+        <LogoAndMasset>
           <Link to="/" title="Home" onClick={closeAccount}>
-            <LogoSvg />
+            <Logo inverted={accountOpen} />
           </Link>
-        </Logo>
-        <MassetContainer>{!home && <MassetSelector />}</MassetContainer>
+          <MassetContainer>{!home && <MassetSelector />}</MassetContainer>
+        </LogoAndMasset>
+        {accountOpen ? <CloseAccount /> : <Navigation />}
         <WalletAndSpinner>
           <ToggleButton onClick={handleThemeToggle}>
             {themeMode === 'light' ? '☀️' : '🌙'}

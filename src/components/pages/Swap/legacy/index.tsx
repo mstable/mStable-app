@@ -99,7 +99,7 @@ export const Swap: FC = () => {
     <SwapProvider>
       <PageHeader
         action={PageAction.Swap}
-        subtitle="Exchange stablecoins with zero-slippage 1:1 swaps"
+        subtitle="Exchange stablecoins with zero-slippage"
       />
       <MassetPage>
         <SwapForm />

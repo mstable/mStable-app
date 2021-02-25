@@ -57,7 +57,6 @@ export const Form: FC<Props> = ({ children, onSubmit, error, submitting }) => {
 
 export const FormRow = styled.div`
   width: 100%;
-  padding: 1rem 0;
 `;
 
 export const SubmitButton = styled(Button)`

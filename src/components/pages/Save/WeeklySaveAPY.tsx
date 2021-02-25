@@ -4,38 +4,15 @@ import CountUp from 'react-countup';
 
 import { useAvailableSaveApy } from '../../../hooks/useAvailableSaveApy';
 import { ThemedSkeleton } from '../../core/ThemedSkeleton';
+import {
+  formatMassetName,
+  useSelectedMassetName,
+} from '../../../context/SelectedMassetNameProvider';
 
-const SaveAPYContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: 2rem;
-  text-align: center;
-
-  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
-    margin: 0;
-    text-align: right;
-    justify-content: flex-end;
-  }
-`;
-
-const InfoCountUp = styled(CountUp)`
-  font-size: 1.5rem;
-  font-family: 'DM Mono', monospace;
-  color: ${({ theme }) => theme.color.primary};
-`;
-
-const InfoMsg = styled.div`
-  padding-top: 4px;
-  font-size: 12px;
-  max-width: 25ch;
-
-  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
-    max-width: 20ch;
-  }
-
-  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
-    max-width: inherit;
-  }
+const InfoAPY = styled.div`
+  font-size: 0.75rem;
+  font-style: italic;
+  margin-top: 0.25rem;
 
   a {
     color: ${({ theme }) => theme.color.greyTransparent};
@@ -47,10 +24,45 @@ const InfoMsg = styled.div`
   }
 `;
 
+const InfoCountUp = styled(CountUp)`
+  font-size: 1.125rem;
+  font-family: 'DM Mono', monospace;
+  color: ${({ theme }) => theme.color.primary};
+`;
+
+const InfoMsg = styled.div`
+  font-size: 1.125rem;
+  max-width: 25ch;
+  color: ${({ theme }) => theme.color.bodyAccent};
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
+    max-width: 20ch;
+  }
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+    max-width: inherit;
+  }
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+    margin: 0;
+    text-align: center;
+  }
+`;
+
 export const WeeklySaveAPY: FC = () => {
   const apy = useAvailableSaveApy();
+  const massetName = useSelectedMassetName();
+  const formattedMasset = formatMassetName(massetName);
   return (
-    <SaveAPYContainer>
+    <Container>
       {apy.type === 'fetching' ? (
         <ThemedSkeleton height={42} width={100} />
       ) : apy.type === 'inactive' ? (
@@ -64,8 +76,12 @@ export const WeeklySaveAPY: FC = () => {
         </div>
       ) : (
         <>
-          <InfoCountUp end={apy?.value} suffix="%" decimals={2} />
-          <InfoMsg>
+          <p>
+            Earn <InfoCountUp end={apy?.value} suffix="%" decimals={2} />* on
+            your {formattedMasset}
+          </p>
+
+          <InfoAPY>
             {' '}
             <a
               href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
@@ -73,12 +89,12 @@ export const WeeklySaveAPY: FC = () => {
               rel="noopener noreferrer"
             >
               {apy.type === 'average'
-                ? 'Average APY over the last 7 days'
-                : 'Live APY (unstable)'}
+                ? '*Average APY over the last 7 days'
+                : '*Live APY (unstable)'}
             </a>
-          </InfoMsg>
+          </InfoAPY>
         </>
       )}
-    </SaveAPYContainer>
+    </Container>
   );
 };

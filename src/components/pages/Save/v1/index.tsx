@@ -22,8 +22,6 @@ const Container = styled.div`
   flex-direction: column;
   border-radius: 0 0 2px 2px;
   text-align: left;
-  border-top: 1px solid ${({ theme }) => theme.color.accent};
-  padding-top: 1rem;
 
   > * {
     margin: 0.5rem 0;

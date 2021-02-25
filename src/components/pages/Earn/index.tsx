@@ -12,7 +12,7 @@ import { Token } from '../../core/Token';
 import { H3, P } from '../../core/Typography';
 import { Button } from '../../core/Button';
 import { ExternalLink } from '../../core/ExternalLink';
-import { Color, FontSize, ViewportWidth } from '../../../theme';
+import { Color, FontSize } from '../../../theme';
 import { LocalStorage } from '../../../localStorage';
 import { PageAction, PageHeader } from '../PageHeader';
 import { PoolsOverview } from './PoolsOverview';
@@ -307,6 +307,7 @@ const SliderContainer = styled.div`
   height: 100%;
   border-radius: 1rem;
   background: linear-gradient(to top right, #040a10, #131212);
+  margin-top: 2rem;
   flex: 1;
   > * {
     flex: 1;
@@ -316,16 +317,11 @@ const SliderContainer = styled.div`
   }
 `;
 
-const PageHeaderContainer = styled.div`
-  @media (min-width: ${ViewportWidth.m}) {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-
-    > :last-child {
-      flex: 0;
-    }
-  }
+const MerkleClaims = styled(MerkleDropClaims)`
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 2rem;
 `;
 
 const Content = styled.div`
@@ -374,17 +370,11 @@ const EarnContent: FC = () => {
         </SwipeDisabledProvider>
       ) : (
         <Content>
-          <PageHeaderContainer>
-            <PageHeader
-              action={PageAction.Earn}
-              subtitle="Ecosystem rewards with mStable"
-            >
-              <Button onClick={toggleOnboardingVisible} scale={0.875}>
-                View introduction
-              </Button>
-            </PageHeader>
-            <MerkleDropClaims />
-          </PageHeaderContainer>
+          <PageHeader
+            action={PageAction.Earn}
+            subtitle="Ecosystem rewards with mStable"
+          />
+          <MerkleClaims />
           <PoolsOverview />
         </Content>
       )}
