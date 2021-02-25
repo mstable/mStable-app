@@ -123,8 +123,13 @@ const ToggleButton = styled(UnstyledButton)`
 `;
 
 const TruncatedAddress = styled.span`
-  font-family: 'DM Mono', monospace;
-  text-transform: none;
+  display: none;
+
+  @media (min-width: ${ViewportWidth.s}) {
+    font-family: 'DM Mono', monospace;
+    text-transform: none;
+    display: inherit;
+  }
 `;
 
 const Inner = styled.div`

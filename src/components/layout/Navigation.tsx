@@ -4,15 +4,27 @@ import { NavLink } from 'react-router-dom';
 
 import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
 import { useCloseAccount, useThemeMode } from '../../context/AppProvider';
-import { colorTheme } from '../../theme';
-
-interface NavItem {
-  title: string;
-  path: string;
-}
+import { colorTheme, ViewportWidth } from '../../theme';
+import { NavigationDropdown, NavItem } from '../core/NavigationDropdown';
 
 const List = styled.div`
   display: flex;
+
+  > div:first-child {
+    display: inline-block;
+  }
+  a {
+    display: none;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    > div:first-child {
+      display: none;
+    }
+    > a {
+      display: inline-block;
+    }
+  }
 `;
 
 const navItems: NavItem[] = [
@@ -40,6 +52,7 @@ export const Navigation: FC = () => {
   return (
     <nav>
       <List>
+        <NavigationDropdown massetName={massetName} items={navItems} />
         {navItems.map(({ title, path }) => (
           <StyledNavLink
             activeStyle={{ color: colorTheme(themeMode).primary }}

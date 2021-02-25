@@ -1,10 +1,28 @@
 import React, { FC } from 'react';
 import { useHistory } from 'react-router-dom';
+import styled from 'styled-components';
 
 import { useDataState } from '../../context/DataProvider/DataProvider';
 import { useSelectedMasset } from '../../context/SelectedMassetNameProvider';
+import { ViewportWidth } from '../../theme';
 import { MassetName } from '../../types';
-import { Dropdown } from './Dropdown';
+import { AssetDropdown } from './AssetDropdown';
+
+const StyledDropdown = styled(AssetDropdown)`
+  @media (max-width: ${ViewportWidth.m}) {
+    min-width: 5.5rem;
+
+    > button > div {
+      display: none;
+    }
+    > div {
+      min-width: 5.5rem;
+      > button > div {
+        display: none;
+      }
+    }
+  }
+`;
 
 export const MassetSelector: FC = () => {
   const dataState = useDataState();
@@ -30,7 +48,7 @@ export const MassetSelector: FC = () => {
   };
 
   return (
-    <Dropdown
+    <StyledDropdown
       onChange={handleSelect}
       options={options}
       defaultAddress={dataState[selected]?.token?.address}

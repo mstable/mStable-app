@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 
 import { useTokens, useTokenSubscription } from '../../context/TokensProvider';
-import { Dropdown } from '../core/Dropdown';
+import { AssetDropdown } from '../core/AssetDropdown';
 import { TransactionOption } from '../../types';
 
 interface Props {
@@ -41,7 +41,7 @@ export const SubscribedTokenInput: FC<Props> = ({
   );
 
   return (
-    <Dropdown
+    <AssetDropdown
       onChange={onChange}
       options={options}
       defaultAddress={value}
