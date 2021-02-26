@@ -12,7 +12,7 @@ interface Props extends ButtonHTMLAttributes<unknown> {
 const ButtonCss = css<Props>`
   font-size: ${({ scale }) => (scale ? `${scale}rem` : `1rem`)};
   padding: ${({ scale }) =>
-    scale ? `${scale * 0.75}em ${scale * 1.5}em` : `0.75rem 1.5rem`};
+    scale ? `${scale * 0.75}em ${scale * 1.5}em` : `0.5rem 1.25rem`};
   border-radius: 1.5em;
   background: ${({ theme, highlighted, transparent }) =>
     highlighted
