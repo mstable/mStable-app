@@ -9,11 +9,11 @@ import React, {
   useState,
 } from 'react';
 import useInterval from 'react-use/lib/useInterval';
+import { StakingRewards__factory } from '../../../typechain';
 
 import { StakingRewards } from '../../../typechain/StakingRewards.d';
 import { ADDRESSES, SCALE } from '../../../constants';
 import { useTokensState } from '../../../context/TokensProvider';
-import { StakingRewardsFactory } from '../../../typechain/StakingRewardsFactory';
 import { SubscribedToken } from '../../../types';
 import {
   useStakingRewardsContract,
@@ -296,7 +296,8 @@ export const StakingRewardsContractProvider: FC<Props> = ({
   const signer = useSigner();
 
   const contract = useMemo(
-    () => (signer ? StakingRewardsFactory.connect(address, signer) : undefined),
+    () =>
+      signer ? StakingRewards__factory.connect(address, signer) : undefined,
     [address, signer],
   );
 

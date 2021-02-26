@@ -1,5 +1,5 @@
 import React, { FC, useCallback } from 'react';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 import Skeleton from 'react-loading-skeleton';
 
 import { useSelectedLegacyMassetContract } from '../../../../web3/hooks';

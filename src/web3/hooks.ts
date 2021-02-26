@@ -1,14 +1,13 @@
 import { useMemo } from 'react';
+import { ERC20 } from '@mstable/protocol/types/generated/ERC20';
+import { ISavingsContractV1 } from '@mstable/protocol/types/generated/ISavingsContractV1';
+import { ERC20__factory } from '@mstable/protocol/types/generated/factories/ERC20__factory';
+import { ISavingsContractV1__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV1__factory';
 
 import { useSigner } from '../context/OnboardProvider';
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
-import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
-import { LegacyMassetFactory } from '../typechain/LegacyMassetFactory';
-import { SavingsContractFactory } from '../typechain/SavingsContractFactory';
-import { SavingsContract } from '../typechain/SavingsContract.d';
-import { Erc20Detailed } from '../typechain/Erc20Detailed.d';
-import { LegacyMasset } from '../typechain/LegacyMasset';
 import { truncateAddress } from '../utils/strings';
+import { LegacyMasset, LegacyMasset__factory } from '../typechain';
 
 export const useTruncatedAddress = (address?: string | null): string | null =>
   useMemo(() => (address ? truncateAddress(address) : null), [address]);
@@ -18,13 +17,11 @@ export const useTruncatedAddress = (address?: string | null): string | null =>
  */
 export const useErc20Contract = (
   address?: string | null,
-): Erc20Detailed | undefined => {
+): ERC20 | undefined => {
   const signer = useSigner();
   return useMemo(
     () =>
-      signer && address
-        ? Erc20DetailedFactory.connect(address, signer)
-        : undefined,
+      signer && address ? ERC20__factory.connect(address, signer) : undefined,
     [address, signer],
   );
 };
@@ -39,7 +36,7 @@ export const useSelectedLegacyMassetContract = (): LegacyMasset | undefined => {
   return useMemo(
     () =>
       signer && address
-        ? LegacyMassetFactory.connect(address, signer)
+        ? LegacyMasset__factory.connect(address, signer)
         : undefined,
     [address, signer],
   );
@@ -48,14 +45,14 @@ export const useSelectedLegacyMassetContract = (): LegacyMasset | undefined => {
 /**
  * @deprecated
  */
-export const useSelectedSaveV1Contract = (): SavingsContract | undefined => {
+export const useSelectedSaveV1Contract = (): ISavingsContractV1 | undefined => {
   const massetState = useSelectedMassetState();
   const address = massetState?.savingsContracts.v1?.address;
   const signer = useSigner();
   return useMemo(
     () =>
       signer && address
-        ? SavingsContractFactory.connect(address, signer)
+        ? ISavingsContractV1__factory.connect(address, signer)
         : undefined,
     [address, signer],
   );

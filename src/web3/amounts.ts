@@ -1,5 +1,7 @@
-import { BigNumber, parseUnits, formatUnits } from 'ethers/utils';
+import { BigNumber, utils } from 'ethers';
 import { Amount } from '../types';
+
+const { parseUnits, formatUnits } = utils;
 
 /**
  * @deprecated

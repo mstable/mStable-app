@@ -1,11 +1,11 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
+import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated/factories/BoostedSavingsVault__factory';
 
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 
-import { BoostedSavingsVaultFactory } from '../../../../typechain/BoostedSavingsVaultFactory';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
@@ -80,9 +80,13 @@ export const VaultWithdraw: FC = () => {
         handleSend={() => {
           if (vaultAddress && signer && inputAmount) {
             const body = `${inputAmount.format()} from the vault`;
+            const contract = BoostedSavingsVault__factory.connect(
+              vaultAddress,
+              signer,
+            );
             propose<Interfaces.BoostedSavingsVault, 'withdraw'>(
               new TransactionManifest(
-                BoostedSavingsVaultFactory.connect(vaultAddress, signer),
+                contract,
                 'withdraw',
                 [inputAmount.exact],
                 {

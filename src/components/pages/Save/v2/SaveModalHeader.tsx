@@ -4,12 +4,12 @@ import styled from 'styled-components';
 import { formatMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { MassetName } from '../../../../types';
 
-import { ReactComponent as IMUSDMTAIcon } from '../../../icons/tokens/imusd-mta.svg';
-import { ReactComponent as IMUSDIcon } from '../../../icons/tokens/imUSD.svg';
-import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
-import { ReactComponent as IMBTCMTAIcon } from '../../../icons/tokens/imbtc-mta.svg';
-import { ReactComponent as IMBTCIcon } from '../../../icons/tokens/imBTC.svg';
-import { ReactComponent as MBTCIcon } from '../../../icons/tokens/mBTC.svg';
+import IMUSDMTAIcon from '../../../icons/tokens/imusd-mta.svg';
+import IMUSDIcon from '../../../icons/tokens/imUSD.svg';
+import MUSDIcon from '../../../icons/tokens/mUSD.svg';
+import IMBTCMTAIcon from '../../../icons/tokens/imbtc-mta.svg';
+import IMBTCIcon from '../../../icons/tokens/imBTC.svg';
+import MBTCIcon from '../../../icons/tokens/mBTC.svg';
 
 type AssetType = 'masset' | 'imasset' | 'vault';
 

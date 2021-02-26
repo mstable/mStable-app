@@ -1,5 +1,7 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { ERC20__factory } from '@mstable/protocol/types/generated/factories/ERC20__factory';
+import { ERC20 } from '@mstable/protocol/types/generated/ERC20';
 
 import { useStakingRewardsContracts } from '../../../../context/earn/EarnDataProvider';
 import { PLATFORM_METADATA } from '../constants';
@@ -8,10 +10,8 @@ import { TokenAmount } from '../../../core/TokenAmount';
 import { Table } from '../../../core/Table';
 import { AmountInput } from '../../../forms/AmountInput';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { Erc20DetailedFactory } from '../../../../typechain/Erc20DetailedFactory';
 import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider';
 import { StakingRewardsContract } from '../../../../context/earn/types';
-import { Erc20Detailed } from '../../../../typechain/Erc20Detailed.d';
 import { Token } from '../../../../types';
 import { useSigner } from '../../../../context/OnboardProvider';
 
@@ -62,7 +62,7 @@ export const StakingRewardContractsTable: FC<{}> = () => {
   }>({});
 
   const airdroppableContracts = useMemo<
-    { address: string; contract?: Erc20Detailed; platformToken: Token }[]
+    { address: string; contract?: ERC20; platformToken: Token }[]
   >(
     () =>
       Object.values(stakingRewardsContracts)
@@ -70,7 +70,7 @@ export const StakingRewardContractsTable: FC<{}> = () => {
         .map(item => ({
           address: item.address,
           contract: signer
-            ? Erc20DetailedFactory.connect(
+            ? ERC20__factory.connect(
                 item.platformRewards?.platformToken.address as string,
                 signer,
               )

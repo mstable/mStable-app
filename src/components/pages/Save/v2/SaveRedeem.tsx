@@ -1,11 +1,11 @@
 import React, { FC, useMemo } from 'react';
+import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV2__factory';
 
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 
-import { SavingsContractFactory } from '../../../../typechain/SavingsContractFactory';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
@@ -93,7 +93,7 @@ export const SaveRedeem: FC = () => {
               'redeemCredits(uint256)'
             >(
               new TransactionManifest(
-                SavingsContractFactory.connect(saveAddress, signer),
+                ISavingsContractV2__factory.connect(saveAddress, signer),
                 'redeemCredits(uint256)',
                 [inputAmount.exact],
                 {

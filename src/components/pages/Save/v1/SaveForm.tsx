@@ -33,7 +33,7 @@ export const SaveForm: FC = () => {
         if (transactionType === TransactionType.Deposit) {
           const body = `${amount.format()} ${massetSymbol}`;
           return new TransactionManifest(
-            contract,
+            contract as never,
             'depositSavings(uint256)',
             [amount.exact],
             {
@@ -47,7 +47,7 @@ export const SaveForm: FC = () => {
         if (transactionType === TransactionType.Withdraw && amountInCredits) {
           const body = `${massetSymbol} savings`;
           return new TransactionManifest(
-            contract,
+            contract as never,
             'redeem',
             [amountInCredits.exact],
             {

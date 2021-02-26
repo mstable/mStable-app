@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useMemo } from 'react';
-import { BigNumber, formatUnits } from 'ethers/utils';
+import { BigNumber, utils } from 'ethers';
 
 import { RATIO_SCALE, SCALE } from '../../../../constants';
 import { formatExactAmount } from '../../../../web3/amounts';
@@ -90,7 +90,7 @@ export const SwapInput: FC = () => {
         const clampedMax = maxMint.gt(ratioedInputBalance)
           ? ratioedInputBalance
           : maxMint;
-        setInputQuantity(formatUnits(clampedMax, 18));
+        setInputQuantity(utils.formatUnits(clampedMax, 18));
       }
       return;
     }
@@ -118,14 +118,14 @@ export const SwapInput: FC = () => {
 
       let maxIncrease = inputMaxWeight.gt(inputVaultBalance)
         ? inputMaxWeight.sub(inputVaultBalance)
-        : new BigNumber(0);
+        : BigNumber.from(0);
       maxIncrease = maxIncrease.gt(ratioedInputBalance)
         ? ratioedInputBalance
         : maxIncrease;
       const maxDecrease = outputVaultBalance;
 
       setInputQuantity(
-        formatUnits(
+        utils.formatUnits(
           maxIncrease.lt(maxDecrease) ? maxIncrease : maxDecrease,
           18,
         ),

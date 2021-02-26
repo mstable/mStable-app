@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { usePrevious } from 'react-use';
-import { Provider, TransactionReceipt } from 'ethers/providers';
+import { Provider, TransactionReceipt } from '@ethersproject/abstract-provider';
 import { Signer } from 'ethers';
 
 import { TransactionStatus } from '../web3/TransactionManifest';

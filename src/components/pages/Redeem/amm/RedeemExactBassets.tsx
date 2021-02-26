@@ -1,5 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import { useThrottleFn } from 'react-use';
+import { Masset__factory } from '@mstable/protocol/types/generated/factories/Masset__factory';
+import { Masset } from '@mstable/protocol/types/generated/Masset';
 
 import { usePropose } from '../../../../context/TransactionsProvider';
 import {
@@ -13,8 +15,6 @@ import {
   useTokenSubscription,
 } from '../../../../context/TokensProvider';
 
-import { MbtcFactory } from '../../../../typechain/MbtcFactory';
-import { Mbtc } from '../../../../typechain/Mbtc';
 import { Interfaces } from '../../../../types';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -47,7 +47,7 @@ const RedeemExactBassetsLogic: FC = () => {
   const outputTokens = useTokens(Object.keys(bassetAmounts));
 
   const masset = useMemo(
-    () => (signer ? MbtcFactory.connect(massetAddress, signer) : undefined),
+    () => (signer ? Masset__factory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
@@ -91,7 +91,7 @@ const RedeemExactBassetsLogic: FC = () => {
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
-    (_masset: Mbtc | undefined, _inputValues: BigDecimalInputValues) => {
+    (_masset: Masset | undefined, _inputValues: BigDecimalInputValues) => {
       if (_masset) {
         const touched = Object.values(_inputValues).filter(v => v.touched);
 

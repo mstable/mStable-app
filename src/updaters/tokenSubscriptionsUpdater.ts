@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { usePrevious } from 'react-use';
-import { Interface } from 'ethers/utils/interface';
-import { Provider } from 'ethers/providers';
+import { Interface } from '@ethersproject/abi';
+import { Provider } from '@ethersproject/providers';
+import { ERC20Interface } from '@mstable/protocol/types/generated/ERC20';
 
 import { useBlockNumber } from '../context/BlockProvider';
 import { useAccount } from '../context/UserProvider';
@@ -11,7 +12,6 @@ import {
   useTokensDispatch,
 } from '../context/TokensProvider';
 import { useSigner } from '../context/OnboardProvider';
-import { Erc20DetailedInterface } from '../typechain/Erc20Detailed.d';
 import { BigDecimal } from '../web3/BigDecimal';
 
 const contractInterface = (() => {
@@ -64,7 +64,7 @@ const contractInterface = (() => {
       type: 'function',
     },
   ];
-  return new Interface(abi) as Erc20DetailedInterface;
+  return (new Interface(abi) as unknown) as ERC20Interface;
 })();
 
 /**
@@ -102,12 +102,13 @@ export const TokenSubscriptionsUpdater = (): null => {
           spenders.map(async spender => {
             const data = await (signer.provider as Provider).call({
               to: address,
-              data: contractInterface.functions.allowance.encode([
+              data: contractInterface.encodeFunctionData('allowance', [
                 account,
                 spender,
               ]),
             });
-            const allowance = contractInterface.functions.allowance.decode(
+            const allowance = contractInterface.decodeFunctionResult(
+              'allowance',
               data,
             );
             return {
@@ -149,9 +150,12 @@ export const TokenSubscriptionsUpdater = (): null => {
       const balancePromises = balanceSubs.map(async ({ address, decimals }) => {
         const data = await (signer.provider as Provider).call({
           to: address,
-          data: contractInterface.functions.balanceOf.encode([account]),
+          data: contractInterface.encodeFunctionData('balanceOf', [account]),
         });
-        const balance = contractInterface.functions.balanceOf.decode(data);
+        const balance = contractInterface.decodeFunctionResult(
+          'balanceOf',
+          data,
+        );
         return [address, new BigDecimal(balance[0], decimals)];
       });
 

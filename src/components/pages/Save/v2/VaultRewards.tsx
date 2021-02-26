@@ -9,8 +9,8 @@ import {
   fromUnixTime,
   endOfDay,
 } from 'date-fns';
+import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated/factories/BoostedSavingsVault__factory';
 
-import { BoostedSavingsVaultFactory } from '../../../../typechain/BoostedSavingsVaultFactory';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useSigner } from '../../../../context/OnboardProvider';
@@ -240,7 +240,7 @@ export const VaultRewards: FC = () => {
                 'claimRewards(uint256,uint256)'
               >(
                 new TransactionManifest(
-                  BoostedSavingsVaultFactory.connect(vaultAddress, signer),
+                  BoostedSavingsVault__factory.connect(vaultAddress, signer),
                   'claimRewards(uint256,uint256)',
                   [rewards.first, rewards.last],
                   {

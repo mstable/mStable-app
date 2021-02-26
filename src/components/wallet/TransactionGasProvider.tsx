@@ -8,7 +8,7 @@ import React, {
   useMemo,
 } from 'react';
 import { useThrottleFn } from 'react-use';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 
 import {
   Transaction,

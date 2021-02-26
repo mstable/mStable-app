@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ERC20__factory } from '@mstable/protocol/types/generated/factories/ERC20__factory';
 
-import { Erc20DetailedFactory } from '../typechain/Erc20DetailedFactory';
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
 import { useSignerOrInfuraProvider } from '../context/OnboardProvider';
 import { useMtaPrice } from './useMtaPrice';
@@ -27,7 +27,7 @@ export const useVaultWeeklyROI = (): {
 
   useEffect(() => {
     if (saveAddress && vaultAddress && !totalStaked) {
-      Erc20DetailedFactory.connect(saveAddress, provider)
+      ERC20__factory.connect(saveAddress, provider)
         .balanceOf(vaultAddress)
         .then(balance => {
           setTotalStaked(parseInt(balance.toString(), 10) / 1e18);

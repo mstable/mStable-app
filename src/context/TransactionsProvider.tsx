@@ -9,8 +9,11 @@ import React, {
   useMemo,
   useReducer,
 } from 'react';
-import { BigNumber } from 'ethers/utils';
-import { TransactionReceipt, TransactionResponse } from 'ethers/providers';
+import { BigNumber } from 'ethers';
+import {
+  TransactionReceipt,
+  TransactionResponse,
+} from '@ethersproject/providers';
 
 import {
   TransactionManifest,

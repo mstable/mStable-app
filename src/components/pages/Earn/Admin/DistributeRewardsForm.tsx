@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 import styled from 'styled-components';
 
 import { useTokenAllowance } from '../../../../context/TokensProvider';
@@ -12,7 +12,7 @@ import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 import { H3, H4 } from '../../../core/Typography';
 import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider';
 import { Interfaces } from '../../../../types';
-import { RewardsDistributorFactory } from '../../../../typechain/RewardsDistributorFactory';
+import { RewardsDistributor__factory } from '../../../../typechain';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { Button } from '../../../core/Button';
@@ -244,7 +244,10 @@ export const DistributeRewardsForm: FC = () => {
     > | void => {
       const contract =
         signer && rewardsDistributorAddress
-          ? RewardsDistributorFactory.connect(rewardsDistributorAddress, signer)
+          ? RewardsDistributor__factory.connect(
+              rewardsDistributorAddress,
+              signer,
+            )
           : undefined;
 
       const args: [string[], BigNumber[]] = Object.entries(recipientAmounts)

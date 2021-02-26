@@ -1,8 +1,10 @@
 import React, { FC, useEffect, useMemo } from 'react';
 import { useThrottleFn } from 'react-use';
-import { BigNumber } from 'ethers/utils';
-
+import { BigNumber } from 'ethers';
+import { Masset__factory } from '@mstable/protocol/types/generated/factories/Masset__factory';
+import { Masset } from '@mstable/protocol/types/generated/Masset';
 import { getUnixTime } from 'date-fns';
+
 import { useTokens, useTokensState } from '../../../../context/TokensProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import {
@@ -16,8 +18,6 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { sanitizeMassetError } from '../../../../utils/strings';
 import { Interfaces } from '../../../../types';
-
-import { Mbtc } from '../../../../typechain/Mbtc';
 
 import {
   ManyToOneAssetExchange,
@@ -33,7 +33,6 @@ import {
 } from '../../../../context/AppProvider';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { MassetPage } from '../../MassetPage';
-import { MbtcFactory } from '../../../../typechain/MbtcFactory';
 import { SCALE } from '../../../../constants';
 
 const formId = 'mint';
@@ -55,7 +54,7 @@ const MintLogic: FC = () => {
   const masset = useMemo(
     () =>
       massetAddress && signer
-        ? MbtcFactory.connect(massetAddress, signer)
+        ? Masset__factory.connect(massetAddress, signer)
         : undefined,
     [massetAddress, signer],
   );
@@ -103,7 +102,7 @@ const MintLogic: FC = () => {
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
-    (_masset: Mbtc | undefined, _inputValues: BigDecimalInputValues) => {
+    (_masset: Masset | undefined, _inputValues: BigDecimalInputValues) => {
       if (_masset) {
         const touched = Object.values(_inputValues).filter(v => v.touched);
 
@@ -281,7 +280,7 @@ export const Mint: FC = () => {
       return;
 
     const currentTime = getUnixTime(Date.now());
-    const weeksSinceLaunch = new BigNumber(currentTime)
+    const weeksSinceLaunch = BigNumber.from(currentTime)
       .sub(invariantStartTime)
       .mul(SCALE)
       .div(604800);

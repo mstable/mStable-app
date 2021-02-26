@@ -1,8 +1,8 @@
 import React, { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV2__factory';
 
-import { SavingsContractFactory } from '../../../../typechain/SavingsContractFactory';
-import { SaveWrapperFactory } from '../../../../typechain/SaveWrapperFactory';
+import { SaveWrapper__factory } from '../../../../typechain';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 
@@ -148,7 +148,7 @@ export const MassetModal: FC = () => {
               const body = `${inputAmount.format()} ${massetSymbol}`;
               propose<Interfaces.SavingsContract, 'depositSavings(uint256)'>(
                 new TransactionManifest(
-                  SavingsContractFactory.connect(saveAddress, signer),
+                  ISavingsContractV2__factory.connect(saveAddress, signer),
                   'depositSavings(uint256)',
                   [inputAmount.exact],
                   {
@@ -171,7 +171,7 @@ export const MassetModal: FC = () => {
                 const body = `${inputAmount.format()} ${massetSymbol}`;
                 propose<Interfaces.SaveWrapper, 'saveAndStake'>(
                   new TransactionManifest(
-                    SaveWrapperFactory.connect(
+                    SaveWrapper__factory.connect(
                       saveWrapperAddress as string,
                       signer,
                     ),

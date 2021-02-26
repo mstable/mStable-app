@@ -2,7 +2,7 @@
 
 import { Dispatch, ReducerAction, ReducerState, useReducer } from 'react';
 import { act, HookResult, renderHook } from '@testing-library/react-hooks';
-import { bigNumberify } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 import { Actions } from '../types';
 import { initialState, reducer } from '../reducer';
 import { BigDecimal } from '../../../../../web3/BigDecimal';
@@ -79,15 +79,15 @@ const dataState: MassetState = {
   failed: false,
   undergoingRecol: false,
   savingsContracts: {},
-  collateralisationRatio: bigNumberify('0'),
-  redemptionFeeRate: bigNumberify('0'),
+  collateralisationRatio: BigNumber.from('0'),
+  redemptionFeeRate: BigNumber.from('0'),
   token: {
     ...mUSD,
     totalSupply: new BigDecimal(1000, 18),
     balance: new BigDecimal(0, 18),
     allowances: {},
   },
-  feeRate: bigNumberify(feeRate),
+  feeRate: BigNumber.from(feeRate),
   bAssets: {
     [DAI.address]: {
       ...DAI,

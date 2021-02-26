@@ -216,7 +216,7 @@ const AssetInputContent: FC<Props> = ({
   );
 };
 
-const AssetInputApproveContent: FC<Props> = props => {
+const AssetInputApproveContent: FC<Props> = (props) => {
   const [{ needsApprove }, handleApprove] = useApprove();
   return (
     <AssetInputContent
@@ -227,7 +227,7 @@ const AssetInputApproveContent: FC<Props> = props => {
   );
 };
 
-export const AssetInput: FC<Props> = props => {
+export const AssetInput: FC<Props> = (props) => {
   const { address, spender, formValue } = props;
   const amount = BigDecimal.parse(formValue ?? '0');
 

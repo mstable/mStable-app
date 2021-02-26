@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish, formatUnits } from 'ethers/utils';
+import { BigNumber, BigNumberish, utils } from 'ethers';
 import { Reducer } from 'react';
 import { Fields, TokenQuantityV1 } from '../../../../types';
 import { parseAmount } from '../../../../web3/amounts';
@@ -42,11 +42,11 @@ const calculateAmountAndFee = (
   const feeAmount = amount.mul(feeRate).div(EXP_SCALE);
 
   return [
-    formatUnits(
+    utils.formatUnits(
       isInputField ? amount.sub(feeAmount) : amount.add(feeAmount),
       decimals,
     ),
-    formatUnits(feeAmount, decimals),
+    utils.formatUnits(feeAmount, decimals),
   ];
 };
 

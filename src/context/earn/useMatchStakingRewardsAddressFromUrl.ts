@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { isHexString } from 'ethers/utils';
+import { utils } from 'ethers';
 
 import { useStakingRewardsContracts } from './EarnDataProvider';
 
@@ -13,7 +13,7 @@ export const useMatchStakingRewardsAddressFromUrl = (
       return false;
     }
 
-    if (isHexString(slugOrAddress)) {
+    if (utils.isHexString(slugOrAddress)) {
       return slugOrAddress;
     }
 

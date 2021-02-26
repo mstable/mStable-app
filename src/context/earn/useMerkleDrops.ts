@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { soliditySha3 } from 'web3-utils';
-import { BigNumber, parseUnits } from 'ethers/utils';
+import { BigNumber, utils } from 'ethers';
 
 import {
   MerkleDropClaimsQueryResult,
@@ -55,14 +55,14 @@ const getProof = (
   decimals: number,
 ): string[] => {
   const elements = Object.entries(report).map(([_account, amount]) =>
-    soliditySha3(_account, parseUnits(amount, decimals).toString()),
+    soliditySha3(_account, utils.parseUnits(amount, decimals).toString()),
   ) as string[];
 
   const tree = new MerkleTree(elements);
 
   const element = soliditySha3(
     account,
-    parseUnits(report[account], decimals).toString(),
+    utils.parseUnits(report[account], decimals).toString(),
   ) as string;
 
   return tree.getHexProof(element);
@@ -125,10 +125,9 @@ export const useMerkleDrops = (
                   .map(({ trancheNumber }) => {
                     const report = reports[token.id][trancheNumber];
 
-                    const allocation = parseUnits(
-                      report[account],
-                      token.decimals,
-                    ).toString();
+                    const allocation = utils
+                      .parseUnits(report[account], token.decimals)
+                      .toString();
 
                     const proof = getProof(report, account, token.decimals);
 
@@ -142,7 +141,7 @@ export const useMerkleDrops = (
                 const totalUnclaimed = new BigDecimal(
                   unclaimedTranches.reduce(
                     (prev, current) => prev.add(current.allocation),
-                    new BigNumber(0),
+                    BigNumber.from(0),
                   ),
                   token.decimals,
                 );

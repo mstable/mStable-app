@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 
 interface Connector {
   id: string;
@@ -6,10 +6,10 @@ interface Connector {
   label: string;
 }
 
-export const SCALE = new BigNumber((1e18).toString());
-export const PERCENT_SCALE = new BigNumber((1e16).toString());
-export const RATIO_SCALE = new BigNumber((1e8).toString());
-export const EXP_SCALE = new BigNumber((1e18).toString());
+export const SCALE = BigNumber.from((1e18).toString());
+export const PERCENT_SCALE = BigNumber.from((1e16).toString());
+export const RATIO_SCALE = BigNumber.from((1e8).toString());
+export const EXP_SCALE = BigNumber.from((1e18).toString());
 
 // For now, support one chain ID per deployment; also a `use-wallet` restriction
 export const CHAIN_ID = parseInt(process.env.REACT_APP_CHAIN_ID as string, 10);

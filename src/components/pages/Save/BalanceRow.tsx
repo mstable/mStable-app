@@ -188,7 +188,7 @@ const BalanceValue = styled.div`
   ${Number} + ${Number} {
     font-size: 1rem;
   }
-  
+
   @media (min-width: ${ViewportWidth.m}) {
     gap: 0.5rem;
     align-items: flex-end !important;
