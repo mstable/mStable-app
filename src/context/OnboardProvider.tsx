@@ -14,7 +14,7 @@ import {
   Provider,
   InfuraProvider,
   JsonRpcSigner,
-} from 'ethers/providers';
+} from '@ethersproject/providers';
 import { Signer, providers, ethers } from 'ethers';
 import { CHAIN_ID } from '../constants';
 import { initOnboard } from './onboardUtils';

@@ -2,6 +2,8 @@ import React, { FC, useMemo, useState } from 'react';
 import { useThrottleFn } from 'react-use';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
+import { Masset__factory } from '@mstable/protocol/types/generated/factories/Masset__factory';
+import { Masset } from '@mstable/protocol/types/generated/Masset';
 
 import {
   useSigner,
@@ -11,8 +13,6 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
-import { MbtcFactory } from '../../../../typechain/MbtcFactory';
-import { Mbtc } from '../../../../typechain/Mbtc';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -92,14 +92,14 @@ const SwapLogic: FC = () => {
   );
 
   const masset = useMemo(
-    () => (signer ? MbtcFactory.connect(massetAddress, signer) : undefined),
+    () => (signer ? Masset__factory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
     (
-      _masset?: Mbtc,
+      _masset?: Masset,
       _inputAddress?: string,
       _inputAmount?: BigDecimal,
       _outputAddress?: string,

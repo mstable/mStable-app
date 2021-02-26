@@ -1,4 +1,5 @@
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
+
 import { Platforms, Token } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import {

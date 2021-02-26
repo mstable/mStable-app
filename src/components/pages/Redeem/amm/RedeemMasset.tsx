@@ -1,6 +1,8 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useThrottleFn } from 'react-use';
 import styled from 'styled-components';
+import { Masset__factory } from '@mstable/protocol/types/generated/factories/Masset__factory';
+import { Masset } from '@mstable/protocol/types/generated/Masset';
 
 import { usePropose } from '../../../../context/TransactionsProvider';
 import {
@@ -17,8 +19,6 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { sanitizeMassetError } from '../../../../utils/strings';
 
-import { Mbtc } from '../../../../typechain/Mbtc';
-import { MbtcFactory } from '../../../../typechain/MbtcFactory';
 import { Interfaces } from '../../../../types';
 
 import { SendButton } from '../../../forms/SendButton';
@@ -75,14 +75,14 @@ export const RedeemMasset: FC = () => {
   );
 
   const masset = useMemo(
-    () => (signer ? MbtcFactory.connect(massetAddress, signer) : undefined),
+    () => (signer ? Masset__factory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
     (
-      _masset: Mbtc | undefined,
+      _masset: Masset | undefined,
       _inputAmount: BigDecimal | undefined,
       _outputAddress: string | undefined,
       _outputDecimals: number | undefined,

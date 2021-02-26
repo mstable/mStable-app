@@ -9,18 +9,20 @@ import React, {
 import { parse, LosslessNumber } from 'lossless-json';
 import { DeepPartial } from 'utility-types';
 
-import { StakingRewardsFactory } from '../../typechain/StakingRewardsFactory';
-import { GaugeControllerFactory } from '../../typechain/GaugeControllerFactory';
-import { MusdGaugeFactory } from '../../typechain/MusdGaugeFactory';
-import { StableSwapFactory } from '../../typechain/StableSwapFactory';
-import { TokenMinterFactory } from '../../typechain/TokenMinterFactory';
-import { CurveDepositFactory } from '../../typechain/CurveDepositFactory';
-import { StakingRewards } from '../../typechain/StakingRewards.d';
-import { GaugeController } from '../../typechain/GaugeController.d';
-import { MusdGauge } from '../../typechain/MusdGauge.d';
-import { StableSwap } from '../../typechain/StableSwap.d';
-import { TokenMinter } from '../../typechain/TokenMinter.d';
-import { CurveDeposit } from '../../typechain/CurveDeposit.d';
+import {
+  CurveDeposit__factory,
+  GaugeController__factory,
+  MusdGauge__factory,
+  StableSwap__factory,
+  StakingRewards__factory,
+  TokenMinter__factory,
+  CurveDeposit,
+  GaugeController,
+  MusdGauge,
+  StableSwap,
+  StakingRewards,
+  TokenMinter,
+} from '../../typechain';
 import { useSignerOrInfuraProvider } from '../OnboardProvider';
 import { useBlockNumber } from '../BlockProvider';
 import { useAccount } from '../UserProvider';
@@ -84,27 +86,27 @@ const CurveContractsProvider: FC = ({ children }) => {
   const contracts = useMemo<CurveContracts>(() => {
     if (CHAIN_ID === 1) {
       return {
-        mtaStakingRewards: StakingRewardsFactory.connect(
+        mtaStakingRewards: StakingRewards__factory.connect(
           ADDRESSES.CURVE.MTA_STAKING_REWARDS,
           provider,
         ),
-        gaugeController: GaugeControllerFactory.connect(
+        gaugeController: GaugeController__factory.connect(
           ADDRESSES.CURVE.GAUGE_CONTROLLER,
           provider,
         ),
-        tokenMinter: TokenMinterFactory.connect(
+        tokenMinter: TokenMinter__factory.connect(
           ADDRESSES.CURVE.TOKEN_MINTER,
           provider,
         ),
-        musdDeposit: CurveDepositFactory.connect(
+        musdDeposit: CurveDeposit__factory.connect(
           ADDRESSES.CURVE.MUSD_DEPOSIT,
           provider,
         ),
-        musdGauge: MusdGaugeFactory.connect(
+        musdGauge: MusdGauge__factory.connect(
           ADDRESSES.CURVE.MUSD_GAUGE,
           provider,
         ),
-        musdSwap: StableSwapFactory.connect(
+        musdSwap: StableSwap__factory.connect(
           ADDRESSES.CURVE.MUSD_SWAP,
           provider,
         ),

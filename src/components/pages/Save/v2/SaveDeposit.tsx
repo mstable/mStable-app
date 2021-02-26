@@ -1,13 +1,13 @@
 import React, { FC, useMemo, useState } from 'react';
+import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated/factories/BoostedSavingsVault__factory';
+import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV2__factory';
 
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 
-import { SaveWrapperFactory } from '../../../../typechain/SaveWrapperFactory';
-import { BoostedSavingsVaultFactory } from '../../../../typechain/BoostedSavingsVaultFactory';
-import { SavingsContractFactory } from '../../../../typechain/SavingsContractFactory';
+import { SaveWrapper__factory } from '../../../../typechain';
 
 import { Interfaces } from '../../../../types';
 import { ADDRESSES } from '../../../../constants';
@@ -190,7 +190,7 @@ export const SaveDeposit: FC<{
             ) {
               return propose<Interfaces.BoostedSavingsVault, 'stake(uint256)'>(
                 new TransactionManifest(
-                  BoostedSavingsVaultFactory.connect(vaultAddress, signer),
+                  BoostedSavingsVault__factory.connect(vaultAddress, signer),
                   'stake(uint256)',
                   [inputAmount.exact],
                   {
@@ -224,7 +224,10 @@ export const SaveDeposit: FC<{
                       'depositSavings(uint256)'
                     >(
                       new TransactionManifest(
-                        SavingsContractFactory.connect(saveAddress, signer),
+                        ISavingsContractV2__factory.connect(
+                          saveAddress,
+                          signer,
+                        ),
                         'depositSavings(uint256)',
                         [inputAmount.exact],
                         depositPurpose,
@@ -240,7 +243,7 @@ export const SaveDeposit: FC<{
                   ) {
                     return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
                       new TransactionManifest(
-                        SaveWrapperFactory.connect(
+                        SaveWrapper__factory.connect(
                           saveWrapperAddress as string,
                           signer,
                         ),
@@ -274,7 +277,7 @@ export const SaveDeposit: FC<{
                   if (inputAddress === massetAddress) {
                     return propose<Interfaces.SaveWrapper, 'saveAndStake'>(
                       new TransactionManifest(
-                        SaveWrapperFactory.connect(
+                        SaveWrapper__factory.connect(
                           saveWrapperAddress as string,
                           signer,
                         ),
@@ -289,7 +292,7 @@ export const SaveDeposit: FC<{
                   if (isDepositingBasset && scaledInputAmount) {
                     return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
                       new TransactionManifest(
-                        SaveWrapperFactory.connect(
+                        SaveWrapper__factory.connect(
                           saveWrapperAddress as string,
                           signer,
                         ),

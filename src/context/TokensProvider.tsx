@@ -9,7 +9,7 @@ import React, {
   useReducer,
   useRef,
 } from 'react';
-import { AddressZero } from 'ethers/constants';
+import { constants } from 'ethers';
 
 import { AllTokensQueryResult } from '../graphql/protocol';
 import { Allowances, SubscribedToken } from '../types';
@@ -122,9 +122,9 @@ const initialState: State = {
       allowances: {},
       totalSupply: new BigDecimal(0, 18),
     },
-    [AddressZero as string]: {
+    [constants.AddressZero as string]: {
       symbol: 'ETH',
-      address: AddressZero,
+      address: constants.AddressZero,
       decimals: 18,
       balance: new BigDecimal(0),
       allowances: {},

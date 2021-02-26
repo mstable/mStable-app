@@ -245,9 +245,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 1084167
-  },
+    "type": "function"  },
   {
     "name": "calc_token_amount",
     "outputs": [
@@ -268,9 +266,7 @@
     ],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 4239939
-  },
+    "type": "function"  },
   {
     "name": "get_dy",
     "outputs": [
@@ -295,9 +291,7 @@
     ],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2543681
-  },
+    "type": "function"  },
   {
     "name": "get_dy_underlying",
     "outputs": [
@@ -322,9 +316,7 @@
     ],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2543506
-  },
+    "type": "function"  },
   {
     "name": "coins",
     "outputs": [
@@ -341,9 +333,7 @@
     ],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2190
-  },
+    "type": "function"  },
   {
     "name": "underlying_coins",
     "outputs": [
@@ -360,9 +350,7 @@
     ],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2220
-  },
+    "type": "function"  },
   {
     "name": "balances",
     "outputs": [
@@ -379,9 +367,7 @@
     ],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2250
-  },
+    "type": "function"  },
   {
     "name": "A",
     "outputs": [
@@ -393,9 +379,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2081
-  },
+    "type": "function"  },
   {
     "name": "fee",
     "outputs": [
@@ -407,9 +391,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2111
-  },
+    "type": "function"  },
   {
     "name": "admin_fee",
     "outputs": [
@@ -421,9 +403,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2141
-  },
+    "type": "function"  },
   {
     "name": "owner",
     "outputs": [
@@ -435,9 +415,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2171
-  },
+    "type": "function"  },
   {
     "name": "admin_actions_deadline",
     "outputs": [
@@ -450,9 +428,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2201
-  },
+    "type": "function"  },
   {
     "name": "transfer_ownership_deadline",
     "outputs": [
@@ -465,9 +441,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2231
-  },
+    "type": "function"  },
   {
     "name": "future_A",
     "outputs": [
@@ -479,9 +453,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2261
-  },
+    "type": "function"  },
   {
     "name": "future_fee",
     "outputs": [
@@ -493,9 +465,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2291
-  },
+    "type": "function"  },
   {
     "name": "future_admin_fee",
     "outputs": [
@@ -507,9 +477,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2321
-  },
+    "type": "function"  },
   {
     "name": "future_owner",
     "outputs": [
@@ -521,7 +489,5 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 2351
-  }
+    "type": "function"  }
 ]

@@ -244,7 +244,7 @@ const StatusWarningsRow: FC = () => {
 
   return (
     <StatusWarningsRowContainer>
-      {warnings.map(warning => (
+      {warnings.map((warning) => (
         <StatusWarning key={warning} error={statusWarnings[warning].error}>
           {statusWarnings[warning].label}
         </StatusWarning>
@@ -288,7 +288,7 @@ const TransactionsSpinner: FC = () => {
   const pending = useMemo(
     () =>
       Object.values(transactions).some(
-        tx =>
+        (tx) =>
           tx.status === TransactionStatus.Response ||
           tx.status === TransactionStatus.Sent,
       ),

@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated/factories/BoostedSavingsVault__factory';
 
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 
-import { BoostedSavingsVaultFactory } from '../../../../typechain/BoostedSavingsVaultFactory';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { MoreInfo } from '../../../core/Tabs';
@@ -41,7 +41,7 @@ export const VaultExit: FC = () => {
             // TODO provide tranches
             propose<Interfaces.BoostedSavingsVault, 'exit()'>(
               new TransactionManifest(
-                BoostedSavingsVaultFactory.connect(vaultAddress, signer),
+                BoostedSavingsVault__factory.connect(vaultAddress, signer),
                 'exit()',
                 [],
                 {

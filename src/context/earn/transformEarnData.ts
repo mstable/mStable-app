@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 import {
   EarnData,
   NormalizedPool,
@@ -25,7 +25,7 @@ const EXPIRED_POOLS: Set<string> = new Set([
   '0x881c72d1e6317f10a1cdcbe05040e7564e790c80', // USDC/mUSD 50:50
 ]);
 
-const currentTime = new BigNumber(Math.floor(Date.now() / 1e3));
+const currentTime = BigNumber.from(Math.floor(Date.now() / 1e3));
 
 const getStakingRewardsContractsMap = (
   { pools, tokenPrices, curveJsonData }: SyncedEarnData,
@@ -133,7 +133,9 @@ const getStakingRewardsContractsMap = (
         const totalRemainingRewards = new BigDecimal(
           currentTime.gt(periodFinish)
             ? 0
-            : new BigNumber(periodFinish).sub(currentTime).mul(rewardRate),
+            : BigNumber.from(periodFinish)
+                .sub(currentTime)
+                .mul(rewardRate),
           rewardsToken.decimals,
         );
 
@@ -186,8 +188,8 @@ const getStakingRewardsContractsMap = (
           expired,
           stakingToken,
           rewardsToken,
-          rewardRate: new BigNumber(rewardRate),
-          rewardPerTokenStoredNow: new BigNumber(rewardPerTokenStored),
+          rewardRate: BigNumber.from(rewardRate),
+          rewardPerTokenStoredNow: BigNumber.from(rewardPerTokenStored),
           totalSupply,
           totalStakingRewards,
           totalRemainingRewards,
@@ -210,10 +212,10 @@ const getStakingRewardsContractsMap = (
                     ) as BigDecimal,
                     price: tokenPrices[platformToken.address],
                   },
-                  platformRewardPerTokenStoredNow: new BigNumber(
+                  platformRewardPerTokenStoredNow: BigNumber.from(
                     platformRewardPerTokenStored,
                   ),
-                  platformRewardRate: new BigNumber(platformRewardRate),
+                  platformRewardRate: BigNumber.from(platformRewardRate),
                   platformReward: {
                     amount: new BigDecimal(
                       data.platformRewards[0]?.amount || 0,
@@ -231,7 +233,7 @@ const getStakingRewardsContractsMap = (
                   totalRemainingPlatformRewards: new BigDecimal(
                     currentTime.gt(periodFinish)
                       ? 0
-                      : new BigNumber(periodFinish)
+                      : BigNumber.from(periodFinish)
                           .sub(currentTime)
                           .mul(platformRewardRate),
                     platformToken.decimals,

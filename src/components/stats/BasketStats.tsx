@@ -209,7 +209,7 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
             data={data}
           >
             <defs>
-              {Object.values(bAssets).map(b => (
+              {Object.values(bAssets).map((b) => (
                 <Hatch
                   key={b.token.symbol}
                   symbol={b.token.symbol as TokenSymbol}

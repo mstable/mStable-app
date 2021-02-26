@@ -124,7 +124,7 @@ export const CurveAddLiquidity: FC = () => {
         return new TransactionManifest(
           curveContracts.musdDeposit,
           'add_liquidity',
-          [amounts, minLPTokensToMint],
+          [amounts as never, minLPTokensToMint],
           {
             present: 'Adding liquidity',
             past: 'Added liquidity',

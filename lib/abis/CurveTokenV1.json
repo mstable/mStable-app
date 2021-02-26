@@ -78,9 +78,7 @@
     ],
     "constant": false,
     "payable": false,
-    "type": "function",
-    "gas": 36247
-  },
+    "type": "function"  },
   {
     "name": "totalSupply",
     "outputs": [
@@ -92,9 +90,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 1181
-  },
+    "type": "function"  },
   {
     "name": "allowance",
     "outputs": [
@@ -115,9 +111,7 @@
     ],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 1519
-  },
+    "type": "function"  },
   {
     "name": "transfer",
     "outputs": [
@@ -138,9 +132,7 @@
     ],
     "constant": false,
     "payable": false,
-    "type": "function",
-    "gas": 74802
-  },
+    "type": "function"  },
   {
     "name": "transferFrom",
     "outputs": [
@@ -165,9 +157,7 @@
     ],
     "constant": false,
     "payable": false,
-    "type": "function",
-    "gas": 111953
-  },
+    "type": "function"  },
   {
     "name": "approve",
     "outputs": [
@@ -188,9 +178,7 @@
     ],
     "constant": false,
     "payable": false,
-    "type": "function",
-    "gas": 39012
-  },
+    "type": "function"  },
   {
     "name": "mint",
     "outputs": [],
@@ -206,9 +194,7 @@
     ],
     "constant": false,
     "payable": false,
-    "type": "function",
-    "gas": 75733
-  },
+    "type": "function"  },
   {
     "name": "burn",
     "outputs": [],
@@ -220,9 +206,7 @@
     ],
     "constant": false,
     "payable": false,
-    "type": "function",
-    "gas": 76623
-  },
+    "type": "function"  },
   {
     "name": "burnFrom",
     "outputs": [],
@@ -238,9 +222,7 @@
     ],
     "constant": false,
     "payable": false,
-    "type": "function",
-    "gas": 76696
-  },
+    "type": "function"  },
   {
     "name": "name",
     "outputs": [
@@ -252,9 +234,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 7853
-  },
+    "type": "function"  },
   {
     "name": "symbol",
     "outputs": [
@@ -266,9 +246,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 6906
-  },
+    "type": "function"  },
   {
     "name": "decimals",
     "outputs": [
@@ -280,9 +258,7 @@
     "inputs": [],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 1511
-  },
+    "type": "function"  },
   {
     "name": "balanceOf",
     "outputs": [
@@ -299,7 +275,5 @@
     ],
     "constant": true,
     "payable": false,
-    "type": "function",
-    "gas": 1695
-  }
+    "type": "function"  }
 ]

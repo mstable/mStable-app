@@ -1,4 +1,4 @@
-import { BigNumber, bigNumberify } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { MassetName, SubscribedToken } from '../../types';
@@ -43,8 +43,8 @@ const transformBassets = (
           {
             address,
             isTransferFeeCharged,
-            maxWeight: maxWeight ? bigNumberify(maxWeight) : undefined,
-            ratio: bigNumberify(ratio),
+            maxWeight: maxWeight ? BigNumber.from(maxWeight) : undefined,
+            ratio: BigNumber.from(ratio),
             status: status as BassetStatus,
             totalVault: BigDecimal.fromMetric(vaultBalance),
             token: {
@@ -157,10 +157,10 @@ const transformBoostedSavingsVault = ({
       lastClaim,
       rawBalance,
       rewardCount,
-      rewardPerTokenPaid: bigNumberify(rewardPerTokenPaid),
-      rewards: bigNumberify(rewards),
+      rewardPerTokenPaid: BigNumber.from(rewardPerTokenPaid),
+      rewards: BigNumber.from(rewards),
       rewardEntries: rewardEntries.map(({ rate, finish, index, start }) => ({
-        rate: bigNumberify(rate),
+        rate: BigNumber.from(rate),
         finish,
         index,
         start,
@@ -175,12 +175,12 @@ const transformBoostedSavingsVault = ({
     lockupDuration,
     periodDuration,
     periodFinish,
-    rewardPerTokenStored: bigNumberify(rewardPerTokenStored),
-    rewardRate: bigNumberify(rewardRate),
+    rewardPerTokenStored: BigNumber.from(rewardPerTokenStored),
+    rewardRate: BigNumber.from(rewardRate),
     stakingContract,
     totalStakingRewards: BigDecimal.parse(totalStakingRewards),
     totalSupply: new BigDecimal(totalSupply),
-    unlockPercentage: new BigNumber(unlockPercentage),
+    unlockPercentage: BigNumber.from(unlockPercentage),
   };
 };
 
@@ -269,10 +269,10 @@ const transformMassetData = (
     forgeValidator,
     invariantStartTime: invariantStartTime || undefined,
     invariantStartingCap: invariantStartingCap
-      ? bigNumberify(invariantStartingCap)
+      ? BigNumber.from(invariantStartingCap)
       : undefined,
     invariantCapFactor: invariantCapFactor
-      ? bigNumberify(invariantCapFactor)
+      ? BigNumber.from(invariantCapFactor)
       : undefined,
     undergoingRecol,
     token: transformTokenData(token, tokens),
@@ -284,10 +284,10 @@ const transformMassetData = (
       ]),
     ),
     collateralisationRatio: collateralisationRatio
-      ? bigNumberify(collateralisationRatio)
+      ? BigNumber.from(collateralisationRatio)
       : undefined,
-    feeRate: bigNumberify(feeRate),
-    redemptionFeeRate: bigNumberify(redemptionFeeRate),
+    feeRate: BigNumber.from(feeRate),
+    redemptionFeeRate: BigNumber.from(redemptionFeeRate),
     savingsContracts: {
       v1: savingsContractV1
         ? transformSavingsContractV1(

@@ -12,7 +12,7 @@ import {
   TransactionStatus,
 } from '../../../web3/TransactionManifest';
 import { humanizeList } from '../../../utils/strings';
-import { MerkleDropFactory } from '../../../typechain/MerkleDropFactory';
+import { MerkleDrop__factory } from '../../../typechain';
 import { Amount, NumberFormat } from '../../core/Amount';
 import { H3, P } from '../../core/Typography';
 import { Tooltip } from '../../core/ReactTooltip';
@@ -74,7 +74,7 @@ const MerkleDropClaimForm: FC<{ merkleDrop: MerkleDrop }> = ({
       'claimWeeks' | 'claimWeek'
     > | void => {
       if (account && unclaimedTranches && signer) {
-        const contract = MerkleDropFactory.connect(address, signer);
+        const contract = MerkleDrop__factory.connect(address, signer);
 
         const tranches = unclaimedTranches.map(t => t.trancheNumber);
         const balances = unclaimedTranches.map(t => t.allocation);

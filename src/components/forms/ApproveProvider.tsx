@@ -7,8 +7,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { BigNumber } from 'ethers/utils';
-import { MaxUint256 } from 'ethers/constants';
+import { BigNumber, constants } from 'ethers';
 
 import { useErc20Contract } from '../../web3/hooks';
 import { BigDecimal } from '../../web3/BigDecimal';
@@ -41,7 +40,7 @@ const APPROVE_EDGE_CASES: Record<string, string> = {
   '0xb404c51bbc10dcbe948077f18a4b8e553d160084': 'USDT', // Ropsten
 };
 
-const INFINITE = new BigDecimal(MaxUint256, 18);
+const INFINITE = new BigDecimal(constants.MaxUint256, 18);
 
 const handleApproveCtx = createContext<HandleApprove>(null as never);
 
@@ -90,7 +89,7 @@ export const ApproveProvider: FC<{
 
     propose<Interfaces.ERC20, 'approve'>(
       new TransactionManifest(
-        contract,
+        contract as never,
         'approve',
         [spender, approveAmount.exact as BigNumber],
         {

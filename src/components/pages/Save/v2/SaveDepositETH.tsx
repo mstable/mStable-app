@@ -1,7 +1,8 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useDebounce } from 'react-use';
-import { AddressZero } from 'ethers/constants';
-import { BigNumber } from 'ethers/utils';
+import { constants, BigNumber } from 'ethers';
+import { IUniswapV2Router02 } from '@mstable/protocol/types/generated/IUniswapV2Router02';
+import { IUniswapV2Router02__factory } from '@mstable/protocol/types/generated/factories/IUniswapV2Router02__factory';
 
 import { MassetState } from '../../../../context/DataProvider/types';
 import { useSigner } from '../../../../context/OnboardProvider';
@@ -9,9 +10,7 @@ import { usePropose } from '../../../../context/TransactionsProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useEthBalance } from '../../../../context/EthProvider';
 
-import { SaveWrapperFactory } from '../../../../typechain/SaveWrapperFactory';
-import { UniswapRouter02Factory } from '../../../../typechain/UniswapRouter02Factory';
-
+import { SaveWrapper__factory } from '../../../../typechain';
 import { Interfaces } from '../../../../types';
 import {
   ADDRESSES,
@@ -25,7 +24,6 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { SendButton } from '../../../forms/SendButton';
-import { UniswapRouter02 } from '../../../../typechain/UniswapRouter02';
 
 const formId = 'SaveDeposit';
 
@@ -37,7 +35,7 @@ interface UniswapBassetOutput {
 }
 
 const getUniswapBassetOutputForETH = async (
-  uniswap: UniswapRouter02,
+  uniswap: IUniswapV2Router02,
   inputAmount: BigDecimal,
   massetState: MassetState,
 ): Promise<UniswapBassetOutput> => {
@@ -113,13 +111,16 @@ export const SaveDepositETH: FC<{
     error?: string;
   }>({ fetching: false });
   const [inputAddress, setInputAddress] = useState<string | undefined>(
-    AddressZero,
+    constants.AddressZero,
   );
 
   const uniswap = useMemo(
     () =>
       signer
-        ? UniswapRouter02Factory.connect(ADDRESSES.UNISWAP_ROUTER02, signer)
+        ? IUniswapV2Router02__factory.connect(
+            ADDRESSES.UNISWAP_ROUTER02,
+            signer,
+          )
         : undefined,
     [signer],
   );
@@ -139,7 +140,7 @@ export const SaveDepositETH: FC<{
   const inputAddressOptions = useMemo(() => {
     return [
       {
-        address: AddressZero,
+        address: constants.AddressZero,
         balance: ethBalance,
         symbol: 'ETH',
         decimals: 18,
@@ -249,7 +250,7 @@ export const SaveDepositETH: FC<{
 
                 propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
                   new TransactionManifest(
-                    SaveWrapperFactory.connect(
+                    SaveWrapper__factory.connect(
                       saveWrapperAddress as string,
                       signer,
                     ),
@@ -300,7 +301,7 @@ export const SaveDepositETH: FC<{
 
               propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
                 new TransactionManifest(
-                  SaveWrapperFactory.connect(
+                  SaveWrapper__factory.connect(
                     saveWrapperAddress as string,
                     signer,
                   ),

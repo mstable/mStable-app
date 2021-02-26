@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import {
@@ -159,7 +159,9 @@ export const calculateRewards = (
     .reduce(
       (prev, { finish, start, rate }) => {
         const fullAmount = new BigDecimal(
-          new BigNumber(finish).sub(start).mul(rate),
+          BigNumber.from(finish)
+            .sub(start)
+            .mul(rate),
         );
 
         if (currentTime < start) {
@@ -180,7 +182,9 @@ export const calculateRewards = (
         const startTime = Math.max(start, lastClaim);
 
         const unlockedAmount = new BigDecimal(
-          new BigNumber(endTime).sub(startTime).mul(rate),
+          BigNumber.from(endTime)
+            .sub(startTime)
+            .mul(rate),
         );
 
         const lockedAmount = fullAmount.sub(unlockedAmount);

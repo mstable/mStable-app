@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 import { getUnixTime } from 'date-fns';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useVaultWeeklyROI } from '../../../../hooks/useVaultWeeklyROI';
@@ -47,7 +47,7 @@ export const VaultROI: FC = () => {
   const rewardsText = useMemo<string>(() => {
     if (vault && nowUnix < vault.periodFinish) {
       const rewards = new BigDecimal(
-        new BigNumber(vault.periodDuration).mul(vault.rewardRate),
+        BigNumber.from(vault.periodDuration).mul(vault.rewardRate),
       );
       return `+ ${rewards.abbreviated} MTA weekly`;
     }

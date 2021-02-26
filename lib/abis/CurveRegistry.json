@@ -162,8 +162,7 @@
   },
   {
     "constant": true,
-    "gas": 45681,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -199,8 +198,7 @@
   },
   {
     "constant": true,
-    "gas": 87733,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -248,8 +246,7 @@
   },
   {
     "constant": true,
-    "gas": 44706,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -267,8 +264,7 @@
   },
   {
     "constant": true,
-    "gas": 50163,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -294,8 +290,7 @@
   },
   {
     "constant": true,
-    "gas": 45192,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -325,8 +320,7 @@
   },
   {
     "constant": false,
-    "gas": 198813,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -360,8 +354,7 @@
   },
   {
     "constant": true,
-    "gas": 135410,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -391,8 +384,7 @@
   },
   {
     "constant": true,
-    "gas": 138709,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -422,8 +414,7 @@
   },
   {
     "constant": false,
-    "gas": 10290194,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -460,8 +451,7 @@
   },
   {
     "constant": false,
-    "gas": 10273690,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -498,8 +488,7 @@
   },
   {
     "constant": false,
-    "gas": 317792223500,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -512,8 +501,7 @@
   },
   {
     "constant": false,
-    "gas": 36818,
-    "inputs": [
+        "inputs": [
       {
         "name": "_addr",
         "type": "address"
@@ -530,8 +518,7 @@
   },
   {
     "constant": false,
-    "gas": 356796,
-    "inputs": [
+        "inputs": [
       {
         "name": "_addr",
         "type": "address[10]"
@@ -548,8 +535,7 @@
   },
   {
     "constant": false,
-    "gas": 36911,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -566,8 +552,7 @@
   },
   {
     "constant": false,
-    "gas": 37019,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -584,8 +569,7 @@
   },
   {
     "constant": true,
-    "gas": 1953,
-    "inputs": [
+        "inputs": [
       {
         "name": "_pool",
         "type": "address"
@@ -603,8 +587,7 @@
   },
   {
     "constant": false,
-    "gas": 74452,
-    "inputs": [
+        "inputs": [
       {
         "name": "_new_admin",
         "type": "address"
@@ -617,8 +600,7 @@
   },
   {
     "constant": false,
-    "gas": 60590,
-    "inputs": [],
+        "inputs": [],
     "name": "apply_transfer_ownership",
     "outputs": [],
     "payable": false,
@@ -626,8 +608,7 @@
   },
   {
     "constant": false,
-    "gas": 21865,
-    "inputs": [],
+        "inputs": [],
     "name": "revert_transfer_ownership",
     "outputs": [],
     "payable": false,
@@ -635,8 +616,7 @@
   },
   {
     "constant": false,
-    "gas": 4854,
-    "inputs": [
+        "inputs": [
       {
         "name": "_token",
         "type": "address"
@@ -649,8 +629,7 @@
   },
   {
     "constant": false,
-    "gas": 36726,
-    "inputs": [],
+        "inputs": [],
     "name": "claim_eth_balance",
     "outputs": [],
     "payable": false,
@@ -658,8 +637,7 @@
   },
   {
     "constant": true,
-    "gas": 1901,
-    "inputs": [],
+        "inputs": [],
     "name": "admin",
     "outputs": [
       {
@@ -672,8 +650,7 @@
   },
   {
     "constant": true,
-    "gas": 2130,
-    "inputs": [
+        "inputs": [
       {
         "name": "arg0",
         "type": "int128"
@@ -691,8 +668,7 @@
   },
   {
     "constant": true,
-    "gas": 1961,
-    "inputs": [],
+        "inputs": [],
     "name": "pool_count",
     "outputs": [
       {

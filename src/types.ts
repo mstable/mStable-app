@@ -1,20 +1,26 @@
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 
-import { ISavingsContract } from './typechain/ISavingsContract.d';
-import { SaveWrapper } from './typechain/SaveWrapper.d';
-import { LegacyMasset } from './typechain/LegacyMasset';
-import { MusdGauge } from './typechain/MusdGauge.d';
-import { StakingRewards } from './typechain/StakingRewards.d';
-import { StakingRewardsWithPlatformToken } from './typechain/StakingRewardsWithPlatformToken.d';
-import { RewardsDistributor } from './typechain/RewardsDistributor.d';
-import { MerkleDrop } from './typechain/MerkleDrop.d';
-import { TokenMinter as CurveTokenMinter } from './typechain/TokenMinter.d';
-import { CurveDeposit } from './typechain/CurveDeposit.d';
-import { BoostedSavingsVault } from './typechain/BoostedSavingsVault.d';
-import { Masset } from './typechain/Masset.d';
+import {
+  ERC20,
+  BoostedSavingsVault,
+  ISavingsContractV2,
+  Masset,
+} from '@mstable/protocol/types/generated';
+
+import {
+  CurveDeposit,
+  MerkleDrop,
+  MusdGauge,
+  RewardsDistributor,
+  StakingRewards,
+  StakingRewardsWithPlatformToken,
+  UniswapRouter02,
+  LegacyMasset,
+  SaveWrapper,
+  TokenMinter,
+} from './typechain';
+
 import { BigDecimal } from './web3/BigDecimal';
-import { Erc20Detailed } from './typechain/Erc20Detailed';
-import { UniswapRouter02 } from './typechain/UniswapRouter02';
 
 export type MassetName = 'musd' | 'mbtc';
 
@@ -45,14 +51,14 @@ export enum Interfaces {
 export interface Instances {
   [Interfaces.LegacyMasset]: LegacyMasset;
   [Interfaces.Masset]: Masset;
-  [Interfaces.ERC20]: Erc20Detailed;
-  [Interfaces.SavingsContract]: ISavingsContract;
+  [Interfaces.ERC20]: ERC20;
+  [Interfaces.SavingsContract]: ISavingsContractV2;
   [Interfaces.StakingRewards]: StakingRewards;
   [Interfaces.StakingRewardsWithPlatformToken]: StakingRewardsWithPlatformToken;
   [Interfaces.RewardsDistibutor]: RewardsDistributor;
   [Interfaces.MerkleDrop]: MerkleDrop;
   [Interfaces.CurveGauge]: MusdGauge;
-  [Interfaces.CurveTokenMinter]: CurveTokenMinter;
+  [Interfaces.CurveTokenMinter]: TokenMinter;
   [Interfaces.CurveDeposit]: CurveDeposit;
   [Interfaces.SaveWrapper]: SaveWrapper;
   [Interfaces.BoostedSavingsVault]: BoostedSavingsVault;
@@ -123,10 +129,10 @@ export enum Fields {
   Output = 'output',
 }
 
-export type TransactionOption = {
+export interface TransactionOption {
   address?: string;
   balance?: BigDecimal;
   symbol?: string;
   label?: string;
   custom?: boolean;
-};
+}

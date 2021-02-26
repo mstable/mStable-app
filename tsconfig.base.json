@@ -3,6 +3,7 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -11,6 +12,7 @@
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    "importsNotUsedAsValues": "preserve",
     "strict": true,
     "target": "es5",
     "isolatedModules": true

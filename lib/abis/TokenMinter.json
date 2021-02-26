@@ -23,17 +23,13 @@
     "outputs": [],
     "inputs": [{ "type": "address", "name": "gauge_addr" }],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 100038
-  },
+    "type": "function"  },
   {
     "name": "mint_many",
     "outputs": [],
     "inputs": [{ "type": "address[8]", "name": "gauge_addrs" }],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 408502
-  },
+    "type": "function"  },
   {
     "name": "mint_for",
     "outputs": [],
@@ -42,33 +38,25 @@
       { "type": "address", "name": "_for" }
     ],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 101219
-  },
+    "type": "function"  },
   {
     "name": "toggle_approve_mint",
     "outputs": [],
     "inputs": [{ "type": "address", "name": "minting_user" }],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 36726
-  },
+    "type": "function"  },
   {
     "name": "token",
     "outputs": [{ "type": "address", "name": "" }],
     "inputs": [],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 1301
-  },
+    "type": "function"  },
   {
     "name": "controller",
     "outputs": [{ "type": "address", "name": "" }],
     "inputs": [],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 1331
-  },
+    "type": "function"  },
   {
     "name": "minted",
     "outputs": [{ "type": "uint256", "name": "" }],
@@ -77,9 +65,7 @@
       { "type": "address", "name": "arg1" }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 1669
-  },
+    "type": "function"  },
   {
     "name": "allowed_to_mint_for",
     "outputs": [{ "type": "bool", "name": "" }],
@@ -88,7 +74,5 @@
       { "type": "address", "name": "arg1" }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 1699
-  }
+    "type": "function"  }
 ]

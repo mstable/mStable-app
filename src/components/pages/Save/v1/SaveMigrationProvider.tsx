@@ -10,8 +10,7 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 
-import { BigNumber } from 'ethers/utils';
-import { MaxUint256 } from 'ethers/constants';
+import { BigNumber, constants } from 'ethers';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useTokenAllowance } from '../../../../context/TokensProvider';
@@ -104,7 +103,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
 
     const body = v1SavingsBalance.balance.format();
     const tx = new TransactionManifest<Interfaces.SavingsContract, 'redeem'>(
-      savingsContractV1,
+      savingsContractV1 as never,
       'redeem',
       [v1SavingsBalance?.credits?.exact as BigNumber],
       {
@@ -132,12 +131,12 @@ export const SaveMigrationProvider: FC = ({ children }) => {
 
     const body = `transfer of ${massetSymbol}`;
     const tx = new TransactionManifest<Interfaces.ERC20, 'approve'>(
-      massetContract,
+      massetContract as never,
       'approve',
       [
         v2Address,
         approveInfinite
-          ? MaxUint256
+          ? constants.MaxUint256
           : (v1SavingsBalance?.balance.exact as BigNumber),
       ],
       {

@@ -1,15 +1,10 @@
-import {
-  BigNumber,
-  bigNumberify,
-  BigNumberish,
-  commify,
-  formatUnits,
-  parseUnits,
-} from 'ethers/utils';
+import { BigNumber, BigNumberish, utils } from 'ethers';
 import { BigNumber as FractionalBigNumber } from 'bignumber.js';
 
 import { toK } from '../components/stats/utils';
 import { RATIO_SCALE, SCALE } from '../constants';
+
+const { commify, formatUnits, parseUnits } = utils;
 
 const DEFAULT_DECIMALS = 18;
 
@@ -78,7 +73,7 @@ export class BigDecimal {
   exact: BigNumber;
 
   constructor(num: BigNumberish, decimals = DEFAULT_DECIMALS) {
-    this.exact = bigNumberify(num);
+    this.exact = BigNumber.from(num);
     this.decimals = decimals;
   }
 

@@ -76,9 +76,7 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 36247
-  },
+    "type": "function"  },
   {
     "name": "set_name",
     "outputs": [],
@@ -93,9 +91,7 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 178069
-  },
+    "type": "function"  },
   {
     "name": "totalSupply",
     "outputs": [
@@ -106,9 +102,7 @@
     ],
     "inputs": [],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 1211
-  },
+    "type": "function"  },
   {
     "name": "allowance",
     "outputs": [
@@ -128,9 +122,7 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 1549
-  },
+    "type": "function"  },
   {
     "name": "transfer",
     "outputs": [
@@ -150,9 +142,7 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 74832
-  },
+    "type": "function"  },
   {
     "name": "transferFrom",
     "outputs": [
@@ -176,9 +166,7 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 111983
-  },
+    "type": "function"  },
   {
     "name": "approve",
     "outputs": [
@@ -198,9 +186,7 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 39078
-  },
+    "type": "function"  },
   {
     "name": "mint",
     "outputs": [
@@ -220,9 +206,7 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 75808
-  },
+    "type": "function"  },
   {
     "name": "burnFrom",
     "outputs": [
@@ -242,9 +226,7 @@
       }
     ],
     "stateMutability": "nonpayable",
-    "type": "function",
-    "gas": 75826
-  },
+    "type": "function"  },
   {
     "name": "name",
     "outputs": [
@@ -255,9 +237,7 @@
     ],
     "inputs": [],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 7823
-  },
+    "type": "function"  },
   {
     "name": "symbol",
     "outputs": [
@@ -268,9 +248,7 @@
     ],
     "inputs": [],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 6876
-  },
+    "type": "function"  },
   {
     "name": "decimals",
     "outputs": [
@@ -281,9 +259,7 @@
     ],
     "inputs": [],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 1481
-  },
+    "type": "function"  },
   {
     "name": "balanceOf",
     "outputs": [
@@ -299,7 +275,5 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function",
-    "gas": 1665
-  }
+    "type": "function"  }
 ]

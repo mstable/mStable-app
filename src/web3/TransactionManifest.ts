@@ -1,9 +1,7 @@
-import { Contract } from 'ethers';
-import { BigNumber } from 'ethers/utils';
-import { TransactionResponse } from 'ethers/providers';
+import { Contract, BigNumber, CallOverrides } from 'ethers';
+import { TransactionResponse } from '@ethersproject/abstract-provider';
 
 import { Instances, Interfaces, Purpose } from '../types';
-import { TransactionOverrides } from '../typechain';
 import { calculateGasMargin } from '../utils/maths';
 
 export enum TransactionStatus {
@@ -43,7 +41,7 @@ export class TransactionManifest<
     purpose: Purpose,
     formId?: string,
   ) {
-    this.contract = contract;
+    this.contract = contract as Contract;
     this.args = args;
     this.fn = fn;
     this.formId = formId;
@@ -68,7 +66,7 @@ export class TransactionManifest<
 
     try {
       const args = await this.addGasSettings(gasLimit, gasPrice);
-      response = await this.contract[this.fn](...args);
+      response = await this.contract.functions[this.fn](...args);
     } catch (error) {
       // MetaMask error messages are in a `data` property
       const txMessage = error.data?.message || error.message;
@@ -95,7 +93,7 @@ export class TransactionManifest<
   }
 
   // eslint-disable-next-line class-methods-use-this
-  private isTransactionOverrides(arg: unknown): boolean {
+  private isCallOverrides(arg: unknown): boolean {
     return (
       arg != null &&
       typeof arg === 'object' &&
@@ -113,9 +111,9 @@ export class TransactionManifest<
     let gasPrice: number | undefined = _gasPrice;
 
     const last = this.args[this.args.length - 1];
-    const lastArgIsOverrides = this.isTransactionOverrides(last);
+    const lastArgIsOverrides = this.isCallOverrides(last);
 
-    if (lastArgIsOverrides && (last as TransactionOverrides).gasLimit) {
+    if (lastArgIsOverrides && (last as CallOverrides).gasLimit) {
       // Don't alter the manifest if the gas limit is already set
       return this.args;
     }
@@ -123,7 +121,7 @@ export class TransactionManifest<
     // Set the gas limit (with the calculated gas margin)
     if (
       !gasLimit ||
-      (lastArgIsOverrides && !(last as TransactionOverrides).gasLimit)
+      (lastArgIsOverrides && !(last as CallOverrides).gasLimit)
     ) {
       gasLimit = await this.estimate();
     }
@@ -136,7 +134,7 @@ export class TransactionManifest<
     }
 
     const overrides = {
-      ...(lastArgIsOverrides ? (last as TransactionOverrides) : null),
+      ...(lastArgIsOverrides ? (last as CallOverrides) : null),
       gasLimit,
       gasPrice,
     };

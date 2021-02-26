@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { SubscribedToken } from '../../types';

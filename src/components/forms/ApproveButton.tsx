@@ -1,8 +1,7 @@
 import React, { FC, useCallback, useMemo, useState } from 'react';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber, constants } from 'ethers';
 import styled from 'styled-components';
 
-import { MaxUint256 } from 'ethers/constants';
 import {
   useHasPendingApproval,
   useTransactionsDispatch,
@@ -25,7 +24,7 @@ interface Props {
   spender: string;
 }
 
-const INFINITE = new BigDecimal(MaxUint256, 18);
+const INFINITE = new BigDecimal(constants.MaxUint256, 18);
 
 const StyledButton = styled(Button)`
   line-height: 15px;

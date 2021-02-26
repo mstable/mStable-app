@@ -8,6 +8,6 @@ src/graphql/mbtc.tsx
 src/graphql/sushi.tsx
 src/graphql/vault.tsx
 src/react-app-env.d.ts
-src/typechain
+src/typechain/*
 scripts/*
 lib/
