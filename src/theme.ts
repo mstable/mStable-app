@@ -54,7 +54,7 @@ export const colorTheme = (
     body: isLight ? Color.offBlack : Color.offWhite,
     bodyAccent: Color.grey,
     accent: isLight ? '#eee' : '#222',
-    accentContrast: isLight ? '#ccc' : '#333',
+    accentContrast: isLight ? '#cccccc' : '#3333333',
     bodyTransparent: isLight ? Color.blackTransparent : Color.whiteTransparent,
     bodyTransparenter: isLight
       ? Color.blackTransparenter
