@@ -1,9 +1,8 @@
 import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 
-import { LocalStorage } from '../../localStorage';
-import { ReactComponent as CheckmarkIcon } from '../icons/checkmark.svg';
-import { UnstyledButton } from './Button';
+import { LocalStorage } from '../../../../localStorage';
+import { Card } from './Card';
 
 export enum OnboardType {
   Rewards,
@@ -17,68 +16,6 @@ interface Props {
   type: OnboardType;
 }
 
-const Checkmark = styled.div`
-  background: ${({ theme }) => theme.color.accentContrast};
-  border-radius: 1rem;
-  width: 2rem;
-  height: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.25s ease all;
-
-  svg {
-    width: 1.875rem;
-    height: 1.875rem;
-
-    path {
-      fill: ${({ theme }) => theme.color.body};
-    }
-  }
-`;
-
-const Container = styled(UnstyledButton)`
-  display: flex;
-  flex-direction: column;
-  background: ${({ theme }) => theme.color.accent};
-  border: 1px solid ${({ theme }) => theme.color.accentContrast};
-  padding: 1rem;
-  border-radius: 1rem;
-  justify-content: flex-start;
-  transition: 0.25s ease all;
-
-  > div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    text-align: left;
-  }
-
-  p {
-    margin-top: 1.25rem;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    text-align: left;
-    color: ${({ theme }) => theme.color.body};
-  }
-
-  :hover {
-    opacity: 0.75;
-
-    > div > div {
-      background: ${({ theme }) => theme.color.gold};
-      path {
-        fill: ${({ theme }) => theme.color.white};
-      }
-    }
-  }
-`;
-
 const Title: Record<OnboardType, string> = {
   [Rewards]: 'Liquidity Rewards',
   [Ecosystem]: 'Ecosystem Rewards',
@@ -90,6 +27,11 @@ const Content: Record<OnboardType, string> = {
   [Ecosystem]:
     'Providing liquidity and staking your token will give you MTA ... ',
 };
+
+const Container = styled(Card)`
+  background: ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.accentContrast};
+`;
 
 export const OnboardingCard: FC<Props> = ({ className, type }) => {
   const [clicked, setClicked] = useState<boolean>(false);
@@ -126,13 +68,12 @@ export const OnboardingCard: FC<Props> = ({ className, type }) => {
   };
 
   return shouldShow && !clicked ? (
-    <Container className={className} onClick={handleClick}>
-      <div>
-        <h2>{title}</h2>
-        <Checkmark>
-          <CheckmarkIcon />
-        </Checkmark>
-      </div>
+    <Container
+      className={className}
+      title={title}
+      iconType="checkmark"
+      onClick={handleClick}
+    >
       <p>{content}</p>
     </Container>
   ) : null;
