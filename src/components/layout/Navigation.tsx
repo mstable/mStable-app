@@ -29,7 +29,7 @@ const List = styled.div`
 
 const navItems: NavItem[] = [
   { title: 'Save', path: '/save' },
-  { title: 'Earn', path: '/earn' },
+  { title: 'Pools', path: '/pools' },
   { title: 'Mint', path: '/mint' },
   { title: 'Swap', path: '/swap' },
   { title: 'Redeem', path: '/redeem' },
