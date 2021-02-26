@@ -19,6 +19,7 @@ export enum PageAction {
   Redeem = 'Redeem',
   Analytics = 'Analytics',
   Account = 'Account',
+  Pools = 'Pools',
 }
 
 interface Props {
@@ -30,6 +31,7 @@ const ActionIcons: { [action: string]: JSX.Element } = {
   Save: <SaveIcon />,
   Mint: <MintIcon />,
   Earn: <EarnIcon />,
+  Pools: <EarnIcon />,
   Swap: <SwapIcon />,
   Redeem: <RedeemIcon />,
   Analytics: <AnalyticsIcon />,

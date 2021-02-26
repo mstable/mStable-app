@@ -13,6 +13,7 @@ import { Layout } from './components/layout/Layout';
 import { Home } from './components/pages';
 import { Swap } from './components/pages/Swap';
 import { Mint } from './components/pages/Mint';
+import { Pools } from './components/pages/Pools';
 import { Earn } from './components/pages/Earn';
 import { Save } from './components/pages/Save';
 import { Redeem } from './components/pages/Redeem';
@@ -62,6 +63,7 @@ const Routes: FC = () => {
       <Route exact path="/:massetName/redeem" component={Redeem} />
       <Route exact path="/:massetName/save" component={Save} />
       <Route exact path="/:massetName/swap" component={Swap} />
+      <Route exact path="/:massetName/pools" component={Pools} />
       <Redirect exact path="/analytics" to="/musd/analytics" />
       <Redirect exact path="/mint" to="/musd/mint" />
       <Redirect exact path="/redeem" to="/musd/redeem" />

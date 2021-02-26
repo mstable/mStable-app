@@ -31,6 +31,7 @@ const navItems: NavItem[] = [
   { title: 'Mint', path: '/mint' },
   { title: 'Save', path: '/save' },
   { title: 'Earn', path: '/earn' },
+  { title: 'Pools', path: '/pools' },
   { title: 'Swap', path: '/swap' },
   { title: 'Redeem', path: '/redeem' },
 ];
