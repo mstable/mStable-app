@@ -19,7 +19,7 @@ export const NavigationDropdown: FC<Props> = ({ items, massetName }) => {
   const [selected, setSelected] = useState<string | undefined>(undefined);
 
   const options = items.map(item => item.title);
-  const tab = window.location.hash.split('/')[2];
+  const tab: string | undefined = window.location.hash.split('/')[2];
 
   const defaultOption = options.find(
     option => option?.toLowerCase() === tab?.toLowerCase(),

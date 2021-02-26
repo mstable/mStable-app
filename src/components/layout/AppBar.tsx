@@ -50,24 +50,26 @@ const statusWarnings: Record<
   },
 };
 
-const Logo = styled(LogoSvg)<{ inverted?: boolean }>`
+const Logo = styled(LogoSvg)`
   width: 20px;
   height: 24px;
   padding-top: 2px;
-
-  path,
-  rect {
-    fill: ${({ theme, inverted }) =>
-      inverted ? theme.color.white : theme.color.body};
-  }
 `;
 
-const LogoAndMasset = styled.div`
+const LogoAndMasset = styled.div<{ inverted?: boolean }>`
   display: flex;
   align-items: center;
 
   a {
     border-bottom: 0;
+  }
+
+  ${Logo} {
+    path,
+    rect {
+      fill: ${({ theme, inverted }) =>
+        inverted ? theme.color.white : theme.color.body};
+    }
   }
 `;
 
@@ -310,9 +312,9 @@ export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
   return (
     <Container inverted={accountOpen}>
       <Inner>
-        <LogoAndMasset>
+        <LogoAndMasset inverted={accountOpen}>
           <Link to="/" title="Home" onClick={closeAccount}>
-            <Logo inverted={accountOpen} />
+            <Logo />
           </Link>
           <MassetContainer>{!home && <MassetSelector />}</MassetContainer>
         </LogoAndMasset>
