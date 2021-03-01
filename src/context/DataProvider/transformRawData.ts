@@ -2,7 +2,7 @@ import { BigNumber } from 'ethers';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { MassetName, SubscribedToken } from '../../types';
-import { MusdQueryResult, TokenAllFragment } from '../../graphql/protocol';
+import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol';
 import {
   BassetStatus,
   BoostedSavingsVaultState,
@@ -11,10 +11,9 @@ import {
   SavingsContractState,
 } from './types';
 import { Tokens } from '../TokensProvider';
-import { MbtcQueryResult } from '../../graphql/mbtc';
 
 type NonNullableMasset = NonNullable<
-  NonNullable<MusdQueryResult['data']>['masset']
+  NonNullable<MassetsQueryResult['data']>['massets'][number]
 >;
 
 type SavingsContractV1QueryResult = NonNullableMasset['savingsContractsV1'][number];
@@ -22,9 +21,7 @@ type SavingsContractV1QueryResult = NonNullableMasset['savingsContractsV1'][numb
 type SavingsContractV2QueryResult = NonNullableMasset['savingsContractsV2'][number];
 
 const transformBassets = (
-  bassets: NonNullable<
-    NonNullable<MusdQueryResult['data']>['masset']
-  >['basket']['bassets'],
+  bassets: NonNullableMasset['basket']['bassets'],
   massetDecimals: number,
   tokens: Tokens,
 ): MassetState['bAssets'] => {
@@ -317,24 +314,16 @@ const transformMassetData = (
   };
 };
 
-export const transformRawData = ([musd, mbtc, tokens]: [
-  MusdQueryResult['data'],
-  MbtcQueryResult['data'],
+export const transformRawData = ([data, tokens]: [
+  MassetsQueryResult['data'],
   Tokens,
 ]): DataState => {
   return Object.fromEntries(
-    [musd, mbtc]
-      .filter(data => data?.masset)
-      .map(data => [
-        (data as {
-          masset: NonNullableMasset;
-        }).masset.token.symbol.toLowerCase() as MassetName,
-        transformMassetData(
-          (data as {
-            masset: NonNullableMasset;
-          }).masset,
-          tokens,
-        ),
+    (data?.massets ?? [])
+      .filter(masset => !!masset.token.symbol)
+      .map(masset => [
+        masset.token.symbol.toLowerCase() as MassetName,
+        transformMassetData(masset, tokens),
       ]),
   );
 };
