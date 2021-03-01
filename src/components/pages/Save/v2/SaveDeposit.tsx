@@ -241,18 +241,21 @@ export const SaveDeposit: FC<{
                     isDepositingBasset &&
                     scaledInputAmount
                   ) {
-                    return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
-                      new TransactionManifest(
-                        SaveWrapper__factory.connect(
-                          saveWrapperAddress as string,
-                          signer,
-                        ),
-                        'saveViaMint',
-                        [inputAddress, scaledInputAmount.exact, false],
-                        depositPurpose,
-                        formId,
+                    const manifest = new TransactionManifest<
+                      Interfaces.SaveWrapper,
+                      'saveViaMint'
+                    >(
+                      SaveWrapper__factory.connect(
+                        saveWrapperAddress as string,
+                        signer,
                       ),
+                      'saveViaMint',
+                      [inputAddress, scaledInputAmount.exact, false],
+                      depositPurpose,
+                      formId,
                     );
+                    manifest.setFallbackGasLimit(580000);
+                    return propose(manifest);
                   }
 
                   // TODO: via Curve

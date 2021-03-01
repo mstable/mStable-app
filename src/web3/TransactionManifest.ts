@@ -1,5 +1,6 @@
-import { Contract, BigNumber, CallOverrides } from 'ethers';
+import { Contract, BigNumber, CallOverrides, BigNumberish } from 'ethers';
 import { TransactionResponse } from '@ethersproject/abstract-provider';
+import { ErrorCode } from '@ethersproject/logger';
 
 import { Instances, Interfaces, Purpose } from '../types';
 import { calculateGasMargin } from '../utils/maths';
@@ -27,6 +28,8 @@ export class TransactionManifest<
   readonly createdAt: number;
 
   readonly formId?: string;
+
+  private fallbackGasLimit: BigNumber | undefined;
 
   constructor(
     contract: Instances[TIface],
@@ -72,7 +75,9 @@ export class TransactionManifest<
       const txMessage = error.data?.message || error.message;
 
       throw new Error(
-        !txMessage || txMessage.includes('always failing transaction')
+        !txMessage ||
+        txMessage.includes('always failing transaction') ||
+        txMessage.includes('transaction may fail')
           ? 'Transaction failed - if this problem persists, contact mStable team.'
           : txMessage,
       );
@@ -86,10 +91,32 @@ export class TransactionManifest<
   }
 
   async estimate(): Promise<BigNumber> {
-    const gasLimit = (await this.contract.estimate[this.fn](
-      ...this.args,
-    )) as BigNumber;
-    return calculateGasMargin(gasLimit);
+    try {
+      const gasLimit = (await this.contract.estimateGas[this.fn](
+        ...this.args,
+      )) as BigNumber;
+      return calculateGasMargin(gasLimit);
+    } catch (error) {
+      // Ethers v5 error handling:
+      // - Error revert reasons can be nested
+      // - Estimation may fail due to an unpredictable gas limit;
+      //   attempt to use a fallback, and warn if not set.
+      if (error.error) {
+        if (error.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
+          if (this.fallbackGasLimit) {
+            return this.fallbackGasLimit;
+          } else {
+            console.warn(`No fallback gaslimit set: ${this.id}`);
+          }
+        }
+        throw new Error(error.error.message ?? error.error.toString());
+      }
+      throw error;
+    }
+  }
+
+  setFallbackGasLimit(gasLimit: BigNumberish): void {
+    this.fallbackGasLimit = BigNumber.from(gasLimit);
   }
 
   // eslint-disable-next-line class-methods-use-this
