@@ -46,7 +46,12 @@ export const RedeemMasset: FC = () => {
   const massetState = useSelectedMassetState() as MassetState;
   const { address: massetAddress, bAssets } = massetState;
 
-  const [outputAddress, handleSetAddress] = useState<string | undefined>();
+  const [outputAddress, handleSetAddress] = useState<string | undefined>(
+    Object.keys(bAssets)[0],
+  );
+  const massetToken = useTokenSubscription(massetAddress);
+  const outputToken = useTokenSubscription(outputAddress);
+  const outputDecimals = outputToken?.decimals;
 
   const [bassetAmount, setBassetAmount] = useState<{
     fetching?: boolean;
@@ -59,7 +64,7 @@ export const RedeemMasset: FC = () => {
     inputFormValue,
     handleSetInputFormValue,
     setInputAmount,
-  ] = useBigDecimalInput();
+  ] = useBigDecimalInput('0', outputDecimals);
 
   const [slippageSimple, slippageFormValue, handleSetSlippage] = useSimpleInput(
     0.1,
@@ -68,10 +73,6 @@ export const RedeemMasset: FC = () => {
       max: 99.99,
     },
   );
-
-  const massetToken = useTokenSubscription(massetAddress);
-  const outputToken = useTokenSubscription(outputAddress);
-  const outputDecimals = outputToken?.decimals;
 
   const masset = useMemo(
     () => (signer ? MbtcFactory.connect(massetAddress, signer) : undefined),
@@ -120,13 +121,20 @@ export const RedeemMasset: FC = () => {
             bassetAmount.value.decimals,
           )
         : undefined,
+      outputDecimals,
     );
 
     return {
       exchangeRate: _exchangeRate,
       minOutputAmount: _minOutputAmount,
     };
-  }, [inputAmount, bassetAmount.fetching, bassetAmount.value, slippageSimple]);
+  }, [
+    inputAmount,
+    bassetAmount.fetching,
+    bassetAmount.value,
+    slippageSimple,
+    outputDecimals,
+  ]);
 
   const addressOptions = useMemo(
     () => Object.keys(bAssets).map(address => ({ address })),
