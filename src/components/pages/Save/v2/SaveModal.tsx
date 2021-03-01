@@ -25,9 +25,9 @@ const Container = styled.div`
 const tabInfo = (
   formattedMasset: string,
 ): { [key in Tabs]: string | undefined } => ({
-  [DepositStablecoins]: `Interest-bearing ${formattedMasset} (${`i${formattedMasset}`}) will be minted from your selected stablecoin. Your ${`i${formattedMasset}`} can be redeemed for ${formattedMasset} at any time.`,
-  [DepositETH]: `ETH will be automatically traded via Uniswap V2 & Curve for ${formattedMasset}. Your ${formattedMasset} will then be deposited for ${`i${formattedMasset}`} (interest-bearing ${formattedMasset}). Your ${`i${formattedMasset}`} can be redeemed for ${formattedMasset} at any time.`,
-  [Redeem]: `Redeem an amount of ${`i${formattedMasset}`} for ${formattedMasset}.`,
+  [DepositStablecoins]: `Interest-bearing ${formattedMasset} (i${formattedMasset}) will be minted from your selected stablecoin. Your i${formattedMasset} can be redeemed for ${formattedMasset} at any time.`,
+  [DepositETH]: `ETH will be automatically traded via Uniswap V2 & Curve for ${formattedMasset}. Your ${formattedMasset} will then be deposited for i${formattedMasset} (interest-bearing ${formattedMasset}). Your i${formattedMasset} can be redeemed for ${formattedMasset} at any time.`,
+  [Redeem]: `Redeem an amount of i${formattedMasset} for ${formattedMasset}.`,
 });
 
 // TODO TabbedModal
