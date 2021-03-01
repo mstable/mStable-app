@@ -1,3 +1,4 @@
+import { ErrorCode } from '@ethersproject/logger';
 import { CHAIN_ID } from '../constants';
 
 const ETHERSCAN_PREFIXES = {
@@ -42,8 +43,42 @@ export const humanizeList = (list: string[]): string =>
     ? list.join(' and ')
     : `${list.slice(0, -1).join(', ')}, and ${list[list.length - 1]}`;
 
-export const sanitizeMassetError = (error: Error): string => {
-  const message = error.message.replace('execution reverted: ', '');
+interface EthersError extends Error {
+  code?: ErrorCode;
+  error?: Error;
+}
+
+const sanitizeEthersError = (error: EthersError): string => {
+  let { message } = error;
+
+  switch (error.code) {
+    case ErrorCode.UNPREDICTABLE_GAS_LIMIT: {
+      if (error.error?.message) {
+        break;
+      }
+      return 'Unable to estimate gas';
+    }
+    case ErrorCode.INSUFFICIENT_FUNDS:
+      return 'Insufficient funds';
+    case ErrorCode.NETWORK_ERROR:
+      return 'Network error';
+    case ErrorCode.REPLACEMENT_UNDERPRICED:
+      return 'Replacement transaction underpriced';
+    case ErrorCode.TIMEOUT:
+      return 'Timeout';
+    default:
+      break;
+  }
+
+  if (error.error?.message) {
+    message = error.error.message;
+  }
+
+  return message.replace('execution reverted: ', '');
+};
+
+export const sanitizeMassetError = (error: EthersError): string => {
+  const message = sanitizeEthersError(error);
 
   switch (message) {
     case 'Out of bounds':

@@ -226,6 +226,7 @@ export const useHasPendingApproval = (
   return Object.values(state).some(
     tx =>
       tx.status !== TransactionStatus.Confirmed &&
+      tx.manifest &&
       tx.manifest.fn === 'approve' &&
       tx.manifest.args[0] === spender &&
       tx.to === address,
