@@ -27,14 +27,6 @@ generates:
     config:
       includeDirectives: true
 
-  ./src/graphql/mbtc/schema.graphql:
-    overwrite: true
-    schema: https://api.thegraph.com/subgraphs/name/jameslefrere/mbtc-deployment
-    plugins:
-      - 'schema-ast'
-    config:
-      includeDirectives: true
-
   ./src/graphql/ecosystem/schema.graphql:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM}
@@ -89,16 +81,6 @@ generates:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL}
     documents: 'src/graphql/protocol/*.graphql'
-    plugins:
-      - 'fragment-matcher'
-      - 'typescript'
-      - 'typescript-operations'
-      - 'typescript-react-apollo'
-
-  ./src/graphql/mbtc.tsx:
-    overwrite: true
-    schema: https://api.thegraph.com/subgraphs/name/jameslefrere/mbtc-deployment
-    documents: 'src/graphql/mbtc/*.graphql'
     plugins:
       - 'fragment-matcher'
       - 'typescript'

@@ -43,24 +43,18 @@ const cache = new InMemoryCache({
     StakingRewardsContract: {
       keyFields: false,
     },
-    'Query.tokens': {
-      // Hack: sometimes tokens of the same ID are loaded across separate
-      // subgraphs; `totalSupply` is an ID that will be unique
-      keyFields: ['id', 'totalSupply'],
+    // Sometimes tokens of the same ID are loaded across separate
+    // subgraphs; avoid merging them in the cache
+    Token: {
+      keyFields: false,
     },
-    // Query: {
-    //   fields: {
-    //     tokens: {
-    //       merge(existing: Reference[] = [], incoming: Reference[] = []) {
-    //         const existingRefs = new Set(existing.map(item => item.__ref));
-    //         return [
-    //           ...existing,
-    //           ...incoming.filter(item => !existingRefs.has(item.__ref)),
-    //         ];
-    //       },
-    //     },
-    //   },
-    // },
+    Query: {
+      fields: {
+        tokens: {
+          merge: false,
+        },
+      },
+    },
   },
 });
 

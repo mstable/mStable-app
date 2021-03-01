@@ -1,7 +1,7 @@
 # import './fragments.graphql'
 
-query MUSD($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
-  masset(id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5") {
+query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
+  massets {
     id
     token {
       ...TokenAll
@@ -48,7 +48,6 @@ query MUSD($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
         amount
       }
     }
-    # TODO remove me: Exclude outdated Ropsten SavingsContract
     savingsContractsV2: savingsContracts(where: { version: 2 }) {
       ...SavingsContractAll
       token {

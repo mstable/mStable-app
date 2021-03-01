@@ -14,17 +14,15 @@ import { transformRawData } from './transformRawData';
 import { useBlockPollingSubscription } from './subscriptions';
 import { useAccount } from '../UserProvider';
 import { useBlockNumber } from '../BlockProvider';
-import { MusdQueryResult, useMusdLazyQuery } from '../../graphql/protocol';
-import { MbtcQueryResult, useMbtcLazyQuery } from '../../graphql/mbtc';
+import {
+  MassetsQueryResult,
+  useMassetsLazyQuery,
+} from '../../graphql/protocol';
 import { useSelectedMassetName } from '../SelectedMassetNameProvider';
 
 const dataStateCtx = createContext<DataState>({});
 
-const useRawData = (): [
-  MusdQueryResult['data'],
-  MbtcQueryResult['data'],
-  Tokens,
-] => {
+const useRawData = (): [MassetsQueryResult['data'], Tokens] => {
   const blockNumber = useBlockNumber();
   const { tokens } = useTokensState();
 
@@ -36,18 +34,19 @@ const useRawData = (): [
     [account],
   );
 
-  const musdSub = useBlockPollingSubscription(useMusdLazyQuery, baseOptions);
-  const mbtcSub = useBlockPollingSubscription(useMbtcLazyQuery, baseOptions);
+  const massetsSub = useBlockPollingSubscription(
+    useMassetsLazyQuery,
+    baseOptions,
+  );
 
   // Intentionally limit updates.
   // Given that the blockNumber and the subscription's loading state are what
   // drive updates to both the tokens state and the DataState, use these
   // as the deps to prevent creating new objects with the same underlying data.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => [musdSub.data, mbtcSub.data, tokens], [
+  return useMemo(() => [massetsSub.data, tokens], [
     blockNumber,
-    musdSub.loading,
-    mbtcSub.loading,
+    massetsSub.loading,
     tokens,
   ]);
 };

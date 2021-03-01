@@ -4708,13 +4708,13 @@ export type TransactionFieldsFragment = TransactionFields_SavingsContractDeposit
 
 export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
 
-export type MusdQueryVariables = {
+export type MassetsQueryVariables = {
   account: Scalars['String'];
   hasAccount: Scalars['Boolean'];
 };
 
 
-export type MusdQuery = { masset?: Maybe<(
+export type MassetsQuery = { massets: Array<(
     Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'forgeValidator' | 'invariantStartTime' | 'invariantStartingCap' | 'invariantCapFactor'>
     & { token: TokenAllFragment, basket: (
       Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
@@ -4863,9 +4863,9 @@ export const TransactionFieldsFragmentDoc = gql`
   sender
 }
     `;
-export const MusdDocument = gql`
-    query MUSD($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
-  masset(id: "0xe2f2a5c287993345a840db3b0845fbc70f5935a5") {
+export const MassetsDocument = gql`
+    query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
+  massets {
     id
     token {
       ...TokenAll
@@ -4955,31 +4955,31 @@ ${MetricFieldsFragmentDoc}
 ${SavingsContractAllFragmentDoc}`;
 
 /**
- * __useMusdQuery__
+ * __useMassetsQuery__
  *
- * To run a query within a React component, call `useMusdQuery` and pass it any options that fit your needs.
- * When your component renders, `useMusdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useMassetsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMassetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useMusdQuery({
+ * const { data, loading, error } = useMassetsQuery({
  *   variables: {
  *      account: // value for 'account'
  *      hasAccount: // value for 'hasAccount'
  *   },
  * });
  */
-export function useMusdQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MusdQuery, MusdQueryVariables>) {
-        return ApolloReactHooks.useQuery<MusdQuery, MusdQueryVariables>(MusdDocument, baseOptions);
+export function useMassetsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MassetsQuery, MassetsQueryVariables>) {
+        return ApolloReactHooks.useQuery<MassetsQuery, MassetsQueryVariables>(MassetsDocument, baseOptions);
       }
-export function useMusdLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MusdQuery, MusdQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<MusdQuery, MusdQueryVariables>(MusdDocument, baseOptions);
+export function useMassetsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MassetsQuery, MassetsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<MassetsQuery, MassetsQueryVariables>(MassetsDocument, baseOptions);
         }
-export type MusdQueryHookResult = ReturnType<typeof useMusdQuery>;
-export type MusdLazyQueryHookResult = ReturnType<typeof useMusdLazyQuery>;
-export type MusdQueryResult = ApolloReactCommon.QueryResult<MusdQuery, MusdQueryVariables>;
+export type MassetsQueryHookResult = ReturnType<typeof useMassetsQuery>;
+export type MassetsLazyQueryHookResult = ReturnType<typeof useMassetsLazyQuery>;
+export type MassetsQueryResult = ApolloReactCommon.QueryResult<MassetsQuery, MassetsQueryVariables>;
 export const V1SavingsBalanceDocument = gql`
     query V1SavingsBalance($id: ID!, $account: String!, $include: Boolean!) @api(name: protocol) {
   savingsContract(id: $id) @include(if: $include) {
