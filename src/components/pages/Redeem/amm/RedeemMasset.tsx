@@ -63,7 +63,6 @@ export const RedeemMasset: FC = () => {
     inputAmount,
     inputFormValue,
     handleSetInputFormValue,
-    setInputAmount,
   ] = useBigDecimalInput('0', outputDecimals);
 
   const [slippageSimple, slippageFormValue, handleSetSlippage] = useSimpleInput(
@@ -185,7 +184,7 @@ export const RedeemMasset: FC = () => {
         handleSetAddress={handleSetAddress}
         handleSetAmount={handleSetInputFormValue}
         handleSetMax={() => {
-          setInputAmount(massetToken?.balance);
+          handleSetInputFormValue(massetToken?.balance.string);
         }}
       />
       <div>
