@@ -105,9 +105,9 @@ export class TransactionManifest<
         if (error.code === ErrorCode.UNPREDICTABLE_GAS_LIMIT) {
           if (this.fallbackGasLimit) {
             return this.fallbackGasLimit;
-          } else {
+          } 
             console.warn(`No fallback gaslimit set: ${this.id}`);
-          }
+          
         }
         throw new Error(error.error.message ?? error.error.toString());
       }
