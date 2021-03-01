@@ -57,7 +57,7 @@ yarn run platform-rewards --trancheNumber=24 \
  *******************************************************************************
  */
 
-import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
+import { BigNumber, utils } from 'ethers';
 import { options } from 'yargs';
 
 import { getMerkleRootHash } from './merkleRootHash';
@@ -161,6 +161,8 @@ interface ReportData {
   fullOutputReport: PlatformEarningsReport;
   simpleOutputReport: PlatformEarningsReport['rewards'];
 }
+
+const { formatUnits, parseUnits } = utils;
 
 const TOKENS_METADATA: {
   [tokenAddress: string]: TokenMetadata;
@@ -302,11 +304,11 @@ const fetchPools = async (
           ...current.claimRewardTransactions,
         ];
 
-        const rewardRate = new BigNumber(current.rewardRate);
-        const rewardPerTokenStored = new BigNumber(
+        const rewardRate = BigNumber.from(current.rewardRate);
+        const rewardPerTokenStored = BigNumber.from(
           current.rewardPerTokenStored,
         );
-        const totalTokens = new BigNumber(current.totalSupply);
+        const totalTokens = BigNumber.from(current.totalSupply);
 
         let rewardPerToken = rewardPerTokenStored;
 
@@ -365,8 +367,8 @@ const getEarningsPerStaker = ({
     stakingRewards.map(({ amount, account, amountPerTokenPaid }) => [
       account,
       {
-        amount: new BigNumber(amount),
-        amountPerTokenPaid: new BigNumber(amountPerTokenPaid),
+        amount: BigNumber.from(amount),
+        amountPerTokenPaid: BigNumber.from(amountPerTokenPaid),
       },
     ]),
   );
@@ -377,7 +379,7 @@ const getEarningsPerStaker = ({
   > = Object.fromEntries(
     stakingBalances.map(({ amount, account }) => [
       account,
-      new BigNumber(amount),
+      BigNumber.from(amount),
     ]),
   );
 
@@ -386,7 +388,7 @@ const getEarningsPerStaker = ({
   >(
     (prev, { amount, sender: account }) => ({
       ...prev,
-      [account]: (prev[account] ?? new BigNumber(0)).add(amount),
+      [account]: (prev[account] ?? BigNumber.from(0)).add(amount),
     }),
     {},
   );
@@ -463,13 +465,13 @@ const getSharesPerPool = (
       ([poolAddress, earningsPerStaker]) => {
         const totalEarnedForAllStakers = Object.values(
           earningsPerStaker,
-        ).reduce((prev, current) => prev.add(current), new BigNumber(0));
+        ).reduce((prev, current) => prev.add(current), BigNumber.from(0));
 
         const sharePerStaker: AddressBnMap = Object.fromEntries(
           Object.entries(earningsPerStaker).map(([account, amount]) => {
             const share = totalEarnedForAllStakers.gt(0)
               ? amount.mul(SCALE).div(totalEarnedForAllStakers)
-              : new BigNumber(0);
+              : BigNumber.from(0);
             return [account, share];
           }),
         );
@@ -487,7 +489,7 @@ const getTotalMtaEarningsPerPool = (
     Object.entries(earningsPerStakerPerPool).map(([poolAddress, earnings]) => {
       const totalMtaEarnings = Object.values(earnings).reduce(
         (prev, current) => prev.add(current),
-        new BigNumber(0),
+        BigNumber.from(0),
       );
       return [poolAddress, totalMtaEarnings];
     }),
@@ -549,14 +551,14 @@ const getPlatformEarnings = (
 
         return {
           ..._prev,
-          [account]: (_prev[account] ?? new BigNumber(0)).add(rewardAmount),
+          [account]: (_prev[account] ?? BigNumber.from(0)).add(rewardAmount),
         };
       }, prev);
   }, {});
 
   const totalEarnedForAllStakers = Object.values(totalEarnedPerStaker).reduce(
     (prev, current) => prev.add(current),
-    new BigNumber(0),
+    BigNumber.from(0),
   );
 
   return {
