@@ -34,10 +34,10 @@ const tabTitles = (massetSymbol?: string): { [key in Tabs]: string } => ({
 const tabInfo = (
   formattedMasset: string,
 ): { [key in Tabs]: string | undefined } => ({
-  [Deposit]: `${`i${formattedMasset}`} will be minted from your selected stablecoin & deposited into the Vault. Your ${`i${formattedMasset}`} can be withdrawn at any time.`,
-  [DepositETH]: `ETH will be traded via Uniswap V2 & Curve for ${formattedMasset}. Your ${formattedMasset} will then mint ${`i${formattedMasset}`} & be deposited into the Vault. Your ${`i${formattedMasset}`} can be withdrawn at any time.`,
-  [Withdraw]: `Withdraw an amount of ${`i${formattedMasset}`} from the Vault, returning ${`i${formattedMasset}`} to your wallet.`,
-  [Exit]: `Exiting the Vault will return your ${`i${formattedMasset}`}. You will no longer receive new MTA rewards but you will continue earning interest by holding ${`i${formattedMasset}`}.`,
+  [Deposit]: `i${formattedMasset} will be minted from your selected stablecoin & deposited into the Vault. Your i${formattedMasset} can be withdrawn at any time.`,
+  [DepositETH]: `ETH will be traded via Uniswap V2 & Curve for ${formattedMasset}. Your ${formattedMasset} will then mint i${formattedMasset} & be deposited into the Vault. Your i${formattedMasset} can be withdrawn at any time.`,
+  [Withdraw]: `Withdraw an amount of i${formattedMasset} from the Vault, returning i${formattedMasset} to your wallet.`,
+  [Exit]: `Exiting the Vault will return your i${formattedMasset}. You will no longer receive new MTA rewards but you will continue earning interest by holding i${formattedMasset}.`,
 });
 
 export const VaultModal: FC = () => {
