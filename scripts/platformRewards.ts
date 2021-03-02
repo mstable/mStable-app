@@ -11,12 +11,12 @@
  * @example
  *
  * ```bash
-yarn run platform-rewards --trancheNumber=24 \
-  --startBlock=11861356 \
-  --startTimestamp=1613392314 \
+yarn run platform-rewards --trancheNumber=25 \
+  --startBlock=11906847 \
+  --startTimestamp=1613997120 \
   --token=0xba100000625a3754423978a60c9317c58a424e3d \
   --allocations \
-  0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,946.355556674383137761
+  0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,865.123425521349076917
  * ```
  *
  *
@@ -202,7 +202,7 @@ const parseArgs = async (): Promise<ValidatedArgs> => {
   const validatedAllocations: {
     [poolAddress: string]: BigNumber;
   } = Object.fromEntries(
-    allocations.map(item => {
+    allocations.map((item) => {
       const [poolAddress, amount] = (item as string).split(',');
       return [poolAddress, parseUnits(amount, 18)];
     }),
@@ -396,7 +396,7 @@ const getEarningsPerStaker = ({
   const accounts = Object.keys(stakingBalancesPerAccount);
 
   return Object.fromEntries(
-    accounts.map(account => {
+    accounts.map((account) => {
       const stakingReward = stakingRewardsPerAccount[account];
       const stakingBalance = stakingBalancesPerAccount[account];
       const totalClaimed: BigNumber | undefined =
@@ -599,7 +599,7 @@ const getReportData = ({
       mtaEarningsPerStakerPerPool: Object.fromEntries(
         Object.keys(mtaEarningsPerStakerPerPool)
           .sort()
-          .map(poolAddress => {
+          .map((poolAddress) => {
             const earnings = Object.fromEntries(
               Object.entries(mtaEarningsPerStakerPerPool[poolAddress])
                 .sort(([, a], [, b]) => (b.gt(a) ? 1 : -1))
@@ -611,7 +611,7 @@ const getReportData = ({
       totalMtaEarningsPerPoolAtEnd: Object.fromEntries(
         Object.keys(totalMtaEarningsPerPoolAtEnd)
           .sort()
-          .map(poolAddress => [
+          .map((poolAddress) => [
             poolAddress,
             formatUnits(totalMtaEarningsPerPoolAtEnd[poolAddress], 18),
           ]),
@@ -619,7 +619,7 @@ const getReportData = ({
       totalMtaEarningsPerPoolAtStart: Object.fromEntries(
         Object.keys(totalMtaEarningsPerPoolAtStart)
           .sort()
-          .map(poolAddress => [
+          .map((poolAddress) => [
             poolAddress,
             formatUnits(totalMtaEarningsPerPoolAtStart[poolAddress], 18),
           ]),
