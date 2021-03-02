@@ -19,7 +19,7 @@
 
 import { options } from 'yargs';
 import fs from 'fs';
-import { BigNumber, formatUnits, parseUnits } from 'ethers/utils';
+import { BigNumber, utils } from 'ethers';
 import { soliditySha3 } from 'web3-utils';
 
 import { MerkleTree } from '../src/web3/MerkleTree';
@@ -27,6 +27,8 @@ import { MerkleTree } from '../src/web3/MerkleTree';
 interface Allocations {
   [address: string]: BigNumber;
 }
+
+const { formatUnits, parseUnits } = utils;
 
 const getAllocations = async (
   trancheNumber: number,
@@ -74,7 +76,7 @@ export const getMerkleRootHash = async (
 
   const totalAllocation = Object.values(allocations).reduce(
     (prev, current) => prev.add(current),
-    new BigNumber(0),
+    BigNumber.from(0),
   );
 
   const output = {
