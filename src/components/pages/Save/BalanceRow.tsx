@@ -413,9 +413,12 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
               <Number end={balance.simple} decimals={6} />
               {balance.simple !== 0 && dollarExchangeRate && (
                 <ExchangeRate
-                  prefix="≈ $"
+                  prefix="≈ "
                   end={dollarExchangeRate * balance.simple}
                   decimals={4}
+                  suffix={` ${masset.slice(0, 1)}${masset
+                    .slice(1)
+                    .toUpperCase()}`}
                 />
               )}
             </>
