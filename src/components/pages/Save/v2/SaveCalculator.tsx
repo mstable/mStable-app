@@ -12,8 +12,8 @@ import { InfoMessage } from '../../../core/InfoMessage';
 import { Widget } from '../../../core/Widget';
 import { AssetInput } from '../../../forms/AssetInput';
 import { calculateBoost, calculateVMTAForMaxBoost } from './utils';
-import ArrowsSvg from '../../../icons/double-arrow.svg';
-import GovSvg from '../../../icons/governance-icon.svg';
+import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
+import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
