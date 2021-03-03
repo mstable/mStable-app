@@ -1,15 +1,24 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 
 import { useTokens } from '../../../../context/TokensProvider';
 import { SubscribedToken } from '../../../../types';
 import { TokenIcon } from '../../../icons/TokenIcon';
 import { Card } from './Card';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 interface Props {
   className?: string;
-  tokenAddresses: string[];
+  address: string;
+  tokenPair: string[];
+  deprecated: boolean;
 }
+
+const assetBackgroundMapping: Record<string, string> = {
+  'TUSD/WBTC': '#FFD8EB',
+  'DAI/WBTC': '#EFF3FF',
+};
 
 const StatsContainer = styled.div`
   flex: 1;
@@ -97,33 +106,37 @@ const Container = styled(Card)<{ gradientColor?: string }>`
   }
 `;
 
-export const AssetCard: FC<Props> = ({ className, tokenAddresses }) => {
-  const subscribedTokens = useTokens(tokenAddresses);
-  const title = subscribedTokens.map(t => t.symbol).join('/');
+export const AssetCard: FC<Props> = ({
+  className,
+  tokenPair,
+  address,
+  deprecated,
+}) => {
+  const subscribedTokens = useTokens(tokenPair);
+  const massetName = useSelectedMassetName();
+  const history = useHistory();
 
-  // TODO: -
-  // getPoolFromPair(tokenAddresses)
-  // const poolInfo = getPoolFromPair(tokenAddresses)
+  const title = subscribedTokens.map(t => t.symbol).join('/');
+  const gradientColor = assetBackgroundMapping[title];
 
   const handleClick = (): void => {
-    // const address = poolInfo.address
-    // history.push(/`${address}`);
+    history.push(`/${massetName}/pools/${address}`);
   };
 
   return (
     <Container
       className={className}
-      gradientColor="lightblue" // poolInfo.color
+      gradientColor={!deprecated ? gradientColor : undefined}
       title={
         <div>
           <TokenPair tokens={subscribedTokens} />
           {title}
         </div>
       }
-      iconType="checkmark"
+      iconType="chevron"
       onClick={handleClick}
     >
-      <TokenStats />
+      {!deprecated && <TokenStats />}
     </Container>
   );
 };

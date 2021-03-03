@@ -13,7 +13,7 @@ interface Props {
 }
 
 const Icon = styled.div<{ isChevron?: boolean }>`
-  background: ${({ theme }) => `${theme.color.accentContrast}99`};
+  background: ${({ theme }) => `${theme.color.accentContrast}77`};
   border-radius: 1rem;
   width: 2rem;
   height: 2rem;
@@ -43,9 +43,12 @@ const Container = styled(UnstyledButton)`
   justify-content: flex-start;
   transition: 0.25s ease all;
 
-  > div:not(:last-child) {
+  > div {
     display: flex;
     justify-content: space-between;
+  }
+
+  > div:not(:last-child) {
     align-items: center;
     margin-bottom: 1rem;
   }
