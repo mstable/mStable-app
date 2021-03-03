@@ -220,14 +220,14 @@ const SwapLogic: FC = () => {
     if (!amounts?.minOutputAmount || !inputAmount) return;
     const { minOutputAmount } = amounts;
 
-    const amountMinBound = inputAmount.simple * 0.95;
-    const amountMaxBound = inputAmount.simple * 1.05;
+    const amountMinBound = inputAmount.simple * 0.996;
+    const amountMaxBound = inputAmount.simple * 1.004;
 
     if (
       minOutputAmount.simple < amountMinBound ||
       minOutputAmount.simple > amountMaxBound
     ) {
-      return 'WARNING: High slippage. 1% slippage protection';
+      return 'WARNING: High slippage. 0.4% slippage protection';
     }
   }, [amounts, inputAmount]);
 

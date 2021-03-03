@@ -201,14 +201,14 @@ const MintLogic: FC = () => {
       .map(address => inputValues[address].amount?.simple ?? 0)
       .reduce((a, b) => a + b);
 
-    const amountMinBound = inputAmount * 0.95;
-    const amountMaxBound = inputAmount * 1.05;
+    const amountMinBound = inputAmount * 0.996;
+    const amountMaxBound = inputAmount * 1.004;
 
     if (
       minOutputAmount.simple < amountMinBound ||
       minOutputAmount.simple > amountMaxBound
     ) {
-      return 'WARNING: High slippage. 1% slippage protection';
+      return 'WARNING: High slippage. 0.4% slippage protection';
     }
   }, [inputValues, minOutputAmount]);
 
