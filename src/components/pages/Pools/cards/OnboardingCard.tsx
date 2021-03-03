@@ -4,61 +4,61 @@ import styled from 'styled-components';
 import { LocalStorage } from '../../../../localStorage';
 import { Card } from './Card';
 
-export enum OnboardType {
-  Rewards,
-  Ecosystem,
-}
-
-const { Rewards, Ecosystem } = OnboardType;
+type OnboardingType = 'user' | 'active';
 
 interface Props {
   className?: string;
-  type: OnboardType;
+  type: OnboardingType;
 }
 
-const Title: Record<OnboardType, string> = {
-  [Rewards]: 'Liquidity Rewards',
-  [Ecosystem]: 'Ecosystem Rewards',
+const Title: Record<OnboardingType, string> = {
+  user: 'Liquidity Rewards',
+  active: 'Ecosystem Rewards',
 };
 
-const Content: Record<OnboardType, string> = {
-  [Rewards]:
+const Content: Record<OnboardingType, string> = {
+  user:
     'Liquidity providers earn fees on trades proportional to their share of the pool’s liquidity.',
-  [Ecosystem]:
-    'Providing liquidity and staking your token will give you MTA ... ',
+  active: 'Providing liquidity and staking your token will give you MTA ... ',
 };
 
 const Container = styled(Card)`
   background: ${({ theme }) => theme.color.accent};
-  border: 1px solid ${({ theme }) => theme.color.accentContrast};
+  border: none;
 `;
 
 export const OnboardingCard: FC<Props> = ({ className, type }) => {
   const [clicked, setClicked] = useState<boolean>(false);
 
+  if (!(type === 'user' || type === 'active')) return null;
+
   const title = Title[type];
   const content = Content[type];
 
   const viewedPoolOnboarding = LocalStorage.get('viewedPoolOnboarding');
-  const viewedRewards = viewedPoolOnboarding?.rewards;
-  const viewedEcosystem = viewedPoolOnboarding?.ecosystem;
+  const viewedUser = viewedPoolOnboarding?.user;
+  const viewedActive = viewedPoolOnboarding?.active;
 
   const shouldShow =
-    !(viewedRewards && type === Rewards) &&
-    !(viewedEcosystem && type === Ecosystem);
+    !(viewedUser && type === 'user') && !(viewedActive && type === 'active');
+
+  // LocalStorage.set('viewedPoolOnboarding', {
+  //   user: false,
+  //   active: false,
+  // });
 
   const handleClick = (): void => {
     switch (type) {
-      case Rewards:
+      case 'user':
         LocalStorage.set('viewedPoolOnboarding', {
-          rewards: true,
-          ecosystem: viewedEcosystem ?? false,
+          user: true,
+          active: viewedActive ?? false,
         });
         break;
-      case Ecosystem:
+      case 'active':
         LocalStorage.set('viewedPoolOnboarding', {
-          rewards: viewedRewards ?? false,
-          ecosystem: true,
+          user: viewedUser ?? false,
+          active: true,
         });
         break;
       default:
@@ -67,7 +67,7 @@ export const OnboardingCard: FC<Props> = ({ className, type }) => {
     setClicked(true);
   };
 
-  return shouldShow && !clicked ? (
+  return type && shouldShow && !clicked ? (
     <Container
       className={className}
       title={title}

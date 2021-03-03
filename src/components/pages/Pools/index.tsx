@@ -1,23 +1,159 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 import { Button } from '../../core/Button';
 import { PageAction, PageHeader } from '../PageHeader';
 import { Card } from './cards/Card';
-import { OnboardingCard, OnboardType } from './cards/OnboardingCard';
+import { OnboardingCard } from './cards/OnboardingCard';
 import { AssetCard } from './cards/AssetCard';
+import { PoolType } from './types';
 
-const LoadMore = styled.h3`
-  font-size: 1.25rem;
-  color: ${({ theme }) => theme.color.bodyAccent};
-  font-weight: 600;
-  margin: 1rem 2rem;
-  text-align: center;
+const DEFAULT_ITEM_COUNT = 3;
+
+// Mock data
+interface MockPoolData {
+  address: string;
+  tokenPair: string[];
+}
+
+interface MockData {
+  pools: {
+    user: MockPoolData[];
+    active: MockPoolData[];
+    deprecated: MockPoolData[];
+  };
+}
+
+const mockData: MockData = {
+  pools: {
+    user: [
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x6b175474e89094c44da98b954eedeac495271d0f',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+    ],
+    active: [
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+    ],
+    deprecated: [
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+      {
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        tokenPair: [
+          '0x0000000000085d4780b73119b644ae5ecd22b376',
+          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+        ],
+      },
+    ],
+  },
+};
+
+const LoadCard = styled(Card)`
+  align-items: center;
+  justify-content: center;
+
+  h3 {
+    font-size: 1.25rem;
+    color: ${({ theme }) => theme.color.bodyAccent};
+    font-weight: 600;
+    text-align: center;
+    flex: 1;
+  }
 `;
 
 const Cards = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
   > * {
     margin-bottom: 1rem;
+    flex-basis: calc(50% - 0.75rem);
   }
 `;
 
@@ -25,6 +161,7 @@ const Row = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1rem;
 
   h2 {
     font-size: 1.25rem;
@@ -38,38 +175,91 @@ const Row = styled.div`
   }
 `;
 
+const Section = styled.div`
+  border-bottom: 1px solid ${({ theme }) => theme.color.accent};
+  padding-bottom: 3rem;
+  margin-bottom: 3rem;
+`;
+
 const Container = styled.div``;
 
+const Title: Record<PoolType, string> = {
+  [PoolType.User]: 'Your Pools',
+  [PoolType.Active]: 'Active Pools',
+  [PoolType.Deprecated]: 'Deprecated Pools',
+};
+
 export const Pools: FC = () => {
+  const {
+    pools: { user, active, deprecated },
+  } = mockData;
+
+  const sections: Record<PoolType, MockPoolData[]> = {
+    [PoolType.User]: user,
+    [PoolType.Active]: active,
+    [PoolType.Deprecated]: deprecated,
+  };
+
+  const [numPoolsVisible, setNumPoolsVisible] = useState({
+    [PoolType.User]: DEFAULT_ITEM_COUNT,
+    [PoolType.Active]: DEFAULT_ITEM_COUNT,
+    [PoolType.Deprecated]: DEFAULT_ITEM_COUNT,
+  });
+
+  const showMorePools = useCallback(
+    (type: PoolType) =>
+      setNumPoolsVisible({
+        ...numPoolsVisible,
+        [type]: numPoolsVisible[type] + 3,
+      }),
+    [numPoolsVisible],
+  );
+
+  const handleExploreClick = (): void => {};
+  const handleAddLiquidityClick = (): void => {};
+
   return (
     <Container>
       <PageHeader
         action={PageAction.Pools}
         subtitle="Earn fees and ecosystem rewards"
       />
-      <Row>
-        <h2>Your Pools</h2>
-        <div>
-          <Button onClick={() => {}}>Explore Pools</Button>
-          <Button highlighted onClick={() => {}}>
-            Add Liquidity
-          </Button>
-        </div>
-      </Row>
-      <Cards>
-        <Card>
-          <LoadMore>Load more</LoadMore>
-        </Card>
-        <OnboardingCard type={OnboardType.Rewards} />
-        <AssetCard
-          tokenAddresses={[
-            '0x0000000000085d4780b73119b644ae5ecd22b376',
-            '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-          ]}
-        />
-      </Cards>
-      {/* 
-      <OnboardingCard type={OnboardType.Ecosystem} /> */}
+      {Object.keys(sections).map(type => {
+        const section = sections[type as PoolType];
+        return (
+          <Section>
+            <Row>
+              <h2>{Title[type as PoolType]}</h2>
+              {(type as PoolType) === PoolType.User && (
+                <div>
+                  <Button onClick={handleExploreClick}>Explore Pools</Button>
+                  <Button highlighted onClick={handleAddLiquidityClick}>
+                    Add Liquidity
+                  </Button>
+                </div>
+              )}
+            </Row>
+            <Cards>
+              <OnboardingCard type={(type as 'active' | 'user') ?? undefined} />
+              {section
+                .filter((_, i) => i < numPoolsVisible[type as PoolType])
+                .map(({ tokenPair, address }) => (
+                  <AssetCard
+                    key={address}
+                    address={address}
+                    tokenPair={tokenPair}
+                    deprecated={(type as PoolType) === PoolType.Deprecated}
+                  />
+                ))}
+              {section.length > numPoolsVisible[type as PoolType] && (
+                <LoadCard onClick={() => showMorePools(type as PoolType)}>
+                  <h3>Load more</h3>
+                </LoadCard>
+              )}
+            </Cards>
+          </Section>
+        );
+      })}
     </Container>
   );
 };

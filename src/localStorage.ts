@@ -25,8 +25,8 @@ export interface StorageV3 extends VersionedStorage<3, StorageV2> {
   walletName?: string;
   themeMode?: string;
   viewedPoolOnboarding?: {
-    rewards: boolean;
-    ecosystem: boolean;
+    user: boolean;
+    active: boolean;
   };
 }
 
