@@ -8,6 +8,9 @@ import { ApproveProvider, useApprove, Mode } from './ApproveProvider';
 import { Button, UnstyledButton } from '../core/Button';
 import { Tooltip } from '../core/ReactTooltip';
 
+const SLIPPAGE_WARNING =
+  'This transaction has a price impact of at least 0.4%. Please confirm you would like to continue';
+
 enum Step {
   ACTION,
   APPROVE,
@@ -64,10 +67,26 @@ const SendButtonContent: FC<Omit<Props, 'approve'>> = ({
   valid,
   title,
   handleSend,
+  slippageWarning,
 }) => (
   <Container className={className}>
-    <StyledButton highlighted={valid} disabled={!valid} onClick={handleSend}>
-      {title}
+    <StyledButton
+      slippageWarning={slippageWarning}
+      highlighted={valid}
+      disabled={!valid}
+      onClick={async () => {
+        if (!valid) return;
+
+        if (slippageWarning) {
+          if (!confirm(SLIPPAGE_WARNING)) {
+            return;
+          }
+        }
+
+        handleSend();
+      }}
+    >
+      {`${title} ${slippageWarning && valid ? 'Anyway' : ''}`}
     </StyledButton>
   </Container>
 );
@@ -186,11 +205,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
             }
 
             if (slippageWarning) {
-              if (
-                !confirm(
-                  'This transaction has a price impact of at least 5%. Please confirm you would like to continue',
-                )
-              ) {
+              if (!confirm(SLIPPAGE_WARNING)) {
                 return;
               }
             }
