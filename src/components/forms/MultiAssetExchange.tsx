@@ -92,10 +92,12 @@ interface Props {
   error?: string;
 }
 
-export const ManyToOneAssetExchange: FC<Props & {
-  outputAddress: string;
-  minOutputAmount?: BigDecimal;
-}> = ({
+export const ManyToOneAssetExchange: FC<
+  Props & {
+    outputAddress: string;
+    minOutputAmount?: BigDecimal;
+  }
+> = ({
   children,
   exchangeRate,
   spender,
@@ -112,7 +114,7 @@ export const ManyToOneAssetExchange: FC<Props & {
   return (
     <Container>
       {Object.keys(inputValues).map(
-        address =>
+        (address) =>
           spender &&
           inputValues && (
             <AssetInput
@@ -134,6 +136,7 @@ export const ManyToOneAssetExchange: FC<Props & {
       />
       <AssetInput
         disabled
+        amountDisabled
         address={outputAddress}
         addressDisabled
         formValue={outputAmount.value?.string}
@@ -149,10 +152,12 @@ export const ManyToOneAssetExchange: FC<Props & {
   );
 };
 
-export const OneToManyAssetExchange: FC<Props & {
-  inputAddress: string;
-  maxOutputAmount?: BigDecimal;
-}> = ({
+export const OneToManyAssetExchange: FC<
+  Props & {
+    inputAddress: string;
+    maxOutputAmount?: BigDecimal;
+  }
+> = ({
   children,
   exchangeRate,
   spender,
@@ -183,7 +188,7 @@ export const OneToManyAssetExchange: FC<Props & {
           exchangeRate={exchangeRate}
         />
       </div>
-      {Object.keys(outputValues).map(address => (
+      {Object.keys(outputValues).map((address) => (
         <AssetInput
           key={address}
           address={address}

@@ -25,6 +25,11 @@ import { sanitizeMassetError } from '../../../../utils/strings';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { MassetPage } from '../../MassetPage';
+import {
+  getBounds,
+  getEstimatedOutput,
+  getPenaltyMessage,
+} from '../../amm/utils';
 
 interface SwapOutput {
   value?: BigDecimal;
@@ -87,7 +92,7 @@ const SwapLogic: FC = () => {
   );
 
   const addressOptions = useMemo(
-    () => Object.keys(bAssets).map(address => ({ address })),
+    () => Object.keys(bAssets).map((address) => ({ address })),
     [bAssets],
   );
 
@@ -116,12 +121,12 @@ const SwapLogic: FC = () => {
           setSwapOutput({ fetching: true });
           _masset
             .getSwapOutput(_inputAddress, _outputAddress, _inputAmount.exact)
-            .then(_swapOutput => {
+            .then((_swapOutput) => {
               setSwapOutput({
                 value: new BigDecimal(_swapOutput, _outputDecimals),
               });
             })
-            .catch(_error => {
+            .catch((_error) => {
               setSwapOutput({
                 error: sanitizeMassetError(_error),
               });
@@ -216,20 +221,25 @@ const SwapLogic: FC = () => {
     }
   }, [swapOutput.error, inputAmount, inputToken, outputToken]);
 
-  const slippageWarning = useMemo<string | undefined>(() => {
+  const penaltyBonusAmount = useMemo<number | undefined>(() => {
     if (!amounts?.minOutputAmount || !inputAmount) return;
     const { minOutputAmount } = amounts;
 
-    const amountMinBound = inputAmount.simple * 0.996;
-    const amountMaxBound = inputAmount.simple * 1.004;
+    const { min, max } = getBounds(inputAmount.simple);
+    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
 
-    if (
-      minOutputAmount.simple < amountMinBound ||
-      minOutputAmount.simple > amountMaxBound
-    ) {
-      return 'WARNING: High slippage. 0.4% slippage protection';
-    }
-  }, [amounts, inputAmount]);
+    if (!output) return;
+
+    const penalty = output / inputAmount.simple;
+    const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
+
+    if (output < min || output > max) return percentage;
+  }, [amounts, inputAmount, slippageSimple]);
+
+  const penaltyBonusWarning = useMemo<string | undefined>(
+    () => getPenaltyMessage(penaltyBonusAmount),
+    [penaltyBonusAmount],
+  );
 
   const approve = useMemo(
     () =>
@@ -247,7 +257,7 @@ const SwapLogic: FC = () => {
     <AssetSwap
       inputAddressOptions={addressOptions}
       outputAddressOptions={addressOptions}
-      error={error ?? slippageWarning}
+      error={error ?? penaltyBonusWarning}
       exchangeRate={amounts.exchangeRate}
       handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputAmount}
@@ -264,7 +274,7 @@ const SwapLogic: FC = () => {
         valid={!error && !!swapOutput.value}
         title="Swap"
         approve={approve}
-        slippageWarning={!!slippageWarning}
+        penaltyBonusAmount={penaltyBonusAmount}
         handleSend={() => {
           if (
             masset &&

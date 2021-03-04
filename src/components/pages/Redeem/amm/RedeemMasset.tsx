@@ -27,6 +27,11 @@ import { Arrow } from '../../../core/Arrow';
 import { ErrorMessage } from '../../../core/ErrorMessage';
 import { ExchangeRate } from '../../../core/ExchangeRate';
 import { TransactionInfo } from '../../../core/TransactionInfo';
+import {
+  getBounds,
+  getEstimatedOutput,
+  getPenaltyMessage,
+} from '../../amm/utils';
 
 const formId = 'redeem';
 
@@ -90,7 +95,7 @@ export const RedeemMasset: FC = () => {
         setBassetAmount({ fetching: true });
         _masset
           .getRedeemOutput(_outputAddress, _inputAmount.exact)
-          .then(_bassetAmount => {
+          .then((_bassetAmount) => {
             setBassetAmount({
               value: new BigDecimal(_bassetAmount, _outputDecimals),
             });
@@ -136,7 +141,7 @@ export const RedeemMasset: FC = () => {
   ]);
 
   const addressOptions = useMemo(
-    () => Object.keys(bAssets).map(address => ({ address })),
+    () => Object.keys(bAssets).map((address) => ({ address })),
     [bAssets],
   );
 
@@ -161,19 +166,24 @@ export const RedeemMasset: FC = () => {
     return bassetAmount.error;
   }, [bassetAmount.error, inputAmount, massetToken, outputAddress]);
 
-  const slippageWarning = useMemo<string | undefined>(() => {
+  const penaltyBonusAmount = useMemo<number | undefined>(() => {
     if (!minOutputAmount || !inputAmount) return;
 
-    const amountMinBound = inputAmount.simple * 0.996;
-    const amountMaxBound = inputAmount.simple * 1.004;
+    const { min, max } = getBounds(inputAmount.simple);
+    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
 
-    if (
-      minOutputAmount.simple < amountMinBound ||
-      minOutputAmount.simple > amountMaxBound
-    ) {
-      return 'WARNING: High slippage. 0.4% slippage protection';
-    }
-  }, [minOutputAmount, inputAmount]);
+    if (!output) return;
+
+    const penalty = output / inputAmount.simple;
+    const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
+
+    if (output < min || output > max) return percentage;
+  }, [minOutputAmount, inputAmount, slippageSimple]);
+
+  const penaltyBonusWarning = useMemo<string | undefined>(
+    () => getPenaltyMessage(penaltyBonusAmount),
+    [penaltyBonusAmount],
+  );
 
   return (
     <Container>
@@ -203,13 +213,13 @@ export const RedeemMasset: FC = () => {
         handleSetAddress={handleSetAddress}
         disabled
       />
-      {(error || slippageWarning) && (
-        <ErrorMessage error={error ?? slippageWarning ?? ''} />
+      {(error || penaltyBonusWarning) && (
+        <ErrorMessage error={error ?? penaltyBonusWarning ?? ''} />
       )}
       <SendButton
         valid={!error}
         title="Redeem"
-        slippageWarning={!!slippageWarning}
+        penaltyBonusAmount={penaltyBonusAmount}
         handleSend={() => {
           if (
             masset &&
