@@ -156,7 +156,8 @@ const RedeemExactBassetsLogic: FC = () => {
       .reduce((a, b) => a + b);
 
     const { min, max } = getBounds(inputAmount);
-    const output = maxMassetAmount.simple * (1 - (slippage.simple ?? 0) / 100);
+    const output =
+      exchangeRate?.value && inputAmount * (exchangeRate.value.simple ?? 0);
 
     if (!output) return;
 
@@ -164,7 +165,7 @@ const RedeemExactBassetsLogic: FC = () => {
     const percentage = penalty > 1 ? (penalty - 1) * -100 : (1 - penalty) * 100;
 
     if (output < min || output > max) return percentage;
-  }, [bassetAmounts, maxMassetAmount, slippage.simple]);
+  }, [bassetAmounts, exchangeRate.value, maxMassetAmount]);
 
   const penaltyBonusWarning = useMemo<string | undefined>(
     () => getPenaltyMessage(penaltyBonusAmount),
