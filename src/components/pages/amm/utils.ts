@@ -7,6 +7,14 @@ export const getBounds = (amount: number): { min: number; max: number } => {
   return { min, max };
 };
 
+export const getEstimatedOutput = (
+  amount: number | undefined,
+  slippage: number | undefined,
+): number | undefined => {
+  if (!amount || !slippage) return;
+  return amount / (1 - slippage / 100);
+};
+
 export const getPenaltyMessage = (
   amount: number | undefined,
 ): string | undefined => {

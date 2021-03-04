@@ -34,7 +34,11 @@ import {
 import { PageHeader, PageAction } from '../../PageHeader';
 import { MassetPage } from '../../MassetPage';
 import { SCALE } from '../../../../constants';
-import { getBounds, getPenaltyMessage } from '../../amm/utils';
+import {
+  getBounds,
+  getEstimatedOutput,
+  getPenaltyMessage,
+} from '../../amm/utils';
 
 const formId = 'mint';
 
@@ -205,14 +209,15 @@ const MintLogic: FC = () => {
       .reduce((a, b) => a + b);
 
     const { min, max } = getBounds(inputAmount);
+    const output = getEstimatedOutput(minOutputAmount.simple, slippage.simple);
 
-    const penalty = minOutputAmount.simple / inputAmount;
+    if (!output) return;
+
+    const penalty = output / inputAmount;
     const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
 
-    if (minOutputAmount.simple < min || minOutputAmount.simple > max) {
-      return percentage;
-    }
-  }, [inputValues, minOutputAmount]);
+    if (output < min || output > max) return percentage;
+  }, [inputValues, minOutputAmount, slippage.simple]);
 
   const penaltyBonusWarning = useMemo<string | undefined>(
     () => getPenaltyMessage(penaltyBonusAmount),

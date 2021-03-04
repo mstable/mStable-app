@@ -27,7 +27,11 @@ import { Arrow } from '../../../core/Arrow';
 import { ErrorMessage } from '../../../core/ErrorMessage';
 import { ExchangeRate } from '../../../core/ExchangeRate';
 import { TransactionInfo } from '../../../core/TransactionInfo';
-import { getBounds, getPenaltyMessage } from '../../amm/utils';
+import {
+  getBounds,
+  getEstimatedOutput,
+  getPenaltyMessage,
+} from '../../amm/utils';
 
 const formId = 'redeem';
 
@@ -166,14 +170,15 @@ export const RedeemMasset: FC = () => {
     if (!minOutputAmount || !inputAmount) return;
 
     const { min, max } = getBounds(inputAmount.simple);
+    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
 
-    const penalty = minOutputAmount.simple / inputAmount.simple;
+    if (!output) return;
+
+    const penalty = output / inputAmount.simple;
     const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
 
-    if (minOutputAmount.simple < min || minOutputAmount.simple > max) {
-      return percentage;
-    }
-  }, [minOutputAmount, inputAmount]);
+    if (output < min || output > max) return percentage;
+  }, [minOutputAmount, inputAmount, slippageSimple]);
 
   const penaltyBonusWarning = useMemo<string | undefined>(
     () => getPenaltyMessage(penaltyBonusAmount),

@@ -25,7 +25,11 @@ import { sanitizeMassetError } from '../../../../utils/strings';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { MassetPage } from '../../MassetPage';
-import { getBounds, getPenaltyMessage } from '../../amm/utils';
+import {
+  getBounds,
+  getEstimatedOutput,
+  getPenaltyMessage,
+} from '../../amm/utils';
 
 interface SwapOutput {
   value?: BigDecimal;
@@ -222,14 +226,15 @@ const SwapLogic: FC = () => {
     const { minOutputAmount } = amounts;
 
     const { min, max } = getBounds(inputAmount.simple);
+    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
 
-    const penalty = minOutputAmount.simple / inputAmount.simple;
+    if (!output) return;
+
+    const penalty = output / inputAmount.simple;
     const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
 
-    if (minOutputAmount.simple < min || minOutputAmount.simple > max) {
-      return percentage;
-    }
-  }, [amounts, inputAmount]);
+    if (output < min || output > max) return percentage;
+  }, [amounts, inputAmount, slippageSimple]);
 
   const penaltyBonusWarning = useMemo<string | undefined>(
     () => getPenaltyMessage(penaltyBonusAmount),
