@@ -27,6 +27,7 @@ import { Arrow } from '../../../core/Arrow';
 import { ErrorMessage } from '../../../core/ErrorMessage';
 import { ExchangeRate } from '../../../core/ExchangeRate';
 import { TransactionInfo } from '../../../core/TransactionInfo';
+import { getBounds, getPenaltyMessage } from '../../amm/utils';
 
 const formId = 'redeem';
 
@@ -164,29 +165,20 @@ export const RedeemMasset: FC = () => {
   const penaltyBonusAmount = useMemo<number | undefined>(() => {
     if (!minOutputAmount || !inputAmount) return;
 
-    const amountMinBound = inputAmount.simple * 0.996;
-    const amountMaxBound = inputAmount.simple * 1.004;
+    const { min, max } = getBounds(inputAmount.simple);
 
     const penalty = minOutputAmount.simple / inputAmount.simple;
-    const formatted = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
+    const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
 
-    if (
-      minOutputAmount.simple < amountMinBound ||
-      minOutputAmount.simple > amountMaxBound
-    ) {
-      return formatted;
+    if (minOutputAmount.simple < min || minOutputAmount.simple > max) {
+      return percentage;
     }
   }, [minOutputAmount, inputAmount]);
 
-  const penaltyBonusWarning = useMemo<string | undefined>(() => {
-    if (!penaltyBonusAmount) return;
-
-    const abs = Math.abs(penaltyBonusAmount).toFixed(4);
-
-    return penaltyBonusAmount > 0
-      ? `WARNING: There is a price bonus of +${abs}%`
-      : `WARNING: There is a price penalty of -${abs}%`;
-  }, [penaltyBonusAmount]);
+  const penaltyBonusWarning = useMemo<string | undefined>(
+    () => getPenaltyMessage(penaltyBonusAmount),
+    [penaltyBonusAmount],
+  );
 
   return (
     <Container>

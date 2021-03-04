@@ -29,6 +29,7 @@ import {
   useMultiAssetExchangeDispatch,
   useMultiAssetExchangeState,
 } from '../../../forms/MultiAssetExchange';
+import { getBounds, getPenaltyMessage } from '../../amm/utils';
 
 const formId = 'redeem';
 
@@ -154,29 +155,20 @@ const RedeemExactBassetsLogic: FC = () => {
       .map((address) => bassetAmounts[address].amount?.simple ?? 0)
       .reduce((a, b) => a + b);
 
-    const amountMinBound = inputAmount * 0.996;
-    const amountMaxBound = inputAmount * 1.004;
+    const { min, max } = getBounds(inputAmount);
 
     const penalty = inputAmount / maxMassetAmount.simple;
-    const formatted = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
+    const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
 
-    if (
-      maxMassetAmount.simple < amountMinBound ||
-      maxMassetAmount.simple > amountMaxBound
-    ) {
-      return formatted;
+    if (maxMassetAmount.simple < min || maxMassetAmount.simple > max) {
+      return percentage;
     }
   }, [bassetAmounts, maxMassetAmount]);
 
-  const penaltyBonusWarning = useMemo<string | undefined>(() => {
-    if (!penaltyBonusAmount) return;
-
-    const abs = Math.abs(penaltyBonusAmount).toFixed(4);
-
-    return penaltyBonusAmount > 0
-      ? `WARNING: There is a price bonus of +${abs}%`
-      : `WARNING: There is a price penalty of -${abs}%`;
-  }, [penaltyBonusAmount]);
+  const penaltyBonusWarning = useMemo<string | undefined>(
+    () => getPenaltyMessage(penaltyBonusAmount),
+    [penaltyBonusAmount],
+  );
 
   return (
     <OneToManyAssetExchange

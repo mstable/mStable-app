@@ -34,6 +34,7 @@ import {
 import { PageHeader, PageAction } from '../../PageHeader';
 import { MassetPage } from '../../MassetPage';
 import { SCALE } from '../../../../constants';
+import { getBounds, getPenaltyMessage } from '../../amm/utils';
 
 const formId = 'mint';
 
@@ -203,29 +204,20 @@ const MintLogic: FC = () => {
       .map((address) => inputValues[address].amount?.simple ?? 0)
       .reduce((a, b) => a + b);
 
-    const amountMinBound = inputAmount * 0.996;
-    const amountMaxBound = inputAmount * 1.004;
+    const { min, max } = getBounds(inputAmount);
 
     const penalty = minOutputAmount.simple / inputAmount;
-    const formatted = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
+    const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
 
-    if (
-      minOutputAmount.simple < amountMinBound ||
-      minOutputAmount.simple > amountMaxBound
-    ) {
-      return formatted;
+    if (minOutputAmount.simple < min || minOutputAmount.simple > max) {
+      return percentage;
     }
   }, [inputValues, minOutputAmount]);
 
-  const penaltyBonusWarning = useMemo<string | undefined>(() => {
-    if (!penaltyBonusAmount) return;
-
-    const abs = Math.abs(penaltyBonusAmount).toFixed(4);
-
-    return penaltyBonusAmount > 0
-      ? `WARNING: There is a price bonus of +${abs}%`
-      : `WARNING: There is a price penalty of -${abs}%`;
-  }, [penaltyBonusAmount]);
+  const penaltyBonusWarning = useMemo<string | undefined>(
+    () => getPenaltyMessage(penaltyBonusAmount),
+    [penaltyBonusAmount],
+  );
 
   return (
     <ManyToOneAssetExchange
