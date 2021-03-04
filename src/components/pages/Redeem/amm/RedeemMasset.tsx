@@ -90,7 +90,7 @@ export const RedeemMasset: FC = () => {
         setBassetAmount({ fetching: true });
         _masset
           .getRedeemOutput(_outputAddress, _inputAmount.exact)
-          .then(_bassetAmount => {
+          .then((_bassetAmount) => {
             setBassetAmount({
               value: new BigDecimal(_bassetAmount, _outputDecimals),
             });
@@ -136,7 +136,7 @@ export const RedeemMasset: FC = () => {
   ]);
 
   const addressOptions = useMemo(
-    () => Object.keys(bAssets).map(address => ({ address })),
+    () => Object.keys(bAssets).map((address) => ({ address })),
     [bAssets],
   );
 
@@ -161,19 +161,32 @@ export const RedeemMasset: FC = () => {
     return bassetAmount.error;
   }, [bassetAmount.error, inputAmount, massetToken, outputAddress]);
 
-  const slippageWarning = useMemo<string | undefined>(() => {
+  const penaltyBonusAmount = useMemo<number | undefined>(() => {
     if (!minOutputAmount || !inputAmount) return;
 
     const amountMinBound = inputAmount.simple * 0.996;
     const amountMaxBound = inputAmount.simple * 1.004;
 
+    const penalty = minOutputAmount.simple / inputAmount.simple;
+    const formatted = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
+
     if (
       minOutputAmount.simple < amountMinBound ||
       minOutputAmount.simple > amountMaxBound
     ) {
-      return 'WARNING: High slippage. 0.4% slippage protection';
+      return formatted;
     }
   }, [minOutputAmount, inputAmount]);
+
+  const penaltyBonusWarning = useMemo<string | undefined>(() => {
+    if (!penaltyBonusAmount) return;
+
+    const abs = Math.abs(penaltyBonusAmount).toFixed(4);
+
+    return penaltyBonusAmount > 0
+      ? `WARNING: There is a price bonus of +${abs}%`
+      : `WARNING: There is a price penalty of -${abs}%`;
+  }, [penaltyBonusAmount]);
 
   return (
     <Container>
@@ -203,13 +216,13 @@ export const RedeemMasset: FC = () => {
         handleSetAddress={handleSetAddress}
         disabled
       />
-      {(error || slippageWarning) && (
-        <ErrorMessage error={error ?? slippageWarning ?? ''} />
+      {(error || penaltyBonusWarning) && (
+        <ErrorMessage error={error ?? penaltyBonusWarning ?? ''} />
       )}
       <SendButton
         valid={!error}
         title="Redeem"
-        slippageWarning={!!slippageWarning}
+        penaltyBonusAmount={penaltyBonusAmount}
         handleSend={() => {
           if (
             masset &&

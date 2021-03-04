@@ -26,15 +26,15 @@ interface Props {
     address: string;
     amount?: BigDecimal;
   };
-  slippageWarning?: boolean;
+  penaltyBonusAmount?: number;
 }
 
-const StyledButton = styled(Button)<{ slippageWarning?: boolean }>`
+const StyledButton = styled(Button)<{ isPenalty?: boolean; isBonus?: boolean }>`
   width: 100%;
   height: 3.75rem;
   border-radius: 2rem;
-  background: ${({ slippageWarning, theme }) =>
-    slippageWarning && theme.color.red};
+  background: ${({ isBonus, isPenalty, theme }) =>
+    isPenalty ? theme.color.red : isBonus && theme.color.orange};
 `;
 
 const CloseButton = styled(UnstyledButton)`
@@ -67,29 +67,33 @@ const SendButtonContent: FC<Omit<Props, 'approve'>> = ({
   valid,
   title,
   handleSend,
-  slippageWarning,
-}) => (
-  <Container className={className}>
-    <StyledButton
-      slippageWarning={slippageWarning}
-      highlighted={valid}
-      disabled={!valid}
-      onClick={async () => {
-        if (!valid) return;
+  penaltyBonusAmount,
+}) => {
+  const isBonus = (penaltyBonusAmount ?? 0) > 0;
+  return (
+    <Container className={className}>
+      <StyledButton
+        isBonus={isBonus && !!penaltyBonusAmount}
+        isPenalty={!isBonus && !!penaltyBonusAmount}
+        highlighted={valid}
+        disabled={!valid}
+        onClick={async () => {
+          if (!valid) return;
 
-        if (slippageWarning) {
-          if (!confirm(SLIPPAGE_WARNING)) {
-            return;
+          if (penaltyBonusAmount) {
+            if (!confirm(SLIPPAGE_WARNING)) {
+              return;
+            }
           }
-        }
 
-        handleSend();
-      }}
-    >
-      {`${title} ${slippageWarning && valid ? 'Anyway' : ''}`}
-    </StyledButton>
-  </Container>
-);
+          handleSend();
+        }}
+      >
+        {`${title} ${!!penaltyBonusAmount && valid ? 'Anyway' : ''}`}
+      </StyledButton>
+    </Container>
+  );
+};
 
 export const ApproveContent: FC<{
   onApproveClick: (mode: Mode) => void;
@@ -170,9 +174,10 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
   valid,
   title,
   handleSend,
-  slippageWarning,
+  penaltyBonusAmount,
 }) => {
   const [sendError, setSendError] = useState<string | undefined>();
+  const isBonus = (penaltyBonusAmount ?? 0) > 0;
 
   const [
     { needsApprove, hasPendingApproval, isApproveEdgeCase, mode },
@@ -190,7 +195,8 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
     <Container className={className}>
       {step === Step.ACTION ? (
         <StyledButton
-          slippageWarning={slippageWarning}
+          isBonus={isBonus && !!penaltyBonusAmount}
+          isPenalty={!isBonus && !!penaltyBonusAmount}
           highlighted={valid}
           disabled={!valid}
           onClick={async () => {
@@ -204,7 +210,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
               return setStep(Step.APPROVE);
             }
 
-            if (slippageWarning) {
+            if (penaltyBonusAmount) {
               if (!confirm(SLIPPAGE_WARNING)) {
                 return;
               }
@@ -217,7 +223,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
             }
           }}
         >
-          {`${title} ${slippageWarning && valid ? 'Anyway' : ''}`}
+          {`${title} ${!!penaltyBonusAmount && valid ? 'Anyway' : ''}`}
         </StyledButton>
       ) : (
         <ApproveContent
@@ -238,7 +244,7 @@ export const SendButton: FC<Props> = ({
   handleSend,
   title,
   valid,
-  slippageWarning,
+  penaltyBonusAmount,
 }) =>
   approve ? (
     <ApproveProvider
@@ -251,7 +257,7 @@ export const SendButton: FC<Props> = ({
         valid={valid}
         title={title}
         handleSend={handleSend}
-        slippageWarning={slippageWarning}
+        penaltyBonusAmount={penaltyBonusAmount}
       />
     </ApproveProvider>
   ) : (
@@ -260,6 +266,6 @@ export const SendButton: FC<Props> = ({
       valid={valid}
       title={title}
       handleSend={handleSend}
-      slippageWarning={slippageWarning}
+      penaltyBonusAmount={penaltyBonusAmount}
     />
   );

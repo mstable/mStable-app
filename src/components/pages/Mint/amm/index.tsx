@@ -61,7 +61,7 @@ const MintLogic: FC = () => {
 
   const { exchangeRate, minOutputAmount } = useMemo(() => {
     const totalInputAmount = Object.values(inputValues)
-      .filter(v => v.touched)
+      .filter((v) => v.touched)
       .reduce(
         (prev, v) =>
           prev.add(
@@ -104,7 +104,7 @@ const MintLogic: FC = () => {
   useThrottleFn(
     (_masset: Masset | undefined, _inputValues: BigDecimalInputValues) => {
       if (_masset) {
-        const touched = Object.values(_inputValues).filter(v => v.touched);
+        const touched = Object.values(_inputValues).filter((v) => v.touched);
 
         if (touched.length > 0) {
           setOutputAmount({ fetching: true });
@@ -118,8 +118,8 @@ const MintLogic: FC = () => {
               );
             }
 
-            const inputs = touched.map(v => v.address);
-            const amounts = touched.map(v => (v.amount as BigDecimal).exact);
+            const inputs = touched.map((v) => v.address);
+            const amounts = touched.map((v) => (v.amount as BigDecimal).exact);
             return _masset.getMintMultiOutput(inputs, amounts);
           })();
 
@@ -158,18 +158,20 @@ const MintLogic: FC = () => {
   const inputLabel = useMemo(
     () =>
       Object.values(inputValues)
-        .filter(v => v.touched)
-        .map(v => inputTokens.find(t => t.address === v.address)?.symbol)
+        .filter((v) => v.touched)
+        .map((v) => inputTokens.find((t) => t.address === v.address)?.symbol)
         .join('/'),
     [inputTokens, inputValues],
   );
 
   const error = useMemo(() => {
-    const touched = Object.keys(inputValues).find(t => inputValues[t].touched);
+    const touched = Object.keys(inputValues).find(
+      (t) => inputValues[t].touched,
+    );
 
     if (!touched) return;
 
-    const addressesBalanceTooLow = Object.keys(inputValues).filter(t =>
+    const addressesBalanceTooLow = Object.keys(inputValues).filter((t) =>
       inputValues[t].amount?.exact.gt(
         tokenState.tokens[t]?.balance?.exact ?? 0,
       ),
@@ -177,10 +179,10 @@ const MintLogic: FC = () => {
 
     if (addressesBalanceTooLow.length)
       return `Insufficient ${addressesBalanceTooLow
-        .map(t => tokenState.tokens[t]?.symbol)
+        .map((t) => tokenState.tokens[t]?.symbol)
         .join(', ')} balance`;
 
-    const addressesApprovalNeeded = Object.keys(inputValues).filter(t =>
+    const addressesApprovalNeeded = Object.keys(inputValues).filter((t) =>
       inputValues[t].amount?.exact.gt(
         tokenState.tokens[t]?.allowances[massetState.address]?.exact ?? 0,
       ),
@@ -188,29 +190,42 @@ const MintLogic: FC = () => {
 
     if (addressesApprovalNeeded.length)
       return `Approval for ${addressesApprovalNeeded
-        .map(t => tokenState.tokens[t]?.symbol)
+        .map((t) => tokenState.tokens[t]?.symbol)
         .join(', ')} needed`;
 
     return outputAmount.error;
   }, [inputValues, massetState.address, outputAmount.error, tokenState.tokens]);
 
-  const slippageWarning = useMemo<string | undefined>(() => {
+  const penaltyBonusAmount = useMemo<number | undefined>(() => {
     if (!minOutputAmount) return;
 
     const inputAmount = Object.keys(inputValues)
-      .map(address => inputValues[address].amount?.simple ?? 0)
+      .map((address) => inputValues[address].amount?.simple ?? 0)
       .reduce((a, b) => a + b);
 
     const amountMinBound = inputAmount * 0.996;
     const amountMaxBound = inputAmount * 1.004;
 
+    const penalty = minOutputAmount.simple / inputAmount;
+    const formatted = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
+
     if (
       minOutputAmount.simple < amountMinBound ||
       minOutputAmount.simple > amountMaxBound
     ) {
-      return 'WARNING: High slippage. 0.4% slippage protection';
+      return formatted;
     }
   }, [inputValues, minOutputAmount]);
+
+  const penaltyBonusWarning = useMemo<string | undefined>(() => {
+    if (!penaltyBonusAmount) return;
+
+    const abs = Math.abs(penaltyBonusAmount).toFixed(4);
+
+    return penaltyBonusAmount > 0
+      ? `WARNING: There is a price bonus of +${abs}%`
+      : `WARNING: There is a price penalty of -${abs}%`;
+  }, [penaltyBonusAmount]);
 
   return (
     <ManyToOneAssetExchange
@@ -221,15 +236,15 @@ const MintLogic: FC = () => {
       setMaxCallbacks={setMaxCallbacks}
       spender={massetState.address}
       minOutputAmount={minOutputAmount}
-      error={error ?? slippageWarning}
+      error={error ?? penaltyBonusWarning}
     >
       <SendButton
-        valid={!error && Object.values(inputValues).some(v => v.touched)}
-        slippageWarning={!!slippageWarning}
+        valid={!error && Object.values(inputValues).some((v) => v.touched)}
+        penaltyBonusAmount={penaltyBonusAmount}
         title="Mint"
         handleSend={() => {
           if (masset && walletAddress && minOutputAmount) {
-            const touched = Object.values(inputValues).filter(v => v.touched);
+            const touched = Object.values(inputValues).filter((v) => v.touched);
 
             if (touched.length === 1) {
               const [{ address, amount }] = touched;
@@ -249,8 +264,8 @@ const MintLogic: FC = () => {
               );
             }
 
-            const addresses = touched.map(v => v.address);
-            const amounts = touched.map(v => (v.amount as BigDecimal).exact);
+            const addresses = touched.map((v) => v.address);
+            const amounts = touched.map((v) => (v.amount as BigDecimal).exact);
 
             return propose<Interfaces.Masset, 'mintMulti'>(
               new TransactionManifest(

@@ -53,7 +53,7 @@ const RedeemExactBassetsLogic: FC = () => {
 
   const { exchangeRate, maxMassetAmount } = useMemo(() => {
     const outputAmount = Object.values(bassetAmounts)
-      .filter(v => v.touched)
+      .filter((v) => v.touched)
       .reduce(
         (prev, v) =>
           prev.add(
@@ -93,16 +93,16 @@ const RedeemExactBassetsLogic: FC = () => {
   useThrottleFn(
     (_masset: Masset | undefined, _inputValues: BigDecimalInputValues) => {
       if (_masset) {
-        const touched = Object.values(_inputValues).filter(v => v.touched);
+        const touched = Object.values(_inputValues).filter((v) => v.touched);
 
         if (touched.length > 0) {
           setMassetAmount({ fetching: true });
 
-          const inputs = touched.map(v => v.address);
-          const amounts = touched.map(v => (v.amount as BigDecimal).exact);
+          const inputs = touched.map((v) => v.address);
+          const amounts = touched.map((v) => (v.amount as BigDecimal).exact);
           return _masset
             .getRedeemExactBassetsOutput(inputs, amounts)
-            .then(_massetAmount => {
+            .then((_massetAmount) => {
               setMassetAmount({
                 value: new BigDecimal(_massetAmount),
               });
@@ -123,14 +123,14 @@ const RedeemExactBassetsLogic: FC = () => {
   const outputLabel = useMemo(
     () =>
       Object.values(bassetAmounts)
-        .filter(v => v.touched)
-        .map(v => outputTokens.find(t => t.address === v.address)?.symbol)
+        .filter((v) => v.touched)
+        .map((v) => outputTokens.find((t) => t.address === v.address)?.symbol)
         .join('/'),
     [outputTokens, bassetAmounts],
   );
 
   const error = useMemo(() => {
-    const touched = Object.values(bassetAmounts).filter(v => v.touched);
+    const touched = Object.values(bassetAmounts).filter((v) => v.touched);
 
     if (touched.length === 0) {
       return;
@@ -147,23 +147,36 @@ const RedeemExactBassetsLogic: FC = () => {
     return massetAmount.error;
   }, [bassetAmounts, massetAmount.error, massetBalance, maxMassetAmount]);
 
-  const slippageWarning = useMemo<string | undefined>(() => {
+  const penaltyBonusAmount = useMemo<number | undefined>(() => {
     if (!maxMassetAmount) return;
 
     const inputAmount = Object.keys(bassetAmounts)
-      .map(address => bassetAmounts[address].amount?.simple ?? 0)
+      .map((address) => bassetAmounts[address].amount?.simple ?? 0)
       .reduce((a, b) => a + b);
 
     const amountMinBound = inputAmount * 0.996;
     const amountMaxBound = inputAmount * 1.004;
 
+    const penalty = inputAmount / maxMassetAmount.simple;
+    const formatted = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
+
     if (
       maxMassetAmount.simple < amountMinBound ||
       maxMassetAmount.simple > amountMaxBound
     ) {
-      return 'WARNING: High slippage. 0.4% slippage protection';
+      return formatted;
     }
   }, [bassetAmounts, maxMassetAmount]);
+
+  const penaltyBonusWarning = useMemo<string | undefined>(() => {
+    if (!penaltyBonusAmount) return;
+
+    const abs = Math.abs(penaltyBonusAmount).toFixed(4);
+
+    return penaltyBonusAmount > 0
+      ? `WARNING: There is a price bonus of +${abs}%`
+      : `WARNING: There is a price penalty of -${abs}%`;
+  }, [penaltyBonusAmount]);
 
   return (
     <OneToManyAssetExchange
@@ -172,20 +185,22 @@ const RedeemExactBassetsLogic: FC = () => {
       inputLabel={massetState?.token.symbol}
       outputLabel={outputLabel}
       maxOutputAmount={maxMassetAmount}
-      error={error ?? slippageWarning}
+      error={error ?? penaltyBonusWarning}
     >
       <SendButton
-        valid={!error && Object.values(bassetAmounts).some(v => v.touched)}
-        slippageWarning={!!slippageWarning}
+        valid={!error && Object.values(bassetAmounts).some((v) => v.touched)}
+        penaltyBonusAmount={penaltyBonusAmount}
         title="Redeem"
         handleSend={() => {
           if (masset && walletAddress && maxMassetAmount) {
-            const touched = Object.values(bassetAmounts).filter(v => v.touched);
+            const touched = Object.values(bassetAmounts).filter(
+              (v) => v.touched,
+            );
 
             if (touched.length === 0) return;
 
-            const addresses = touched.map(v => v.address);
-            const amounts = touched.map(v => (v.amount as BigDecimal).exact);
+            const addresses = touched.map((v) => v.address);
+            const amounts = touched.map((v) => (v.amount as BigDecimal).exact);
 
             return propose<Interfaces.Masset, 'redeemExactBassets'>(
               new TransactionManifest(
