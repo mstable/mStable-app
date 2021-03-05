@@ -17,6 +17,7 @@ import {
   UniswapRouter02,
   LegacyMasset,
   SaveWrapper,
+  SaveWrapperV2,
   TokenMinter,
 } from './typechain';
 
@@ -43,6 +44,7 @@ export enum Interfaces {
   CurveTokenMinter,
   CurveDeposit,
   SaveWrapper,
+  SaveWrapperV2,
   BoostedSavingsVault,
   UniswapRouter02,
 }
@@ -61,6 +63,7 @@ export interface Instances {
   [Interfaces.CurveTokenMinter]: TokenMinter;
   [Interfaces.CurveDeposit]: CurveDeposit;
   [Interfaces.SaveWrapper]: SaveWrapper;
+  [Interfaces.SaveWrapperV2]: SaveWrapperV2;
   [Interfaces.BoostedSavingsVault]: BoostedSavingsVault;
   [Interfaces.UniswapRouter02]: UniswapRouter02;
 }

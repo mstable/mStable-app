@@ -123,6 +123,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     musd: {
       SaveWrapper: '0xeb9201126a77dcd966c878ce81ea1146603b86ad',
     },
+    mbtc: {
+      SaveWrapper: '0xe43f02fefe1101116af8facb3a7522a94479db40',
+    },
     BALANCER: {
       BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },
