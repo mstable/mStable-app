@@ -1,5 +1,4 @@
 import React, { FC, useMemo, useState } from 'react';
-import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated/factories/BoostedSavingsVault__factory';
 import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV2__factory';
 
 import styled from 'styled-components';
@@ -11,7 +10,6 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 
 import {
-  SaveWrapper__factory,
   SaveWrapperV2__factory,
   Masset,
   Masset__factory,
@@ -28,21 +26,19 @@ import { SendButton } from '../../../forms/SendButton';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 import { TransactionInfo } from '../../../core/TransactionInfo';
-import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
 import { sanitizeMassetError } from '../../../../utils/strings';
-import { Basset } from '../../../../graphql/protocol';
 import { BassetState } from '../../../../context/DataProvider/types';
+import {
+  getBounds,
+  getEstimatedOutput,
+  getPenaltyMessage,
+} from '../../amm/utils';
 
 const formId = 'SaveDepositAMM';
 
 const depositPurpose = {
   present: 'Depositing savings',
   past: 'Deposited savings',
-};
-
-const depositAndStakePurpose = {
-  present: 'Depositing and staking savings',
-  past: 'Deposited and staked savings',
 };
 
 const Info = styled(TransactionInfo)`
@@ -60,9 +56,6 @@ export const SaveDepositAMM: FC<{
   const massetAddress = massetState?.address;
   const savingsContract = massetState?.savingsContracts.v2;
   const saveTokenSymbol = savingsContract?.token?.symbol ?? '';
-  const vault = savingsContract?.boostedSavingsVault;
-  const vaultAddress = vault?.address;
-  const vaultBalance = vault?.account?.rawBalance ?? BigDecimal.ZERO;
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
   const saveWrapperAddress = ADDRESSES[massetName]?.SaveWrapper;
@@ -104,7 +97,7 @@ export const SaveDepositAMM: FC<{
     ];
   }, [massetAddress, bassets]);
 
-  const [outputAmount, setOutputAmount] = useState<{
+  const [bAssetOutputAmount, setBAssetOutputAmount] = useState<{
     fetching?: boolean;
     value?: BigDecimal;
     error?: string;
@@ -116,15 +109,15 @@ export const SaveDepositAMM: FC<{
   }>(() => {
     if (!inputAmount || !saveExchangeRate) return {};
 
-    if (outputAmount?.value) {
+    if (bAssetOutputAmount?.value && inputAmount?.simple > 0) {
       return {
-        value: outputAmount.value
+        value: bAssetOutputAmount.value
           .divPrecisely(inputAmount)
           .divPrecisely(saveExchangeRate),
       };
     }
     return { value: BigDecimal.ONE.divPrecisely(saveExchangeRate) };
-  }, [inputAmount, outputAmount.value, saveExchangeRate]);
+  }, [inputAmount, bAssetOutputAmount, saveExchangeRate]);
 
   const basset = inputAddress && massetState?.bAssets[inputAddress];
 
@@ -136,6 +129,11 @@ export const SaveDepositAMM: FC<{
     [massetAddress, signer],
   );
 
+  const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
+    min: 0.01,
+    max: 99.99,
+  });
+
   // Get the swap output with a throttle so it's not called too often
   useThrottleFn(
     (
@@ -143,13 +141,12 @@ export const SaveDepositAMM: FC<{
       _basset: BassetState | undefined | '',
       _inputValue?: BigDecimal,
       _inputAddress?: string,
-      _exchangeRate?: BigDecimal | undefined,
     ) => {
-      if (!(_inputValue && _inputAddress && _exchangeRate)) return;
+      if (!(_inputValue && _inputAddress)) return;
       if (_inputValue.simple <= 0) return;
 
       if (_masset && _basset) {
-        setOutputAmount({ fetching: true });
+        setBAssetOutputAmount({ fetching: true });
 
         const promise = (() => {
           return _masset.getMintOutput(_inputAddress, _inputValue.exact);
@@ -157,68 +154,76 @@ export const SaveDepositAMM: FC<{
 
         return promise
           .then((mintOutput: BigNumber): void => {
-            setOutputAmount({
+            setBAssetOutputAmount({
               value: new BigDecimal(mintOutput).setDecimals(
                 _basset.token.decimals,
               ),
             });
           })
           .catch((_error: Error): void => {
-            setOutputAmount({
+            setBAssetOutputAmount({
               error: sanitizeMassetError(_error),
             });
           });
       }
-      setOutputAmount({});
+      setBAssetOutputAmount({});
     },
     1000,
-    [masset, basset, inputAmount, inputAddress, saveExchangeRate],
+    [masset, basset, inputAmount, inputAddress],
   );
 
-  // const scaledInputAmount = useMemo<BigDecimal | undefined>(
-  //   () =>
-  //     basset && outputAmount.value
-  //       ? outputAmount.value
-  //           .divRatioPrecisely(basset.ratio)
-  //           .setDecimals(basset.token.decimals)
-  //       : outputAmount.value,
-  //   [basset, outputAmount],
-  // );
-
-  const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
-    min: 0.01,
-    max: 99.99,
-  });
-
-  const { minOutputAmount, minOutputIMUSD } = useMemo(() => {
+  const { minOutputAmount, minOutputSaveAmount } = useMemo(() => {
     const _minOutputAmount = BigDecimal.maybeParse(
-      outputAmount?.value && slippageSimple
-        ? (outputAmount?.value.simple * (1 - slippageSimple / 100)).toFixed(
-            outputAmount?.value.decimals,
-          )
-        : undefined,
+      (bAssetOutputAmount?.value &&
+        slippageSimple &&
+        (bAssetOutputAmount?.value.simple * (1 - slippageSimple / 100)).toFixed(
+          bAssetOutputAmount?.value.decimals,
+        )) ||
+        undefined,
     );
+    const _minOutputSaveAmount =
+      saveExchangeRate && _minOutputAmount?.divPrecisely(saveExchangeRate);
 
     return {
       minOutputAmount: _minOutputAmount,
-      minOutputIMUSD:
-        saveExchangeRate && _minOutputAmount?.divPrecisely(saveExchangeRate),
+      minOutputSaveAmount: _minOutputSaveAmount,
     };
-  }, [outputAmount?.value, saveExchangeRate, slippageSimple]);
+  }, [bAssetOutputAmount, saveExchangeRate, slippageSimple]);
+
+  const penaltyBonusAmount = useMemo<number | undefined>(() => {
+    if (!(minOutputAmount && inputAmount)) return;
+
+    const { min, max } = getBounds(inputAmount.simple);
+    if (!min || !max) return;
+
+    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
+    if (!output) return;
+
+    const penalty = output / inputAmount.simple;
+    const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
+
+    if (output < min || output > max) return percentage;
+  }, [inputAmount, minOutputAmount, slippageSimple]);
+
+  const penaltyBonusWarning = useMemo<string | undefined>(
+    () => getPenaltyMessage(penaltyBonusAmount),
+    [penaltyBonusAmount],
+  );
 
   const depositApprove = useMemo(
     () => ({
       spender: isDepositingBasset
         ? (saveWrapperAddress as string)
         : (saveAddress as string),
-      amount: outputAmount?.value ?? inputAmount, // TODO: - improve this - change outputAmount to be like bAssetOutputAmount or something ...
+      // if no bAssetAmount, fallback to mAssetAmount
+      amount: bAssetOutputAmount?.value ?? inputAmount,
       address: inputAddress as string,
     }),
     [
       isDepositingBasset,
       saveWrapperAddress,
       saveAddress,
-      outputAmount?.value,
+      bAssetOutputAmount,
       inputAmount,
       inputAddress,
     ],
@@ -233,115 +238,78 @@ export const SaveDepositAMM: FC<{
       inputAddress={inputAddress}
       inputFormValue={inputFormValue}
       outputAddress={saveAddress}
-      error={error}
+      error={error ?? penaltyBonusWarning}
       exchangeRate={exchangeRate}
       handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputFormValue}
-      handleSetInputMax={() => {
-        if (inputToken) {
-          setInputFormValue(inputToken.balance.string);
-        }
-      }}
+      handleSetInputMax={() =>
+        inputToken && setInputFormValue(inputToken.balance.string)
+      }
       outputAddressDisabled
     >
-      <>
-        {!saveAndStake && (
-          <SendButton
-            valid={valid}
-            title={`Mint ${saveTokenSymbol}`}
-            handleSend={async () => {
-              if (
-                signer &&
-                saveAddress &&
-                massetAddress &&
-                massetState &&
-                inputAmount &&
-                inputAddress
-              ) {
-                console.log(
-                  'FLIP DIS',
-                  inputAmount?.exact?.toString(),
-                  outputAmount?.value?.simple,
-                  minOutputAmount?.simple,
-                  inputAddress,
-                  saveWrapperAddress,
-                );
-
-                if (inputAddress === massetAddress) {
-                  return propose<
-                    Interfaces.SavingsContract,
-                    'depositSavings(uint256)'
-                  >(
-                    new TransactionManifest(
-                      ISavingsContractV2__factory.connect(saveAddress, signer),
-                      'depositSavings(uint256)',
-                      [inputAmount.exact],
-                      depositPurpose,
-                      formId,
-                    ),
-                  );
-                }
-
-                if (
-                  canDepositWithWrapper &&
-                  isDepositingBasset &&
-                  outputAmount?.value &&
-                  minOutputAmount
-                ) {
-                  const manifest = new TransactionManifest<
-                    Interfaces.SaveWrapperV2,
-                    'saveViaMint'
-                  >(
-                    SaveWrapperV2__factory.connect(
-                      saveWrapperAddress as string,
-                      signer,
-                    ),
-                    'saveViaMint',
-                    [
-                      inputAddress,
-                      inputAmount.exact,
-                      minOutputAmount.exact, // 0, // minOutput
-                      false,
-                    ],
+      {!saveAndStake && (
+        <SendButton
+          valid={valid}
+          title={`Mint ${saveTokenSymbol}`}
+          penaltyBonusAmount={penaltyBonusAmount}
+          handleSend={async () => {
+            if (
+              signer &&
+              saveAddress &&
+              massetAddress &&
+              massetState &&
+              inputAmount &&
+              inputAddress
+            ) {
+              if (inputAddress === massetAddress) {
+                return propose<
+                  Interfaces.SavingsContract,
+                  'depositSavings(uint256)'
+                >(
+                  new TransactionManifest(
+                    ISavingsContractV2__factory.connect(saveAddress, signer),
+                    'depositSavings(uint256)',
+                    [inputAmount.exact],
                     depositPurpose,
                     formId,
-                  );
-                  manifest.setFallbackGasLimit(580000);
-                  return propose(manifest);
-                }
-
-                // if (
-                //   canDepositWithWrapper &&
-                //   isDepositingBasset &&
-                //   scaledInputAmount
-                // ) {
-                //   const manifest = new TransactionManifest<
-                //     Interfaces.SaveWrapper,
-                //     'saveViaMint'
-                //   >(
-                //     SaveWrapper__factory.connect(
-                //       saveWrapperAddress as string,
-                //       signer,
-                //     ),
-                //     'saveViaMint',
-                //     [inputAddress, scaledInputAmount.exact, false],
-                //     depositPurpose,
-                //     formId,
-                //   );
-                //   manifest.setFallbackGasLimit(580000);
-                //   return propose(manifest);
-                // }
-
-                // TODO: via Curve
+                  ),
+                );
               }
-            }}
-            approve={depositApprove}
-          />
-        )}
-      </>
+
+              if (
+                canDepositWithWrapper &&
+                isDepositingBasset &&
+                minOutputAmount
+              ) {
+                const manifest = new TransactionManifest<
+                  Interfaces.SaveWrapperV2,
+                  'saveViaMint'
+                >(
+                  SaveWrapperV2__factory.connect(
+                    saveWrapperAddress as string,
+                    signer,
+                  ),
+                  'saveViaMint',
+                  [
+                    inputAddress,
+                    inputAmount.exact,
+                    minOutputAmount.exact,
+                    false,
+                  ],
+                  depositPurpose,
+                  formId,
+                );
+                manifest.setFallbackGasLimit(580000);
+                return propose(manifest);
+              }
+            }
+          }}
+          approve={depositApprove}
+        />
+      )}
       {inputAddress !== massetState?.address && (
         <Info
-          minOutputAmount={minOutputIMUSD}
+          minOutputAmount={minOutputSaveAmount}
           slippageFormValue={slippageFormValue}
           onSetSlippage={setSlippage}
         />

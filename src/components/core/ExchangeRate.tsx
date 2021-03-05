@@ -43,7 +43,7 @@ export const ExchangeRate: FC<Props> = ({
   const hasInput = inputLabel || inputToken;
   if (!exchangeRate) return null;
   const { fetching, value } = exchangeRate;
-  if (!fetching && !value) return null;
+  if (!value) return null;
   return (
     <Container>
       {fetching && <ThemedSkeleton height={16} width={150} />}

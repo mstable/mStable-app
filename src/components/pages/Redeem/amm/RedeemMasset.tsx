@@ -95,7 +95,7 @@ export const RedeemMasset: FC = () => {
         setBassetAmount({ fetching: true });
         _masset
           .getRedeemOutput(_outputAddress, _massetAmount.exact)
-          .then((_bassetAmount) => {
+          .then(_bassetAmount => {
             setBassetAmount({
               value: new BigDecimal(_bassetAmount, _outputDecimals),
             });
@@ -142,7 +142,7 @@ export const RedeemMasset: FC = () => {
   ]);
 
   const addressOptions = useMemo(
-    () => Object.keys(bAssets).map((address) => ({ address })),
+    () => Object.keys(bAssets).map(address => ({ address })),
     [bAssets],
   );
 
@@ -171,8 +171,9 @@ export const RedeemMasset: FC = () => {
     if (!minOutputAmount || !massetAmount) return;
 
     const { min, max } = getBounds(massetAmount.simple);
-    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
+    if (!min || !max) return;
 
+    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
     if (!output) return;
 
     const penalty = output / massetAmount.simple;
