@@ -81,7 +81,6 @@ export const SaveDepositAMM: FC<{
     massetAddress,
   );
 
-  const isDepositingSave = inputAddress === saveAddress;
   const isDepositingBasset = inputAddress && bassets.includes(inputAddress);
 
   const inputToken = useTokenSubscription(inputAddress);
@@ -115,21 +114,17 @@ export const SaveDepositAMM: FC<{
     fetching?: boolean;
     value?: BigDecimal;
   }>(() => {
-    if (
-      isDepositingSave ||
-      !inputAmount ||
-      !saveExchangeRate ||
-      !outputAmount?.value
-    )
-      return {};
+    if (!inputAmount || !saveExchangeRate) return {};
 
-    return {
-      value: outputAmount.value
-        .divPrecisely(inputAmount)
-        .divPrecisely(saveExchangeRate),
-    };
-    // return { value: BigDecimal.ONE.divPrecisely(saveExchangeRate) };
-  }, [inputAmount, isDepositingSave, outputAmount.value, saveExchangeRate]);
+    if (outputAmount?.value) {
+      return {
+        value: outputAmount.value
+          .divPrecisely(inputAmount)
+          .divPrecisely(saveExchangeRate),
+      };
+    }
+    return { value: BigDecimal.ONE.divPrecisely(saveExchangeRate) };
+  }, [inputAmount, outputAmount.value, saveExchangeRate]);
 
   const basset = inputAddress && massetState?.bAssets[inputAddress];
 
@@ -216,7 +211,7 @@ export const SaveDepositAMM: FC<{
       spender: isDepositingBasset
         ? (saveWrapperAddress as string)
         : (saveAddress as string),
-      amount: outputAmount?.value,
+      amount: outputAmount?.value ?? inputAmount, // TODO: - improve this - change outputAmount to be like bAssetOutputAmount or something ...
       address: inputAddress as string,
     }),
     [
@@ -224,6 +219,7 @@ export const SaveDepositAMM: FC<{
       saveWrapperAddress,
       saveAddress,
       outputAmount?.value,
+      inputAmount,
       inputAddress,
     ],
   );
@@ -233,13 +229,7 @@ export const SaveDepositAMM: FC<{
   return (
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
-      outputAddressOptions={[
-        {
-          address: saveAddress,
-          balance: isDepositingSave ? vaultBalance : undefined,
-          label: isDepositingSave ? `${saveTokenSymbol} Vault` : undefined,
-        },
-      ]}
+      outputAddressOptions={[{ address: saveAddress }]}
       inputAddress={inputAddress}
       inputFormValue={inputFormValue}
       outputAddress={saveAddress}
@@ -268,61 +258,57 @@ export const SaveDepositAMM: FC<{
                 inputAmount &&
                 inputAddress
               ) {
-                if (massetName === 'mbtc') {
-                  console.log(
-                    'FLIP DIS',
-                    inputAmount?.simple,
-                    outputAmount?.value?.simple,
-                    minOutputAmount?.simple,
-                    inputAddress,
-                    saveWrapperAddress,
-                  );
+                console.log(
+                  'FLIP DIS',
+                  inputAmount?.exact?.toString(),
+                  outputAmount?.value?.simple,
+                  minOutputAmount?.simple,
+                  inputAddress,
+                  saveWrapperAddress,
+                );
 
-                  if (
-                    canDepositWithWrapper &&
-                    isDepositingBasset &&
-                    outputAmount?.value &&
-                    minOutputAmount
-                  ) {
-                    const manifest = new TransactionManifest<
-                      Interfaces.SaveWrapperV2,
-                      'saveViaMint'
-                    >(
-                      SaveWrapperV2__factory.connect(
-                        saveWrapperAddress as string,
-                        signer,
-                      ),
-                      'saveViaMint',
-                      [
-                        inputAddress,
-                        inputAmount.exact,
-                        minOutputAmount.exact, // 0, // minOutput
-                        false,
-                      ],
+                if (inputAddress === massetAddress) {
+                  return propose<
+                    Interfaces.SavingsContract,
+                    'depositSavings(uint256)'
+                  >(
+                    new TransactionManifest(
+                      ISavingsContractV2__factory.connect(saveAddress, signer),
+                      'depositSavings(uint256)',
+                      [inputAmount.exact],
                       depositPurpose,
                       formId,
-                    );
-                    manifest.setFallbackGasLimit(580000);
-                    return propose(manifest);
-                  }
+                    ),
+                  );
                 }
-                // if (inputAddress === massetAddress) {
-                //   return propose<
-                //     Interfaces.SavingsContract,
-                //     'depositSavings(uint256)'
-                //   >(
-                //     new TransactionManifest(
-                //       ISavingsContractV2__factory.connect(
-                //         saveAddress,
-                //         signer,
-                //       ),
-                //       'depositSavings(uint256)',
-                //       [inputAmount.exact],
-                //       depositPurpose,
-                //       formId,
-                //     ),
-                //   );
-                // }
+
+                if (
+                  canDepositWithWrapper &&
+                  isDepositingBasset &&
+                  outputAmount?.value &&
+                  minOutputAmount
+                ) {
+                  const manifest = new TransactionManifest<
+                    Interfaces.SaveWrapperV2,
+                    'saveViaMint'
+                  >(
+                    SaveWrapperV2__factory.connect(
+                      saveWrapperAddress as string,
+                      signer,
+                    ),
+                    'saveViaMint',
+                    [
+                      inputAddress,
+                      inputAmount.exact,
+                      minOutputAmount.exact, // 0, // minOutput
+                      false,
+                    ],
+                    depositPurpose,
+                    formId,
+                  );
+                  manifest.setFallbackGasLimit(580000);
+                  return propose(manifest);
+                }
 
                 // if (
                 //   canDepositWithWrapper &&
