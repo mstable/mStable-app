@@ -72,9 +72,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     musd: {
       SaveWrapper: '0xD7c346C228bDdd8a6a4c1a69E6cC82292909dcAD',
     },
-    // mbtc: {
-    //   SaveWrapper: '0x7CB1576dcC0D8FCb32eBD21204899ef6C0270Eb9',
-    // },
+    mbtc: {
+      SaveWrapper: '0x7CB1576dcC0D8FCb32eBD21204899ef6C0270Eb9',
+    },
     BALANCER: {
       BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },
