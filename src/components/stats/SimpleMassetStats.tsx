@@ -41,13 +41,13 @@ const Container = styled.div`
 export const SimpleMassetStats: FC = () => {
   const masset = useSelectedMassetState() as MassetState;
 
-  return (
+  return masset ? (
     <Container>
       <AssetRow>
         <Label>Total {masset.token.symbol}</Label>
         <Amount amount={masset.token.totalSupply} />
       </AssetRow>
-      {Object.values(masset.bAssets).map(b => (
+      {Object.values(masset.bAssets).map((b) => (
         <AssetRow key={b.token.address}>
           <Label>{b.token.symbol}</Label>
           <div>
@@ -66,5 +66,5 @@ export const SimpleMassetStats: FC = () => {
         </AssetRow>
       ))}
     </Container>
-  );
+  ) : null;
 };
