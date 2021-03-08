@@ -26,6 +26,7 @@ interface AggregateMetricsQueryResult {
       simple: string;
     };
     savingsContracts: {
+      version: number;
       latestExchangeRate: {
         rate: number;
       };
@@ -71,6 +72,7 @@ const useAggregateMetrics = (): {
           simple
         }
         savingsContracts(orderBy: version, orderDirection: asc) {
+          version
           latestExchangeRate {
             rate
           }
@@ -100,13 +102,12 @@ const useAggregateMetrics = (): {
     return filtered
       .sort(([a], [b]) => (a > b ? 1 : -1))
       .map(([timestamp, { totalSupply, savingsContracts }]) => {
-        const totalSavingsV1 = parseFloat(
-          savingsContracts[0] ? savingsContracts[0].totalSavings.simple : '0',
-        );
+        const v1 = savingsContracts.find((sc) => sc.version === 1);
+        const v2 = savingsContracts.find((sc) => sc.version === 2);
+        const totalSavingsV1 = parseFloat(v1 ? v1.totalSavings.simple : '0');
         const totalSavingsV2 =
-          parseFloat(
-            savingsContracts[1] ? savingsContracts[1].totalSavings.simple : '0',
-          ) * (savingsContracts[1]?.latestExchangeRate?.rate ?? 0.1);
+          parseFloat(v2 ? v2.totalSavings.simple : '0') *
+          (v2?.latestExchangeRate?.rate ?? 0.1);
         return {
           timestamp,
           totalSupply: parseFloat(totalSupply.simple),
@@ -160,7 +161,7 @@ const Chart: FC<{
               padding={{ left: 16 }}
               minTickGap={16}
               tickLine
-              tickFormatter={timestamp =>
+              tickFormatter={(timestamp) =>
                 timestamp
                   ? format(
                       timestamp * 1000,
@@ -183,7 +184,7 @@ const Chart: FC<{
             />
             <Tooltip
               cursor
-              labelFormatter={timestamp =>
+              labelFormatter={(timestamp) =>
                 format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
               }
               formatter={toK as never}
