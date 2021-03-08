@@ -172,7 +172,7 @@ export const AssetDropdown: FC<Props> = ({
   const selected = useMemo(
     () =>
       defaultAddress && options
-        ? options.find(option => defaultAddress === option.address)
+        ? options.find((option) => defaultAddress === option.address)
         : undefined,
     [options, defaultAddress],
   );
@@ -208,11 +208,13 @@ export const AssetDropdown: FC<Props> = ({
       {options && (
         <OptionList hidden={!show}>
           {options
-            .filter(m => m.address !== selected?.address)
-            .map(option => (
+            .filter((m) => m.address !== selected?.address)
+            .map((option) => (
               <Option
-                key={option?.symbol}
-                onClick={() => handleSelect(option?.address)}
+                key={option.symbol}
+                onClick={() => {
+                  handleSelect(option.address);
+                }}
                 option={option}
               />
             ))}
