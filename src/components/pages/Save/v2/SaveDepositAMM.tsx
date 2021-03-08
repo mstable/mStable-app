@@ -78,6 +78,12 @@ export const SaveDepositAMM: FC<{
 
   const inputToken = useTokenSubscription(inputAddress);
 
+  const [bAssetOutputAmount, setBAssetOutputAmount] = useState<{
+    fetching?: boolean;
+    value?: BigDecimal;
+    error?: string;
+  }>({});
+
   const error = useMemo<string | undefined>(() => {
     if (
       inputAmount &&
@@ -87,8 +93,8 @@ export const SaveDepositAMM: FC<{
       return 'Insufficient balance';
     }
 
-    return undefined;
-  }, [inputAmount, inputToken]);
+    return bAssetOutputAmount?.error;
+  }, [bAssetOutputAmount, inputAmount, inputToken]);
 
   const inputAddressOptions = useMemo(() => {
     return [
@@ -96,12 +102,6 @@ export const SaveDepositAMM: FC<{
       ...bassets.map(address => ({ address })),
     ];
   }, [massetAddress, bassets]);
-
-  const [bAssetOutputAmount, setBAssetOutputAmount] = useState<{
-    fetching?: boolean;
-    value?: BigDecimal;
-    error?: string;
-  }>({});
 
   const exchangeRate = useMemo<{
     fetching?: boolean;
