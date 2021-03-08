@@ -65,10 +65,10 @@ export const RedeemMasset: FC = () => {
   }>({});
 
   const [
-    inputAmount,
-    inputFormValue,
-    handleSetInputFormValue,
-  ] = useBigDecimalInput('0', outputDecimals);
+    massetAmount,
+    massetFormValue,
+    handleSetMassetFormValue,
+  ] = useBigDecimalInput('0', massetState.token.decimals);
 
   const [slippageSimple, slippageFormValue, handleSetSlippage] = useSimpleInput(
     0.1,
@@ -87,14 +87,14 @@ export const RedeemMasset: FC = () => {
   useThrottleFn(
     (
       _masset: Masset | undefined,
-      _inputAmount: BigDecimal | undefined,
+      _massetAmount: BigDecimal | undefined,
       _outputAddress: string | undefined,
       _outputDecimals: number | undefined,
     ) => {
-      if (_masset && _outputAddress && _inputAmount?.exact.gt(0)) {
+      if (_masset && _outputAddress && _massetAmount?.exact.gt(0)) {
         setBassetAmount({ fetching: true });
         _masset
-          .getRedeemOutput(_outputAddress, _inputAmount.exact)
+          .getRedeemOutput(_outputAddress, _massetAmount.exact)
           .then((_bassetAmount) => {
             setBassetAmount({
               value: new BigDecimal(_bassetAmount, _outputDecimals),
@@ -110,30 +110,31 @@ export const RedeemMasset: FC = () => {
       }
     },
     1000,
-    [masset, inputAmount, outputAddress, outputDecimals],
+    [masset, massetAmount, outputAddress, outputDecimals],
   );
 
   const { exchangeRate, minOutputAmount } = useMemo(() => {
     const _exchangeRate: { value?: BigDecimal; fetching?: boolean } =
-      inputAmount && bassetAmount.value && inputAmount.exact.gt(0)
-        ? { value: bassetAmount.value.divPrecisely(inputAmount) }
+      massetAmount && bassetAmount.value && massetAmount.exact.gt(0)
+        ? { value: bassetAmount.value.divPrecisely(massetAmount) }
         : { fetching: bassetAmount.fetching };
 
-    const _minOutputAmount = BigDecimal.maybeParse(
+    const amountStr =
       bassetAmount.value && slippageSimple
         ? (bassetAmount.value.simple * (1 - slippageSimple / 100)).toFixed(
             bassetAmount.value.decimals,
           )
-        : undefined,
-      outputDecimals,
-    );
+        : undefined;
+
+    // Important: output amount needs bAsset decimals (outputDecimals)
+    const _minOutputAmount = BigDecimal.maybeParse(amountStr, outputDecimals);
 
     return {
       exchangeRate: _exchangeRate,
       minOutputAmount: _minOutputAmount,
     };
   }, [
-    inputAmount,
+    massetAmount,
     bassetAmount.fetching,
     bassetAmount.value,
     slippageSimple,
@@ -146,10 +147,10 @@ export const RedeemMasset: FC = () => {
   );
 
   const error = useMemo(() => {
-    if (inputAmount) {
+    if (massetAmount) {
       if (
         massetToken?.balance.exact &&
-        inputAmount.exact.gt(massetToken.balance.exact)
+        massetAmount.exact.gt(massetToken.balance.exact)
       ) {
         return 'Insufficient balance';
       }
@@ -158,27 +159,27 @@ export const RedeemMasset: FC = () => {
         return 'Must select an asset to receive';
       }
 
-      if (inputAmount.exact.eq(0)) {
+      if (massetAmount.exact.eq(0)) {
         return 'Amount must be greater than zero';
       }
     }
 
     return bassetAmount.error;
-  }, [bassetAmount.error, inputAmount, massetToken, outputAddress]);
+  }, [bassetAmount.error, massetAmount, massetToken, outputAddress]);
 
   const penaltyBonusAmount = useMemo<number | undefined>(() => {
-    if (!minOutputAmount || !inputAmount) return;
+    if (!minOutputAmount || !massetAmount) return;
 
-    const { min, max } = getBounds(inputAmount.simple);
+    const { min, max } = getBounds(massetAmount.simple);
     const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
 
     if (!output) return;
 
-    const penalty = output / inputAmount.simple;
+    const penalty = output / massetAmount.simple;
     const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
 
     if (output < min || output > max) return percentage;
-  }, [minOutputAmount, inputAmount, slippageSimple]);
+  }, [minOutputAmount, massetAmount, slippageSimple]);
 
   const penaltyBonusWarning = useMemo<string | undefined>(
     () => getPenaltyMessage(penaltyBonusAmount),
@@ -190,11 +191,11 @@ export const RedeemMasset: FC = () => {
       <AssetInput
         address={massetAddress}
         addressDisabled
-        formValue={inputFormValue}
+        formValue={massetFormValue}
         handleSetAddress={handleSetAddress}
-        handleSetAmount={handleSetInputFormValue}
+        handleSetAmount={handleSetMassetFormValue}
         handleSetMax={() => {
-          handleSetInputFormValue(massetToken?.balance.string);
+          handleSetMassetFormValue(massetToken?.balance.string);
         }}
       />
       <div>
@@ -224,7 +225,7 @@ export const RedeemMasset: FC = () => {
           if (
             masset &&
             walletAddress &&
-            inputAmount &&
+            massetAmount &&
             outputAddress &&
             minOutputAmount
           ) {
@@ -234,7 +235,7 @@ export const RedeemMasset: FC = () => {
                 'redeem',
                 [
                   outputAddress,
-                  inputAmount.exact,
+                  massetAmount.exact,
                   minOutputAmount.exact,
                   walletAddress,
                 ],
