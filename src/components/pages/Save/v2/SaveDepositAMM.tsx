@@ -27,7 +27,10 @@ import { useSelectedMassetName } from '../../../../context/SelectedMassetNamePro
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { sanitizeMassetError } from '../../../../utils/strings';
-import { BassetState } from '../../../../context/DataProvider/types';
+import {
+  BassetState,
+  MassetState,
+} from '../../../../context/DataProvider/types';
 import {
   getBounds,
   getEstimatedOutput,
@@ -69,14 +72,18 @@ export const SaveDepositAMM: FC<{
     [canDepositWithWrapper, massetState?.bAssets],
   );
 
-  const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
   const [inputAddress, setInputAddress] = useState<string | undefined>(
     massetAddress,
   );
 
-  const isDepositingBasset = inputAddress && bassets.includes(inputAddress);
-
   const inputToken = useTokenSubscription(inputAddress);
+
+  const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput(
+    '0',
+    inputToken?.decimals,
+  );
+
+  const isDepositingBasset = inputAddress && bassets.includes(inputAddress);
 
   const [bAssetOutputAmount, setBAssetOutputAmount] = useState<{
     fetching?: boolean;
@@ -107,17 +114,36 @@ export const SaveDepositAMM: FC<{
     fetching?: boolean;
     value?: BigDecimal;
   }>(() => {
-    if (!inputAmount || !saveExchangeRate) return {};
+    if (!inputAmount || !saveExchangeRate || !massetState || !inputAddress)
+      return {};
 
-    if (bAssetOutputAmount?.value && inputAmount?.simple > 0) {
+    const inputRatio = massetState.bAssets[inputAddress]?.ratio;
+
+    const scaledInputAmount =
+      inputRatio && inputAmount && inputAmount.exact.gt(0)
+        ? inputAmount.mulRatioTruncate(inputRatio).setDecimals(18)
+        : undefined;
+
+    if (
+      bAssetOutputAmount?.value &&
+      inputAmount?.simple > 0 &&
+      scaledInputAmount
+    ) {
       return {
         value: bAssetOutputAmount.value
-          .divPrecisely(inputAmount)
+          ?.divPrecisely(scaledInputAmount)
           .divPrecisely(saveExchangeRate),
       };
     }
+
     return { value: BigDecimal.ONE.divPrecisely(saveExchangeRate) };
-  }, [inputAmount, bAssetOutputAmount, saveExchangeRate]);
+  }, [
+    bAssetOutputAmount.value,
+    inputAddress,
+    inputAmount,
+    massetState,
+    saveExchangeRate,
+  ]);
 
   const basset = inputAddress && massetState?.bAssets[inputAddress];
 
@@ -155,9 +181,7 @@ export const SaveDepositAMM: FC<{
         return promise
           .then((mintOutput: BigNumber): void => {
             setBAssetOutputAmount({
-              value: new BigDecimal(mintOutput).setDecimals(
-                _basset.token.decimals,
-              ),
+              value: new BigDecimal(mintOutput),
             });
           })
           .catch((_error: Error): void => {
@@ -174,13 +198,15 @@ export const SaveDepositAMM: FC<{
 
   const { minOutputAmount, minOutputSaveAmount } = useMemo(() => {
     const _minOutputAmount = BigDecimal.maybeParse(
-      (bAssetOutputAmount?.value &&
-        slippageSimple &&
-        (bAssetOutputAmount?.value.simple * (1 - slippageSimple / 100)).toFixed(
-          bAssetOutputAmount?.value.decimals,
-        )) ||
-        undefined,
+      bAssetOutputAmount.value && slippageSimple
+        ? (
+            bAssetOutputAmount.value.simple *
+            (1 - slippageSimple / 100)
+          ).toFixed(bAssetOutputAmount.value.decimals)
+        : undefined,
+      18,
     );
+
     const _minOutputSaveAmount =
       saveExchangeRate && _minOutputAmount?.divPrecisely(saveExchangeRate);
 
