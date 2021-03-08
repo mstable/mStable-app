@@ -12,6 +12,7 @@ interface Props {
   value?: string;
   balance?: string;
   placeholder?: string;
+  step?: string;
   onChange?(formValue?: string): void;
   disabled?: boolean;
   min?: string;
@@ -66,6 +67,7 @@ export const AmountInput: FC<Props> = ({
   value,
   min = '0',
   max,
+  step = '0.01',
 }) => {
   const handleKeyPress = useCallback<KeyboardEventHandler<HTMLInputElement>>(
     event => {
@@ -93,7 +95,7 @@ export const AmountInput: FC<Props> = ({
       min={min}
       max={max}
       placeholder={placeholder}
-      step="any"
+      step={step}
       value={value || ''}
       onKeyPress={handleKeyPress}
       onChange={handleChange}

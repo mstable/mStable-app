@@ -178,6 +178,7 @@ const AssetInputContent: FC<Props> = ({
                 disabled={amountDisabled}
                 value={formValue}
                 onChange={handleSetAmount}
+                step="any"
               />
               {handleSetMax && (
                 <MaxButton
