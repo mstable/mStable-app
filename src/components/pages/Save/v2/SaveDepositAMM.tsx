@@ -27,10 +27,7 @@ import { useSelectedMassetName } from '../../../../context/SelectedMassetNamePro
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { sanitizeMassetError } from '../../../../utils/strings';
-import {
-  BassetState,
-  MassetState,
-} from '../../../../context/DataProvider/types';
+import { BassetState } from '../../../../context/DataProvider/types';
 import {
   getBounds,
   getEstimatedOutput,
@@ -114,21 +111,28 @@ export const SaveDepositAMM: FC<{
     fetching?: boolean;
     value?: BigDecimal;
   }>(() => {
-    if (!inputAmount || !saveExchangeRate || !massetState || !inputAddress)
-      return {};
-
-    const inputRatio = massetState.bAssets[inputAddress]?.ratio;
-
-    const scaledInputAmount =
-      inputRatio && inputAmount && inputAmount.exact.gt(0)
-        ? inputAmount.mulRatioTruncate(inputRatio).setDecimals(18)
-        : undefined;
+    if (!inputAmount || !saveExchangeRate)
+      return {
+        fetching: true,
+      };
 
     if (
       bAssetOutputAmount?.value &&
       inputAmount?.simple > 0 &&
-      scaledInputAmount
+      massetState &&
+      inputAddress
     ) {
+      const inputRatio = massetState.bAssets[inputAddress]?.ratio;
+      const scaledInputAmount =
+        (inputRatio &&
+          inputAmount.exact.gt(0) &&
+          inputAmount.mulRatioTruncate(inputRatio).setDecimals(18)) ||
+        undefined;
+
+      if (!scaledInputAmount) {
+        return { fetching: true };
+      }
+
       return {
         value: bAssetOutputAmount.value
           ?.divPrecisely(scaledInputAmount)
