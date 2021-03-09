@@ -8,14 +8,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useLocation } from 'react-router-dom';
 
 import { useSelectedMassetState } from './DataProvider/DataProvider';
 import { SavingsContractState } from './DataProvider/types';
 import { useSelectedMassetName } from './SelectedMassetNameProvider';
 import { useWalletAddress } from './OnboardProvider';
 import { useV1SavingsBalanceQuery } from '../graphql/protocol';
-import { BannerMessage, useSetBannerMessage } from './AppProvider';
 
 export enum SaveVersion {
   V1 = 1,
@@ -34,9 +32,6 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
   const [selectedSaveVersion, setSelectedSaveVersion] = ctxValue;
   const setRef = useRef(false);
 
-  const location = useLocation();
-
-  const setBannerMessage = useSetBannerMessage();
   const walletAddress = useWalletAddress();
 
   const massetName = useSelectedMassetName();
@@ -44,8 +39,6 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
   const savingsContracts = massetState?.savingsContracts;
   const v1 = savingsContracts?.v1;
   const v2 = savingsContracts?.v2;
-  const v1Exists = !!v1;
-  const v2Exists = !!v2;
   const v2Current = v2?.current;
   const v1Address = v1?.address;
 
@@ -81,49 +74,6 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
     selectedSaveVersion,
     setSelectedSaveVersion,
     v2Current,
-  ]);
-
-  useEffect(() => {
-    let message: BannerMessage | undefined;
-
-    if (!loading && v1Exists) {
-      message = {
-        title: 'SAVE V2 is launching soon! ',
-        emoji: '⚠️',
-        visible: true,
-      };
-
-      if (!hasNoV1Balance) {
-        message.subtitle =
-          'This will require you to migrate your existing funds.';
-      }
-
-      if (v2Exists) {
-        if (location.pathname !== '/save') {
-          message.url = '/save';
-        }
-        if (v2Current) {
-          message.title = 'SAVE V2 has launched!';
-          message.emoji = '🚀';
-          if (!hasNoV1Balance) {
-            message.subtitle =
-              'Migrate your funds now to keep earning interest.';
-          }
-        } else {
-          message.subtitle = 'Safely deposit your savings early now.';
-        }
-      }
-    }
-
-    setBannerMessage(message);
-  }, [
-    loading,
-    location,
-    setBannerMessage,
-    hasNoV1Balance,
-    v1Exists,
-    v2Current,
-    v2Exists,
   ]);
 
   // Remount the provider when the massetName or wallet changes
