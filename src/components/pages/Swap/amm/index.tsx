@@ -92,7 +92,7 @@ const SwapLogic: FC = () => {
   );
 
   const addressOptions = useMemo(
-    () => Object.keys(bAssets).map((address) => ({ address })),
+    () => Object.keys(bAssets).map(address => ({ address })),
     [bAssets],
   );
 
@@ -121,12 +121,12 @@ const SwapLogic: FC = () => {
           setSwapOutput({ fetching: true });
           _masset
             .getSwapOutput(_inputAddress, _outputAddress, _inputAmount.exact)
-            .then((_swapOutput) => {
+            .then(_swapOutput => {
               setSwapOutput({
                 value: new BigDecimal(_swapOutput, _outputDecimals),
               });
             })
-            .catch((_error) => {
+            .catch(_error => {
               setSwapOutput({
                 error: sanitizeMassetError(_error),
               });
@@ -226,8 +226,9 @@ const SwapLogic: FC = () => {
     const { minOutputAmount } = amounts;
 
     const { min, max } = getBounds(inputAmount.simple);
-    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
+    if (!min || !max) return;
 
+    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
     if (!output) return;
 
     const penalty = output / inputAmount.simple;

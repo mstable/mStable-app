@@ -7,6 +7,7 @@ import { SaveDepositETH } from './SaveDepositETH';
 import { SaveRedeem } from './SaveRedeem';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { ADDRESSES } from '../../../../constants';
+import { SaveDepositAMM } from './SaveDepositAMM';
 
 enum Tabs {
   DepositStablecoins,
@@ -47,7 +48,7 @@ export const SaveModal: FC = () => {
       {
         tab: Tabs.DepositStablecoins,
         label: `Deposit via ${massetSymbol === 'mUSD' ? 'Stablecoin' : 'mBTC'}`,
-        component: SaveDeposit,
+        component: massetSymbol === 'mUSD' ? SaveDeposit : SaveDepositAMM,
         active: tab === Tabs.DepositStablecoins,
       },
       ...(isActive && saveWrapperAddress

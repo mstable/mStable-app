@@ -72,9 +72,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     musd: {
       SaveWrapper: '0xD7c346C228bDdd8a6a4c1a69E6cC82292909dcAD',
     },
-    // mbtc: {
-    //   SaveWrapper: '0x7CB1576dcC0D8FCb32eBD21204899ef6C0270Eb9',
-    // },
+    mbtc: {
+      SaveWrapper: '0x7CB1576dcC0D8FCb32eBD21204899ef6C0270Eb9',
+    },
     BALANCER: {
       BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },
@@ -122,6 +122,9 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
     musd: {
       SaveWrapper: '0xeb9201126a77dcd966c878ce81ea1146603b86ad',
+    },
+    mbtc: {
+      SaveWrapper: '0x6f5b3bb45b05558b7cacd9f96f82406cc6b4a694',
     },
     BALANCER: {
       BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
