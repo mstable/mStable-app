@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { SubscribedTokenInput } from './SubscribedTokenInput';
-import { AmountInput } from './AmountInput';
+import { AmountInputV2 as InputField } from './AmountInputV2';
 import { ApproveContent } from './SendButton';
 import { ReactComponent as LockIcon } from '../icons/lock-open.svg';
 import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg';
@@ -57,18 +57,6 @@ const MaxButton = styled(Button)`
 
   @media (min-width: ${ViewportWidth.m}) {
     display: inherit;
-  }
-`;
-
-const InputField = styled(AmountInput)`
-  border: none;
-  background: none;
-  font-size: 1.125rem;
-  padding: 0 0.75rem;
-
-  &:active,
-  &:focus {
-    background: none;
   }
 `;
 

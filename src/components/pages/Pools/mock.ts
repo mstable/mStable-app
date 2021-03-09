@@ -2,6 +2,10 @@
 export interface MockPoolData {
   address: string;
   tokenPair: string[];
+  poolTotal?: number;
+  userAmount?: number;
+  userStakedAmount?: number;
+  mtaRewards?: number;
 }
 
 export interface MockData {
@@ -16,11 +20,15 @@ export const mockData: MockData = {
   pools: {
     user: [
       {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
+        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8519',
         tokenPair: [
           '0x0000000000085d4780b73119b644ae5ecd22b376',
           '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
         ],
+        poolTotal: 1300,
+        userAmount: 100,
+        userStakedAmount: 100,
+        mtaRewards: 1,
       },
       {
         address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8512',
