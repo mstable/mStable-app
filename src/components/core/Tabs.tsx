@@ -1,6 +1,7 @@
+import React, { FC, ReactElement } from 'react';
 import styled from 'styled-components';
 import { UnstyledButton } from './Button';
-import { Color, FontSize, ViewportWidth } from '../../theme';
+import { Color, ViewportWidth } from '../../theme';
 import { InfoMessage } from './InfoMessage';
 
 export const TabsContainer = styled.div`
@@ -11,14 +12,15 @@ export const TabsContainer = styled.div`
 
 export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
   cursor: pointer;
-  border-bottom: 4px
-    ${({ active, theme }) => (active ? theme.color.primary : 'transparent')}
+  border-bottom: 2px
+    ${({ active, theme }) =>
+      active ? theme.color.primary : theme.color.accent}
     solid;
   background: transparent;
   color: ${({ active, theme }) => (active ? theme.color.primary : Color.grey)};
   padding: 0.75rem 0.5rem;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.875rem;
   width: 100%;
   transition: border-bottom-color 0.2s ease;
 
@@ -28,9 +30,37 @@ export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
   }
 
   @media (min-width: ${ViewportWidth.s}) {
-    font-size: ${FontSize.m};
+    font-size: 1rem;
   }
 `;
+
+export const TabSwitch: FC<{
+  tabs: Record<string, { title: string; component?: ReactElement }>;
+  active: string;
+  onClick: (key: string) => void;
+}> = ({ tabs, children, active, onClick }) => {
+  return (
+    <>
+      <TabsContainer>
+        {Object.keys(tabs)
+          .filter(key => !!tabs[key].component)
+          .map(_key => (
+            <TabBtn
+              key={_key}
+              active={active === _key}
+              onClick={() => {
+                onClick(_key);
+              }}
+            >
+              {tabs[_key].title}
+            </TabBtn>
+          ))}
+      </TabsContainer>
+      {children && children}
+      {active && tabs[active]?.component}
+    </>
+  );
+};
 
 export const MoreInfo = styled.div`
   font-size: 0.875rem;
