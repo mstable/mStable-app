@@ -1,5 +1,5 @@
 import React, { FC, ReactElement } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { ReactComponent as CheckmarkIcon } from '../../../icons/checkmark.svg';
 import { ReactComponent as ChevronIcon } from '../../../icons/chevron-down.svg';
@@ -34,7 +34,7 @@ const Icon = styled.div<{ isChevron?: boolean }>`
   }
 `;
 
-const Container = styled(UnstyledButton)`
+const ContainerStyle = css`
   display: flex;
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.color.accent};
@@ -65,6 +65,10 @@ const Container = styled(UnstyledButton)`
     text-align: left;
     color: ${({ theme }) => theme.color.body};
   }
+`;
+
+const ContainerButton = styled(UnstyledButton)`
+  ${ContainerStyle};
 
   :hover {
     opacity: 0.75;
@@ -78,19 +82,42 @@ const Container = styled(UnstyledButton)`
   }
 `;
 
-export const Card: FC<Props> = props => {
-  const { className, onClick, title, children, iconType } = props;
+const Container = styled.div`
+  ${ContainerStyle};
+`;
+
+const CardContent: FC<Props> = (props) => {
+  const { title, children, iconType } = props;
   return (
-    <Container className={className} onClick={onClick}>
+    <>
       {(title || iconType) && (
         <div>
           <h2>{title}</h2>
-          <Icon className="icon" isChevron={iconType === 'chevron'}>
-            {iconType === 'checkmark' ? <CheckmarkIcon /> : <ChevronIcon />}
-          </Icon>
+          {iconType && (
+            <Icon className="icon" isChevron={iconType === 'chevron'}>
+              {iconType === 'checkmark' ? <CheckmarkIcon /> : <ChevronIcon />}
+            </Icon>
+          )}
         </div>
       )}
       {children && <div>{children}</div>}
+    </>
+  );
+};
+
+export const Card: FC<Props> = (props) => {
+  const { className, onClick, children, title, iconType } = props;
+  return onClick ? (
+    <ContainerButton className={className} onClick={onClick}>
+      <CardContent title={title} iconType={iconType}>
+        {children}
+      </CardContent>
+    </ContainerButton>
+  ) : (
+    <Container className={className}>
+      <CardContent title={title} iconType={iconType}>
+        {children}
+      </CardContent>
     </Container>
   );
 };
