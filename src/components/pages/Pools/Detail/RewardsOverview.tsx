@@ -69,7 +69,7 @@ const Container = styled.div`
   margin: 1rem 0;
 `;
 
-export const RewardsOverview: FC<Props> = (props) => {
+export const RewardsOverview: FC<Props> = props => {
   const { poolTotal, userAmount, userStakedAmount, mtaRewards, title } = props;
 
   const poolPercentage = 100 * ((userAmount ?? 0) / (poolTotal ?? 0));
@@ -102,7 +102,6 @@ export const RewardsOverview: FC<Props> = (props) => {
               }`}</span>
             </div>
           </PoolInfo>
-
           <EarnInfo>
             <div>
               <h3>Earn Rewards</h3>

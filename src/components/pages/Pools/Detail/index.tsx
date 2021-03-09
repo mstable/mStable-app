@@ -1,4 +1,10 @@
-import React, { ChangeEventHandler, FC, useCallback, useState } from 'react';
+import React, {
+  ChangeEventHandler,
+  FC,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -83,9 +89,9 @@ const getDataForAddress = (
   if (!address) return;
 
   const { pools } = data;
-  const active = pools.active.find((p) => p.address === address);
-  const user = pools.user.find((p) => p.address === address);
-  const deprecated = pools.deprecated.find((p) => p.address === address);
+  const active = pools.active.find(p => p.address === address);
+  const user = pools.user.find(p => p.address === address);
+  const deprecated = pools.deprecated.find(p => p.address === address);
 
   return active ?? user ?? deprecated;
 };
@@ -106,21 +112,24 @@ export const PoolDetail: FC = () => {
     poolAddress?: string;
   }>();
   const [lookupAddress, setLookupAddress] = useState<string | undefined>();
+  const inputText = useRef<string | undefined>();
   const [activeTab, setActiveTab] = useState<string>(Object.keys(tabs)[0]);
 
   const data = getDataForAddress(mockData, poolAddress);
   const { tokenPair, poolTotal, userAmount, userStakedAmount, mtaRewards } =
     data ?? {};
   const subscribedTokens = useTokens(tokenPair ?? []);
-  const title = subscribedTokens.map((t) => t.symbol).join('/');
+  const title = subscribedTokens.map(t => t.symbol).join('/');
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    (event) => setLookupAddress(event.target.value ?? undefined),
+    event => {
+      inputText.current = event.target.value ?? undefined;
+    },
     [],
   );
 
   // eslint-disable-next-line no-alert
-  const handleLookupClick = (): void => alert(lookupAddress);
+  const handleLookupClick = (): void => setLookupAddress(inputText.current);
 
   return (
     <Container>
@@ -136,7 +145,7 @@ export const PoolDetail: FC = () => {
           ) : (
             <ThemedSkeleton width={48} height={32} />
           )}
-          {subscribedTokens.map((token) =>
+          {subscribedTokens.map(token =>
             token.address ? (
               <EtherscanLink data={token.address} type="address">
                 <p>{token.symbol}</p>
@@ -149,7 +158,7 @@ export const PoolDetail: FC = () => {
       </AssetDetails>
       <Divider />
       <UserLookup>
-        <p>Lookup user balance:</p>
+        <p>{lookupAddress ? 'Viewing balance of:' : 'Lookup user balance:'}</p>
         <Input
           placeholder="0x00000000000000000000000000000"
           onChange={handleChange}

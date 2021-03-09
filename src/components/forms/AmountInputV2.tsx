@@ -16,6 +16,7 @@ interface Props {
   disabled?: boolean;
   min?: string;
   max?: string;
+  step?: string;
 }
 
 export const InputV2 = styled.input<{
@@ -49,6 +50,7 @@ export const AmountInputV2: FC<Props> = ({
   value,
   min = '0',
   max,
+  step = '0.01',
 }) => {
   const handleKeyPress = useCallback<KeyboardEventHandler<HTMLInputElement>>(
     event => {
@@ -76,7 +78,7 @@ export const AmountInputV2: FC<Props> = ({
       min={min}
       max={max}
       placeholder={placeholder}
-      step="any"
+      step={step}
       value={value || ''}
       onKeyPress={handleKeyPress}
       onChange={handleChange}
