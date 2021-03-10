@@ -102,7 +102,7 @@ export const SaveDepositETH: FC<{
   const saveExchangeRate = savingsContract?.latestExchangeRate?.rate;
   const saveAddress = savingsContract?.address;
   const saveWrapperAddress =
-    ADDRESSES[massetSymbol as 'mbtc' | 'musd']?.SaveWrapper;
+    ADDRESSES[massetSymbol?.toLowerCase() as 'mbtc' | 'musd']?.SaveWrapper;
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
   const [uniswapAmountOut, setUniswapAmountOut] = useState<{
@@ -168,7 +168,12 @@ export const SaveDepositETH: FC<{
     };
   }, [inputAmount, saveExchangeRate, uniswapAmountOut]);
 
-  const valid = !!(!error && inputAmount && inputAmount.simple > 0);
+  const valid = !!(
+    !error &&
+    inputAmount &&
+    inputAmount.simple > 0 &&
+    (exchangeRate?.value?.simple ?? 0) > 0
+  );
 
   useEffect(() => {
     setUniswapAmountOut({ fetching: true });
@@ -176,7 +181,7 @@ export const SaveDepositETH: FC<{
 
   useDebounce(
     () => {
-      if (valid && inputAmount && uniswap && massetState) {
+      if (inputAmount && uniswap && massetState) {
         getUniswapBassetOutputForETH(uniswap, inputAmount, massetState)
           .then(optimalBasset => {
             setUniswapAmountOut({
@@ -190,7 +195,7 @@ export const SaveDepositETH: FC<{
       }
     },
     2000,
-    [inputAmount, valid, signer, massetState],
+    [inputAmount, signer, massetState],
   );
 
   return (
