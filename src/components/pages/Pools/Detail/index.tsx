@@ -9,6 +9,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { useTokens } from '../../../../context/TokensProvider';
+import { ViewportWidth } from '../../../../theme';
 import { SubscribedToken } from '../../../../types';
 import { Button } from '../../../core/Button';
 import { EtherscanLink } from '../../../core/EtherscanLink';
@@ -25,15 +26,29 @@ import { RewardsOverview } from './RewardsOverview';
 
 const UserLookup = styled.div`
   display: flex;
-  align-items: center;
   flex: 1;
-  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
   padding: 0.75rem 1rem;
   border: 1px solid ${({ theme }) => theme.color.accent};
   border-radius: 1rem;
 
   p {
     font-weight: 600;
+  }
+
+  > button {
+    width: 100%;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    > button {
+      width: inherit;
+    }
   }
 `;
 
@@ -47,30 +62,50 @@ const Divider = styled.div`
 const AssetDetails = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
   padding: 1rem;
   border: 1px solid ${({ theme }) => theme.color.accent};
   border-radius: 1rem;
-  align-items: center;
   margin-top: 1rem;
 
   > h3 {
     font-weight: 600;
-    font-size: 1.25rem;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
   }
 
   > div {
     display: flex;
+    flex-wrap: wrap;
   }
 
   > div a {
     display: flex;
     align-items: center;
     font-weight: 600;
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
 
   > div a:not(:last-child) {
-    margin-right: 2rem;
+    margin-right: 1rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    align-items: center;
+    flex-direction: row;
+
+    > h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0;
+    }
+
+    > div a {
+      font-size: 1.125rem;
+    }
+
+    > div a:not(:last-child) {
+      margin-right: 2rem;
+    }
   }
 `;
 
@@ -82,17 +117,36 @@ const HeaderCard = styled(AssetCard)`
 
 const HeaderContainer = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
 
-  > div:first-child {
-    flex-basis: calc(65% - 0.5rem);
+  > div {
+    flex: 1;
   }
 
   > div:last-child {
-    flex-basis: calc(35% - 0.5rem);
+    overflow: hidden;
+    display: none;
+  }
+
+  @media (min-width: ${ViewportWidth.l}) {
+    justify-content: space-between;
+    flex-direction: row;
 
     > div {
-      height: 100%;
+      flex: 0;
+    }
+
+    > div:first-child {
+      flex-basis: calc(65% - 0.5rem);
+    }
+
+    > div:last-child {
+      display: inherit;
+      flex-basis: calc(35% - 0.5rem);
+
+      > div {
+        height: 100%;
+      }
     }
   }
 `;
@@ -116,11 +170,15 @@ const getDataForAddress = (
 };
 
 const TabContainer = styled.div`
-  width: 50%;
+  width: 100%;
 
   > * {
     width: 100%;
     margin-bottom: 0.5rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    width: 50%;
   }
 `;
 

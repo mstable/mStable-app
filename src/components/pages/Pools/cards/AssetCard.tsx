@@ -8,6 +8,7 @@ import { TokenIcon } from '../../../icons/TokenIcon';
 import { Card } from './Card';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { assetColorMapping } from '../utils';
+import { ViewportWidth } from '../../../../theme';
 
 interface Props {
   className?: string;
@@ -19,14 +20,8 @@ interface Props {
 }
 
 const StatsContainer = styled.div<{ isLarge?: boolean }>`
-  ${({ isLarge }) =>
-    isLarge && {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-    }}
-
+  display: flex;
+  flex-direction: column;
   flex: 1;
 
   > div:not(:last-child) {
@@ -36,7 +31,6 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
   > div {
     display: flex;
     justify-content: space-between;
-    flex-basis: ${({ isLarge }) => isLarge && `calc(50% - 5%)`};
 
     p:first-child {
       font-weight: 600;
@@ -45,6 +39,24 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
     p:last-child > span {
       ${({ theme }) => theme.mixins.numeric};
     }
+
+    @media (min-width: ${ViewportWidth.m}) {
+      flex-direction: row;
+      flex: 0;
+      justify-content: space-between;
+
+      flex-basis: ${({ isLarge }) => isLarge && `calc(50% - 5%)`};
+    }
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    ${({ isLarge }) =>
+      isLarge && {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+      }}
   }
 `;
 
@@ -129,6 +141,10 @@ const Container = styled(Card)<{ gradientColor?: string }>`
     > *:first-child {
       margin-right: 0.5rem;
     }
+  }
+
+  > div {
+    width: 100%;
   }
 `;
 

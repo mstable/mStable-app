@@ -8,6 +8,7 @@ import { OnboardingCard } from './cards/OnboardingCard';
 import { AssetCard } from './cards/AssetCard';
 import { PoolType } from './types';
 import { mockData, MockPoolData } from './mock';
+import { ViewportWidth } from '../../../theme';
 
 const DEFAULT_ITEM_COUNT = 3;
 
@@ -26,19 +27,29 @@ const LoadCard = styled(Card)`
 
 const Cards = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  flex-direction: column;
 
   > * {
+    flex: 1;
     margin-bottom: 1rem;
-    flex-basis: calc(50% - 0.75rem);
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    > * {
+      flex: 0;
+      margin-bottom: 1rem;
+      flex-basis: calc(50% - 0.75rem);
+    }
   }
 `;
 
 const Row = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   margin-bottom: 1rem;
 
   h2 {
@@ -47,19 +58,33 @@ const Row = styled.div`
   }
 
   > div {
+    margin-top: 1rem;
+
     button:not(:last-child) {
       margin-right: 1rem;
     }
   }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    > div {
+      margin-top: 0;
+    }
+  }
 `;
 
-const Section = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.color.accent};
-  padding-bottom: 3rem;
-  margin-bottom: 3rem;
-`;
+const Section = styled.div``;
 
-const Container = styled.div``;
+const Container = styled.div`
+  > ${Section}:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.color.accent};
+    padding-bottom: 3rem;
+    margin-bottom: 3rem;
+  }
+`;
 
 const Title: Record<PoolType, string> = {
   [PoolType.User]: 'Your Pools',
@@ -102,7 +127,7 @@ export const Pools: FC = () => {
         action={PageAction.Pools}
         subtitle="Earn fees and ecosystem rewards"
       />
-      {Object.keys(sections).map((type) => {
+      {Object.keys(sections).map(type => {
         const section = sections[type as PoolType];
         return (
           <Section>

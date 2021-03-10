@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { ViewportWidth } from '../../../../theme';
 import { Button } from '../../../core/Button';
 
 interface Props {
@@ -12,14 +13,18 @@ interface Props {
 
 const Card = styled.div`
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
   border-radius: 1rem;
   padding: 1rem;
 
+  > button {
+    width: 100%;
+  }
+
   > div {
     display: flex;
     flex-direction: column;
+    margin-bottom: 1rem;
 
     h3 {
       font-size: 1.25rem;
@@ -49,19 +54,48 @@ const EarnInfo = styled(Card)`
 
 const Stats = styled.div`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
 
-  > div:first-child {
-    flex-basis: calc(60% - 0.5rem);
+  > div {
+    flex: 1;
+    margin-bottom: 1rem;
   }
-  > div:last-child {
-    flex-basis: calc(40% - 0.5rem);
+
+  @media (min-width: ${ViewportWidth.m}) {
+    justify-content: space-between;
+    flex-direction: row;
+
+    > div {
+      flex: 0;
+      margin-bottom: 0;
+    }
+
+    > div:first-child {
+      flex-basis: calc(60% - 0.5rem);
+    }
+    > div:last-child {
+      flex-basis: calc(40% - 0.5rem);
+    }
   }
 `;
 
 const GetLP = styled(Card)`
   background: ${({ theme }) => theme.color.backgroundAccent};
+  flex-direction: column;
   align-items: center;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    align-items: flex-start;
+
+    > div {
+      margin-bottom: 0;
+    }
+
+    > button {
+      width: inherit;
+    }
+  }
 `;
 
 const Container = styled.div`
