@@ -9,11 +9,13 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { useTokens } from '../../../../context/TokensProvider';
+import { SubscribedToken } from '../../../../types';
 import { Button } from '../../../core/Button';
 import { EtherscanLink } from '../../../core/EtherscanLink';
 import { TabSwitch } from '../../../core/Tabs';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 import { InputV2 as Input } from '../../../forms/AmountInputV2';
+import { AssetInput } from '../../../forms/AssetInput';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { AssetCard } from '../cards/AssetCard';
 import { mockData, MockData, MockPoolData } from '../mock';
@@ -113,15 +115,70 @@ const getDataForAddress = (
   return active ?? user ?? deprecated;
 };
 
-const tabs = {
-  Deposit: {
-    title: 'Deposit',
-    component: <p>Test</p>,
-  },
-  Withdraw: {
-    title: 'Withdraw or Exit',
-    component: <p>Test 2</p>,
-  },
+const TabContainer = styled.div`
+  width: 50%;
+
+  > * {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+`;
+
+const Withdraw: FC<{
+  lpSymbol?: string;
+  lpAddress?: string;
+}> = ({ lpAddress, lpSymbol }) => {
+  const addressOptions =
+    (lpSymbol &&
+      lpAddress && [
+        {
+          address: lpAddress,
+          symbol: lpSymbol,
+          label: lpSymbol,
+          custom: true,
+        },
+      ]) ||
+    undefined;
+
+  const [address, setAddress] = useState<string | undefined>(
+    addressOptions?.[0]?.address,
+  );
+
+  return (
+    <TabContainer>
+      <AssetInput
+        addressOptions={addressOptions}
+        address={address}
+        handleSetAddress={setAddress}
+      />
+      <Button highlighted>Deposit</Button>
+    </TabContainer>
+  );
+};
+
+const Deposit: FC<{
+  tokens?: SubscribedToken[];
+}> = ({ tokens }) => {
+  const addressOptions = tokens?.map(token => ({
+    address: token.address,
+    symbol: token.symbol,
+    balance: token.balance,
+  }));
+
+  const [address, setAddress] = useState<string | undefined>(
+    addressOptions?.[0]?.address,
+  );
+
+  return (
+    <TabContainer>
+      <AssetInput
+        addressOptions={addressOptions}
+        address={address}
+        handleSetAddress={setAddress}
+      />
+      <Button highlighted>Deposit</Button>
+    </TabContainer>
+  );
 };
 
 export const PoolDetail: FC = () => {
@@ -130,7 +187,6 @@ export const PoolDetail: FC = () => {
   }>();
   const [lookupAddress, setLookupAddress] = useState<string | undefined>();
   const inputText = useRef<string | undefined>();
-  const [activeTab, setActiveTab] = useState<string>(Object.keys(tabs)[0]);
 
   const data = getDataForAddress(mockData, poolAddress);
   const { tokenPair, poolTotal, userAmount, userStakedAmount, mtaRewards } =
@@ -139,6 +195,19 @@ export const PoolDetail: FC = () => {
   const title = subscribedTokens.map(t => t.symbol).join('/');
   const color = assetColorMapping[title];
   const darkColor = assetDarkColorMapping[title];
+
+  const tabs = {
+    Deposit: {
+      title: 'Deposit',
+      component: <Deposit tokens={subscribedTokens} />,
+    },
+    Withdraw: {
+      title: 'Withdraw or Exit',
+      component: <Withdraw lpAddress={poolAddress} lpSymbol={title} />,
+    },
+  };
+
+  const [activeTab, setActiveTab] = useState<string>(Object.keys(tabs)[0]);
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
