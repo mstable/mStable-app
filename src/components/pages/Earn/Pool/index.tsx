@@ -19,7 +19,7 @@ const Container = styled.div`
   flex: 1;
 `;
 
-const PoolPageContent: FC = () => {
+const EarnPageContent: FC = () => {
   const { userAddress, slugOrAddress } = useParams<{
     slugOrAddress?: string;
     userAddress?: string;
@@ -56,10 +56,10 @@ const PoolPageContent: FC = () => {
   );
 };
 
-export const PoolPage: FC = () => (
+export const EarnPage: FC = () => (
   <CurveProvider>
     <EarnDataProvider>
-      <PoolPageContent />
+      <EarnPageContent />
     </EarnDataProvider>
   </CurveProvider>
 );

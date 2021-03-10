@@ -13,14 +13,15 @@ import { Layout } from './components/layout/Layout';
 import { Home } from './components/pages';
 import { Swap } from './components/pages/Swap';
 import { Mint } from './components/pages/Mint';
-import { Pools } from './components/pages/Pools';
-import { Earn } from './components/pages/Earn';
 import { Save } from './components/pages/Save';
 import { Redeem } from './components/pages/Redeem';
 import { NotFound } from './components/pages/NotFound';
 import { Stats } from './components/pages/Stats';
-import { PoolPage } from './components/pages/Earn/Pool';
+import { Earn } from './components/pages/Earn';
+import { EarnPage } from './components/pages/Earn/Pool';
 import { AdminPage } from './components/pages/Earn/Admin';
+import { Pools } from './components/pages/Pools';
+import { PoolDetail } from './components/pages/Pools/Detail';
 
 checkRequiredEnvVars();
 
@@ -49,12 +50,12 @@ const Routes: FC = () => {
       <Route
         exact
         path="/:massetName/earn/:slugOrAddress"
-        component={PoolPage}
+        component={EarnPage}
       />
       <Route
         exact
         path="/:massetName/earn/:slugOrAddress/:userAddress"
-        component={PoolPage}
+        component={EarnPage}
       />
       <Route exact path="/:massetName/stats" component={Stats} />
       <Route exact path="/:massetName/mint" component={Mint} />
@@ -62,6 +63,11 @@ const Routes: FC = () => {
       <Route exact path="/:massetName/save" component={Save} />
       <Route exact path="/:massetName/swap" component={Swap} />
       <Route exact path="/:massetName/pools" component={Pools} />
+      <Route
+        exact
+        path="/:massetName/pools/:poolAddress"
+        component={PoolDetail}
+      />
       <Redirect exact path="/analytics" to="/musd/stats" />
       <Redirect exact path="/mint" to="/musd/mint" />
       <Redirect exact path="/redeem" to="/musd/redeem" />
