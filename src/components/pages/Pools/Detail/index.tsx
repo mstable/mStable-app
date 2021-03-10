@@ -17,6 +17,8 @@ import { InputV2 as Input } from '../../../forms/AmountInputV2';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { AssetCard } from '../cards/AssetCard';
 import { mockData, MockData, MockPoolData } from '../mock';
+import { assetColorMapping, assetDarkColorMapping } from '../utils';
+import { LiquidityChart } from './LiquidityChart';
 import { RewardsOverview } from './RewardsOverview';
 
 const UserLookup = styled.div`
@@ -71,10 +73,25 @@ const AssetDetails = styled.div`
 `;
 
 const HeaderCard = styled(AssetCard)`
-  flex: 1;
-
   h2 {
     font-size: 1.75rem;
+  }
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+
+  > div:first-child {
+    flex-basis: calc(65% - 0.5rem);
+  }
+
+  > div:last-child {
+    flex-basis: calc(35% - 0.5rem);
+
+    > div {
+      height: 100%;
+    }
   }
 `;
 
@@ -120,6 +137,8 @@ export const PoolDetail: FC = () => {
     data ?? {};
   const subscribedTokens = useTokens(tokenPair ?? []);
   const title = subscribedTokens.map(t => t.symbol).join('/');
+  const color = assetColorMapping[title];
+  const darkColor = assetDarkColorMapping[title];
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
@@ -134,7 +153,15 @@ export const PoolDetail: FC = () => {
   return (
     <Container>
       <PageHeader action={PageAction.Pools} subtitle={title} />
-      <HeaderCard address={poolAddress} tokenPair={tokenPair} isLarge />
+      <HeaderContainer>
+        <HeaderCard
+          address={poolAddress}
+          tokenPair={tokenPair}
+          isLarge
+          color={color}
+        />
+        <LiquidityChart color={darkColor} />
+      </HeaderContainer>
       <AssetDetails>
         <h3>Asset Details</h3>
         <div>

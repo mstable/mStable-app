@@ -7,6 +7,7 @@ import { SubscribedToken } from '../../../../types';
 import { TokenIcon } from '../../../icons/TokenIcon';
 import { Card } from './Card';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
+import { assetColorMapping } from '../utils';
 
 interface Props {
   className?: string;
@@ -14,12 +15,8 @@ interface Props {
   tokenPair?: string[];
   deprecated?: boolean;
   isLarge?: boolean;
+  color?: string;
 }
-
-const assetBackgroundMapping: Record<string, string> = {
-  'TUSD/WBTC': '#FFD8EB',
-  'DAI/WBTC': '#EFF3FF',
-};
 
 const StatsContainer = styled.div<{ isLarge?: boolean }>`
   ${({ isLarge }) =>
@@ -79,7 +76,7 @@ const TokenStats: FC<{ isLarge?: boolean }> = ({ isLarge = false }) => {
           <div>
             <p>Assets:</p>
             <p>
-              3POOL <span>(3.43m)</span> - MUSD <span>(6.43m)</span>
+              <span>3.43m</span> – <span>6.43m</span>
             </p>
           </div>
         </>
@@ -141,13 +138,14 @@ export const AssetCard: FC<Props> = ({
   address,
   deprecated = false,
   isLarge = false,
+  color,
 }) => {
   const subscribedTokens = useTokens(tokenPair ?? []);
   const massetName = useSelectedMassetName();
   const history = useHistory();
 
-  const title = subscribedTokens.map((t) => t.symbol).join('/');
-  const gradientColor = assetBackgroundMapping[title];
+  const title = subscribedTokens.map(t => t.symbol).join('/');
+  const gradientColor = color ?? assetColorMapping[title];
 
   const handleClick = (): void => {
     history.push(`/${massetName}/pools/${address}`);
