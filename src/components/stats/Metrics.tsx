@@ -202,6 +202,7 @@ const DATE_RANGES: State<never>['dates'] = [
 interface Props<T extends string> {
   metrics?: Metric<T>[];
   defaultDateRange?: DateRange;
+  hideControls?: boolean;
 }
 
 const stateCtx = createContext<State<any>>({} as State<any>);
@@ -224,6 +225,7 @@ const initializer = <T extends string>({
 export const Metrics = <T extends string>({
   metrics = [],
   defaultDateRange,
+  hideControls = false,
   children,
 }: PropsWithChildren<Props<T>>): ReactElement => {
   const [state, dispatch] = useReducer(
@@ -255,44 +257,46 @@ export const Metrics = <T extends string>({
         ])}
       >
         <div>
-          <ControlsContainer>
-            {state.metrics?.length > 0 ? (
+          {!hideControls && (
+            <ControlsContainer>
+              {state.metrics?.length > 0 ? (
+                <Control>
+                  <H3>Metrics</H3>
+                  <MetricToggles>
+                    {state.metrics.map(({ type, enabled, label, color }) => (
+                      <Toggle key={type}>
+                        <div>
+                          <ToggleInput
+                            enabledColor={color}
+                            onClick={() => toggleType(type)}
+                            checked={!!enabled}
+                          />
+                        </div>
+                        <ToggleLabel>{label}</ToggleLabel>
+                      </Toggle>
+                    ))}
+                  </MetricToggles>
+                </Control>
+              ) : (
+                <div />
+              )}
               <Control>
-                <H3>Metrics</H3>
-                <MetricToggles>
-                  {state.metrics.map(({ type, enabled, label, color }) => (
-                    <Toggle key={type}>
-                      <div>
-                        <ToggleInput
-                          enabledColor={color}
-                          onClick={() => toggleType(type)}
-                          checked={!!enabled}
-                        />
-                      </div>
-                      <ToggleLabel>{label}</ToggleLabel>
-                    </Toggle>
+                <H3>Range</H3>
+                <TabsContainer>
+                  {state.dates.map(({ label, enabled, dateRange }) => (
+                    <DateRangeBtn
+                      key={dateRange}
+                      type="button"
+                      onClick={() => setDateRange(dateRange)}
+                      active={!!enabled}
+                    >
+                      {label}
+                    </DateRangeBtn>
                   ))}
-                </MetricToggles>
+                </TabsContainer>
               </Control>
-            ) : (
-              <div />
-            )}
-            <Control>
-              <H3>Range</H3>
-              <TabsContainer>
-                {state.dates.map(({ label, enabled, dateRange }) => (
-                  <DateRangeBtn
-                    key={dateRange}
-                    type="button"
-                    onClick={() => setDateRange(dateRange)}
-                    active={!!enabled}
-                  >
-                    {label}
-                  </DateRangeBtn>
-                ))}
-              </TabsContainer>
-            </Control>
-          </ControlsContainer>
+            </ControlsContainer>
+          )}
           <ChartContainer>{children}</ChartContainer>
         </div>
       </dispatchCtx.Provider>

@@ -7,131 +7,10 @@ import { Card } from './cards/Card';
 import { OnboardingCard } from './cards/OnboardingCard';
 import { AssetCard } from './cards/AssetCard';
 import { PoolType } from './types';
+import { mockData, MockPoolData } from './mock';
+import { ViewportWidth } from '../../../theme';
 
 const DEFAULT_ITEM_COUNT = 3;
-
-// Mock data
-interface MockPoolData {
-  address: string;
-  tokenPair: string[];
-}
-
-interface MockData {
-  pools: {
-    user: MockPoolData[];
-    active: MockPoolData[];
-    deprecated: MockPoolData[];
-  };
-}
-
-const mockData: MockData = {
-  pools: {
-    user: [
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x6b175474e89094c44da98b954eedeac495271d0f',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-    ],
-    active: [
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-    ],
-    deprecated: [
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-      {
-        address: '0xe036CCE08cf4E23D33bC6B18e53Caf532AFa8513',
-        tokenPair: [
-          '0x0000000000085d4780b73119b644ae5ecd22b376',
-          '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-        ],
-      },
-    ],
-  },
-};
 
 const LoadCard = styled(Card)`
   align-items: center;
@@ -148,19 +27,29 @@ const LoadCard = styled(Card)`
 
 const Cards = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  flex-direction: column;
 
   > * {
+    flex: 1;
     margin-bottom: 1rem;
-    flex-basis: calc(50% - 0.75rem);
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    > * {
+      flex: 0;
+      margin-bottom: 1rem;
+      flex-basis: calc(50% - 0.75rem);
+    }
   }
 `;
 
 const Row = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   margin-bottom: 1rem;
 
   h2 {
@@ -169,19 +58,33 @@ const Row = styled.div`
   }
 
   > div {
+    margin-top: 1rem;
+
     button:not(:last-child) {
       margin-right: 1rem;
     }
   }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    > div {
+      margin-top: 0;
+    }
+  }
 `;
 
-const Section = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.color.accent};
-  padding-bottom: 3rem;
-  margin-bottom: 3rem;
-`;
+const Section = styled.div``;
 
-const Container = styled.div``;
+const Container = styled.div`
+  > ${Section}:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.color.accent};
+    padding-bottom: 3rem;
+    margin-bottom: 3rem;
+  }
+`;
 
 const Title: Record<PoolType, string> = {
   [PoolType.User]: 'Your Pools',
