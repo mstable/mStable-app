@@ -1,7 +1,7 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 
-import { TabBtn, TabsContainer, Message } from '../../../core/Tabs';
+import { TabSwitch, Message } from '../../../core/Tabs';
 import { SaveDeposit } from './SaveDeposit';
 import { SaveDepositETH } from './SaveDepositETH';
 import { SaveRedeem } from './SaveRedeem';
@@ -10,9 +10,9 @@ import { ADDRESSES } from '../../../../constants';
 import { SaveDepositAMM } from './SaveDepositAMM';
 
 enum Tabs {
-  DepositStablecoins,
-  DepositETH,
-  Redeem,
+  DepositStablecoins = 'DepositStablecoins',
+  DepositETH = 'DepositETH',
+  Redeem = 'Redeem',
 }
 
 const { DepositStablecoins, DepositETH, Redeem } = Tabs;
@@ -31,68 +31,48 @@ const tabInfo = (
   [Redeem]: `Redeem an amount of i${formattedMasset} for ${formattedMasset}.`,
 });
 
-// TODO TabbedModal
 export const SaveModal: FC = () => {
   const massetState = useSelectedMassetState();
   const massetSymbol = massetState?.token.symbol;
-  const isActive = massetState?.savingsContracts.v2?.active;
   const saveWrapperAddress =
-    ADDRESSES[massetSymbol as 'mbtc' | 'musd']?.SaveWrapper;
+    ADDRESSES[massetSymbol?.toLowerCase() as 'mbtc' | 'musd']?.SaveWrapper;
+  const canDepositWithWrapper =
+    massetState?.savingsContracts.v2?.active && !!saveWrapperAddress;
 
-  const [tab, setTab] = useState<Tabs>(Tabs.DepositStablecoins);
+  const [activeTab, setActiveTab] = useState<string>(
+    Tabs.DepositStablecoins as string,
+  );
 
-  const tabInfoMessage = massetSymbol && tabInfo(massetSymbol)[tab];
+  const tabs = {
+    [DepositStablecoins]: {
+      title: `Deposit`,
+      component: massetSymbol === 'mUSD' ? <SaveDeposit /> : <SaveDepositAMM />,
+    },
+    [DepositETH]: {
+      title: 'Deposit via ETH',
+      component:
+        canDepositWithWrapper && massetSymbol === 'mUSD' ? (
+          <SaveDepositETH />
+        ) : undefined,
+    },
+    [Redeem]: {
+      title: `Redeem`,
+      component: <SaveRedeem />,
+    },
+  };
 
-  const [tabs, ActiveComponent] = useMemo(() => {
-    const _tabs = [
-      {
-        tab: Tabs.DepositStablecoins,
-        label: `Deposit via ${massetSymbol === 'mUSD' ? 'Stablecoin' : 'mBTC'}`,
-        component: massetSymbol === 'mUSD' ? SaveDeposit : SaveDepositAMM,
-        active: tab === Tabs.DepositStablecoins,
-      },
-      ...(isActive && saveWrapperAddress
-        ? [
-            {
-              tab: Tabs.DepositETH,
-              label: 'Deposit via ETH',
-              component: SaveDepositETH,
-              active: tab === Tabs.DepositETH,
-            },
-          ]
-        : []),
-      {
-        tab: Tabs.Redeem,
-        label: `Redeem ${massetSymbol}`,
-        component: SaveRedeem,
-        active: tab === Tabs.Redeem,
-      },
-    ];
-    const activeComponent = _tabs.find(t => t.active)?.component as FC;
-    return [_tabs, activeComponent];
-  }, [tab, isActive, saveWrapperAddress, massetSymbol]);
+  const tabInfoMessage =
+    massetSymbol && tabInfo(massetSymbol)[activeTab as Tabs];
 
   return (
     <Container>
-      <TabsContainer>
-        {tabs.map(_tab => (
-          <TabBtn
-            key={_tab.tab.toString()}
-            active={_tab.active}
-            onClick={() => {
-              setTab(_tab.tab);
-            }}
-          >
-            {_tab.label}
-          </TabBtn>
-        ))}
-      </TabsContainer>
-      {tabInfoMessage && (
-        <Message>
-          <span>{tabInfoMessage}</span>
-        </Message>
-      )}
-      {ActiveComponent && <ActiveComponent />}
+      <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab}>
+        {tabInfoMessage && (
+          <Message>
+            <span>{tabInfoMessage}</span>
+          </Message>
+        )}
+      </TabSwitch>
     </Container>
   );
 };

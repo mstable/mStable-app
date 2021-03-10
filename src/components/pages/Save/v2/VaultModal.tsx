@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 
-import { TabBtn, TabsContainer, Message } from '../../../core/Tabs';
+import { Message, TabSwitch } from '../../../core/Tabs';
 import { SaveDeposit } from './SaveDeposit';
 import { SaveDepositETH } from './SaveDepositETH';
 import { VaultWithdraw } from './VaultWithdraw';
@@ -24,13 +24,6 @@ const Container = styled.div`
   }
 `;
 
-const tabTitles = (massetSymbol?: string): { [key in Tabs]: string } => ({
-  [Deposit]: `Deposit via ${massetSymbol === 'mUSD' ? 'Stablecoin' : 'mBTC'}`,
-  [DepositETH]: 'Deposit via ETH',
-  [Withdraw]: 'Withdraw',
-  [Exit]: 'Exit',
-});
-
 const tabInfo = (
   formattedMasset: string,
 ): { [key in Tabs]: string | undefined } => ({
@@ -42,50 +35,47 @@ const tabInfo = (
 
 export const VaultModal: FC = () => {
   const massetState = useSelectedMassetState();
-  const [tab, setTab] = useState<Tabs>(Tabs.Deposit);
   const massetSymbol = massetState?.token.symbol;
   const saveWrapperAddress =
-    ADDRESSES[massetSymbol as 'mbtc' | 'musd']?.SaveWrapper;
-
+    ADDRESSES[massetSymbol?.toLowerCase() as 'mbtc' | 'musd']?.SaveWrapper;
   const canDepositWithWrapper =
     massetState?.savingsContracts.v2?.active && !!saveWrapperAddress;
 
-  const tabs = [
-    Withdraw,
-    Deposit,
-    canDepositWithWrapper ? DepositETH : undefined,
-    Exit,
-  ];
+  const [activeTab, setActiveTab] = useState<string>(Deposit as string);
+  const tabInfoMessage =
+    massetSymbol && tabInfo(massetSymbol)[activeTab as Tabs];
 
-  const tabInfoMessage = massetSymbol && tabInfo(massetSymbol)[tab];
+  const tabs = {
+    [Deposit]: {
+      title: `Deposit`,
+      component: <SaveDeposit saveAndStake />,
+    },
+    [DepositETH]: {
+      title: 'Deposit via ETH',
+      component:
+        canDepositWithWrapper && massetSymbol === 'mUSD' ? (
+          <SaveDepositETH saveAndStake />
+        ) : undefined,
+    },
+    [Withdraw]: {
+      title: `Withdraw`,
+      component: <VaultWithdraw />,
+    },
+    [Exit]: {
+      title: `Exit`,
+      component: <VaultExit />,
+    },
+  };
 
   return (
     <Container>
-      <TabsContainer>
-        {tabs.map(
-          t =>
-            t && (
-              <TabBtn active={tab === t} onClick={() => setTab(t)} key={t}>
-                {tabTitles(massetSymbol)[t]}
-              </TabBtn>
-            ),
+      <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab}>
+        {tabInfoMessage && (
+          <Message>
+            <span>{tabInfoMessage}</span>
+          </Message>
         )}
-      </TabsContainer>
-      {tabInfoMessage && (
-        <Message>
-          <span>{tabInfoMessage}</span>
-        </Message>
-      )}
-      <div>
-        {
-          ({
-            [Deposit]: <SaveDeposit saveAndStake />,
-            [DepositETH]: <SaveDepositETH saveAndStake />,
-            [Withdraw]: <VaultWithdraw />,
-            [Exit]: <VaultExit />,
-          } as { [key in Tabs]: JSX.Element })[tab]
-        }
-      </div>
+      </TabSwitch>
     </Container>
   );
 };
