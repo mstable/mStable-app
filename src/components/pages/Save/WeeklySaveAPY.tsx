@@ -10,12 +10,22 @@ import {
 } from '../../../context/SelectedMassetNameProvider';
 
 const InfoAPY = styled.div`
-  font-size: 0.75rem;
-  font-style: italic;
-  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  color: ${({ theme }) => theme.color.grey};
+
+  > :first-child {
+    max-width: 50ch;
+    margin: 0 auto;
+    p {
+      font-size: 0.8rem;
+    }
+    > :first-child {
+      font-weight: 600;
+    }
+  }
 
   a {
-    color: ${({ theme }) => theme.color.greyTransparent};
     border: none;
 
     :hover {
@@ -77,20 +87,30 @@ export const WeeklySaveAPY: FC = () => {
       ) : (
         <>
           <p>
-            Earn <InfoCountUp end={apy?.value} suffix="%" decimals={2} />* on
+            Earn <InfoCountUp end={apy?.value} suffix="%" decimals={2} /> on
             your {formattedMasset}
           </p>
 
           <InfoAPY>
             {' '}
+            <div>
+              <p>
+                {apy.type === 'average'
+                  ? '7-day MA (Moving Average) APY'
+                  : 'Live APY (unstable)'}
+              </p>
+              <p>
+                {massetName === 'mbtc'
+                  ? 'This APY is purely derived from internal swap fees, and thus does not expose mBTC holders to external protocol risk.'
+                  : 'This rate depends on activity such as fees accrued on mStable and lending markets, and is not reflective of future rates.'}
+              </p>
+            </div>
             <a
               href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
               target="_blank"
               rel="noopener noreferrer"
             >
-              {apy.type === 'average'
-                ? '*Average APY over the last 7 days'
-                : '*Live APY (unstable)'}
+              Learn about how this is calculated
             </a>
           </InfoAPY>
         </>
