@@ -42,11 +42,6 @@ export const OnboardingCard: FC<Props> = ({ className, type }) => {
   const shouldShow =
     !(viewedUser && type === 'user') && !(viewedActive && type === 'active');
 
-  // LocalStorage.set('viewedPoolOnboarding', {
-  //   user: false,
-  //   active: false,
-  // });
-
   const handleClick = (): void => {
     switch (type) {
       case 'user':

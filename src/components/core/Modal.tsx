@@ -23,7 +23,7 @@ interface Props {
 
 const Title = styled.div`
   flex-grow: 1;
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 600;
   display: flex;
   justify-content: center;
@@ -40,7 +40,6 @@ const Header = styled.div`
   justify-content: space-between;
   padding: 1rem 2rem;
   border-bottom: 1px ${({ theme }) => theme.color.accent} solid;
-  background: ${({ theme }) => theme.color.background};
 `;
 
 const CloseButton = styled(UnstyledButton)`
@@ -59,19 +58,35 @@ const CloseButton = styled(UnstyledButton)`
 const Body = styled.div``;
 
 const Container = styled.div`
-  position: relative;
-  overflow-y: scroll;
-  min-width: 50vw;
-  width: 100%;
-  margin: 0 1rem;
-  max-height: calc(90vh - 50px);
+  /* position: relative; */
+  /* overflow-y: scroll; */
+  /* width: 100%; */
+  /* max-height: calc(90vh - 50px); */
+  /* background: ${({ theme }) => theme.color.background}; */
+  /* border-radius: 1rem; */
+  /* border: 1px ${({ theme }) => theme.color.backgroundAccent} solid; */
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
+  width: inherit;
+  max-width: inherit;
+  box-sizing: border-box;
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  transition: all ease-in;
   background: ${({ theme }) => theme.color.background};
-  border-radius: 1rem;
-  border: 1px ${({ theme }) => theme.color.backgroundAccent} solid;
 
   @media (min-width: ${ViewportWidth.m}) {
     margin: 0 2rem;
     max-width: 44rem;
+    position: relative;
+    border-radius: 1rem;
+    padding-bottom: 0;
   }
 `;
 

@@ -109,7 +109,7 @@ const IconContainer = styled.div<{ isLarge: boolean }>`
 
   > img:last-child {
     margin-left: -1rem;
-    z-index: 2;
+    z-index: 1;
   }
 `;
 

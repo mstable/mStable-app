@@ -82,7 +82,6 @@ export const Save: FC = () => {
     title: <SaveModalHeader masset={massetName} type="imasset" />,
     children: <SaveModal />,
   });
-
   const [showVaultModal] = useModalComponent({
     title: <SaveModalHeader masset={massetName} type="vault" />,
     children: <VaultModal />,

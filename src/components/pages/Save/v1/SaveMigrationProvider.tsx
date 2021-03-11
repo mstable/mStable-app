@@ -8,8 +8,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import styled from 'styled-components';
-
 import { BigNumber, constants } from 'ethers';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
@@ -31,7 +29,7 @@ import { Interfaces } from '../../../../types';
 import { StepProps } from '../../../core/Step';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
 import { MassetModal } from '../v2/MassetModal';
-import { ReactComponent as MUSDIcon } from '../../../icons/tokens/mUSD.svg';
+import { SaveModalHeader } from '../v2/SaveModalHeader';
 
 const isTxPending = (
   transactions: Record<string, Transaction>,
@@ -47,17 +45,6 @@ const isTxPending = (
     ].includes(transactions[id].status)
   );
 };
-
-const ModalTitle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  > svg {
-    width: 2rem;
-    height: auto;
-  }
-`;
 
 const stepsCtx = createContext<StepProps[]>([]);
 
@@ -81,12 +68,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const allowance = useTokenAllowance(massetState?.address, v2Address);
 
   const [showDepositModal] = useModalComponent({
-    title: (
-      <ModalTitle>
-        <MUSDIcon />
-        mUSD
-      </ModalTitle>
-    ),
+    title: <SaveModalHeader masset="musd" type="masset" />,
     children: <MassetModal />,
   });
 

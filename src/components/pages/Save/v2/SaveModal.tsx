@@ -1,13 +1,15 @@
 import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 
-import { TabSwitch, Message } from '../../../core/Tabs';
+import { TabSwitch } from '../../../core/Tabs';
 import { SaveDeposit } from './SaveDeposit';
 import { SaveDepositETH } from './SaveDepositETH';
 import { SaveRedeem } from './SaveRedeem';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { ADDRESSES } from '../../../../constants';
 import { SaveDepositAMM } from './SaveDepositAMM';
+import { ViewportWidth } from '../../../../theme';
+import { InfoMessage } from '../../../core/InfoMessage';
 
 enum Tabs {
   DepositStablecoins = 'DepositStablecoins',
@@ -18,8 +20,16 @@ enum Tabs {
 const { DepositStablecoins, DepositETH, Redeem } = Tabs;
 
 const Container = styled.div`
-  > :last-child {
-    padding: 2rem;
+  > div:last-child {
+    padding: 1rem;
+
+    > div:first-child {
+      margin-bottom: 1rem;
+    }
+
+    @media (min-width: ${ViewportWidth.m}) {
+      padding: 2rem;
+    }
   }
 `;
 
@@ -69,9 +79,9 @@ export const SaveModal: FC = () => {
     <Container>
       <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab}>
         {tabInfoMessage && (
-          <Message>
+          <InfoMessage>
             <span>{tabInfoMessage}</span>
-          </Message>
+          </InfoMessage>
         )}
       </TabSwitch>
     </Container>
