@@ -47,7 +47,10 @@ const getTitle = (masset: MassetName, type: AssetType): string => {
 const Container = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+
+  > *:first-child {
+    margin-right: 0.5rem;
+  }
 
   > svg {
     width: 2rem;

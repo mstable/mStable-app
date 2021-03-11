@@ -9,6 +9,9 @@ import { AssetCard } from './cards/AssetCard';
 import { PoolType } from './types';
 import { mockData, MockPoolData } from './mock';
 import { ViewportWidth } from '../../../theme';
+import { useModalComponent } from '../../../hooks/useModalComponent';
+import { LiquidityModal } from './LiquidityModal';
+import { RewardsModal } from './RewardsModal';
 
 const DEFAULT_ITEM_COUNT = 3;
 
@@ -109,6 +112,15 @@ export const Pools: FC = () => {
     [PoolType.Deprecated]: DEFAULT_ITEM_COUNT,
   });
 
+  const [showLiquidityModal] = useModalComponent({
+    title: 'Add Liquidity',
+    children: <LiquidityModal />,
+  });
+  const [showRewardsModal] = useModalComponent({
+    title: 'Rewards',
+    children: <RewardsModal />,
+  });
+
   const showMorePools = useCallback(
     (type: PoolType) =>
       setNumPoolsVisible({
@@ -119,7 +131,14 @@ export const Pools: FC = () => {
   );
 
   const handleExploreClick = (): void => {};
-  const handleAddLiquidityClick = (): void => {};
+
+  const handleRewardsClick = useCallback(() => showRewardsModal(), [
+    showRewardsModal,
+  ]);
+
+  const handleAddLiquidityClick = useCallback(() => showLiquidityModal(), [
+    showLiquidityModal,
+  ]);
 
   return (
     <Container>
@@ -136,6 +155,8 @@ export const Pools: FC = () => {
               {(type as PoolType) === PoolType.User && (
                 <div>
                   <Button onClick={handleExploreClick}>Explore Pools</Button>
+                  {/* Probably move Rewards to top of screen / leave out */}
+                  <Button onClick={handleRewardsClick}>Rewards</Button>
                   <Button highlighted onClick={handleAddLiquidityClick}>
                     Add Liquidity
                   </Button>

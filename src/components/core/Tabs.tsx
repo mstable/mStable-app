@@ -57,8 +57,10 @@ export const TabSwitch: FC<{
             </TabBtn>
           ))}
       </TabsContainer>
-      {children && children}
-      {active && tabs[active]?.component}
+      <div>
+        {children && children}
+        {active && tabs[active]?.component}
+      </div>
     </>
   );
 };

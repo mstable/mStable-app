@@ -14,9 +14,14 @@ export interface MockData {
     active: MockPoolData[];
     deprecated: MockPoolData[];
   };
+  fAssets: string[];
 }
 
 export const mockData: MockData = {
+  fAssets: [
+    '0x0000000000085d4780b73119b644ae5ecd22b376',
+    '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+  ],
   pools: {
     user: [
       {
