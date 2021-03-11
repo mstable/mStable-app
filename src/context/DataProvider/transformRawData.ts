@@ -260,6 +260,14 @@ const transformMassetData = (
 ): MassetState => {
   const bAssets = transformBassets(_bassets, decimals, tokens);
 
+  // Temporary fix for incorrect Subgraph data; this no impact on the UI in its
+  // current state, but is worth having for sanity
+  // TODO remove this when the Subgraph is next updated
+  if (address === '0x945facb997494cc2570096c74b5f66a3507330a1') {
+    // eslint-disable-next-line no-param-reassign
+    redemptionFeeRate = '600000000000000';
+  }
+
   return {
     address,
     failed,
