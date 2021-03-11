@@ -276,8 +276,7 @@ const getRow = (masset: MassetName): Record<BalanceType, RowProps> => {
             {formattedMasset}.
           </p>
           <p>
-            It passively gains interest while holding it, such that it is
-            redeemable for a greater amount of {formattedMasset} as interest
+            It gradually accrues value in {formattedMasset} terms as interest
             accrues over time.
           </p>
         </>
@@ -390,7 +389,7 @@ const InternalBalanceRow: FC<Props & { hasChildren?: boolean }> = ({
             <Line />
           ) : apy ? (
             <>
-              <ApyLabel>{apyLabel ?? 'APY'}</ApyLabel>
+              <ApyLabel>{apyLabel ?? 'APY (7-day MA)'}</ApyLabel>
               <div>
                 {typeof apy === 'string' ? (
                   apy
