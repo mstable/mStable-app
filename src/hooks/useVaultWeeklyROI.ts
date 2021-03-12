@@ -3,7 +3,7 @@ import { ERC20__factory } from '@mstable/protocol/types/generated/factories/ERC2
 
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
 import { useSignerOrInfuraProvider } from '../context/OnboardProvider';
-import { useMtaPrice } from './useMtaPrice';
+import { useMtaPrice } from './usePrice';
 
 export const useVaultWeeklyROI = (): {
   fetching?: boolean;

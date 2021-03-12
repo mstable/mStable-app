@@ -342,6 +342,7 @@ export const SaveDepositAMM: FC<{
           minOutputAmount={minOutputSaveAmount}
           slippageFormValue={slippageFormValue}
           onSetSlippage={setSlippage}
+          saveExchangeRate={exchangeRate?.value}
         />
       )}
     </AssetExchange>

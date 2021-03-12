@@ -17,7 +17,7 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { useRewards } from './RewardsProvider';
 import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
 import { VaultROI } from './VaultROI';
-import { useMtaPrice } from '../../../../hooks/useMtaPrice';
+import { useSavePrices } from '../../../../hooks/usePrice';
 import { Button } from '../../../core/Button';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { SaveModalHeader } from './SaveModalHeader';
@@ -57,12 +57,17 @@ export const Save: FC = () => {
   const [isCalculatorVisible, setCalculatorVisible] = useState(false);
   const massetState = useSelectedMassetState();
   const massetName = useSelectedMassetName();
-  const mtaPrice = useMtaPrice();
+  const isMBTC = massetName?.toLowerCase() === 'mbtc';
+  const [mtaPrice, wbtcPrice] = useSavePrices() ?? [];
 
   const savingsContract = massetState?.savingsContracts?.v2;
   const vault = savingsContract?.boostedSavingsVault;
   const vaultBalance = vault?.account?.rawBalance;
-  const exchangeRate = savingsContract?.latestExchangeRate?.rate.simple;
+
+  const exchangeRate = (isMBTC && wbtcPrice) || undefined;
+  const imExchangeRate = isMBTC
+    ? wbtcPrice * (savingsContract?.latestExchangeRate?.rate.simple ?? 0)
+    : savingsContract?.latestExchangeRate?.rate.simple;
 
   const massetToken = useTokenSubscription(massetState?.address);
   const saveToken = useTokenSubscription(savingsContract?.address);
@@ -99,6 +104,7 @@ export const Save: FC = () => {
         token={BalanceType.Masset}
         onClick={showMassetModal}
         balance={massetToken?.balance}
+        dollarExchangeRate={exchangeRate}
         masset={massetName}
       />
       <BalanceRow
@@ -106,7 +112,7 @@ export const Save: FC = () => {
         apy={saveApy?.value}
         onClick={showSaveModal}
         balance={saveToken?.balance}
-        dollarExchangeRate={exchangeRate}
+        dollarExchangeRate={imExchangeRate}
         masset={massetName}
       />
       {vault && (
@@ -121,7 +127,7 @@ export const Save: FC = () => {
             rewards={<VaultROI />}
             onClick={showVaultModal}
             balance={vaultBalance ?? BigDecimal.ZERO}
-            dollarExchangeRate={exchangeRate}
+            dollarExchangeRate={imExchangeRate}
             masset={massetName}
           >
             {vaultBalance || hasRewards ? (

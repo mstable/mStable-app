@@ -1,19 +1,25 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { Tooltip } from './ReactTooltip';
 import { CollapseBox } from '../forms/CollapseBox';
 import { SlippageInput } from '../forms/SlippageInput';
+import { useWBTCPrice } from '../../hooks/usePrice';
 
 interface Props {
   className?: string;
-  fee?: BigDecimal;
-  onSetSlippage?(formValue?: string): void;
-  slippageFormValue?: string;
+  feeAmount?: BigDecimal;
   minOutputAmount?: BigDecimal;
   maxOutputAmount?: BigDecimal;
+  slippageFormValue?: string;
+  onSetSlippage?(formValue?: string): void;
+  saveExchangeRate?: BigDecimal;
 }
+
+const DollarEstimate = styled.span`
+  color: ${({ theme }) => theme.color.bodyAccent};
+`;
 
 const Info = styled.div`
   display: flex;
@@ -38,14 +44,53 @@ const AdditionalInfo = styled.div`
 `;
 
 export const TransactionInfo: FC<Props> = ({
-  fee,
+  feeAmount,
   minOutputAmount,
   maxOutputAmount,
   className,
   onSetSlippage,
   slippageFormValue,
+  saveExchangeRate,
 }) => {
-  const showAdditionalInfo = fee || minOutputAmount || maxOutputAmount;
+  const showAdditionalInfo = feeAmount || minOutputAmount || maxOutputAmount;
+
+  // wbtc only for now.
+  const wbtcPrice = useWBTCPrice();
+
+  const { min, max, fee } = useMemo<{
+    fee?: BigDecimal;
+    min?: BigDecimal;
+    max?: BigDecimal;
+  }>(() => {
+    if (!wbtcPrice) return {};
+
+    const _fee = feeAmount && wbtcPrice * feeAmount?.simple;
+    const _min = minOutputAmount && wbtcPrice * minOutputAmount?.simple;
+    const _max = maxOutputAmount && wbtcPrice * maxOutputAmount?.simple;
+
+    const prices = {
+      fee: (_fee && BigDecimal.parse(_fee.toString(), 2)) || undefined,
+      min: (_min && BigDecimal.parse(_min.toString(), 2)) || undefined,
+      max: (_max && BigDecimal.parse(_max.toString(), 2)) || undefined,
+    };
+
+    if (saveExchangeRate) {
+      return {
+        fee: prices.fee?.divPrecisely(saveExchangeRate),
+        min: prices.min?.divPrecisely(saveExchangeRate),
+        max: prices.max?.divPrecisely(saveExchangeRate),
+      };
+    }
+
+    return prices;
+  }, [
+    wbtcPrice,
+    feeAmount,
+    saveExchangeRate,
+    minOutputAmount,
+    maxOutputAmount,
+  ]);
+
   return (
     <>
       {onSetSlippage && (
@@ -58,14 +103,19 @@ export const TransactionInfo: FC<Props> = ({
       )}
       {showAdditionalInfo && (
         <AdditionalInfo className={className}>
-          {fee && (
+          {feeAmount && (
             <Info>
               <p>
                 <Tooltip tip="The received amount includes a small swap fee. Swap fees are sent directly to Savers.">
                   Swap Fee
                 </Tooltip>
               </p>
-              <span>{fee.string}</span>
+              <span>
+                {feeAmount?.format(8, false)}
+                {fee && (
+                  <DollarEstimate>{` ≈ $${fee?.format(2)}`}</DollarEstimate>
+                )}
+              </span>
             </Info>
           )}
           {minOutputAmount && (
@@ -75,7 +125,12 @@ export const TransactionInfo: FC<Props> = ({
                   Minimum received
                 </Tooltip>
               </p>
-              <span>{minOutputAmount?.format(8, false)}</span>
+              <span>
+                {minOutputAmount?.format(8, false)}
+                {min && (
+                  <DollarEstimate>{` ≈ $${min?.format(2)}`}</DollarEstimate>
+                )}
+              </span>
             </Info>
           )}
           {maxOutputAmount && (
@@ -85,7 +140,12 @@ export const TransactionInfo: FC<Props> = ({
                   Maximum cost
                 </Tooltip>
               </p>
-              <span>{maxOutputAmount?.format(8, false)}</span>
+              <span>
+                {maxOutputAmount?.format(8, false)}
+                {max && (
+                  <DollarEstimate>{` ≈ $${max?.format(2)}`}</DollarEstimate>
+                )}
+              </span>
             </Info>
           )}
         </AdditionalInfo>

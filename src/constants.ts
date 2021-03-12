@@ -59,6 +59,7 @@ interface Addresses {
   REN: {
     renBTC: string;
   };
+  WBTC: string;
 }
 
 type AddressesByNetwork = Record<typeof CHAIN_ID, Addresses>;
@@ -114,6 +115,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     REN: {
       renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
     },
+    WBTC: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
   },
   3: {
     UNISWAP_ROUTER02: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
@@ -143,6 +145,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     REN: {
       renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
     },
+    WBTC: '0x6f19a562a32ec6d6404beaa8c218c425ca73c451',
   },
   42: {
     UNISWAP_ROUTER02: 'TODO',
