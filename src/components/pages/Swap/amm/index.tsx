@@ -304,7 +304,7 @@ const SwapLogic: FC = () => {
         }}
       />
       <Info
-        fee={amounts.swapFee}
+        feeAmount={amounts.swapFee}
         minOutputAmount={amounts.minOutputAmount}
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}
