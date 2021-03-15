@@ -2,9 +2,9 @@ import React, { FC } from 'react';
 
 import { Swap as SwapLegacy } from './legacy';
 import { Swap as SwapAMM } from './amm';
-import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 
 export const Swap: FC = () => {
-  const massetName = useSelectedMassetName();
-  return massetName === 'musd' ? <SwapLegacy /> : <SwapAMM />;
+  const { isLegacy } = useSelectedMassetState() ?? {};
+  return isLegacy ? <SwapLegacy /> : <SwapAMM />;
 };

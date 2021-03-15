@@ -2,9 +2,9 @@ import React, { FC } from 'react';
 
 import { Mint as MintLegacy } from './legacy';
 import { Mint as MintAMM } from './amm';
-import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 
 export const Mint: FC = () => {
-  const massetName = useSelectedMassetName();
-  return massetName === 'musd' ? <MintLegacy /> : <MintAMM />;
+  const { isLegacy } = useSelectedMassetState() ?? {};
+  return isLegacy ? <MintLegacy /> : <MintAMM />;
 };

@@ -319,6 +319,7 @@ const transformMassetData = (
     blacklistedBassets: [],
     overweightBassets: [],
     allBassetsNormal: true,
+    isLegacy: !!collateralisationRatio,
   };
 };
 
