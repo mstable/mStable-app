@@ -158,8 +158,8 @@ const CurveJsonDataProvider: FC = ({ children }) => {
 
   useEffect(() => {
     Promise.all([
-      fetch('https://www.curve.fi/raw-stats/apys.json'),
-      fetch('https://www.curve.fi/raw-stats/musd-1440m.json'),
+      fetch('https://stats.curve.fi/raw-stats/apys.json'),
+      fetch('https://stats.curve.fi/raw-stats/musd-1440m.json'),
     ])
       .then(([apyRes, statsRes]) => {
         Promise.all([apyRes.text(), statsRes.text()]).then(([_apy, _stats]) => {
