@@ -2,9 +2,9 @@ import React, { FC } from 'react';
 
 import { Analytics as AnalyticsLegacy } from './legacy';
 import { Analytics as AnalyticsAMM } from './amm';
-import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 
 export const Analytics: FC = () => {
-  const massetName = useSelectedMassetName();
-  return massetName === 'musd' ? <AnalyticsLegacy /> : <AnalyticsAMM />;
+  const { isLegacy } = useSelectedMassetState() ?? {};
+  return isLegacy ? <AnalyticsLegacy /> : <AnalyticsAMM />;
 };

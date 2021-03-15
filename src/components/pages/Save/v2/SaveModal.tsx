@@ -38,6 +38,7 @@ export const SaveModal: FC = () => {
     ADDRESSES[massetSymbol?.toLowerCase() as 'mbtc' | 'musd']?.SaveWrapper;
   const canDepositWithWrapper =
     massetState?.savingsContracts.v2?.active && !!saveWrapperAddress;
+  const { isLegacy } = massetState ?? {};
 
   const [activeTab, setActiveTab] = useState<string>(
     Tabs.DepositStablecoins as string,
@@ -46,7 +47,7 @@ export const SaveModal: FC = () => {
   const tabs = {
     [DepositStablecoins]: {
       title: `Deposit`,
-      component: massetSymbol === 'mUSD' ? <SaveDeposit /> : <SaveDepositAMM />,
+      component: isLegacy ? <SaveDeposit /> : <SaveDepositAMM />,
     },
     [DepositETH]: {
       title: 'Deposit via ETH',

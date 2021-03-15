@@ -50,6 +50,7 @@ export interface MassetState {
     v1?: Extract<SavingsContractState, { version: 1 }>;
     v2?: Extract<SavingsContractState, { version: 2 }>;
   };
+  isLegacy: boolean;
 }
 
 export interface BoostedSavingsVaultAccountState {

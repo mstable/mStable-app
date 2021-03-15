@@ -1,8 +1,8 @@
 import { useEffectOnce } from 'react-use';
 
+import { useMemo, useState } from 'react';
 import { fetchCoingeckoPrices } from '../utils/fetchCoingeckoPrices';
 import { ADDRESSES_BY_NETWORK } from '../constants';
-import { useMemo, useState } from 'react';
 
 const { MTA, WBTC } = ADDRESSES_BY_NETWORK[1];
 
