@@ -32,9 +32,9 @@ const Container = styled.div`
 `;
 
 export const BannerMessage: FC = () => {
-  const bannerMessage = useBannerMessage();
+  const [bannerMessage] = useBannerMessage();
 
-  return bannerMessage?.visible ? (
+  return bannerMessage?.title ? (
     <Container>
       <span role="img" aria-label="emoji">
         {bannerMessage.emoji}

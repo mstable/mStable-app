@@ -311,7 +311,6 @@ export const Mint: FC = () => {
     const message: BannerMessage = {
       title: `Current TVL cap is ${tvlCap.format(4, false)} mBTC. `,
       emoji: '⚠️',
-      visible: true,
       url: 'https://medium.com/mstable/mstable-launches-mbtc-e26a246dc0bb',
     };
 
@@ -339,7 +338,7 @@ export const Mint: FC = () => {
         action={PageAction.Mint}
         subtitle={`Convert into ${massetState.token.symbol}`}
       />
-      <MassetPage>
+      <MassetPage asideVisible>
         <MintLogic />
       </MassetPage>
     </MultiAssetExchangeProvider>

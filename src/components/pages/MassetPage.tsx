@@ -1,10 +1,15 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 
 import { MassetState } from '../../context/DataProvider/types';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 
 import { SimpleMassetStats } from '../stats/SimpleMassetStats';
+import { useBannerMessage } from '../../context/AppProvider';
+import {
+  formatMassetName,
+  useSelectedMassetName,
+} from '../../context/SelectedMassetNameProvider';
 
 const MassetAsideContainer = styled.aside`
   padding: 1rem;
@@ -58,7 +63,7 @@ const Separator = styled.div`
   }
 `;
 
-const Container = styled.div`
+const Inner = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
     display: flex;
     flex-direction: row;
@@ -77,12 +82,77 @@ const Container = styled.div`
   }
 `;
 
-export const MassetPage: FC = ({ children }) => {
+const MigrationOverlay = styled.div`
+  * {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  opacity: 0.75;
+  background: ${({ theme }) => theme.color.background};
+  z-index: 4;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+`;
+
+const Container = styled.div`
+  position: relative;
+`;
+
+export const MassetPage: FC<{ asideVisible?: boolean }> = ({
+  children,
+  asideVisible,
+}) => {
+  const [bannerMessage, setBannerMessage] = useBannerMessage();
+  const massetName = useSelectedMassetName();
+  const formattedMasset = formatMassetName(massetName);
+  const { undergoingRecol } = useSelectedMassetState() ?? {};
+
+  const message = useMemo(
+    () => ({
+      title: `${formattedMasset} is currently undergoing recollateralisation. `,
+      subtitle: `During this time,
+      mAsset functionality will be reduced in order to restore a healthy
+      basket state.`,
+      emoji: '⚠️',
+    }),
+    [formattedMasset],
+  );
+
+  useEffect(() => {
+    if (!undergoingRecol) {
+      if (bannerMessage?.title === message?.title) {
+        setBannerMessage(undefined);
+      }
+      return;
+    }
+
+    if (bannerMessage?.title !== message?.title) {
+      setBannerMessage(message);
+    }
+  }, [
+    bannerMessage,
+    formattedMasset,
+    message,
+    setBannerMessage,
+    undergoingRecol,
+  ]);
+
   return (
     <Container>
-      <div>{children}</div>
-      <Separator />
-      <MassetAside />
+      {undergoingRecol && <MigrationOverlay />}
+      {asideVisible ? (
+        <Inner>
+          <div>{children}</div>
+          <Separator />
+          <MassetAside />
+        </Inner>
+      ) : (
+        <div>{children}</div>
+      )}
     </Container>
   );
 };
