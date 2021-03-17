@@ -263,9 +263,7 @@ export const Layout: FC = ({ children }) => {
         undefined;
 
       message = recollatMessage ?? saveV2Message;
-    }
-
-    if (massetName === 'mbtc') {
+    } else if (massetName === 'mbtc') {
       message =
         (pathname === '/mbtc/mint' && MessageHandler.tvlCap({ tvlCap })) ||
         undefined;
