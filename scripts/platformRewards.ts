@@ -11,12 +11,12 @@
  * @example
  *
  * ```bash
-yarn run platform-rewards --trancheNumber=26 \
-  --startBlock=11952357 \
-  --startTimestamp=1614601932 \
+yarn run platform-rewards --trancheNumber=27 \
+  --startBlock=11997884 \
+  --startTimestamp=1615206741 \
   --token=0xba100000625a3754423978a60c9317c58a424e3d \
   --allocations \
-  0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,831.809534573652513245
+  0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb,667.999240348333387374
  * ```
  *
  *
