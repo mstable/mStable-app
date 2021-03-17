@@ -19,7 +19,6 @@ import { PoolsOverview } from './PoolsOverview';
 import { Card } from './Card';
 import { MerkleDropClaims } from './MerkleDropClaims';
 import { CurveProvider } from '../../../context/earn/CurveProvider';
-import { MassetPage } from '../MassetPage';
 
 const [useSwipeDisabled, SwipeDisabledProvider] = createStateContext(false);
 
@@ -375,10 +374,8 @@ const EarnContent: FC = () => {
             action={PageAction.Earn}
             subtitle="Ecosystem rewards with mStable"
           />
-          <MassetPage>
-            <MerkleClaims />
-            <PoolsOverview />
-          </MassetPage>
+          <MerkleClaims />
+          <PoolsOverview />
         </Content>
       )}
     </Container>

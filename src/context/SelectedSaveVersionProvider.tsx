@@ -31,11 +31,10 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
   const ctxValue = useState<SaveVersion | undefined>(undefined);
   const [selectedSaveVersion, setSelectedSaveVersion] = ctxValue;
   const setRef = useRef(false);
-
   const walletAddress = useWalletAddress();
-
   const massetName = useSelectedMassetName();
   const massetState = useSelectedMassetState();
+
   const savingsContracts = massetState?.savingsContracts;
   const v1 = savingsContracts?.v1;
   const v2 = savingsContracts?.v2;

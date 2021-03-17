@@ -1,15 +1,10 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 
 import { MassetState } from '../../context/DataProvider/types';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 
 import { SimpleMassetStats } from '../stats/SimpleMassetStats';
-import { useBannerMessage } from '../../context/AppProvider';
-import {
-  formatMassetName,
-  useSelectedMassetName,
-} from '../../context/SelectedMassetNameProvider';
 
 const MassetAsideContainer = styled.aside`
   padding: 1rem;
@@ -106,41 +101,7 @@ export const MassetPage: FC<{ asideVisible?: boolean }> = ({
   children,
   asideVisible,
 }) => {
-  const [bannerMessage, setBannerMessage] = useBannerMessage();
-  const massetName = useSelectedMassetName();
-  const formattedMasset = formatMassetName(massetName);
   const { undergoingRecol } = useSelectedMassetState() ?? {};
-
-  const message = useMemo(
-    () => ({
-      title: `${formattedMasset} is currently undergoing recollateralisation. `,
-      subtitle: `During this time,
-      mAsset functionality will be reduced in order to restore a healthy
-      basket state.`,
-      emoji: '⚠️',
-    }),
-    [formattedMasset],
-  );
-
-  useEffect(() => {
-    if (!undergoingRecol) {
-      if (bannerMessage?.title === message?.title) {
-        setBannerMessage(undefined);
-      }
-      return;
-    }
-
-    if (bannerMessage?.title !== message?.title) {
-      setBannerMessage(message);
-    }
-  }, [
-    bannerMessage,
-    formattedMasset,
-    message,
-    setBannerMessage,
-    undergoingRecol,
-  ]);
-
   return (
     <Container>
       {undergoingRecol && <MigrationOverlay />}

@@ -1,20 +1,31 @@
-import React, { FC, useLayoutEffect } from 'react';
+import React, { FC, useLayoutEffect, useMemo } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
 import { useLocation } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
 import { ModalProvider } from 'react-modal-hook';
 
+import { getUnixTime } from 'date-fns';
+import { BigNumber } from 'ethers';
 import { ReactTooltip, Tooltip } from '../core/ReactTooltip';
 import { Footer } from './Footer';
 import { Account } from './Account';
-import { useAccountOpen } from '../../context/AppProvider';
+import {
+  BannerMessage,
+  useAccountOpen,
+  useBannerMessage,
+} from '../../context/AppProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
 import { NotificationToasts } from './NotificationToasts';
 import { containerBackground } from './css';
 import { Color, ViewportWidth } from '../../theme';
 import { PendingTransactions } from '../wallet/PendingTransactions';
+import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
+import { BigDecimal } from '../../web3/BigDecimal';
+import { SCALE } from '../../constants';
+import { MessageHandler } from './MessageHandler';
 
 const Main = styled.main<{ marginTop?: boolean }>`
   padding: 0 1rem;
@@ -204,10 +215,73 @@ export const Layout: FC = ({ children }) => {
   const { pathname } = useLocation();
   const home = pathname === '/';
 
+  // Message
+  const [bannerMessage, setBannerMessage] = useBannerMessage();
+  const massetState = useSelectedMassetState();
+  const massetName = useSelectedMassetName();
+  const { undergoingRecol } = useSelectedMassetState() ?? {};
+
+  const tvlCap = useMemo(() => {
+    if (massetName !== 'mbtc') return;
+
+    const { invariantStartingCap, invariantStartTime, invariantCapFactor } =
+      massetState ?? {};
+    if (!invariantStartingCap || !invariantStartTime || !invariantCapFactor)
+      return;
+
+    const currentTime = getUnixTime(Date.now());
+    const weeksSinceLaunch = BigNumber.from(currentTime)
+      .sub(invariantStartTime)
+      .mul(SCALE)
+      .div(604800);
+
+    if (weeksSinceLaunch.gt(SCALE.mul(7))) return;
+
+    const maxK = invariantStartingCap.add(
+      invariantCapFactor.mul(weeksSinceLaunch.pow(2)).div(SCALE.pow(2)),
+    );
+
+    return new BigDecimal(maxK);
+  }, [massetName, massetState]);
+
+  // Scroll to the top when the account view is toggled
   useLayoutEffect(() => {
-    // Scroll to the top when the account view is toggled
     window.scrollTo({ top: 0 });
   }, [accountOpen]);
+
+  // Handle message prioritisation:
+  useLayoutEffect(() => {
+    let message: BannerMessage | undefined;
+
+    if (massetName === 'musd') {
+      const saveV2Message = MessageHandler.saveV2({
+        hasV1Balance: false,
+        pathname,
+      });
+      const recollatMessage =
+        (undergoingRecol && MessageHandler.recollat({ massetName })) ||
+        undefined;
+
+      message = recollatMessage ?? saveV2Message;
+    }
+
+    if (massetName === 'mbtc') {
+      message =
+        (pathname === '/mbtc/mint' && MessageHandler.tvlCap({ tvlCap })) ||
+        undefined;
+    }
+
+    if (bannerMessage?.title !== message?.title) {
+      setBannerMessage(message);
+    }
+  }, [
+    bannerMessage,
+    massetName,
+    pathname,
+    setBannerMessage,
+    tvlCap,
+    undergoingRecol,
+  ]);
 
   return (
     <ModalProvider rootComponent={TransitionGroup}>
