@@ -31,6 +31,7 @@ const Container = styled.div`
   }
 `;
 
+// TODO: - Remove useEffect to set message - change to use provider & memoised props
 export const BannerMessage: FC = () => {
   const [bannerMessage] = useBannerMessage();
 
