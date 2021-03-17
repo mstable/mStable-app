@@ -78,6 +78,7 @@ const dataState: MassetState = {
   forgeValidator: '',
   failed: false,
   undergoingRecol: false,
+  isLegacy: true,
   savingsContracts: {},
   collateralisationRatio: BigNumber.from('0'),
   redemptionFeeRate: BigNumber.from('0'),
