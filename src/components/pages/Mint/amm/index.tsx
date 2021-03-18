@@ -1,9 +1,8 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useThrottleFn } from 'react-use';
 import { BigNumber } from 'ethers';
 import { Masset__factory } from '@mstable/protocol/types/generated/factories/Masset__factory';
 import { Masset } from '@mstable/protocol/types/generated/Masset';
-import { getUnixTime } from 'date-fns';
 
 import { useTokens, useTokensState } from '../../../../context/TokensProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
@@ -27,13 +26,8 @@ import {
 } from '../../../forms/MultiAssetExchange';
 import { SendButton } from '../../../forms/SendButton';
 import { MassetState } from '../../../../context/DataProvider/types';
-import {
-  BannerMessage,
-  useSetBannerMessage,
-} from '../../../../context/AppProvider';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { MassetPage } from '../../MassetPage';
-import { SCALE } from '../../../../constants';
 import {
   getBounds,
   getEstimatedOutput,
@@ -281,42 +275,6 @@ const MintLogic: FC = () => {
 
 export const Mint: FC = () => {
   const massetState = useSelectedMassetState();
-  const setBannerMessage = useSetBannerMessage();
-
-  const { invariantStartingCap, invariantStartTime, invariantCapFactor } =
-    massetState ?? {};
-
-  const tvlCap = useMemo(() => {
-    if (!invariantStartingCap || !invariantStartTime || !invariantCapFactor)
-      return;
-
-    const currentTime = getUnixTime(Date.now());
-    const weeksSinceLaunch = BigNumber.from(currentTime)
-      .sub(invariantStartTime)
-      .mul(SCALE)
-      .div(604800);
-
-    if (weeksSinceLaunch.gt(SCALE.mul(7))) return;
-
-    const maxK = invariantStartingCap.add(
-      invariantCapFactor.mul(weeksSinceLaunch.pow(2)).div(SCALE.pow(2)),
-    );
-
-    return new BigDecimal(maxK);
-  }, [invariantCapFactor, invariantStartTime, invariantStartingCap]);
-
-  useEffect(() => {
-    if (!tvlCap) return;
-
-    const message: BannerMessage = {
-      title: `Current TVL cap is ${tvlCap.format(4, false)} mBTC. `,
-      emoji: '⚠️',
-      visible: true,
-      url: 'https://medium.com/mstable/mstable-launches-mbtc-e26a246dc0bb',
-    };
-
-    setBannerMessage(message);
-  }, [setBannerMessage, tvlCap]);
 
   const inputAssets = useMemo(
     () =>
@@ -339,7 +297,7 @@ export const Mint: FC = () => {
         action={PageAction.Mint}
         subtitle={`Convert into ${massetState.token.symbol}`}
       />
-      <MassetPage>
+      <MassetPage asideVisible>
         <MintLogic />
       </MassetPage>
     </MultiAssetExchangeProvider>

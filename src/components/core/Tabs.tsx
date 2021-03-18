@@ -7,7 +7,7 @@ import { InfoMessage } from './InfoMessage';
 export const TabsContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  margin: 0.5rem 0;
+  margin: 0.5rem 0 1.25rem;
 `;
 
 export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
@@ -38,10 +38,11 @@ export const TabSwitch: FC<{
   tabs: Record<string, { title: string; component?: ReactElement }>;
   active: string;
   onClick: (key: string) => void;
-}> = ({ tabs, children, active, onClick }) => {
+  className?: string;
+}> = ({ tabs, children, active, onClick, className }) => {
   return (
     <>
-      <TabsContainer>
+      <TabsContainer className={className}>
         {Object.keys(tabs)
           .filter(key => !!tabs[key].component)
           .map(_key => (
@@ -70,5 +71,5 @@ export const MoreInfo = styled.div`
 `;
 
 export const Message = styled(InfoMessage)`
-  margin: 2rem 2rem 0 2rem;
+  margin: 0 2rem;
 `;

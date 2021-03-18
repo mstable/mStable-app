@@ -99,7 +99,7 @@ export const Redeem: FC = () => {
         action={PageAction.Redeem}
         subtitle="Exchange mUSD for its underlying collateral"
       />
-      <MassetPage>
+      <MassetPage asideVisible>
         <RedeemForm />
       </MassetPage>
     </RedeemProvider>

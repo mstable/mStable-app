@@ -322,7 +322,7 @@ export const Swap: FC = () => {
         subtitle="Swap the underlying collateral of mBTC"
       />
       {massetState ? (
-        <MassetPage>
+        <MassetPage asideVisible>
           <SwapLogic />
         </MassetPage>
       ) : (

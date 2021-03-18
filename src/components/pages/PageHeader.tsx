@@ -102,12 +102,12 @@ const ChildrenRow = styled.div`
 
 export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
   const accountOpen = useAccountOpen();
-  const { visible } = useBannerMessage() ?? {};
+  const [bannerMessage] = useBannerMessage();
   const icon = ActionIcons[action];
 
   return (
     <div>
-      <Container accountOpen={accountOpen} messageVisible={visible}>
+      <Container accountOpen={accountOpen} messageVisible={!!bannerMessage}>
         <Row>
           <Icon inverted>{icon}</Icon>
           <h2>{action}</h2>
@@ -115,7 +115,7 @@ export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
         {subtitle && <p>{subtitle}</p>}
         {children && <ChildrenRow>{children}</ChildrenRow>}
       </Container>
-      {visible && <BannerMessage />}
+      {!!bannerMessage && <BannerMessage />}
     </div>
   );
 };
