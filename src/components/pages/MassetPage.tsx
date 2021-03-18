@@ -58,7 +58,7 @@ const Separator = styled.div`
   }
 `;
 
-const Container = styled.div`
+const Inner = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
     display: flex;
     flex-direction: row;
@@ -77,12 +77,43 @@ const Container = styled.div`
   }
 `;
 
-export const MassetPage: FC = ({ children }) => {
+const MigrationOverlay = styled.div`
+  * {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  opacity: 0.75;
+  background: ${({ theme }) => theme.color.background};
+  z-index: 4;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+`;
+
+const Container = styled.div`
+  position: relative;
+`;
+
+export const MassetPage: FC<{ asideVisible?: boolean }> = ({
+  children,
+  asideVisible,
+}) => {
+  const { undergoingRecol } = useSelectedMassetState() ?? {};
   return (
     <Container>
-      <div>{children}</div>
-      <Separator />
-      <MassetAside />
+      {undergoingRecol && <MigrationOverlay />}
+      {asideVisible ? (
+        <Inner>
+          <div>{children}</div>
+          <Separator />
+          <MassetAside />
+        </Inner>
+      ) : (
+        <div>{children}</div>
+      )}
     </Container>
   );
 };

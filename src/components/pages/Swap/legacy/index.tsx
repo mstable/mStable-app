@@ -101,10 +101,10 @@ export const Swap: FC = () => {
         action={PageAction.Swap}
         subtitle="Exchange stablecoins with zero-slippage"
       />
-      <MassetPage>
+      <MassetPage asideVisible>
         <SwapForm />
+        <MassetStats />
       </MassetPage>
-      <MassetStats />
     </SwapProvider>
   ) : (
     <Skeleton height={400} />

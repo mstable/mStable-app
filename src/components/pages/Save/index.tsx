@@ -10,6 +10,7 @@ import { WeeklySaveAPY } from './WeeklySaveAPY';
 import { Save as SaveV1 } from './v1';
 import { Save as SaveV2 } from './v2';
 import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
+import { MassetPage } from '../MassetPage';
 
 const VersionToggle = styled(ToggleSave)`
   margin-bottom: 1rem;
@@ -25,8 +26,10 @@ export const Save: FC = () => {
       <PageHeader action={PageAction.Save}>
         <WeeklySaveAPY />
       </PageHeader>
-      {massetName === 'musd' ? <VersionToggle /> : <div />}
-      {selectedSaveVersion === 1 ? <SaveV1 /> : <SaveV2 />}
+      <MassetPage>
+        {massetName === 'musd' ? <VersionToggle /> : <div />}
+        {selectedSaveVersion === 1 ? <SaveV1 /> : <SaveV2 />}
+      </MassetPage>
     </>
   ) : (
     <Skeleton height={400} />

@@ -91,10 +91,10 @@ export const Mint: FC = () => {
         action={PageAction.Mint}
         subtitle="Convert stablecoins into mUSD"
       />
-      <MassetPage>
+      <MassetPage asideVisible>
         <MintForm />
+        <MassetStats />
       </MassetPage>
-      <MassetStats />
     </MintProvider>
   ) : (
     <Skeleton height={400} />

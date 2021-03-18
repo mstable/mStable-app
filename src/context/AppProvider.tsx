@@ -20,7 +20,6 @@ export interface BannerMessage {
   subtitle?: string;
   emoji: string;
   url?: string;
-  visible: boolean;
 }
 
 export type ThemeMode = 'light' | 'dark';
@@ -288,8 +287,10 @@ export const useAppStatusWarnings = (): StatusWarnings[] => {
 export const useToggleWallet = (): Dispatch['toggleWallet'] =>
   useAppDispatch().toggleWallet;
 
-export const useBannerMessage = (): State['bannerMessage'] =>
-  useAppState().bannerMessage;
+export const useBannerMessage = (): [
+  State['bannerMessage'],
+  Dispatch['setBannerMessage'],
+] => [useAppState().bannerMessage, useAppDispatch().setBannerMessage];
 
 export const useSetBannerMessage = (): Dispatch['setBannerMessage'] =>
   useAppDispatch().setBannerMessage;
