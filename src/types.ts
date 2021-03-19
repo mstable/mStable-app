@@ -115,11 +115,6 @@ export enum Platforms {
   Badger = 'Badger',
 }
 
-export interface BlockTimestamp {
-  blockNumber: number;
-  timestamp: number;
-}
-
 export interface AccentColors {
   light: string;
   accent: string;
@@ -132,8 +127,8 @@ export enum Fields {
   Output = 'output',
 }
 
-export interface TransactionOption {
-  address?: string;
+export interface AddressOption {
+  address: string;
   balance?: BigDecimal;
   symbol?: string;
   label?: string;

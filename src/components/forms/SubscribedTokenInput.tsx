@@ -2,11 +2,11 @@ import React, { FC, useMemo } from 'react';
 
 import { useTokens, useTokenSubscription } from '../../context/TokensProvider';
 import { AssetDropdown } from '../core/AssetDropdown';
-import { TransactionOption } from '../../types';
+import { AddressOption } from '../../types';
 
 interface Props {
   value?: string;
-  options?: TransactionOption[];
+  options?: (AddressOption | string)[];
   onChange?(tokenAddress?: string): void;
   error?: string;
   disabled?: boolean;
@@ -15,35 +15,40 @@ interface Props {
 
 export const SubscribedTokenInput: FC<Props> = ({
   value,
-  options: _options,
+  options: _options = [],
   onChange,
   disabled = false,
 }) => {
+  // Subscribe to the selected token
   const token = useTokenSubscription(value);
+
+  // Subscribe the other options
   const tokens = useTokens(
     _options
-      ?.filter(option => !option.custom)
-      .map(option => option.address ?? '') ?? [],
+      .filter(
+        (option: AddressOption | string) =>
+          typeof option === 'string' || !option.custom,
+      )
+      .map(option => (typeof option === 'string' ? option : option.address)),
   );
 
-  const options = useMemo(
+  const options = useMemo<AddressOption[]>(
     () =>
-      _options
-        ? [...tokens, ..._options.filter(option => option.custom)]
-        : [
-            {
-              address: token?.address,
-              balance: token?.balance,
-              symbol: token?.symbol,
-            },
-          ],
+      // Merge selected token, subscribed options and custom options
+      [
+        token,
+        ...tokens,
+        ..._options.filter(
+          option => typeof option !== 'string' && option.custom,
+        ),
+      ].filter(Boolean) as AddressOption[],
     [_options, token, tokens],
   );
 
   return (
     <AssetDropdown
       onChange={onChange}
-      options={options}
+      addressOptions={options}
       defaultAddress={value}
       disabled={disabled}
     />

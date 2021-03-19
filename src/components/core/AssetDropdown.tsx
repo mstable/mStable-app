@@ -5,13 +5,13 @@ import useOnClickOutside from 'use-onclickoutside';
 
 import { TokenIcon } from '../icons/TokenIcon';
 import { UnstyledButton } from './Button';
-import { TransactionOption } from '../../types';
+import { AddressOption } from '../../types';
 import { ThemedSkeleton } from './ThemedSkeleton';
 import { Chevron } from './Chevron';
 
 interface Props {
   defaultAddress?: string;
-  options?: TransactionOption[];
+  addressOptions: AddressOption[];
   onChange?(address?: string): void;
   disabled?: boolean;
   className?: string;
@@ -117,7 +117,7 @@ const Option: FC<{
   selected?: boolean;
   active?: boolean;
   onClick: () => void;
-  option?: TransactionOption;
+  option?: AddressOption;
   disabled?: boolean;
   dropdownEnabled?: boolean;
 }> = ({
@@ -162,19 +162,19 @@ const Option: FC<{
 
 export const AssetDropdown: FC<Props> = ({
   defaultAddress,
-  options,
+  addressOptions,
   onChange,
   disabled,
   className,
 }) => {
   const [show, toggleShow] = useToggle(false);
 
-  const selected = useMemo(
+  const selected = useMemo<AddressOption | undefined>(
     () =>
-      defaultAddress && options
-        ? options.find((option) => defaultAddress === option.address)
+      defaultAddress && addressOptions
+        ? addressOptions.find(option => defaultAddress === option.address)
         : undefined,
-    [options, defaultAddress],
+    [addressOptions, defaultAddress],
   );
 
   const handleSelect = (address?: string): void => {
@@ -187,7 +187,7 @@ export const AssetDropdown: FC<Props> = ({
     toggleShow(false);
   });
 
-  const isDropdown = (options?.length ?? 0) > 1;
+  const isDropdown = addressOptions.length > 1;
 
   return (
     <Container
@@ -205,21 +205,19 @@ export const AssetDropdown: FC<Props> = ({
         disabled={disabled}
         dropdownEnabled={isDropdown}
       />
-      {options && (
-        <OptionList hidden={!show}>
-          {options
-            .filter((m) => m.address !== selected?.address)
-            .map((option) => (
-              <Option
-                key={option.symbol}
-                onClick={() => {
-                  handleSelect(option.address);
-                }}
-                option={option}
-              />
-            ))}
-        </OptionList>
-      )}
+      <OptionList hidden={!show}>
+        {addressOptions
+          .filter(m => m.address !== selected?.address)
+          .map(option => (
+            <Option
+              key={option.symbol}
+              onClick={() => {
+                handleSelect(option.address);
+              }}
+              option={option}
+            />
+          ))}
+      </OptionList>
     </Container>
   );
 };

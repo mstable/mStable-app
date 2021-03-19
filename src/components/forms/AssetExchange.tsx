@@ -6,13 +6,13 @@ import { BigDecimal } from '../../web3/BigDecimal';
 import { AssetInput } from './AssetInput';
 import { ExchangeRate } from '../core/ExchangeRate';
 import { Arrow } from '../core/Arrow';
-import { TransactionOption } from '../../types';
+import type { AddressOption } from '../../types';
 import { ErrorMessage } from '../core/ErrorMessage';
 
 export interface Props {
   inputAddress?: string;
   inputAddressDisabled?: boolean;
-  inputAddressOptions: TransactionOption[];
+  inputAddressOptions: AddressOption[];
   inputFormValue?: string;
   handleSetInputAddress?(address?: string): void;
   handleSetInputAmount?(formValue?: string): void;
@@ -20,7 +20,7 @@ export interface Props {
 
   outputAddress?: string;
   outputAddressDisabled?: boolean;
-  outputAddressOptions: TransactionOption[];
+  outputAddressOptions: AddressOption[];
   outputFormValue?: string;
   handleSetOutputAddress?(address?: string): void;
   handleSetOutputAmount?(formValue?: string): void;
