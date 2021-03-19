@@ -5,7 +5,7 @@ import { Signer } from 'ethers';
 
 import { TransactionStatus } from '../web3/TransactionManifest';
 import { useSignerOrInfuraProvider } from '../context/OnboardProvider';
-import { useBlockNumber } from '../context/BlockProvider';
+import { useBlockNow } from '../context/BlockProvider';
 import { useAccount } from '../context/UserProvider';
 import {
   useTransactionsDispatch,
@@ -26,7 +26,7 @@ export const TransactionsUpdater = (): null => {
   const account = useAccount();
   const accountPrev = usePrevious(account);
   const provider = useSignerOrInfuraProvider();
-  const blockNumber = useBlockNumber();
+  const blockNumber = useBlockNow();
 
   const state = useTransactionsState();
   const { check, finalize, reset } = useTransactionsDispatch();

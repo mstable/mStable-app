@@ -4,7 +4,7 @@ import { Interface } from '@ethersproject/abi';
 import { Provider } from '@ethersproject/providers';
 import type { ERC20Interface } from '@mstable/protocol/types/generated/ERC20';
 
-import { useBlockNumber } from '../context/BlockProvider';
+import { useBlockNow } from '../context/BlockProvider';
 import { useAccount } from '../context/UserProvider';
 import {
   useAllowanceSubscriptionsSerialized,
@@ -77,7 +77,7 @@ export const TokenSubscriptionsUpdater = (): null => {
 
   const account = useAccount();
   const prevAccount = usePrevious(account);
-  const blockNumber = useBlockNumber();
+  const blockNumber = useBlockNow();
 
   const balanceSubscriptionsSerialized = useBalanceSubscriptionsSerialized();
   const allowanceSubscriptionsSerialized = useAllowanceSubscriptionsSerialized();
