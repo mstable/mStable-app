@@ -131,7 +131,7 @@ const PoolDetailContent: FC<{ poolAddress: string }> = ({ poolAddress }) => {
     <Container>
       <PageHeader action={PageAction.Pools} subtitle={title} />
       <HeaderContainer>
-        <HeaderCard address={poolAddress} isLarge color={color} />
+        <HeaderCard poolAddress={poolAddress} isLarge color={color} />
         <LiquidityChart poolAddress={poolAddress} color={darkColor} />
       </HeaderContainer>
       <AssetDetails poolAddress={poolAddress} />
