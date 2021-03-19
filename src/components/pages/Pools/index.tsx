@@ -173,7 +173,7 @@ const PoolsContent: FC = () => {
                   .map(({ address, masset, fasset }) => (
                     <AssetCard
                       key={address}
-                      address={address}
+                      poolAddress={address}
                       deprecated={type === PoolType.Deprecated}
                     />
                   ))}
