@@ -30,6 +30,7 @@ import IMUSDMTA, {
 import Sushi, { ReactComponent as SushiSvg } from './tokens/Sushi.svg';
 import BADGER, { ReactComponent as BadgerSvg } from './tokens/Badger.svg';
 import CREAM, { ReactComponent as CreamSvg } from './tokens/Cream.svg';
+import FAKE, { ReactComponent as FakeSvg } from './tokens/FAKE.svg';
 import IMBTCMTA, {
   ReactComponent as ImbtcmtaSvg,
 } from './tokens/imbtc-mta.svg';
@@ -75,6 +76,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   BADGER,
   CREAM,
   IMBTCMTA,
+  FAST: FAKE,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -109,6 +111,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   BADGER: BadgerSvg as SvgComponent,
   CREAM: CreamSvg as SvgComponent,
   IMBTCMTA: ImbtcmtaSvg as SvgComponent,
+  FAST: FakeSvg as SvgComponent,
 };
 
 const Image = styled.img`
