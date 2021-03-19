@@ -33,11 +33,10 @@ export const BassetOutput: FC<Props> = ({ address }) => {
   const mode = useRedeemMode();
   const { toggleBassetEnabled, setBassetAmount } = useRedeemDispatch();
 
-  const cannotRedeem = !!(
+  const cannotRedeem =
     mode !== Mode.RedeemMasset &&
     overweightBassets.length > 0 &&
-    overweightBassets.find(b => b !== address)
-  );
+    !overweightBassets.includes(address);
 
   const handleChangeAmount = useCallback<
     NonNullable<ComponentProps<typeof AmountInput>['onChange']>
