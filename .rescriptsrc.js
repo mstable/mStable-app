@@ -16,7 +16,7 @@ const transform = ({
         rule0,
         // Edit file matchers
         {
-          oneOf: matchers.map((ruleset) =>
+          oneOf: matchers.map(ruleset =>
             // Babel Loader rule
             String(ruleset.test) === String(/\.(js|mjs|jsx|ts|tsx)$/)
               ? {
@@ -29,6 +29,7 @@ const transform = ({
                     path.resolve(
                       'node_modules/@mstable/protocol/types/generated',
                     ),
+                    path.resolve('../contracts/types/generated'),
                   ],
                 }
               : ruleset,
