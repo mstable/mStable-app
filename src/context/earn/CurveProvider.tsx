@@ -24,7 +24,7 @@ import {
   TokenMinter,
 } from '../../typechain';
 import { useSignerOrInfuraProvider } from '../OnboardProvider';
-import { useBlockNumber } from '../BlockProvider';
+import { useBlockNow } from '../BlockProvider';
 import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { CHAIN_ID, ADDRESSES } from '../../constants';
@@ -122,7 +122,7 @@ const CurveContractsProvider: FC = ({ children }) => {
 
 const CurveBalancesProvider: FC = ({ children }) => {
   const account = useAccount();
-  const blockNumber = useBlockNumber();
+  const blockNumber = useBlockNow();
   const [balances, setBalances] = useState<CurveBalances>({});
   const { musdGauge } = useCurveContracts();
 

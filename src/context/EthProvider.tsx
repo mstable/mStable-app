@@ -9,7 +9,7 @@ import React, {
 import { useInterval, useEffectOnce } from 'react-use';
 
 import { BigDecimal } from '../web3/BigDecimal';
-import { useBlockNumber } from './BlockProvider';
+import { useBlockNow } from './BlockProvider';
 import { useSigner, useWalletAddress } from './OnboardProvider';
 
 interface POANetworkGasPriceResponse {
@@ -49,7 +49,7 @@ const EthBalanceProvider: FC = ({ children }) => {
 
   const signer = useSigner();
   const walletAddress = useWalletAddress();
-  const blockNumber = useBlockNumber();
+  const blockNumber = useBlockNow();
 
   useEffect(() => {
     if (walletAddress && signer?.provider) {

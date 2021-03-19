@@ -5,6 +5,7 @@ import {
   BoostedSavingsVault,
   ISavingsContractV2,
   Masset,
+  FeederPool,
 } from '@mstable/protocol/types/generated';
 
 import {
@@ -47,6 +48,7 @@ export enum Interfaces {
   SaveWrapperV2,
   BoostedSavingsVault,
   UniswapRouter02,
+  FeederPool,
 }
 /* eslint-enable @typescript-eslint/no-shadow */
 
@@ -66,6 +68,7 @@ export interface Instances {
   [Interfaces.SaveWrapperV2]: SaveWrapperV2;
   [Interfaces.BoostedSavingsVault]: BoostedSavingsVault;
   [Interfaces.UniswapRouter02]: UniswapRouter02;
+  [Interfaces.FeederPool]: FeederPool;
 }
 
 export interface Token {

@@ -33,12 +33,19 @@ const Container = styled.div`
 `;
 
 export const RewardsModal: FC = () => {
+  // TODO real value
   return (
     <Container>
       <Message>
         When you provide liquidity to pools you earn MTA rewards.
       </Message>
-      <Button highlighted>
+      <Button
+        highlighted
+        onClick={() => {
+          // TODO
+          alert('TODO claim');
+        }}
+      >
         Claim <span>12</span> MTA
       </Button>
     </Container>

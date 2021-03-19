@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ERC20__factory } from '@mstable/protocol/types/generated/factories/ERC20__factory';
+import { ERC20__factory } from '@mstable/protocol/types/generated';
 
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
 import { useSignerOrInfuraProvider } from '../context/OnboardProvider';

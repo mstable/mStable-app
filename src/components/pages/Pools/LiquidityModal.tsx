@@ -1,14 +1,14 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
+
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
-import { useTokens } from '../../../context/TokensProvider';
 import { useBigDecimalInput } from '../../../hooks/useBigDecimalInput';
+import type { MassetState } from '../../../context/DataProvider/types';
 import { ViewportWidth } from '../../../theme';
 
 import { Plus } from '../../core/Arrow';
 import { Button } from '../../core/Button';
 import { AssetInput } from '../../forms/AssetInput';
-import { mockData } from './mock';
 
 const Message = styled.div`
   padding: 1rem;
@@ -39,43 +39,29 @@ const Container = styled.div`
 `;
 
 export const LiquidityModal: FC = () => {
-  const massetState = useSelectedMassetState();
+  const massetState = useSelectedMassetState() as MassetState;
+  const { feederPools } = massetState;
+
   const [, mInputFormValue, setMAmount] = useBigDecimalInput();
   const [, fInputFormValue, setFAmount] = useBigDecimalInput();
 
-  const mToken = massetState?.token;
-  const mAddress = (mToken && mToken?.address) || undefined;
-  const mTokenAddressOptions =
-    (mToken && [
-      {
-        address: mToken.address,
-        symbol: mToken.symbol,
-        balance: mToken.balance,
-      },
-    ]) ||
-    undefined;
-
-  const { fAssets } = mockData;
-  const fTokens = useTokens(fAssets);
-  const fTokenAddressOptions = fTokens?.map(token => ({
-    address: token.address,
-    symbol: token.symbol,
-    balance: token.balance,
-  }));
-
-  const [fAddress, setFAddress] = useState<string | undefined>(
-    fTokenAddressOptions?.[0]?.address,
+  const fassets = useMemo(
+    () =>
+      Object.values(feederPools).map(feederPool => feederPool.fasset.address),
+    [feederPools],
   );
 
+  const [fAddress, setFAddress] = useState<string | undefined>(fassets[0]);
+
+  // TODO get X% value
   return (
     <Container>
       <Message>
         By providing liquidity, you will earn X% of fees from all trades
         proportional to your share of the pool.
       </Message>
-
       <AssetInput
-        addressOptions={fTokenAddressOptions}
+        addressOptions={fassets}
         address={fAddress}
         handleSetAddress={setFAddress}
         handleSetAmount={setFAmount}
@@ -85,13 +71,21 @@ export const LiquidityModal: FC = () => {
         <Plus />
       </div>
       <AssetInput
-        addressOptions={mTokenAddressOptions}
-        address={mAddress}
+        addressOptions={[massetState.address]}
+        address={massetState.address}
         addressDisabled
         handleSetAmount={setMAmount}
         formValue={mInputFormValue}
       />
-      <Button highlighted>Deposit</Button>
+      <Button
+        highlighted
+        onClick={() => {
+          // TODO
+          alert('TODO deposit');
+        }}
+      >
+        Deposit
+      </Button>
     </Container>
   );
 };

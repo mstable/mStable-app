@@ -8,7 +8,7 @@ type OnboardingType = 'user' | 'active';
 
 interface Props {
   className?: string;
-  type: OnboardingType;
+  type: OnboardingType | string;
 }
 
 const Title: Record<OnboardingType, string> = {
@@ -43,22 +43,18 @@ export const OnboardingCard: FC<Props> = ({ className, type }) => {
     !(viewedUser && type === 'user') && !(viewedActive && type === 'active');
 
   const handleClick = (): void => {
-    switch (type) {
-      case 'user':
-        LocalStorage.set('viewedPoolOnboarding', {
-          user: true,
-          active: viewedActive ?? false,
-        });
-        break;
-      case 'active':
-        LocalStorage.set('viewedPoolOnboarding', {
-          user: viewedUser ?? false,
-          active: true,
-        });
-        break;
-      default:
-        break;
-    }
+    LocalStorage.set(
+      'viewedPoolOnboarding',
+      type === 'user'
+        ? {
+            user: true,
+            active: viewedActive,
+          }
+        : {
+            user: viewedUser,
+            active: true,
+          },
+    );
     setClicked(true);
   };
 

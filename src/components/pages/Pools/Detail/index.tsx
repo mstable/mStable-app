@@ -1,16 +1,22 @@
-import React, {
-  ChangeEventHandler,
-  FC,
-  useCallback,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import type { ChangeEventHandler, FC } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import Skeleton from 'react-loading-skeleton';
+import { FeederPool__factory } from '@mstable/protocol/types/generated';
 
-import { useTokens } from '../../../../context/TokensProvider';
+import type { FeederPoolState } from '../../../../context/DataProvider/types';
+import { useTokenSubscription } from '../../../../context/TokensProvider';
+import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
+import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import {
+  useSigner,
+  useWalletAddress,
+} from '../../../../context/OnboardProvider';
+import { usePropose } from '../../../../context/TransactionsProvider';
+import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
+
 import { ViewportWidth } from '../../../../theme';
-import { SubscribedToken } from '../../../../types';
 import { Button } from '../../../core/Button';
 import { EtherscanLink } from '../../../core/EtherscanLink';
 import { TabSwitch } from '../../../core/Tabs';
@@ -19,10 +25,14 @@ import { InputV2 as Input } from '../../../forms/AmountInputV2';
 import { AssetInput } from '../../../forms/AssetInput';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { AssetCard } from '../cards/AssetCard';
-import { mockData, MockData, MockPoolData } from '../mock';
+
 import { assetColorMapping, assetDarkColorMapping } from '../utils';
 import { LiquidityChart } from './LiquidityChart';
 import { RewardsOverview } from './RewardsOverview';
+import type { AddressOption } from '../../../../types';
+import { VaultRewardsProvider } from '../../Save/v2/RewardsProvider';
+import { SendButton } from '../../../forms/SendButton';
+import { Interfaces } from '../../../../types';
 
 const UserLookup = styled.div`
   display: flex;
@@ -155,20 +165,6 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const getDataForAddress = (
-  data: MockData,
-  address?: string,
-): MockPoolData | undefined => {
-  if (!address) return;
-
-  const { pools } = data;
-  const active = pools.active.find(p => p.address === address);
-  const user = pools.user.find(p => p.address === address);
-  const deprecated = pools.deprecated.find(p => p.address === address);
-
-  return active ?? user ?? deprecated;
-};
-
 const TabContainer = styled.div`
   width: 100%;
   margin-top: 1rem;
@@ -184,24 +180,22 @@ const TabContainer = styled.div`
 `;
 
 const Withdraw: FC<{
-  lpSymbol?: string;
-  lpAddress?: string;
-}> = ({ lpAddress, lpSymbol }) => {
-  const addressOptions =
-    (lpSymbol &&
-      lpAddress && [
+  address: string;
+  label: string;
+}> = ({ address: poolAddress, label }) => {
+  const token = useTokenSubscription(poolAddress);
+
+  const addressOptions: AddressOption[] = token
+    ? [
         {
-          address: lpAddress,
-          symbol: lpSymbol,
-          label: lpSymbol,
+          ...token,
+          label,
           custom: true,
         },
-      ]) ||
-    undefined;
+      ]
+    : [];
 
-  const [address, setAddress] = useState<string | undefined>(
-    addressOptions?.[0]?.address,
-  );
+  const [address, setAddress] = useState<string | undefined>(poolAddress);
 
   return (
     <TabContainer>
@@ -210,63 +204,94 @@ const Withdraw: FC<{
         address={address}
         handleSetAddress={setAddress}
       />
-      <Button highlighted>Deposit</Button>
+      <Button highlighted>Withdraw</Button>
     </TabContainer>
   );
 };
 
 const Deposit: FC<{
-  tokens?: SubscribedToken[];
-}> = ({ tokens }) => {
-  const addressOptions = tokens?.map(token => ({
-    address: token.address,
-    symbol: token.symbol,
-    balance: token.balance,
-  }));
+  poolAddress: string;
+  tokens: string[];
+}> = ({ poolAddress, tokens }) => {
+  const [address, setAddress] = useState<string | undefined>(tokens[0]);
+  const [amount, formValue, handleSetAmount] = useBigDecimalInput();
 
-  const [address, setAddress] = useState<string | undefined>(
-    addressOptions?.[0]?.address,
+  const propose = usePropose();
+  const signer = useSigner();
+  const walletAddress = useWalletAddress();
+
+  const token = useTokenSubscription(address);
+  const valid = !!(
+    address &&
+    token?.balance &&
+    amount?.exact.lt(token.balance.exact)
   );
 
   return (
     <TabContainer>
       <AssetInput
-        addressOptions={addressOptions}
+        addressOptions={tokens}
         address={address}
+        formValue={formValue}
         handleSetAddress={setAddress}
+        handleSetAmount={handleSetAmount}
       />
-      <Button highlighted>Deposit</Button>
+      <SendButton
+        title="Deposit"
+        valid={valid}
+        handleSend={() => {
+          // TODO use SaveWrapper to deposit straight to vault
+          if (valid && amount && address && walletAddress && signer) {
+            propose<Interfaces.FeederPool, 'mint'>(
+              new TransactionManifest(
+                FeederPool__factory.connect(poolAddress, signer),
+                'mint',
+                // FIXME slippage
+                [address, amount.exact, '1', walletAddress],
+                { past: 'Deposited', present: 'Depositing' },
+              ),
+            );
+          }
+        }}
+      />
     </TabContainer>
   );
 };
 
-export const PoolDetail: FC = () => {
-  const { poolAddress } = useParams<{
-    poolAddress?: string;
-  }>();
+const PoolDetailContent: FC<{ poolAddress: string }> = ({ poolAddress }) => {
   const [lookupAddress, setLookupAddress] = useState<string | undefined>();
   const inputText = useRef<string | undefined>();
 
-  const data = getDataForAddress(mockData, poolAddress);
-  const { tokenPair, poolTotal, userAmount, userStakedAmount, mtaRewards } =
-    data ?? {};
-  const subscribedTokens = useTokens(tokenPair ?? []);
-  const title = subscribedTokens.map(t => t.symbol).join('/');
+  const { title, fasset, masset } = useFeederPool(
+    poolAddress,
+  ) as FeederPoolState;
+  useTokenSubscription(poolAddress);
+  useTokenSubscription(fasset.address);
+  useTokenSubscription(masset.address);
+
   const color = assetColorMapping[title];
   const darkColor = assetDarkColorMapping[title];
 
-  const tabs = {
-    Deposit: {
-      title: 'Deposit',
-      component: <Deposit tokens={subscribedTokens} />,
-    },
-    Withdraw: {
-      title: 'Withdraw or Exit',
-      component: <Withdraw lpAddress={poolAddress} lpSymbol={title} />,
-    },
-  };
+  const tabs = useMemo(
+    () => ({
+      Deposit: {
+        title: 'Deposit',
+        component: (
+          <Deposit
+            poolAddress={poolAddress}
+            tokens={[masset.address, fasset.address]}
+          />
+        ),
+      },
+      Withdraw: {
+        title: 'Withdraw or Exit',
+        component: <Withdraw address={poolAddress} label={title} />,
+      },
+    }),
+    [masset.address, fasset.address, poolAddress, title],
+  );
 
-  const [activeTab, setActiveTab] = useState<string>(Object.keys(tabs)[0]);
+  const [activeTab, setActiveTab] = useState<string>('Deposit');
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
@@ -275,38 +300,34 @@ export const PoolDetail: FC = () => {
     [],
   );
 
-  // eslint-disable-next-line no-alert
-  const handleLookupClick = (): void => setLookupAddress(inputText.current);
+  const handleLookupClick = useCallback(() => {
+    setLookupAddress(inputText.current);
+  }, []);
 
   return (
     <Container>
       <PageHeader action={PageAction.Pools} subtitle={title} />
       <HeaderContainer>
-        <HeaderCard
-          address={poolAddress}
-          tokenPair={tokenPair}
-          isLarge
-          color={color}
-        />
+        <HeaderCard address={poolAddress} isLarge color={color} />
         <LiquidityChart color={darkColor} />
       </HeaderContainer>
       <AssetDetails>
         <h3>Asset Details</h3>
         <div>
-          {poolAddress ? (
-            <EtherscanLink data={poolAddress} type="address">
-              <h3>{title}</h3>
-            </EtherscanLink>
-          ) : (
-            <ThemedSkeleton width={48} height={32} />
-          )}
-          {subscribedTokens.map(token =>
+          <EtherscanLink data={poolAddress} type="address">
+            <h3>{title}</h3>
+          </EtherscanLink>
+          {[masset.token, fasset.token].map(token =>
             token.address ? (
-              <EtherscanLink data={token.address} type="address">
+              <EtherscanLink
+                data={token.address}
+                type="address"
+                key={token.address}
+              >
                 <p>{token.symbol}</p>
               </EtherscanLink>
             ) : (
-              <ThemedSkeleton width={48} height={32} />
+              <ThemedSkeleton width={48} height={32} key={token.address} />
             ),
           )}
         </div>
@@ -320,15 +341,24 @@ export const PoolDetail: FC = () => {
         />
         <Button onClick={handleLookupClick}>View</Button>
       </UserLookup>
-      <RewardsOverview
-        title={title}
-        poolTotal={poolTotal}
-        userAmount={userAmount}
-        userStakedAmount={userStakedAmount}
-        mtaRewards={mtaRewards}
-      />
+      <RewardsOverview poolAddress={poolAddress} />
       <Divider />
       <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab} />
     </Container>
+  );
+};
+
+// TODO support more than just feeders
+export const PoolDetail: FC = () => {
+  const { poolAddress } = useParams<{
+    poolAddress: string;
+  }>();
+  const feederPool = useFeederPool(poolAddress);
+  return feederPool ? (
+    <VaultRewardsProvider vault={feederPool.vault}>
+      <PoolDetailContent poolAddress={poolAddress} />
+    </VaultRewardsProvider>
+  ) : (
+    <Skeleton height={300} />
   );
 };

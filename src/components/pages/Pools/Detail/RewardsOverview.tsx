@@ -2,13 +2,13 @@ import React, { FC } from 'react';
 import styled from 'styled-components';
 import { ViewportWidth } from '../../../../theme';
 import { Button } from '../../../core/Button';
+import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
+import { useRewards } from '../../Save/v2/RewardsProvider';
+import { FeederPoolState } from '../../../../context/DataProvider/types';
+import { CountUp } from '../../../core/CountUp';
 
 interface Props {
-  title?: string;
-  poolTotal?: number;
-  userAmount?: number;
-  userStakedAmount?: number;
-  mtaRewards?: number;
+  poolAddress: string;
 }
 
 const Card = styled.div`
@@ -103,11 +103,23 @@ const Container = styled.div`
   margin: 1rem 0;
 `;
 
-export const RewardsOverview: FC<Props> = props => {
-  const { poolTotal, userAmount, userStakedAmount, mtaRewards, title } = props;
+// TODO wrap this so that we can supply a feeder pool or earn pool or whatever
+export const RewardsOverview: FC<Props> = ({ poolAddress }) => {
+  const { token, totalSupply, vault, title } = useFeederPool(
+    poolAddress,
+  ) as FeederPoolState;
 
-  const poolPercentage = 100 * ((userAmount ?? 0) / (poolTotal ?? 0));
-  const showLiquidityMessage = !userAmount && !userStakedAmount && !mtaRewards;
+  const poolTotal = totalSupply.simple;
+  const userAmount = token.balance?.simple ?? 0;
+  const userStakedAmount = vault.account?.rawBalance.simple ?? 0;
+
+  const rewards = useRewards();
+  const unclaimedAmount = rewards?.now.claimable;
+
+  // TODO consider just using staked amount?
+  const poolPercentage = 100 * ((userAmount + userStakedAmount) / poolTotal);
+
+  const showLiquidityMessage = !userAmount && !userStakedAmount;
 
   return (
     <Container>
@@ -120,7 +132,14 @@ export const RewardsOverview: FC<Props> = props => {
               fees
             </p>
           </div>
-          <Button>Add Liquidity</Button>
+          <Button
+            onClick={() => {
+              // TODO
+              alert('TODO add liquidity');
+            }}
+          >
+            Add Liquidity
+          </Button>
         </GetLP>
       ) : (
         <Stats>
@@ -139,13 +158,21 @@ export const RewardsOverview: FC<Props> = props => {
           <EarnInfo>
             <div>
               <h3>Earn Rewards</h3>
-              {!mtaRewards ? (
+              {!unclaimedAmount ? (
                 <span>
                   Provide liquidity and stake to earn rewards in addition to
                   trade fees
                 </span>
               ) : (
-                <Button>Claim {mtaRewards} MTA</Button>
+                <Button
+                  onClick={() => {
+                    // TODO
+                    alert('TODO claim');
+                  }}
+                >
+                  Claim <CountUp end={unclaimedAmount.simple} decimals={4} />{' '}
+                  MTA
+                </Button>
               )}
             </div>
           </EarnInfo>

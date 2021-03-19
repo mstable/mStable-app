@@ -1,3 +1,42 @@
+fragment FPMetrics on FeederPool {
+  cumulativeSwapped {
+    ...MetricFields
+  }
+  cumulativeInterestCollected {
+    ...MetricFields
+  }
+  cumulativeInterestDistributed {
+    ...MetricFields
+  }
+  cumulativeFeesPaid {
+    ...MetricFields
+  }
+  cumulativeMinted {
+    ...MetricFields
+  }
+  cumulativeRedeemed {
+    ...MetricFields
+  }
+  totalMints {
+    value
+  }
+  totalRedeemMassets {
+    value
+  }
+  totalRedemptions {
+    value
+  }
+  totalSupply {
+    ...MetricFields
+  }
+  totalSwaps {
+    value
+  }
+  price
+  invariantK
+  dailyAPY
+}
+
 fragment TokenAll on Token {
   id
   address
@@ -34,4 +73,49 @@ fragment MetricFields on Metric {
   exact
   decimals
   simple
+}
+
+fragment BassetAll on Basset {
+  id
+  vaultBalance {
+    ...MetricFields
+  }
+  isTransferFeeCharged
+  ratio
+  status
+  maxWeight
+  token {
+    ...TokenAll
+  }
+}
+
+fragment BoostedSavingsVaultAll on BoostedSavingsVault {
+  id
+  lastUpdateTime
+  lockupDuration
+  unlockPercentage
+  periodDuration
+  periodFinish
+  rewardPerTokenStored
+  rewardRate
+  stakingContract
+  totalStakingRewards
+  totalSupply
+  accounts(where: { account: $account }) @include(if: $hasAccount) {
+    id
+    boostedBalance
+    lastAction
+    lastClaim
+    rawBalance
+    rewardCount
+    rewardPerTokenPaid
+    rewards
+    rewardEntries(orderBy: index, orderDirection: asc) {
+      id
+      finish
+      index
+      rate
+      start
+    }
+  }
 }

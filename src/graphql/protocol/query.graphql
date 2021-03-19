@@ -17,23 +17,41 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
       collateralisationRatio
       undergoingRecol
       bassets: bassets(where: { removed: false }) {
-        id
-        vaultBalance {
-          ...MetricFields
-        }
-        isTransferFeeCharged
-        ratio
-        status
-        maxWeight
-        token {
-          ...TokenAll
-        }
+        ...BassetAll
       }
       removedBassets: bassets(where: { removed: true }) {
         id
         token {
           ...TokenAll
         }
+      }
+    }
+    feederPools {
+      id
+      swapFeeRate
+      redemptionFeeRate
+      governanceFeeRate
+      dailyAPY
+      price
+      invariantK
+      basket {
+        bassets {
+          ...BassetAll
+        }
+        undergoingRecol
+        failed
+      }
+      token {
+        ...TokenAll
+      }
+      fasset {
+        ...TokenAll
+      }
+      masset {
+        id
+      }
+      vault {
+        ...BoostedSavingsVaultAll
       }
     }
     currentSavingsContract {
@@ -54,36 +72,18 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
         ...TokenAll
       }
       boostedSavingsVaults {
-        id
-        lastUpdateTime
-        lockupDuration
-        unlockPercentage
-        periodDuration
-        periodFinish
-        rewardPerTokenStored
-        rewardRate
-        stakingContract
-        totalStakingRewards
-        totalSupply
-        accounts(where: { account: $account }) @include(if: $hasAccount) {
-          id
-          boostedBalance
-          lastAction
-          lastClaim
-          rawBalance
-          rewardCount
-          rewardPerTokenPaid
-          rewards
-          rewardEntries(orderBy: index, orderDirection: asc) {
-            id
-            finish
-            index
-            rate
-            start
-          }
-        }
+        ...BoostedSavingsVaultAll
       }
     }
+  }
+}
+
+query FeederPoolMetrics($feederPool: ID!, $block: Block_height!) @api(name: protocol) {
+  current: feederPool(id: $feederPool) {
+    ...FPMetrics
+  }
+  historic: feederPool(id: $feederPool, block: $block) {
+    ...FPMetrics
   }
 }
 

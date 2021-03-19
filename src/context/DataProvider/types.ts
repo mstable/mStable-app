@@ -29,6 +29,24 @@ export interface BassetState {
   token: SubscribedToken;
 }
 
+export interface FeederPoolState {
+  address: string;
+  fasset: BassetState;
+  masset: BassetState;
+  token: SubscribedToken;
+  totalSupply: BigDecimal;
+  vault: BoostedSavingsVaultState;
+  invariantK: BigNumber;
+  dailyApy: number;
+  price: number;
+  failed: boolean;
+  title: string;
+  governanceFeeRate: BigNumber;
+  feeRate: BigNumber;
+  redemptionFeeRate: BigNumber;
+  undergoingRecol: boolean;
+}
+
 export interface MassetState {
   address: string;
   allBassetsNormal: boolean;
@@ -51,6 +69,9 @@ export interface MassetState {
     v2?: Extract<SavingsContractState, { version: 2 }>;
   };
   isLegacy: boolean;
+  feederPools: {
+    [address: string]: FeederPoolState;
+  };
 }
 
 export interface BoostedSavingsVaultAccountState {

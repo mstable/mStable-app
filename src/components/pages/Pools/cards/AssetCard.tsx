@@ -1,19 +1,28 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
+import Skeleton from 'react-loading-skeleton';
+import { BigNumber } from 'ethers';
+import { getUnixTime } from 'date-fns';
 
-import { useTokens } from '../../../../context/TokensProvider';
+import { useFeederPoolMetricsQuery } from '../../../../graphql/protocol';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
+import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
+import { useTokenSubscription } from '../../../../context/TokensProvider';
+import { FeederPoolState } from '../../../../context/DataProvider/types';
+import { useBlockNumbers } from '../../../../context/BlockProvider';
+import { BigDecimal } from '../../../../web3/BigDecimal';
+
 import { SubscribedToken } from '../../../../types';
 import { TokenIcon } from '../../../icons/TokenIcon';
-import { Card } from './Card';
-import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
-import { assetColorMapping } from '../utils';
 import { ViewportWidth } from '../../../../theme';
+import { assetColorMapping } from '../utils';
+
+import { Card } from './Card';
 
 interface Props {
   className?: string;
-  address?: string;
-  tokenPair?: string[];
+  address: string;
   deprecated?: boolean;
   isLarge?: boolean;
   color?: string;
@@ -60,35 +69,86 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
   }
 `;
 
-const TokenStats: FC<{ isLarge?: boolean }> = ({ isLarge = false }) => {
+const nowUnix = getUnixTime(Date.now());
+
+const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
+  isLarge = false,
+  address,
+}) => {
   // TODO: -
-  // getPoolStats(tokenAddresses)
+  // getPoolStats(tokenAddresses);
+  const {
+    vault: { rewardRate, periodFinish, periodDuration },
+    totalSupply,
+    masset,
+    fasset,
+    invariantK,
+    price,
+  } = useFeederPool(address) as FeederPoolState;
+
+  const { block24h } = useBlockNumbers();
+
+  const fpMetrics = useFeederPoolMetricsQuery({
+    variables: { feederPool: address, block: { number: block24h as number } },
+    skip: !block24h,
+  });
+
+  // TODO get price
+  const massetPrice = 59450;
+
+  const stats = useMemo(() => {
+    // FIXME use totalVaultInMasset; not set on subgraph
+    // const liquidity = masset.totalVault.add(fasset.totalVault);
+
+    // FIXME liquidity should be USD value; simply invariantK * masset price?
+    const liquidity = BigDecimal.parse(
+      ((parseInt(invariantK.toString()) / 1e18) * massetPrice).toFixed(2),
+    );
+
+    const rewardsPerWeek = new BigDecimal(
+      nowUnix < periodFinish
+        ? BigNumber.from(periodDuration).mul(rewardRate)
+        : 0,
+    );
+
+    const volume =
+      fpMetrics.data?.historic && fpMetrics.data.current
+        ? BigDecimal.fromMetric(fpMetrics.data.current.cumulativeSwapped).sub(
+            BigDecimal.fromMetric(fpMetrics.data.historic.cumulativeSwapped),
+          )
+        : BigDecimal.ZERO;
+
+    return { liquidity, rewardsPerWeek, volume };
+  }, [fpMetrics.data]);
+
   return (
     <StatsContainer isLarge={isLarge}>
       <div>
-        <p>Liquidity:</p>
+        <p>Liquidity</p>
         <p>
-          <span>$112,000,000</span>
+          <span>${stats.liquidity.abbreviated}</span>
         </p>
       </div>
       <div>
-        <p>Rewards:</p>
+        <p>Rewards</p>
         <p>
-          <span>14.75</span> MTA / week
+          <span>{stats.rewardsPerWeek.abbreviated}</span> MTA / week
         </p>
       </div>
       {isLarge && (
         <>
           <div>
-            <p>Volume:</p>
+            <p>Volume</p>
             <p>
-              <span>$24,000</span>
+              <span>${stats.volume.abbreviated}</span>
             </p>
           </div>
           <div>
-            <p>Assets:</p>
+            <p>Assets</p>
             <p>
-              <span>3.43m</span> – <span>6.43m</span>
+              <span>{masset.totalVault.abbreviated}</span> {masset.token.symbol}
+              , <span>{fasset.totalVault.abbreviated}</span>{' '}
+              {fasset.token.symbol}
             </p>
           </div>
         </>
@@ -108,8 +168,7 @@ const IconContainer = styled.div<{ isLarge: boolean }>`
   }
 
   > img:last-child {
-    margin-left: -1rem;
-    z-index: 1;
+    margin-left: -0.7rem;
   }
 `;
 
@@ -117,8 +176,8 @@ const TokenPair: FC<{ tokens?: SubscribedToken[]; isLarge?: boolean }> = ({
   tokens,
   isLarge = false,
 }) => {
-  if (!tokens?.length) return null;
-  if ((tokens?.length ?? 0) < 2) return null;
+  if (!tokens?.length || tokens.length < 2) return null;
+
   // TODO: Add skeleton
   return (
     <IconContainer isLarge={isLarge}>
@@ -148,20 +207,22 @@ const Container = styled(Card)<{ gradientColor?: string }>`
   }
 `;
 
-export const AssetCard: FC<Props> = ({
+const AssetCardContent: FC<Props> = ({
   className,
-  tokenPair,
   address,
   deprecated = false,
   isLarge = false,
   color,
 }) => {
-  const subscribedTokens = useTokens(tokenPair ?? []);
+  const feederPool = useFeederPool(address) as FeederPoolState;
+
+  useTokenSubscription(feederPool.address);
+  useTokenSubscription(feederPool.fasset.address);
+
   const massetName = useSelectedMassetName();
   const history = useHistory();
 
-  const title = subscribedTokens.map(t => t.symbol).join('/');
-  const gradientColor = color ?? assetColorMapping[title];
+  const gradientColor = color ?? assetColorMapping[feederPool.title];
 
   const handleClick = (): void => {
     history.push(`/${massetName}/pools/${address}`);
@@ -173,14 +234,38 @@ export const AssetCard: FC<Props> = ({
       gradientColor={!deprecated ? gradientColor : undefined}
       title={
         <div>
-          <TokenPair tokens={subscribedTokens} isLarge={isLarge} />
-          {title}
+          <TokenPair
+            tokens={[feederPool.masset.token, feederPool.fasset.token]}
+            isLarge={isLarge}
+          />
+          {feederPool.title}
         </div>
       }
       iconType={(!isLarge && 'chevron') || undefined}
       onClick={(!isLarge && handleClick) || undefined}
     >
-      {!deprecated && <TokenStats isLarge={isLarge} />}
+      {!deprecated && <PoolStats address={address} isLarge={isLarge} />}
     </Container>
+  );
+};
+
+export const AssetCard: FC<Props> = ({
+  address,
+  className,
+  deprecated,
+  isLarge,
+  color,
+}) => {
+  const feederPool = useFeederPool(address);
+  return feederPool ? (
+    <AssetCardContent
+      address={address}
+      className={className}
+      deprecated={deprecated}
+      isLarge={isLarge}
+      color={color}
+    />
+  ) : (
+    <Skeleton height={200} />
   );
 };

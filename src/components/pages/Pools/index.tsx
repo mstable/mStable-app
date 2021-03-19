@@ -1,17 +1,23 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
+import Skeleton from 'react-loading-skeleton';
+
+import type {
+  FeederPoolState,
+  MassetState,
+} from '../../../context/DataProvider/types';
 
 import { Button } from '../../core/Button';
 import { PageAction, PageHeader } from '../PageHeader';
 import { Card } from './cards/Card';
 import { OnboardingCard } from './cards/OnboardingCard';
 import { AssetCard } from './cards/AssetCard';
-import { PoolType } from './types';
-import { mockData, MockPoolData } from './mock';
 import { ViewportWidth } from '../../../theme';
 import { useModalComponent } from '../../../hooks/useModalComponent';
 import { LiquidityModal } from './LiquidityModal';
 import { RewardsModal } from './RewardsModal';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
+import { PoolType } from './types';
 
 const DEFAULT_ITEM_COUNT = 3;
 
@@ -95,16 +101,32 @@ const Title: Record<PoolType, string> = {
   [PoolType.Deprecated]: 'Deprecated Pools',
 };
 
-export const Pools: FC = () => {
-  const {
-    pools: { user, active, deprecated },
-  } = mockData;
+const sections = [PoolType.User, PoolType.Active, PoolType.Deprecated];
 
-  const sections: Record<PoolType, MockPoolData[]> = {
-    [PoolType.User]: user,
-    [PoolType.Active]: active,
-    [PoolType.Deprecated]: deprecated,
-  };
+const PoolsContent: FC = () => {
+  const { feederPools } = useSelectedMassetState() as MassetState;
+  const pools = useMemo(
+    () =>
+      Object.values(feederPools).reduce<{
+        active: FeederPoolState[];
+        user: FeederPoolState[];
+        deprecated: FeederPoolState[];
+      }>(
+        (prev, current) => {
+          if (current.token.balance?.exact.gt(0)) {
+            return { ...prev, user: [...prev.user, current] };
+          }
+          // TODO determine deprecated somehow
+          return { ...prev, active: [...prev.active, current] };
+        },
+        {
+          user: [],
+          active: [],
+          deprecated: [],
+        },
+      ),
+    [feederPools],
+  );
 
   const [numPoolsVisible, setNumPoolsVisible] = useState({
     [PoolType.User]: DEFAULT_ITEM_COUNT,
@@ -132,58 +154,61 @@ export const Pools: FC = () => {
 
   const handleExploreClick = (): void => {};
 
-  const handleRewardsClick = useCallback(() => showRewardsModal(), [
-    showRewardsModal,
-  ]);
-
-  const handleAddLiquidityClick = useCallback(() => showLiquidityModal(), [
-    showLiquidityModal,
-  ]);
-
   return (
-    <Container>
-      <PageHeader
-        action={PageAction.Pools}
-        subtitle="Earn fees and ecosystem rewards"
-      />
-      {Object.keys(sections).map(type => {
-        const section = sections[type as PoolType];
+    <>
+      {sections.map((type, index) => {
         return (
-          <Section>
+          <Section key={type + index}>
             <Row>
-              <h2>{Title[type as PoolType]}</h2>
-              {(type as PoolType) === PoolType.User && (
+              <h2>{Title[type]}</h2>
+              {type === PoolType.User && (
                 <div>
                   <Button onClick={handleExploreClick}>Explore Pools</Button>
                   {/* Probably move Rewards to top of screen / leave out */}
-                  <Button onClick={handleRewardsClick}>Rewards</Button>
-                  <Button highlighted onClick={handleAddLiquidityClick}>
+                  <Button onClick={showRewardsModal}>Rewards</Button>
+                  <Button highlighted onClick={showLiquidityModal}>
                     Add Liquidity
                   </Button>
                 </div>
               )}
             </Row>
             <Cards>
-              <OnboardingCard type={(type as 'active' | 'user') ?? undefined} />
-              {section
-                .filter((_, i) => i < numPoolsVisible[type as PoolType])
-                .map(({ tokenPair, address }) => (
+              <OnboardingCard type={type} />
+              {pools[type]
+                .filter((_, i) => i < numPoolsVisible[type])
+                .map(({ address, masset, fasset }) => (
                   <AssetCard
                     key={address}
                     address={address}
-                    tokenPair={tokenPair}
-                    deprecated={(type as PoolType) === PoolType.Deprecated}
+                    deprecated={type === PoolType.Deprecated}
                   />
                 ))}
-              {section.length > numPoolsVisible[type as PoolType] && (
-                <LoadCard onClick={() => showMorePools(type as PoolType)}>
-                  <h3>Load more</h3>
+              {pools[type].length > numPoolsVisible[type] && (
+                <LoadCard
+                  onClick={() => {
+                    showMorePools(type);
+                  }}
+                >
+                  <div>Load more</div>
                 </LoadCard>
               )}
             </Cards>
           </Section>
         );
       })}
+    </>
+  );
+};
+
+export const Pools: FC = () => {
+  const massetState = useSelectedMassetState();
+  return (
+    <Container>
+      <PageHeader
+        action={PageAction.Pools}
+        subtitle="Earn fees and ecosystem rewards"
+      />
+      {massetState ? <PoolsContent /> : <Skeleton height={500} />}
     </Container>
   );
 };
