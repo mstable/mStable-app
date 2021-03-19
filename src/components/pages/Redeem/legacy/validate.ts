@@ -174,7 +174,7 @@ const redeemMassetValidator: StateValidator = state => {
 /**
  * Validate the basket state for all redemption modes
  */
-const basketValidator: StateValidator = ({ simulation, mode }) => {
+const basketValidator: StateValidator = ({ simulation, mode, bAssets }) => {
   if (!simulation) {
     return [false, Reasons.FetchingData];
   }
@@ -196,7 +196,10 @@ const basketValidator: StateValidator = ({ simulation, mode }) => {
   }
 
   if (mode !== Mode.RedeemMasset) {
-    if (overweightBassets.length > 1) {
+    if (
+      overweightBassets.length > 1 &&
+      overweightBassets.every(b => bAssets[b].enabled)
+    ) {
       return [false, Reasons.MustRedeemOverweightAssets, overweightBassets];
     }
 
