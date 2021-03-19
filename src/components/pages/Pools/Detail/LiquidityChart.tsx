@@ -15,7 +15,6 @@ import { format, getUnixTime } from 'date-fns';
 import { useBlockTimesForDates } from '../../../../hooks/useBlockTimesForDates';
 import { getKeyTimestamp } from '../../../../utils/getKeyTimestamp';
 import { Color } from '../../../../theme';
-import { useSelectedSavingsContractState } from '../../../../context/SelectedSaveVersionProvider';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 import {
   useDateFilter,
@@ -28,9 +27,7 @@ import { periodFormatMapping, toK } from '../../../stats/utils';
 
 interface AggregateMetricsQueryResult {
   [timestamp: string]: {
-    totalLiquidity: {
-      simple: string;
-    };
+    simple: string;
   };
 }
 
@@ -56,37 +53,32 @@ const Container = styled(RechartsContainer)`
 
 const nowUnix = getUnixTime(new Date());
 
-const useAggregateMetrics = (): {
+const useTotalLiquidity = (
+  poolAddress: string,
+): {
   timestamp: number;
   totalLiquidity: number;
 }[] => {
   const dateFilter = useDateFilter();
-  const savingsContractState = useSelectedSavingsContractState();
-  const massetAddress = savingsContractState?.massetAddress;
 
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
 
   const metricsDoc = useMemo<DocumentNode>(() => {
-    const current = `t${nowUnix}: masset(id: "${massetAddress}") { ...AggregateMetricsFields }`;
+    const current = `t${nowUnix}: metric(id: "${poolAddress}.token.totalSupply") { simple }`;
     const blockMetrics = blockTimes
       .map(
         ({ timestamp, number }) =>
-          `t${timestamp}: masset(id: "${massetAddress}", block: { number: ${number} }) { ...AggregateMetricsFields }`,
+          `t${timestamp}: metric(id: "${poolAddress}.token.totalSupply", block: { number: ${number} }) { simple }`,
       )
       .join('\n');
 
     return gql`
-      fragment AggregateMetricsFields on Masset {
-        totalLiquidity: totalSupply {
-          simple
-        }
-      }
       query AggregateMetrics @api(name: protocol) {
         ${current}
         ${blockMetrics}
       }
     `;
-  }, [blockTimes, massetAddress]);
+  }, [blockTimes, poolAddress]);
 
   const query = useQuery<AggregateMetricsQueryResult>(metricsDoc, {
     fetchPolicy: 'no-cache',
@@ -94,36 +86,37 @@ const useAggregateMetrics = (): {
 
   return useMemo(() => {
     const filtered = Object.entries(query.data ?? {})
-      .filter(([, value]) => !!value?.totalLiquidity)
+      .filter(([, value]) => !!value?.simple)
       .map(([key, value]) => [getKeyTimestamp(key), value]) as [
       number,
       AggregateMetricsQueryResult[string],
     ][];
     return filtered
       .sort(([a], [b]) => (a > b ? 1 : -1))
-      .map(([timestamp, { totalLiquidity }]) => {
+      .map(([timestamp, { simple }]) => {
         return {
           timestamp,
-          totalLiquidity: parseFloat(totalLiquidity.simple),
+          totalLiquidity: parseFloat(simple),
         };
       });
   }, [query.data]);
 };
 
 const Chart: FC<{
+  poolAddress: string;
   aggregateMetrics: {
     type: string;
     enabled: boolean;
     label: string;
     color: string;
   }[];
-}> = ({ aggregateMetrics }) => {
-  const data = useAggregateMetrics();
+}> = ({ poolAddress, aggregateMetrics }) => {
+  const data = useTotalLiquidity(poolAddress);
   const dateFilter = useDateFilter();
   const { metrics } = useMetricsState();
   return (
     <Container>
-      <Title> Liquidity </Title>
+      <Title>Liquidity</Title>
       {data && data.length ? (
         <ResponsiveContainer aspect={2}>
           <AreaChart
@@ -217,14 +210,17 @@ const Chart: FC<{
   );
 };
 
-export const LiquidityChart: FC<{ color?: string }> = ({ color }) => {
+export const LiquidityChart: FC<{ poolAddress: string; color?: string }> = ({
+  poolAddress,
+  color = Color.blue,
+}) => {
   const aggregateMetrics = useMemo(
     () => [
       {
         type: 'totalLiquidity',
         enabled: true,
         label: 'Liquidity',
-        color: color ?? Color.blue,
+        color,
       },
     ],
     [color],
@@ -233,10 +229,10 @@ export const LiquidityChart: FC<{ color?: string }> = ({ color }) => {
   return (
     <Metrics
       metrics={aggregateMetrics}
-      defaultDateRange={DateRange.Days90}
+      defaultDateRange={DateRange.Week}
       hideControls
     >
-      <Chart aggregateMetrics={aggregateMetrics} />
+      <Chart poolAddress={poolAddress} aggregateMetrics={aggregateMetrics} />
     </Metrics>
   );
 };
