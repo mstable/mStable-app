@@ -4,6 +4,7 @@ import { addDays, getUnixTime } from 'date-fns';
 
 import { calculateRewards, Rewards } from './utils';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import { BoostedSavingsVaultState } from '../../../../context/DataProvider/types';
 
 type RewardsTimeTravel = [boolean, () => void, (time: number) => void];
 
@@ -42,4 +43,20 @@ export const RewardsProvider: FC = ({ children }) => {
       <rewardsCtx.Provider value={rewards}>{children}</rewardsCtx.Provider>
     </rewardsTimeTravelCtx.Provider>
   );
+};
+
+// TODO separate this out
+export const VaultRewardsProvider: FC<{ vault: BoostedSavingsVaultState }> = ({
+  children,
+  vault,
+}) => {
+  const [rewards, setRewards] = useState<Rewards>();
+
+  useInterval(() => {
+    const currentTime = getUnixTime(Date.now());
+    const newRewards = calculateRewards(vault, currentTime);
+    setRewards(newRewards);
+  }, 1000);
+
+  return <rewardsCtx.Provider value={rewards}>{children}</rewardsCtx.Provider>;
 };

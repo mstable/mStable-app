@@ -28,6 +28,18 @@ export type Maybe<T> = T | null;
             "name": "SavingsContractWithdrawTransaction"
           },
           {
+            "name": "FPMintMultiTransaction"
+          },
+          {
+            "name": "FPMintSingleTransaction"
+          },
+          {
+            "name": "FPRedeemTransaction"
+          },
+          {
+            "name": "FPSwapTransaction"
+          },
+          {
             "name": "BoostedSavingsVaultStakeTransaction"
           },
           {
@@ -225,8 +237,10 @@ export type Basket = {
   undergoingRecol: Scalars['Boolean'];
   /** Flag for whether the Basket has failed */
   failed: Scalars['Boolean'];
-  /** Masset the Basket belongs to */
-  masset: Masset;
+  /** Masset the Basket belongs to (optional) */
+  masset?: Maybe<Masset>;
+  /** FeederPool the Basket belongs to (optional) */
+  feederPool?: Maybe<FeederPool>;
 };
 
 
@@ -285,15 +299,14 @@ export enum Basket_OrderBy {
   MaxBassets = 'maxBassets',
   UndergoingRecol = 'undergoingRecol',
   Failed = 'failed',
-  Masset = 'masset'
+  Masset = 'masset',
+  FeederPool = 'feederPool'
 }
 
 /** Basket Asset (e.g. DAI for the mUSD basket) */
 export type Basset = {
   /** Address of the Basset token contract */
   id: Scalars['ID'];
-  /** Basket the Basset is contained in */
-  basket: Basket;
   /** Target weight of the Basset (mUSD only) */
   maxWeight?: Maybe<Scalars['BigInt']>;
   /** Basset to Masset ratio for quantity conversion */
@@ -533,7 +546,6 @@ export type Basset_Filter = {
 
 export enum Basset_OrderBy {
   Id = 'id',
-  Basket = 'basket',
   MaxWeight = 'maxWeight',
   Ratio = 'ratio',
   Removed = 'removed',
@@ -561,7 +573,10 @@ export type Block_Height = {
 
 export type BoostedSavingsVault = {
   id: Scalars['ID'];
-  savingsContract: SavingsContract;
+  /** Optionally, the Savings Contract associated with this vault */
+  savingsContract?: Maybe<SavingsContract>;
+  /** Optionally, the Feeder Pool associated with this vault */
+  feederPool?: Maybe<FeederPool>;
   accounts: Array<BoostedSavingsVaultAccount>;
   rewardEntries: Array<BoostedSavingsVaultRewardEntry>;
   /** Length of token lockup (in seconds), after rewards are earned */
@@ -673,6 +688,20 @@ export type BoostedSavingsVault_Filter = {
   savingsContract_not_starts_with?: Maybe<Scalars['String']>;
   savingsContract_ends_with?: Maybe<Scalars['String']>;
   savingsContract_not_ends_with?: Maybe<Scalars['String']>;
+  feederPool?: Maybe<Scalars['String']>;
+  feederPool_not?: Maybe<Scalars['String']>;
+  feederPool_gt?: Maybe<Scalars['String']>;
+  feederPool_lt?: Maybe<Scalars['String']>;
+  feederPool_gte?: Maybe<Scalars['String']>;
+  feederPool_lte?: Maybe<Scalars['String']>;
+  feederPool_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_not_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_contains?: Maybe<Scalars['String']>;
+  feederPool_not_contains?: Maybe<Scalars['String']>;
+  feederPool_starts_with?: Maybe<Scalars['String']>;
+  feederPool_not_starts_with?: Maybe<Scalars['String']>;
+  feederPool_ends_with?: Maybe<Scalars['String']>;
+  feederPool_not_ends_with?: Maybe<Scalars['String']>;
   lockupDuration?: Maybe<Scalars['Int']>;
   lockupDuration_not?: Maybe<Scalars['Int']>;
   lockupDuration_gt?: Maybe<Scalars['Int']>;
@@ -790,6 +819,7 @@ export type BoostedSavingsVault_Filter = {
 export enum BoostedSavingsVault_OrderBy {
   Id = 'id',
   SavingsContract = 'savingsContract',
+  FeederPool = 'feederPool',
   Accounts = 'accounts',
   RewardEntries = 'rewardEntries',
   LockupDuration = 'lockupDuration',
@@ -1627,6 +1657,922 @@ export enum ExchangeRate_OrderBy {
   Next = 'next'
 }
 
+export type FeederPool = {
+  id: Scalars['ID'];
+  ampData: AmpData;
+  basket: Basket;
+  cacheSize: Scalars['BigInt'];
+  cumulativeFeesPaid: Metric;
+  cumulativeInterestCollected: Metric;
+  cumulativeInterestDistributed: Metric;
+  cumulativeLiquidatorDeposited: Metric;
+  cumulativeMinted: Metric;
+  cumulativeRedeemed: Metric;
+  cumulativeSwapped: Metric;
+  dailyAPY: Scalars['BigDecimal'];
+  invariantK: Scalars['BigInt'];
+  fasset: Token;
+  governanceFeeRate: Scalars['BigInt'];
+  hardMax: Scalars['BigInt'];
+  hardMin: Scalars['BigInt'];
+  masset: Masset;
+  pendingFees: Scalars['BigInt'];
+  price: Scalars['BigInt'];
+  swapFeeRate: Scalars['BigInt'];
+  redemptionFeeRate: Scalars['BigInt'];
+  token: Token;
+  totalMints: Counter;
+  totalRedeemMassets: Counter;
+  totalRedemptions: Counter;
+  totalSupply: Metric;
+  totalSwaps: Counter;
+  mintMultiTransactions: Array<FpMintMultiTransaction>;
+  mintSingleTransactions: Array<FpMintSingleTransaction>;
+  redeemTransactions: Array<FpRedeemTransaction>;
+  swapTransactions: Array<FpSwapTransaction>;
+  vault: BoostedSavingsVault;
+};
+
+
+export type FeederPoolMintMultiTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpMintMultiTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpMintMultiTransaction_Filter>;
+};
+
+
+export type FeederPoolMintSingleTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpMintSingleTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpMintSingleTransaction_Filter>;
+};
+
+
+export type FeederPoolRedeemTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpRedeemTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpRedeemTransaction_Filter>;
+};
+
+
+export type FeederPoolSwapTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpSwapTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpSwapTransaction_Filter>;
+};
+
+export type FeederPool_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  ampData?: Maybe<Scalars['String']>;
+  ampData_not?: Maybe<Scalars['String']>;
+  ampData_gt?: Maybe<Scalars['String']>;
+  ampData_lt?: Maybe<Scalars['String']>;
+  ampData_gte?: Maybe<Scalars['String']>;
+  ampData_lte?: Maybe<Scalars['String']>;
+  ampData_in?: Maybe<Array<Scalars['String']>>;
+  ampData_not_in?: Maybe<Array<Scalars['String']>>;
+  ampData_contains?: Maybe<Scalars['String']>;
+  ampData_not_contains?: Maybe<Scalars['String']>;
+  ampData_starts_with?: Maybe<Scalars['String']>;
+  ampData_not_starts_with?: Maybe<Scalars['String']>;
+  ampData_ends_with?: Maybe<Scalars['String']>;
+  ampData_not_ends_with?: Maybe<Scalars['String']>;
+  basket?: Maybe<Scalars['String']>;
+  basket_not?: Maybe<Scalars['String']>;
+  basket_gt?: Maybe<Scalars['String']>;
+  basket_lt?: Maybe<Scalars['String']>;
+  basket_gte?: Maybe<Scalars['String']>;
+  basket_lte?: Maybe<Scalars['String']>;
+  basket_in?: Maybe<Array<Scalars['String']>>;
+  basket_not_in?: Maybe<Array<Scalars['String']>>;
+  basket_contains?: Maybe<Scalars['String']>;
+  basket_not_contains?: Maybe<Scalars['String']>;
+  basket_starts_with?: Maybe<Scalars['String']>;
+  basket_not_starts_with?: Maybe<Scalars['String']>;
+  basket_ends_with?: Maybe<Scalars['String']>;
+  basket_not_ends_with?: Maybe<Scalars['String']>;
+  cacheSize?: Maybe<Scalars['BigInt']>;
+  cacheSize_not?: Maybe<Scalars['BigInt']>;
+  cacheSize_gt?: Maybe<Scalars['BigInt']>;
+  cacheSize_lt?: Maybe<Scalars['BigInt']>;
+  cacheSize_gte?: Maybe<Scalars['BigInt']>;
+  cacheSize_lte?: Maybe<Scalars['BigInt']>;
+  cacheSize_in?: Maybe<Array<Scalars['BigInt']>>;
+  cacheSize_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  cumulativeFeesPaid?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_gt?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_lt?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_gte?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_lte?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeFeesPaid_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeFeesPaid_contains?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not_contains?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_starts_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_ends_with?: Maybe<Scalars['String']>;
+  cumulativeFeesPaid_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_not?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_gt?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_lt?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_gte?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_lte?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeInterestCollected_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeInterestCollected_contains?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_not_contains?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_starts_with?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_ends_with?: Maybe<Scalars['String']>;
+  cumulativeInterestCollected_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_not?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_gt?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_lt?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_gte?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_lte?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeInterestDistributed_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeInterestDistributed_contains?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_not_contains?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_starts_with?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_ends_with?: Maybe<Scalars['String']>;
+  cumulativeInterestDistributed_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_not?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_gt?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_lt?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_gte?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_lte?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeLiquidatorDeposited_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeLiquidatorDeposited_contains?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_not_contains?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_starts_with?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_ends_with?: Maybe<Scalars['String']>;
+  cumulativeLiquidatorDeposited_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeMinted?: Maybe<Scalars['String']>;
+  cumulativeMinted_not?: Maybe<Scalars['String']>;
+  cumulativeMinted_gt?: Maybe<Scalars['String']>;
+  cumulativeMinted_lt?: Maybe<Scalars['String']>;
+  cumulativeMinted_gte?: Maybe<Scalars['String']>;
+  cumulativeMinted_lte?: Maybe<Scalars['String']>;
+  cumulativeMinted_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeMinted_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeMinted_contains?: Maybe<Scalars['String']>;
+  cumulativeMinted_not_contains?: Maybe<Scalars['String']>;
+  cumulativeMinted_starts_with?: Maybe<Scalars['String']>;
+  cumulativeMinted_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeMinted_ends_with?: Maybe<Scalars['String']>;
+  cumulativeMinted_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_gt?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_lt?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_gte?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_lte?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeRedeemed_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeRedeemed_contains?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not_contains?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_starts_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_ends_with?: Maybe<Scalars['String']>;
+  cumulativeRedeemed_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeSwapped?: Maybe<Scalars['String']>;
+  cumulativeSwapped_not?: Maybe<Scalars['String']>;
+  cumulativeSwapped_gt?: Maybe<Scalars['String']>;
+  cumulativeSwapped_lt?: Maybe<Scalars['String']>;
+  cumulativeSwapped_gte?: Maybe<Scalars['String']>;
+  cumulativeSwapped_lte?: Maybe<Scalars['String']>;
+  cumulativeSwapped_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeSwapped_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeSwapped_contains?: Maybe<Scalars['String']>;
+  cumulativeSwapped_not_contains?: Maybe<Scalars['String']>;
+  cumulativeSwapped_starts_with?: Maybe<Scalars['String']>;
+  cumulativeSwapped_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeSwapped_ends_with?: Maybe<Scalars['String']>;
+  cumulativeSwapped_not_ends_with?: Maybe<Scalars['String']>;
+  dailyAPY?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_not?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_gt?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_lt?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_gte?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_lte?: Maybe<Scalars['BigDecimal']>;
+  dailyAPY_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  dailyAPY_not_in?: Maybe<Array<Scalars['BigDecimal']>>;
+  invariantK?: Maybe<Scalars['BigInt']>;
+  invariantK_not?: Maybe<Scalars['BigInt']>;
+  invariantK_gt?: Maybe<Scalars['BigInt']>;
+  invariantK_lt?: Maybe<Scalars['BigInt']>;
+  invariantK_gte?: Maybe<Scalars['BigInt']>;
+  invariantK_lte?: Maybe<Scalars['BigInt']>;
+  invariantK_in?: Maybe<Array<Scalars['BigInt']>>;
+  invariantK_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  fasset?: Maybe<Scalars['String']>;
+  fasset_not?: Maybe<Scalars['String']>;
+  fasset_gt?: Maybe<Scalars['String']>;
+  fasset_lt?: Maybe<Scalars['String']>;
+  fasset_gte?: Maybe<Scalars['String']>;
+  fasset_lte?: Maybe<Scalars['String']>;
+  fasset_in?: Maybe<Array<Scalars['String']>>;
+  fasset_not_in?: Maybe<Array<Scalars['String']>>;
+  fasset_contains?: Maybe<Scalars['String']>;
+  fasset_not_contains?: Maybe<Scalars['String']>;
+  fasset_starts_with?: Maybe<Scalars['String']>;
+  fasset_not_starts_with?: Maybe<Scalars['String']>;
+  fasset_ends_with?: Maybe<Scalars['String']>;
+  fasset_not_ends_with?: Maybe<Scalars['String']>;
+  governanceFeeRate?: Maybe<Scalars['BigInt']>;
+  governanceFeeRate_not?: Maybe<Scalars['BigInt']>;
+  governanceFeeRate_gt?: Maybe<Scalars['BigInt']>;
+  governanceFeeRate_lt?: Maybe<Scalars['BigInt']>;
+  governanceFeeRate_gte?: Maybe<Scalars['BigInt']>;
+  governanceFeeRate_lte?: Maybe<Scalars['BigInt']>;
+  governanceFeeRate_in?: Maybe<Array<Scalars['BigInt']>>;
+  governanceFeeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMax?: Maybe<Scalars['BigInt']>;
+  hardMax_not?: Maybe<Scalars['BigInt']>;
+  hardMax_gt?: Maybe<Scalars['BigInt']>;
+  hardMax_lt?: Maybe<Scalars['BigInt']>;
+  hardMax_gte?: Maybe<Scalars['BigInt']>;
+  hardMax_lte?: Maybe<Scalars['BigInt']>;
+  hardMax_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMax_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMin?: Maybe<Scalars['BigInt']>;
+  hardMin_not?: Maybe<Scalars['BigInt']>;
+  hardMin_gt?: Maybe<Scalars['BigInt']>;
+  hardMin_lt?: Maybe<Scalars['BigInt']>;
+  hardMin_gte?: Maybe<Scalars['BigInt']>;
+  hardMin_lte?: Maybe<Scalars['BigInt']>;
+  hardMin_in?: Maybe<Array<Scalars['BigInt']>>;
+  hardMin_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  masset?: Maybe<Scalars['String']>;
+  masset_not?: Maybe<Scalars['String']>;
+  masset_gt?: Maybe<Scalars['String']>;
+  masset_lt?: Maybe<Scalars['String']>;
+  masset_gte?: Maybe<Scalars['String']>;
+  masset_lte?: Maybe<Scalars['String']>;
+  masset_in?: Maybe<Array<Scalars['String']>>;
+  masset_not_in?: Maybe<Array<Scalars['String']>>;
+  masset_contains?: Maybe<Scalars['String']>;
+  masset_not_contains?: Maybe<Scalars['String']>;
+  masset_starts_with?: Maybe<Scalars['String']>;
+  masset_not_starts_with?: Maybe<Scalars['String']>;
+  masset_ends_with?: Maybe<Scalars['String']>;
+  masset_not_ends_with?: Maybe<Scalars['String']>;
+  pendingFees?: Maybe<Scalars['BigInt']>;
+  pendingFees_not?: Maybe<Scalars['BigInt']>;
+  pendingFees_gt?: Maybe<Scalars['BigInt']>;
+  pendingFees_lt?: Maybe<Scalars['BigInt']>;
+  pendingFees_gte?: Maybe<Scalars['BigInt']>;
+  pendingFees_lte?: Maybe<Scalars['BigInt']>;
+  pendingFees_in?: Maybe<Array<Scalars['BigInt']>>;
+  pendingFees_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  price?: Maybe<Scalars['BigInt']>;
+  price_not?: Maybe<Scalars['BigInt']>;
+  price_gt?: Maybe<Scalars['BigInt']>;
+  price_lt?: Maybe<Scalars['BigInt']>;
+  price_gte?: Maybe<Scalars['BigInt']>;
+  price_lte?: Maybe<Scalars['BigInt']>;
+  price_in?: Maybe<Array<Scalars['BigInt']>>;
+  price_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  swapFeeRate?: Maybe<Scalars['BigInt']>;
+  swapFeeRate_not?: Maybe<Scalars['BigInt']>;
+  swapFeeRate_gt?: Maybe<Scalars['BigInt']>;
+  swapFeeRate_lt?: Maybe<Scalars['BigInt']>;
+  swapFeeRate_gte?: Maybe<Scalars['BigInt']>;
+  swapFeeRate_lte?: Maybe<Scalars['BigInt']>;
+  swapFeeRate_in?: Maybe<Array<Scalars['BigInt']>>;
+  swapFeeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  redemptionFeeRate?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_not?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_gt?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_lt?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_gte?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_lte?: Maybe<Scalars['BigInt']>;
+  redemptionFeeRate_in?: Maybe<Array<Scalars['BigInt']>>;
+  redemptionFeeRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  token?: Maybe<Scalars['String']>;
+  token_not?: Maybe<Scalars['String']>;
+  token_gt?: Maybe<Scalars['String']>;
+  token_lt?: Maybe<Scalars['String']>;
+  token_gte?: Maybe<Scalars['String']>;
+  token_lte?: Maybe<Scalars['String']>;
+  token_in?: Maybe<Array<Scalars['String']>>;
+  token_not_in?: Maybe<Array<Scalars['String']>>;
+  token_contains?: Maybe<Scalars['String']>;
+  token_not_contains?: Maybe<Scalars['String']>;
+  token_starts_with?: Maybe<Scalars['String']>;
+  token_not_starts_with?: Maybe<Scalars['String']>;
+  token_ends_with?: Maybe<Scalars['String']>;
+  token_not_ends_with?: Maybe<Scalars['String']>;
+  totalMints?: Maybe<Scalars['String']>;
+  totalMints_not?: Maybe<Scalars['String']>;
+  totalMints_gt?: Maybe<Scalars['String']>;
+  totalMints_lt?: Maybe<Scalars['String']>;
+  totalMints_gte?: Maybe<Scalars['String']>;
+  totalMints_lte?: Maybe<Scalars['String']>;
+  totalMints_in?: Maybe<Array<Scalars['String']>>;
+  totalMints_not_in?: Maybe<Array<Scalars['String']>>;
+  totalMints_contains?: Maybe<Scalars['String']>;
+  totalMints_not_contains?: Maybe<Scalars['String']>;
+  totalMints_starts_with?: Maybe<Scalars['String']>;
+  totalMints_not_starts_with?: Maybe<Scalars['String']>;
+  totalMints_ends_with?: Maybe<Scalars['String']>;
+  totalMints_not_ends_with?: Maybe<Scalars['String']>;
+  totalRedeemMassets?: Maybe<Scalars['String']>;
+  totalRedeemMassets_not?: Maybe<Scalars['String']>;
+  totalRedeemMassets_gt?: Maybe<Scalars['String']>;
+  totalRedeemMassets_lt?: Maybe<Scalars['String']>;
+  totalRedeemMassets_gte?: Maybe<Scalars['String']>;
+  totalRedeemMassets_lte?: Maybe<Scalars['String']>;
+  totalRedeemMassets_in?: Maybe<Array<Scalars['String']>>;
+  totalRedeemMassets_not_in?: Maybe<Array<Scalars['String']>>;
+  totalRedeemMassets_contains?: Maybe<Scalars['String']>;
+  totalRedeemMassets_not_contains?: Maybe<Scalars['String']>;
+  totalRedeemMassets_starts_with?: Maybe<Scalars['String']>;
+  totalRedeemMassets_not_starts_with?: Maybe<Scalars['String']>;
+  totalRedeemMassets_ends_with?: Maybe<Scalars['String']>;
+  totalRedeemMassets_not_ends_with?: Maybe<Scalars['String']>;
+  totalRedemptions?: Maybe<Scalars['String']>;
+  totalRedemptions_not?: Maybe<Scalars['String']>;
+  totalRedemptions_gt?: Maybe<Scalars['String']>;
+  totalRedemptions_lt?: Maybe<Scalars['String']>;
+  totalRedemptions_gte?: Maybe<Scalars['String']>;
+  totalRedemptions_lte?: Maybe<Scalars['String']>;
+  totalRedemptions_in?: Maybe<Array<Scalars['String']>>;
+  totalRedemptions_not_in?: Maybe<Array<Scalars['String']>>;
+  totalRedemptions_contains?: Maybe<Scalars['String']>;
+  totalRedemptions_not_contains?: Maybe<Scalars['String']>;
+  totalRedemptions_starts_with?: Maybe<Scalars['String']>;
+  totalRedemptions_not_starts_with?: Maybe<Scalars['String']>;
+  totalRedemptions_ends_with?: Maybe<Scalars['String']>;
+  totalRedemptions_not_ends_with?: Maybe<Scalars['String']>;
+  totalSupply?: Maybe<Scalars['String']>;
+  totalSupply_not?: Maybe<Scalars['String']>;
+  totalSupply_gt?: Maybe<Scalars['String']>;
+  totalSupply_lt?: Maybe<Scalars['String']>;
+  totalSupply_gte?: Maybe<Scalars['String']>;
+  totalSupply_lte?: Maybe<Scalars['String']>;
+  totalSupply_in?: Maybe<Array<Scalars['String']>>;
+  totalSupply_not_in?: Maybe<Array<Scalars['String']>>;
+  totalSupply_contains?: Maybe<Scalars['String']>;
+  totalSupply_not_contains?: Maybe<Scalars['String']>;
+  totalSupply_starts_with?: Maybe<Scalars['String']>;
+  totalSupply_not_starts_with?: Maybe<Scalars['String']>;
+  totalSupply_ends_with?: Maybe<Scalars['String']>;
+  totalSupply_not_ends_with?: Maybe<Scalars['String']>;
+  totalSwaps?: Maybe<Scalars['String']>;
+  totalSwaps_not?: Maybe<Scalars['String']>;
+  totalSwaps_gt?: Maybe<Scalars['String']>;
+  totalSwaps_lt?: Maybe<Scalars['String']>;
+  totalSwaps_gte?: Maybe<Scalars['String']>;
+  totalSwaps_lte?: Maybe<Scalars['String']>;
+  totalSwaps_in?: Maybe<Array<Scalars['String']>>;
+  totalSwaps_not_in?: Maybe<Array<Scalars['String']>>;
+  totalSwaps_contains?: Maybe<Scalars['String']>;
+  totalSwaps_not_contains?: Maybe<Scalars['String']>;
+  totalSwaps_starts_with?: Maybe<Scalars['String']>;
+  totalSwaps_not_starts_with?: Maybe<Scalars['String']>;
+  totalSwaps_ends_with?: Maybe<Scalars['String']>;
+  totalSwaps_not_ends_with?: Maybe<Scalars['String']>;
+};
+
+export enum FeederPool_OrderBy {
+  Id = 'id',
+  AmpData = 'ampData',
+  Basket = 'basket',
+  CacheSize = 'cacheSize',
+  CumulativeFeesPaid = 'cumulativeFeesPaid',
+  CumulativeInterestCollected = 'cumulativeInterestCollected',
+  CumulativeInterestDistributed = 'cumulativeInterestDistributed',
+  CumulativeLiquidatorDeposited = 'cumulativeLiquidatorDeposited',
+  CumulativeMinted = 'cumulativeMinted',
+  CumulativeRedeemed = 'cumulativeRedeemed',
+  CumulativeSwapped = 'cumulativeSwapped',
+  DailyApy = 'dailyAPY',
+  InvariantK = 'invariantK',
+  Fasset = 'fasset',
+  GovernanceFeeRate = 'governanceFeeRate',
+  HardMax = 'hardMax',
+  HardMin = 'hardMin',
+  Masset = 'masset',
+  PendingFees = 'pendingFees',
+  Price = 'price',
+  SwapFeeRate = 'swapFeeRate',
+  RedemptionFeeRate = 'redemptionFeeRate',
+  Token = 'token',
+  TotalMints = 'totalMints',
+  TotalRedeemMassets = 'totalRedeemMassets',
+  TotalRedemptions = 'totalRedemptions',
+  TotalSupply = 'totalSupply',
+  TotalSwaps = 'totalSwaps',
+  MintMultiTransactions = 'mintMultiTransactions',
+  MintSingleTransactions = 'mintSingleTransactions',
+  RedeemTransactions = 'redeemTransactions',
+  SwapTransactions = 'swapTransactions',
+  Vault = 'vault'
+}
+
+export type FpMintMultiTransaction = Transaction & {
+  id: Scalars['ID'];
+  hash: Scalars['Bytes'];
+  block: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  recipient: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  /** The Feeder Pool the transaction relates to. */
+  feederPool: FeederPool;
+  /** The amount minted in Masset units. */
+  massetUnits: Scalars['BigInt'];
+  /**
+   * The tokens used as the collateral asset for this mint.
+   * This can be fAsset or mAsset.
+   */
+  inputs: Array<Basset>;
+  /** The respective Basset units for each Basset used in this mint. */
+  bassetsUnits: Array<Scalars['BigInt']>;
+};
+
+
+export type FpMintMultiTransactionInputsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Basset_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<Basset_Filter>;
+};
+
+export type FpMintMultiTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  hash?: Maybe<Scalars['Bytes']>;
+  hash_not?: Maybe<Scalars['Bytes']>;
+  hash_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_contains?: Maybe<Scalars['Bytes']>;
+  hash_not_contains?: Maybe<Scalars['Bytes']>;
+  block?: Maybe<Scalars['Int']>;
+  block_not?: Maybe<Scalars['Int']>;
+  block_gt?: Maybe<Scalars['Int']>;
+  block_lt?: Maybe<Scalars['Int']>;
+  block_gte?: Maybe<Scalars['Int']>;
+  block_lte?: Maybe<Scalars['Int']>;
+  block_in?: Maybe<Array<Scalars['Int']>>;
+  block_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  recipient?: Maybe<Scalars['Bytes']>;
+  recipient_not?: Maybe<Scalars['Bytes']>;
+  recipient_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_contains?: Maybe<Scalars['Bytes']>;
+  recipient_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['BigInt']>;
+  timestamp_not?: Maybe<Scalars['BigInt']>;
+  timestamp_gt?: Maybe<Scalars['BigInt']>;
+  timestamp_lt?: Maybe<Scalars['BigInt']>;
+  timestamp_gte?: Maybe<Scalars['BigInt']>;
+  timestamp_lte?: Maybe<Scalars['BigInt']>;
+  timestamp_in?: Maybe<Array<Scalars['BigInt']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  feederPool?: Maybe<Scalars['String']>;
+  feederPool_not?: Maybe<Scalars['String']>;
+  feederPool_gt?: Maybe<Scalars['String']>;
+  feederPool_lt?: Maybe<Scalars['String']>;
+  feederPool_gte?: Maybe<Scalars['String']>;
+  feederPool_lte?: Maybe<Scalars['String']>;
+  feederPool_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_not_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_contains?: Maybe<Scalars['String']>;
+  feederPool_not_contains?: Maybe<Scalars['String']>;
+  feederPool_starts_with?: Maybe<Scalars['String']>;
+  feederPool_not_starts_with?: Maybe<Scalars['String']>;
+  feederPool_ends_with?: Maybe<Scalars['String']>;
+  feederPool_not_ends_with?: Maybe<Scalars['String']>;
+  massetUnits?: Maybe<Scalars['BigInt']>;
+  massetUnits_not?: Maybe<Scalars['BigInt']>;
+  massetUnits_gt?: Maybe<Scalars['BigInt']>;
+  massetUnits_lt?: Maybe<Scalars['BigInt']>;
+  massetUnits_gte?: Maybe<Scalars['BigInt']>;
+  massetUnits_lte?: Maybe<Scalars['BigInt']>;
+  massetUnits_in?: Maybe<Array<Scalars['BigInt']>>;
+  massetUnits_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  inputs?: Maybe<Array<Scalars['String']>>;
+  inputs_not?: Maybe<Array<Scalars['String']>>;
+  inputs_contains?: Maybe<Array<Scalars['String']>>;
+  inputs_not_contains?: Maybe<Array<Scalars['String']>>;
+  bassetsUnits?: Maybe<Array<Scalars['BigInt']>>;
+  bassetsUnits_not?: Maybe<Array<Scalars['BigInt']>>;
+  bassetsUnits_contains?: Maybe<Array<Scalars['BigInt']>>;
+  bassetsUnits_not_contains?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum FpMintMultiTransaction_OrderBy {
+  Id = 'id',
+  Hash = 'hash',
+  Block = 'block',
+  Sender = 'sender',
+  Recipient = 'recipient',
+  Timestamp = 'timestamp',
+  FeederPool = 'feederPool',
+  MassetUnits = 'massetUnits',
+  Inputs = 'inputs',
+  BassetsUnits = 'bassetsUnits'
+}
+
+export type FpMintSingleTransaction = Transaction & {
+  id: Scalars['ID'];
+  hash: Scalars['Bytes'];
+  block: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  recipient: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  /** The Feeder Pool the transaction relates to. */
+  feederPool: FeederPool;
+  /** The amount minted in Masset units. */
+  massetUnits: Scalars['BigInt'];
+  /**
+   * The token used as the collateral asset for this mint.
+   * This can be fAsset, mAsset or mpAsset (main pool asset).
+   */
+  input: Token;
+  /** The amount of the Basset used for this mint, in Basset units. */
+  bassetUnits: Scalars['BigInt'];
+};
+
+export type FpMintSingleTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  hash?: Maybe<Scalars['Bytes']>;
+  hash_not?: Maybe<Scalars['Bytes']>;
+  hash_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_contains?: Maybe<Scalars['Bytes']>;
+  hash_not_contains?: Maybe<Scalars['Bytes']>;
+  block?: Maybe<Scalars['Int']>;
+  block_not?: Maybe<Scalars['Int']>;
+  block_gt?: Maybe<Scalars['Int']>;
+  block_lt?: Maybe<Scalars['Int']>;
+  block_gte?: Maybe<Scalars['Int']>;
+  block_lte?: Maybe<Scalars['Int']>;
+  block_in?: Maybe<Array<Scalars['Int']>>;
+  block_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  recipient?: Maybe<Scalars['Bytes']>;
+  recipient_not?: Maybe<Scalars['Bytes']>;
+  recipient_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_contains?: Maybe<Scalars['Bytes']>;
+  recipient_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['BigInt']>;
+  timestamp_not?: Maybe<Scalars['BigInt']>;
+  timestamp_gt?: Maybe<Scalars['BigInt']>;
+  timestamp_lt?: Maybe<Scalars['BigInt']>;
+  timestamp_gte?: Maybe<Scalars['BigInt']>;
+  timestamp_lte?: Maybe<Scalars['BigInt']>;
+  timestamp_in?: Maybe<Array<Scalars['BigInt']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  feederPool?: Maybe<Scalars['String']>;
+  feederPool_not?: Maybe<Scalars['String']>;
+  feederPool_gt?: Maybe<Scalars['String']>;
+  feederPool_lt?: Maybe<Scalars['String']>;
+  feederPool_gte?: Maybe<Scalars['String']>;
+  feederPool_lte?: Maybe<Scalars['String']>;
+  feederPool_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_not_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_contains?: Maybe<Scalars['String']>;
+  feederPool_not_contains?: Maybe<Scalars['String']>;
+  feederPool_starts_with?: Maybe<Scalars['String']>;
+  feederPool_not_starts_with?: Maybe<Scalars['String']>;
+  feederPool_ends_with?: Maybe<Scalars['String']>;
+  feederPool_not_ends_with?: Maybe<Scalars['String']>;
+  massetUnits?: Maybe<Scalars['BigInt']>;
+  massetUnits_not?: Maybe<Scalars['BigInt']>;
+  massetUnits_gt?: Maybe<Scalars['BigInt']>;
+  massetUnits_lt?: Maybe<Scalars['BigInt']>;
+  massetUnits_gte?: Maybe<Scalars['BigInt']>;
+  massetUnits_lte?: Maybe<Scalars['BigInt']>;
+  massetUnits_in?: Maybe<Array<Scalars['BigInt']>>;
+  massetUnits_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  input?: Maybe<Scalars['String']>;
+  input_not?: Maybe<Scalars['String']>;
+  input_gt?: Maybe<Scalars['String']>;
+  input_lt?: Maybe<Scalars['String']>;
+  input_gte?: Maybe<Scalars['String']>;
+  input_lte?: Maybe<Scalars['String']>;
+  input_in?: Maybe<Array<Scalars['String']>>;
+  input_not_in?: Maybe<Array<Scalars['String']>>;
+  input_contains?: Maybe<Scalars['String']>;
+  input_not_contains?: Maybe<Scalars['String']>;
+  input_starts_with?: Maybe<Scalars['String']>;
+  input_not_starts_with?: Maybe<Scalars['String']>;
+  input_ends_with?: Maybe<Scalars['String']>;
+  input_not_ends_with?: Maybe<Scalars['String']>;
+  bassetUnits?: Maybe<Scalars['BigInt']>;
+  bassetUnits_not?: Maybe<Scalars['BigInt']>;
+  bassetUnits_gt?: Maybe<Scalars['BigInt']>;
+  bassetUnits_lt?: Maybe<Scalars['BigInt']>;
+  bassetUnits_gte?: Maybe<Scalars['BigInt']>;
+  bassetUnits_lte?: Maybe<Scalars['BigInt']>;
+  bassetUnits_in?: Maybe<Array<Scalars['BigInt']>>;
+  bassetUnits_not_in?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum FpMintSingleTransaction_OrderBy {
+  Id = 'id',
+  Hash = 'hash',
+  Block = 'block',
+  Sender = 'sender',
+  Recipient = 'recipient',
+  Timestamp = 'timestamp',
+  FeederPool = 'feederPool',
+  MassetUnits = 'massetUnits',
+  Input = 'input',
+  BassetUnits = 'bassetUnits'
+}
+
+export type FpRedeemTransaction = Transaction & {
+  id: Scalars['ID'];
+  hash: Scalars['Bytes'];
+  block: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  recipient: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  /** The Feeder Pool the transaction relates to. */
+  feederPool: FeederPool;
+  /** The amount redeemed in Masset units. */
+  massetUnits: Scalars['BigInt'];
+  /** The Bassets selected as assets to redeem. */
+  bassets: Array<Basset>;
+  /** The respective units of each Basset selected to redeem. */
+  bassetsUnits: Array<Scalars['BigInt']>;
+};
+
+
+export type FpRedeemTransactionBassetsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<Basset_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<Basset_Filter>;
+};
+
+export type FpRedeemTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  hash?: Maybe<Scalars['Bytes']>;
+  hash_not?: Maybe<Scalars['Bytes']>;
+  hash_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_contains?: Maybe<Scalars['Bytes']>;
+  hash_not_contains?: Maybe<Scalars['Bytes']>;
+  block?: Maybe<Scalars['Int']>;
+  block_not?: Maybe<Scalars['Int']>;
+  block_gt?: Maybe<Scalars['Int']>;
+  block_lt?: Maybe<Scalars['Int']>;
+  block_gte?: Maybe<Scalars['Int']>;
+  block_lte?: Maybe<Scalars['Int']>;
+  block_in?: Maybe<Array<Scalars['Int']>>;
+  block_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  recipient?: Maybe<Scalars['Bytes']>;
+  recipient_not?: Maybe<Scalars['Bytes']>;
+  recipient_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_contains?: Maybe<Scalars['Bytes']>;
+  recipient_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['BigInt']>;
+  timestamp_not?: Maybe<Scalars['BigInt']>;
+  timestamp_gt?: Maybe<Scalars['BigInt']>;
+  timestamp_lt?: Maybe<Scalars['BigInt']>;
+  timestamp_gte?: Maybe<Scalars['BigInt']>;
+  timestamp_lte?: Maybe<Scalars['BigInt']>;
+  timestamp_in?: Maybe<Array<Scalars['BigInt']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  feederPool?: Maybe<Scalars['String']>;
+  feederPool_not?: Maybe<Scalars['String']>;
+  feederPool_gt?: Maybe<Scalars['String']>;
+  feederPool_lt?: Maybe<Scalars['String']>;
+  feederPool_gte?: Maybe<Scalars['String']>;
+  feederPool_lte?: Maybe<Scalars['String']>;
+  feederPool_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_not_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_contains?: Maybe<Scalars['String']>;
+  feederPool_not_contains?: Maybe<Scalars['String']>;
+  feederPool_starts_with?: Maybe<Scalars['String']>;
+  feederPool_not_starts_with?: Maybe<Scalars['String']>;
+  feederPool_ends_with?: Maybe<Scalars['String']>;
+  feederPool_not_ends_with?: Maybe<Scalars['String']>;
+  massetUnits?: Maybe<Scalars['BigInt']>;
+  massetUnits_not?: Maybe<Scalars['BigInt']>;
+  massetUnits_gt?: Maybe<Scalars['BigInt']>;
+  massetUnits_lt?: Maybe<Scalars['BigInt']>;
+  massetUnits_gte?: Maybe<Scalars['BigInt']>;
+  massetUnits_lte?: Maybe<Scalars['BigInt']>;
+  massetUnits_in?: Maybe<Array<Scalars['BigInt']>>;
+  massetUnits_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  bassets?: Maybe<Array<Scalars['String']>>;
+  bassets_not?: Maybe<Array<Scalars['String']>>;
+  bassets_contains?: Maybe<Array<Scalars['String']>>;
+  bassets_not_contains?: Maybe<Array<Scalars['String']>>;
+  bassetsUnits?: Maybe<Array<Scalars['BigInt']>>;
+  bassetsUnits_not?: Maybe<Array<Scalars['BigInt']>>;
+  bassetsUnits_contains?: Maybe<Array<Scalars['BigInt']>>;
+  bassetsUnits_not_contains?: Maybe<Array<Scalars['BigInt']>>;
+};
+
+export enum FpRedeemTransaction_OrderBy {
+  Id = 'id',
+  Hash = 'hash',
+  Block = 'block',
+  Sender = 'sender',
+  Recipient = 'recipient',
+  Timestamp = 'timestamp',
+  FeederPool = 'feederPool',
+  MassetUnits = 'massetUnits',
+  Bassets = 'bassets',
+  BassetsUnits = 'bassetsUnits'
+}
+
+export type FpSwapTransaction = Transaction & {
+  id: Scalars['ID'];
+  hash: Scalars['Bytes'];
+  block: Scalars['Int'];
+  sender: Scalars['Bytes'];
+  timestamp: Scalars['BigInt'];
+  /** The Feeder Pool the transaction relates to. */
+  feederPool: FeederPool;
+  /** The amount of the swap output in Masset units */
+  massetUnits: Scalars['BigInt'];
+  /** The Basset used as the input for this swap. */
+  inputBasset: Basset;
+  /** The Basset used as the output for this swap. */
+  outputBasset: Basset;
+  /** The recipient of the swap output. */
+  recipient: Scalars['Bytes'];
+};
+
+export type FpSwapTransaction_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  hash?: Maybe<Scalars['Bytes']>;
+  hash_not?: Maybe<Scalars['Bytes']>;
+  hash_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  hash_contains?: Maybe<Scalars['Bytes']>;
+  hash_not_contains?: Maybe<Scalars['Bytes']>;
+  block?: Maybe<Scalars['Int']>;
+  block_not?: Maybe<Scalars['Int']>;
+  block_gt?: Maybe<Scalars['Int']>;
+  block_lt?: Maybe<Scalars['Int']>;
+  block_gte?: Maybe<Scalars['Int']>;
+  block_lte?: Maybe<Scalars['Int']>;
+  block_in?: Maybe<Array<Scalars['Int']>>;
+  block_not_in?: Maybe<Array<Scalars['Int']>>;
+  sender?: Maybe<Scalars['Bytes']>;
+  sender_not?: Maybe<Scalars['Bytes']>;
+  sender_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  sender_contains?: Maybe<Scalars['Bytes']>;
+  sender_not_contains?: Maybe<Scalars['Bytes']>;
+  timestamp?: Maybe<Scalars['BigInt']>;
+  timestamp_not?: Maybe<Scalars['BigInt']>;
+  timestamp_gt?: Maybe<Scalars['BigInt']>;
+  timestamp_lt?: Maybe<Scalars['BigInt']>;
+  timestamp_gte?: Maybe<Scalars['BigInt']>;
+  timestamp_lte?: Maybe<Scalars['BigInt']>;
+  timestamp_in?: Maybe<Array<Scalars['BigInt']>>;
+  timestamp_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  feederPool?: Maybe<Scalars['String']>;
+  feederPool_not?: Maybe<Scalars['String']>;
+  feederPool_gt?: Maybe<Scalars['String']>;
+  feederPool_lt?: Maybe<Scalars['String']>;
+  feederPool_gte?: Maybe<Scalars['String']>;
+  feederPool_lte?: Maybe<Scalars['String']>;
+  feederPool_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_not_in?: Maybe<Array<Scalars['String']>>;
+  feederPool_contains?: Maybe<Scalars['String']>;
+  feederPool_not_contains?: Maybe<Scalars['String']>;
+  feederPool_starts_with?: Maybe<Scalars['String']>;
+  feederPool_not_starts_with?: Maybe<Scalars['String']>;
+  feederPool_ends_with?: Maybe<Scalars['String']>;
+  feederPool_not_ends_with?: Maybe<Scalars['String']>;
+  massetUnits?: Maybe<Scalars['BigInt']>;
+  massetUnits_not?: Maybe<Scalars['BigInt']>;
+  massetUnits_gt?: Maybe<Scalars['BigInt']>;
+  massetUnits_lt?: Maybe<Scalars['BigInt']>;
+  massetUnits_gte?: Maybe<Scalars['BigInt']>;
+  massetUnits_lte?: Maybe<Scalars['BigInt']>;
+  massetUnits_in?: Maybe<Array<Scalars['BigInt']>>;
+  massetUnits_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  inputBasset?: Maybe<Scalars['String']>;
+  inputBasset_not?: Maybe<Scalars['String']>;
+  inputBasset_gt?: Maybe<Scalars['String']>;
+  inputBasset_lt?: Maybe<Scalars['String']>;
+  inputBasset_gte?: Maybe<Scalars['String']>;
+  inputBasset_lte?: Maybe<Scalars['String']>;
+  inputBasset_in?: Maybe<Array<Scalars['String']>>;
+  inputBasset_not_in?: Maybe<Array<Scalars['String']>>;
+  inputBasset_contains?: Maybe<Scalars['String']>;
+  inputBasset_not_contains?: Maybe<Scalars['String']>;
+  inputBasset_starts_with?: Maybe<Scalars['String']>;
+  inputBasset_not_starts_with?: Maybe<Scalars['String']>;
+  inputBasset_ends_with?: Maybe<Scalars['String']>;
+  inputBasset_not_ends_with?: Maybe<Scalars['String']>;
+  outputBasset?: Maybe<Scalars['String']>;
+  outputBasset_not?: Maybe<Scalars['String']>;
+  outputBasset_gt?: Maybe<Scalars['String']>;
+  outputBasset_lt?: Maybe<Scalars['String']>;
+  outputBasset_gte?: Maybe<Scalars['String']>;
+  outputBasset_lte?: Maybe<Scalars['String']>;
+  outputBasset_in?: Maybe<Array<Scalars['String']>>;
+  outputBasset_not_in?: Maybe<Array<Scalars['String']>>;
+  outputBasset_contains?: Maybe<Scalars['String']>;
+  outputBasset_not_contains?: Maybe<Scalars['String']>;
+  outputBasset_starts_with?: Maybe<Scalars['String']>;
+  outputBasset_not_starts_with?: Maybe<Scalars['String']>;
+  outputBasset_ends_with?: Maybe<Scalars['String']>;
+  outputBasset_not_ends_with?: Maybe<Scalars['String']>;
+  recipient?: Maybe<Scalars['Bytes']>;
+  recipient_not?: Maybe<Scalars['Bytes']>;
+  recipient_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_not_in?: Maybe<Array<Scalars['Bytes']>>;
+  recipient_contains?: Maybe<Scalars['Bytes']>;
+  recipient_not_contains?: Maybe<Scalars['Bytes']>;
+};
+
+export enum FpSwapTransaction_OrderBy {
+  Id = 'id',
+  Hash = 'hash',
+  Block = 'block',
+  Sender = 'sender',
+  Timestamp = 'timestamp',
+  FeederPool = 'feederPool',
+  MassetUnits = 'massetUnits',
+  InputBasset = 'inputBasset',
+  OutputBasset = 'outputBasset',
+  Recipient = 'recipient'
+}
+
 /** An mStable asset (e.g. mUSD) */
 export type Masset = {
   /** Address of the Masset contract */
@@ -1687,6 +2633,8 @@ export type Masset = {
   currentSavingsContract?: Maybe<SavingsContract>;
   /** All Savings Contracts for this Masset */
   savingsContracts: Array<SavingsContract>;
+  /** All Feeder Pools for this Masset */
+  feederPools: Array<FeederPool>;
   /** All swap transactions sent with this Masset */
   swapTransactions: Array<SwapTransaction>;
   /** All transactions sent with this Masset where a fee was paid */
@@ -1709,6 +2657,16 @@ export type MassetSavingsContractsArgs = {
   orderBy?: Maybe<SavingsContract_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<SavingsContract_Filter>;
+};
+
+
+/** An mStable asset (e.g. mUSD) */
+export type MassetFeederPoolsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FeederPool_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FeederPool_Filter>;
 };
 
 
@@ -2126,6 +3084,7 @@ export enum Masset_OrderBy {
   Token = 'token',
   CurrentSavingsContract = 'currentSavingsContract',
   SavingsContracts = 'savingsContracts',
+  FeederPools = 'feederPools',
   SwapTransactions = 'swapTransactions',
   PaidFeeTransactions = 'paidFeeTransactions',
   RedeemMassetTransactions = 'redeemMassetTransactions',
@@ -2590,6 +3549,16 @@ export type Query = {
   boostedSavingsVaultRewardPaidTransactions: Array<BoostedSavingsVaultRewardPaidTransaction>;
   boostedSavingsVaultWithdrawTransaction?: Maybe<BoostedSavingsVaultWithdrawTransaction>;
   boostedSavingsVaultWithdrawTransactions: Array<BoostedSavingsVaultWithdrawTransaction>;
+  feederPool?: Maybe<FeederPool>;
+  feederPools: Array<FeederPool>;
+  fpswapTransaction?: Maybe<FpSwapTransaction>;
+  fpswapTransactions: Array<FpSwapTransaction>;
+  fpmintSingleTransaction?: Maybe<FpMintSingleTransaction>;
+  fpmintSingleTransactions: Array<FpMintSingleTransaction>;
+  fpmintMultiTransaction?: Maybe<FpMintMultiTransaction>;
+  fpmintMultiTransactions: Array<FpMintMultiTransaction>;
+  fpredeemTransaction?: Maybe<FpRedeemTransaction>;
+  fpredeemTransactions: Array<FpRedeemTransaction>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
@@ -3025,6 +3994,86 @@ export type QueryBoostedSavingsVaultWithdrawTransactionsArgs = {
   orderBy?: Maybe<BoostedSavingsVaultWithdrawTransaction_OrderBy>;
   orderDirection?: Maybe<OrderDirection>;
   where?: Maybe<BoostedSavingsVaultWithdrawTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFeederPoolArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFeederPoolsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FeederPool_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FeederPool_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFpswapTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFpswapTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpSwapTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpSwapTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFpmintSingleTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFpmintSingleTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpMintSingleTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpMintSingleTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFpmintMultiTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFpmintMultiTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpMintMultiTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpMintMultiTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFpredeemTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryFpredeemTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpRedeemTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpRedeemTransaction_Filter>;
   block?: Maybe<Block_Height>;
 };
 
@@ -3849,6 +4898,16 @@ export type Subscription = {
   boostedSavingsVaultRewardPaidTransactions: Array<BoostedSavingsVaultRewardPaidTransaction>;
   boostedSavingsVaultWithdrawTransaction?: Maybe<BoostedSavingsVaultWithdrawTransaction>;
   boostedSavingsVaultWithdrawTransactions: Array<BoostedSavingsVaultWithdrawTransaction>;
+  feederPool?: Maybe<FeederPool>;
+  feederPools: Array<FeederPool>;
+  fpswapTransaction?: Maybe<FpSwapTransaction>;
+  fpswapTransactions: Array<FpSwapTransaction>;
+  fpmintSingleTransaction?: Maybe<FpMintSingleTransaction>;
+  fpmintSingleTransactions: Array<FpMintSingleTransaction>;
+  fpmintMultiTransaction?: Maybe<FpMintMultiTransaction>;
+  fpmintMultiTransactions: Array<FpMintMultiTransaction>;
+  fpredeemTransaction?: Maybe<FpRedeemTransaction>;
+  fpredeemTransactions: Array<FpRedeemTransaction>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
@@ -4288,6 +5347,86 @@ export type SubscriptionBoostedSavingsVaultWithdrawTransactionsArgs = {
 };
 
 
+export type SubscriptionFeederPoolArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFeederPoolsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FeederPool_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FeederPool_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFpswapTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFpswapTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpSwapTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpSwapTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFpmintSingleTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFpmintSingleTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpMintSingleTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpMintSingleTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFpmintMultiTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFpmintMultiTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpMintMultiTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpMintMultiTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFpredeemTransactionArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionFpredeemTransactionsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<FpRedeemTransaction_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<FpRedeemTransaction_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
 export type SubscriptionTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -4670,6 +5809,11 @@ export enum Transaction_OrderBy {
   Sender = 'sender'
 }
 
+export type FpMetricsFragment = (
+  Pick<FeederPool, 'price' | 'invariantK' | 'dailyAPY'>
+  & { cumulativeSwapped: MetricFieldsFragment, cumulativeInterestCollected: MetricFieldsFragment, cumulativeInterestDistributed: MetricFieldsFragment, cumulativeFeesPaid: MetricFieldsFragment, cumulativeMinted: MetricFieldsFragment, cumulativeRedeemed: MetricFieldsFragment, totalMints: Pick<Counter, 'value'>, totalRedeemMassets: Pick<Counter, 'value'>, totalRedemptions: Pick<Counter, 'value'>, totalSupply: MetricFieldsFragment, totalSwaps: Pick<Counter, 'value'> }
+);
+
 export type TokenAllFragment = (
   Pick<Token, 'id' | 'address' | 'decimals' | 'symbol'>
   & { totalSupply: MetricFieldsFragment }
@@ -4683,6 +5827,14 @@ export type SavingsContractAllFragment = (
 type TransactionFields_SavingsContractDepositTransaction_Fragment = Pick<SavingsContractDepositTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
 type TransactionFields_SavingsContractWithdrawTransaction_Fragment = Pick<SavingsContractWithdrawTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+
+type TransactionFields_FpMintMultiTransaction_Fragment = Pick<FpMintMultiTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+
+type TransactionFields_FpMintSingleTransaction_Fragment = Pick<FpMintSingleTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+
+type TransactionFields_FpRedeemTransaction_Fragment = Pick<FpRedeemTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
+
+type TransactionFields_FpSwapTransaction_Fragment = Pick<FpSwapTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
 type TransactionFields_BoostedSavingsVaultStakeTransaction_Fragment = Pick<BoostedSavingsVaultStakeTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
@@ -4704,9 +5856,22 @@ type TransactionFields_MintSingleTransaction_Fragment = Pick<MintSingleTransacti
 
 type TransactionFields_RedeemTransaction_Fragment = Pick<RedeemTransaction, 'id' | 'hash' | 'timestamp' | 'block' | 'sender'>;
 
-export type TransactionFieldsFragment = TransactionFields_SavingsContractDepositTransaction_Fragment | TransactionFields_SavingsContractWithdrawTransaction_Fragment | TransactionFields_BoostedSavingsVaultStakeTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardPaidTransaction_Fragment | TransactionFields_BoostedSavingsVaultWithdrawTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardAddedTransaction_Fragment | TransactionFields_SwapTransaction_Fragment | TransactionFields_PaidFeeTransaction_Fragment | TransactionFields_RedeemMassetTransaction_Fragment | TransactionFields_MintMultiTransaction_Fragment | TransactionFields_MintSingleTransaction_Fragment | TransactionFields_RedeemTransaction_Fragment;
+export type TransactionFieldsFragment = TransactionFields_SavingsContractDepositTransaction_Fragment | TransactionFields_SavingsContractWithdrawTransaction_Fragment | TransactionFields_FpMintMultiTransaction_Fragment | TransactionFields_FpMintSingleTransaction_Fragment | TransactionFields_FpRedeemTransaction_Fragment | TransactionFields_FpSwapTransaction_Fragment | TransactionFields_BoostedSavingsVaultStakeTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardPaidTransaction_Fragment | TransactionFields_BoostedSavingsVaultWithdrawTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardAddedTransaction_Fragment | TransactionFields_SwapTransaction_Fragment | TransactionFields_PaidFeeTransaction_Fragment | TransactionFields_RedeemMassetTransaction_Fragment | TransactionFields_MintMultiTransaction_Fragment | TransactionFields_MintSingleTransaction_Fragment | TransactionFields_RedeemTransaction_Fragment;
 
 export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
+
+export type BassetAllFragment = (
+  Pick<Basset, 'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
+  & { vaultBalance: MetricFieldsFragment, token: TokenAllFragment }
+);
+
+export type BoostedSavingsVaultAllFragment = (
+  Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
+  & { accounts: Array<(
+    Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
+    & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
+  )> }
+);
 
 export type MassetsQueryVariables = {
   account: Scalars['String'];
@@ -4718,27 +5883,32 @@ export type MassetsQuery = { massets: Array<(
     Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'forgeValidator' | 'invariantStartTime' | 'invariantStartingCap' | 'invariantCapFactor'>
     & { token: TokenAllFragment, basket: (
       Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
-      & { bassets: Array<(
-        Pick<Basset, 'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
-        & { vaultBalance: MetricFieldsFragment, token: TokenAllFragment }
-      )>, removedBassets: Array<(
+      & { bassets: Array<BassetAllFragment>, removedBassets: Array<(
         Pick<Basset, 'id'>
         & { token: TokenAllFragment }
       )> }
-    ), currentSavingsContract?: Maybe<Pick<SavingsContract, 'id'>>, savingsContractsV1: Array<(
+    ), feederPools: Array<(
+      Pick<FeederPool, 'id' | 'swapFeeRate' | 'redemptionFeeRate' | 'governanceFeeRate' | 'dailyAPY' | 'price' | 'invariantK'>
+      & { basket: (
+        Pick<Basket, 'undergoingRecol' | 'failed'>
+        & { bassets: Array<BassetAllFragment> }
+      ), token: TokenAllFragment, fasset: TokenAllFragment, masset: Pick<Masset, 'id'>, vault: BoostedSavingsVaultAllFragment }
+    )>, currentSavingsContract?: Maybe<Pick<SavingsContract, 'id'>>, savingsContractsV1: Array<(
       { totalCredits?: Maybe<MetricFieldsFragment>, creditBalances: Array<Pick<CreditBalance, 'amount'>> }
       & SavingsContractAllFragment
     )>, savingsContractsV2: Array<(
-      { token?: Maybe<TokenAllFragment>, boostedSavingsVaults: Array<(
-        Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
-        & { accounts: Array<(
-          Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
-          & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
-        )> }
-      )> }
+      { token?: Maybe<TokenAllFragment>, boostedSavingsVaults: Array<BoostedSavingsVaultAllFragment> }
       & SavingsContractAllFragment
     )> }
   )> };
+
+export type FeederPoolMetricsQueryVariables = {
+  feederPool: Scalars['ID'];
+  block: Block_Height;
+};
+
+
+export type FeederPoolMetricsQuery = { current?: Maybe<FpMetricsFragment>, historic?: Maybe<FpMetricsFragment> };
 
 export type V1SavingsBalanceQueryVariables = {
   id: Scalars['ID'];
@@ -4784,6 +5954,18 @@ export type HistoricTransactionsQuery = { transactions: Array<(
       & { masset: Pick<Masset, 'id'> }
     ) }
   ) | (
+    { __typename: 'FPMintMultiTransaction' }
+    & Pick<FpMintMultiTransaction, 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+  ) | (
+    { __typename: 'FPMintSingleTransaction' }
+    & Pick<FpMintSingleTransaction, 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+  ) | (
+    { __typename: 'FPRedeemTransaction' }
+    & Pick<FpRedeemTransaction, 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+  ) | (
+    { __typename: 'FPSwapTransaction' }
+    & Pick<FpSwapTransaction, 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
+  ) | (
     { __typename: 'BoostedSavingsVaultStakeTransaction' }
     & Pick<BoostedSavingsVaultStakeTransaction, 'id' | 'hash' | 'block' | 'timestamp' | 'sender'>
   ) | (
@@ -4828,15 +6010,44 @@ export const MetricFieldsFragmentDoc = gql`
   simple
 }
     `;
-export const TokenAllFragmentDoc = gql`
-    fragment TokenAll on Token {
-  id
-  address
-  decimals
-  symbol
+export const FpMetricsFragmentDoc = gql`
+    fragment FPMetrics on FeederPool {
+  cumulativeSwapped {
+    ...MetricFields
+  }
+  cumulativeInterestCollected {
+    ...MetricFields
+  }
+  cumulativeInterestDistributed {
+    ...MetricFields
+  }
+  cumulativeFeesPaid {
+    ...MetricFields
+  }
+  cumulativeMinted {
+    ...MetricFields
+  }
+  cumulativeRedeemed {
+    ...MetricFields
+  }
+  totalMints {
+    value
+  }
+  totalRedeemMassets {
+    value
+  }
+  totalRedemptions {
+    value
+  }
   totalSupply {
     ...MetricFields
   }
+  totalSwaps {
+    value
+  }
+  price
+  invariantK
+  dailyAPY
 }
     ${MetricFieldsFragmentDoc}`;
 export const SavingsContractAllFragmentDoc = gql`
@@ -4863,6 +6074,65 @@ export const TransactionFieldsFragmentDoc = gql`
   sender
 }
     `;
+export const TokenAllFragmentDoc = gql`
+    fragment TokenAll on Token {
+  id
+  address
+  decimals
+  symbol
+  totalSupply {
+    ...MetricFields
+  }
+}
+    ${MetricFieldsFragmentDoc}`;
+export const BassetAllFragmentDoc = gql`
+    fragment BassetAll on Basset {
+  id
+  vaultBalance {
+    ...MetricFields
+  }
+  isTransferFeeCharged
+  ratio
+  status
+  maxWeight
+  token {
+    ...TokenAll
+  }
+}
+    ${MetricFieldsFragmentDoc}
+${TokenAllFragmentDoc}`;
+export const BoostedSavingsVaultAllFragmentDoc = gql`
+    fragment BoostedSavingsVaultAll on BoostedSavingsVault {
+  id
+  lastUpdateTime
+  lockupDuration
+  unlockPercentage
+  periodDuration
+  periodFinish
+  rewardPerTokenStored
+  rewardRate
+  stakingContract
+  totalStakingRewards
+  totalSupply
+  accounts(where: {account: $account}) @include(if: $hasAccount) {
+    id
+    boostedBalance
+    lastAction
+    lastClaim
+    rawBalance
+    rewardCount
+    rewardPerTokenPaid
+    rewards
+    rewardEntries(orderBy: index, orderDirection: asc) {
+      id
+      finish
+      index
+      rate
+      start
+    }
+  }
+}
+    `;
 export const MassetsDocument = gql`
     query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
   massets {
@@ -4881,23 +6151,41 @@ export const MassetsDocument = gql`
       collateralisationRatio
       undergoingRecol
       bassets: bassets(where: {removed: false}) {
-        id
-        vaultBalance {
-          ...MetricFields
-        }
-        isTransferFeeCharged
-        ratio
-        status
-        maxWeight
-        token {
-          ...TokenAll
-        }
+        ...BassetAll
       }
       removedBassets: bassets(where: {removed: true}) {
         id
         token {
           ...TokenAll
         }
+      }
+    }
+    feederPools {
+      id
+      swapFeeRate
+      redemptionFeeRate
+      governanceFeeRate
+      dailyAPY
+      price
+      invariantK
+      basket {
+        bassets {
+          ...BassetAll
+        }
+        undergoingRecol
+        failed
+      }
+      token {
+        ...TokenAll
+      }
+      fasset {
+        ...TokenAll
+      }
+      masset {
+        id
+      }
+      vault {
+        ...BoostedSavingsVaultAll
       }
     }
     currentSavingsContract {
@@ -4918,41 +6206,16 @@ export const MassetsDocument = gql`
         ...TokenAll
       }
       boostedSavingsVaults {
-        id
-        lastUpdateTime
-        lockupDuration
-        unlockPercentage
-        periodDuration
-        periodFinish
-        rewardPerTokenStored
-        rewardRate
-        stakingContract
-        totalStakingRewards
-        totalSupply
-        accounts(where: {account: $account}) @include(if: $hasAccount) {
-          id
-          boostedBalance
-          lastAction
-          lastClaim
-          rawBalance
-          rewardCount
-          rewardPerTokenPaid
-          rewards
-          rewardEntries(orderBy: index, orderDirection: asc) {
-            id
-            finish
-            index
-            rate
-            start
-          }
-        }
+        ...BoostedSavingsVaultAll
       }
     }
   }
 }
     ${TokenAllFragmentDoc}
-${MetricFieldsFragmentDoc}
-${SavingsContractAllFragmentDoc}`;
+${BassetAllFragmentDoc}
+${BoostedSavingsVaultAllFragmentDoc}
+${SavingsContractAllFragmentDoc}
+${MetricFieldsFragmentDoc}`;
 
 /**
  * __useMassetsQuery__
@@ -4980,6 +6243,43 @@ export function useMassetsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHook
 export type MassetsQueryHookResult = ReturnType<typeof useMassetsQuery>;
 export type MassetsLazyQueryHookResult = ReturnType<typeof useMassetsLazyQuery>;
 export type MassetsQueryResult = ApolloReactCommon.QueryResult<MassetsQuery, MassetsQueryVariables>;
+export const FeederPoolMetricsDocument = gql`
+    query FeederPoolMetrics($feederPool: ID!, $block: Block_height!) @api(name: protocol) {
+  current: feederPool(id: $feederPool) {
+    ...FPMetrics
+  }
+  historic: feederPool(id: $feederPool, block: $block) {
+    ...FPMetrics
+  }
+}
+    ${FpMetricsFragmentDoc}`;
+
+/**
+ * __useFeederPoolMetricsQuery__
+ *
+ * To run a query within a React component, call `useFeederPoolMetricsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFeederPoolMetricsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFeederPoolMetricsQuery({
+ *   variables: {
+ *      feederPool: // value for 'feederPool'
+ *      block: // value for 'block'
+ *   },
+ * });
+ */
+export function useFeederPoolMetricsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>) {
+        return ApolloReactHooks.useQuery<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>(FeederPoolMetricsDocument, baseOptions);
+      }
+export function useFeederPoolMetricsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>(FeederPoolMetricsDocument, baseOptions);
+        }
+export type FeederPoolMetricsQueryHookResult = ReturnType<typeof useFeederPoolMetricsQuery>;
+export type FeederPoolMetricsLazyQueryHookResult = ReturnType<typeof useFeederPoolMetricsLazyQuery>;
+export type FeederPoolMetricsQueryResult = ApolloReactCommon.QueryResult<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>;
 export const V1SavingsBalanceDocument = gql`
     query V1SavingsBalance($id: ID!, $account: String!, $include: Boolean!) @api(name: protocol) {
   savingsContract(id: $id) @include(if: $include) {

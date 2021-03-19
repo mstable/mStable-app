@@ -133,6 +133,10 @@ export class BigDecimal {
     return this.format(decimalPlaces);
   }
 
+  get usd(): string {
+    return `$${this.format(2, true)}`;
+  }
+
   get abbreviated(): string {
     return toK(this.simple);
   }

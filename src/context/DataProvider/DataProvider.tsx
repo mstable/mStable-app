@@ -6,6 +6,7 @@ import {
   BassetState,
   BoostedSavingsVaultState,
   DataState,
+  FeederPoolState,
   MassetState,
   SavingsContractState,
 } from './types';
@@ -13,7 +14,7 @@ import { recalculateState } from './recalculateState';
 import { transformRawData } from './transformRawData';
 import { useBlockPollingSubscription } from './subscriptions';
 import { useAccount } from '../UserProvider';
-import { useBlockNumber } from '../BlockProvider';
+import { useBlockNow } from '../BlockProvider';
 import {
   MassetsQueryResult,
   useMassetsLazyQuery,
@@ -23,7 +24,7 @@ import { useSelectedMassetName } from '../SelectedMassetNameProvider';
 const dataStateCtx = createContext<DataState>({});
 
 const useRawData = (): [MassetsQueryResult['data'], Tokens] => {
-  const blockNumber = useBlockNumber();
+  const blockNumber = useBlockNow();
   const { tokens } = useTokensState();
 
   const account = useAccount();
@@ -80,6 +81,10 @@ export const useSaveV1Address = (): string | undefined => {
 export const useSaveV2Address = (): string | undefined => {
   const massetState = useSelectedMassetState();
   return massetState?.savingsContracts?.v2?.address;
+};
+
+export const useFeederPool = (address: string): FeederPoolState | undefined => {
+  return useSelectedMassetState()?.feederPools[address];
 };
 
 export const DataProvider: FC = ({ children }) => {

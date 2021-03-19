@@ -1,16 +1,19 @@
 import { BigNumber } from 'ethers';
 
-import { BigDecimal } from '../../web3/BigDecimal';
-import { MassetName, SubscribedToken } from '../../types';
-import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol';
-import {
+import type { MassetName, SubscribedToken } from '../../types';
+import type {
+  BassetState,
   BassetStatus,
   BoostedSavingsVaultState,
   DataState,
+  FeederPoolState,
   MassetState,
   SavingsContractState,
 } from './types';
-import { Tokens } from '../TokensProvider';
+import type { Tokens } from '../TokensProvider';
+
+import { BigDecimal } from '../../web3/BigDecimal';
+import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol';
 
 type NonNullableMasset = NonNullable<
   NonNullable<MassetsQueryResult['data']>['massets'][number]
@@ -20,50 +23,50 @@ type SavingsContractV1QueryResult = NonNullableMasset['savingsContractsV1'][numb
 
 type SavingsContractV2QueryResult = NonNullableMasset['savingsContractsV2'][number];
 
+const transformBasset = (
+  basset: NonNullableMasset['basket']['bassets'][0],
+  tokens: Tokens,
+): BassetState => {
+  const {
+    ratio,
+    status,
+    maxWeight,
+    vaultBalance,
+    isTransferFeeCharged,
+    token: { address, totalSupply, decimals, symbol },
+  } = basset;
+  return {
+    address,
+    isTransferFeeCharged,
+    maxWeight: maxWeight ? BigNumber.from(maxWeight) : undefined,
+    ratio: BigNumber.from(ratio),
+    status: status as BassetStatus,
+    totalVault: BigDecimal.fromMetric(vaultBalance),
+    token: {
+      balance: new BigDecimal(0, decimals),
+      allowances: {},
+      ...tokens[address],
+      totalSupply: BigDecimal.fromMetric(totalSupply),
+      address,
+      decimals,
+      symbol,
+    },
+
+    // Initial values
+    balanceInMasset: new BigDecimal(0),
+    basketShare: new BigDecimal(0),
+    maxWeightInMasset: new BigDecimal(0),
+    overweight: false,
+    totalVaultInMasset: new BigDecimal(0),
+  };
+};
+
 const transformBassets = (
   bassets: NonNullableMasset['basket']['bassets'],
-  massetDecimals: number,
   tokens: Tokens,
 ): MassetState['bAssets'] => {
   return Object.fromEntries(
-    bassets.map(
-      ({
-        ratio,
-        status,
-        maxWeight,
-        vaultBalance,
-        isTransferFeeCharged,
-        token: { address, totalSupply, decimals, symbol },
-      }) => {
-        return [
-          address,
-          {
-            address,
-            isTransferFeeCharged,
-            maxWeight: maxWeight ? BigNumber.from(maxWeight) : undefined,
-            ratio: BigNumber.from(ratio),
-            status: status as BassetStatus,
-            totalVault: BigDecimal.fromMetric(vaultBalance),
-            token: {
-              balance: new BigDecimal(0, decimals),
-              allowances: {},
-              ...tokens[address],
-              totalSupply: BigDecimal.fromMetric(totalSupply),
-              address,
-              decimals,
-              symbol,
-            },
-
-            // Initial values
-            balanceInMasset: new BigDecimal(0, massetDecimals),
-            basketShare: new BigDecimal(0, massetDecimals),
-            maxWeightInMasset: new BigDecimal(0, massetDecimals),
-            overweight: false,
-            totalVaultInMasset: new BigDecimal(0, massetDecimals),
-          },
-        ];
-      },
-    ),
+    bassets.map(basset => [basset.id, transformBasset(basset, tokens)]),
   );
 };
 
@@ -235,6 +238,48 @@ const transformTokenData = (
   symbol,
 });
 
+const transformFeederPoolsData = (
+  feederPools: NonNullableMasset['feederPools'],
+  tokens: Tokens,
+): MassetState['feederPools'] => {
+  return Object.fromEntries(
+    feederPools.map<[string, FeederPoolState]>(
+      ({
+        id: address,
+        basket: { bassets, failed, undergoingRecol },
+        fasset,
+        price,
+        token,
+        dailyAPY,
+        governanceFeeRate,
+        invariantK,
+        redemptionFeeRate,
+        swapFeeRate,
+        vault,
+      }) => [
+        address,
+        {
+          address,
+          masset: transformBasset(bassets[0], tokens),
+          fasset: transformBasset(bassets[1], tokens),
+          token: { ...token, ...tokens[address] } as SubscribedToken,
+          totalSupply: BigDecimal.fromMetric(fasset.totalSupply),
+          governanceFeeRate: BigNumber.from(governanceFeeRate),
+          feeRate: BigNumber.from(swapFeeRate),
+          redemptionFeeRate: BigNumber.from(redemptionFeeRate),
+          invariantK: BigNumber.from(invariantK),
+          dailyApy: parseFloat(dailyAPY),
+          price: parseFloat(price),
+          failed,
+          title: bassets.map(b => b.token.symbol).join('/'),
+          undergoingRecol,
+          vault: transformBoostedSavingsVault(vault),
+        },
+      ],
+    ),
+  );
+};
+
 const transformMassetData = (
   {
     // currentSavingsContract,
@@ -255,10 +300,11 @@ const transformMassetData = (
     },
     savingsContractsV1: [savingsContractV1],
     savingsContractsV2: [savingsContractV2],
+    feederPools,
   }: NonNullableMasset,
   tokens: Tokens,
 ): MassetState => {
-  const bAssets = transformBassets(_bassets, decimals, tokens);
+  const bAssets = transformBassets(_bassets, tokens);
 
   // Temporary fix for incorrect Subgraph data; this no impact on the UI in its
   // current state, but is worth having for sanity
@@ -293,6 +339,7 @@ const transformMassetData = (
       : undefined,
     feeRate: BigNumber.from(feeRate),
     redemptionFeeRate: BigNumber.from(redemptionFeeRate),
+    feederPools: transformFeederPoolsData(feederPools, tokens),
     savingsContracts: {
       v1: savingsContractV1
         ? transformSavingsContractV1(

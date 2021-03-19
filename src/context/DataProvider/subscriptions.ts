@@ -2,7 +2,7 @@ import { LazyQueryHookOptions, QueryTuple } from '@apollo/react-hooks';
 import { QueryResult } from '@apollo/react-common';
 import { useEffect } from 'react';
 
-import { useBlockNumber } from '../BlockProvider';
+import { useBlockNow } from '../BlockProvider';
 
 export const useBlockPollingSubscription = <TData, TVariables>(
   lazyQuery: (
@@ -13,7 +13,7 @@ export const useBlockPollingSubscription = <TData, TVariables>(
   baseOptions?: LazyQueryHookOptions<TData, TVariables>,
   skip?: boolean,
 ): QueryResult<TData, TVariables> => {
-  const blockNumber = useBlockNumber();
+  const blockNumber = useBlockNow();
   const hasBlock = !!blockNumber;
 
   // We're using a long-polling query because subscriptions don't seem to be
