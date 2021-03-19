@@ -22,7 +22,7 @@ import { Card } from './Card';
 
 interface Props {
   className?: string;
-  address: string;
+  poolAddress: string;
   deprecated?: boolean;
   isLarge?: boolean;
   color?: string;
@@ -111,12 +111,23 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
         : 0,
     );
 
-    const volume =
-      fpMetrics.data?.historic && fpMetrics.data.current
-        ? BigDecimal.fromMetric(fpMetrics.data.current.cumulativeSwapped).sub(
-            BigDecimal.fromMetric(fpMetrics.data.historic.cumulativeSwapped),
-          )
-        : BigDecimal.ZERO;
+    // TODO calculate volume on the subgraph
+    const volume = (() => {
+      if (fpMetrics.data?.historic && fpMetrics.data.current) {
+        const { current, historic } = fpMetrics.data;
+        const swapped = BigDecimal.fromMetric(current.cumulativeSwapped).sub(
+          BigDecimal.fromMetric(historic.cumulativeSwapped),
+        );
+        const minted = BigDecimal.fromMetric(current.cumulativeMinted).sub(
+          BigDecimal.fromMetric(historic.cumulativeMinted),
+        );
+        const redeemed = BigDecimal.fromMetric(current?.cumulativeRedeemed).sub(
+          BigDecimal.fromMetric(historic?.cumulativeRedeemed),
+        );
+        return swapped.add(minted).add(redeemed);
+      }
+      return BigDecimal.ZERO;
+    })();
 
     return { liquidity, rewardsPerWeek, volume };
   }, [fpMetrics.data]);
@@ -138,9 +149,9 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
       {isLarge && (
         <>
           <div>
-            <p>Volume</p>
+            <p>24h Volume</p>
             <p>
-              <span>${stats.volume.abbreviated}</span>
+              <span>{stats.volume.abbreviated}</span>
             </p>
           </div>
           <div>
@@ -209,12 +220,12 @@ const Container = styled(Card)<{ gradientColor?: string }>`
 
 const AssetCardContent: FC<Props> = ({
   className,
-  address,
+  poolAddress,
   deprecated = false,
   isLarge = false,
   color,
 }) => {
-  const feederPool = useFeederPool(address) as FeederPoolState;
+  const feederPool = useFeederPool(poolAddress) as FeederPoolState;
 
   useTokenSubscription(feederPool.address);
   useTokenSubscription(feederPool.fasset.address);
@@ -225,7 +236,7 @@ const AssetCardContent: FC<Props> = ({
   const gradientColor = color ?? assetColorMapping[feederPool.title];
 
   const handleClick = (): void => {
-    history.push(`/${massetName}/pools/${address}`);
+    history.push(`/${massetName}/pools/${poolAddress}`);
   };
 
   return (
@@ -244,22 +255,22 @@ const AssetCardContent: FC<Props> = ({
       iconType={(!isLarge && 'chevron') || undefined}
       onClick={(!isLarge && handleClick) || undefined}
     >
-      {!deprecated && <PoolStats address={address} isLarge={isLarge} />}
+      {!deprecated && <PoolStats address={poolAddress} isLarge={isLarge} />}
     </Container>
   );
 };
 
 export const AssetCard: FC<Props> = ({
-  address,
+  poolAddress,
   className,
   deprecated,
   isLarge,
   color,
 }) => {
-  const feederPool = useFeederPool(address);
+  const feederPool = useFeederPool(poolAddress);
   return feederPool ? (
     <AssetCardContent
-      address={address}
+      poolAddress={poolAddress}
       className={className}
       deprecated={deprecated}
       isLarge={isLarge}
