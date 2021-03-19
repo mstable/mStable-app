@@ -1,8 +1,8 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { constants, BigNumber } from 'ethers';
-import { IUniswapV2Router02 } from '@mstable/protocol/types/generated/IUniswapV2Router02';
-import { IUniswapV2Router02__factory } from '@mstable/protocol/types/generated/factories/IUniswapV2Router02__factory';
+import type { IUniswapV2Router02 } from '@mstable/protocol/types/generated';
+import { IUniswapV2Router02__factory } from '@mstable/protocol/types/generated';
 
 import { MassetState } from '../../../../context/DataProvider/types';
 import { useSigner } from '../../../../context/OnboardProvider';
@@ -204,7 +204,7 @@ export const SaveDepositETH: FC<{
       inputAddressOptions={inputAddressOptions}
       outputAddressOptions={[
         {
-          address: saveAddress,
+          address: saveAddress as string,
           balance: ethBalance,
           label: 'ETH',
         },

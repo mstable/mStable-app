@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV2__factory';
+import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated';
 
 import { SaveWrapper__factory } from '../../../../typechain';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';

@@ -9,7 +9,7 @@ import {
   fromUnixTime,
   endOfDay,
 } from 'date-fns';
-import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated/factories/BoostedSavingsVault__factory';
+import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';

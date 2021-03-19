@@ -1,5 +1,5 @@
 import React, { FC, useMemo, useState } from 'react';
-import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV2__factory';
+import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated';
 
 import styled from 'styled-components';
 import { useThrottleFn } from 'react-use';
@@ -268,7 +268,7 @@ export const SaveDepositAMM: FC<{
   return (
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
-      outputAddressOptions={[{ address: saveAddress }]}
+      outputAddressOptions={[{ address: saveAddress as string }]}
       inputAddress={inputAddress}
       inputFormValue={inputFormValue}
       outputAddress={saveAddress}

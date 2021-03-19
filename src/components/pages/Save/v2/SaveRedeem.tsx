@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV2__factory';
+import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated';
 
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
@@ -62,7 +62,7 @@ export const SaveRedeem: FC = () => {
   return (
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
-      outputAddressOptions={[{ address: massetAddress }]}
+      outputAddressOptions={[{ address: massetAddress as string }]}
       inputAddress={saveAddress}
       inputAddressDisabled
       inputFormValue={inputFormValue}
