@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { useLocation } from 'react-use';
@@ -10,7 +10,7 @@ import {
   useSetSelectedMassetName,
 } from '../../context/SelectedMassetNameProvider';
 import { ViewportWidth } from '../../theme';
-import { MassetName } from '../../types';
+import { AddressOption, MassetName } from '../../types';
 import { AssetDropdown } from './AssetDropdown';
 
 const StyledDropdown = styled(AssetDropdown)`
@@ -34,10 +34,10 @@ export const MassetSelector: FC = () => {
   const history = useHistory();
   const [selected, setMassetName] = useSelectedMasset();
 
-  const options = Object.values(dataState).map((massetState) => ({
-    address: massetState.token.address,
-    symbol: massetState.token.symbol,
-  }));
+  const options = useMemo<AddressOption[]>(
+    () => Object.values(dataState).map(massetState => massetState.token),
+    [dataState],
+  );
 
   // Handle the masset changing directly from the URL
   const setSelectedMassetName = useSetSelectedMassetName();
@@ -66,7 +66,7 @@ export const MassetSelector: FC = () => {
         const tab = window.location.hash.split('/')[2];
         history.push(`/${slug}/${tab}`);
       }}
-      options={options}
+      addressOptions={options}
       defaultAddress={dataState[selected]?.token?.address}
     />
   );

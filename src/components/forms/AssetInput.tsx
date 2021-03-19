@@ -1,8 +1,6 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import { BigDecimal } from '../../web3/BigDecimal';
 import { Button } from '../core/Button';
 import { SubscribedTokenInput } from './SubscribedTokenInput';
 import { AmountInputV2 as InputField } from './AmountInputV2';
@@ -10,7 +8,7 @@ import { ApproveContent } from './SendButton';
 import { ReactComponent as LockIcon } from '../icons/lock-open.svg';
 import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg';
 import { ApproveProvider, Mode, useApprove } from './ApproveProvider';
-import { TransactionOption } from '../../types';
+import type { AddressOption } from '../../types';
 import { ViewportWidth } from '../../theme';
 
 interface Props {
@@ -18,7 +16,7 @@ interface Props {
   amountDisabled?: boolean;
   formValue?: string;
   address?: string;
-  addressOptions?: TransactionOption[];
+  addressOptions?: (AddressOption | string)[];
   addressDisabled?: boolean;
   error?: 'warning' | 'error';
   handleSetAmount?(formValue?: string): void;
@@ -140,9 +138,9 @@ const AssetInputContent: FC<Props> = ({
 }) => {
   const [unlockState, setUnlockState] = useState(false);
 
-  const handleUnlockClick = (): void => {
+  const handleUnlockClick = useCallback(() => {
     setUnlockState(true);
-  };
+  }, []);
 
   useEffect(() => {
     if (needsApprove) return;
@@ -205,26 +203,92 @@ const AssetInputContent: FC<Props> = ({
   );
 };
 
-const AssetInputApproveContent: FC<Props> = (props) => {
+const AssetInputApproveContent: FC<Props> = ({
+  address,
+  addressDisabled,
+  addressOptions,
+  amountDisabled,
+  children,
+  disabled,
+  error,
+  formValue,
+  handleSetAddress,
+  handleSetAmount,
+  handleSetMax,
+  spender,
+}) => {
   const [{ needsApprove }, handleApprove] = useApprove();
   return (
     <AssetInputContent
-      {...props}
-      needsApprove={needsApprove}
+      address={address}
+      addressDisabled={addressDisabled}
+      addressOptions={addressOptions}
+      amountDisabled={amountDisabled}
+      children={children}
+      disabled={disabled}
+      error={error}
+      formValue={formValue}
       handleApprove={handleApprove}
+      handleSetAddress={handleSetAddress}
+      handleSetAmount={handleSetAmount}
+      handleSetMax={handleSetMax}
+      needsApprove={needsApprove}
+      spender={spender}
     />
   );
 };
 
-export const AssetInput: FC<Props> = (props) => {
-  const { address, spender, formValue } = props;
-  const amount = BigDecimal.parse(formValue ?? '0');
-
+export const AssetInput: FC<Props> = ({
+  address,
+  spender,
+  formValue,
+  addressOptions,
+  error,
+  handleSetAddress,
+  disabled,
+  handleSetAmount,
+  children,
+  needsApprove,
+  amountDisabled,
+  handleSetMax,
+  handleApprove,
+  addressDisabled,
+}) => {
   return spender && address ? (
-    <ApproveProvider address={address} spender={spender} amount={amount}>
-      <AssetInputApproveContent {...props} />
+    <ApproveProvider address={address} spender={spender}>
+      <AssetInputApproveContent
+        address={address}
+        spender={spender}
+        formValue={formValue}
+        addressOptions={addressOptions}
+        error={error}
+        handleSetAddress={handleSetAddress}
+        disabled={disabled}
+        handleSetAmount={handleSetAmount}
+        children={children}
+        needsApprove={needsApprove}
+        amountDisabled={amountDisabled}
+        handleSetMax={handleSetMax}
+        handleApprove={handleApprove}
+        addressDisabled={addressDisabled}
+      />
     </ApproveProvider>
   ) : (
-    <AssetInputContent {...props} />
+    <AssetInputContent
+      address={address}
+      spender={spender}
+      formValue={formValue}
+      addressOptions={addressOptions}
+      error={error}
+      handleSetAddress={handleSetAddress}
+      disabled={disabled}
+      handleSetAmount={handleSetAmount}
+      children={children}
+      needsApprove={needsApprove}
+      amountDisabled={amountDisabled}
+      handleSetMax={handleSetMax}
+      handleApprove={handleApprove}
+      addressDisabled={addressDisabled}
+    />
   );
 };
