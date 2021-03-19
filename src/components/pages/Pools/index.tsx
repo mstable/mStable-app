@@ -14,7 +14,6 @@ import { OnboardingCard } from './cards/OnboardingCard';
 import { AssetCard } from './cards/AssetCard';
 import { ViewportWidth } from '../../../theme';
 import { useModalComponent } from '../../../hooks/useModalComponent';
-import { LiquidityModal } from './LiquidityModal';
 import { RewardsModal } from './RewardsModal';
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { PoolType } from './types';
@@ -134,10 +133,6 @@ const PoolsContent: FC = () => {
     [PoolType.Deprecated]: DEFAULT_ITEM_COUNT,
   });
 
-  const [showLiquidityModal] = useModalComponent({
-    title: 'Add Liquidity',
-    children: <LiquidityModal />,
-  });
   const [showRewardsModal] = useModalComponent({
     title: 'Rewards',
     children: <RewardsModal />,
@@ -152,50 +147,54 @@ const PoolsContent: FC = () => {
     [numPoolsVisible],
   );
 
-  const handleExploreClick = (): void => {};
+  const showPoolSection = (type: PoolType): boolean =>
+    (type === PoolType.Deprecated && pools[type]?.length > 0) ||
+    type !== PoolType.Deprecated;
 
   return (
     <>
-      {sections.map((type, index) => {
-        return (
-          <Section key={type + index}>
-            <Row>
-              <h2>{Title[type]}</h2>
-              {type === PoolType.User && (
-                <div>
-                  <Button onClick={handleExploreClick}>Explore Pools</Button>
-                  {/* Probably move Rewards to top of screen / leave out */}
-                  <Button onClick={showRewardsModal}>Rewards</Button>
-                  <Button highlighted onClick={showLiquidityModal}>
-                    Add Liquidity
-                  </Button>
-                </div>
-              )}
-            </Row>
-            <Cards>
-              <OnboardingCard type={type} />
-              {pools[type]
-                .filter((_, i) => i < numPoolsVisible[type])
-                .map(({ address, masset, fasset }) => (
-                  <AssetCard
-                    key={address}
-                    poolAddress={address}
-                    deprecated={type === PoolType.Deprecated}
-                  />
-                ))}
-              {pools[type].length > numPoolsVisible[type] && (
-                <LoadCard
-                  onClick={() => {
-                    showMorePools(type);
-                  }}
-                >
-                  <div>Load more</div>
-                </LoadCard>
-              )}
-            </Cards>
-          </Section>
-        );
-      })}
+      {sections.map(
+        (type, index) =>
+          showPoolSection(type) && (
+            <Section key={type + index}>
+              <Row>
+                <h2>{Title[type]}</h2>
+                {type === PoolType.User && (
+                  <div>
+                    {/* Probably move Rewards to top of screen / leave out */}
+                    <Button onClick={showRewardsModal}>Rewards</Button>
+                  </div>
+                )}
+              </Row>
+              <Cards>
+                <OnboardingCard type={type} />
+                {pools[type]
+                  .filter((_, i) => i < numPoolsVisible[type])
+                  .map(({ address, masset, fasset }) => (
+                    <AssetCard
+                      key={address}
+                      address={address}
+                      deprecated={type === PoolType.Deprecated}
+                    />
+                  ))}
+                {type === PoolType.User && pools[type]?.length === 0 && (
+                  <Card>
+                    <p>get yer self in a pool sonny</p>
+                  </Card>
+                )}
+                {pools[type].length > numPoolsVisible[type] && (
+                  <LoadCard
+                    onClick={() => {
+                      showMorePools(type);
+                    }}
+                  >
+                    <div>Load more</div>
+                  </LoadCard>
+                )}
+              </Cards>
+            </Section>
+          ),
+      )}
     </>
   );
 };
