@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { usePrevious } from 'react-use';
 import { Interface } from '@ethersproject/abi';
 import { Provider } from '@ethersproject/providers';
-import { ERC20Interface } from '@mstable/protocol/types/generated/ERC20';
+import type { ERC20Interface } from '@mstable/protocol/types/generated/ERC20';
 
 import { useBlockNumber } from '../context/BlockProvider';
 import { useAccount } from '../context/UserProvider';

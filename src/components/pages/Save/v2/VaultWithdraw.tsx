@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
-import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated/factories/BoostedSavingsVault__factory';
+import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated';
 
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';

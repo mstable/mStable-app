@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
-import { ERC20__factory } from '@mstable/protocol/types/generated/factories/ERC20__factory';
-import { ERC20 } from '@mstable/protocol/types/generated/ERC20';
+import { ERC20__factory } from '@mstable/protocol/types/generated';
+import type { ERC20 } from '@mstable/protocol/types/generated';
 
 import { useStakingRewardsContracts } from '../../../../context/earn/EarnDataProvider';
 import { PLATFORM_METADATA } from '../constants';

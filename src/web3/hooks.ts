@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
-import { ERC20 } from '@mstable/protocol/types/generated/ERC20';
-import { ISavingsContractV1 } from '@mstable/protocol/types/generated/ISavingsContractV1';
-import { ERC20__factory } from '@mstable/protocol/types/generated/factories/ERC20__factory';
-import { ISavingsContractV1__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV1__factory';
+import type { ERC20 } from '@mstable/protocol/types/generated/ERC20';
+import type { ISavingsContractV1 } from '@mstable/protocol/types/generated';
+import {
+  ERC20__factory,
+  ISavingsContractV1__factory,
+} from '@mstable/protocol/types/generated';
 
 import { useSigner } from '../context/OnboardProvider';
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';

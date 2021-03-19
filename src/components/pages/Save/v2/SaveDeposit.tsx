@@ -1,6 +1,8 @@
 import React, { FC, useMemo, useState } from 'react';
-import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated/factories/BoostedSavingsVault__factory';
-import { ISavingsContractV2__factory } from '@mstable/protocol/types/generated/factories/ISavingsContractV2__factory';
+import {
+  BoostedSavingsVault__factory,
+  ISavingsContractV2__factory,
+} from '@mstable/protocol/types/generated';
 
 import { useSigner } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
@@ -152,7 +154,7 @@ export const SaveDeposit: FC<{
       inputAddressOptions={inputAddressOptions}
       outputAddressOptions={[
         {
-          address: saveAddress,
+          address: saveAddress as string,
           balance: isDepositingSave ? vaultBalance : undefined,
           label: isDepositingSave ? `${saveTokenSymbol} Vault` : undefined,
         },
