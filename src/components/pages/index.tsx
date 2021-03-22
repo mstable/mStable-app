@@ -63,7 +63,7 @@ const MassetButton: FC<{ massetName: MassetName }> = ({ massetName }) => {
           connect();
         }
         setSelectedMassetName(slug as MassetName);
-        history.push(`/${slug}/mint`);
+        history.push(`/${slug}/save`);
       }}
     >
       <StyledTokenIcon symbol={symbol} />

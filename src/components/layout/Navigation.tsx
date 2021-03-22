@@ -28,9 +28,9 @@ const List = styled.div`
 `;
 
 const navItems: NavItem[] = [
-  { title: 'Mint', path: '/mint' },
   { title: 'Save', path: '/save' },
   { title: 'Earn', path: '/earn' },
+  { title: 'Mint', path: '/mint' },
   { title: 'Swap', path: '/swap' },
   { title: 'Redeem', path: '/redeem' },
 ];
