@@ -20,9 +20,9 @@ const Container = styled.div`
 
 type Section = 'volumes' | 'totals' | 'basket' | 'save';
 
-export const AnalyticsLink: FC<{ section?: Section }> = () => (
+export const StatsLink: FC<{ section?: Section }> = () => (
   <Container>
-    <Link to="/analytics">
+    <Link to="/stats">
       <span role="img" aria-label="chart">
         📊
       </span>{' '}

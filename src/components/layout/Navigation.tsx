@@ -33,6 +33,7 @@ const navItems: NavItem[] = [
   { title: 'Mint', path: '/mint' },
   { title: 'Swap', path: '/swap' },
   { title: 'Redeem', path: '/redeem' },
+  { title: 'Stats', path: '/stats' },
 ];
 
 const StyledNavLink = styled(NavLink)`

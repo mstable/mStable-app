@@ -6,7 +6,7 @@ import { ReactComponent as MintIcon } from '../icons/circle/mint.svg';
 import { ReactComponent as EarnIcon } from '../icons/circle/earn.svg';
 import { ReactComponent as SwapIcon } from '../icons/circle/swap.svg';
 import { ReactComponent as RedeemIcon } from '../icons/circle/redeem.svg';
-import { ReactComponent as AnalyticsIcon } from '../icons/circle/analytics.svg';
+import { ReactComponent as StatsIcon } from '../icons/circle/stats.svg';
 import { ReactComponent as AccountIcon } from '../icons/circle/account.svg';
 import { useAccountOpen, useBannerMessage } from '../../context/AppProvider';
 import { BannerMessage } from '../layout/BannerMessage';
@@ -17,7 +17,7 @@ export enum PageAction {
   Earn = 'Earn',
   Swap = 'Swap',
   Redeem = 'Redeem',
-  Analytics = 'Analytics',
+  Stats = 'Stats',
   Account = 'Account',
 }
 
@@ -32,7 +32,7 @@ const ActionIcons: { [action: string]: JSX.Element } = {
   Earn: <EarnIcon />,
   Swap: <SwapIcon />,
   Redeem: <RedeemIcon />,
-  Analytics: <AnalyticsIcon />,
+  Stats: <StatsIcon />,
   Account: <AccountIcon />,
 };
 
