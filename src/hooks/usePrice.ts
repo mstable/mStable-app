@@ -3,6 +3,7 @@ import { useEffectOnce } from 'react-use';
 import { useMemo, useState } from 'react';
 import { fetchCoingeckoPrices } from '../utils/fetchCoingeckoPrices';
 import { ADDRESSES_BY_NETWORK } from '../constants';
+import { useSelectedMassetName } from '../context/SelectedMassetNameProvider';
 
 const { MTA, WBTC } = ADDRESSES_BY_NETWORK[1];
 
@@ -56,4 +57,11 @@ export const useWBTCPrice = (): number | undefined => {
 
 export const useMtaPrice = (): number | undefined => {
   return usePrices([MTA])?.[0];
+};
+
+export const useSelectedMassetPrice = () => {
+  const massetName = useSelectedMassetName();
+  const wbtcPrice = useWBTCPrice();
+  // TODO support more mAssets, use mUSD price feed
+  return massetName === 'mbtc' ? wbtcPrice : 1;
 };

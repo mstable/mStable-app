@@ -12,6 +12,7 @@ import {
 } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import { BigDecimalInputValues } from '../../../../hooks/useBigDecimalInputs';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
@@ -217,6 +218,8 @@ const MintLogic: FC = () => {
     [penaltyBonusAmount],
   );
 
+  const massetPrice = useSelectedMassetPrice();
+
   return (
     <ManyToOneAssetExchange
       exchangeRate={exchangeRate}
@@ -227,6 +230,7 @@ const MintLogic: FC = () => {
       spender={massetState.address}
       minOutputAmount={minOutputAmount}
       error={error ?? penaltyBonusWarning}
+      price={massetPrice}
     >
       <SendButton
         valid={!error && Object.values(inputValues).some(v => v.touched)}

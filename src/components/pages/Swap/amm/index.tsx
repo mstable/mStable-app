@@ -30,6 +30,7 @@ import {
   getEstimatedOutput,
   getPenaltyMessage,
 } from '../../amm/utils';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 interface SwapOutput {
   value?: BigDecimal;
@@ -254,6 +255,8 @@ const SwapLogic: FC = () => {
     [inputAddress, inputAmount, massetAddress],
   );
 
+  const massetPrice = useSelectedMassetPrice();
+
   return (
     <AssetSwap
       inputAddressOptions={addressOptions}
@@ -308,6 +311,7 @@ const SwapLogic: FC = () => {
         minOutputAmount={amounts.minOutputAmount}
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}
+        price={massetPrice}
       />
     </AssetSwap>
   );

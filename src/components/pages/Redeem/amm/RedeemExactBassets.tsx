@@ -30,6 +30,7 @@ import {
   useMultiAssetExchangeState,
 } from '../../../forms/MultiAssetExchange';
 import { getBounds, getPenaltyMessage } from '../../amm/utils';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'redeem';
 
@@ -173,6 +174,8 @@ const RedeemExactBassetsLogic: FC = () => {
     [penaltyBonusAmount],
   );
 
+  const massetPrice = useSelectedMassetPrice();
+
   return (
     <OneToManyAssetExchange
       exchangeRate={exchangeRate}
@@ -181,6 +184,7 @@ const RedeemExactBassetsLogic: FC = () => {
       outputLabel={outputLabel}
       maxOutputAmount={maxMassetAmount}
       error={error ?? penaltyBonusWarning}
+      price={massetPrice}
     >
       <SendButton
         valid={!error && Object.values(bassetAmounts).some(v => v.touched)}
