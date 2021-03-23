@@ -59,7 +59,7 @@ export const useMtaPrice = (): number | undefined => {
   return usePrices([MTA])?.[0];
 };
 
-export const useSelectedMassetPrice = () => {
+export const useSelectedMassetPrice = (): number | undefined => {
   const massetName = useSelectedMassetName();
   const wbtcPrice = useWBTCPrice();
   // TODO support more mAssets, use mUSD price feed
