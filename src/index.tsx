@@ -18,7 +18,7 @@ import { Save } from './components/pages/Save';
 import { Redeem } from './components/pages/Redeem';
 import { NotFound } from './components/pages/NotFound';
 import { FAQ } from './components/pages/FAQ';
-import { Analytics } from './components/pages/Analytics';
+import { Stats } from './components/pages/Stats';
 import { PoolPage } from './components/pages/Earn/Pool';
 import { AdminPage } from './components/pages/Earn/Admin';
 
@@ -57,12 +57,12 @@ const Routes: FC = () => {
         component={PoolPage}
       />
       <Route exact path="/faq" component={FAQ} />
-      <Route exact path="/:massetName/analytics" component={Analytics} />
+      <Route exact path="/:massetName/stats" component={Stats} />
       <Route exact path="/:massetName/mint" component={Mint} />
       <Route exact path="/:massetName/redeem" component={Redeem} />
       <Route exact path="/:massetName/save" component={Save} />
       <Route exact path="/:massetName/swap" component={Swap} />
-      <Redirect exact path="/analytics" to="/musd/analytics" />
+      <Redirect exact path="/analytics" to="/musd/stats" />
       <Redirect exact path="/mint" to="/musd/mint" />
       <Redirect exact path="/redeem" to="/musd/redeem" />
       <Redirect exact path="/save" to="/musd/save" />
@@ -70,6 +70,8 @@ const Routes: FC = () => {
       <Redirect exact path="/earn" to="/musd/earn" />
       <Redirect exact path="/musd" to="/musd/mint" />
       <Redirect exact path="/mbtc" to="/mbtc/mint" />
+      <Redirect exact path="/musd/analytics" to="/musd/stats" />
+      <Redirect exact path="/mbtc/analytics" to="/mbtc/stats" />
       <Route component={NotFound} />
     </Switch>
   );
