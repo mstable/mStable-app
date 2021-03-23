@@ -90,6 +90,7 @@ interface Props {
   setMaxCallbacks?: { [address: string]: () => void };
   exchangeRate?: { value?: BigDecimal; fetching?: boolean };
   error?: string;
+  price?: number;
 }
 
 export const ManyToOneAssetExchange: FC<
@@ -107,6 +108,7 @@ export const ManyToOneAssetExchange: FC<
   outputAddress,
   error,
   minOutputAmount,
+  price,
 }) => {
   const [inputValues, outputAmount, slippage] = useContext(stateCtx);
   const [inputCallbacks, , setSlippage] = useContext(dispatchCtx);
@@ -114,7 +116,7 @@ export const ManyToOneAssetExchange: FC<
   return (
     <Container>
       {Object.keys(inputValues).map(
-        (address) =>
+        address =>
           spender &&
           inputValues && (
             <AssetInput
@@ -144,6 +146,7 @@ export const ManyToOneAssetExchange: FC<
       {error && <ErrorMessage error={error} />}
       {children}
       <TransactionInfo
+        price={price}
         onSetSlippage={setSlippage}
         slippageFormValue={slippage.formValue}
         minOutputAmount={minOutputAmount}
@@ -167,6 +170,7 @@ export const OneToManyAssetExchange: FC<
   outputLabel = 'Output',
   maxOutputAmount,
   error,
+  price,
 }) => {
   const [outputValues, inputAmount, slippage] = useContext(stateCtx);
   const [outputCallbacks, , setSlippage] = useContext(dispatchCtx);
@@ -188,7 +192,7 @@ export const OneToManyAssetExchange: FC<
           exchangeRate={exchangeRate}
         />
       </div>
-      {Object.keys(outputValues).map((address) => (
+      {Object.keys(outputValues).map(address => (
         <AssetInput
           key={address}
           address={address}
@@ -202,6 +206,7 @@ export const OneToManyAssetExchange: FC<
       {error && <ErrorMessage error={error} />}
       {children}
       <TransactionInfo
+        price={price}
         onSetSlippage={setSlippage}
         slippageFormValue={slippage.formValue}
         maxOutputAmount={maxOutputAmount}

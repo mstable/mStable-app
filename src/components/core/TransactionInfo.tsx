@@ -5,7 +5,6 @@ import { BigDecimal } from '../../web3/BigDecimal';
 import { Tooltip } from './ReactTooltip';
 import { CollapseBox } from '../forms/CollapseBox';
 import { SlippageInput } from '../forms/SlippageInput';
-import { useWBTCPrice } from '../../hooks/usePrice';
 
 interface Props {
   className?: string;
@@ -15,6 +14,7 @@ interface Props {
   slippageFormValue?: string;
   onSetSlippage?(formValue?: string): void;
   saveExchangeRate?: BigDecimal;
+  price?: number;
 }
 
 const DollarEstimate = styled.span`
@@ -51,22 +51,20 @@ export const TransactionInfo: FC<Props> = ({
   onSetSlippage,
   slippageFormValue,
   saveExchangeRate,
+  price,
 }) => {
   const showAdditionalInfo = feeAmount || minOutputAmount || maxOutputAmount;
-
-  // wbtc only for now.
-  const wbtcPrice = useWBTCPrice();
 
   const { min, max, fee } = useMemo<{
     fee?: BigDecimal;
     min?: BigDecimal;
     max?: BigDecimal;
   }>(() => {
-    if (!wbtcPrice) return {};
+    if (!price) return {};
 
-    const _fee = feeAmount && wbtcPrice * feeAmount?.simple;
-    const _min = minOutputAmount && wbtcPrice * minOutputAmount?.simple;
-    const _max = maxOutputAmount && wbtcPrice * maxOutputAmount?.simple;
+    const _fee = feeAmount && price * feeAmount?.simple;
+    const _min = minOutputAmount && price * minOutputAmount?.simple;
+    const _max = maxOutputAmount && price * maxOutputAmount?.simple;
 
     const prices = {
       fee: (_fee && BigDecimal.parse(_fee.toString(), 2)) || undefined,
@@ -83,13 +81,7 @@ export const TransactionInfo: FC<Props> = ({
     }
 
     return prices;
-  }, [
-    wbtcPrice,
-    feeAmount,
-    saveExchangeRate,
-    minOutputAmount,
-    maxOutputAmount,
-  ]);
+  }, [price, feeAmount, saveExchangeRate, minOutputAmount, maxOutputAmount]);
 
   return (
     <>

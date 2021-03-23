@@ -33,6 +33,7 @@ import {
   getEstimatedOutput,
   getPenaltyMessage,
 } from '../../amm/utils';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'SaveDepositAMM';
 
@@ -261,6 +262,8 @@ export const SaveDepositAMM: FC<{
 
   const valid = !!(!error && inputAmount && inputAmount.simple > 0);
 
+  const massetPrice = useSelectedMassetPrice();
+
   return (
     <AssetExchange
       inputAddressOptions={inputAddressOptions}
@@ -339,6 +342,7 @@ export const SaveDepositAMM: FC<{
       )}
       {inputAddress !== massetState?.address && (
         <Info
+          price={massetPrice}
           minOutputAmount={minOutputSaveAmount}
           slippageFormValue={slippageFormValue}
           onSetSlippage={setSlippage}
