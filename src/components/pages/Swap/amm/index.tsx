@@ -2,8 +2,8 @@ import React, { FC, useMemo, useState } from 'react';
 import { useThrottleFn } from 'react-use';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-import { Masset__factory } from '@mstable/protocol/types/generated/factories/Masset__factory';
-import { Masset } from '@mstable/protocol/types/generated/Masset';
+import { Masset__factory } from '@mstable/protocol/types/generated';
+import type { Masset } from '@mstable/protocol/types/generated/Masset';
 
 import {
   useSigner,
@@ -25,12 +25,10 @@ import { sanitizeMassetError } from '../../../../utils/strings';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { MassetPage } from '../../MassetPage';
-import {
-  getBounds,
-  getEstimatedOutput,
-  getPenaltyMessage,
-} from '../../amm/utils';
+import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
+
+const formId = 'swap';
 
 interface SwapOutput {
   value?: BigDecimal;
@@ -42,7 +40,14 @@ const Info = styled(TransactionInfo)`
   margin-top: 0.5rem;
 `;
 
-const formId = 'swap';
+const Container = styled(AssetSwap)`
+  > * {
+    margin: 0;
+  }
+  > *:not(:first-child) {
+    margin: 0.5rem 0;
+  }
+`;
 
 const SwapLogic: FC = () => {
   const massetState = useSelectedMassetState() as MassetState;
@@ -145,7 +150,6 @@ const SwapLogic: FC = () => {
   // - exchange rate
   // - fee rate
   // - swap fee
-  // - min output amount
   const amounts = useMemo(() => {
     const scaledInputAmount =
       inputRatio && inputAmount && inputAmount.exact.gt(0)
@@ -172,35 +176,21 @@ const SwapLogic: FC = () => {
         ? outputSimple / (1 - feeRateSimple) - outputSimple
         : undefined;
 
-    const minOutputAmount = BigDecimal.maybeParse(
-      swapOutput.value && slippageSimple
-        ? (swapOutput.value.simple * (1 - slippageSimple / 100)).toFixed(
-            swapOutput.value.decimals,
-          )
-        : undefined,
-      outputDecimals,
-    );
-
     return {
       exchangeRate,
-      minOutputAmount,
       swapFee: BigDecimal.maybeParse(swapFee?.toFixed(18)),
     };
   }, [
     feeRate,
     inputAmount,
-    slippageSimple,
     swapOutput.fetching,
     swapOutput.value,
-    outputDecimals,
     inputRatio,
     outputRatio,
   ]);
 
-  // Calling `getSwapOutput` performs the complex validation;
-  // this validation is trivial.
   const error = useMemo<string | undefined>(() => {
-    if (!inputAmount?.simple) return;
+    if (!inputAmount?.simple) return 'Enter an amount';
 
     if (swapOutput.error) return swapOutput.error;
 
@@ -222,25 +212,10 @@ const SwapLogic: FC = () => {
     }
   }, [swapOutput.error, inputAmount, inputToken, outputToken]);
 
-  const penaltyBonusAmount = useMemo<number | undefined>(() => {
-    if (!amounts?.minOutputAmount || !inputAmount) return;
-    const { minOutputAmount } = amounts;
-
-    const { min, max } = getBounds(inputAmount.simple);
-    if (!min || !max) return;
-
-    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
-    if (!output) return;
-
-    const penalty = output / inputAmount.simple;
-    const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
-
-    if (output < min || output > max) return percentage;
-  }, [amounts, inputAmount, slippageSimple]);
-
-  const penaltyBonusWarning = useMemo<string | undefined>(
-    () => getPenaltyMessage(penaltyBonusAmount),
-    [penaltyBonusAmount],
+  const { minOutputAmount, penaltyBonus } = useMinimumOutput(
+    slippageSimple,
+    inputAmount,
+    swapOutput?.value,
   );
 
   const approve = useMemo(
@@ -258,10 +233,10 @@ const SwapLogic: FC = () => {
   const massetPrice = useSelectedMassetPrice();
 
   return (
-    <AssetSwap
+    <Container
       inputAddressOptions={addressOptions}
       outputAddressOptions={addressOptions}
-      error={error ?? penaltyBonusWarning}
+      error={penaltyBonus?.message}
       exchangeRate={amounts.exchangeRate}
       handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputAmount}
@@ -276,15 +251,15 @@ const SwapLogic: FC = () => {
     >
       <SendButton
         valid={!error && !!swapOutput.value}
-        title="Swap"
+        title={error ?? 'Swap'}
         approve={approve}
-        penaltyBonusAmount={penaltyBonusAmount}
+        penaltyBonusAmount={penaltyBonus?.percentage}
         handleSend={() => {
           if (
             masset &&
             walletAddress &&
             inputAmount &&
-            amounts.minOutputAmount &&
+            minOutputAmount &&
             inputAddress &&
             outputAddress
           ) {
@@ -296,7 +271,7 @@ const SwapLogic: FC = () => {
                   inputAddress,
                   outputAddress,
                   inputAmount.exact,
-                  amounts.minOutputAmount.exact,
+                  minOutputAmount.exact,
                   walletAddress,
                 ],
                 { present: 'Swapping', past: 'Swapped' },
@@ -308,12 +283,12 @@ const SwapLogic: FC = () => {
       />
       <Info
         feeAmount={amounts.swapFee}
-        minOutputAmount={amounts.minOutputAmount}
+        minOutputAmount={minOutputAmount}
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}
         price={massetPrice}
       />
-    </AssetSwap>
+    </Container>
   );
 };
 

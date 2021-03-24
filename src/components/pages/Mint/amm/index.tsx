@@ -1,9 +1,6 @@
-import React, { FC, useMemo } from 'react';
-import { useThrottleFn } from 'react-use';
-import { BigNumber } from 'ethers';
-import { Masset__factory } from '@mstable/protocol/types/generated/factories/Masset__factory';
-import { Masset } from '@mstable/protocol/types/generated/Masset';
+import React, { FC, useEffect, useMemo } from 'react';
 
+import { Masset__factory } from '@mstable/protocol/types/generated';
 import { useTokens, useTokensState } from '../../../../context/TokensProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import {
@@ -11,14 +8,9 @@ import {
   useWalletAddress,
 } from '../../../../context/OnboardProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
-
-import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
-import { BigDecimalInputValues } from '../../../../hooks/useBigDecimalInputs';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import { sanitizeMassetError } from '../../../../utils/strings';
 import { Interfaces } from '../../../../types';
-
 import {
   ManyToOneAssetExchange,
   MultiAssetExchangeProvider,
@@ -29,11 +21,9 @@ import { SendButton } from '../../../forms/SendButton';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { MassetPage } from '../../MassetPage';
-import {
-  getBounds,
-  getEstimatedOutput,
-  getPenaltyMessage,
-} from '../../amm/utils';
+import { useEstimatedMintOutput } from '../../../../hooks/useEstimatedMintOutput';
+import { useMinimumOutput } from '../../../../hooks/useOutput';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'mint';
 
@@ -59,88 +49,42 @@ const MintLogic: FC = () => {
     [massetAddress, signer],
   );
 
-  const { exchangeRate, minOutputAmount } = useMemo(() => {
-    const totalInputAmount = Object.values(inputValues)
-      .filter(v => v.touched)
-      .reduce(
-        (prev, v) =>
-          prev.add(
-            (v.amount as BigDecimal).mulRatioTruncate(
-              massetState.bAssets[v.address].ratio,
-            ),
+  const touched = useMemo(
+    () => Object.values(inputValues).filter(v => v.touched),
+    [inputValues],
+  );
+
+  const { estimatedOutputAmount, exchangeRate } = useEstimatedMintOutput(
+    masset,
+    inputValues,
+  );
+
+  const inputAmount = useMemo(() => {
+    if (!Object.keys(inputValues).length) return;
+    if (!touched.length) return;
+
+    const totalAmount = Object.values(touched).reduce(
+      (prev, v) =>
+        prev.add(
+          (v.amount as BigDecimal).mulRatioTruncate(
+            massetState.bAssets[v.address].ratio,
           ),
-        BigDecimal.ZERO,
-      );
-
-    const _exchangeRate: { value?: BigDecimal; fetching?: boolean } =
-      totalInputAmount &&
-      totalInputAmount.exact.gt(0) &&
-      outputAmount.value &&
-      outputAmount.value.exact.gt(0)
-        ? { value: outputAmount.value.divPrecisely(totalInputAmount) }
-        : { fetching: outputAmount.fetching };
-
-    const _minOutputAmount = BigDecimal.maybeParse(
-      outputAmount.value && slippage.simple
-        ? (outputAmount.value.simple * (1 - slippage.simple / 100)).toFixed(
-            outputAmount.value.decimals,
-          )
-        : undefined,
+        ),
+      BigDecimal.ZERO,
     );
 
-    return {
-      exchangeRate: _exchangeRate,
-      minOutputAmount: _minOutputAmount,
-    };
-  }, [
-    inputValues,
-    massetState.bAssets,
-    outputAmount.fetching,
-    outputAmount.value,
-    slippage.simple,
-  ]);
+    return totalAmount;
+  }, [inputValues, touched, massetState]);
 
-  // Get the swap output with a throttle so it's not called too often
-  useThrottleFn(
-    (_masset: Masset | undefined, _inputValues: BigDecimalInputValues) => {
-      if (_masset) {
-        const touched = Object.values(_inputValues).filter(v => v.touched);
-
-        if (touched.length > 0) {
-          setOutputAmount({ fetching: true });
-
-          const promise = (() => {
-            if (touched.length === 1) {
-              const [{ address, amount }] = touched;
-              return _masset.getMintOutput(
-                address,
-                (amount as BigDecimal).exact,
-              );
-            }
-
-            const inputs = touched.map(v => v.address);
-            const amounts = touched.map(v => (v.amount as BigDecimal).exact);
-            return _masset.getMintMultiOutput(inputs, amounts);
-          })();
-
-          return promise
-            .then((mintOutput: BigNumber): void => {
-              setOutputAmount({
-                value: new BigDecimal(mintOutput),
-              });
-            })
-            .catch((_error: Error): void => {
-              setOutputAmount({
-                error: sanitizeMassetError(_error),
-              });
-            });
-        }
-      }
-      setOutputAmount({});
-    },
-    1000,
-    [masset, inputValues],
+  const { minOutputAmount, penaltyBonus } = useMinimumOutput(
+    slippage?.simple,
+    inputAmount,
+    estimatedOutputAmount?.value,
   );
+
+  useEffect(() => {
+    setOutputAmount(estimatedOutputAmount);
+  }, [estimatedOutputAmount, setOutputAmount]);
 
   const setMaxCallbacks = useMemo(
     () =>
@@ -160,14 +104,12 @@ const MintLogic: FC = () => {
       Object.values(inputValues)
         .filter(v => v.touched)
         .map(v => inputTokens.find(t => t.address === v.address)?.symbol)
-        .join('/'),
+        .join(', '),
     [inputTokens, inputValues],
   );
 
   const error = useMemo(() => {
-    const touched = Object.keys(inputValues).find(t => inputValues[t].touched);
-
-    if (!touched) return;
+    if (!touched) return 'Enter an amount';
 
     const addressesBalanceTooLow = Object.keys(inputValues).filter(t =>
       inputValues[t].amount?.exact.gt(
@@ -192,31 +134,7 @@ const MintLogic: FC = () => {
         .join(', ')} needed`;
 
     return outputAmount.error;
-  }, [inputValues, massetState.address, outputAmount.error, tokenState.tokens]);
-
-  const penaltyBonusAmount = useMemo<number | undefined>(() => {
-    if (!minOutputAmount) return;
-
-    const inputAmount = Object.keys(inputValues)
-      .map(address => inputValues[address].amount?.simple ?? 0)
-      .reduce((a, b) => a + b);
-
-    const { min, max } = getBounds(inputAmount);
-    if (!min || !max) return;
-
-    const output = getEstimatedOutput(minOutputAmount.simple, slippage.simple);
-    if (!output) return;
-
-    const penalty = output / inputAmount;
-    const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
-
-    if (output < min || output > max) return percentage;
-  }, [inputValues, minOutputAmount, slippage.simple]);
-
-  const penaltyBonusWarning = useMemo<string | undefined>(
-    () => getPenaltyMessage(penaltyBonusAmount),
-    [penaltyBonusAmount],
-  );
+  }, [inputValues, massetState, outputAmount, tokenState, touched]);
 
   const massetPrice = useSelectedMassetPrice();
 
@@ -229,17 +147,15 @@ const MintLogic: FC = () => {
       setMaxCallbacks={setMaxCallbacks}
       spender={massetState.address}
       minOutputAmount={minOutputAmount}
-      error={error ?? penaltyBonusWarning}
+      error={penaltyBonus?.message}
       price={massetPrice}
     >
       <SendButton
         valid={!error && Object.values(inputValues).some(v => v.touched)}
-        penaltyBonusAmount={penaltyBonusAmount}
-        title="Mint"
+        penaltyBonusAmount={penaltyBonus?.percentage}
+        title={error ?? 'Mint'}
         handleSend={() => {
           if (masset && walletAddress && minOutputAmount) {
-            const touched = Object.values(inputValues).filter(v => v.touched);
-
             if (touched.length === 1) {
               const [{ address, amount }] = touched;
               return propose<Interfaces.Masset, 'mint'>(
