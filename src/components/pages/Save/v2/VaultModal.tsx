@@ -8,7 +8,6 @@ import { VaultWithdraw } from './VaultWithdraw';
 import { VaultExit } from './VaultExit';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { ADDRESSES } from '../../../../constants';
-import { ViewportWidth } from '../../../../theme';
 import { InfoMessage } from '../../../core/InfoMessage';
 
 enum Tabs {
@@ -26,10 +25,6 @@ const Container = styled.div`
 
     > div:first-child {
       margin-bottom: 1rem;
-    }
-
-    @media (min-width: ${ViewportWidth.m}) {
-      padding: 2rem;
     }
   }
 `;

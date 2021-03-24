@@ -7,7 +7,7 @@ import { InfoMessage } from './InfoMessage';
 export const TabsContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  margin: 0.5rem 0 1.25rem;
+  margin: 0 0 1.25rem;
 `;
 
 export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
@@ -41,8 +41,8 @@ export const TabSwitch: FC<{
   className?: string;
 }> = ({ tabs, children, active, onClick, className }) => {
   return (
-    <>
-      <TabsContainer className={className}>
+    <div className={className}>
+      <TabsContainer>
         {Object.keys(tabs)
           .filter(key => !!tabs[key].component)
           .map(_key => (
@@ -61,9 +61,13 @@ export const TabSwitch: FC<{
         {children && children}
         {active && tabs[active]?.component}
       </div>
-    </>
+    </div>
   );
 };
+
+export const TabCard = styled(TabSwitch)`
+  ${({ theme }) => theme.mixins.card};
+`;
 
 export const MoreInfo = styled.div`
   font-size: 0.875rem;

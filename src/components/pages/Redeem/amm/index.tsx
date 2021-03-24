@@ -6,7 +6,7 @@ import { PageAction, PageHeader } from '../../PageHeader';
 import { RedeemExactBassets } from './RedeemExactBassets';
 import { RedeemMasset } from './RedeemMasset';
 import { MassetPage } from '../../MassetPage';
-import { TabSwitch } from '../../../core/Tabs';
+import { TabCard } from '../../../core/Tabs';
 
 enum Tabs {
   Single = 'Single',
@@ -45,7 +45,7 @@ export const Redeem: FC = () => {
         subtitle={tabs[activeTab as Tabs].subtitle}
       />
       <MassetPage asideVisible>
-        <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab} />
+        <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
       </MassetPage>
     </div>
   ) : (

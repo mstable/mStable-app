@@ -35,7 +35,11 @@ export const MassetSelector: FC = () => {
   const [selected, setMassetName] = useSelectedMasset();
 
   const options = useMemo<AddressOption[]>(
-    () => Object.values(dataState).map(massetState => massetState.token),
+    () =>
+      Object.values(dataState).map(massetState => ({
+        address: massetState.token.address,
+        symbol: massetState.token.symbol,
+      })),
     [dataState],
   );
 

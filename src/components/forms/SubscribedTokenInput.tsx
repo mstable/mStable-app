@@ -34,10 +34,10 @@ export const SubscribedTokenInput: FC<Props> = ({
 
   const options = useMemo<AddressOption[]>(
     () =>
-      // Merge selected token, subscribed options and custom options
+      // Merge selected token, subscribed options and custom options & filter out token duplication
       [
         token,
-        ...tokens,
+        ...tokens.filter(t => t.address !== token?.address),
         ..._options.filter(
           option => typeof option !== 'string' && option.custom,
         ),

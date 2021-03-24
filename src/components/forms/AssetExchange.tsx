@@ -28,6 +28,7 @@ export interface Props {
 
   exchangeRate?: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
   error?: string;
+  className?: string;
 }
 
 const Container = styled.div`
@@ -54,9 +55,14 @@ export const AssetExchange: FC<Props> = ({
   outputAddressDisabled,
   outputFormValue,
   children,
+  className,
 }) => {
-  const inputToken = useTokenSubscription(inputAddress);
-  const outputToken = useTokenSubscription(outputAddress);
+  const inputToken =
+    useTokenSubscription(inputAddress) ??
+    inputAddressOptions.find(v => v.address === inputAddress);
+  const outputToken =
+    useTokenSubscription(outputAddress) ??
+    outputAddressOptions.find(v => v.address === outputAddress);
 
   const conversionFormValue =
     inputFormValue && exchangeRate?.value && !outputFormValue
@@ -66,7 +72,7 @@ export const AssetExchange: FC<Props> = ({
       : undefined;
 
   return (
-    <Container>
+    <Container className={className}>
       <AssetInput
         address={inputAddress}
         addressOptions={inputAddressOptions}
@@ -78,14 +84,15 @@ export const AssetExchange: FC<Props> = ({
       />
       <div>
         <Arrow />
-        <ExchangeRate
-          exchangeRate={exchangeRate}
-          outputToken={outputToken}
-          inputToken={inputToken}
-        />
+        {exchangeRate && (
+          <ExchangeRate
+            exchangeRate={exchangeRate}
+            outputToken={outputToken}
+            inputToken={inputToken}
+          />
+        )}
       </div>
       <AssetInput
-        disabled
         address={outputAddress}
         addressOptions={outputAddressOptions}
         formValue={conversionFormValue ?? outputFormValue}
