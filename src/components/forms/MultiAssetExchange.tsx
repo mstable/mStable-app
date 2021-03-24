@@ -91,6 +91,7 @@ interface Props {
   exchangeRate?: { value?: BigDecimal; fetching?: boolean };
   error?: string;
   price?: number;
+  className?: string;
 }
 
 export const ManyToOneAssetExchange: FC<
@@ -109,12 +110,13 @@ export const ManyToOneAssetExchange: FC<
   error,
   minOutputAmount,
   price,
+  className,
 }) => {
   const [inputValues, outputAmount, slippage] = useContext(stateCtx);
   const [inputCallbacks, , setSlippage] = useContext(dispatchCtx);
 
   return (
-    <Container>
+    <Container className={className}>
       {Object.keys(inputValues).map(
         address =>
           spender &&

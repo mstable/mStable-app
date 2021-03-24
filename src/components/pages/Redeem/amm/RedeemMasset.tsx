@@ -1,9 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
-import { useThrottleFn } from 'react-use';
 import styled from 'styled-components';
-import { Masset__factory } from '@mstable/protocol/types/generated/factories/Masset__factory';
-import { Masset } from '@mstable/protocol/types/generated/Masset';
 
+import { Masset__factory } from '@mstable/protocol/types/generated';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import {
   useSigner,
@@ -15,9 +13,7 @@ import { useTokenSubscription } from '../../../../context/TokensProvider';
 
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
-import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import { sanitizeMassetError } from '../../../../utils/strings';
 
 import { Interfaces } from '../../../../types';
 
@@ -27,11 +23,9 @@ import { Arrow } from '../../../core/Arrow';
 import { ErrorMessage } from '../../../core/ErrorMessage';
 import { ExchangeRate } from '../../../core/ExchangeRate';
 import { TransactionInfo } from '../../../core/TransactionInfo';
-import {
-  getBounds,
-  getEstimatedOutput,
-  getPenaltyMessage,
-} from '../../amm/utils';
+import { useMinimumOutput } from '../../../../hooks/useMinimumOutput';
+import { useEstimatedRedeemTokenOutput } from '../../../../hooks/useEstimatedRedeemTokenOutput';
+import { BigDecimalInputValues } from '../../../../hooks/useBigDecimalInputs';
 
 const formId = 'redeem';
 
@@ -56,13 +50,6 @@ export const RedeemMasset: FC = () => {
   );
   const massetToken = useTokenSubscription(massetAddress);
   const outputToken = useTokenSubscription(outputAddress);
-  const outputDecimals = outputToken?.decimals;
-
-  const [bassetAmount, setBassetAmount] = useState<{
-    fetching?: boolean;
-    error?: string;
-    value?: BigDecimal;
-  }>({});
 
   const [
     massetAmount,
@@ -83,63 +70,15 @@ export const RedeemMasset: FC = () => {
     [massetAddress, signer],
   );
 
-  // Get the swap output with a throttle so it's not called too often
-  useThrottleFn(
-    (
-      _masset: Masset | undefined,
-      _massetAmount: BigDecimal | undefined,
-      _outputAddress: string | undefined,
-      _outputDecimals: number | undefined,
-    ) => {
-      if (_masset && _outputAddress && _massetAmount?.exact.gt(0)) {
-        setBassetAmount({ fetching: true });
-        _masset
-          .getRedeemOutput(_outputAddress, _massetAmount.exact)
-          .then(_bassetAmount => {
-            setBassetAmount({
-              value: new BigDecimal(_bassetAmount, _outputDecimals),
-            });
-          })
-          .catch((_error: Error): void => {
-            setBassetAmount({
-              error: sanitizeMassetError(_error),
-            });
-          });
-      } else {
-        setBassetAmount({});
-      }
-    },
-    1000,
-    [masset, massetAmount, outputAddress, outputDecimals],
-  );
-
-  const { exchangeRate, minOutputAmount } = useMemo(() => {
-    const _exchangeRate: { value?: BigDecimal; fetching?: boolean } =
-      massetAmount && bassetAmount.value && massetAmount.exact.gt(0)
-        ? { value: bassetAmount.value.divPrecisely(massetAmount) }
-        : { fetching: bassetAmount.fetching };
-
-    const amountStr =
-      bassetAmount.value && slippageSimple
-        ? (bassetAmount.value.simple * (1 - slippageSimple / 100)).toFixed(
-            bassetAmount.value.decimals,
-          )
-        : undefined;
-
-    // Important: output amount needs bAsset decimals (outputDecimals)
-    const _minOutputAmount = BigDecimal.maybeParse(amountStr, outputDecimals);
-
-    return {
-      exchangeRate: _exchangeRate,
-      minOutputAmount: _minOutputAmount,
-    };
-  }, [
+  const { estimatedOutputAmount, exchangeRate } = useEstimatedRedeemTokenOutput(
+    masset,
     massetAmount,
-    bassetAmount.fetching,
-    bassetAmount.value,
-    slippageSimple,
-    outputDecimals,
-  ]);
+    {
+      [outputAddress as string]: {
+        ...outputToken,
+      },
+    } as BigDecimalInputValues,
+  );
 
   const addressOptions = useMemo(
     () => Object.keys(bAssets).map(address => ({ address })),
@@ -147,6 +86,8 @@ export const RedeemMasset: FC = () => {
   );
 
   const error = useMemo(() => {
+    if (!massetAmount?.simple) return 'Enter an amount';
+
     if (massetAmount) {
       if (
         massetToken?.balance.exact &&
@@ -164,27 +105,13 @@ export const RedeemMasset: FC = () => {
       }
     }
 
-    return bassetAmount.error;
-  }, [bassetAmount.error, massetAmount, massetToken, outputAddress]);
+    return estimatedOutputAmount.error;
+  }, [estimatedOutputAmount.error, massetAmount, massetToken, outputAddress]);
 
-  const penaltyBonusAmount = useMemo<number | undefined>(() => {
-    if (!minOutputAmount || !massetAmount) return;
-
-    const { min, max } = getBounds(massetAmount.simple);
-    if (!min || !max) return;
-
-    const output = getEstimatedOutput(minOutputAmount.simple, slippageSimple);
-    if (!output) return;
-
-    const penalty = output / massetAmount.simple;
-    const percentage = penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100;
-
-    if (output < min || output > max) return percentage;
-  }, [minOutputAmount, massetAmount, slippageSimple]);
-
-  const penaltyBonusWarning = useMemo<string | undefined>(
-    () => getPenaltyMessage(penaltyBonusAmount),
-    [penaltyBonusAmount],
+  const { minOutputAmount, penaltyBonus } = useMinimumOutput(
+    slippageSimple,
+    massetAmount,
+    estimatedOutputAmount?.value,
   );
 
   return (
@@ -201,27 +128,26 @@ export const RedeemMasset: FC = () => {
       />
       <div>
         <Arrow />
-        <ExchangeRate
-          inputToken={massetToken}
-          outputToken={outputToken}
-          exchangeRate={exchangeRate}
-        />
+        {exchangeRate && (
+          <ExchangeRate
+            inputToken={massetToken}
+            outputToken={outputToken}
+            exchangeRate={exchangeRate}
+          />
+        )}
       </div>
       <AssetInput
         address={outputAddress ?? addressOptions[0].address}
         addressOptions={addressOptions}
         amountDisabled
-        formValue={bassetAmount.value?.string}
+        formValue={estimatedOutputAmount.value?.string}
         handleSetAddress={handleSetAddress}
-        disabled
       />
-      {(error || penaltyBonusWarning) && (
-        <ErrorMessage error={error ?? penaltyBonusWarning ?? ''} />
-      )}
+      {penaltyBonus?.message && <ErrorMessage error={penaltyBonus?.message} />}
       <SendButton
         valid={!error}
-        title="Redeem"
-        penaltyBonusAmount={penaltyBonusAmount}
+        title={error ?? 'Redeem'}
+        penaltyBonusAmount={penaltyBonus?.percentage}
         handleSend={() => {
           if (
             masset &&
