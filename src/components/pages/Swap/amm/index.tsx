@@ -25,7 +25,7 @@ import { sanitizeMassetError } from '../../../../utils/strings';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { MassetPage } from '../../MassetPage';
-import { useMinimumOutput } from '../../../../hooks/useMinimumOutput';
+import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'swap';

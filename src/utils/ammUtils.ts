@@ -1,4 +1,4 @@
-import { BigDecimal } from '../../../web3/BigDecimal';
+import type { BigDecimal } from '../web3/BigDecimal';
 
 const MIN_FACTOR = 0.996;
 const MAX_FACTOR = 1.004;

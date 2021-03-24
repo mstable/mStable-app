@@ -22,7 +22,7 @@ import { MassetState } from '../../../../context/DataProvider/types';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { MassetPage } from '../../MassetPage';
 import { useEstimatedMintOutput } from '../../../../hooks/useEstimatedMintOutput';
-import { useMinimumOutput } from '../../../../hooks/useMinimumOutput';
+import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'mint';

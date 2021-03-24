@@ -23,7 +23,7 @@ import { Arrow } from '../../../core/Arrow';
 import { ErrorMessage } from '../../../core/ErrorMessage';
 import { ExchangeRate } from '../../../core/ExchangeRate';
 import { TransactionInfo } from '../../../core/TransactionInfo';
-import { useMinimumOutput } from '../../../../hooks/useMinimumOutput';
+import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { useEstimatedRedeemTokenOutput } from '../../../../hooks/useEstimatedRedeemTokenOutput';
 import { BigDecimalInputValues } from '../../../../hooks/useBigDecimalInputs';
 

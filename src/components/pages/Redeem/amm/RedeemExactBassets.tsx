@@ -26,7 +26,7 @@ import {
   useMultiAssetExchangeState,
 } from '../../../forms/MultiAssetExchange';
 import { useEstimatedRedeemOutput } from '../../../../hooks/useEstimatedRedeemOutput';
-import { useMaximumOutput } from '../../../../hooks/useMaximumOutput';
+import { useMaximumOutput } from '../../../../hooks/useOutput';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'redeem';

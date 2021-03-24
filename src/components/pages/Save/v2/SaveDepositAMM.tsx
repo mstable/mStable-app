@@ -32,7 +32,7 @@ import {
   getBounds,
   getEstimatedOutput,
   getPenaltyMessage,
-} from '../../amm/utils';
+} from '../../../../utils/ammUtils';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'SaveDepositAMM';
