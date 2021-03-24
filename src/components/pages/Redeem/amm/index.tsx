@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState, ReactElement } from 'react';
 import Skeleton from 'react-loading-skeleton';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
@@ -7,13 +7,17 @@ import { RedeemExactBassets } from './RedeemExactBassets';
 import { RedeemMasset } from './RedeemMasset';
 import { MassetPage } from '../../MassetPage';
 import { TabSwitch } from '../../../core/Tabs';
-
 enum Tabs {
   Single = 'Single',
   Multiple = 'Multiple',
 }
 
-const getTabs = (massetSymbol: string = 'mAsset') => ({
+const getTabs = (
+  massetSymbol: string = 'mAsset',
+): Record<
+  Tabs,
+  { title: string; subtitle: string; component: ReactElement }
+> => ({
   [Tabs.Single]: {
     title: `${massetSymbol} Amount`,
     subtitle: `Redeem an exact amount of ${massetSymbol} for its underlying collateral`,
