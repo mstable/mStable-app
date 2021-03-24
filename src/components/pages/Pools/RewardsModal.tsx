@@ -43,6 +43,7 @@ export const RewardsModal: FC = () => {
         highlighted
         onClick={() => {
           // TODO
+          // eslint-disable-next-line no-alert
           alert('TODO claim');
         }}
       >

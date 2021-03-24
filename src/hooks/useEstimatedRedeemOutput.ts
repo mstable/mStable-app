@@ -1,19 +1,16 @@
 import type { FeederPool, Masset } from '@mstable/protocol/types/generated';
 import { useThrottleFn } from 'react-use';
-import { sanitizeMassetError } from '../utils/strings';
 
 import type { BigDecimalInputValues } from './useBigDecimalInputs';
+import { sanitizeMassetError } from '../utils/strings';
 import { BigDecimal } from '../web3/BigDecimal';
 
 import { FetchState, useFetchState } from './useFetchState';
-import { useExchangeRateForMassetInputs } from './useMassetExchangeRate';
 
-type RedeemableContract = Masset | FeederPool;
-
-interface RedeemOutput {
-  estimatedOutputAmount: FetchState<BigDecimal>;
-  exchangeRate: FetchState<BigDecimal> | undefined;
-}
+type RedeemableContract = Pick<
+  Masset | FeederPool,
+  'getRedeemExactBassetsOutput'
+>;
 
 /**
  * This hook is designed for use with contracts that support redeemExact
@@ -21,7 +18,7 @@ interface RedeemOutput {
 export const useEstimatedRedeemOutput = (
   contract?: RedeemableContract,
   inputValues?: BigDecimalInputValues,
-): RedeemOutput => {
+): FetchState<BigDecimal> => {
   const [
     estimatedOutputAmount,
     setEstimatedOutputAmount,
@@ -58,11 +55,5 @@ export const useEstimatedRedeemOutput = (
     [contract, inputValues],
   );
 
-  const exchangeRate = useExchangeRateForMassetInputs(
-    contract,
-    estimatedOutputAmount.value,
-    inputValues,
-  );
-
-  return { estimatedOutputAmount, exchangeRate };
+  return estimatedOutputAmount;
 };

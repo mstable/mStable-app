@@ -10,6 +10,7 @@ import {
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { useSimpleInput } from '../../hooks/useSimpleInput';
+import type { FetchState } from '../../hooks/useFetchState';
 
 import { ExchangeRate } from '../core/ExchangeRate';
 
@@ -20,17 +21,13 @@ import { ErrorMessage } from '../core/ErrorMessage';
 
 type Dispatch = [
   BigDecimalInputCallbacks, // input callbacks
-  (outputAmount: {
-    fetching?: boolean;
-    value?: BigDecimal;
-    error?: string;
-  }) => void, // set output amount
+  (outputAmount: FetchState<BigDecimal>) => void, // set output amount
   (slippage?: string) => void, // set slippage
 ];
 
 type State = [
   BigDecimalInputValues, // input values
-  { fetching?: boolean; value?: BigDecimal; error?: string }, // output amount
+  FetchState<BigDecimal>, // output amount
   { simple?: number; formValue?: string }, // slippage
 ];
 

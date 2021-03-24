@@ -1,6 +1,8 @@
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import type { FC, ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
+import { Link } from 'react-router-dom';
 
 import type {
   FeederPoolState,
@@ -11,12 +13,19 @@ import { Button } from '../../core/Button';
 import { PageAction, PageHeader } from '../PageHeader';
 import { Card } from './cards/Card';
 import { OnboardingCard } from './cards/OnboardingCard';
-import { AssetCard } from './cards/AssetCard';
+import { AssetCard, CustomAssetCard } from './cards/AssetCard';
 import { ViewportWidth } from '../../../theme';
 import { useModalComponent } from '../../../hooks/useModalComponent';
 import { RewardsModal } from './RewardsModal';
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { PoolType } from './types';
+
+interface CustomAssetCardProps {
+  isCustomAssetCard: true;
+  key: string;
+  title: string;
+  component: ReactElement;
+}
 
 const DEFAULT_ITEM_COUNT = 3;
 
@@ -110,12 +119,25 @@ const Title: Record<PoolType, string> = {
 
 const sections = [PoolType.User, PoolType.Active, PoolType.Deprecated];
 
+const customEarnCard: CustomAssetCardProps = {
+  isCustomAssetCard: true,
+  key: 'earn',
+  title: 'Earn Pools',
+  // TODO use selected masset earn route
+  // TODO better description
+  component: (
+    <div>
+      Earn pools are available <Link to="/musd/earn">here</Link>
+    </div>
+  ),
+};
+
 const PoolsContent: FC = () => {
   const { feederPools } = useSelectedMassetState() as MassetState;
   const pools = useMemo(
     () =>
       Object.values(feederPools).reduce<{
-        active: FeederPoolState[];
+        active: (FeederPoolState | CustomAssetCardProps)[];
         user: FeederPoolState[];
         deprecated: FeederPoolState[];
       }>(
@@ -128,7 +150,7 @@ const PoolsContent: FC = () => {
         },
         {
           user: [],
-          active: [],
+          active: [customEarnCard],
           deprecated: [],
         },
       ),
@@ -162,9 +184,9 @@ const PoolsContent: FC = () => {
   return (
     <>
       {sections.map(
-        (type, index) =>
+        type =>
           showPoolSection(type) && (
-            <Section key={type + index}>
+            <Section key={type}>
               <Row>
                 <h2>{Title[type]}</h2>
                 {type === PoolType.User && (
@@ -178,13 +200,22 @@ const PoolsContent: FC = () => {
                 <OnboardingCard type={type} />
                 {pools[type]
                   .filter((_, i) => i < numPoolsVisible[type])
-                  .map(({ address, masset, fasset }) => (
-                    <AssetCard
-                      key={address}
-                      poolAddress={address}
-                      deprecated={type === PoolType.Deprecated}
-                    />
-                  ))}
+                  .map(poolOrCard =>
+                    (poolOrCard as CustomAssetCardProps).isCustomAssetCard ? (
+                      <CustomAssetCard
+                        key={(poolOrCard as CustomAssetCardProps).key}
+                        title={poolOrCard.title}
+                      >
+                        {(poolOrCard as CustomAssetCardProps).component}
+                      </CustomAssetCard>
+                    ) : (
+                      <AssetCard
+                        key={(poolOrCard as FeederPoolState).address}
+                        poolAddress={(poolOrCard as FeederPoolState).address}
+                        deprecated={type === PoolType.Deprecated}
+                      />
+                    ),
+                  )}
                 {type === PoolType.User && pools[type]?.length === 0 && (
                   <EmptyCard>
                     <p>No user pools found</p>

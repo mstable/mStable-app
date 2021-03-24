@@ -72,6 +72,7 @@ export interface MassetState {
   feederPools: {
     [address: string]: FeederPoolState;
   };
+  bassetRatios: { [address: string]: BigNumber };
 }
 
 export interface BoostedSavingsVaultAccountState {

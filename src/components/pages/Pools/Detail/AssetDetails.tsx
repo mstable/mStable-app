@@ -2,9 +2,7 @@ import React from 'react';
 import type { FC } from 'react';
 import styled from 'styled-components';
 
-import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
-import type { FeederPoolState } from '../../../../context/DataProvider/types';
-
+import { useSelectedFeederPoolState } from '../FeederPoolProvider';
 import { ViewportWidth } from '../../../../theme';
 import { EtherscanLink } from '../../../core/EtherscanLink';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
@@ -59,15 +57,13 @@ const Container = styled.div`
   }
 `;
 
-export const AssetDetails: FC<{ poolAddress: string }> = ({ poolAddress }) => {
-  const { title, masset, fasset } = useFeederPool(
-    poolAddress,
-  ) as FeederPoolState;
+export const AssetDetails: FC = () => {
+  const { address, title, masset, fasset } = useSelectedFeederPoolState();
   return (
     <Container>
       <h3>Asset Details</h3>
       <div>
-        <EtherscanLink data={poolAddress} type="address">
+        <EtherscanLink data={address} type="address">
           <h3>{title}</h3>
         </EtherscanLink>
         {[masset.token, fasset.token].map(token =>

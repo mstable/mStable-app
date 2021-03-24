@@ -24,6 +24,7 @@ import {
 } from '../../../stats/Metrics';
 import { RechartsContainer } from '../../../stats/RechartsContainer';
 import { periodFormatMapping, toK } from '../../../stats/utils';
+import { useSelectedFeederPoolAddress } from '../FeederPoolProvider';
 
 interface AggregateMetricsQueryResult {
   [timestamp: string]: {
@@ -103,14 +104,14 @@ const useTotalLiquidity = (
 };
 
 const Chart: FC<{
-  poolAddress: string;
   aggregateMetrics: {
     type: string;
     enabled: boolean;
     label: string;
     color: string;
   }[];
-}> = ({ poolAddress, aggregateMetrics }) => {
+}> = ({ aggregateMetrics }) => {
+  const poolAddress = useSelectedFeederPoolAddress();
   const data = useTotalLiquidity(poolAddress);
   const dateFilter = useDateFilter();
   const { metrics } = useMetricsState();
@@ -210,8 +211,7 @@ const Chart: FC<{
   );
 };
 
-export const LiquidityChart: FC<{ poolAddress: string; color?: string }> = ({
-  poolAddress,
+export const LiquidityChart: FC<{ color?: string }> = ({
   color = Color.blue,
 }) => {
   const aggregateMetrics = useMemo(
@@ -232,7 +232,7 @@ export const LiquidityChart: FC<{ poolAddress: string; color?: string }> = ({
       defaultDateRange={DateRange.Week}
       hideControls
     >
-      <Chart poolAddress={poolAddress} aggregateMetrics={aggregateMetrics} />
+      <Chart aggregateMetrics={aggregateMetrics} />
     </Metrics>
   );
 };

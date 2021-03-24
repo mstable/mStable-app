@@ -362,6 +362,9 @@ const transformMassetData = (
           )
         : undefined,
     },
+    bassetRatios: Object.fromEntries(
+      Object.values(bAssets).map(b => [b.address, b.ratio]),
+    ),
     // Initial values
     blacklistedBassets: [],
     overweightBassets: [],

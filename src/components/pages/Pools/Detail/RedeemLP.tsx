@@ -1,15 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
 
-import { FeederPool__factory } from '@mstable/protocol/types/generated';
 import { usePropose } from '../../../../context/TransactionsProvider';
-import {
-  useSigner,
-  useWalletAddress,
-} from '../../../../context/OnboardProvider';
-import {
-  useTokens,
-  useTokenSubscription,
-} from '../../../../context/TokensProvider';
+import { useWalletAddress } from '../../../../context/OnboardProvider';
 import { SendButton } from '../../../forms/SendButton';
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
@@ -20,31 +12,25 @@ import { useEstimatedRedeemTokenOutput } from '../../../../hooks/useEstimatedRed
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
+import {
+  useSelectedFeederPoolContract,
+  useSelectedFeederPoolState,
+} from '../FeederPoolProvider';
 
 const formId = 'RedeemLP';
 
-interface Props {
-  poolAddress: string;
-  tokens: string[];
-}
-
-export const RedeemLP: FC<Props> = ({ poolAddress, tokens }) => {
+export const RedeemLP: FC = () => {
+  const feederPool = useSelectedFeederPoolState();
+  const contract = useSelectedFeederPoolContract();
   const propose = usePropose();
-  const signer = useSigner();
   const walletAddress = useWalletAddress();
-  const token = useTokenSubscription(poolAddress);
-  const outputTokens = useTokens(tokens);
-
-  const [outputAddress, setOutputAddress] = useState<string | undefined>(
-    tokens[0],
+  const outputTokens = useMemo(
+    () => [feederPool.masset.token, feederPool.fasset.token],
+    [feederPool],
   );
 
-  const feederPool = useMemo(
-    () =>
-      poolAddress && signer
-        ? FeederPool__factory.connect(poolAddress, signer)
-        : undefined,
-    [poolAddress, signer],
+  const [outputAddress, setOutputAddress] = useState<string | undefined>(
+    outputTokens[0].address,
   );
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
@@ -60,7 +46,7 @@ export const RedeemLP: FC<Props> = ({ poolAddress, tokens }) => {
   );
 
   const { estimatedOutputAmount, exchangeRate } = useEstimatedRedeemTokenOutput(
-    feederPool,
+    contract,
     inputAmount,
     {
       [outputAddress as string]: {
@@ -84,7 +70,10 @@ export const RedeemLP: FC<Props> = ({ poolAddress, tokens }) => {
     )
       return `Not enough ${outputToken?.symbol} in basket`;
 
-    if (token?.balance.exact && inputAmount.exact.gt(token.balance.exact)) {
+    if (
+      feederPool.token.balance?.exact &&
+      inputAmount.exact.gt(feederPool.token.balance.exact)
+    ) {
       return 'Insufficient balance';
     }
 
@@ -97,20 +86,20 @@ export const RedeemLP: FC<Props> = ({ poolAddress, tokens }) => {
     }
 
     return estimatedOutputAmount?.error;
-  }, [inputAmount, token, estimatedOutputAmount, outputToken]);
+  }, [inputAmount, feederPool.token, estimatedOutputAmount, outputToken]);
 
   return (
     <AssetExchange
-      inputAddressOptions={token ? [token] : []}
+      inputAddressOptions={[feederPool.token]}
       outputAddressOptions={outputTokens}
       error={penaltyBonus?.message}
       exchangeRate={exchangeRate}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={(): void => {
-        setInputFormValue(token?.balance.string);
+        setInputFormValue(feederPool.token.balance?.string);
       }}
       handleSetOutputAddress={setOutputAddress}
-      inputAddress={poolAddress}
+      inputAddress={feederPool.address}
       inputFormValue={inputFormValue}
       outputAddress={outputAddress}
       outputFormValue={estimatedOutputAmount?.value?.string}
@@ -120,12 +109,12 @@ export const RedeemLP: FC<Props> = ({ poolAddress, tokens }) => {
         penaltyBonusAmount={penaltyBonus?.percentage}
         valid={!error}
         handleSend={() => {
-          if (!signer || !walletAddress || !feederPool) return;
+          if (!contract || !walletAddress || !feederPool) return;
           if (!outputAddress || !inputAmount || !minOutputAmount) return;
 
           return propose<Interfaces.FeederPool, 'redeem'>(
             new TransactionManifest(
-              feederPool,
+              contract,
               'redeem',
               [
                 outputAddress,

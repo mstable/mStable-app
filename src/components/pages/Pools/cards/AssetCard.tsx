@@ -79,11 +79,11 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
   // getPoolStats(tokenAddresses);
   const {
     vault: { rewardRate, periodFinish, periodDuration },
-    totalSupply,
+    // totalSupply,
     masset,
     fasset,
     invariantK,
-    price,
+    // price,
   } = useFeederPool(address) as FeederPoolState;
 
   const { block24h } = useBlockNumbers();
@@ -130,7 +130,7 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
     })();
 
     return { liquidity, rewardsPerWeek, volume };
-  }, [fpMetrics.data]);
+  }, [fpMetrics.data, invariantK, periodDuration, periodFinish, rewardRate]);
 
   return (
     <StatsContainer isLarge={isLarge}>
@@ -280,3 +280,15 @@ export const AssetCard: FC<Props> = ({
     <Skeleton height={200} />
   );
 };
+
+export const CustomAssetCard: FC<
+  Omit<Props, 'poolAddress'> & { title: string }
+> = ({ className, deprecated, color, title, children }) => (
+  <Container
+    className={className}
+    gradientColor={!deprecated ? color : undefined}
+    title={title}
+  >
+    {children}
+  </Container>
+);
