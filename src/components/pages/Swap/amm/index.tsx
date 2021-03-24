@@ -319,11 +319,14 @@ const SwapLogic: FC = () => {
 
 export const Swap: FC = () => {
   const massetState = useSelectedMassetState();
+  const massetSymbol = massetState?.token.symbol;
   return (
     <div>
       <PageHeader
         action={PageAction.Swap}
-        subtitle="Swap the underlying collateral of mBTC"
+        subtitle={`Swap the underlying collateral of ${
+          massetSymbol ?? 'mAsset'
+        }`}
       />
       {massetState ? (
         <MassetPage asideVisible>
