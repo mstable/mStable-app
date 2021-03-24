@@ -61,7 +61,8 @@ export const SaveDepositAMM: FC<{
   const saveAddress = savingsContract?.address;
   const saveWrapperAddress = ADDRESSES[massetName]?.SaveWrapper;
   const canDepositWithWrapper = !!(
-    savingsContract?.active && !!saveWrapperAddress
+    // TODO remove mBTC requirement when new SaveWrapper is deployed
+    (savingsContract?.active && !!saveWrapperAddress && massetName === 'mbtc')
   );
 
   const bassets = useMemo(

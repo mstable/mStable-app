@@ -49,17 +49,13 @@ export const SaveDeposit: FC<{
   const saveAddress = savingsContract?.address;
   const saveWrapperAddress = ADDRESSES[massetName]?.SaveWrapper;
   const canDepositWithWrapper = !!(
-    savingsContract?.active && !!saveWrapperAddress
+    // TODO remove mBTC requirement when new SaveWrapper is deployed
+    (savingsContract?.active && !!saveWrapperAddress && massetName === 'mbtc')
   );
 
   const bassets = useMemo(
     () =>
-      canDepositWithWrapper
-        ? Object.keys(massetState?.bAssets ?? {}).filter(
-            // Exclude USDT; reverts with SaveViaMint
-            addr => addr !== '0xdac17f958d2ee523a2206206994597c13d831ec7',
-          )
-        : [],
+      canDepositWithWrapper ? Object.keys(massetState?.bAssets ?? {}) : [],
     [canDepositWithWrapper, massetState?.bAssets],
   );
 
