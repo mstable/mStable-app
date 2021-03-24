@@ -97,6 +97,15 @@ const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
     }) ||
     undefined;
 
+  const inputLabel = useMemo(
+    () =>
+      Object.values(inputValues)
+        .filter(v => v.touched)
+        .map(v => inputTokens.find(t => t.address === v.address)?.symbol)
+        .join(', '),
+    [inputTokens, inputValues],
+  );
+
   const error = useMemo<string | undefined>(() => {
     if (!touched.length) return 'Enter an amount';
 
@@ -117,7 +126,7 @@ const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
   return (
     <ManyToOneAssetExchange
       exchangeRate={exchangeRate}
-      inputLabel={outputOption?.label} // inputLabel}
+      inputLabel={inputLabel}
       outputLabel={outputOption?.symbol}
       outputAddress={outputOption?.address as string}
       setMaxCallbacks={setMaxCallbacks}
