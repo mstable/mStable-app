@@ -8,9 +8,7 @@ import { BigDecimal } from '../web3/BigDecimal';
 import { FetchState, useFetchState } from './useFetchState';
 import { useExchangeRateForMassetInputs } from './useMassetExchangeRate';
 
-type RedeemableContract =
-  | Pick<Masset, 'getRedeemExactBassetsOutput'>
-  | Pick<FeederPool, 'getRedeemExactBassetsOutput'>;
+type RedeemableContract = Masset | FeederPool;
 
 interface RedeemOutput {
   estimatedOutputAmount: FetchState<BigDecimal>;
@@ -61,6 +59,7 @@ export const useEstimatedRedeemOutput = (
   );
 
   const exchangeRate = useExchangeRateForMassetInputs(
+    contract,
     estimatedOutputAmount.value,
     inputValues,
   );

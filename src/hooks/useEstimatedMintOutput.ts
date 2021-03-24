@@ -9,9 +9,7 @@ import type { BigDecimalInputValues } from './useBigDecimalInputs';
 import { FetchState, useFetchState } from './useFetchState';
 import { useExchangeRateForMassetInputs } from './useMassetExchangeRate';
 
-type MintableContract =
-  | Pick<Masset, 'getMintMultiOutput' | 'getMintOutput'>
-  | Pick<FeederPool, 'getMintMultiOutput' | 'getMintOutput'>;
+type MintableContract = Masset | FeederPool;
 
 interface MintOutput {
   estimatedOutputAmount: FetchState<BigDecimal>;
@@ -69,6 +67,7 @@ export const useEstimatedMintOutput = (
   );
 
   const exchangeRate = useExchangeRateForMassetInputs(
+    contract,
     estimatedOutputAmount.value,
     inputValues,
   );
