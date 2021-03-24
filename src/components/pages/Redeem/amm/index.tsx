@@ -7,13 +7,14 @@ import { RedeemExactBassets } from './RedeemExactBassets';
 import { RedeemMasset } from './RedeemMasset';
 import { MassetPage } from '../../MassetPage';
 import { TabSwitch } from '../../../core/Tabs';
+
 enum Tabs {
   Single = 'Single',
   Multiple = 'Multiple',
 }
 
 const getTabs = (
-  massetSymbol: string = 'mAsset',
+  massetSymbol = 'mAsset',
 ): Record<
   Tabs,
   { title: string; subtitle: string; component: ReactElement }
