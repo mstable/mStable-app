@@ -65,11 +65,6 @@ const Container = styled.div<{
   flex-direction: column;
   align-items: center;
   padding: 3rem 0;
-  border-bottom: ${({ theme, accountOpen, messageVisible }) =>
-    messageVisible
-      ? `none`
-      : `1px solid ${accountOpen ? '#222' : theme.color.accent}`};
-  margin-bottom: ${({ messageVisible }) => (messageVisible ? `0` : `2rem`)};
 
   h2 {
     font-size: 2rem;

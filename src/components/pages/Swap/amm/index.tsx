@@ -41,6 +41,8 @@ const Info = styled(TransactionInfo)`
 `;
 
 const Container = styled(AssetSwap)`
+  ${({ theme }) => theme.mixins.card};
+
   > * {
     margin: 0;
   }

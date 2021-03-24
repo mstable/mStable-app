@@ -289,7 +289,7 @@ const transformMassetData = (
     invariantStartTime,
     invariantStartingCap,
     invariantCapFactor,
-    token: { decimals, address },
+    token: { address },
     token,
     basket: {
       bassets: _bassets,

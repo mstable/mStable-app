@@ -31,11 +31,14 @@ const Container = styled.div`
   }
 
   > :last-child {
+    > *:not(:last-child) {
+      margin-right: 0.5rem;
+    }
+
     > * {
       ${({ theme }) => theme.mixins.numeric}
       font-size: 0.875rem;
       margin-bottom: 0.5rem;
-      margin-right: 0.5rem;
       padding: 0.25rem;
 
       > * {
@@ -43,7 +46,7 @@ const Container = styled.div`
       }
 
       @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
-        min-width: 5rem;
+        min-width: 4rem;
         margin-bottom: 0;
       }
     }

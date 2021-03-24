@@ -1,4 +1,4 @@
-import type { Masset } from '@mstable/protocol/types/generated';
+import type { FeederPool, Masset } from '@mstable/protocol/types/generated';
 import type { BigNumber } from 'ethers';
 import { useThrottleFn } from 'react-use';
 
@@ -9,11 +9,13 @@ import type { BigDecimalInputValues } from './useBigDecimalInputs';
 import { FetchState, useFetchState } from './useFetchState';
 import { useExchangeRateForMassetInputs } from './useMassetExchangeRate';
 
-type MintableContract = Pick<Masset, 'getMintMultiOutput' | 'getMintOutput'>;
+type MintableContract =
+  | Pick<Masset, 'getMintMultiOutput' | 'getMintOutput'>
+  | Pick<FeederPool, 'getMintMultiOutput' | 'getMintOutput'>;
 
 interface MintOutput {
   estimatedOutputAmount: FetchState<BigDecimal>;
-  exchangeRate: FetchState<BigDecimal>;
+  exchangeRate: FetchState<BigDecimal> | undefined;
 }
 
 /**

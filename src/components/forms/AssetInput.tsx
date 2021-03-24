@@ -10,6 +10,7 @@ import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg';
 import { ApproveProvider, Mode, useApprove } from './ApproveProvider';
 import type { AddressOption } from '../../types';
 import { ViewportWidth } from '../../theme';
+import { BigDecimal } from '../../web3/BigDecimal';
 
 interface Props {
   disabled?: boolean;
@@ -87,7 +88,7 @@ const InputContainer = styled.div`
   input {
     margin-bottom: 0;
     height: 100%;
-    flex: 1;
+    width: 100%;
   }
 `;
 
@@ -224,7 +225,6 @@ const AssetInputApproveContent: FC<Props> = ({
       addressDisabled={addressDisabled}
       addressOptions={addressOptions}
       amountDisabled={amountDisabled}
-      children={children}
       disabled={disabled}
       error={error}
       formValue={formValue}
@@ -234,7 +234,9 @@ const AssetInputApproveContent: FC<Props> = ({
       handleSetMax={handleSetMax}
       needsApprove={needsApprove}
       spender={spender}
-    />
+    >
+      {children}
+    </AssetInputContent>
   );
 };
 
@@ -254,8 +256,9 @@ export const AssetInput: FC<Props> = ({
   handleApprove,
   addressDisabled,
 }) => {
+  const amount = BigDecimal.parse(formValue ?? '0');
   return spender && address ? (
-    <ApproveProvider address={address} spender={spender}>
+    <ApproveProvider address={address} spender={spender} amount={amount}>
       <AssetInputApproveContent
         address={address}
         spender={spender}
@@ -265,13 +268,14 @@ export const AssetInput: FC<Props> = ({
         handleSetAddress={handleSetAddress}
         disabled={disabled}
         handleSetAmount={handleSetAmount}
-        children={children}
         needsApprove={needsApprove}
         amountDisabled={amountDisabled}
         handleSetMax={handleSetMax}
         handleApprove={handleApprove}
         addressDisabled={addressDisabled}
-      />
+      >
+        {children}
+      </AssetInputApproveContent>
     </ApproveProvider>
   ) : (
     <AssetInputContent
@@ -283,12 +287,13 @@ export const AssetInput: FC<Props> = ({
       handleSetAddress={handleSetAddress}
       disabled={disabled}
       handleSetAmount={handleSetAmount}
-      children={children}
       needsApprove={needsApprove}
       amountDisabled={amountDisabled}
       handleSetMax={handleSetMax}
       handleApprove={handleApprove}
       addressDisabled={addressDisabled}
-    />
+    >
+      {children}
+    </AssetInputContent>
   );
 };

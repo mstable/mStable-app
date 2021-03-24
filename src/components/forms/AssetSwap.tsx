@@ -18,9 +18,11 @@ export const AssetSwap: FC<Props> = ({
   outputAddress,
   outputFormValue,
   children,
+  className,
 }) => {
   return (
     <AssetExchange
+      className={className}
       inputAddressOptions={inputAddressOptions}
       outputAddressOptions={outputAddressOptions}
       inputAddress={inputAddress}

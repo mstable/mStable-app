@@ -20,6 +20,14 @@ import { PoolType } from './types';
 
 const DEFAULT_ITEM_COUNT = 3;
 
+const EmptyCard = styled(Card)`
+  min-height: 6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed ${({ theme }) => theme.color.accent};
+`;
+
 const LoadCard = styled(Card)`
   align-items: center;
   justify-content: center;
@@ -178,9 +186,9 @@ const PoolsContent: FC = () => {
                     />
                   ))}
                 {type === PoolType.User && pools[type]?.length === 0 && (
-                  <Card>
-                    <p>get yer self in a pool sonny</p>
-                  </Card>
+                  <EmptyCard>
+                    <p>No user pools found</p>
+                  </EmptyCard>
                 )}
                 {pools[type].length > numPoolsVisible[type] && (
                   <LoadCard

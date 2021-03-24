@@ -9,7 +9,7 @@ import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
 
 import { ViewportWidth } from '../../../../theme';
-import { TabSwitch } from '../../../core/Tabs';
+import { TabCard } from '../../../core/Tabs';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { AssetCard } from '../cards/AssetCard';
 
@@ -20,7 +20,7 @@ import { VaultRewardsProvider } from '../../Save/v2/RewardsProvider';
 import { AssetDetails } from './AssetDetails';
 import { UserLookup } from './UserLookup';
 import { Deposit } from './Deposit';
-import { Withdraw } from './Withdraw';
+import { Redeem } from './Redeem';
 
 const Divider = styled.div`
   height: 1px;
@@ -71,17 +71,24 @@ const HeaderContainer = styled.div`
   }
 `;
 
-const TabContainer = styled.div`
-  width: 100%;
-  margin-top: 1rem;
+// Pull out & make generic for message reuse
+const Clippy = styled.div`
+  border: 1px solid ${({ theme }) => theme.color.gold};
+  padding: 1rem;
+`;
 
-  > * {
-    width: 100%;
-    margin-bottom: 0.5rem;
+const Aside = styled.div`
+  padding: 0 1rem;
+`;
+
+const Exchange = styled.div`
+  display: flex;
+
+  > div:first-child {
+    flex-basis: calc(60% - 0.5rem);
   }
-
-  @media (min-width: ${ViewportWidth.m}) {
-    width: 50%;
+  > div:last-child {
+    flex-basis: calc(40% - 0.5rem);
   }
 `;
 
@@ -105,24 +112,23 @@ const PoolDetailContent: FC<{ poolAddress: string }> = ({ poolAddress }) => {
       Deposit: {
         title: 'Deposit',
         component: (
-          <TabContainer>
-            <Deposit
-              poolAddress={poolAddress}
-              tokens={[masset.address, fasset.address]}
-            />
-          </TabContainer>
+          <Deposit
+            poolAddress={poolAddress}
+            tokens={[masset.address, fasset.address]}
+          />
         ),
       },
       Withdraw: {
-        title: 'Withdraw or Exit',
+        title: 'Redeem',
         component: (
-          <TabContainer>
-            <Withdraw address={poolAddress} label={title} />
-          </TabContainer>
+          <Redeem
+            poolAddress={poolAddress}
+            tokens={[masset.address, fasset.address]}
+          />
         ),
       },
     }),
-    [masset.address, fasset.address, poolAddress, title],
+    [masset.address, fasset.address, poolAddress],
   );
 
   const [activeTab, setActiveTab] = useState<string>('Deposit');
@@ -139,7 +145,12 @@ const PoolDetailContent: FC<{ poolAddress: string }> = ({ poolAddress }) => {
       <UserLookup />
       <RewardsOverview poolAddress={poolAddress} />
       <Divider />
-      <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab} />
+      <Exchange>
+        <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
+        <Aside>
+          <Clippy>Hello, world</Clippy>
+        </Aside>
+      </Exchange>
     </Container>
   );
 };

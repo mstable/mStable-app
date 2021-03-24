@@ -1,4 +1,4 @@
-import type { Masset } from '@mstable/protocol/types/generated';
+import type { FeederPool, Masset } from '@mstable/protocol/types/generated';
 import { useMemo } from 'react';
 import { useThrottleFn } from 'react-use';
 import { sanitizeMassetError } from '../utils/strings';
@@ -7,7 +7,9 @@ import type { BigDecimalInputValues } from './useBigDecimalInputs';
 import { BigDecimal } from '../web3/BigDecimal';
 import { FetchState, useFetchState } from './useFetchState';
 
-type RedeemableContract = Pick<Masset, 'getRedeemOutput'>;
+type RedeemableContract =
+  | Pick<Masset, 'getRedeemOutput'>
+  | Pick<FeederPool, 'getRedeemOutput'>;
 
 interface RedeemOutput {
   estimatedOutputAmount: FetchState<BigDecimal>;

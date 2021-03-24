@@ -162,6 +162,19 @@ export const mixins = {
   numeric: css`
     font-family: 'DM Mono', monospace !important;
   `,
+  card: css`
+    display: flex;
+    flex-direction: column;
+    border: 1px solid ${({ theme }) => theme.color.accent};
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    @media (min-width: ${ViewportWidth.m}) {
+      flex-basis: calc(65% - 0.5rem);
+      padding: 1.5rem;
+    }
+  `,
 };
 
 export const lightTheme: DefaultTheme = {

@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useMemo } from 'react';
+import styled from 'styled-components';
 
 import { Masset__factory } from '@mstable/protocol/types/generated';
 import { useTokens, useTokensState } from '../../../../context/TokensProvider';
@@ -26,6 +27,10 @@ import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'mint';
+
+const Container = styled(ManyToOneAssetExchange)`
+  ${({ theme }) => theme.mixins.card};
+`;
 
 const MintLogic: FC = () => {
   const propose = usePropose();
@@ -58,6 +63,8 @@ const MintLogic: FC = () => {
     masset,
     inputValues,
   );
+
+  console.log('exchangeRate', exchangeRate);
 
   const inputAmount = useMemo(() => {
     if (!Object.keys(inputValues).length) return;
@@ -137,7 +144,7 @@ const MintLogic: FC = () => {
   const massetPrice = useSelectedMassetPrice();
 
   return (
-    <ManyToOneAssetExchange
+    <Container
       exchangeRate={exchangeRate}
       inputLabel={inputLabel}
       outputLabel={massetState.token.symbol}
@@ -187,7 +194,7 @@ const MintLogic: FC = () => {
           }
         }}
       />
-    </ManyToOneAssetExchange>
+    </Container>
   );
 };
 

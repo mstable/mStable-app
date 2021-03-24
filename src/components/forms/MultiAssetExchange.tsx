@@ -94,6 +94,8 @@ interface Props {
   className?: string;
 }
 
+// TODO: I think the provider logic of MultiAssetExchange could be dropped.
+
 export const ManyToOneAssetExchange: FC<
   Props & {
     outputAddress: string;
@@ -114,7 +116,6 @@ export const ManyToOneAssetExchange: FC<
 }) => {
   const [inputValues, outputAmount, slippage] = useContext(stateCtx);
   const [inputCallbacks, , setSlippage] = useContext(dispatchCtx);
-
   return (
     <Container className={className}>
       {Object.keys(inputValues).map(
@@ -133,13 +134,14 @@ export const ManyToOneAssetExchange: FC<
           ),
       )}
       <Arrow />
-      <ExchangeRate
-        inputLabel={inputLabel}
-        outputLabel={outputLabel}
-        exchangeRate={exchangeRate}
-      />
+      {exchangeRate && (
+        <ExchangeRate
+          inputLabel={inputLabel}
+          outputLabel={outputLabel}
+          exchangeRate={exchangeRate}
+        />
+      )}
       <AssetInput
-        disabled
         amountDisabled
         address={outputAddress}
         addressDisabled
@@ -180,7 +182,6 @@ export const OneToManyAssetExchange: FC<
   return (
     <Container>
       <AssetInput
-        disabled
         address={inputAddress}
         addressDisabled
         formValue={inputAmount.value?.string}
@@ -188,11 +189,13 @@ export const OneToManyAssetExchange: FC<
       />
       <div>
         <Arrow />
-        <ExchangeRate
-          inputLabel={inputLabel}
-          outputLabel={outputLabel}
-          exchangeRate={exchangeRate}
-        />
+        {exchangeRate && (
+          <ExchangeRate
+            inputLabel={inputLabel}
+            outputLabel={outputLabel}
+            exchangeRate={exchangeRate}
+          />
+        )}
       </div>
       {Object.keys(outputValues).map(address => (
         <AssetInput
