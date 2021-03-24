@@ -56,7 +56,7 @@ export const VaultRewardsProvider: FC<{ vault: BoostedSavingsVaultState }> = ({
     const currentTime = getUnixTime(Date.now());
     const newRewards = calculateRewards(vault, currentTime);
     setRewards(newRewards);
-  }, 1000);
+  }, 7500);
 
   return <rewardsCtx.Provider value={rewards}>{children}</rewardsCtx.Provider>;
 };

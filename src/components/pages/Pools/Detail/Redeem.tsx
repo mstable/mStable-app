@@ -1,17 +1,16 @@
-import React, { FC, useMemo, useState } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 import { useToggle } from 'react-use';
 import styled from 'styled-components';
 
-import { useTokens } from '../../../../context/TokensProvider';
 import { UnstyledButton } from '../../../core/Button';
 import { MultiAssetExchangeProvider } from '../../../forms/MultiAssetExchange';
+import {
+  useSelectedFeederPoolAssets,
+  useSelectedFeederPoolState,
+} from '../FeederPoolProvider';
 import { RedeemExact } from './RedeemExact';
 import { RedeemLP } from './RedeemLP';
-
-interface Props {
-  poolAddress: string;
-  tokens: string[];
-}
 
 const RedeemPathBox = styled.div`
   display: flex;
@@ -33,33 +32,22 @@ const RedeemPathBox = styled.div`
   }
 `;
 
-export const Redeem: FC<Props> = ({ poolAddress, tokens }) => {
+export const Redeem: FC = () => {
   const [isRedeemExact, setRedeemExact] = useToggle(true);
 
-  const inputTokens = useTokens(tokens);
-  const inputAssets = useMemo(() => {
-    if (!inputTokens.length) return;
-    return inputTokens
-      ?.map(t => ({
-        [t.address]: {
-          decimals: t.decimals,
-        },
-      }))
-      ?.reduce((a, b) => ({ ...a, ...b }));
-  }, [inputTokens]);
+  const feederPool = useSelectedFeederPoolState();
+  const assets = useSelectedFeederPoolAssets();
 
-  return inputAssets ? (
-    <MultiAssetExchangeProvider assets={inputAssets}>
-      {isRedeemExact ? (
-        <RedeemExact poolAddress={poolAddress} tokens={tokens} />
-      ) : (
-        <RedeemLP poolAddress={poolAddress} tokens={tokens} />
-      )}
+  return (
+    <MultiAssetExchangeProvider assets={assets}>
+      {isRedeemExact ? <RedeemExact /> : <RedeemLP />}
       <RedeemPathBox>
         <UnstyledButton onClick={setRedeemExact}>
-          {`Switch to ${isRedeemExact ? 'mAsset' : 'exact'} redemption`}
+          {`Switch to ${
+            isRedeemExact ? feederPool.token.symbol : 'exact'
+          } amount redemption`}
         </UnstyledButton>
       </RedeemPathBox>
     </MultiAssetExchangeProvider>
-  ) : null;
+  );
 };

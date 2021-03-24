@@ -7,14 +7,8 @@ import { BigDecimal } from '../web3/BigDecimal';
 
 import type { BigDecimalInputValues } from './useBigDecimalInputs';
 import { FetchState, useFetchState } from './useFetchState';
-import { useExchangeRateForMassetInputs } from './useMassetExchangeRate';
 
 type MintableContract = Masset | FeederPool;
-
-interface MintOutput {
-  estimatedOutputAmount: FetchState<BigDecimal>;
-  exchangeRate: FetchState<BigDecimal> | undefined;
-}
 
 /**
  * This hook is designed for use with contracts that support mint & mintMulti
@@ -22,7 +16,7 @@ interface MintOutput {
 export const useEstimatedMintOutput = (
   contract?: MintableContract,
   inputValues?: BigDecimalInputValues,
-): MintOutput => {
+): FetchState<BigDecimal> => {
   const [
     estimatedOutputAmount,
     setEstimatedOutputAmount,
@@ -66,11 +60,5 @@ export const useEstimatedMintOutput = (
     [contract, inputValues],
   );
 
-  const exchangeRate = useExchangeRateForMassetInputs(
-    contract,
-    estimatedOutputAmount.value,
-    inputValues,
-  );
-
-  return { estimatedOutputAmount, exchangeRate };
+  return estimatedOutputAmount;
 };

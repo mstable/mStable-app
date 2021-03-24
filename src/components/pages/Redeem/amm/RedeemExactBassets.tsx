@@ -28,6 +28,7 @@ import {
 import { useEstimatedRedeemOutput } from '../../../../hooks/useEstimatedRedeemOutput';
 import { useMaximumOutput } from '../../../../hooks/useOutput';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
+import { useExchangeRateForMassetInputs } from '../../../../hooks/useMassetExchangeRate';
 
 const formId = 'redeem';
 
@@ -36,7 +37,7 @@ const RedeemExactBassetsLogic: FC = () => {
   const walletAddress = useWalletAddress();
   const signer = useSigner();
   const massetState = useSelectedMassetState() as MassetState;
-  const massetAddress = massetState.address;
+  const { address: massetAddress, bassetRatios } = massetState;
   const massetToken = useTokenSubscription(massetState.address);
   const massetBalance = massetToken?.balance;
 
@@ -50,8 +51,9 @@ const RedeemExactBassetsLogic: FC = () => {
     [massetAddress, signer],
   );
 
-  const { estimatedOutputAmount, exchangeRate } = useEstimatedRedeemOutput(
-    masset,
+  const estimatedOutputAmount = useEstimatedRedeemOutput(masset, bassetAmounts);
+  const exchangeRate = useExchangeRateForMassetInputs(
+    estimatedOutputAmount.value,
     bassetAmounts,
   );
 
@@ -65,21 +67,16 @@ const RedeemExactBassetsLogic: FC = () => {
   );
 
   const inputAmount = useMemo(() => {
-    if (!Object.keys(bassetAmounts).length) return;
-    if (!touched.length) return;
+    if (!Object.keys(bassetAmounts).length || !touched.length) return;
 
-    const totalAmount = Object.values(touched).reduce(
+    return Object.values(touched).reduce(
       (prev, v) =>
         prev.add(
-          (v.amount as BigDecimal).mulRatioTruncate(
-            massetState.bAssets[v.address].ratio,
-          ),
+          (v.amount as BigDecimal).mulRatioTruncate(bassetRatios[v.address]),
         ),
       BigDecimal.ZERO,
     );
-
-    return totalAmount;
-  }, [bassetAmounts, touched, massetState]);
+  }, [bassetAmounts, touched, bassetRatios]);
 
   const { maxOutputAmount, penaltyBonus } = useMaximumOutput(
     slippage?.simple,

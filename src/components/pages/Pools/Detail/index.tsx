@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
 import type { FeederPoolState } from '../../../../context/DataProvider/types';
-import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
 
 import { ViewportWidth } from '../../../../theme';
@@ -16,11 +15,14 @@ import { AssetCard } from '../cards/AssetCard';
 import { assetColorMapping, assetDarkColorMapping } from '../utils';
 import { LiquidityChart } from './LiquidityChart';
 import { RewardsOverview } from './RewardsOverview';
-import { VaultRewardsProvider } from '../../Save/v2/RewardsProvider';
 import { AssetDetails } from './AssetDetails';
 import { UserLookup } from './UserLookup';
 import { Deposit } from './Deposit';
 import { Redeem } from './Redeem';
+import {
+  FeederPoolProvider,
+  useSelectedFeederPoolState,
+} from '../FeederPoolProvider';
 
 const Divider = styled.div`
   height: 1px;
@@ -96,13 +98,8 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const PoolDetailContent: FC<{ poolAddress: string }> = ({ poolAddress }) => {
-  const { title, fasset, masset } = useFeederPool(
-    poolAddress,
-  ) as FeederPoolState;
-  useTokenSubscription(poolAddress);
-  useTokenSubscription(fasset.address);
-  useTokenSubscription(masset.address);
+const PoolDetailContent: FC = () => {
+  const { address, title } = useSelectedFeederPoolState() as FeederPoolState;
 
   const color = assetColorMapping[title];
   const darkColor = assetDarkColorMapping[title];
@@ -111,24 +108,14 @@ const PoolDetailContent: FC<{ poolAddress: string }> = ({ poolAddress }) => {
     () => ({
       Deposit: {
         title: 'Deposit',
-        component: (
-          <Deposit
-            poolAddress={poolAddress}
-            tokens={[masset.address, fasset.address]}
-          />
-        ),
+        component: <Deposit />,
       },
       Withdraw: {
         title: 'Redeem',
-        component: (
-          <Redeem
-            poolAddress={poolAddress}
-            tokens={[masset.address, fasset.address]}
-          />
-        ),
+        component: <Redeem />,
       },
     }),
-    [masset.address, fasset.address, poolAddress],
+    [],
   );
 
   const [activeTab, setActiveTab] = useState<string>('Deposit');
@@ -137,13 +124,13 @@ const PoolDetailContent: FC<{ poolAddress: string }> = ({ poolAddress }) => {
     <Container>
       <PageHeader action={PageAction.Pools} subtitle={title} />
       <HeaderContainer>
-        <HeaderCard poolAddress={poolAddress} isLarge color={color} />
-        <LiquidityChart poolAddress={poolAddress} color={darkColor} />
+        <HeaderCard poolAddress={address} isLarge color={color} />
+        <LiquidityChart color={darkColor} />
       </HeaderContainer>
-      <AssetDetails poolAddress={poolAddress} />
+      <AssetDetails />
       <Divider />
       <UserLookup />
-      <RewardsOverview poolAddress={poolAddress} />
+      <RewardsOverview />
       <Divider />
       <Exchange>
         <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
@@ -162,9 +149,9 @@ export const PoolDetail: FC = () => {
   }>();
   const feederPool = useFeederPool(poolAddress);
   return feederPool ? (
-    <VaultRewardsProvider vault={feederPool.vault}>
-      <PoolDetailContent poolAddress={poolAddress} />
-    </VaultRewardsProvider>
+    <FeederPoolProvider poolAddress={poolAddress}>
+      <PoolDetailContent />
+    </FeederPoolProvider>
   ) : (
     <Skeleton height={300} />
   );

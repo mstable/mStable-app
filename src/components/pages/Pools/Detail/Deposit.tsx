@@ -1,15 +1,7 @@
 import React, { FC, useEffect, useMemo } from 'react';
 
-import { FeederPool__factory } from '@mstable/protocol/types/generated';
 import { usePropose } from '../../../../context/TransactionsProvider';
-import {
-  useSigner,
-  useWalletAddress,
-} from '../../../../context/OnboardProvider';
-import {
-  useTokens,
-  useTokenSubscription,
-} from '../../../../context/TokensProvider';
+import { useWalletAddress } from '../../../../context/OnboardProvider';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { SendButton } from '../../../forms/SendButton';
 import { AddressOption, Interfaces } from '../../../../types';
@@ -22,39 +14,34 @@ import {
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { useEstimatedMintOutput } from '../../../../hooks/useEstimatedMintOutput';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
-
-interface Props {
-  poolAddress: string;
-  tokens: string[];
-}
+import { useExchangeRateForFPInputs } from '../../../../hooks/useMassetExchangeRate';
+import {
+  useSelectedFeederPoolAssets,
+  useSelectedFeederPoolContract,
+  useSelectedFeederPoolState,
+} from '../FeederPoolProvider';
 
 const formId = 'DepositLP';
 
-const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
+const DepositLogic: FC = () => {
+  const feederPool = useSelectedFeederPoolState();
+  const contract = useSelectedFeederPoolContract();
   const propose = usePropose();
-  const signer = useSigner();
   const walletAddress = useWalletAddress();
-  const token = useTokenSubscription(poolAddress);
-  const inputTokens = useTokens(tokens);
-
-  const feederPool = useMemo(
-    () =>
-      poolAddress && signer
-        ? FeederPool__factory.connect(poolAddress, signer)
-        : undefined,
-    [poolAddress, signer],
+  const inputTokens = useMemo(
+    () => [feederPool.masset.token, feederPool.fasset.token],
+    [feederPool],
   );
 
   const [inputValues, , slippage] = useMultiAssetExchangeState();
   const [inputCallbacks, setOutputAmount] = useMultiAssetExchangeDispatch();
-  const { estimatedOutputAmount, exchangeRate } = useEstimatedMintOutput(
-    feederPool,
+
+  const estimatedOutputAmount = useEstimatedMintOutput(contract, inputValues);
+  const exchangeRate = useExchangeRateForFPInputs(
+    feederPool.address,
+    estimatedOutputAmount.value,
     inputValues,
   );
-
-  useEffect(() => {
-    setOutputAmount(estimatedOutputAmount);
-  }, [estimatedOutputAmount, setOutputAmount]);
 
   const touched = useMemo(
     () => Object.values(inputValues).filter(v => v.touched),
@@ -62,19 +49,17 @@ const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
   );
 
   const inputAmount = useMemo(() => {
-    if (!Object.keys(inputValues).length) return;
-    if (!touched.length) return;
+    if (!Object.keys(inputValues).length || !touched.length) return;
 
-    const totalAmount = touched
+    return touched
       .map(v => v.amount)
-      .reduce((a, b) => (b ? a?.add(b) : a));
-    return totalAmount;
+      .reduce((a, b) => (a as BigDecimal).add(b as BigDecimal));
   }, [inputValues, touched]);
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippage?.simple,
     inputAmount,
-    estimatedOutputAmount?.value,
+    estimatedOutputAmount.value,
   );
 
   const setMaxCallbacks = useMemo(
@@ -90,20 +75,19 @@ const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
     [inputTokens, inputCallbacks],
   );
 
-  const outputOption: AddressOption | undefined =
-    (token && {
-      ...token,
-      address: token.address,
-    }) ||
-    undefined;
+  const outputOption = feederPool.token as AddressOption;
 
   const inputLabel = useMemo(
     () =>
-      Object.values(inputValues)
-        .filter(v => v.touched)
-        .map(v => inputTokens.find(t => t.address === v.address)?.symbol)
+      touched
+        .map(
+          v =>
+            (inputTokens.find(t => t.address === v.address) as {
+              symbol: string;
+            }).symbol,
+        )
         .join(', '),
-    [inputTokens, inputValues],
+    [inputTokens, touched],
   );
 
   const error = useMemo<string | undefined>(() => {
@@ -111,7 +95,7 @@ const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
 
     const addressesApprovalNeeded = inputTokens.filter(t =>
       inputValues[t.address].amount?.exact.gt(
-        t.allowances[poolAddress]?.exact ?? 0,
+        t.allowances[feederPool.address]?.exact ?? 0,
       ),
     );
 
@@ -120,17 +104,27 @@ const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
         .map(t => t.symbol)
         .join(', ')} needed`;
 
-    return estimatedOutputAmount?.error;
-  }, [estimatedOutputAmount, inputTokens, inputValues, poolAddress, touched]);
+    return estimatedOutputAmount.error;
+  }, [
+    estimatedOutputAmount,
+    inputTokens,
+    inputValues,
+    feederPool.address,
+    touched,
+  ]);
+
+  useEffect(() => {
+    setOutputAmount(estimatedOutputAmount);
+  }, [estimatedOutputAmount, setOutputAmount]);
 
   return (
     <ManyToOneAssetExchange
       exchangeRate={exchangeRate}
       inputLabel={inputLabel}
-      outputLabel={outputOption?.symbol}
-      outputAddress={outputOption?.address as string}
+      outputLabel={outputOption.symbol}
+      outputAddress={outputOption.address}
       setMaxCallbacks={setMaxCallbacks}
-      spender={poolAddress}
+      spender={feederPool.address}
       minOutputAmount={minOutputAmount}
       error={penaltyBonus?.message}
     >
@@ -139,14 +133,14 @@ const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
         penaltyBonusAmount={penaltyBonus?.percentage}
         valid={!error}
         handleSend={() => {
-          if (!signer || !walletAddress || !minOutputAmount) return;
+          if (!contract || !walletAddress || !minOutputAmount) return;
 
           // TODO use SaveWrapper to deposit straight to vault
           if (touched.length === 1) {
             const [{ address, amount }] = touched;
             return propose<Interfaces.FeederPool, 'mint'>(
               new TransactionManifest(
-                FeederPool__factory.connect(poolAddress, signer),
+                contract,
                 'mint',
                 [
                   address,
@@ -165,7 +159,7 @@ const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
 
           return propose<Interfaces.FeederPool, 'mintMulti'>(
             new TransactionManifest(
-              FeederPool__factory.connect(poolAddress, signer),
+              contract,
               'mintMulti',
               [addresses, amounts, minOutputAmount.exact, walletAddress],
               { past: 'Deposited', present: 'Depositing' },
@@ -178,22 +172,12 @@ const DepositLogic: FC<Props> = ({ poolAddress, tokens }) => {
   );
 };
 
-export const Deposit: FC<Props> = ({ poolAddress, tokens }) => {
-  const inputTokens = useTokens(tokens);
-  const inputAssets = useMemo(() => {
-    if (!inputTokens.length) return;
-    return inputTokens
-      ?.map(t => ({
-        [t.address]: {
-          decimals: t.decimals,
-        },
-      }))
-      ?.reduce((a, b) => ({ ...a, ...b }));
-  }, [inputTokens]);
+export const Deposit: FC = () => {
+  const assets = useSelectedFeederPoolAssets();
 
-  return inputAssets ? (
-    <MultiAssetExchangeProvider assets={inputAssets}>
-      <DepositLogic poolAddress={poolAddress} tokens={tokens} />
+  return (
+    <MultiAssetExchangeProvider assets={assets}>
+      <DepositLogic />
     </MultiAssetExchangeProvider>
-  ) : null;
+  );
 };

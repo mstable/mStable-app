@@ -1,15 +1,11 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+
 import { ViewportWidth } from '../../../../theme';
 import { Button } from '../../../core/Button';
-import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
 import { useRewards } from '../../Save/v2/RewardsProvider';
-import { FeederPoolState } from '../../../../context/DataProvider/types';
 import { CountUp } from '../../../core/CountUp';
-
-interface Props {
-  poolAddress: string;
-}
+import { useSelectedFeederPoolState } from '../FeederPoolProvider';
 
 const Card = styled.div`
   display: flex;
@@ -104,10 +100,8 @@ const Container = styled.div`
 `;
 
 // TODO wrap this so that we can supply a feeder pool or earn pool or whatever
-export const RewardsOverview: FC<Props> = ({ poolAddress }) => {
-  const { token, totalSupply, vault, title } = useFeederPool(
-    poolAddress,
-  ) as FeederPoolState;
+export const RewardsOverview: FC = () => {
+  const { token, totalSupply, vault, title } = useSelectedFeederPoolState();
 
   const poolTotal = totalSupply.simple;
   const userAmount = token.balance?.simple ?? 0;
@@ -135,6 +129,7 @@ export const RewardsOverview: FC<Props> = ({ poolAddress }) => {
           <Button
             onClick={() => {
               // TODO
+              // eslint-disable-next-line no-alert
               alert('TODO add liquidity');
             }}
           >
@@ -167,6 +162,7 @@ export const RewardsOverview: FC<Props> = ({ poolAddress }) => {
                 <Button
                   onClick={() => {
                     // TODO
+                    // eslint-disable-next-line no-alert
                     alert('TODO claim');
                   }}
                 >

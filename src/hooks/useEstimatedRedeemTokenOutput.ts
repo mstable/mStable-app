@@ -7,9 +7,7 @@ import type { BigDecimalInputValues } from './useBigDecimalInputs';
 import { BigDecimal } from '../web3/BigDecimal';
 import { FetchState, useFetchState } from './useFetchState';
 
-type RedeemableContract =
-  | Pick<Masset, 'getRedeemOutput'>
-  | Pick<FeederPool, 'getRedeemOutput'>;
+type RedeemableContract = Pick<Masset | FeederPool, 'getRedeemOutput'>;
 
 interface RedeemOutput {
   estimatedOutputAmount: FetchState<BigDecimal>;
@@ -68,9 +66,13 @@ export const useEstimatedRedeemTokenOutput = (
   const exchangeRate = useMemo<FetchState<BigDecimal>>(() => {
     if (!inputAmount) return {};
 
-    if (!estimatedOutputAmount) return { fetching: true };
+    if (!estimatedOutputAmount.value) return { fetching: true };
 
-    const value = estimatedOutputAmount.value?.divPrecisely(inputAmount);
+    if (!estimatedOutputAmount.value.exact.gt(0)) {
+      return { error: 'Output amount must be greater than zero' };
+    }
+
+    const value = estimatedOutputAmount.value.divPrecisely(inputAmount);
     return { value };
   }, [estimatedOutputAmount, inputAmount]);
 

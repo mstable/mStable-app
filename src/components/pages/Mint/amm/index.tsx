@@ -25,6 +25,7 @@ import { MassetPage } from '../../MassetPage';
 import { useEstimatedMintOutput } from '../../../../hooks/useEstimatedMintOutput';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
+import { useExchangeRateForMassetInputs } from '../../../../hooks/useMassetExchangeRate';
 
 const formId = 'mint';
 
@@ -39,7 +40,7 @@ const MintLogic: FC = () => {
   const tokenState = useTokensState();
 
   const massetState = useSelectedMassetState() as MassetState;
-  const massetAddress = massetState.address;
+  const { address: massetAddress, bassetRatios } = massetState;
 
   const [inputValues, outputAmount, slippage] = useMultiAssetExchangeState();
   const [inputCallbacks, setOutputAmount] = useMultiAssetExchangeDispatch();
@@ -59,27 +60,23 @@ const MintLogic: FC = () => {
     [inputValues],
   );
 
-  const { estimatedOutputAmount, exchangeRate } = useEstimatedMintOutput(
-    masset,
+  const estimatedOutputAmount = useEstimatedMintOutput(masset, inputValues);
+  const exchangeRate = useExchangeRateForMassetInputs(
+    estimatedOutputAmount.value,
     inputValues,
   );
 
-  console.log('exchangeRate', exchangeRate);
-
   const inputAmount = useMemo(() => {
-    if (!Object.keys(inputValues).length) return;
-    if (!touched.length) return;
+    if (!Object.keys(inputValues).length || !touched.length) return;
 
     return Object.values(touched).reduce(
       (prev, v) =>
         prev.add(
-          (v.amount as BigDecimal).mulRatioTruncate(
-            massetState.bAssets[v.address].ratio,
-          ),
+          (v.amount as BigDecimal).mulRatioTruncate(bassetRatios[v.address]),
         ),
       BigDecimal.ZERO,
     );
-  }, [inputValues, touched, massetState]);
+  }, [inputValues, touched, bassetRatios]);
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippage?.simple,

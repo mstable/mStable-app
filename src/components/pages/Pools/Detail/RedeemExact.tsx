@@ -1,15 +1,8 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
-import { FeederPool__factory } from '@mstable/protocol/types/generated';
 import { usePropose } from '../../../../context/TransactionsProvider';
-import {
-  useSigner,
-  useWalletAddress,
-} from '../../../../context/OnboardProvider';
-import {
-  useTokens,
-  useTokenSubscription,
-} from '../../../../context/TokensProvider';
+import { useWalletAddress } from '../../../../context/OnboardProvider';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { SendButton } from '../../../forms/SendButton';
 import { AddressOption, Interfaces } from '../../../../types';
@@ -21,39 +14,35 @@ import {
 import { BigDecimal } from '../../../../web3/BigDecimal';
 import { useEstimatedRedeemOutput } from '../../../../hooks/useEstimatedRedeemOutput';
 import { useMaximumOutput } from '../../../../hooks/useOutput';
+import { useExchangeRateForFPInputs } from '../../../../hooks/useMassetExchangeRate';
+import {
+  useSelectedFeederPoolContract,
+  useSelectedFeederPoolState,
+} from '../FeederPoolProvider';
 
 const formId = 'RedeemExactLP';
 
-interface Props {
-  poolAddress: string;
-  tokens: string[];
-}
-
-export const RedeemExact: FC<Props> = ({ poolAddress, tokens }) => {
+export const RedeemExact: FC = () => {
+  const feederPool = useSelectedFeederPoolState();
+  const contract = useSelectedFeederPoolContract();
   const propose = usePropose();
-  const signer = useSigner();
   const walletAddress = useWalletAddress();
-  const token = useTokenSubscription(poolAddress);
-  const outputTokens = useTokens(tokens);
-
-  const feederPool = useMemo(
-    () =>
-      poolAddress && signer
-        ? FeederPool__factory.connect(poolAddress, signer)
-        : undefined,
-    [poolAddress, signer],
+  const outputTokens = useMemo(
+    () => [feederPool.masset.token, feederPool.fasset.token],
+    [feederPool],
   );
 
   const [outputValues, , slippage] = useMultiAssetExchangeState();
   const [, setOutputAmount] = useMultiAssetExchangeDispatch();
-  const { estimatedOutputAmount, exchangeRate } = useEstimatedRedeemOutput(
-    feederPool,
+  const estimatedOutputAmount = useEstimatedRedeemOutput(
+    contract,
     outputValues,
   );
-
-  useEffect(() => {
-    setOutputAmount(estimatedOutputAmount);
-  }, [estimatedOutputAmount, setOutputAmount]);
+  const exchangeRate = useExchangeRateForFPInputs(
+    feederPool.address,
+    estimatedOutputAmount.value,
+    outputValues,
+  );
 
   const touched = useMemo(
     () => Object.values(outputValues).filter(v => v.touched),
@@ -61,32 +50,30 @@ export const RedeemExact: FC<Props> = ({ poolAddress, tokens }) => {
   );
 
   const inputAmount = useMemo(() => {
-    if (!Object.keys(outputValues).length) return;
-    if (!touched.length) return;
+    if (!Object.keys(outputValues).length || !touched.length) return;
 
-    const totalAmount = touched
+    return touched
       .map(v => v.amount)
-      .reduce((a, b) => (b ? a?.add(b) : a));
-    return totalAmount;
+      .reduce((a, b) => (a as BigDecimal).add(b as BigDecimal));
   }, [outputValues, touched]);
 
   const { maxOutputAmount, penaltyBonus } = useMaximumOutput(
     slippage?.simple,
     inputAmount,
-    estimatedOutputAmount?.value,
+    estimatedOutputAmount.value,
   );
 
-  const outputOption: AddressOption | undefined =
-    (token && {
-      ...token,
-      address: token.address,
-    }) ||
-    undefined;
+  const outputOption = feederPool.token as AddressOption;
 
   const outputLabel = useMemo(
     () =>
       touched
-        .map(v => outputTokens.find(t => t.address === v.address)?.symbol)
+        .map(
+          v =>
+            (outputTokens.find(t => t.address === v.address) as {
+              symbol: string;
+            }).symbol,
+        )
         .join(', '),
     [touched, outputTokens],
   );
@@ -94,12 +81,18 @@ export const RedeemExact: FC<Props> = ({ poolAddress, tokens }) => {
   const error = useMemo<string | undefined>(() => {
     if (!touched.length) return 'Enter an amount';
 
-    if (estimatedOutputAmount?.value?.exact.gt(token?.balance.exact ?? 0)) {
+    if (
+      estimatedOutputAmount.value?.exact.gt(feederPool.token.balance.exact ?? 0)
+    ) {
       return 'Insufficient balance';
     }
 
-    return estimatedOutputAmount?.error;
-  }, [estimatedOutputAmount, token, touched]);
+    return estimatedOutputAmount.error;
+  }, [estimatedOutputAmount, feederPool.token.balance, touched]);
+
+  useEffect(() => {
+    setOutputAmount(estimatedOutputAmount);
+  }, [estimatedOutputAmount, setOutputAmount]);
 
   return (
     <OneToManyAssetExchange
@@ -115,14 +108,14 @@ export const RedeemExact: FC<Props> = ({ poolAddress, tokens }) => {
         penaltyBonusAmount={penaltyBonus?.percentage}
         valid={!error}
         handleSend={() => {
-          if (!signer || !walletAddress || !maxOutputAmount) return;
+          if (!contract || !walletAddress || !maxOutputAmount) return;
 
           const addresses = touched.map(v => v.address);
           const amounts = touched.map(v => (v.amount as BigDecimal).exact);
 
           return propose<Interfaces.FeederPool, 'redeemExactBassets'>(
             new TransactionManifest(
-              FeederPool__factory.connect(poolAddress, signer),
+              contract,
               'redeemExactBassets',
               [addresses, amounts, maxOutputAmount.exact, walletAddress],
               { past: 'Redeemed', present: 'Redeeming' },
