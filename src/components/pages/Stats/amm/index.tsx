@@ -23,7 +23,11 @@ const TotalSupply: FC = () => {
     <div>
       <H3>Total supply</H3>
       {totalSupply ? (
-        <CountUp suffix=" mBTC" end={totalSupply.simpleRounded} decimals={2} />
+        <CountUp
+          suffix={` ${massetState?.token.symbol}`}
+          end={totalSupply.simpleRounded}
+          decimals={2}
+        />
       ) : (
         <ThemedSkeleton height={50} />
       )}
@@ -42,7 +46,11 @@ const TotalSavings: FC = () => {
     <div>
       <H3>Total savings</H3>
       {value ? (
-        <CountUp suffix=" mBTC" end={value} decimals={2} />
+        <CountUp
+          suffix={` ${massetState?.token.symbol}`}
+          end={value}
+          decimals={2}
+        />
       ) : (
         <div>No data available yet</div>
       )}
