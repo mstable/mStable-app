@@ -121,7 +121,6 @@ const links = [
   { title: 'mStable', href: 'https://mstable.org' },
   { title: 'Docs', href: 'https://docs.mstable.org' },
   { title: 'Code', href: 'https://github.com/mstable' },
-  { title: 'FAQ', href: '/faq' },
   { title: 'Governance', href: 'https://governance.mstable.org' },
 ];
 

@@ -17,7 +17,6 @@ import { Earn } from './components/pages/Earn';
 import { Save } from './components/pages/Save';
 import { Redeem } from './components/pages/Redeem';
 import { NotFound } from './components/pages/NotFound';
-import { FAQ } from './components/pages/FAQ';
 import { Stats } from './components/pages/Stats';
 import { PoolPage } from './components/pages/Earn/Pool';
 import { AdminPage } from './components/pages/Earn/Admin';
@@ -56,7 +55,6 @@ const Routes: FC = () => {
         path="/:massetName/earn/:slugOrAddress/:userAddress"
         component={PoolPage}
       />
-      <Route exact path="/faq" component={FAQ} />
       <Route exact path="/:massetName/stats" component={Stats} />
       <Route exact path="/:massetName/mint" component={Mint} />
       <Route exact path="/:massetName/redeem" component={Redeem} />
