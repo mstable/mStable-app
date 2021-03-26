@@ -1,9 +1,10 @@
 import React, { FC, useMemo, useState } from 'react';
-import { useThrottleFn } from 'react-use';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-import { Masset__factory } from '@mstable/protocol/types/generated';
-import type { Masset } from '@mstable/protocol/types/generated/Masset';
+import {
+  FeederPool__factory,
+  Masset__factory,
+} from '@mstable/protocol/types/generated';
 
 import {
   useSigner,
@@ -15,26 +16,20 @@ import { usePropose } from '../../../../context/TransactionsProvider';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import { BigDecimal } from '../../../../web3/BigDecimal';
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 
 import { AssetSwap } from '../../../forms/AssetSwap';
 import { SendButton } from '../../../forms/SendButton';
 import { PageAction, PageHeader } from '../../PageHeader';
-import { sanitizeMassetError } from '../../../../utils/strings';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { MassetPage } from '../../MassetPage';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
+import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
+import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
 
 const formId = 'swap';
-
-interface SwapOutput {
-  value?: BigDecimal;
-  fetching?: boolean;
-  error?: string;
-}
 
 const Info = styled(TransactionInfo)`
   margin-top: 0.5rem;
@@ -53,13 +48,11 @@ const Container = styled(AssetSwap)`
 
 const SwapLogic: FC = () => {
   const massetState = useSelectedMassetState() as MassetState;
-  const { address: massetAddress, feeRate, bAssets } = massetState;
+  const { address: massetAddress, bAssets, fAssets, feederPools } = massetState;
 
   const signer = useSigner();
   const walletAddress = useWalletAddress();
   const propose = usePropose();
-
-  const [swapOutput, setSwapOutput] = useState<SwapOutput>({});
 
   const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
     min: 0.01,
@@ -81,16 +74,9 @@ const SwapLogic: FC = () => {
     assetsByBalance?.[1]?.address,
   );
 
-  const outputToken = useTokenSubscription(outputAddress);
-  const outputDecimals = outputToken?.decimals;
   const inputToken = useTokenSubscription(inputAddress);
+  const outputToken = useTokenSubscription(outputAddress);
   const inputDecimals = inputToken?.decimals;
-  const inputRatio = inputAddress
-    ? massetState.bAssets[inputAddress].ratio
-    : undefined;
-  const outputRatio = outputAddress
-    ? massetState.bAssets[outputAddress].ratio
-    : undefined;
 
   const [inputAmount, inputFormValue, setInputAmount] = useBigDecimalInput(
     '0',
@@ -99,97 +85,52 @@ const SwapLogic: FC = () => {
     },
   );
 
-  const addressOptions = useMemo(
+  const currentFeederAddress = Object.keys(feederPools).find(
+    address =>
+      feederPools[address].fasset.address === inputAddress ||
+      feederPools[address].fasset.address === outputAddress,
+  );
+
+  const bassetOptions = useMemo(
     () => Object.keys(bAssets).map(address => ({ address })),
     [bAssets],
   );
+
+  const fassetOptions = useMemo(
+    () =>
+      Object.keys(feederPools).map(address => ({
+        address: feederPools[address].fasset.address,
+      })),
+    [feederPools],
+  );
+
+  const addressOptions = [
+    { address: massetAddress },
+    ...bassetOptions,
+    ...fassetOptions,
+  ];
 
   const masset = useMemo(
     () => (signer ? Masset__factory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
-  // Get the swap output with a throttle so it's not called too often
-  useThrottleFn(
-    (
-      _masset?: Masset,
-      _inputAddress?: string,
-      _inputAmount?: BigDecimal,
-      _outputAddress?: string,
-      _outputDecimals?: number,
-    ) => {
-      if (_masset) {
-        if (
-          _inputAddress &&
-          _inputAmount &&
-          _outputAddress &&
-          _outputDecimals &&
-          !!_inputAmount.simple
-        ) {
-          setSwapOutput({ fetching: true });
-          _masset
-            .getSwapOutput(_inputAddress, _outputAddress, _inputAmount.exact)
-            .then(_swapOutput => {
-              setSwapOutput({
-                value: new BigDecimal(_swapOutput, _outputDecimals),
-              });
-            })
-            .catch(_error => {
-              setSwapOutput({
-                error: sanitizeMassetError(_error),
-              });
-            });
-        } else {
-          setSwapOutput({});
-        }
-      }
-    },
-    1000,
-    [masset, inputAddress, inputAmount, outputAddress, outputDecimals],
+  const fasset = useMemo(
+    () =>
+      signer && currentFeederAddress
+        ? FeederPool__factory.connect(currentFeederAddress, signer)
+        : undefined,
+    [currentFeederAddress, signer],
   );
 
-  // Calculate:
-  // - exchange rate
-  // - fee rate
-  // - swap fee
-  const amounts = useMemo(() => {
-    const scaledInputAmount =
-      inputRatio && inputAmount && inputAmount.exact.gt(0)
-        ? inputAmount.mulRatioTruncate(inputRatio).setDecimals(18)
-        : undefined;
-    const scaledOutputAmount =
-      outputRatio && swapOutput.value && swapOutput.value.exact.gt(0)
-        ? swapOutput.value.mulRatioTruncate(outputRatio).setDecimals(18)
-        : undefined;
-
-    const exchangeRate =
-      scaledInputAmount && scaledOutputAmount
-        ? { value: scaledOutputAmount.divPrecisely(scaledInputAmount) }
-        : { fetching: swapOutput.fetching };
-
-    const feeRateSimple = feeRate
-      ? parseInt(feeRate.toString(), 10) / 1e18
-      : undefined;
-
-    const outputSimple = swapOutput.value?.simple;
-
-    const swapFee =
-      outputSimple && feeRateSimple
-        ? outputSimple / (1 - feeRateSimple) - outputSimple
-        : undefined;
-
-    return {
-      exchangeRate,
-      swapFee: BigDecimal.maybeParse(swapFee?.toFixed(18)),
-    };
-  }, [
+  const {
+    estimatedOutputAmount: swapOutput,
+    exchangeRate,
     feeRate,
-    inputAmount,
-    swapOutput.fetching,
-    swapOutput.value,
-    inputRatio,
-    outputRatio,
-  ]);
+  } = useEstimatedOutput(
+    { ...inputToken, amount: inputAmount } as BigDecimalInputValue,
+    { ...outputToken } as BigDecimalInputValue,
+  );
 
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount';
@@ -236,10 +177,24 @@ const SwapLogic: FC = () => {
 
   return (
     <Container
-      inputAddressOptions={addressOptions}
-      outputAddressOptions={addressOptions}
+      inputAddressOptions={(() => {
+        if (!currentFeederAddress) return addressOptions;
+        const fAssetAddress = fAssets[currentFeederAddress].address;
+        if (outputAddress === fAssetAddress) {
+          return [{ address: massetAddress }, ...bassetOptions];
+        }
+        return addressOptions;
+      })()}
+      outputAddressOptions={(() => {
+        if (!currentFeederAddress) return addressOptions;
+        const fAssetAddress = fAssets[currentFeederAddress].address;
+        if (inputAddress === fAssetAddress) {
+          return [{ address: massetAddress }, ...bassetOptions];
+        }
+        return addressOptions;
+      })()}
       error={penaltyBonus?.message}
-      exchangeRate={amounts.exchangeRate}
+      exchangeRate={exchangeRate}
       handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputAmount}
       handleSetInputMax={(): void => {
@@ -250,6 +205,7 @@ const SwapLogic: FC = () => {
       inputFormValue={inputFormValue}
       outputAddress={outputAddress ?? addressOptions[0].address}
       outputFormValue={swapOutput.value?.string}
+      isFetching={swapOutput?.fetching}
     >
       <SendButton
         valid={!error && !!swapOutput.value}
@@ -265,26 +221,87 @@ const SwapLogic: FC = () => {
             inputAddress &&
             outputAddress
           ) {
-            propose<Interfaces.Masset, 'swap'>(
-              new TransactionManifest(
-                masset,
-                'swap',
-                [
-                  inputAddress,
-                  outputAddress,
-                  inputAmount.exact,
-                  minOutputAmount.exact,
-                  walletAddress,
-                ],
-                { present: 'Swapping', past: 'Swapped' },
-                formId,
-              ),
-            );
+            const isMassetMint =
+              bAssets[inputAddress]?.address && outputAddress === massetAddress;
+
+            const isMassetRedeem =
+              bAssets[outputAddress]?.address && inputAddress === massetAddress;
+
+            const isBassetSwap =
+              [inputAddress, outputAddress].filter(
+                address => bAssets[address]?.address,
+              ).length === 2;
+
+            const isFassetSwap = !!Object.keys(fAssets)
+              .filter(address => fAssets[address].address !== massetAddress)
+              .find(
+                address =>
+                  fAssets[address].address === inputAddress ||
+                  fAssets[address].address === outputAddress,
+              );
+
+            // mAsset mint
+            if (isMassetMint) {
+              return propose<Interfaces.Masset, 'mint'>(
+                new TransactionManifest(
+                  masset,
+                  'mint',
+                  [
+                    inputAddress,
+                    inputAmount.exact,
+                    minOutputAmount.exact,
+                    walletAddress,
+                  ],
+                  { past: 'Minted', present: 'Minting' },
+                  formId,
+                ),
+              );
+            }
+
+            // mAsset redeem
+            if (isMassetRedeem) {
+              return propose<Interfaces.Masset, 'redeem'>(
+                new TransactionManifest(
+                  masset,
+                  'redeem',
+                  [
+                    outputAddress,
+                    inputAmount.exact,
+                    minOutputAmount.exact,
+                    walletAddress,
+                  ],
+                  { past: 'Redeemed', present: 'Redeeming' },
+                  formId,
+                ),
+              );
+            }
+
+            // bAsset or fAsset swap
+            if (isBassetSwap || isFassetSwap) {
+              const contract = isFassetSwap ? fasset : masset;
+              if (!contract) return;
+
+              return propose<Interfaces.Masset | Interfaces.FeederPool, 'swap'>(
+                new TransactionManifest(
+                  contract,
+                  'swap',
+                  [
+                    inputAddress,
+                    outputAddress,
+                    inputAmount.exact,
+                    minOutputAmount.exact,
+                    walletAddress,
+                  ],
+                  { present: 'Swapping', past: 'Swapped' },
+                  formId,
+                ),
+              );
+            }
           }
         }}
       />
       <Info
-        feeAmount={amounts.swapFee}
+        feeAmount={feeRate?.value}
         minOutputAmount={minOutputAmount}
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}
