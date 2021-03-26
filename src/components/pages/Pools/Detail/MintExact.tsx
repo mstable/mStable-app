@@ -7,7 +7,6 @@ import { SendButton } from '../../../forms/SendButton';
 import { AddressOption, Interfaces } from '../../../../types';
 import {
   ManyToOneAssetExchange,
-  MultiAssetExchangeProvider,
   useMultiAssetExchangeDispatch,
   useMultiAssetExchangeState,
 } from '../../../forms/MultiAssetExchange';
@@ -16,14 +15,13 @@ import { useEstimatedMintOutput } from '../../../../hooks/useEstimatedMintOutput
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { useExchangeRateForFPInputs } from '../../../../hooks/useMassetExchangeRate';
 import {
-  useSelectedFeederPoolAssets,
   useSelectedFeederPoolContract,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
 
 const formId = 'DepositLP';
 
-const DepositLogic: FC = () => {
+export const MintExact: FC = () => {
   const feederPool = useSelectedFeederPoolState();
   const contract = useSelectedFeederPoolContract();
   const propose = usePropose();
@@ -169,15 +167,5 @@ const DepositLogic: FC = () => {
         }}
       />
     </ManyToOneAssetExchange>
-  );
-};
-
-export const Deposit: FC = () => {
-  const assets = useSelectedFeederPoolAssets();
-
-  return (
-    <MultiAssetExchangeProvider assets={assets}>
-      <DepositLogic />
-    </MultiAssetExchangeProvider>
   );
 };

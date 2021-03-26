@@ -21,7 +21,7 @@ import { useTokens } from '../../../../context/TokensProvider';
 
 const formId = 'RedeemLP';
 
-export const RedeemLP: FC = () => {
+export const MintLP: FC = () => {
   const { bAssets } = useSelectedMassetState() ?? {};
   const feederPool = useSelectedFeederPoolState();
   const contract = useSelectedFeederPoolContract();
@@ -32,13 +32,13 @@ export const RedeemLP: FC = () => {
     Object.keys(bAssets ?? {}).map(address => address),
   );
 
-  const outputTokens = useMemo(
+  const inputTokens = useMemo(
     () => [feederPool.masset.token, feederPool.fasset.token, ...mpAssetsTokens],
     [feederPool, mpAssetsTokens],
   );
 
-  const [outputAddress, setOutputAddress] = useState<string | undefined>(
-    outputTokens[0].address,
+  const [inputAddress, setInputAddress] = useState<string | undefined>(
+    inputTokens[0].address,
   );
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
@@ -48,18 +48,30 @@ export const RedeemLP: FC = () => {
     max: 99.99,
   });
 
-  const { token: inputToken } = feederPool;
+  const { token: outputToken } = feederPool;
 
-  const outputToken = useMemo(
-    () => outputTokens.find(t => t.address === outputAddress),
-    [outputAddress, outputTokens],
+  const inputToken = useMemo(
+    () => inputTokens.find(t => t.address === inputAddress),
+    [inputAddress, inputTokens],
+  );
+
+  const approve = useMemo(
+    () =>
+      (inputAddress && {
+        spender: feederPool.address,
+        address: inputAddress,
+        amount: inputAmount,
+      }) ||
+      undefined,
+    [inputAddress, inputAmount, feederPool],
   );
 
   const { estimatedOutputAmount, exchangeRate } = useEstimatedOutput(
-    { ...inputToken, amount: inputAmount } as BigDecimalInputValue,
     {
-      ...outputTokens.find(t => t.address === outputAddress),
+      ...inputTokens.find(t => t.address === inputAddress),
+      amount: inputAmount,
     } as BigDecimalInputValue,
+    { ...outputToken } as BigDecimalInputValue,
   );
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
@@ -97,39 +109,40 @@ export const RedeemLP: FC = () => {
 
   return (
     <AssetExchange
-      inputAddressOptions={[inputToken]}
-      outputAddressOptions={outputTokens}
+      inputAddressOptions={inputTokens}
+      outputAddressOptions={[outputToken]}
       error={penaltyBonus?.message}
       exchangeRate={exchangeRate}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={(): void => {
-        setInputFormValue(inputToken.balance?.string);
+        setInputFormValue(inputToken?.balance?.string);
       }}
-      handleSetOutputAddress={setOutputAddress}
-      inputAddress={feederPool.address}
+      handleSetInputAddress={setInputAddress}
+      inputAddress={inputAddress}
       inputFormValue={inputFormValue}
-      outputAddress={outputAddress}
+      outputAddress={outputToken.address}
       outputFormValue={estimatedOutputAmount?.value?.string}
     >
       <SendButton
-        title={error ?? 'Redeem'}
+        title={error ?? 'Mint'}
+        approve={approve}
         penaltyBonusAmount={penaltyBonus?.percentage}
         valid={!error}
         handleSend={() => {
           if (!contract || !walletAddress || !feederPool) return;
-          if (!outputAddress || !inputAmount || !minOutputAmount) return;
+          if (!inputAddress || !inputAmount || !minOutputAmount) return;
 
-          return propose<Interfaces.FeederPool, 'redeem'>(
+          return propose<Interfaces.FeederPool, 'mint'>(
             new TransactionManifest(
               contract,
-              'redeem',
+              'mint',
               [
-                outputAddress,
+                inputAddress,
                 inputAmount.exact,
                 minOutputAmount.exact,
                 walletAddress,
               ],
-              { past: 'Redeemed', present: 'Redeeming' },
+              { past: 'Minted', present: 'Minting' },
               formId,
             ),
           );
