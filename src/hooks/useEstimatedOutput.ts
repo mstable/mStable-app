@@ -57,7 +57,9 @@ export const useEstimatedOutput = (
     .find(
       address =>
         fAssets[address].address === inputValue?.address ||
-        fAssets[address].address === outputValue?.address,
+        fAssets[address].address === outputValue?.address ||
+        address === inputValue?.address ||
+        address === outputValue?.address,
     );
 
   const contract: Contract | undefined = useMemo(() => {
@@ -92,6 +94,9 @@ export const useEstimatedOutput = (
       const { address: inputAddress, amount: inputAmount } = _inputValue;
       const { address: outputAddress, decimals: outputDecimals } = _outputValue;
 
+      const isLPRedeem = _contract.address === inputAddress;
+      const isLPMint = _contract.address === outputAddress;
+
       const isMassetMint =
         bAssets[inputAddress]?.address && outputAddress === massetAddress;
 
@@ -100,7 +105,7 @@ export const useEstimatedOutput = (
           address => bAssets[address]?.address,
         ).length === 2;
 
-      if (isMassetMint && inputAmount?.simple) {
+      if ((isMassetMint || isLPMint) && inputAmount?.simple) {
         setAction(Action.MINT);
         // TODO: Fix flicker
         // setEstimatedOutputAmount.fetching();
@@ -111,7 +116,11 @@ export const useEstimatedOutput = (
           });
       }
 
-      if ((_isFeederPool || isBassetSwap) && inputAmount?.simple) {
+      if (
+        (_isFeederPool || isBassetSwap) &&
+        !isLPRedeem &&
+        inputAmount?.simple
+      ) {
         setAction(Action.SWAP);
         // setEstimatedOutputAmount.fetching();
         return _contract
@@ -126,7 +135,7 @@ export const useEstimatedOutput = (
           });
       }
 
-      if (!_isFeederPool && inputAmount?.simple) {
+      if ((!_isFeederPool || isLPRedeem) && inputAmount?.simple) {
         setAction(Action.REDEEM);
         // setEstimatedOutputAmount.fetching();
         return _contract

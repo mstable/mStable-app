@@ -17,7 +17,7 @@ import { LiquidityChart } from './LiquidityChart';
 import { RewardsOverview } from './RewardsOverview';
 import { AssetDetails } from './AssetDetails';
 import { UserLookup } from './UserLookup';
-import { Deposit } from './Deposit';
+import { Mint } from './Mint';
 import { Redeem } from './Redeem';
 import {
   FeederPoolProvider,
@@ -106,11 +106,11 @@ const PoolDetailContent: FC = () => {
 
   const tabs = useMemo(
     () => ({
-      Deposit: {
-        title: 'Deposit',
-        component: <Deposit />,
+      Mint: {
+        title: 'Mint',
+        component: <Mint />,
       },
-      Withdraw: {
+      Redeem: {
         title: 'Redeem',
         component: <Redeem />,
       },
@@ -118,7 +118,7 @@ const PoolDetailContent: FC = () => {
     [],
   );
 
-  const [activeTab, setActiveTab] = useState<string>('Deposit');
+  const [activeTab, setActiveTab] = useState<string>('Mint');
 
   return (
     <Container>
