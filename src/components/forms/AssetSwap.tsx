@@ -19,6 +19,7 @@ export const AssetSwap: FC<Props> = ({
   outputFormValue,
   children,
   className,
+  isFetching,
 }) => {
   return (
     <AssetExchange
@@ -47,6 +48,7 @@ export const AssetSwap: FC<Props> = ({
       outputAddress={outputAddress}
       outputFormValue={outputFormValue}
       error={error}
+      isFetching={isFetching}
     >
       {children}
     </AssetExchange>

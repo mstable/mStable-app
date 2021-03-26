@@ -41,22 +41,22 @@ const Container = styled.div`
   }
 `;
 
-export const RedeemMasset: FC = () => {
+export const MintMasset: FC = () => {
   const propose = usePropose();
   const walletAddress = useWalletAddress();
   const signer = useSigner();
   const massetState = useSelectedMassetState() as MassetState;
   const { address: massetAddress, bAssets, fAssets, feederPools } = massetState;
 
-  const [outputAddress, handleSetAddress] = useState<string | undefined>(
+  const [inputAddress, handleSetAddress] = useState<string | undefined>(
     Object.keys(bAssets)[0],
   );
   const massetToken = useTokenSubscription(massetAddress);
-  const outputToken = useTokenSubscription(outputAddress);
+  const inputToken = useTokenSubscription(inputAddress);
 
   const [
-    massetAmount,
-    massetFormValue,
+    inputAmount,
+    inputFormValue,
     handleSetMassetFormValue,
   ] = useBigDecimalInput('0', massetState.token.decimals);
 
@@ -69,7 +69,7 @@ export const RedeemMasset: FC = () => {
   );
 
   const currentFeederAddress = Object.keys(feederPools).find(
-    address => feederPools[address].fasset.address === outputAddress,
+    address => feederPools[address].fasset.address === inputAddress,
   );
 
   const feederOptions = Object.keys(feederPools).map(address => ({
@@ -90,8 +90,8 @@ export const RedeemMasset: FC = () => {
   );
 
   const { estimatedOutputAmount, exchangeRate, feeRate } = useEstimatedOutput(
-    { ...massetToken, amount: massetAmount } as BigDecimalInputValue,
-    outputToken as BigDecimalInputValue,
+    { ...inputToken, amount: inputAmount } as BigDecimalInputValue,
+    { ...massetToken } as BigDecimalInputValue,
   );
 
   const addressOptions = useMemo(
@@ -103,40 +103,40 @@ export const RedeemMasset: FC = () => {
   );
 
   const error = useMemo(() => {
-    if (!massetAmount?.simple) return 'Enter an amount';
+    if (!inputAmount?.simple) return 'Enter an amount';
 
-    if (massetAmount) {
+    if (inputAmount) {
       if (
         massetToken?.balance.exact &&
-        massetAmount.exact.gt(massetToken.balance.exact)
+        inputAmount.exact.gt(massetToken.balance.exact)
       ) {
         return 'Insufficient balance';
       }
 
-      if (!outputAddress) {
+      if (!inputAddress) {
         return 'Must select an asset to receive';
       }
 
-      if (massetAmount.exact.eq(0)) {
+      if (inputAmount.exact.eq(0)) {
         return 'Amount must be greater than zero';
       }
     }
 
     return estimatedOutputAmount.error;
-  }, [estimatedOutputAmount.error, massetAmount, massetToken, outputAddress]);
+  }, [estimatedOutputAmount.error, inputAmount, massetToken, inputAddress]);
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippageSimple,
-    massetAmount,
-    estimatedOutputAmount.value,
+    inputAmount,
+    estimatedOutputAmount?.value,
   );
 
   return (
     <Container>
       <AssetInput
-        address={massetAddress}
-        addressDisabled
-        formValue={massetFormValue}
+        address={inputAddress ?? addressOptions[0].address}
+        addressOptions={addressOptions}
+        formValue={inputFormValue}
         handleSetAddress={handleSetAddress}
         handleSetAmount={handleSetMassetFormValue}
         handleSetMax={() => {
@@ -147,18 +147,18 @@ export const RedeemMasset: FC = () => {
         <Arrow />
         {exchangeRate && (
           <ExchangeRate
-            inputToken={massetToken}
-            outputToken={outputToken}
+            inputToken={inputToken}
+            outputToken={massetToken}
             exchangeRate={exchangeRate}
           />
         )}
       </div>
       <AssetInput
-        address={outputAddress ?? addressOptions[0].address}
-        addressOptions={addressOptions}
+        address={massetAddress}
         amountDisabled
         formValue={estimatedOutputAmount.value?.string}
         handleSetAddress={handleSetAddress}
+        addressDisabled
       />
       {penaltyBonus?.message && <ErrorMessage error={penaltyBonus?.message} />}
       <SendButton
@@ -169,13 +169,13 @@ export const RedeemMasset: FC = () => {
           if (
             masset &&
             walletAddress &&
-            massetAmount &&
-            outputAddress &&
+            inputAmount &&
+            inputAddress &&
             minOutputAmount
           ) {
             if (
               Object.keys(fAssets).find(
-                address => fAssets[address].address === outputAddress,
+                address => fAssets[address].address === inputAddress,
               ) &&
               fasset
             ) {
@@ -184,9 +184,9 @@ export const RedeemMasset: FC = () => {
                   fasset,
                   'swap',
                   [
+                    inputAddress,
                     massetAddress,
-                    outputAddress,
-                    massetAmount.exact,
+                    inputAmount.exact,
                     minOutputAmount.exact,
                     walletAddress,
                   ],
@@ -196,17 +196,17 @@ export const RedeemMasset: FC = () => {
               );
             }
 
-            propose<Interfaces.Masset, 'redeem'>(
+            return propose<Interfaces.Masset, 'mint'>(
               new TransactionManifest(
                 masset,
-                'redeem',
+                'mint',
                 [
-                  outputAddress,
-                  massetAmount.exact,
+                  inputAddress,
+                  inputAmount.exact,
                   minOutputAmount.exact,
                   walletAddress,
                 ],
-                { past: 'Redeemed', present: 'Redeeming' },
+                { past: 'Minted', present: 'Minting' },
                 formId,
               ),
             );

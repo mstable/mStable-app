@@ -51,6 +51,7 @@ export interface MassetState {
   address: string;
   allBassetsNormal: boolean;
   bAssets: { [address: string]: BassetState };
+  fAssets: { [address: string]: BassetState };
   removedBassets: { [address: string]: SubscribedToken };
   blacklistedBassets: string[];
   collateralisationRatio?: BigNumber;

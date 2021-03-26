@@ -11,6 +11,7 @@ import { ApproveProvider, Mode, useApprove } from './ApproveProvider';
 import type { AddressOption } from '../../types';
 import { ViewportWidth } from '../../theme';
 import { BigDecimal } from '../../web3/BigDecimal';
+import { ThemedSkeleton } from '../core/ThemedSkeleton';
 
 interface Props {
   disabled?: boolean;
@@ -26,6 +27,7 @@ interface Props {
   needsApprove?: boolean;
   handleApprove?: (mode: Mode) => void;
   spender?: string;
+  isFetching?: boolean;
 }
 
 const Input = styled.div`
@@ -122,6 +124,18 @@ const Container = styled.div<{
   }
 `;
 
+const StyledSkeleton = styled(ThemedSkeleton)`
+  display: flex;
+  flex: 1;
+  height: 100%;
+  border-radius: 0.5rem;
+  width: 100%;
+
+  > * {
+    width: 100%;
+  }
+`;
+
 const AssetInputContent: FC<Props> = ({
   disabled,
   address,
@@ -136,6 +150,7 @@ const AssetInputContent: FC<Props> = ({
   needsApprove,
   handleApprove,
   spender,
+  isFetching,
 }) => {
   const [unlockState, setUnlockState] = useState(false);
 
@@ -161,12 +176,16 @@ const AssetInputContent: FC<Props> = ({
         <>
           <InputContainer>
             <Input>
-              <InputField
-                disabled={amountDisabled}
-                value={formValue}
-                onChange={handleSetAmount}
-                step="any"
-              />
+              {isFetching ? (
+                <StyledSkeleton />
+              ) : (
+                <InputField
+                  disabled={amountDisabled}
+                  value={formValue}
+                  onChange={handleSetAmount}
+                  step="any"
+                />
+              )}
               {handleSetMax && (
                 <MaxButton
                   type="button"
@@ -255,6 +274,7 @@ export const AssetInput: FC<Props> = ({
   handleSetMax,
   handleApprove,
   addressDisabled,
+  isFetching,
 }) => {
   const amount = BigDecimal.parse(formValue ?? '0');
   return spender && address ? (
@@ -273,6 +293,7 @@ export const AssetInput: FC<Props> = ({
         handleSetMax={handleSetMax}
         handleApprove={handleApprove}
         addressDisabled={addressDisabled}
+        isFetching={isFetching}
       >
         {children}
       </AssetInputApproveContent>
@@ -292,6 +313,7 @@ export const AssetInput: FC<Props> = ({
       handleSetMax={handleSetMax}
       handleApprove={handleApprove}
       addressDisabled={addressDisabled}
+      isFetching={isFetching}
     >
       {children}
     </AssetInputContent>

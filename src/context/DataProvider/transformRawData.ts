@@ -300,7 +300,7 @@ const transformMassetData = (
     },
     savingsContractsV1: [savingsContractV1],
     savingsContractsV2: [savingsContractV2],
-    feederPools,
+    feederPools: _feederPools,
   }: NonNullableMasset,
   tokens: Tokens,
 ): MassetState => {
@@ -313,6 +313,15 @@ const transformMassetData = (
     // eslint-disable-next-line no-param-reassign
     redemptionFeeRate = '600000000000000';
   }
+
+  const feederPools = transformFeederPoolsData(_feederPools, tokens);
+  const fAssets = Object.keys(feederPools).length
+    ? Object.keys(feederPools)
+        .map(f => ({
+          [f]: feederPools[f].fasset,
+        }))
+        .reduce((a, b) => ({ ...a, ...b }))
+    : {};
 
   return {
     address,
@@ -339,7 +348,8 @@ const transformMassetData = (
       : undefined,
     feeRate: BigNumber.from(feeRate),
     redemptionFeeRate: BigNumber.from(redemptionFeeRate),
-    feederPools: transformFeederPoolsData(feederPools, tokens),
+    feederPools,
+    fAssets,
     savingsContracts: {
       v1: savingsContractV1
         ? transformSavingsContractV1(
