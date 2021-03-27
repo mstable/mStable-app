@@ -8,13 +8,9 @@ import { EtherscanLink } from '../../../core/EtherscanLink';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const Container = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
   padding: 1rem;
   border: 1px solid ${({ theme }) => theme.color.accent};
   border-radius: 1rem;
-  margin-top: 1rem;
 
   > h3 {
     font-weight: 600;

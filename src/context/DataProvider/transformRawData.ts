@@ -315,13 +315,11 @@ const transformMassetData = (
   }
 
   const feederPools = transformFeederPoolsData(_feederPools, tokens);
-  const fAssets = Object.keys(feederPools).length
-    ? Object.keys(feederPools)
-        .map(f => ({
-          [f]: feederPools[f].fasset,
-        }))
-        .reduce((a, b) => ({ ...a, ...b }))
-    : {};
+  const fAssets = Object.fromEntries(
+    Object.entries(feederPools).map(
+      ([key, { fasset }]) => ([key, fasset])
+    )
+  );
 
   return {
     address,

@@ -1,14 +1,7 @@
 import React, { FC, useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import { useToggle } from 'react-use';
-import {
-  addDays,
-  format,
-  formatDistance,
-  getUnixTime,
-  fromUnixTime,
-  endOfDay,
-} from 'date-fns';
+import { formatDistance, fromUnixTime } from 'date-fns';
 import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
@@ -25,8 +18,7 @@ import { Tooltip } from '../../../core/ReactTooltip';
 import { Widget } from '../../../core/Widget';
 import { CountUp } from '../../../core/CountUp';
 
-import { useRewards, useRewardsTimeTravel } from './RewardsProvider';
-import { ToggleInput } from '../../../forms/ToggleInput';
+import { useRewards } from './SavingsVaultRewardsProvider';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const SkeleWrapper = styled.div`
@@ -42,76 +34,6 @@ const SkeleWrapper = styled.div`
 const PreviewCountUp = styled(CountUp)`
   color: ${({ theme }) => theme.color.green};
 `;
-
-const TimeTravelContainer = styled.div`
-  padding: 0.75rem;
-  background: ${({ theme }) => theme.color.backgroundAccent};
-  border-radius: 0.75rem;
-
-  > :first-child {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    padding-bottom: 0.5rem;
-
-    > :first-child {
-      font-weight: 600;
-      display: flex;
-      gap: 0.5rem;
-      > :last-child {
-        display: inline;
-      }
-    }
-    > :last-child {
-      word-break: keep-all;
-      white-space: nowrap;
-    }
-  }
-
-  input {
-    width: 100%;
-  }
-`;
-
-const RewardsTimeTravel: FC = () => {
-  const [timeTravel, toggleTimeTravel, setTimeTravel] = useRewardsTimeTravel();
-  const rewards = useRewards();
-  return (
-    <TimeTravelContainer>
-      <div>
-        <div>
-          <ToggleInput
-            onClick={toggleTimeTravel}
-            checked={timeTravel}
-            disabled={!rewards}
-          />
-          <Tooltip tip="Simulate your rewards in 6 months time. This assumes that the vault's rewards will be added a constant rate for this time.">
-            Time Travel Rewards
-          </Tooltip>
-        </div>
-        <div>
-          {rewards?.currentTime &&
-            timeTravel &&
-            format(fromUnixTime(rewards.currentTime), 'yyyy-MM-dd')}
-        </div>
-      </div>
-      <input
-        type="range"
-        min={0}
-        step={1}
-        disabled={!timeTravel}
-        max={190}
-        onChange={event => {
-          setTimeTravel(
-            getUnixTime(
-              endOfDay(addDays(Date.now(), parseInt(event.target.value, 10))),
-            ),
-          );
-        }}
-      />
-    </TimeTravelContainer>
-  );
-};
 
 const Line = styled.div`
   background: ${({ theme }) => theme.color.accent};
@@ -299,7 +221,6 @@ export const VaultRewards: FC = () => {
             preview={showSimulated ? previewedBalance : undefined}
             value={metaToken?.balance}
           />
-          <RewardsTimeTravel />
         </Stats>
       </Body>
     </Widget>

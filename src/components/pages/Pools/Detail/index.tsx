@@ -12,9 +12,9 @@ import { TabCard } from '../../../core/Tabs';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { AssetCard } from '../cards/AssetCard';
 
-import { assetColorMapping, assetDarkColorMapping } from '../utils';
+import { assetColorMapping, assetDarkColorMapping } from '../constants';
 import { LiquidityChart } from './LiquidityChart';
-import { RewardsOverview } from './RewardsOverview';
+import { UserPosition } from './UserPosition';
 import { AssetDetails } from './AssetDetails';
 import { UserLookup } from './UserLookup';
 import { Mint } from './Mint';
@@ -23,6 +23,7 @@ import {
   FeederPoolProvider,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
+import { RewardStreamsProvider } from './useRewardStreams';
 
 const Divider = styled.div`
   height: 1px;
@@ -40,32 +41,32 @@ const HeaderCard = styled(AssetCard)`
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
+  margin-bottom: 2rem;
 
   > div {
     flex: 1;
   }
 
   > div:last-child {
-    overflow: hidden;
     display: none;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    > div:last-child {
+      display: block;
+    }
   }
 
   @media (min-width: ${ViewportWidth.l}) {
     justify-content: space-between;
     flex-direction: row;
 
-    > div {
-      flex: 0;
-    }
-
     > div:first-child {
-      flex-basis: calc(65% - 0.5rem);
+      min-width: calc(65% - 2rem);
+      margin-right: 1rem;
     }
 
     > div:last-child {
-      display: inherit;
-      flex-basis: calc(35% - 0.5rem);
-
       > div {
         height: 100%;
       }
@@ -91,6 +92,26 @@ const Exchange = styled.div`
   }
   > div:last-child {
     flex-basis: calc(40% - 0.5rem);
+  }
+`;
+
+const Row = styled.div`
+  > * {
+    margin-bottom: 1rem;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  @media (min-width: ${ViewportWidth.l}) {
+    display: flex;
+    justify-content: space-between;
+    > * {
+      margin-bottom: 0;
+      margin-right: 1rem;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
   }
 `;
 
@@ -127,10 +148,12 @@ const PoolDetailContent: FC = () => {
         <HeaderCard poolAddress={address} isLarge color={color} />
         <LiquidityChart color={darkColor} />
       </HeaderContainer>
-      <AssetDetails />
+      <Row>
+        <AssetDetails />
+        <UserLookup />
+      </Row>
       <Divider />
-      <UserLookup />
-      <RewardsOverview />
+      <UserPosition />
       <Divider />
       <Exchange>
         <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
@@ -150,7 +173,9 @@ export const PoolDetail: FC = () => {
   const feederPool = useFeederPool(poolAddress);
   return feederPool ? (
     <FeederPoolProvider poolAddress={poolAddress}>
-      <PoolDetailContent />
+      <RewardStreamsProvider>
+        <PoolDetailContent />
+      </RewardStreamsProvider>
     </FeederPoolProvider>
   ) : (
     <Skeleton height={300} />
