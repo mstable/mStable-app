@@ -7,6 +7,7 @@ import { getUnixTime } from 'date-fns';
 
 import { useFeederPoolMetricsQuery } from '../../../../graphql/feeders';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { FeederPoolState } from '../../../../context/DataProvider/types';
@@ -83,8 +84,9 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
     masset,
     fasset,
     invariantK,
-    // price,
+    price,
   } = useFeederPool(address) as FeederPoolState;
+  const massetPrice = useSelectedMassetPrice();
 
   const { block24h } = useBlockNumbers();
 
@@ -93,17 +95,11 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
     skip: !block24h,
   });
 
-  // TODO get price
-  const massetPrice = 59450;
-
   const stats = useMemo(() => {
-    // FIXME use totalVaultInMasset; not set on subgraph
-    // const liquidity = masset.totalVault.add(fasset.totalVault);
-
-    // FIXME liquidity should be USD value; simply invariantK * masset price?
-    const liquidity = BigDecimal.parse(
-      ((parseInt(invariantK.toString()) / 1e18) * massetPrice).toFixed(2),
-    );
+    const invKSimple = parseInt(invariantK.toString()) / 1e18;
+    const priceInMassetTerms = (invKSimple * price) / 1e18;
+    const priceInUsdTerms = priceInMassetTerms * (massetPrice ?? 0);
+    const liquidity = BigDecimal.parse(priceInUsdTerms.toFixed(2));
 
     const rewardsPerWeek = new BigDecimal(
       nowUnix < periodFinish
