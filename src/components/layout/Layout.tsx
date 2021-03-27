@@ -253,7 +253,7 @@ export const Layout: FC = ({ children }) => {
   useLayoutEffect(() => {
     let message: BannerMessage | undefined;
 
-    if (massetName === 'musd') {
+    if (massetName === 'musd' && !pathname.includes('pools')) {
       const saveV2Message = MessageHandler.saveV2({
         hasV1Balance: false,
         pathname,
