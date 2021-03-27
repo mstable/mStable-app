@@ -77,6 +77,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   CREAM,
   IMBTCMTA,
   FAST: FAKE,
+  GUSD: FAKE,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -112,6 +113,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   CREAM: CreamSvg as SvgComponent,
   IMBTCMTA: ImbtcmtaSvg as SvgComponent,
   FAST: FakeSvg as SvgComponent,
+  GUSD: FakeSvg as SvgComponent,
 };
 
 const Image = styled.img`

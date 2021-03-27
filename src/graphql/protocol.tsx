@@ -5809,11 +5809,6 @@ export enum Transaction_OrderBy {
   Sender = 'sender'
 }
 
-export type FpMetricsFragment = (
-  Pick<FeederPool, 'price' | 'invariantK' | 'dailyAPY'>
-  & { cumulativeSwapped: MetricFieldsFragment, cumulativeInterestCollected: MetricFieldsFragment, cumulativeInterestDistributed: MetricFieldsFragment, cumulativeFeesPaid: MetricFieldsFragment, cumulativeMinted: MetricFieldsFragment, cumulativeRedeemed: MetricFieldsFragment, totalMints: Pick<Counter, 'value'>, totalRedeemMassets: Pick<Counter, 'value'>, totalRedemptions: Pick<Counter, 'value'>, totalSupply: MetricFieldsFragment, totalSwaps: Pick<Counter, 'value'> }
-);
-
 export type TokenAllFragment = (
   Pick<Token, 'id' | 'address' | 'decimals' | 'symbol'>
   & { totalSupply: MetricFieldsFragment }
@@ -5887,13 +5882,7 @@ export type MassetsQuery = { massets: Array<(
         Pick<Basset, 'id'>
         & { token: TokenAllFragment }
       )> }
-    ), feederPools: Array<(
-      Pick<FeederPool, 'id' | 'swapFeeRate' | 'redemptionFeeRate' | 'governanceFeeRate' | 'dailyAPY' | 'price' | 'invariantK'>
-      & { basket: (
-        Pick<Basket, 'undergoingRecol' | 'failed'>
-        & { bassets: Array<BassetAllFragment> }
-      ), token: TokenAllFragment, fasset: TokenAllFragment, masset: Pick<Masset, 'id'>, vault: BoostedSavingsVaultAllFragment }
-    )>, currentSavingsContract?: Maybe<Pick<SavingsContract, 'id'>>, savingsContractsV1: Array<(
+    ), currentSavingsContract?: Maybe<Pick<SavingsContract, 'id'>>, savingsContractsV1: Array<(
       { totalCredits?: Maybe<MetricFieldsFragment>, creditBalances: Array<Pick<CreditBalance, 'amount'>> }
       & SavingsContractAllFragment
     )>, savingsContractsV2: Array<(
@@ -5901,14 +5890,6 @@ export type MassetsQuery = { massets: Array<(
       & SavingsContractAllFragment
     )> }
   )> };
-
-export type FeederPoolMetricsQueryVariables = {
-  feederPool: Scalars['ID'];
-  block: Block_Height;
-};
-
-
-export type FeederPoolMetricsQuery = { current?: Maybe<FpMetricsFragment>, historic?: Maybe<FpMetricsFragment> };
 
 export type V1SavingsBalanceQueryVariables = {
   id: Scalars['ID'];
@@ -6010,46 +5991,6 @@ export const MetricFieldsFragmentDoc = gql`
   simple
 }
     `;
-export const FpMetricsFragmentDoc = gql`
-    fragment FPMetrics on FeederPool {
-  cumulativeSwapped {
-    ...MetricFields
-  }
-  cumulativeInterestCollected {
-    ...MetricFields
-  }
-  cumulativeInterestDistributed {
-    ...MetricFields
-  }
-  cumulativeFeesPaid {
-    ...MetricFields
-  }
-  cumulativeMinted {
-    ...MetricFields
-  }
-  cumulativeRedeemed {
-    ...MetricFields
-  }
-  totalMints {
-    value
-  }
-  totalRedeemMassets {
-    value
-  }
-  totalRedemptions {
-    value
-  }
-  totalSupply {
-    ...MetricFields
-  }
-  totalSwaps {
-    value
-  }
-  price
-  invariantK
-  dailyAPY
-}
-    ${MetricFieldsFragmentDoc}`;
 export const SavingsContractAllFragmentDoc = gql`
     fragment SavingsContractAll on SavingsContract {
   id
@@ -6160,34 +6101,6 @@ export const MassetsDocument = gql`
         }
       }
     }
-    feederPools {
-      id
-      swapFeeRate
-      redemptionFeeRate
-      governanceFeeRate
-      dailyAPY
-      price
-      invariantK
-      basket {
-        bassets {
-          ...BassetAll
-        }
-        undergoingRecol
-        failed
-      }
-      token {
-        ...TokenAll
-      }
-      fasset {
-        ...TokenAll
-      }
-      masset {
-        id
-      }
-      vault {
-        ...BoostedSavingsVaultAll
-      }
-    }
     currentSavingsContract {
       id
     }
@@ -6213,9 +6126,9 @@ export const MassetsDocument = gql`
 }
     ${TokenAllFragmentDoc}
 ${BassetAllFragmentDoc}
-${BoostedSavingsVaultAllFragmentDoc}
 ${SavingsContractAllFragmentDoc}
-${MetricFieldsFragmentDoc}`;
+${MetricFieldsFragmentDoc}
+${BoostedSavingsVaultAllFragmentDoc}`;
 
 /**
  * __useMassetsQuery__
@@ -6243,43 +6156,6 @@ export function useMassetsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHook
 export type MassetsQueryHookResult = ReturnType<typeof useMassetsQuery>;
 export type MassetsLazyQueryHookResult = ReturnType<typeof useMassetsLazyQuery>;
 export type MassetsQueryResult = ApolloReactCommon.QueryResult<MassetsQuery, MassetsQueryVariables>;
-export const FeederPoolMetricsDocument = gql`
-    query FeederPoolMetrics($feederPool: ID!, $block: Block_height!) @api(name: protocol) {
-  current: feederPool(id: $feederPool) {
-    ...FPMetrics
-  }
-  historic: feederPool(id: $feederPool, block: $block) {
-    ...FPMetrics
-  }
-}
-    ${FpMetricsFragmentDoc}`;
-
-/**
- * __useFeederPoolMetricsQuery__
- *
- * To run a query within a React component, call `useFeederPoolMetricsQuery` and pass it any options that fit your needs.
- * When your component renders, `useFeederPoolMetricsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useFeederPoolMetricsQuery({
- *   variables: {
- *      feederPool: // value for 'feederPool'
- *      block: // value for 'block'
- *   },
- * });
- */
-export function useFeederPoolMetricsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>) {
-        return ApolloReactHooks.useQuery<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>(FeederPoolMetricsDocument, baseOptions);
-      }
-export function useFeederPoolMetricsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>(FeederPoolMetricsDocument, baseOptions);
-        }
-export type FeederPoolMetricsQueryHookResult = ReturnType<typeof useFeederPoolMetricsQuery>;
-export type FeederPoolMetricsLazyQueryHookResult = ReturnType<typeof useFeederPoolMetricsLazyQuery>;
-export type FeederPoolMetricsQueryResult = ApolloReactCommon.QueryResult<FeederPoolMetricsQuery, FeederPoolMetricsQueryVariables>;
 export const V1SavingsBalanceDocument = gql`
     query V1SavingsBalance($id: ID!, $account: String!, $include: Boolean!) @api(name: protocol) {
   savingsContract(id: $id) @include(if: $include) {

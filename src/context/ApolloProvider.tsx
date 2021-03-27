@@ -19,16 +19,15 @@ const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
 
 const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}.v3`;
 
-const ENDPOINTS = {
-  legacy: process.env.REACT_APP_GRAPHQL_ENDPOINT_LEGACY as string,
+export const ENDPOINTS = {
   protocol: process.env.REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL as string,
   ecosystem: process.env.REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM as string,
+  feeders: process.env.REACT_APP_GRAPHQL_ENDPOINT_FEEDERS as string,
   balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
   uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
   blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,
   sushi:
     'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork',
-  mbtc: 'https://api.thegraph.com/subgraphs/name/jameslefrere/mbtc-deployment',
 };
 
 const cache = new InMemoryCache({

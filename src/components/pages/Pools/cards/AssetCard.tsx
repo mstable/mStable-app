@@ -5,7 +5,7 @@ import Skeleton from 'react-loading-skeleton';
 import { BigNumber } from 'ethers';
 import { getUnixTime } from 'date-fns';
 
-import { useFeederPoolMetricsQuery } from '../../../../graphql/protocol';
+import { useFeederPoolMetricsQuery } from '../../../../graphql/feeders';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../../../../context/TokensProvider';

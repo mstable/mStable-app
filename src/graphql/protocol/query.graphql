@@ -26,34 +26,6 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
         }
       }
     }
-    feederPools {
-      id
-      swapFeeRate
-      redemptionFeeRate
-      governanceFeeRate
-      dailyAPY
-      price
-      invariantK
-      basket {
-        bassets {
-          ...BassetAll
-        }
-        undergoingRecol
-        failed
-      }
-      token {
-        ...TokenAll
-      }
-      fasset {
-        ...TokenAll
-      }
-      masset {
-        id
-      }
-      vault {
-        ...BoostedSavingsVaultAll
-      }
-    }
     currentSavingsContract {
       id
     }
@@ -75,15 +47,6 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
         ...BoostedSavingsVaultAll
       }
     }
-  }
-}
-
-query FeederPoolMetrics($feederPool: ID!, $block: Block_height!) @api(name: protocol) {
-  current: feederPool(id: $feederPool) {
-    ...FPMetrics
-  }
-  historic: feederPool(id: $feederPool, block: $block) {
-    ...FPMetrics
   }
 }
 

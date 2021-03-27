@@ -1,9 +1,10 @@
 enum PROJECTS {
-  legacy
   protocol
   ecosystem
+  feeders
   balancer
   uniswap
+  sushi
   blocks
 }
 

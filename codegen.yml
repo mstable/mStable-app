@@ -11,14 +11,6 @@ config:
     ID: string
 
 generates:
-  ./src/graphql/legacy/schema.graphql:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_LEGACY}
-    plugins:
-      - 'schema-ast'
-    config:
-      includeDirectives: true
-
   ./src/graphql/protocol/schema.graphql:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL}
@@ -30,6 +22,14 @@ generates:
   ./src/graphql/ecosystem/schema.graphql:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM}
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
+  ./src/graphql/feeders/schema.graphql:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_FEEDERS}
     plugins:
       - 'schema-ast'
     config:
@@ -67,16 +67,6 @@ generates:
     config:
       includeDirectives: true
 
-  ./src/graphql/legacy.tsx:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_LEGACY}
-    documents: 'src/graphql/legacy/*.graphql'
-    plugins:
-      - 'fragment-matcher'
-      - 'typescript'
-      - 'typescript-operations'
-      - 'typescript-react-apollo'
-
   ./src/graphql/protocol.tsx:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL}
@@ -91,6 +81,16 @@ generates:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM}
     documents: 'src/graphql/ecosystem/*.graphql'
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+
+  ./src/graphql/feeders.tsx:
+    overwrite: true
+    schema: ${REACT_APP_GRAPHQL_ENDPOINT_FEEDERS}
+    documents: 'src/graphql/feeders/*.graphql'
     plugins:
       - 'fragment-matcher'
       - 'typescript'
