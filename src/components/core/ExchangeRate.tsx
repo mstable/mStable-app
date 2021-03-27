@@ -1,18 +1,17 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
+import type { FetchState } from '../../hooks/useFetchState';
 import { AddressOption, SubscribedToken } from '../../types';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { ThemedSkeleton } from './ThemedSkeleton';
-
-export type FetchRate = { value?: BigDecimal; fetching?: boolean };
 
 interface Props {
   inputLabel?: string;
   outputLabel?: string;
   inputToken?: AddressOption | SubscribedToken;
   outputToken?: AddressOption | SubscribedToken;
-  exchangeRate?: FetchRate;
+  exchangeRate: FetchState<BigDecimal>;
 }
 
 const Container = styled.div`
@@ -33,15 +32,13 @@ const Numeric = styled.span`
 `;
 
 export const ExchangeRate: FC<Props> = ({
-  exchangeRate,
+  exchangeRate: { fetching, value },
   inputToken,
   outputToken,
   inputLabel,
   outputLabel,
 }) => {
   const hasInput = inputLabel || inputToken;
-  if (!exchangeRate) return null;
-  const { fetching, value } = exchangeRate;
   return (
     <Container>
       {fetching ? (
