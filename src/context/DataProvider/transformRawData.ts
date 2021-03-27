@@ -14,9 +14,14 @@ import type { Tokens } from '../TokensProvider';
 
 import { BigDecimal } from '../../web3/BigDecimal';
 import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol';
+import { FeederPoolsQueryResult } from '../../graphql/feeders';
 
 type NonNullableMasset = NonNullable<
   NonNullable<MassetsQueryResult['data']>['massets'][number]
+>;
+
+type NonNullableFeederPools = NonNullable<
+  NonNullable<FeederPoolsQueryResult['data']>['feederPools']
 >;
 
 type SavingsContractV1QueryResult = NonNullableMasset['savingsContractsV1'][number];
@@ -239,7 +244,7 @@ const transformTokenData = (
 });
 
 const transformFeederPoolsData = (
-  feederPools: NonNullableMasset['feederPools'],
+  feederPools: NonNullableFeederPools,
   tokens: Tokens,
 ): MassetState['feederPools'] => {
   return Object.fromEntries(
@@ -300,25 +305,18 @@ const transformMassetData = (
     },
     savingsContractsV1: [savingsContractV1],
     savingsContractsV2: [savingsContractV2],
-    feederPools: _feederPools,
   }: NonNullableMasset,
+  allFeederPools: NonNullableFeederPools,
   tokens: Tokens,
 ): MassetState => {
   const bAssets = transformBassets(_bassets, tokens);
 
-  // Temporary fix for incorrect Subgraph data; this no impact on the UI in its
-  // current state, but is worth having for sanity
-  // TODO remove this when the Subgraph is next updated
-  if (address === '0x945facb997494cc2570096c74b5f66a3507330a1') {
-    // eslint-disable-next-line no-param-reassign
-    redemptionFeeRate = '600000000000000';
-  }
-
-  const feederPools = transformFeederPoolsData(_feederPools, tokens);
+  const feederPools = transformFeederPoolsData(
+    allFeederPools.filter(fp => fp.masset.id === address),
+    tokens,
+  );
   const fAssets = Object.fromEntries(
-    Object.entries(feederPools).map(
-      ([key, { fasset }]) => ([key, fasset])
-    )
+    Object.entries(feederPools).map(([key, { fasset }]) => [key, fasset]),
   );
 
   return {
@@ -381,16 +379,18 @@ const transformMassetData = (
   };
 };
 
-export const transformRawData = ([data, tokens]: [
+export const transformRawData = ([massetsData, feedersData, tokens]: [
   MassetsQueryResult['data'],
+  FeederPoolsQueryResult['data'],
   Tokens,
 ]): DataState => {
   return Object.fromEntries(
-    (data?.massets ?? [])
+    (massetsData?.massets ?? [])
       .filter(masset => !!masset.token.symbol)
-      .map(masset => [
-        masset.token.symbol.toLowerCase() as MassetName,
-        transformMassetData(masset, tokens),
-      ]),
+      .map(masset => {
+        const feeders = feedersData?.feederPools ?? [];
+        const massetName = masset.token.symbol.toLowerCase() as MassetName;
+        return [massetName, transformMassetData(masset, feeders, tokens)];
+      }),
   );
 };

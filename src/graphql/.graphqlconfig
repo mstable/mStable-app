@@ -25,6 +25,18 @@
         }
       }
     },
+    "feeders": {
+      "includes": ["./shared/*", "./feeders/*"],
+      "schemaPath": "remote-schema.graphql",
+      "extensions": {
+        "endpoints": {
+          "ropsten": {
+            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-feeders-ropsten",
+            "introspect": false
+          }
+        }
+      }
+    },
     "balancer": {
       "includes": ["./shared/*", "./balancer/*"],
       "extensions": {

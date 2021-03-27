@@ -35,14 +35,8 @@ export const getApolloClient = () => {
   const apolloLink = ApolloLink.from([
     new MultiAPILink({
       endpoints: {
-        legacy: process.env.REACT_APP_GRAPHQL_ENDPOINT_LEGACY as string,
-        protocol: process.env.REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL as string,
         ecosystem: process.env.REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM as string,
-        balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
-        uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
         blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,
-        vault:
-          'https://api.thegraph.com/subgraphs/name/jameslefrere/boosted-savings-vault',
       },
       httpSuffix: '', // By default, this library adds `/graphql` as a suffix
       createHttpLink: () => new HttpLink({ fetch }) as never,
