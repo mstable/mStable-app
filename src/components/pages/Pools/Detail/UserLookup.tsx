@@ -1,46 +1,41 @@
-import React, {
-  ChangeEventHandler,
-  useCallback,
-  useRef,
-  useState,
-} from 'react';
+import React, { ChangeEventHandler, useCallback, useRef } from 'react';
 import type { FC } from 'react';
 import styled from 'styled-components';
+import { isAddress } from 'ethers/lib/utils';
 
-import { ViewportWidth } from '../../../../theme';
 import { InputV2 as Input } from '../../../forms/AmountInputV2';
 import { Button } from '../../../core/Button';
+import {
+  useIsMasquerading,
+  useMasquerade,
+} from '../../../../context/UserProvider';
 
 const Container = styled.div`
-  display: flex;
   flex: 1;
-  align-items: flex-start;
-  flex-direction: column;
   padding: 0.75rem 1rem;
   border: 1px solid ${({ theme }) => theme.color.accent};
   border-radius: 1rem;
 
-  p {
+  > :first-child {
     font-weight: 600;
   }
 
-  > button {
-    width: 100%;
+  > :last-child {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
   }
 
-  @media (min-width: ${ViewportWidth.m}) {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-
-    > button {
-      width: inherit;
-    }
+  input {
+    padding-left: 0;
+    max-width: 12rem;
   }
 `;
 
 export const UserLookup: FC = () => {
   const inputText = useRef<string | undefined>();
+  const masquerade = useMasquerade();
+  const isMasquerading = useIsMasquerading();
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
@@ -49,20 +44,27 @@ export const UserLookup: FC = () => {
     [],
   );
 
-  const [lookupAddress, setLookupAddress] = useState<string | undefined>();
-  const handleLookupClick = useCallback(() => {
-    // TODO useMasquerade
-    setLookupAddress(inputText.current);
-  }, []);
-
   return (
     <Container>
-      <p>{lookupAddress ? 'Viewing balance of:' : 'Lookup user balance:'}</p>
-      <Input
-        placeholder="0x00000000000000000000000000000"
-        onChange={handleChange}
-      />
-      <Button onClick={handleLookupClick}>View</Button>
+      <div>{isMasquerading ? 'Viewing balance of' : 'Lookup user balance'}</div>
+      <div>
+        <Input placeholder="0x000…" onChange={handleChange} />
+        <Button
+          onClick={() => {
+            if (
+              !isMasquerading &&
+              inputText.current &&
+              isAddress(inputText.current)
+            ) {
+              masquerade(inputText.current);
+            } else {
+              masquerade();
+            }
+          }}
+        >
+          {isMasquerading ? 'Reset' : 'View'}
+        </Button>
+      </div>
     </Container>
   );
 };

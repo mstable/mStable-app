@@ -16,7 +16,7 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { SubscribedToken } from '../../../../types';
 import { TokenIcon } from '../../../icons/TokenIcon';
 import { ViewportWidth } from '../../../../theme';
-import { assetColorMapping } from '../utils';
+import { assetColorMapping } from '../constants';
 
 import { Card } from './Card';
 

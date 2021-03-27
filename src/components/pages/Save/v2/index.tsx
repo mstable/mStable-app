@@ -14,7 +14,7 @@ import { MassetModal } from './MassetModal';
 import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { useRewards } from './RewardsProvider';
+import { useRewards } from './SavingsVaultRewardsProvider';
 import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
 import { VaultROI } from './VaultROI';
 import { useSavePrices } from '../../../../hooks/usePrice';

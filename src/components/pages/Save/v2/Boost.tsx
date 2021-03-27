@@ -10,7 +10,7 @@ import { Button } from '../../../core/Button';
 import { Widget } from '../../../core/Widget';
 import { ViewportWidth } from '../../../../theme';
 import { VaultRewards } from './VaultRewards';
-import { RewardsProvider } from './RewardsProvider';
+import { SavingsVaultRewardsProvider } from './SavingsVaultRewardsProvider';
 import { calculateBoost } from './utils';
 import { SaveCalculator } from './SaveCalculator';
 
@@ -115,9 +115,9 @@ const BoostContent: FC = () => {
 
 export const Boost: FC = () => (
   <ShowCalculatorProvider>
-    <RewardsProvider>
+    <SavingsVaultRewardsProvider>
       <BoostContent />
-    </RewardsProvider>
+    </SavingsVaultRewardsProvider>
   </ShowCalculatorProvider>
 );
 
@@ -125,8 +125,8 @@ export const BoostCalculator: FC<{ onBackClick?: () => void }> = ({
   onBackClick,
 }) => (
   <ShowCalculatorProvider>
-    <RewardsProvider>
+    <SavingsVaultRewardsProvider>
       <SaveCalculator onClick={onBackClick} />
-    </RewardsProvider>
+    </SavingsVaultRewardsProvider>
   </ShowCalculatorProvider>
 );

@@ -1,18 +1,28 @@
 import type { FC } from 'react';
 import React, { createContext, useContext, useMemo } from 'react';
-import type { FeederPool } from '@mstable/protocol/types/generated';
-import { FeederPool__factory } from '@mstable/protocol/types/generated';
+import type {
+  BoostedSavingsVault,
+  FeederPool,
+} from '@mstable/protocol/types/generated';
+import {
+  BoostedSavingsVault__factory,
+  FeederPool__factory,
+} from '@mstable/protocol/types/generated';
 
 import type { FeederPoolState } from '../../../context/DataProvider/types';
 import { useFeederPool } from '../../../context/DataProvider/DataProvider';
 import { useSigner } from '../../../context/OnboardProvider';
 import { useTokenSubscription } from '../../../context/TokensProvider';
-import { VaultRewardsProvider } from '../Save/v2/RewardsProvider';
 import { UseBigDecimalInputsArg } from '../../../hooks/useBigDecimalInputs';
+import { PoolVaultRewardsProvider } from '../Save/v2/SavingsVaultRewardsProvider';
 
 interface PoolState {
   poolAddress: string;
-  contract?: FeederPool;
+  vaultAddress: string;
+  contracts?: {
+    feederPool: FeederPool;
+    vault: BoostedSavingsVault;
+  };
 }
 
 const ctx = createContext<PoolState>(null as never);
@@ -27,8 +37,13 @@ export const useSelectedFeederPoolState = (): FeederPoolState => {
 };
 
 export const useSelectedFeederPoolContract = (): FeederPool | undefined => {
-  const { contract } = useContext(ctx);
-  return contract;
+  return useContext(ctx).contracts?.feederPool;
+};
+
+export const useSelectedFeederPoolVaultContract = ():
+  | BoostedSavingsVault
+  | undefined => {
+  return useContext(ctx).contracts?.vault;
 };
 
 export const useSelectedFeederPoolAssets = (): UseBigDecimalInputsArg => {
@@ -51,6 +66,7 @@ export const FeederPoolProvider: FC<{ poolAddress: string }> = ({
 }) => {
   // Should be mounted below a check for this state
   const feederPool = useFeederPool(poolAddress) as FeederPoolState;
+  const vaultAddress = feederPool.vault.address;
 
   // Subscribe at provider level so we can rely on the data being there
   // in child components
@@ -63,18 +79,22 @@ export const FeederPoolProvider: FC<{ poolAddress: string }> = ({
   const poolState = useMemo<PoolState>(
     () => ({
       poolAddress,
-      contract: signer
-        ? FeederPool__factory.connect(poolAddress, signer)
+      vaultAddress,
+      contracts: signer
+        ? {
+            feederPool: FeederPool__factory.connect(poolAddress, signer),
+            vault: BoostedSavingsVault__factory.connect(vaultAddress, signer),
+          }
         : undefined,
     }),
-    [signer, poolAddress],
+    [signer, poolAddress, vaultAddress],
   );
 
   return (
     <ctx.Provider value={poolState}>
-      <VaultRewardsProvider vault={feederPool.vault}>
+      <PoolVaultRewardsProvider poolAddress={poolAddress}>
         {children}
-      </VaultRewardsProvider>
+      </PoolVaultRewardsProvider>
     </ctx.Provider>
   );
 };
