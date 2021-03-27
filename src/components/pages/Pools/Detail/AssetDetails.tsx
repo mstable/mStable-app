@@ -15,7 +15,7 @@ const Container = styled.div`
   > h3 {
     font-weight: 600;
     font-size: 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   > div {
@@ -40,7 +40,6 @@ const Container = styled.div`
 
     > h3 {
       font-size: 1.25rem;
-      margin-bottom: 0;
     }
 
     > div a {
