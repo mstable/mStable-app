@@ -42,9 +42,9 @@ export const Mint: FC = () => {
       {isMintExact ? <MintExact /> : <MintLP />}
       <MintPathBox>
         <UnstyledButton onClick={setMintExact}>
-          {`Switch to ${
-            isMintExact ? feederPool.token.symbol : 'exact'
-          } amount mint`}
+          {`Switch to mint via ${
+            isMintExact ? feederPool.token.symbol : 'multiple'
+          } `}
         </UnstyledButton>
       </MintPathBox>
     </MultiAssetExchangeProvider>

@@ -31,7 +31,6 @@ const Card = styled.div`
   > div {
     display: flex;
     flex-direction: column;
-    margin-bottom: 1rem;
 
     h3 {
       font-size: 1.25rem;
@@ -47,6 +46,11 @@ const PoolShareContainer = styled(Card)`
 
   > div:last-child {
     text-align: right;
+  }
+
+  span {
+    ${({ theme }) => theme.mixins.numeric};
+    font-size: 1.125rem;
   }
 `;
 
@@ -74,7 +78,10 @@ const Container = styled.div`
   margin: 1rem 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+
+  > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
 `;
 
 const PoolShare: FC = () => {
@@ -141,38 +148,52 @@ const RewardValues = styled.div`
   }
 `;
 
+const ClaimContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  button {
+    height: 2.75rem;
+  }
+`;
+
+const GraphAndValues = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 0;
+
+  > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  > * {
+    min-width: 11rem;
+    border-radius: 2rem;
+  }
+`;
+
 const RewardsCard = styled(Card)`
   display: block;
   border: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
-  padding-bottom: 0;
 
   > div {
     > :first-child {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 3rem;
       > div {
         text-align: right;
-        font-size: 1.2rem;
+        font-size: 1.125rem; // 18px
         h4 {
-          font-weight: bold;
+          font-weight: 600;
           margin-bottom: 0.5rem;
+          font-size: 1.25rem;
         }
       }
     }
-    > * {
+    > *:not(:last-child) {
       margin-bottom: 1rem;
-      &:last-child {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 2rem;
-        margin-bottom: 0;
-        gap: 1rem;
-        > * {
-          min-width: 11rem;
-          border-radius: 2rem;
-        }
-      }
     }
   }
 `;
@@ -272,6 +293,8 @@ const Rewards: FC = () => {
   const propose = usePropose();
   const contract = useSelectedFeederPoolVaultContract();
 
+  const isZeroState = (rewardStreams?.amounts.earned.cumulative ?? 0) > 0;
+
   return (
     <RewardsCard>
       <div>
@@ -285,63 +308,70 @@ const Rewards: FC = () => {
             </div>
           </div>
         </div>
-        <ClaimGraph showPreview={isClaiming} />
-        <RewardValues>
-          <RewardValue
-            title="Unclaimed"
-            label="Current earnings"
-            previewLabel="Sent to you now"
-            value={rewardStreams?.amounts.earned.total}
-            previewValue={rewardStreams?.amounts.earned.unlocked}
-            streamType={StreamType.Earned}
-            showPreview={isClaiming}
-          />
-          <RewardValue
-            title="Unlocked"
-            label="From previous claims"
-            previewLabel="Sent to you now"
-            value={rewardStreams?.amounts.unlocked}
-            previewValue={rewardStreams?.amounts.unlocked}
-            streamType={StreamType.Unlocked}
-            showPreview={isClaiming}
-          />
-          <RewardValue
-            title="Locked"
-            label="From previous earnings"
-            previewLabel="Added to a new lockup"
-            value={rewardStreams?.amounts.locked}
-            previewValue={rewardStreams?.amounts.previewLocked}
-            streamType={StreamType.Locked}
-            showPreview={isClaiming}
-          />
-        </RewardValues>
-        <div>
-          <ClaimButton
-            visible={isClaiming}
-            valid={isClaiming}
-            title="Claim Rewards"
-            handleSend={() => {
-              if (contract && rewardStreams) {
-                propose<
-                  Interfaces.BoostedSavingsVault,
-                  'claimRewards(uint256,uint256)'
-                >(
-                  new TransactionManifest(
-                    contract,
-                    'claimRewards(uint256,uint256)',
-                    rewardStreams.claimRange,
-                    { present: 'Claiming rewards', past: 'Claimed rewards' },
-                  ),
-                );
-              }
-            }}
-          />
-          {canClaim && (
-            <Button onClick={toggleIsClaiming}>
-              {isClaiming ? 'Cancel' : 'Preview Claim'}
-            </Button>
-          )}
-        </div>
+        {isZeroState && (
+          <GraphAndValues>
+            <ClaimGraph showPreview={isClaiming} />
+            <RewardValues>
+              <RewardValue
+                title="Unclaimed"
+                label="Current earnings"
+                previewLabel="Sent to you now"
+                value={rewardStreams?.amounts.earned.total}
+                previewValue={rewardStreams?.amounts.earned.unlocked}
+                streamType={StreamType.Earned}
+                showPreview={isClaiming}
+              />
+              <RewardValue
+                title="Unlocked"
+                label="From previous claims"
+                previewLabel="Sent to you now"
+                value={rewardStreams?.amounts.unlocked}
+                previewValue={rewardStreams?.amounts.unlocked}
+                streamType={StreamType.Unlocked}
+                showPreview={isClaiming}
+              />
+              <RewardValue
+                title="Locked"
+                label="From previous earnings"
+                previewLabel="Added to a new lockup"
+                value={rewardStreams?.amounts.locked}
+                previewValue={rewardStreams?.amounts.previewLocked}
+                streamType={StreamType.Locked}
+                showPreview={isClaiming}
+              />
+            </RewardValues>
+            <ClaimContainer>
+              <ClaimButton
+                visible={isClaiming}
+                valid={isClaiming}
+                title="Claim Rewards"
+                handleSend={() => {
+                  if (contract && rewardStreams) {
+                    propose<
+                      Interfaces.BoostedSavingsVault,
+                      'claimRewards(uint256,uint256)'
+                    >(
+                      new TransactionManifest(
+                        contract,
+                        'claimRewards(uint256,uint256)',
+                        rewardStreams.claimRange,
+                        {
+                          present: 'Claiming rewards',
+                          past: 'Claimed rewards',
+                        },
+                      ),
+                    );
+                  }
+                }}
+              />
+              {canClaim && (
+                <Button onClick={toggleIsClaiming}>
+                  {isClaiming ? 'Cancel' : 'Preview Claim'}
+                </Button>
+              )}
+            </ClaimContainer>
+          </GraphAndValues>
+        )}
       </div>
     </RewardsCard>
   );

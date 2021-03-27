@@ -9,14 +9,11 @@ import type {
   MassetState,
 } from '../../../context/DataProvider/types';
 
-import { Button } from '../../core/Button';
 import { PageAction, PageHeader } from '../PageHeader';
 import { Card } from './cards/Card';
 import { OnboardingCard } from './cards/OnboardingCard';
 import { AssetCard, CustomAssetCard } from './cards/AssetCard';
 import { ViewportWidth } from '../../../theme';
-import { useModalComponent } from '../../../hooks/useModalComponent';
-import { RewardsModal } from './RewardsModal';
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { PoolType } from './types';
 
@@ -163,11 +160,6 @@ const PoolsContent: FC = () => {
     [PoolType.Deprecated]: DEFAULT_ITEM_COUNT,
   });
 
-  const [showRewardsModal] = useModalComponent({
-    title: 'Rewards',
-    children: <RewardsModal />,
-  });
-
   const showMorePools = useCallback(
     (type: PoolType) =>
       setNumPoolsVisible({
@@ -189,12 +181,6 @@ const PoolsContent: FC = () => {
             <Section key={type}>
               <Row>
                 <h2>{Title[type]}</h2>
-                {type === PoolType.User && (
-                  <div>
-                    {/* Probably move Rewards to top of screen / leave out */}
-                    <Button onClick={showRewardsModal}>Rewards</Button>
-                  </div>
-                )}
               </Row>
               <Cards>
                 <OnboardingCard type={type} />

@@ -9,6 +9,7 @@ import {
   useIsMasquerading,
   useMasquerade,
 } from '../../../../context/UserProvider';
+import { ViewportWidth } from '../../../../theme';
 
 const Container = styled.div`
   flex: 1;
@@ -16,19 +17,34 @@ const Container = styled.div`
   border: 1px solid ${({ theme }) => theme.color.accent};
   border-radius: 1rem;
 
-  > :first-child {
+  > h3 {
     font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  > :not(:last-child) {
+    margin-bottom: 0.5rem;
   }
 
   > :last-child {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
+    align-items: center;
   }
 
   input {
     padding-left: 0;
-    max-width: 12rem;
+    height: inherit;
+    padding: 0.75rem 0;
+    width: 100%;
+    margin-right: 1.875rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    > h3 {
+      font-size: 1.25rem;
+    }
   }
 `;
 
@@ -46,7 +62,7 @@ export const UserLookup: FC = () => {
 
   return (
     <Container>
-      <div>{isMasquerading ? 'Viewing balance of' : 'Lookup user balance'}</div>
+      <h3>{isMasquerading ? 'Viewing balance of' : 'Lookup user balance'}</h3>
       <div>
         <Input placeholder="0x000…" onChange={handleChange} />
         <Button

@@ -158,7 +158,7 @@ const Interest = styled.div`
   @media (min-width: ${ViewportWidth.m}) {
     align-items: flex-end;
     text-align: right;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     margin-bottom: 0;
   }
 `;

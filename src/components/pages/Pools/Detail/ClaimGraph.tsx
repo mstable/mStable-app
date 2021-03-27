@@ -146,7 +146,7 @@ export const ClaimGraph: FC<{ showPreview?: boolean }> = ({ showPreview }) => {
     };
   }, [rewardStreams, showPreview]);
 
-  return (
+  return rewardStreams ? (
     <ChartContainer key={chart.groups.length}>
       {chart.groups.map(({ data, types, range }) => (
         <ResponsiveContainer maxHeight={200} aspect={3} key={range[0]}>
@@ -270,5 +270,5 @@ export const ClaimGraph: FC<{ showPreview?: boolean }> = ({ showPreview }) => {
         </ResponsiveContainer>
       ))}
     </ChartContainer>
-  );
+  ) : null;
 };
