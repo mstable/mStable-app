@@ -43,7 +43,7 @@ export const useExchangeRateForMassetInputs = (
     );
 
     if (totalAmount) {
-      if (!estimatedOutputAmount.exact.gt(0)) {
+      if (estimatedOutputAmount.exact.eq(0) || totalAmount.exact.eq(0)) {
         return { error: 'Output amount must be greater than zero' };
       }
 
@@ -90,7 +90,7 @@ export const useExchangeRateForFPInputs = (
     );
 
     if (totalAmount) {
-      if (!estimatedOutputAmount.exact.gt(0)) {
+      if (estimatedOutputAmount.exact.eq(0) || totalAmount.exact.eq(0)) {
         return { error: 'Output amount must be greater than zero' };
       }
 
