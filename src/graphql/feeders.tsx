@@ -3465,6 +3465,11 @@ export type FeederPoolsQuery = { feederPools: Array<(
     ), token: TokenAllFragment, fasset: TokenAllFragment, masset: Pick<Token, 'id'>, vault: BoostedSavingsVaultAllFragment }
   )> };
 
+export type FeederTokensQueryVariables = {};
+
+
+export type FeederTokensQuery = { feederPools: Array<{ token: TokenAllFragment, fasset: TokenAllFragment }> };
+
 export type FeederPoolMetricsQueryVariables = {
   feederPool: Scalars['ID'];
   block: Block_Height;
@@ -3649,6 +3654,43 @@ export function useFeederPoolsLazyQuery(baseOptions?: ApolloReactHooks.LazyQuery
 export type FeederPoolsQueryHookResult = ReturnType<typeof useFeederPoolsQuery>;
 export type FeederPoolsLazyQueryHookResult = ReturnType<typeof useFeederPoolsLazyQuery>;
 export type FeederPoolsQueryResult = ApolloReactCommon.QueryResult<FeederPoolsQuery, FeederPoolsQueryVariables>;
+export const FeederTokensDocument = gql`
+    query FeederTokens {
+  feederPools {
+    token {
+      ...TokenAll
+    }
+    fasset {
+      ...TokenAll
+    }
+  }
+}
+    ${TokenAllFragmentDoc}`;
+
+/**
+ * __useFeederTokensQuery__
+ *
+ * To run a query within a React component, call `useFeederTokensQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFeederTokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFeederTokensQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useFeederTokensQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<FeederTokensQuery, FeederTokensQueryVariables>) {
+        return ApolloReactHooks.useQuery<FeederTokensQuery, FeederTokensQueryVariables>(FeederTokensDocument, baseOptions);
+      }
+export function useFeederTokensLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<FeederTokensQuery, FeederTokensQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<FeederTokensQuery, FeederTokensQueryVariables>(FeederTokensDocument, baseOptions);
+        }
+export type FeederTokensQueryHookResult = ReturnType<typeof useFeederTokensQuery>;
+export type FeederTokensLazyQueryHookResult = ReturnType<typeof useFeederTokensLazyQuery>;
+export type FeederTokensQueryResult = ApolloReactCommon.QueryResult<FeederTokensQuery, FeederTokensQueryVariables>;
 export const FeederPoolMetricsDocument = gql`
     query FeederPoolMetrics($feederPool: ID!, $block: Block_height!) @api(name: feeders) {
   current: feederPool(id: $feederPool) {

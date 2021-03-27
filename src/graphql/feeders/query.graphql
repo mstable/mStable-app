@@ -31,6 +31,17 @@ query FeederPools($account: String!, $hasAccount: Boolean!) @api(name: feeders) 
     }
 }
 
+query FeederTokens {
+    feederPools {
+        token {
+            ...TokenAll
+        }
+        fasset {
+            ...TokenAll
+        }
+    }
+}
+
 query FeederPoolMetrics($feederPool: ID!, $block: Block_height!) @api(name: feeders) {
     current: feederPool(id: $feederPool) {
         ...FPMetrics

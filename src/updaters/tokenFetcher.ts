@@ -10,6 +10,12 @@ import {
   AllErc20TokensQueryVariables,
   useAllErc20TokensQuery as useAllTokensEcosystemQuery,
 } from '../graphql/ecosystem';
+import {
+  useFeederTokensQuery,
+  FeederTokensQuery,
+  FeederTokensQueryVariables,
+} from '../graphql/feeders';
+
 import { useTokensDispatch } from '../context/TokensProvider';
 
 const options = {
@@ -31,9 +37,13 @@ export const TokenFetcher = (): null => {
       AllErc20TokensQueryVariables
     >,
   );
+  const feedersQuery = useFeederTokensQuery(
+    options as QueryHookOptions<FeederTokensQuery, FeederTokensQueryVariables>,
+  );
 
-  const protocolFetched = protocolQuery.data?.tokens || [];
-  const ecosystemFetched = ecosystemQuery.data?.tokens || [];
+  const protocolFetched = protocolQuery.data?.tokens ?? [];
+  const ecosystemFetched = ecosystemQuery.data?.tokens ?? [];
+  const feedersFetched = feedersQuery.data?.feederPools ?? [];
 
   // Sub/unsub when the list of tokens changes from what's subscribed.
   useEffect(() => {
@@ -43,8 +53,11 @@ export const TokenFetcher = (): null => {
     if (ecosystemFetched.length > 0) {
       setFetched(ecosystemFetched);
     }
+    if (feedersFetched.length > 0) {
+      setFetched(feedersFetched.flatMap(fp => [fp.token, fp.fasset]));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [protocolFetched.length, ecosystemFetched.length]);
+  }, [protocolFetched.length, ecosystemFetched.length, feedersFetched.length]);
 
   return null;
 };
