@@ -56,7 +56,7 @@ export const useEstimatedMintOutput = (
       }
       setEstimatedOutputAmount.value();
     },
-    1000,
+    2500,
     [contract, inputValues],
   );
 

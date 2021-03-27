@@ -315,8 +315,9 @@ const transformMassetData = (
     allFeederPools.filter(fp => fp.masset.id === address),
     tokens,
   );
+
   const fAssets = Object.fromEntries(
-    Object.entries(feederPools).map(([key, { fasset }]) => [key, fasset]),
+    Object.values(feederPools).map(fp => [fp.address, fp.fasset]),
   );
 
   return {
