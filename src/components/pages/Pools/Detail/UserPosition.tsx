@@ -287,7 +287,7 @@ const RewardValue: FC<{
 
 const Rewards: FC = () => {
   const rewardStreams = useRewardStreams();
-  const [isClaiming, toggleIsClaiming] = useToggle(true);
+  const [isClaiming, toggleIsClaiming] = useToggle(false);
   const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0;
 
   const propose = usePropose();
