@@ -23,20 +23,24 @@ const usePrices = (tokens: string[]): number[] | undefined => {
     const missing = tokens.filter(token => !priceMap[token]);
 
     if (missing.length) {
-      fetchCoingeckoPrices(missing).then(result => {
-        const fetchedPrices = missing
-          .map(token => [token, result?.[token]?.usd])
-          .filter(([, price]) => price) as [string, number][];
+      fetchCoingeckoPrices(missing)
+        .then(result => {
+          const fetchedPrices = missing
+            .map(token => [token, result?.[token]?.usd])
+            .filter(([, price]) => price) as [string, number][];
 
-        const updatedPrices = fetchedPrices.reduce(
-          (prev, [token, price]) => ({ ...prev, [token]: price }),
-          priceMap,
-        );
+          const updatedPrices = fetchedPrices.reduce(
+            (prev, [token, price]) => ({ ...prev, [token]: price }),
+            priceMap,
+          );
 
-        priceCache = { ...priceCache, ...updatedPrices };
+          priceCache = { ...priceCache, ...updatedPrices };
 
-        setPriceMap(updatedPrices);
-      });
+          setPriceMap(updatedPrices);
+        })
+        .catch(error => {
+          console.warn('Error fetching CoinGecko prices', error);
+        });
     }
   });
 

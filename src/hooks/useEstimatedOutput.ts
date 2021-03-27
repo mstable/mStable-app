@@ -113,6 +113,9 @@ export const useEstimatedOutput = (
           .getMintOutput(inputAddress, (inputAmount as BigDecimal).exact)
           .then(_amount => {
             setEstimatedOutputAmount.value(new BigDecimal(_amount));
+          })
+          .catch(_error => {
+            setEstimatedOutputAmount.error(sanitizeMassetError(_error));
           });
       }
 
