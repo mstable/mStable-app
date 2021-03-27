@@ -15,7 +15,6 @@ import { format, getUnixTime } from 'date-fns';
 import { useBlockTimesForDates } from '../../../../hooks/useBlockTimesForDates';
 import { getKeyTimestamp } from '../../../../utils/getKeyTimestamp';
 import { Color } from '../../../../theme';
-import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 import {
   useDateFilter,
   useMetricsState,
@@ -38,11 +37,6 @@ const Title = styled.h2`
   position: absolute;
   top: 1rem;
   left: 1rem;
-`;
-
-const StyledSkeleton = styled(ThemedSkeleton)`
-  border-radius: 1rem;
-  line-height: inherit;
 `;
 
 const Container = styled(RechartsContainer)`
@@ -103,6 +97,15 @@ const useTotalLiquidity = (
   }, [query.data]);
 };
 
+const NoData = styled.div`
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  opacity: 0.5;
+`;
+
 const Chart: FC<{
   aggregateMetrics: {
     type: string;
@@ -118,7 +121,7 @@ const Chart: FC<{
   return (
     <Container>
       <Title>Liquidity</Title>
-      {data && data.length ? (
+      {data.length ? (
         <ResponsiveContainer aspect={2}>
           <AreaChart
             margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
@@ -205,7 +208,7 @@ const Chart: FC<{
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <StyledSkeleton height={160} />
+        <NoData>No data</NoData>
       )}
     </Container>
   );
