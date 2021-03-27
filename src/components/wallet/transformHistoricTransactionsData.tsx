@@ -30,9 +30,10 @@ export const transformHistoricTransactionsData = (
       const formattedDate = formatUnix(timestamp);
       switch (tx.__typename) {
         case 'RedeemTransaction': {
-          const { bAssets, removedBassets, token } = massetsByAddress[
-            tx.masset.id
-          ];
+          const masset = massetsByAddress[tx.masset.id];
+          if (!masset) return null;
+
+          const { bAssets, removedBassets, token } = masset;
           const bassetSymbols = tx.bassets.map(
             basset =>
               (bAssets[basset.id] ?? removedBassets[basset.id])?.token.symbol,
@@ -101,9 +102,11 @@ export const transformHistoricTransactionsData = (
         case 'PaidFeeTransaction': {
           const { bAssets, removedBassets } = massetsByAddress[tx.masset.id];
           const basset = bAssets[tx.basset.id] ?? removedBassets[tx.basset.id];
+          if (!basset) return null;
+
           const bassetUnit = new BigDecimal(
             tx.bassetUnits,
-            basset?.token.decimals,
+            basset.token.decimals,
           );
           return {
             description: `You paid ${bassetUnit.format()}${
@@ -116,7 +119,10 @@ export const transformHistoricTransactionsData = (
           };
         }
         case 'SavingsContractDepositTransaction': {
-          const { token } = massetsByAddress[tx.savingsContract.masset.id];
+          const masset = massetsByAddress[tx.savingsContract.masset.id];
+          if (!masset) return null;
+
+          const { token } = masset;
           const massetUnits = new BigDecimal(tx.amount, token.decimals);
           return {
             description: `You deposited ${massetUnits.format()} ${
