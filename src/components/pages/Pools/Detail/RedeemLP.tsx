@@ -1,5 +1,6 @@
 import React, { FC, useMemo, useState } from 'react';
 
+import type { MassetState } from '../../../../context/DataProvider/types';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useWalletAddress } from '../../../../context/OnboardProvider';
 import { SendButton } from '../../../forms/SendButton';
@@ -22,7 +23,7 @@ import { useTokens } from '../../../../context/TokensProvider';
 const formId = 'RedeemLP';
 
 export const RedeemLP: FC = () => {
-  const { bAssets } = useSelectedMassetState() ?? {};
+  const { bAssets } = useSelectedMassetState() as MassetState;
   const feederPool = useSelectedFeederPoolState();
   const contract = useSelectedFeederPoolContract();
   const propose = usePropose();

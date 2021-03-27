@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   FeederPool,
@@ -6,14 +6,16 @@ import {
   Masset,
   Masset__factory,
 } from '@mstable/protocol/types/generated';
-import { useThrottleFn } from 'react-use';
-import type { BigDecimalInputValue } from './useBigDecimalInputs';
+import { usePrevious, useThrottleFn } from 'react-use';
+
 import { BigDecimal } from '../web3/BigDecimal';
-import { FetchState, useFetchState } from './useFetchState';
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
 import { MassetState } from '../context/DataProvider/types';
 import { useSigner } from '../context/OnboardProvider';
 import { sanitizeMassetError } from '../utils/strings';
+
+import type { BigDecimalInputValue } from './useBigDecimalInputs';
+import { FetchState, useFetchState } from './useFetchState';
 
 type Contract = Masset | FeederPool;
 
@@ -29,6 +31,18 @@ enum Action {
   MINT,
 }
 
+const inputValuesAreEqual = (
+  a?: BigDecimalInputValue,
+  b?: BigDecimalInputValue,
+): boolean =>
+  !!(
+    (!a && !b) ||
+    (a &&
+      b &&
+      a.amount?.exact.toString() === b.amount?.exact.toString() &&
+      a.address === b.address)
+  );
+
 /**
  * This hook is designed to route to correct hook based on input/output
  */
@@ -36,6 +50,9 @@ export const useEstimatedOutput = (
   inputValue?: BigDecimalInputValue,
   outputValue?: BigDecimalInputValue,
 ): Output => {
+  const inputValuePrev = usePrevious(inputValue);
+  const outputValuePrev = usePrevious(outputValue);
+
   const [
     estimatedOutputAmount,
     setEstimatedOutputAmount,
@@ -52,7 +69,7 @@ export const useEstimatedOutput = (
     feeRate: swapFeeRate,
   } = massetState;
 
-  const feederAddress = Object.keys(fAssets)
+  const poolAddress = Object.keys(fAssets)
     .filter(address => fAssets[address].address !== massetAddress)
     .find(
       address =>
@@ -65,30 +82,46 @@ export const useEstimatedOutput = (
   const contract: Contract | undefined = useMemo(() => {
     if (!signer) return;
 
-    // use feeder to do swap
-    if (feederAddress && feederAddress !== massetAddress) {
-      return FeederPool__factory.connect(feederAddress, signer);
+    // use feeder pool to do swap
+    if (poolAddress && poolAddress !== massetAddress) {
+      return FeederPool__factory.connect(poolAddress, signer);
     }
     return Masset__factory.connect(massetAddress, signer);
-  }, [feederAddress, massetAddress, signer]);
+  }, [poolAddress, massetAddress, signer]);
 
-  const isFeederPool = contract?.address === feederAddress;
+  const isFeederPool = contract?.address === poolAddress;
 
-  // Routes
-  // input ===  basset, output === masset => MINT     1 basset, 1 masset
-  // input ===  masset, output === basset => REDEEM   1 masset, 1 basset
-  // input ===  fasset, output === basset => SWAP     1 fasset
-  // input ===  fasset, output === masset => SWAP     1 fasset
-  // input ===  basset, output === basset => SWAP     2 bassets
+  /*
+   * |------------------------------------------------------|
+   * | ROUTES                                               |
+   * | -----------------------------------------------------|
+   * | Input  | Output | Function      | Tokens             |
+   * | -----------------------------------------------------|
+   * | basset | masset | masset mint   | 1 basset, 1 masset |
+   * | masset | basset | masset redeem | 1 masset, 1 basset |
+   * | basset | basset | masset swap   | 2 bassets          |
+   * | fasset | basset | fpool swap    | 1 fasset           |
+   * | fasset | masset | fpool swap    | 1 fasset           |
+   * |------------------------------------------------------|
+   */
 
   useThrottleFn(
     (
       _contract?: Contract,
       _inputValue?: BigDecimalInputValue,
+      _inputValuePrev?: BigDecimalInputValue,
       _outputValue?: BigDecimalInputValue,
+      _outputValuePrev?: BigDecimalInputValue,
       _isFeederPool?: boolean,
     ) => {
       if (!_inputValue || !_outputValue) return;
+
+      // This is symptom-fighting; new BigDecimals are being created somewhere,
+      // so strict equality always comes up false
+      const inputEq = inputValuesAreEqual(_inputValue, _inputValuePrev);
+      const outputEq = inputValuesAreEqual(_outputValue, _outputValuePrev);
+      if (inputEq && outputEq) return;
+
       if (!_contract) return setEstimatedOutputAmount.fetching();
 
       const { address: inputAddress, amount: inputAmount } = _inputValue;
@@ -105,10 +138,11 @@ export const useEstimatedOutput = (
           address => bAssets[address]?.address,
         ).length === 2;
 
-      if ((isMassetMint || isLPMint) && inputAmount?.simple) {
+      if (!inputAmount?.exact.gt(0)) return;
+
+      if (isMassetMint || isLPMint) {
         setAction(Action.MINT);
-        // TODO: Fix flicker
-        // setEstimatedOutputAmount.fetching();
+        setEstimatedOutputAmount.fetching();
         return _contract
           .getMintOutput(inputAddress, (inputAmount as BigDecimal).exact)
           .then(_amount => {
@@ -119,13 +153,9 @@ export const useEstimatedOutput = (
           });
       }
 
-      if (
-        (_isFeederPool || isBassetSwap) &&
-        !isLPRedeem &&
-        inputAmount?.simple
-      ) {
+      if ((_isFeederPool || isBassetSwap) && !isLPRedeem) {
         setAction(Action.SWAP);
-        // setEstimatedOutputAmount.fetching();
+        setEstimatedOutputAmount.fetching();
         return _contract
           .getSwapOutput(inputAddress, outputAddress, inputAmount.exact)
           .then(_swapOutput => {
@@ -138,9 +168,9 @@ export const useEstimatedOutput = (
           });
       }
 
-      if ((!_isFeederPool || isLPRedeem) && inputAmount?.simple) {
+      if (!_isFeederPool || isLPRedeem) {
         setAction(Action.REDEEM);
-        // setEstimatedOutputAmount.fetching();
+        setEstimatedOutputAmount.fetching();
         return _contract
           .getRedeemOutput(outputAddress, inputAmount.exact)
           .then(_amount => {
@@ -156,7 +186,14 @@ export const useEstimatedOutput = (
       setEstimatedOutputAmount.value();
     },
     2500,
-    [contract, inputValue, outputValue, isFeederPool],
+    [
+      contract,
+      inputValue,
+      inputValuePrev,
+      outputValue,
+      outputValuePrev,
+      isFeederPool,
+    ],
   );
 
   const exchangeRate = useMemo<FetchState<BigDecimal>>(() => {
@@ -176,12 +213,12 @@ export const useEstimatedOutput = (
     const scaleAsset = (address: string, amount: BigDecimal): BigDecimal => {
       if (!amount?.simple) return BigDecimal.ZERO;
 
-      // mAsset amount is not scaled
-      if (address === massetAddress) return amount;
+      // Only bAsset/fAsset amounts are scaled
+      if (address === massetAddress || address === poolAddress) return amount;
 
       // Scale w/ ratio
       const ratio =
-        bAssets[address]?.ratio ?? fAssets[feederAddress as string]?.ratio;
+        bAssets[address]?.ratio ?? (poolAddress && fAssets[poolAddress].ratio);
 
       // shouldn't hit but better to have this can crash
       if (!ratio) return amount;
@@ -201,7 +238,7 @@ export const useEstimatedOutput = (
     bAssets,
     estimatedOutputAmount,
     fAssets,
-    feederAddress,
+    poolAddress,
     inputValue,
     massetAddress,
     outputValue,
