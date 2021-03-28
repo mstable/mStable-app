@@ -205,8 +205,8 @@ export const useEstimatedOutput = (
 
     if (!estimatedOutputAmount.value) return { fetching: true };
 
-    if (!estimatedOutputAmount.value.exact.gt(0)) {
-      return { error: 'Output amount must be greater than zero' };
+    if (!estimatedOutputAmount.value.exact.gt(0) || !inputAmount.exact.gt(0)) {
+      return { error: 'Amount must be greater than zero' };
     }
 
     // Scale asset via ratio
