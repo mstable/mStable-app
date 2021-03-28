@@ -62,12 +62,25 @@ export const MintExact: FC = () => {
   );
 
   const inputAmount = useMemo(() => {
-    if (!Object.keys(inputValues).length || !touched.length) return;
+    if (!touched.length) return;
 
-    return touched
-      .map(v => v.amount)
-      .reduce((a, b) => (a as BigDecimal).add(b as BigDecimal));
-  }, [inputValues, touched]);
+    const massetAmount = touched.find(
+      ({ address }) => address === feederPool.masset.address,
+    )?.amount;
+
+    const fassetAmount = touched.find(
+      ({ address }) => address === feederPool.fasset.address,
+    )?.amount;
+
+    if (fassetAmount && massetAmount) {
+      return fassetAmount
+        .mulRatioTruncate(feederPool.fasset.ratio)
+        .add(massetAmount)
+        .setDecimals(18);
+    }
+
+    return massetAmount ?? fassetAmount;
+  }, [feederPool, touched]);
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippage?.simple,
@@ -193,7 +206,7 @@ export const MintExact: FC = () => {
           const addresses = touched.map(v => v.address as string);
           const amounts = touched.map(v => (v.amount as BigDecimal).exact);
 
-          // TODO: FIX reverting
+          // TODO: FIXME reverting - might need approval called on Wrapper
           // mint & stake multi
           if (outputAddress !== feederPool.address) {
             return propose<Interfaces.FeederWrapper, 'mintMultiAndStake'>(

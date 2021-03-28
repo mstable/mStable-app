@@ -93,7 +93,6 @@ export const RedeemMasset: FC = () => {
     { ...massetToken, amount: massetAmount } as BigDecimalInputValue,
     outputToken as BigDecimalInputValue,
   );
-  console.log(feeRate);
 
   const addressOptions = useMemo(
     () => [
