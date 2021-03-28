@@ -46,7 +46,7 @@ export const RedeemLP: FC = () => {
     [outputAddress, outputAddressOptions],
   );
 
-  const { estimatedOutputAmount, exchangeRate } = useEstimatedOutput(
+  const { estimatedOutputAmount, exchangeRate, feeRate } = useEstimatedOutput(
     {
       ...inputToken,
       amount: inputAmount,
@@ -127,6 +127,9 @@ export const RedeemLP: FC = () => {
         }}
       />
       <TransactionInfo
+        feeAmount={feeRate.value}
+        feeLabel="Redemption Fee"
+        feeTip="The received amount includes a small redemption fee. Fees are sent to Liquidity Providers."
         minOutputAmount={minOutputAmount}
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}

@@ -67,6 +67,7 @@ export const useEstimatedOutput = (
     fAssets,
     bAssets,
     feeRate: swapFeeRate,
+    redemptionFeeRate,
   } = massetState;
 
   const poolAddress = Object.keys(fAssets)
@@ -242,12 +243,14 @@ export const useEstimatedOutput = (
   ]);
 
   const feeRate = useMemo<FetchState<BigDecimal>>(() => {
-    // if not swap, return
-    if (action !== Action.SWAP) return {};
+    // if not swap or redeem, return
+    if (action === Action.MINT) return {};
+
     if (estimatedOutputAmount.fetching) return { fetching: true };
 
-    const feeRateSimple = swapFeeRate
-      ? parseInt(swapFeeRate.toString(), 10) / 1e18
+    const feeRateBN = action === Action.SWAP ? swapFeeRate : redemptionFeeRate;
+    const feeRateSimple = feeRateBN
+      ? parseInt(feeRateBN.toString(), 10) / 1e18
       : undefined;
 
     const outputSimple = estimatedOutputAmount.value?.simple;

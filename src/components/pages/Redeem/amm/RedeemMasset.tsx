@@ -93,6 +93,7 @@ export const RedeemMasset: FC = () => {
     { ...massetToken, amount: massetAmount } as BigDecimalInputValue,
     outputToken as BigDecimalInputValue,
   );
+  console.log(feeRate);
 
   const addressOptions = useMemo(
     () => [
@@ -214,10 +215,12 @@ export const RedeemMasset: FC = () => {
         }}
       />
       <TransactionInfo
+        feeAmount={feeRate.value}
+        feeLabel="Redemption Fee"
+        feeTip="The received amount includes a small redemption fee. Fees are sent to Savers and Liquidity Providers."
         minOutputAmount={minOutputAmount}
         onSetSlippage={handleSetSlippage}
         slippageFormValue={slippageFormValue}
-        feeAmount={feeRate?.value}
       />
     </Container>
   );
