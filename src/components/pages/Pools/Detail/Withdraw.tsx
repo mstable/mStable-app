@@ -1,17 +1,18 @@
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
+import { useToggle } from 'react-use';
 import styled from 'styled-components';
 
-import { useToggle } from 'react-use';
+import { UnstyledButton } from '../../../core/Button';
 import { MultiAssetExchangeProvider } from '../../../forms/MultiAssetExchange';
 import {
   useSelectedFeederPoolAssets,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
-import { UnstyledButton } from '../../../core/Button';
-import { MintExact } from './MintExact';
-import { MintLP } from './MintLP';
+import { RedeemExact } from './RedeemExact';
+import { RedeemLP } from './RedeemLP';
 
-const MintPathBox = styled.div`
+const RedeemPathBox = styled.div`
   display: flex;
   align-items: center;
   text-align: center;
@@ -31,22 +32,22 @@ const MintPathBox = styled.div`
   }
 `;
 
-export const Mint: FC = () => {
-  const [isMintExact, setMintExact] = useToggle(false);
+export const Withdraw: FC = () => {
+  const [isRedeemExact, setRedeemExact] = useToggle(false);
 
   const feederPool = useSelectedFeederPoolState();
   const assets = useSelectedFeederPoolAssets();
 
   return (
     <MultiAssetExchangeProvider assets={assets}>
-      {isMintExact ? <MintExact /> : <MintLP />}
-      <MintPathBox>
-        <UnstyledButton onClick={setMintExact}>
-          {`Switch to mint via ${
-            isMintExact ? feederPool.token.symbol : 'multiple'
-          } `}
+      {isRedeemExact ? <RedeemExact /> : <RedeemLP />}
+      <RedeemPathBox>
+        <UnstyledButton onClick={setRedeemExact}>
+          {`Switch to ${
+            isRedeemExact ? feederPool.token.symbol : 'exact'
+          } amount redemption`}
         </UnstyledButton>
-      </MintPathBox>
+      </RedeemPathBox>
     </MultiAssetExchangeProvider>
   );
 };

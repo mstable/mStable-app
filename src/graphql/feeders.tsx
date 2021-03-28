@@ -3655,7 +3655,7 @@ export type FeederPoolsQueryHookResult = ReturnType<typeof useFeederPoolsQuery>;
 export type FeederPoolsLazyQueryHookResult = ReturnType<typeof useFeederPoolsLazyQuery>;
 export type FeederPoolsQueryResult = ApolloReactCommon.QueryResult<FeederPoolsQuery, FeederPoolsQueryVariables>;
 export const FeederTokensDocument = gql`
-    query FeederTokens {
+    query FeederTokens @api(name: feeders) {
   feederPools {
     token {
       ...TokenAll

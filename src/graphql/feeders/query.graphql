@@ -31,7 +31,7 @@ query FeederPools($account: String!, $hasAccount: Boolean!) @api(name: feeders) 
     }
 }
 
-query FeederTokens {
+query FeederTokens @api(name: feeders) {
     feederPools {
         token {
             ...TokenAll
