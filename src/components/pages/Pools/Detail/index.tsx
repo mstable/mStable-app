@@ -12,7 +12,7 @@ import { TabCard } from '../../../core/Tabs';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { AssetCard } from '../cards/AssetCard';
 
-import { assetColorMapping, assetDarkColorMapping } from '../constants';
+import { assetColorMapping } from '../constants';
 import { LiquidityChart } from './LiquidityChart';
 import { UserPosition } from './UserPosition';
 import { AssetDetails } from './AssetDetails';
@@ -77,11 +77,12 @@ const HeaderContainer = styled.div`
 // Pull out & make generic for message reuse
 const Clippy = styled.div`
   border: 1px rgba(255, 179, 52, 0.2) solid;
-  background: rgba(255, 253, 245, 0.3);
-  box-shadow: rgba(250, 221, 172, 0.5) 0 2px 6px;
+  background: ${({ theme }) =>
+    theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none'};
   border-radius: 1rem;
   padding: 1rem;
-  color: rgba(102, 88, 72, 0.8);
+  color: ${({ theme }) =>
+    theme.isLight ? 'rgba(102, 88, 72, 0.8)' : 'rgba(194, 174, 152, 1)'};
 
   > *:not(:last-child) {
     margin-bottom: 1rem;
@@ -138,8 +139,7 @@ const Container = styled.div`
 const PoolDetailContent: FC = () => {
   const { address, title } = useSelectedFeederPoolState() as FeederPoolState;
 
-  const color = assetColorMapping[title];
-  const darkColor = assetDarkColorMapping[title];
+  const darkColor = assetColorMapping[title];
 
   const tabs = useMemo(
     () => ({
@@ -161,7 +161,7 @@ const PoolDetailContent: FC = () => {
     <Container>
       <PageHeader action={PageAction.Pools} subtitle={title} />
       <HeaderContainer>
-        <HeaderCard poolAddress={address} isLarge color={color} />
+        <HeaderCard poolAddress={address} isLarge color={darkColor} />
         <LiquidityChart color={darkColor} />
       </HeaderContainer>
       <Row>

@@ -212,11 +212,23 @@ const TokenPair: FC<{ tokens?: SubscribedToken[]; isLarge?: boolean }> = ({
   );
 };
 
-const Container = styled(Card)<{ gradientColor?: string }>`
+const Background = styled.div<{ gradientColor?: string }>`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   background: ${({ gradientColor }) =>
     gradientColor
       ? `linear-gradient(180deg, ${gradientColor} 0%, transparent 100%);`
       : `none`};
+  border-radius: 1rem;
+  opacity: 0.5;
+  z-index: -1;
+`;
+
+const Container = styled(Card)`
+  position: relative;
 
   h2 > div {
     display: flex;
@@ -256,7 +268,6 @@ const AssetCardContent: FC<Props> = ({
   return (
     <Container
       className={className}
-      gradientColor={!deprecated ? gradientColor : undefined}
       title={
         <div>
           <TokenPair
@@ -269,6 +280,7 @@ const AssetCardContent: FC<Props> = ({
       iconType={(!isLarge && 'chevron') || undefined}
       onClick={(!isLarge && handleClick) || undefined}
     >
+      <Background gradientColor={!deprecated ? gradientColor : undefined} />
       {!deprecated && <PoolStats address={poolAddress} isLarge={isLarge} />}
     </Container>
   );
@@ -297,12 +309,8 @@ export const AssetCard: FC<Props> = ({
 
 export const CustomAssetCard: FC<
   Omit<Props, 'poolAddress'> & { title: string }
-> = ({ className, deprecated, color, title, children }) => (
-  <Container
-    className={className}
-    gradientColor={!deprecated ? color : undefined}
-    title={title}
-  >
+> = ({ className, title, children }) => (
+  <Container className={className} title={title}>
     {children}
   </Container>
 );
