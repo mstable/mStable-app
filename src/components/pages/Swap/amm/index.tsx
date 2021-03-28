@@ -302,6 +302,8 @@ const SwapLogic: FC = () => {
       />
       <Info
         feeAmount={feeRate?.value}
+        feeLabel="Swap Fee"
+        feeTip="The received amount includes a small swap fee. Swap fees are sent to Savers and Liquidity Providers."
         minOutputAmount={minOutputAmount}
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}

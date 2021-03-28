@@ -37,8 +37,8 @@ export interface RewardStreams {
       total: number;
       unlocked: number;
       locked: number;
-      cumulative: number;
     };
+    cumulativeEarned: number;
     locked: number;
     previewLocked: number;
     received: number;
@@ -106,26 +106,21 @@ const getRewardPerToken = (
 const calculateEarned = (
   currentTime: number,
   boostedSavingsVault: BoostedSavingsVaultState,
-): { total: number; unlocked: number; locked: number; cumulative: number } => {
+): { total: number; unlocked: number; locked: number } => {
   const rewardPerToken = getRewardPerToken(currentTime, boostedSavingsVault);
   const {
     unlockPercentage,
-    account: { boostedBalance, rewardPerTokenPaid, rewardEntries },
+    account: { boostedBalance, rewardPerTokenPaid },
   } = boostedSavingsVault as BoostedSavingsVaultState & {
     account: BoostedSavingsVaultAccountState;
   };
-
-  const cumulative = rewardEntries.reduce(
-    (prev, entry) => prev + getEntryAmount(entry),
-    0,
-  );
 
   // Current rate per token - rate user previously received
   const userRewardDelta = rewardPerToken.sub(rewardPerTokenPaid);
 
   if (userRewardDelta.eq(0)) {
     // Short circuit if there is nothing new to distribute
-    return { total: 0, unlocked: 0, locked: 0, cumulative };
+    return { total: 0, unlocked: 0, locked: 0 };
   }
 
   // New reward = staked tokens * difference in rate
@@ -137,7 +132,7 @@ const calculateEarned = (
   const unlocked = Math.max(total * unlockPercentageSimple, 0);
   const locked = Math.max(total - unlocked, 0);
 
-  return { total, unlocked, locked, cumulative: cumulative + total };
+  return { total, unlocked, locked };
 };
 
 const ctx = createContext<RewardStreams | undefined>(undefined);
@@ -286,8 +281,12 @@ export const RewardStreamsProvider: FC<{ refreshInterval?: number }> = ({
           },
         ]);
 
+      // TODO
+      const cumulativeEarned = earned.total;
+
       return {
         amounts: {
+          cumulativeEarned,
           earned,
           locked,
           previewLocked,
