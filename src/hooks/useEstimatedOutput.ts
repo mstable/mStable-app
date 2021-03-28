@@ -230,7 +230,7 @@ export const useEstimatedOutput = (
     const scaledInput = scaleAsset(inputAddress, inputAmount);
     const scaledOutput = scaleAsset(outputAddress, estimatedOutputAmount.value);
 
-    const value = scaledInput.divPrecisely(scaledOutput);
+    const value = scaledOutput.divPrecisely(scaledInput);
     return { value };
   }, [
     bAssets,
