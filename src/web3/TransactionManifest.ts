@@ -3,7 +3,12 @@ import { TransactionResponse } from '@ethersproject/abstract-provider';
 import { ErrorCode } from '@ethersproject/logger';
 
 import { Instances, Interfaces, Purpose } from '../types';
-import { calculateGasMargin } from '../utils/maths';
+
+const calculateGasMargin = (value: BigNumber): BigNumber => {
+  const GAS_MARGIN = BigNumber.from(1000);
+  const offset = value.mul(GAS_MARGIN).div(BigNumber.from(10000));
+  return value.add(offset);
+};
 
 export enum TransactionStatus {
   Pending = 'Pending',

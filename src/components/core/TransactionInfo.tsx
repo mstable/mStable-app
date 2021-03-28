@@ -9,6 +9,8 @@ import { SlippageInput } from '../forms/SlippageInput';
 interface Props {
   className?: string;
   feeAmount?: BigDecimal;
+  feeLabel?: string;
+  feeTip?: string;
   minOutputAmount?: BigDecimal;
   maxOutputAmount?: BigDecimal;
   slippageFormValue?: string;
@@ -45,6 +47,8 @@ const AdditionalInfo = styled.div`
 
 export const TransactionInfo: FC<Props> = ({
   feeAmount,
+  feeLabel = 'Fee',
+  feeTip = 'The received amount includes a small fee.',
   minOutputAmount,
   maxOutputAmount,
   className,
@@ -98,9 +102,7 @@ export const TransactionInfo: FC<Props> = ({
           {feeAmount && (
             <Info>
               <p>
-                <Tooltip tip="The received amount includes a small swap fee. Swap fees are sent directly to Savers.">
-                  Swap Fee
-                </Tooltip>
+                <Tooltip tip={feeTip}>{feeLabel}</Tooltip>
               </p>
               <span>
                 {feeAmount?.format(8, false)}

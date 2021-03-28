@@ -41,17 +41,18 @@ const Card = styled.div`
   }
 `;
 
-const PoolShareContainer = styled(Card)`
+const PositionContainer = styled(Card)`
   border: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
 
-  > div:last-child {
-    text-align: right;
-  }
-
-  span {
-    font-size: 1.125rem;
-    span {
-      ${({ theme }) => theme.mixins.numeric};
+  > div {
+    width: 100%;
+    > div {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      h4 {
+        font-weight: 600;
+      }
     }
   }
 `;
@@ -75,19 +76,14 @@ const GetLPCard = styled(Card)`
   }
 `;
 
-const Container = styled.div`
-  width: 100%;
-  margin: 1rem 0;
-  display: flex;
-  flex-direction: column;
-
-  > *:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-`;
-
-const PoolShare: FC = () => {
-  const { totalSupply, vault, token, title } = useSelectedFeederPoolState();
+const Position: FC = () => {
+  const {
+    totalSupply,
+    vault,
+    token,
+    title,
+    account,
+  } = useSelectedFeederPoolState();
 
   const userAmount = token.balance?.simple ?? 0;
   const userStakedAmount = vault.account?.rawBalance.simple ?? 0;
@@ -95,22 +91,33 @@ const PoolShare: FC = () => {
   const poolTotal = totalSupply.simple;
   const poolPercentage = 100 * ((userAmount + userStakedAmount) / poolTotal);
 
-  // TODO show unstaked amount (i.e. regular balance)
-
   return (
-    <PoolShareContainer>
+    <PositionContainer>
       <div>
-        <h3>My Pool Share</h3>
-        <span>{poolPercentage.toFixed(4)}%</span>
+        <h3>My Position</h3>
+        <div>
+          <div>
+            <h4>Pool Share</h4>
+            <CountUp end={poolPercentage} decimals={4} suffix="%" />
+          </div>
+          <div>
+            <h4>Fees earned</h4>
+            <CountUp
+              end={account?.cumulativeEarned.simple ?? 0}
+              decimals={10}
+            />
+          </div>
+          <div>
+            <h4>{title} Staked</h4>
+            <CountUp end={userStakedAmount} />
+          </div>
+          <div>
+            <h4>{title} Balance</h4>
+            <CountUp end={userAmount} />
+          </div>
+        </div>
       </div>
-      <div>
-        <h3>Staked</h3>
-        <span>
-          <span>{`${userStakedAmount?.toFixed(2) ?? '–'}`} </span>
-          {!!userStakedAmount && title}
-        </span>
-      </div>
-    </PoolShareContainer>
+    </PositionContainer>
   );
 };
 
@@ -298,7 +305,7 @@ const Rewards: FC = () => {
   const propose = usePropose();
   const contract = useSelectedFeederPoolVaultContract();
 
-  const isZeroState = (rewardStreams?.amounts.earned.cumulative ?? 0) > 0;
+  const isZeroState = (rewardStreams?.amounts.cumulativeEarned ?? 0) > 0;
 
   return (
     <RewardsCard>
@@ -308,8 +315,7 @@ const Rewards: FC = () => {
           <div>
             <h4>Total earnings</h4>
             <div>
-              <CountUp end={rewardStreams?.amounts.earned.cumulative ?? 0} />{' '}
-              MTA
+              <CountUp end={rewardStreams?.amounts.cumulativeEarned ?? 0} /> MTA
             </div>
           </div>
         </div>
@@ -382,6 +388,17 @@ const Rewards: FC = () => {
   );
 };
 
+const Container = styled.div`
+  width: 100%;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+
+  > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+`;
+
 export const UserPosition: FC = () => {
   const { token, vault } = useSelectedFeederPoolState();
 
@@ -396,7 +413,7 @@ export const UserPosition: FC = () => {
         <GetLP />
       ) : (
         <>
-          <PoolShare />
+          <Position />
           <Rewards />
         </>
       )}

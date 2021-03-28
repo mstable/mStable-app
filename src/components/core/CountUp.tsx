@@ -78,15 +78,17 @@ export const CountUp: FC<Props> = ({
       highlightColor={highlightColor}
     >
       {prefix ? <PrefixOrSuffix>{prefix}</PrefixOrSuffix> : null}
-      <Number>{isValid ? countUp : '–'}</Number>
+      <Number>{isValid && countUp.toString() !== 'NaN' ? countUp : '–'}</Number>
       {suffix ? <PrefixOrSuffix>{suffix}</PrefixOrSuffix> : null}
     </Container>
   );
 };
 
-export const DifferentialCountup: FC<Props & {
-  prev?: number;
-}> = ({ prev, end, ...props }) => {
+export const DifferentialCountup: FC<
+  Props & {
+    prev?: number;
+  }
+> = ({ prev, end, ...props }) => {
   return (
     <CountUp
       // eslint-disable-next-line react/jsx-props-no-spreading

@@ -6,6 +6,7 @@ import type {
   BassetStatus,
   BoostedSavingsVaultState,
   DataState,
+  FeederPoolAccountState,
   FeederPoolState,
   MassetState,
   SavingsContractState,
@@ -243,6 +244,26 @@ const transformTokenData = (
   symbol,
 });
 
+const transformFeederPoolAccountData = ({
+  cumulativeEarned,
+  balance,
+  balanceVault,
+  price,
+  priceVault,
+  lastUpdate,
+  lastUpdateVault,
+}: NonNullable<
+  NonNullableFeederPools[number]['accounts']
+>[number]): FeederPoolAccountState => ({
+  cumulativeEarned: BigDecimal.fromMetric(cumulativeEarned),
+  balance: BigDecimal.parse(balance),
+  balanceVault: BigDecimal.parse(balanceVault),
+  price: BigDecimal.parse(price),
+  priceVault: BigDecimal.parse(priceVault),
+  lastUpdate,
+  lastUpdateVault,
+});
+
 const transformFeederPoolsData = (
   feederPools: NonNullableFeederPools,
   tokens: Tokens,
@@ -261,6 +282,7 @@ const transformFeederPoolsData = (
         redemptionFeeRate,
         swapFeeRate,
         vault,
+        accounts,
       }) => [
         address,
         {
@@ -279,6 +301,9 @@ const transformFeederPoolsData = (
           title: bassets.map(b => b.token.symbol).join('/'),
           undergoingRecol,
           vault: transformBoostedSavingsVault(vault),
+          account: accounts?.length
+            ? transformFeederPoolAccountData(accounts[0])
+            : undefined,
         },
       ],
     ),
