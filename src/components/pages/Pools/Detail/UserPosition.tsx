@@ -42,15 +42,17 @@ const Card = styled.div`
 `;
 
 const PoolShareContainer = styled(Card)`
-  background: ${({ theme }) => theme.color.backgroundAccent};
+  border: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
 
   > div:last-child {
     text-align: right;
   }
 
   span {
-    ${({ theme }) => theme.mixins.numeric};
     font-size: 1.125rem;
+    span {
+      ${({ theme }) => theme.mixins.numeric};
+    }
   }
 `;
 
@@ -103,9 +105,10 @@ const PoolShare: FC = () => {
       </div>
       <div>
         <h3>Staked</h3>
-        <span>{`${userStakedAmount?.toFixed(2) ?? '–'} ${
-          (!!userStakedAmount && title) || ''
-        }`}</span>
+        <span>
+          <span>{`${userStakedAmount?.toFixed(2) ?? '–'}`} </span>
+          {!!userStakedAmount && title}
+        </span>
       </div>
     </PoolShareContainer>
   );

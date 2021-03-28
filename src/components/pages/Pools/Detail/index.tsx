@@ -17,8 +17,8 @@ import { LiquidityChart } from './LiquidityChart';
 import { UserPosition } from './UserPosition';
 import { AssetDetails } from './AssetDetails';
 import { UserLookup } from './UserLookup';
-import { Mint } from './Mint';
-import { Redeem } from './Redeem';
+import { Deposit } from './Deposit';
+import { Withdraw } from './Withdraw';
 import {
   FeederPoolProvider,
   useSelectedFeederPoolState,
@@ -76,22 +76,32 @@ const HeaderContainer = styled.div`
 
 // Pull out & make generic for message reuse
 const Clippy = styled.div`
-  border: 1px solid ${({ theme }) => theme.color.gold};
+  border: 1px rgba(255, 179, 52, 0.2) solid;
+  background: rgba(255, 253, 245, 0.3);
+  box-shadow: rgba(250, 221, 172, 0.5) 0 2px 6px;
+  border-radius: 1rem;
   padding: 1rem;
-`;
+  color: rgba(102, 88, 72, 0.8);
 
-const Aside = styled.div`
-  padding: 0 1rem;
+  > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  h4 {
+    font-weight: 600;
+    font-size: 1rem;
+  }
 `;
 
 const Exchange = styled.div`
   display: flex;
 
   > div:first-child {
-    flex-basis: calc(60% - 0.5rem);
+    flex-basis: calc(60%);
+    margin-right: 1rem;
   }
   > div:last-child {
-    flex-basis: calc(40% - 0.5rem);
+    flex-basis: calc(40%);
   }
 `;
 
@@ -127,19 +137,19 @@ const PoolDetailContent: FC = () => {
 
   const tabs = useMemo(
     () => ({
-      Mint: {
-        title: 'Mint',
-        component: <Mint />,
+      Deposit: {
+        title: 'Deposit',
+        component: <Deposit />,
       },
-      Redeem: {
-        title: 'Redeem',
-        component: <Redeem />,
+      Withdraw: {
+        title: 'Withdraw',
+        component: <Withdraw />,
       },
     }),
     [],
   );
 
-  const [activeTab, setActiveTab] = useState<string>('Mint');
+  const [activeTab, setActiveTab] = useState<string>('Deposit');
 
   return (
     <Container>
@@ -157,9 +167,24 @@ const PoolDetailContent: FC = () => {
       <Divider />
       <Exchange>
         <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
-        <Aside>
-          <Clippy>Hello, world</Clippy>
-        </Aside>
+        <div>
+          <Clippy>
+            <h4>Using mStable Feeder Pools</h4>
+            <p>
+              Once crabs have become juveniles, they still have to keep moulting
+              many more times to become adults.
+            </p>
+            <p>
+              They are covered with a hard shell, which would otherwise prevent
+              growth. The moult cycle is coordinated by hormones.
+            </p>
+            <p>
+              When preparing for moult, the old shell is softened and partly
+              eroded away, while the rudimentary beginnings of a new shell form
+              under it.
+            </p>
+          </Clippy>
+        </div>
       </Exchange>
     </Container>
   );

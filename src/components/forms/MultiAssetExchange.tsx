@@ -18,6 +18,7 @@ import { AssetInput } from './AssetInput';
 import { Arrow } from '../core/Arrow';
 import { TransactionInfo } from '../core/TransactionInfo';
 import { ErrorMessage } from '../core/ErrorMessage';
+import { AddressOption } from '../../types';
 
 type Dispatch = [
   BigDecimalInputCallbacks, // input callbacks
@@ -92,10 +93,13 @@ interface Props {
 }
 
 // TODO: I think the provider logic of MultiAssetExchange could be dropped.
+// ^ It's not being taken advantage of (see repeating slippage examples)
 
 export const ManyToOneAssetExchange: FC<
   Props & {
-    outputAddress: string;
+    outputAddress?: string;
+    outputAddressOptions?: AddressOption[];
+    setOutputAddress?(address?: string): void;
     minOutputAmount?: BigDecimal;
   }
 > = ({
@@ -103,8 +107,10 @@ export const ManyToOneAssetExchange: FC<
   exchangeRate,
   spender,
   setMaxCallbacks,
+  setOutputAddress,
   inputLabel = 'Input',
   outputLabel = 'Output',
+  outputAddressOptions,
   outputAddress,
   error,
   minOutputAmount,
@@ -141,7 +147,8 @@ export const ManyToOneAssetExchange: FC<
       <AssetInput
         amountDisabled
         address={outputAddress}
-        addressDisabled
+        addressOptions={outputAddressOptions}
+        handleSetAddress={setOutputAddress}
         formValue={outputAmount.value?.string}
       />
       {error && <ErrorMessage error={error} />}

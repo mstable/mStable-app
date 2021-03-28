@@ -1,10 +1,10 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useWalletAddress } from '../../../../context/OnboardProvider';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { SendButton } from '../../../forms/SendButton';
-import { AddressOption, Interfaces } from '../../../../types';
+import { Interfaces, SubscribedToken } from '../../../../types';
 import {
   ManyToOneAssetExchange,
   useMultiAssetExchangeDispatch,
@@ -15,35 +15,50 @@ import { useEstimatedMintOutput } from '../../../../hooks/useEstimatedMintOutput
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { useExchangeRateForFPInputs } from '../../../../hooks/useMassetExchangeRate';
 import {
-  useSelectedFeederPoolContract,
+  useSelectedFeederPoolContracts,
   useSelectedFeederPoolState,
+  useFPVaultAddressOptions,
+  useFPAssetAddressOptions,
 } from '../FeederPoolProvider';
+import { ADDRESSES } from '../../../../constants';
 
 const formId = 'DepositLP';
 
 export const MintExact: FC = () => {
   const feederPool = useSelectedFeederPoolState();
-  const contract = useSelectedFeederPoolContract();
+  const contracts = useSelectedFeederPoolContracts();
+
   const propose = usePropose();
   const walletAddress = useWalletAddress();
-  const inputTokens = useMemo(
-    () => [feederPool.masset.token, feederPool.fasset.token],
-    [feederPool],
+
+  const assetAddressOptions = useFPAssetAddressOptions(true);
+  const vaultAddressOptions = useFPVaultAddressOptions();
+
+  const [outputAddress, setOutputAddress] = useState<string | undefined>(
+    vaultAddressOptions[0].address,
   );
 
   const [inputValues, , slippage] = useMultiAssetExchangeState();
   const [inputCallbacks, setOutputAmount] = useMultiAssetExchangeDispatch();
 
-  const estimatedOutputAmount = useEstimatedMintOutput(contract, inputValues);
+  const touched = useMemo(
+    () => Object.values(inputValues).filter(v => v.touched),
+    [inputValues],
+  );
+
+  const contractAddress = touched.find(v => v.address === feederPool.address)
+    ? feederPool.vault.address
+    : ADDRESSES.FEEDER_WRAPPER;
+
+  const estimatedOutputAmount = useEstimatedMintOutput(
+    contracts?.feederPool,
+    inputValues,
+  );
+
   const exchangeRate = useExchangeRateForFPInputs(
     feederPool.address,
     estimatedOutputAmount.value,
     inputValues,
-  );
-
-  const touched = useMemo(
-    () => Object.values(inputValues).filter(v => v.touched),
-    [inputValues],
   );
 
   const inputAmount = useMemo(() => {
@@ -63,37 +78,35 @@ export const MintExact: FC = () => {
   const setMaxCallbacks = useMemo(
     () =>
       Object.fromEntries(
-        inputTokens.map(({ address, balance }) => [
+        assetAddressOptions.map(({ address, balance }) => [
           address,
           () => {
             inputCallbacks[address].setAmount(balance);
           },
         ]),
       ),
-    [inputTokens, inputCallbacks],
+    [assetAddressOptions, inputCallbacks],
   );
-
-  const outputOption = feederPool.token as AddressOption;
 
   const inputLabel = useMemo(
     () =>
       touched
         .map(
           v =>
-            (inputTokens.find(t => t.address === v.address) as {
+            (assetAddressOptions.find(t => t.address === v.address) as {
               symbol: string;
             }).symbol,
         )
         .join(', '),
-    [inputTokens, touched],
+    [assetAddressOptions, touched],
   );
 
   const error = useMemo<string | undefined>(() => {
     if (!touched.length) return 'Enter an amount';
 
-    const addressesApprovalNeeded = inputTokens.filter(t =>
-      inputValues[t.address].amount?.exact.gt(
-        t.allowances[feederPool.address]?.exact ?? 0,
+    const addressesApprovalNeeded = assetAddressOptions.filter(t =>
+      inputValues[t.address]?.amount?.exact.gt(
+        (t as SubscribedToken).allowances?.[contractAddress]?.exact ?? 0,
       ),
     );
 
@@ -104,10 +117,10 @@ export const MintExact: FC = () => {
 
     return estimatedOutputAmount.error;
   }, [
+    assetAddressOptions,
     estimatedOutputAmount,
-    inputTokens,
     inputValues,
-    feederPool.address,
+    contractAddress,
     touched,
   ]);
 
@@ -119,10 +132,14 @@ export const MintExact: FC = () => {
     <ManyToOneAssetExchange
       exchangeRate={exchangeRate}
       inputLabel={inputLabel}
-      outputLabel={outputOption.symbol}
-      outputAddress={outputOption.address}
+      outputAddressOptions={vaultAddressOptions}
+      outputLabel={
+        vaultAddressOptions.find(v => v.address === outputAddress)?.label
+      }
+      setOutputAddress={setOutputAddress}
+      outputAddress={outputAddress}
       setMaxCallbacks={setMaxCallbacks}
-      spender={feederPool.address}
+      spender={contractAddress}
       minOutputAmount={minOutputAmount}
       error={penaltyBonus?.message}
     >
@@ -131,14 +148,17 @@ export const MintExact: FC = () => {
         penaltyBonusAmount={penaltyBonus?.percentage}
         valid={!error}
         handleSend={() => {
-          if (!contract || !walletAddress || !minOutputAmount) return;
+          if (!contracts || !walletAddress || !minOutputAmount) return;
 
-          // TODO use SaveWrapper to deposit straight to vault
+          if (contractAddress === ADDRESSES.FEEDER_WRAPPER) {
+            return;
+          }
+
           if (touched.length === 1) {
             const [{ address, amount }] = touched;
             return propose<Interfaces.FeederPool, 'mint'>(
               new TransactionManifest(
-                contract,
+                contracts.feederPool,
                 'mint',
                 [
                   address,
@@ -157,7 +177,7 @@ export const MintExact: FC = () => {
 
           return propose<Interfaces.FeederPool, 'mintMulti'>(
             new TransactionManifest(
-              contract,
+              contracts.feederPool,
               'mintMulti',
               [addresses, amounts, minOutputAmount.exact, walletAddress],
               { past: 'Deposited', present: 'Depositing' },

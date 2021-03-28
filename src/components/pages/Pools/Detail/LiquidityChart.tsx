@@ -68,7 +68,7 @@ const useTotalLiquidity = (
       .join('\n');
 
     return gql`
-      query AggregateMetrics @api(name: protocol) {
+      query AggregateMetrics @api(name: feeders) {
         ${current}
         ${blockMetrics}
       }
@@ -121,7 +121,7 @@ const Chart: FC<{
   return (
     <Container>
       <Title>Liquidity</Title>
-      {data.length ? (
+      {data.length > 1 ? (
         <ResponsiveContainer aspect={2}>
           <AreaChart
             margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
@@ -208,7 +208,7 @@ const Chart: FC<{
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <NoData>No data</NoData>
+        <NoData>No data yet</NoData>
       )}
     </Container>
   );

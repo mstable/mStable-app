@@ -19,6 +19,7 @@ interface Addresses {
   WETH: string;
   MTA: string;
   vMTA: string;
+  FEEDER_WRAPPER: string;
   musd: {
     SaveWrapper?: string;
   };
@@ -70,6 +71,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
     MTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
     vMTA: '0xae8bc96da4f9a9613c323478be181fdb2aa0e1bf',
+    FEEDER_WRAPPER: 'TODO', // TODO
     musd: {
       SaveWrapper: '0xD7c346C228bDdd8a6a4c1a69E6cC82292909dcAD',
     },
@@ -122,6 +124,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
     WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
+    FEEDER_WRAPPER: '0x4fd44282b182264de278573f42ebfa95a6dc8b5e',
     musd: {
       SaveWrapper: '0xeb9201126a77dcd966c878ce81ea1146603b86ad',
     },
@@ -152,6 +155,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     WETH: 'TODO',
     MTA: '0xcda64b5d3ca85800ab9f7409686985b59f2b9598',
     vMTA: 'TODO',
+    FEEDER_WRAPPER: 'TODO',
     musd: {
       SaveWrapper: 'TODO',
     },

@@ -12,33 +12,31 @@ import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import {
+  useFPAssetAddressOptions,
+  useFPVaultAddressOptions,
   useSelectedFeederPoolContract,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
 import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { useTokens } from '../../../../context/TokensProvider';
+import { ADDRESSES } from '../../../../constants';
 
 const formId = 'RedeemLP';
 
 export const MintLP: FC = () => {
-  const { bAssets } = useSelectedMassetState() ?? {};
   const feederPool = useSelectedFeederPoolState();
   const contract = useSelectedFeederPoolContract();
   const propose = usePropose();
   const walletAddress = useWalletAddress();
 
-  const mpAssetsTokens = useTokens(
-    Object.keys(bAssets ?? {}).map(address => address),
-  );
-
-  const inputTokens = useMemo(
-    () => [feederPool.masset.token, feederPool.fasset.token, ...mpAssetsTokens],
-    [feederPool, mpAssetsTokens],
-  );
+  // TODO should include FP token as input (and then use vault only as output)
+  const inputAddressOptions = useFPAssetAddressOptions();
+  const outputAddressOptions = useFPVaultAddressOptions();
 
   const [inputAddress, setInputAddress] = useState<string | undefined>(
-    inputTokens[0].address,
+    inputAddressOptions[0].address,
+  );
+  const [outputAddress, setOutputAddress] = useState<string | undefined>(
+    outputAddressOptions[0].address,
   );
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
@@ -48,27 +46,34 @@ export const MintLP: FC = () => {
     max: 99.99,
   });
 
-  const { token: outputToken } = feederPool;
+  const outputToken = outputAddressOptions.find(
+    t => t.address === outputAddress,
+  );
 
   const inputToken = useMemo(
-    () => inputTokens.find(t => t.address === inputAddress),
-    [inputAddress, inputTokens],
+    () => inputAddressOptions.find(t => t.address === inputAddress),
+    [inputAddress, inputAddressOptions],
   );
+
+  const contractAddress =
+    inputAddress === feederPool.address
+      ? feederPool.vault.address
+      : ADDRESSES.FEEDER_WRAPPER;
 
   const approve = useMemo(
     () =>
       (inputAddress && {
-        spender: feederPool.address,
+        spender: contractAddress,
         address: inputAddress,
         amount: inputAmount,
       }) ||
       undefined,
-    [inputAddress, inputAmount, feederPool],
+    [inputAddress, contractAddress, inputAmount],
   );
 
   const { estimatedOutputAmount, exchangeRate } = useEstimatedOutput(
     {
-      ...inputTokens.find(t => t.address === inputAddress),
+      ...inputAddressOptions.find(t => t.address === inputAddress),
       amount: inputAmount,
     } as BigDecimalInputValue,
     { ...outputToken } as BigDecimalInputValue,
@@ -109,18 +114,19 @@ export const MintLP: FC = () => {
 
   return (
     <AssetExchange
-      inputAddressOptions={inputTokens}
-      outputAddressOptions={[outputToken]}
       error={penaltyBonus?.message}
       exchangeRate={exchangeRate}
+      handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={(): void => {
         setInputFormValue(inputToken?.balance?.string);
       }}
-      handleSetInputAddress={setInputAddress}
+      handleSetOutputAddress={setOutputAddress}
       inputAddress={inputAddress}
+      inputAddressOptions={inputAddressOptions}
       inputFormValue={inputFormValue}
-      outputAddress={outputToken.address}
+      outputAddress={outputAddress}
+      outputAddressOptions={outputAddressOptions}
       outputFormValue={estimatedOutputAmount?.value?.string}
     >
       <SendButton
