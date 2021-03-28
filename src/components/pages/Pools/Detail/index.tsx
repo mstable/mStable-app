@@ -96,6 +96,7 @@ const Clippy = styled.div`
   }
 
   p {
+    font-size: 0.875rem;
     span {
       font-weight: 600;
     }
@@ -112,17 +113,17 @@ const Exchange = styled.div`
 
   @media (min-width: ${ViewportWidth.m}) {
     flex-direction: row;
+    justify-content: space-between;
 
     > div:not(:last-child) {
       margin-bottom: 0;
     }
 
     > div:first-child {
-      flex-basis: calc(60%);
-      margin-right: 1rem;
+      flex-basis: calc(65% - 0.5rem);
     }
     > div:last-child {
-      flex-basis: calc(40%);
+      flex-basis: calc(35% - 0.5rem);
     }
   }
 `;

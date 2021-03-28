@@ -53,12 +53,13 @@ export const MintMasset: FC = () => {
   );
   const massetToken = useTokenSubscription(massetAddress);
   const inputToken = useTokenSubscription(inputAddress);
+  const inputDecimals = inputToken?.decimals;
 
   const [
     inputAmount,
     inputFormValue,
     handleSetMassetFormValue,
-  ] = useBigDecimalInput('0', massetState.token.decimals);
+  ] = useBigDecimalInput('0', { decimals: inputDecimals });
 
   const [slippageSimple, slippageFormValue, handleSetSlippage] = useSimpleInput(
     0.1,
