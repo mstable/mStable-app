@@ -22,6 +22,7 @@ import { assetColorMapping } from '../constants';
 
 import { Card } from './Card';
 import { CountUp } from '../../../core/CountUp';
+import { Tooltip } from '../../../core/ReactTooltip';
 
 interface Props {
   className?: string;
@@ -30,6 +31,20 @@ interface Props {
   isLarge?: boolean;
   color?: string;
 }
+
+const RewardsAPY = styled.div<{ isLarge?: boolean }>`
+  > div {
+    ${({ isLarge }) =>
+      !isLarge && {
+        display: 'flex',
+        flexDirection: 'row',
+      }}
+  }
+`;
+
+const UnderlinedTip = styled(Tooltip)`
+  text-decoration: underline;
+`;
 
 const StatsContainer = styled.div<{ isLarge?: boolean }>`
   display: flex;
@@ -43,6 +58,7 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
   > div {
     display: flex;
     justify-content: space-between;
+    font-size: 0.875rem;
 
     > :first-child {
       font-weight: 600;
@@ -59,7 +75,6 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
       flex-direction: row;
       flex: 0;
       justify-content: space-between;
-
       flex-basis: ${({ isLarge }) => isLarge && `calc(50% - 5%)`};
     }
   }
@@ -144,17 +159,24 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
           <span>${stats.liquidity.abbreviated}</span>
         </p>
       </div>
-      <div>
+      <RewardsAPY isLarge={isLarge}>
         <p>Rewards APY</p>
         <div>
           <div>
-            Base <CountUp end={stats.apy} />%
+            <CountUp end={stats.apy} />% →&nbsp;
           </div>
           <div>
-            +vMTA <CountUp end={stats.boostApy} />%
+            {' '}
+            <CountUp end={stats.boostApy} />%{' '}
+            <UnderlinedTip
+              tip="Max boost can be achieved by staking MTA"
+              hideIcon
+            >
+              vMTA
+            </UnderlinedTip>
           </div>
         </div>
-      </div>
+      </RewardsAPY>
       {isLarge && (
         <>
           <div>
