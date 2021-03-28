@@ -1,52 +1,66 @@
 # import './fragments.graphql'
 
-query FeederPools($account: String!, $hasAccount: Boolean!) @api(name: feeders) {
-    feederPools {
-        id
-        swapFeeRate
-        redemptionFeeRate
-        governanceFeeRate
-        dailyAPY
-        price
-        invariantK
-        basket {
-            bassets {
-                ...BassetAll
-            }
-            undergoingRecol
-            failed
-        }
-        token {
-            ...TokenAll
-        }
-        fasset {
-            ...TokenAll
-        }
-        masset {
-            id
-        }
-        vault {
-            ...BoostedSavingsVaultAll
-        }
+query FeederPools($account: String!, $hasAccount: Boolean!)
+@api(name: feeders) {
+  feederPools {
+    id
+    swapFeeRate
+    redemptionFeeRate
+    governanceFeeRate
+    dailyAPY
+    price
+    invariantK
+    basket {
+      bassets {
+        ...BassetAll
+      }
+      undergoingRecol
+      failed
     }
+    token {
+      ...TokenAll
+    }
+    fasset {
+      ...TokenAll
+    }
+    masset {
+      id
+    }
+    vault {
+      ...BoostedSavingsVaultAll
+    }
+    accounts(where: { account: $account }) @include(if: $hasAccount) {
+      balance
+      price
+      lastUpdate
+      balanceVault
+      priceVault
+      lastUpdateVault
+      cumulativeEarned {
+        exact
+        decimals
+      }
+    }
+  }
 }
 
 query FeederTokens @api(name: feeders) {
-    feederPools {
-        token {
-            ...TokenAll
-        }
-        fasset {
-            ...TokenAll
-        }
+  feederPools {
+    token {
+      ...TokenAll
     }
+    fasset {
+      ...TokenAll
+    }
+  }
 }
 
-query FeederPoolMetrics($feederPool: ID!, $block: Block_height!) @api(name: feeders) {
-    current: feederPool(id: $feederPool) {
-        ...FPMetrics
-    }
-    historic: feederPool(id: $feederPool, block: $block) {
-        ...FPMetrics
-    }
+query FeederPoolMetrics($feederPool: ID!, $block: Block_height!)
+@api(name: feeders) {
+  current: feederPool(id: $feederPool) {
+    ...FPMetrics
+  }
+  historic: feederPool(id: $feederPool, block: $block) {
+    ...FPMetrics
+  }
 }

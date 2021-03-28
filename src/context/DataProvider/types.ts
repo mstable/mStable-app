@@ -29,6 +29,16 @@ export interface BassetState {
   token: SubscribedToken;
 }
 
+export interface FeederPoolAccountState {
+  cumulativeEarned: BigDecimal;
+  balance: BigDecimal;
+  balanceVault: BigDecimal;
+  price: BigDecimal;
+  priceVault: BigDecimal;
+  lastUpdate: number;
+  lastUpdateVault: number;
+}
+
 export interface FeederPoolState {
   address: string;
   fasset: BassetState;
@@ -45,6 +55,7 @@ export interface FeederPoolState {
   feeRate: BigNumber;
   redemptionFeeRate: BigNumber;
   undergoingRecol: boolean;
+  account?: FeederPoolAccountState;
 }
 
 export interface MassetState {
