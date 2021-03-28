@@ -76,7 +76,7 @@ export const MintLP: FC = () => {
       ...inputAddressOptions.find(t => t.address === inputAddress),
       amount: inputAmount,
     } as BigDecimalInputValue,
-    { ...outputToken } as BigDecimalInputValue,
+    { ...outputToken, address: feederPool.address } as BigDecimalInputValue,
   );
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
@@ -137,6 +137,11 @@ export const MintLP: FC = () => {
         handleSend={() => {
           if (!contract || !walletAddress || !feederPool) return;
           if (!inputAddress || !inputAmount || !minOutputAmount) return;
+
+          if (outputAddress !== feederPool.address) {
+            // Deposit to vault here
+            return;
+          }
 
           return propose<Interfaces.FeederPool, 'mint'>(
             new TransactionManifest(
