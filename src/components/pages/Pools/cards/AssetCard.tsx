@@ -2,6 +2,7 @@ import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
+// eslint-disable-next-line
 import { BigNumber } from 'ethers';
 import { getUnixTime } from 'date-fns';
 
@@ -20,6 +21,7 @@ import { ViewportWidth } from '../../../../theme';
 import { assetColorMapping } from '../constants';
 
 import { Card } from './Card';
+import { CountUp } from '../../../core/CountUp';
 
 interface Props {
   className?: string;
@@ -42,12 +44,15 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
     display: flex;
     justify-content: space-between;
 
-    p:first-child {
+    > :first-child {
       font-weight: 600;
     }
 
-    p:last-child > span {
-      ${({ theme }) => theme.mixins.numeric};
+    > :last-child {
+      text-align: right;
+      span {
+        ${({ theme }) => theme.mixins.numeric};
+      }
     }
 
     @media (min-width: ${ViewportWidth.m}) {
@@ -70,16 +75,15 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
   }
 `;
 
+// eslint-disable-next-line
 const nowUnix = getUnixTime(Date.now());
 
 const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
   isLarge = false,
   address,
 }) => {
-  // TODO: -
-  // getPoolStats(tokenAddresses);
   const {
-    vault: { rewardRate, periodFinish, periodDuration },
+    // vault: { rewardRate, periodFinish, periodDuration },
     // totalSupply,
     masset,
     fasset,
@@ -101,11 +105,15 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
     const priceInUsdTerms = priceInMassetTerms * (massetPrice ?? 0);
     const liquidity = BigDecimal.parse(priceInUsdTerms.toFixed(2));
 
-    const rewardsPerWeek = new BigDecimal(
-      nowUnix < periodFinish
-        ? BigNumber.from(periodDuration).mul(rewardRate)
-        : 0,
-    );
+    // const rewardsPerWeek = new BigDecimal(
+    //   nowUnix < periodFinish
+    //     ? BigNumber.from(periodDuration).mul(rewardRate)
+    //     : 0,
+    // );
+
+    // FIXME
+    const apy = 13.99;
+    const boostApy = 28.96;
 
     // TODO calculate volume on the subgraph
     const volume = (() => {
@@ -125,8 +133,8 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
       return BigDecimal.ZERO;
     })();
 
-    return { liquidity, rewardsPerWeek, volume };
-  }, [fpMetrics.data, invariantK, periodDuration, periodFinish, rewardRate]);
+    return { liquidity, apy, boostApy, volume };
+  }, [fpMetrics.data, invariantK, massetPrice, price]);
 
   return (
     <StatsContainer isLarge={isLarge}>
@@ -137,10 +145,15 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
         </p>
       </div>
       <div>
-        <p>Rewards</p>
-        <p>
-          <span>{stats.rewardsPerWeek.abbreviated}</span> MTA / week
-        </p>
+        <p>Rewards APY</p>
+        <div>
+          <div>
+            Base <CountUp end={stats.apy} />%
+          </div>
+          <div>
+            +vMTA <CountUp end={stats.boostApy} />%
+          </div>
+        </div>
       </div>
       {isLarge && (
         <>
@@ -152,11 +165,16 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
           </div>
           <div>
             <p>Assets</p>
-            <p>
-              <span>{masset.totalVault.abbreviated}</span> {masset.token.symbol}
-              , <span>{fasset.totalVault.abbreviated}</span>{' '}
-              {fasset.token.symbol}
-            </p>
+            <div>
+              <div>
+                <span>{masset.totalVault.abbreviated}</span>{' '}
+                {masset.token.symbol}
+              </div>
+              <div>
+                <span>{fasset.totalVault.abbreviated}</span>{' '}
+                {fasset.token.symbol}
+              </div>
+            </div>
           </div>
         </>
       )}
