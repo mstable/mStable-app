@@ -150,12 +150,30 @@ export const MintExact: FC = () => {
         handleSend={() => {
           if (!contracts || !walletAddress || !minOutputAmount) return;
 
-          if (contractAddress === ADDRESSES.FEEDER_WRAPPER) {
-            return;
-          }
-
           if (touched.length === 1) {
             const [{ address, amount }] = touched;
+            // mint & stake via wrapper
+            if (outputAddress !== feederPool.address) {
+              return propose<Interfaces.FeederWrapper, 'mintAndStake'>(
+                new TransactionManifest(
+                  contracts.feederWrapper,
+                  'mintAndStake',
+                  [
+                    feederPool.address,
+                    feederPool.vault.address,
+                    address,
+                    (amount as BigDecimal).exact,
+                    minOutputAmount.exact,
+                  ],
+                  {
+                    past: 'Deposited & Staked',
+                    present: 'Depositing & Staking',
+                  },
+                  formId,
+                ),
+              );
+            }
+            // mint
             return propose<Interfaces.FeederPool, 'mint'>(
               new TransactionManifest(
                 contracts.feederPool,
@@ -175,6 +193,27 @@ export const MintExact: FC = () => {
           const addresses = touched.map(v => v.address as string);
           const amounts = touched.map(v => (v.amount as BigDecimal).exact);
 
+          // TODO: FIX reverting
+          // mint & stake multi
+          if (outputAddress !== feederPool.address) {
+            return propose<Interfaces.FeederWrapper, 'mintMultiAndStake'>(
+              new TransactionManifest(
+                contracts.feederWrapper,
+                'mintMultiAndStake',
+                [
+                  feederPool.address,
+                  feederPool.vault.address,
+                  addresses,
+                  amounts,
+                  minOutputAmount.exact,
+                ],
+                { past: 'Deposited & Staked', present: 'Depositing & Staking' },
+                formId,
+              ),
+            );
+          }
+
+          // mint multi
           return propose<Interfaces.FeederPool, 'mintMulti'>(
             new TransactionManifest(
               contracts.feederPool,

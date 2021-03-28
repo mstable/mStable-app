@@ -3,7 +3,7 @@ import { StreamType } from './Detail/useRewardStreams';
 export const assetColorMapping: Record<string, string> = {
   'mBTC/fAST': '#eb6ba9',
   'TUSD/WBTC': '#eb6ba9',
-  'DAI/WBTC': '#3d68e9',
+  'mUSD/GUSD': '#3d68e9',
 };
 
 const greenRewards = {

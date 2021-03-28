@@ -124,7 +124,7 @@ const Chart: FC<{
       {data.length > 1 ? (
         <ResponsiveContainer aspect={2}>
           <AreaChart
-            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+            margin={{ top: 40, right: 0, bottom: 0, left: 0 }}
             barCategoryGap={1}
             data={data}
           >

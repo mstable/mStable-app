@@ -14,7 +14,7 @@ import { useMinimumOutput } from '../../../../hooks/useOutput';
 import {
   useFPAssetAddressOptions,
   useFPVaultAddressOptions,
-  useSelectedFeederPoolContract,
+  useSelectedFeederPoolContracts,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
 import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
@@ -24,7 +24,8 @@ const formId = 'RedeemLP';
 
 export const MintLP: FC = () => {
   const feederPool = useSelectedFeederPoolState();
-  const contract = useSelectedFeederPoolContract();
+  const contracts = useSelectedFeederPoolContracts();
+
   const propose = usePropose();
   const walletAddress = useWalletAddress();
 
@@ -132,17 +133,30 @@ export const MintLP: FC = () => {
         penaltyBonusAmount={penaltyBonus?.percentage}
         valid={!error}
         handleSend={() => {
-          if (!contract || !walletAddress || !feederPool) return;
+          if (!contracts || !walletAddress || !feederPool) return;
           if (!inputAddress || !inputAmount || !minOutputAmount) return;
 
           if (outputAddress !== feederPool.address) {
-            // Deposit to vault here
-            return;
+            return propose<Interfaces.FeederWrapper, 'mintAndStake'>(
+              new TransactionManifest(
+                contracts.feederWrapper,
+                'mintAndStake',
+                [
+                  feederPool.address,
+                  feederPool.vault.address,
+                  inputAddress,
+                  inputAmount.exact,
+                  minOutputAmount.exact,
+                ],
+                { past: 'Minted & Stake', present: 'Minting & Staking' },
+                formId,
+              ),
+            );
           }
 
           return propose<Interfaces.FeederPool, 'mint'>(
             new TransactionManifest(
-              contract,
+              contracts.feederPool,
               'mint',
               [
                 inputAddress,
