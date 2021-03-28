@@ -19,6 +19,7 @@ import {
 } from '../FeederPoolProvider';
 import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
 import { ADDRESSES } from '../../../../constants';
+import { useTokenSubscription } from '../../../../context/TokensProvider';
 
 const formId = 'RedeemLP';
 
@@ -40,20 +41,24 @@ export const MintLP: FC = () => {
     outputAddressOptions[0].address,
   );
 
-  const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
-
   const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
     min: 0.01,
     max: 99.99,
   });
 
+  const inputToken = useTokenSubscription(
+    inputAddressOptions.find(t => t.address === inputAddress)?.address,
+  );
+
   const outputToken = outputAddressOptions.find(
     t => t.address === outputAddress,
   );
 
-  const inputToken = useMemo(
-    () => inputAddressOptions.find(t => t.address === inputAddress),
-    [inputAddress, inputAddressOptions],
+  const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput(
+    '0',
+    {
+      decimals: inputToken?.decimals,
+    },
   );
 
   const contractAddress =
