@@ -63,7 +63,7 @@ const MintLogic: FC = () => {
     if (!Object.keys(inputValues).length) return;
     if (!touched.length) return;
 
-    const totalAmount = Object.values(touched).reduce(
+    return Object.values(touched).reduce(
       (prev, v) =>
         prev.add(
           (v.amount as BigDecimal).mulRatioTruncate(
@@ -72,14 +72,12 @@ const MintLogic: FC = () => {
         ),
       BigDecimal.ZERO,
     );
-
-    return totalAmount;
   }, [inputValues, touched, massetState]);
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippage?.simple,
     inputAmount,
-    estimatedOutputAmount?.value,
+    estimatedOutputAmount.value,
   );
 
   useEffect(() => {

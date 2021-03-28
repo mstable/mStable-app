@@ -28,23 +28,29 @@ export const useEstimatedRedeemTokenOutput = (
   ] = useFetchState<BigDecimal>();
 
   // Get the swap output with a throttle so it's not called too often
+  // Use strict equality checks for deps for the same reason
+  const output = Object.values(outputValues ?? {})[0];
+  const outputAddress = output?.address;
+  const outputDecimals = output?.decimals;
+  const inputAmt = inputAmount?.exact.toString();
   useThrottleFn(
     (
       _contract?: RedeemableContract,
-      _outputValues?: BigDecimalInputValues,
-      _inputAmount?: BigDecimal,
+      _inputAmt?: string,
+      _outputAddress?: string,
+      _outputDecimals?: number,
     ) => {
-      if (!_outputValues || !_inputAmount) return;
+      if (!_outputDecimals || !_inputAmt) return;
       if (!_contract) return setEstimatedOutputAmount.fetching();
 
-      const address = Object.keys(_outputValues)?.[0];
-      const { decimals } = _outputValues[address];
-
-      if (_inputAmount?.simple) {
+      if (_outputDecimals && _outputAddress && _inputAmt) {
+        setEstimatedOutputAmount.fetching();
         return _contract
-          .getRedeemOutput(address, _inputAmount.exact)
+          .getRedeemOutput(_outputAddress, _inputAmt)
           .then(_amount => {
-            setEstimatedOutputAmount.value(new BigDecimal(_amount, decimals));
+            setEstimatedOutputAmount.value(
+              new BigDecimal(_amount, _outputDecimals),
+            );
           })
           .catch((_error: Error): void => {
             setEstimatedOutputAmount.error(sanitizeMassetError(_error));
@@ -54,7 +60,7 @@ export const useEstimatedRedeemTokenOutput = (
       setEstimatedOutputAmount.value();
     },
     1000,
-    [contract, outputValues, inputAmount],
+    [contract, inputAmt, outputAddress, outputDecimals],
   );
 
   const exchangeRate = useMemo<FetchState<BigDecimal>>(() => {

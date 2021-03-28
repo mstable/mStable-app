@@ -84,7 +84,7 @@ const RedeemExactBassetsLogic: FC = () => {
   const { maxOutputAmount, penaltyBonus } = useMaximumOutput(
     slippage?.simple,
     inputAmount,
-    estimatedOutputAmount?.value,
+    estimatedOutputAmount.value,
   );
 
   const outputLabel = useMemo(

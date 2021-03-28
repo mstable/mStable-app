@@ -74,9 +74,7 @@ export const RedeemMasset: FC = () => {
     masset,
     massetAmount,
     {
-      [outputAddress as string]: {
-        ...outputToken,
-      },
+      [outputAddress as string]: outputToken,
     } as BigDecimalInputValues,
   );
 
@@ -111,7 +109,7 @@ export const RedeemMasset: FC = () => {
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippageSimple,
     massetAmount,
-    estimatedOutputAmount?.value,
+    estimatedOutputAmount.value,
   );
 
   return (

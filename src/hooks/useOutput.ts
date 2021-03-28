@@ -37,7 +37,10 @@ const useOutput = (
         ? outputAmount.simple * (1 + slippageSimple / 100)
         : outputAmount.simple * (1 - slippageSimple / 100);
 
-    return BigDecimal.parse(simpleAmount.toFixed(outputAmount.decimals));
+    return BigDecimal.parse(
+      simpleAmount.toFixed(outputAmount.decimals),
+      outputAmount.decimals,
+    );
   }, [type, outputAmount, slippageSimple]);
 
   const penaltyBonus = useMemo(() => {
