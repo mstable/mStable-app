@@ -1,6 +1,5 @@
 import React, { FC, useMemo, useState } from 'react';
 
-import type { MassetState } from '../../../../context/DataProvider/types';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useWalletAddress } from '../../../../context/OnboardProvider';
 import { SendButton } from '../../../forms/SendButton';
@@ -13,33 +12,29 @@ import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import {
+  useFPAssetAddressOptions,
+  useFPVaultAddressOptions,
   useSelectedFeederPoolContract,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
 import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { useTokens } from '../../../../context/TokensProvider';
 
 const formId = 'RedeemLP';
 
 export const RedeemLP: FC = () => {
-  const { bAssets } = useSelectedMassetState() as MassetState;
   const feederPool = useSelectedFeederPoolState();
   const contract = useSelectedFeederPoolContract();
   const propose = usePropose();
   const walletAddress = useWalletAddress();
 
-  const mpAssetsTokens = useTokens(
-    Object.keys(bAssets ?? {}).map(address => address),
-  );
+  const inputAddressOptions = useFPVaultAddressOptions();
+  const outputAddressOptions = useFPAssetAddressOptions();
 
-  const outputTokens = useMemo(
-    () => [feederPool.masset.token, feederPool.fasset.token, ...mpAssetsTokens],
-    [feederPool, mpAssetsTokens],
+  const [inputAddress, setInputAddress] = useState<string | undefined>(
+    inputAddressOptions[0].address,
   );
-
   const [outputAddress, setOutputAddress] = useState<string | undefined>(
-    outputTokens[0].address,
+    outputAddressOptions[0].address,
   );
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
@@ -52,14 +47,18 @@ export const RedeemLP: FC = () => {
   const { token: inputToken } = feederPool;
 
   const outputToken = useMemo(
-    () => outputTokens.find(t => t.address === outputAddress),
-    [outputAddress, outputTokens],
+    () => outputAddressOptions.find(t => t.address === outputAddress),
+    [outputAddress, outputAddressOptions],
   );
 
   const { estimatedOutputAmount, exchangeRate } = useEstimatedOutput(
-    { ...inputToken, amount: inputAmount } as BigDecimalInputValue,
     {
-      ...outputTokens.find(t => t.address === outputAddress),
+      ...inputToken,
+      amount: inputAmount,
+      address: feederPool.address,
+    } as BigDecimalInputValue,
+    {
+      ...outputAddressOptions.find(t => t.address === outputAddress),
     } as BigDecimalInputValue,
   );
 
@@ -98,16 +97,17 @@ export const RedeemLP: FC = () => {
 
   return (
     <AssetExchange
-      inputAddressOptions={[inputToken]}
-      outputAddressOptions={outputTokens}
+      inputAddressOptions={inputAddressOptions}
+      outputAddressOptions={outputAddressOptions}
       error={penaltyBonus?.message}
       exchangeRate={exchangeRate}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={(): void => {
         setInputFormValue(inputToken.balance?.string);
       }}
+      handleSetInputAddress={setInputAddress}
       handleSetOutputAddress={setOutputAddress}
-      inputAddress={feederPool.address}
+      inputAddress={inputAddress}
       inputFormValue={inputFormValue}
       outputAddress={outputAddress}
       outputFormValue={estimatedOutputAmount?.value?.string}
@@ -119,6 +119,11 @@ export const RedeemLP: FC = () => {
         handleSend={() => {
           if (!contract || !walletAddress || !feederPool) return;
           if (!outputAddress || !inputAmount || !minOutputAmount) return;
+
+          if (inputAddress !== feederPool.address) {
+            // Withdraw from vault here
+            return;
+          }
 
           return propose<Interfaces.FeederPool, 'redeem'>(
             new TransactionManifest(
