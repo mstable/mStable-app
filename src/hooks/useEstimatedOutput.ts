@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   FeederPool,
@@ -227,10 +227,7 @@ export const useEstimatedOutput = (
     };
 
     const scaledInput = scaleAsset(inputAddress, inputAmount);
-    const scaledOutput = scaleAsset(
-      outputAddress,
-      estimatedOutputAmount?.value,
-    );
+    const scaledOutput = scaleAsset(outputAddress, estimatedOutputAmount.value);
 
     const value = scaledInput.divPrecisely(scaledOutput);
     return { value };

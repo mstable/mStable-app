@@ -84,7 +84,7 @@ const MintExactLogic: FC = () => {
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippage?.simple,
     inputAmount,
-    estimatedOutputAmount?.value,
+    estimatedOutputAmount.value,
   );
 
   useEffect(() => {
