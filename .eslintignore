@@ -4,6 +4,7 @@ src/graphql/uniswap.tsx
 src/graphql/blocks.tsx
 src/graphql/ecosystem.tsx
 src/graphql/legacy.tsx
+src/graphql/feeders.tsx
 src/graphql/mbtc.tsx
 src/graphql/sushi.tsx
 src/graphql/vault.tsx
