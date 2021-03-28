@@ -13,7 +13,6 @@ import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import {
   useFPAssetAddressOptions,
-  useFPVaultAddressOptions,
   useSelectedFeederPoolContract,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
@@ -27,12 +26,8 @@ export const RedeemLP: FC = () => {
   const propose = usePropose();
   const walletAddress = useWalletAddress();
 
-  const inputAddressOptions = useFPVaultAddressOptions();
   const outputAddressOptions = useFPAssetAddressOptions();
 
-  const [inputAddress, setInputAddress] = useState<string | undefined>(
-    inputAddressOptions[0].address,
-  );
   const [outputAddress, setOutputAddress] = useState<string | undefined>(
     outputAddressOptions[0].address,
   );
@@ -55,7 +50,6 @@ export const RedeemLP: FC = () => {
     {
       ...inputToken,
       amount: inputAmount,
-      address: feederPool.address,
     } as BigDecimalInputValue,
     {
       ...outputAddressOptions.find(t => t.address === outputAddress),
@@ -94,7 +88,7 @@ export const RedeemLP: FC = () => {
 
   return (
     <AssetExchange
-      inputAddressOptions={inputAddressOptions}
+      inputAddressOptions={[inputToken]}
       outputAddressOptions={outputAddressOptions}
       error={penaltyBonus?.message}
       exchangeRate={exchangeRate}
@@ -102,9 +96,8 @@ export const RedeemLP: FC = () => {
       handleSetInputMax={(): void => {
         setInputFormValue(inputToken.balance?.string);
       }}
-      handleSetInputAddress={setInputAddress}
       handleSetOutputAddress={setOutputAddress}
-      inputAddress={inputAddress}
+      inputAddress={feederPool.address}
       inputFormValue={inputFormValue}
       outputAddress={outputAddress}
       outputFormValue={estimatedOutputAmount.value?.string}
@@ -116,11 +109,6 @@ export const RedeemLP: FC = () => {
         handleSend={() => {
           if (!contract || !walletAddress || !feederPool) return;
           if (!outputAddress || !inputAmount || !minOutputAmount) return;
-
-          if (inputAddress !== feederPool.address) {
-            // Withdraw from vault here
-            return;
-          }
 
           return propose<Interfaces.FeederPool, 'redeem'>(
             new TransactionManifest(

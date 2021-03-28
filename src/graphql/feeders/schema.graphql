@@ -333,6 +333,28 @@ type Query {
     """
     block: Block_height
   ): [FeederPool!]!
+  feederPoolAccount(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): FeederPoolAccount
+  feederPoolAccounts(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: FeederPoolAccount_orderBy
+    orderDirection: OrderDirection
+    where: FeederPoolAccount_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [FeederPoolAccount!]!
   fpswapTransaction(
     id: ID!
     """
@@ -1552,6 +1574,7 @@ enum BoostedSavingsVaultAccount_orderBy {
   lastAction
   lastClaim
   rewardCount
+  cumulativeClaimed
   rewardEntries
   stakeTransactions
   rewardPaidTransactions
@@ -1650,6 +1673,20 @@ input BoostedSavingsVaultAccount_filter {
   rewardCount_lte: Int
   rewardCount_in: [Int!]
   rewardCount_not_in: [Int!]
+  cumulativeClaimed: String
+  cumulativeClaimed_not: String
+  cumulativeClaimed_gt: String
+  cumulativeClaimed_lt: String
+  cumulativeClaimed_gte: String
+  cumulativeClaimed_lte: String
+  cumulativeClaimed_in: [String!]
+  cumulativeClaimed_not_in: [String!]
+  cumulativeClaimed_contains: String
+  cumulativeClaimed_not_contains: String
+  cumulativeClaimed_starts_with: String
+  cumulativeClaimed_not_starts_with: String
+  cumulativeClaimed_ends_with: String
+  cumulativeClaimed_not_ends_with: String
 }
 type BoostedSavingsVaultAccount {
   id: ID!
@@ -1662,6 +1699,7 @@ type BoostedSavingsVaultAccount {
   lastAction: Int!
   lastClaim: Int!
   rewardCount: Int!
+  cumulativeClaimed: Metric!
   rewardEntries(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultRewardEntry_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultRewardEntry_filter): [BoostedSavingsVaultRewardEntry!]!
   stakeTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultStakeTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultStakeTransaction_filter): [BoostedSavingsVaultStakeTransaction!]!
   rewardPaidTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultRewardPaidTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultRewardPaidTransaction_filter): [BoostedSavingsVaultRewardPaidTransaction!]!
@@ -1669,6 +1707,132 @@ type BoostedSavingsVaultAccount {
 }
 type Account {
   id: ID!
+  boostedSavingsVaultAccounts(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultAccount_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultAccount_filter): [BoostedSavingsVaultAccount!]!
+  feederPoolAccounts(skip: Int = 0, first: Int = 100, orderBy: FeederPoolAccount_orderBy, orderDirection: OrderDirection, where: FeederPoolAccount_filter): [FeederPoolAccount!]!
+}
+enum FeederPoolAccount_orderBy {
+  id
+  account
+  feederPool
+  cumulativeEarned
+  balance
+  price
+  lastUpdate
+  balanceVault
+  priceVault
+  lastUpdateVault
+}
+input FeederPoolAccount_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  account: String
+  account_not: String
+  account_gt: String
+  account_lt: String
+  account_gte: String
+  account_lte: String
+  account_in: [String!]
+  account_not_in: [String!]
+  account_contains: String
+  account_not_contains: String
+  account_starts_with: String
+  account_not_starts_with: String
+  account_ends_with: String
+  account_not_ends_with: String
+  feederPool: String
+  feederPool_not: String
+  feederPool_gt: String
+  feederPool_lt: String
+  feederPool_gte: String
+  feederPool_lte: String
+  feederPool_in: [String!]
+  feederPool_not_in: [String!]
+  feederPool_contains: String
+  feederPool_not_contains: String
+  feederPool_starts_with: String
+  feederPool_not_starts_with: String
+  feederPool_ends_with: String
+  feederPool_not_ends_with: String
+  cumulativeEarned: String
+  cumulativeEarned_not: String
+  cumulativeEarned_gt: String
+  cumulativeEarned_lt: String
+  cumulativeEarned_gte: String
+  cumulativeEarned_lte: String
+  cumulativeEarned_in: [String!]
+  cumulativeEarned_not_in: [String!]
+  cumulativeEarned_contains: String
+  cumulativeEarned_not_contains: String
+  cumulativeEarned_starts_with: String
+  cumulativeEarned_not_starts_with: String
+  cumulativeEarned_ends_with: String
+  cumulativeEarned_not_ends_with: String
+  balance: BigInt
+  balance_not: BigInt
+  balance_gt: BigInt
+  balance_lt: BigInt
+  balance_gte: BigInt
+  balance_lte: BigInt
+  balance_in: [BigInt!]
+  balance_not_in: [BigInt!]
+  price: BigInt
+  price_not: BigInt
+  price_gt: BigInt
+  price_lt: BigInt
+  price_gte: BigInt
+  price_lte: BigInt
+  price_in: [BigInt!]
+  price_not_in: [BigInt!]
+  lastUpdate: Int
+  lastUpdate_not: Int
+  lastUpdate_gt: Int
+  lastUpdate_lt: Int
+  lastUpdate_gte: Int
+  lastUpdate_lte: Int
+  lastUpdate_in: [Int!]
+  lastUpdate_not_in: [Int!]
+  balanceVault: BigInt
+  balanceVault_not: BigInt
+  balanceVault_gt: BigInt
+  balanceVault_lt: BigInt
+  balanceVault_gte: BigInt
+  balanceVault_lte: BigInt
+  balanceVault_in: [BigInt!]
+  balanceVault_not_in: [BigInt!]
+  priceVault: BigInt
+  priceVault_not: BigInt
+  priceVault_gt: BigInt
+  priceVault_lt: BigInt
+  priceVault_gte: BigInt
+  priceVault_lte: BigInt
+  priceVault_in: [BigInt!]
+  priceVault_not_in: [BigInt!]
+  lastUpdateVault: Int
+  lastUpdateVault_not: Int
+  lastUpdateVault_gt: Int
+  lastUpdateVault_lt: Int
+  lastUpdateVault_gte: Int
+  lastUpdateVault_lte: Int
+  lastUpdateVault_in: [Int!]
+  lastUpdateVault_not_in: [Int!]
+}
+type FeederPoolAccount {
+  id: ID!
+  account: Account!
+  feederPool: FeederPool!
+  cumulativeEarned: Metric!
+  balance: BigInt!
+  price: BigInt!
+  lastUpdate: Int!
+  balanceVault: BigInt!
+  priceVault: BigInt!
+  lastUpdateVault: Int!
 }
 enum BoostedSavingsVaultRewardEntry_orderBy {
   id
@@ -2386,6 +2550,8 @@ input BoostedSavingsVault_filter {
 }
 enum Account_orderBy {
   id
+  boostedSavingsVaultAccounts
+  feederPoolAccounts
 }
 input Account_filter {
   id: ID
@@ -3156,6 +3322,28 @@ type Subscription {
     """
     block: Block_height
   ): [FeederPool!]!
+  feederPoolAccount(
+    id: ID!
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): FeederPoolAccount
+  feederPoolAccounts(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: FeederPoolAccount_orderBy
+    orderDirection: OrderDirection
+    where: FeederPoolAccount_filter
+    """
+    The block at which the query should be executed. Can either be an `{ number:
+    Int }` containing the block number or a `{ hash: Bytes }` value containing a
+    block hash. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+  ): [FeederPoolAccount!]!
   fpswapTransaction(
     id: ID!
     """

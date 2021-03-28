@@ -155,7 +155,7 @@ const Container = styled.div`
 const PoolDetailContent: FC = () => {
   const { address, title } = useSelectedFeederPoolState() as FeederPoolState;
 
-  const darkColor = assetColorMapping[title];
+  const color = assetColorMapping[title];
 
   const tabs = useMemo(
     () => ({
@@ -177,8 +177,8 @@ const PoolDetailContent: FC = () => {
     <Container>
       <PageHeader action={PageAction.Pools} subtitle={title} />
       <HeaderContainer>
-        <HeaderCard poolAddress={address} isLarge color={darkColor} />
-        <LiquidityChart color={darkColor} />
+        <HeaderCard poolAddress={address} isLarge color={color} />
+        <LiquidityChart color={color} />
       </HeaderContainer>
       <Row>
         <AssetDetails />

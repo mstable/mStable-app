@@ -20,6 +20,7 @@ import {
   SaveWrapper,
   SaveWrapperV2,
   TokenMinter,
+  FeederWrapper,
 } from './typechain';
 
 import { BigDecimal } from './web3/BigDecimal';
@@ -49,6 +50,7 @@ export enum Interfaces {
   BoostedSavingsVault,
   UniswapRouter02,
   FeederPool,
+  FeederWrapper,
 }
 /* eslint-enable @typescript-eslint/no-shadow */
 
@@ -69,6 +71,7 @@ export interface Instances {
   [Interfaces.BoostedSavingsVault]: BoostedSavingsVault;
   [Interfaces.UniswapRouter02]: UniswapRouter02;
   [Interfaces.FeederPool]: FeederPool;
+  [Interfaces.FeederWrapper]: FeederWrapper;
 }
 
 export interface Token {
