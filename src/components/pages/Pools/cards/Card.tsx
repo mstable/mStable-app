@@ -13,10 +13,6 @@ interface Props {
 }
 
 const Icon = styled.div<{ isChevron?: boolean }>`
-  background: ${({ theme }) => `${theme.color.accentContrast}77`};
-  border-radius: 1rem;
-  width: 2rem;
-  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -73,13 +69,6 @@ const ContainerButton = styled(UnstyledButton)`
 
   :hover {
     opacity: 0.75;
-
-    .icon {
-      background: ${({ theme }) => theme.color.gold};
-      path {
-        fill: ${({ theme }) => theme.color.white};
-      }
-    }
   }
 `;
 

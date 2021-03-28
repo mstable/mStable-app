@@ -30,7 +30,7 @@ import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
 import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
 
-const formId = 'redeem';
+const formId = 'mint';
 
 const Container = styled.div`
   > * {
@@ -164,7 +164,7 @@ export const MintMasset: FC = () => {
       {penaltyBonus?.message && <ErrorMessage error={penaltyBonus?.message} />}
       <SendButton
         valid={!error}
-        title={error ?? 'Redeem'}
+        title={error ?? 'Mint'}
         penaltyBonusAmount={penaltyBonus?.percentage}
         handleSend={() => {
           if (

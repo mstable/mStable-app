@@ -245,7 +245,7 @@ const Background = styled.div<{ gradientColor?: string }>`
       ? `linear-gradient(180deg, ${gradientColor} 0%, transparent 100%);`
       : `none`};
   border-radius: 1rem;
-  opacity: 0.5;
+  opacity: 0.33;
   z-index: -1;
 `;
 
