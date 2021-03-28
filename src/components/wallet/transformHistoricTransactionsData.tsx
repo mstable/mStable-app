@@ -5,6 +5,17 @@ import { BigDecimal } from '../../web3/BigDecimal';
 import { formatUnix } from '../../utils/time';
 import { humanizeList } from '../../utils/strings';
 
+interface MaybeMassetTx {
+  masset: {
+    id: string;
+  };
+  savingsContract: {
+    masset: {
+      id: string;
+    };
+  };
+}
+
 export const transformHistoricTransactionsData = (
   data: HistoricTransactionsQueryResult['data'],
   dataState?: DataState,
@@ -25,6 +36,17 @@ export const transformHistoricTransactionsData = (
   );
 
   return transactions
+    .filter(tx => {
+      if (((tx as unknown) as MaybeMassetTx).masset?.id) {
+        return !!massetsByAddress[((tx as unknown) as MaybeMassetTx).masset.id];
+      }
+      if (((tx as unknown) as MaybeMassetTx).savingsContract?.masset?.id) {
+        return !!massetsByAddress[
+          ((tx as unknown) as MaybeMassetTx).savingsContract?.masset?.id
+        ];
+      }
+      return true;
+    })
     .map(({ hash, id, ...tx }) => {
       const timestamp = parseInt(tx.timestamp, 10);
       const formattedDate = formatUnix(timestamp);
