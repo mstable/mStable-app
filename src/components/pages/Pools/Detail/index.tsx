@@ -53,6 +53,7 @@ const HeaderContainer = styled.div`
 
   @media (min-width: ${ViewportWidth.m}) {
     > div:last-child {
+      margin-top: 1rem;
       display: block;
     }
   }
@@ -67,6 +68,7 @@ const HeaderContainer = styled.div`
     }
 
     > div:last-child {
+      margin-top: 0;
       > div {
         height: 100%;
       }
@@ -102,13 +104,26 @@ const Clippy = styled.div`
 
 const Exchange = styled.div`
   display: flex;
+  flex-direction: column;
 
-  > div:first-child {
-    flex-basis: calc(60%);
-    margin-right: 1rem;
+  > div:not(:last-child) {
+    margin-bottom: 1rem;
   }
-  > div:last-child {
-    flex-basis: calc(40%);
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+
+    > div:not(:last-child) {
+      margin-bottom: 0;
+    }
+
+    > div:first-child {
+      flex-basis: calc(60%);
+      margin-right: 1rem;
+    }
+    > div:last-child {
+      flex-basis: calc(40%);
+    }
   }
 `;
 
@@ -173,36 +188,34 @@ const PoolDetailContent: FC = () => {
       <Divider />
       <Exchange>
         <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
-        <div>
-          <Clippy>
-            <h4>Using mStable Feeder Pools</h4>
-            <p>
-              Feeder Pools offer a way to earn with your assets{' '}
-              <span>without exposure to impermanent loss.</span>
-            </p>
-            <p>
-              Liquidity providers passively gain yield from swap fees and also
-              earn MTA rewards.
-            </p>
-            <p>
-              You can <span>multiply your rewards</span> across{' '}
-              <span>all pools</span> (and Save) by staking MTA.
-            </p>
-            <p>
-              Rewards are streamed to you at a constant rate, and can be claimed
-              at any time.
-            </p>
-            <p>
-              Claiming rewards will send 20% of the unclaimed amount to you
-              immediately, with the rest safely locked in a future stream that
-              starts 26 weeks afterwards.
-            </p>
-            <p>
-              When streams are unlocked, these rewards are sent to you in full
-              along with unclaimed earnings.
-            </p>
-          </Clippy>
-        </div>
+        <Clippy>
+          <h4>Using mStable Feeder Pools</h4>
+          <p>
+            Feeder Pools offer a way to earn with your assets{' '}
+            <span>without exposure to impermanent loss.</span>
+          </p>
+          <p>
+            Liquidity providers passively gain yield from swap fees and also
+            earn MTA rewards.
+          </p>
+          <p>
+            You can <span>multiply your rewards</span> across{' '}
+            <span>all pools</span> (and Save) by staking MTA.
+          </p>
+          <p>
+            Rewards are streamed to you at a constant rate, and can be claimed
+            at any time.
+          </p>
+          <p>
+            Claiming rewards will send 20% of the unclaimed amount to you
+            immediately, with the rest safely locked in a future stream that
+            starts 26 weeks afterwards.
+          </p>
+          <p>
+            When streams are unlocked, these rewards are sent to you in full
+            along with unclaimed earnings.
+          </p>
+        </Clippy>
       </Exchange>
     </Container>
   );

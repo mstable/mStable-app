@@ -17,7 +17,7 @@ const List = styled.div`
     display: none;
   }
 
-  @media (min-width: ${ViewportWidth.m}) {
+  @media (min-width: ${ViewportWidth.l}) {
     > div:first-child {
       display: none;
     }
