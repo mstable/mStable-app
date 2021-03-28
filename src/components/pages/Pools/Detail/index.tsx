@@ -91,6 +91,12 @@ const Clippy = styled.div`
     font-weight: 600;
     font-size: 1rem;
   }
+
+  p {
+    span {
+      font-weight: 600;
+    }
+  }
 `;
 
 const Exchange = styled.div`
@@ -171,17 +177,29 @@ const PoolDetailContent: FC = () => {
           <Clippy>
             <h4>Using mStable Feeder Pools</h4>
             <p>
-              Once crabs have become juveniles, they still have to keep moulting
-              many more times to become adults.
+              Feeder Pools offer a way to earn with your assets{' '}
+              <span>without exposure to impermanent loss.</span>
             </p>
             <p>
-              They are covered with a hard shell, which would otherwise prevent
-              growth. The moult cycle is coordinated by hormones.
+              Liquidity providers passively gain yield from swap fees and also
+              earn MTA rewards.
             </p>
             <p>
-              When preparing for moult, the old shell is softened and partly
-              eroded away, while the rudimentary beginnings of a new shell form
-              under it.
+              You can <span>multiply your rewards</span> across{' '}
+              <span>all pools</span> (and Save) by staking MTA.
+            </p>
+            <p>
+              Rewards are streamed to you at a constant rate, and can be claimed
+              at any time.
+            </p>
+            <p>
+              Claiming rewards will send 20% of the unclaimed amount to you
+              immediately, with the rest safely locked in a future stream that
+              starts 26 weeks afterwards.
+            </p>
+            <p>
+              When streams are unlocked, these rewards are sent to you in full
+              along with unclaimed earnings.
             </p>
           </Clippy>
         </div>

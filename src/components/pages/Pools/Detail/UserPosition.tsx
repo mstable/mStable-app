@@ -158,6 +158,8 @@ const ClaimContainer = styled.div`
 
   button {
     height: 2.75rem;
+    min-width: 11rem;
+    margin-left: 1rem;
   }
 `;
 
