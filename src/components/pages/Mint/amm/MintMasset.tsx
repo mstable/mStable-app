@@ -129,7 +129,7 @@ export const MintMasset: FC = () => {
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippageSimple,
     inputAmount,
-    estimatedOutputAmount?.value,
+    estimatedOutputAmount.value,
   );
 
   return (

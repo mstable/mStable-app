@@ -65,16 +65,13 @@ export const RedeemLP: FC = () => {
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippageSimple,
     inputAmount,
-    estimatedOutputAmount?.value,
+    estimatedOutputAmount.value,
   );
 
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount';
 
-    if (
-      !estimatedOutputAmount?.value?.simple &&
-      !estimatedOutputAmount?.fetching
-    )
+    if (!estimatedOutputAmount.value?.simple && !estimatedOutputAmount.fetching)
       return `Not enough ${outputToken?.symbol} in basket`;
 
     if (
@@ -92,7 +89,7 @@ export const RedeemLP: FC = () => {
       return 'Amount must be greater than zero';
     }
 
-    return estimatedOutputAmount?.error;
+    return estimatedOutputAmount.error;
   }, [inputAmount, feederPool.token, estimatedOutputAmount, outputToken]);
 
   return (
@@ -110,7 +107,7 @@ export const RedeemLP: FC = () => {
       inputAddress={inputAddress}
       inputFormValue={inputFormValue}
       outputAddress={outputAddress}
-      outputFormValue={estimatedOutputAmount?.value?.string}
+      outputFormValue={estimatedOutputAmount.value?.string}
     >
       <SendButton
         title={error ?? 'Redeem'}
