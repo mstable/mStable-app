@@ -114,6 +114,7 @@ const Exchange = styled.div`
   @media (min-width: ${ViewportWidth.m}) {
     flex-direction: row;
     justify-content: space-between;
+    align-items: flex-start;
 
     > div:not(:last-child) {
       margin-bottom: 0;
