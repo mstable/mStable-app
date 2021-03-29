@@ -1,18 +1,17 @@
 import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 
-import { ADDRESSES } from '../../../../constants';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { useTokenSubscription } from '../../../../context/TokensProvider';
-import { createToggleContext } from '../../../../hooks/createToggleContext';
-import { ProgressBar } from '../../../core/ProgressBar';
-import { Button } from '../../../core/Button';
-import { Widget } from '../../../core/Widget';
-import { ViewportWidth } from '../../../../theme';
-import { VaultRewards } from './VaultRewards';
-import { SavingsVaultRewardsProvider } from './SavingsVaultRewardsProvider';
+import { ADDRESSES } from '../../constants';
+import { useTokenSubscription } from '../../context/TokensProvider';
+import { createToggleContext } from '../../hooks/createToggleContext';
+import { ProgressBar } from '../core/ProgressBar';
+import { Button } from '../core/Button';
+import { Widget } from '../core/Widget';
+import { ViewportWidth } from '../../theme';
+import type { BigDecimal } from '../../web3/BigDecimal';
+
 import { calculateBoost } from './utils';
-import { SaveCalculator } from './SaveCalculator';
+import { BoostCalculator } from './BoostCalculator';
 
 const BoostBarLine = styled.div`
   width: 100%;
@@ -36,23 +35,20 @@ const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
   false,
 );
 
-const BoostBar: FC = () => {
+const BoostBar: FC<{ inputBalance?: BigDecimal }> = ({ inputBalance }) => {
   const [, toggleShowCalculator] = useShowCalculatorCtx();
-  const massetState = useSelectedMassetState();
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
-  const vaultBalance =
-    massetState?.savingsContracts.v2?.boostedSavingsVault?.account?.rawBalance;
   const vMTABalance = vMTA?.balance;
 
   const boost = useMemo<number>(
-    () => calculateBoost(vaultBalance, vMTABalance),
-    [vaultBalance, vMTABalance],
+    () => calculateBoost(inputBalance, vMTABalance),
+    [inputBalance, vMTABalance],
   );
 
   return (
     <Widget
       title="Earning Power Multiplier"
-      tooltip="Save rewards are boosted by a multiplier (1x to 3x)"
+      tooltip="Rewards are boosted by a multiplier (1x to 3x)"
       headerContent={
         <Button scale={0.7} onClick={toggleShowCalculator}>
           Calculator
@@ -96,37 +92,37 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
   }
 `;
 
-const BoostContent: FC = () => {
+const BoostContent: FC<{
+  inputAddress?: string;
+  inputBalance?: BigDecimal;
+}> = ({ children, inputAddress, inputBalance }) => {
   const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx();
 
   return (
     <Container padding showCalculator={showCalculator}>
       {showCalculator ? (
-        <SaveCalculator onClick={toggleShowCalculator} />
+        <BoostCalculator
+          inputAddress={inputAddress}
+          inputBalance={inputBalance}
+          onClick={toggleShowCalculator}
+        />
       ) : (
         <>
           <BoostBar />
-          <VaultRewards />
+          {children}
         </>
       )}
     </Container>
   );
 };
 
-export const Boost: FC = () => (
+export const Boost: FC<{
+  inputAddress?: string;
+  inputBalance?: BigDecimal;
+}> = ({ children, inputAddress, inputBalance }) => (
   <ShowCalculatorProvider>
-    <SavingsVaultRewardsProvider>
-      <BoostContent />
-    </SavingsVaultRewardsProvider>
-  </ShowCalculatorProvider>
-);
-
-export const BoostCalculator: FC<{ onBackClick?: () => void }> = ({
-  onBackClick,
-}) => (
-  <ShowCalculatorProvider>
-    <SavingsVaultRewardsProvider>
-      <SaveCalculator onClick={onBackClick} />
-    </SavingsVaultRewardsProvider>
+    <BoostContent inputAddress={inputAddress} inputBalance={inputBalance}>
+      {children}
+    </BoostContent>
   </ShowCalculatorProvider>
 );

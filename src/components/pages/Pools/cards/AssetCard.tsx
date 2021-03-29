@@ -156,12 +156,29 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
           formattingFn={toK}
         />
       </div>
-      <div>
-        <p>Price</p>
-        <div>
-          <CountUpUSD end={price.simple} decimals={10} price={massetPrice} />
-        </div>
-      </div>
+      {isLarge && (
+        <>
+          <div>
+            <p>Price</p>
+            <div>
+              <CountUpUSD
+                end={price.simple}
+                decimals={10}
+                price={massetPrice}
+              />
+            </div>
+          </div>
+          <div>
+            <p>24h Volume</p>
+            <CountUpUSD
+              end={stats.volume.simple}
+              decimals={10}
+              price={massetPrice}
+              formattingFn={toK}
+            />
+          </div>
+        </>
+      )}
       <RewardsAPY isLarge={isLarge}>
         <p>Rewards APY</p>
         <div>
@@ -180,32 +197,6 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
           </div>
         </div>
       </RewardsAPY>
-      {isLarge && (
-        <>
-          <div>
-            <p>24h Volume</p>
-            <CountUpUSD
-              end={stats.volume.simple}
-              decimals={10}
-              price={massetPrice}
-              formattingFn={toK}
-            />
-          </div>
-          <div>
-            <p>Assets</p>
-            <div>
-              <div>
-                <span>{masset.totalVault.abbreviated}</span>{' '}
-                {masset.token.symbol}
-              </div>
-              <div>
-                <span>{fasset.totalVault.abbreviated}</span>{' '}
-                {fasset.token.symbol}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
     </StatsContainer>
   );
 };
