@@ -20,7 +20,6 @@ import {
   useFPVaultAddressOptions,
   useFPAssetAddressOptions,
 } from '../FeederPoolProvider';
-import { ADDRESSES } from '../../../../constants';
 
 const formId = 'DepositLP';
 
@@ -45,10 +44,6 @@ export const MintExact: FC = () => {
     () => Object.values(inputValues).filter(v => v.touched),
     [inputValues],
   );
-
-  const contractAddress = touched.find(v => v.address === feederPool.address)
-    ? feederPool.vault.address
-    : ADDRESSES.FEEDER_WRAPPER;
 
   const estimatedOutputAmount = useEstimatedMintOutput(
     contracts?.feederPool,
@@ -116,10 +111,11 @@ export const MintExact: FC = () => {
 
   const error = useMemo<string | undefined>(() => {
     if (!touched.length) return 'Enter an amount';
+    if (!outputAddress) return 'Select a token';
 
     const addressesApprovalNeeded = assetAddressOptions.filter(t =>
       inputValues[t.address]?.amount?.exact.gt(
-        (t as SubscribedToken).allowances?.[contractAddress]?.exact ?? 0,
+        (t as SubscribedToken).allowances?.[outputAddress]?.exact ?? 0,
       ),
     );
 
@@ -133,7 +129,7 @@ export const MintExact: FC = () => {
     assetAddressOptions,
     estimatedOutputAmount,
     inputValues,
-    contractAddress,
+    outputAddress,
     touched,
   ]);
 
@@ -152,7 +148,7 @@ export const MintExact: FC = () => {
       setOutputAddress={setOutputAddress}
       outputAddress={outputAddress}
       setMaxCallbacks={setMaxCallbacks}
-      spender={contractAddress}
+      spender={outputAddress}
       minOutputAmount={minOutputAmount}
       error={penaltyBonus?.message}
     >
