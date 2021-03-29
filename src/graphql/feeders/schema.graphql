@@ -1716,6 +1716,7 @@ enum FeederPoolAccount_orderBy {
   account
   feederPool
   cumulativeEarned
+  cumulativeEarnedVault
   balance
   price
   lastUpdate
@@ -1774,6 +1775,20 @@ input FeederPoolAccount_filter {
   cumulativeEarned_not_starts_with: String
   cumulativeEarned_ends_with: String
   cumulativeEarned_not_ends_with: String
+  cumulativeEarnedVault: String
+  cumulativeEarnedVault_not: String
+  cumulativeEarnedVault_gt: String
+  cumulativeEarnedVault_lt: String
+  cumulativeEarnedVault_gte: String
+  cumulativeEarnedVault_lte: String
+  cumulativeEarnedVault_in: [String!]
+  cumulativeEarnedVault_not_in: [String!]
+  cumulativeEarnedVault_contains: String
+  cumulativeEarnedVault_not_contains: String
+  cumulativeEarnedVault_starts_with: String
+  cumulativeEarnedVault_not_starts_with: String
+  cumulativeEarnedVault_ends_with: String
+  cumulativeEarnedVault_not_ends_with: String
   balance: BigInt
   balance_not: BigInt
   balance_gt: BigInt
@@ -1828,6 +1843,7 @@ type FeederPoolAccount {
   account: Account!
   feederPool: FeederPool!
   cumulativeEarned: Metric!
+  cumulativeEarnedVault: Metric!
   balance: BigInt!
   price: BigInt!
   lastUpdate: Int!

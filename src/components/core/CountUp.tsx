@@ -105,3 +105,42 @@ export const DifferentialCountup: FC<
     />
   );
 };
+
+const CountUpUSDContainer = styled.div`
+  > span {
+    display: block;
+  }
+  span + span {
+    color: ${({ theme }) => theme.color.bodyAccent};
+  }
+`;
+
+export const CountUpUSD: FC<
+  Props & { price?: number; priceDecimals?: number }
+> = ({
+  className,
+  end,
+  decimals,
+  highlight,
+  highlightColor,
+  prefix,
+  suffix,
+  price,
+  priceDecimals,
+}) => (
+  <CountUpUSDContainer className={className}>
+    <CountUp
+      end={end}
+      decimals={decimals}
+      highlight={highlight}
+      highlightColor={highlightColor}
+      prefix={prefix}
+      suffix={suffix}
+    />
+    {price && (
+      <>
+        <CountUp end={end * price} decimals={priceDecimals} prefix="$" />
+      </>
+    )}
+  </CountUpUSDContainer>
+);
