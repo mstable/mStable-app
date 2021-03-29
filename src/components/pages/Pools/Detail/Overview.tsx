@@ -4,7 +4,7 @@ import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 import { UnstyledButton } from '../../../core/Button';
-import { CountUp } from '../../../core/CountUp';
+import { CountUp, CountUpUSD } from '../../../core/CountUp';
 import { useSelectedFeederPoolState } from '../FeederPoolProvider';
 import { Position } from './Position';
 import { ProvideLiquidityMessage } from './ProvideLiquidityMessage';
@@ -96,8 +96,8 @@ export const Overview: FC = () => {
               active={selection === Fees}
               onClick={() => handleSelection(Fees)}
             >
-              <h3>Fees Earned</h3>
-              <CountUp end={userStakedAmount * massetPrice} prefix="$" />
+              <h3>{userStakedAmount ? 'Staked' : 'Unstaked'} balance</h3>
+              <CountUp end={(userStakedAmount || userAmount) * massetPrice} />
             </Button>
             <Button
               active={selection === Boost}
