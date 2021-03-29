@@ -294,6 +294,7 @@ const transformFeederPoolsData = (
           token: { ...token, ...tokens[address] } as SubscribedToken,
           totalSupply: BigDecimal.fromMetric(fasset.totalSupply),
           governanceFeeRate: BigNumber.from(governanceFeeRate),
+          liquidity: new BigDecimal(invariantK).mulTruncate(price),
           feeRate: BigNumber.from(swapFeeRate),
           redemptionFeeRate: BigNumber.from(redemptionFeeRate),
           invariantK: BigNumber.from(invariantK),
