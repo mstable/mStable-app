@@ -6,7 +6,6 @@ import { BigNumber } from 'ethers';
 import { Actions } from '../types';
 import { initialState, reducer } from '../reducer';
 import { BigDecimal } from '../../../../../web3/BigDecimal';
-import { MassetState } from '../../../../../context/DataProvider/types';
 import { Fields } from '../../../../../types';
 
 type Ctx = [
@@ -69,7 +68,8 @@ const TUSD = {
 
 const feeRate = '400000000000000';
 
-const dataState: MassetState = {
+// eslint-disable-next-line
+const dataState: any = {
   ...mUSD,
   removedBassets: {},
   allBassetsNormal: true,

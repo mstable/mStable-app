@@ -24,6 +24,7 @@ import { toK } from '../../../stats/utils';
 import { Card } from './Card';
 import { CountUp, CountUpUSD } from '../../../core/CountUp';
 import { Tooltip } from '../../../core/ReactTooltip';
+import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy';
 
 interface Props {
   className?: string;
@@ -98,9 +99,7 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
   isLarge = false,
   address,
 }) => {
-  const { masset, fasset, invariantK, price } = useFeederPool(
-    address,
-  ) as FeederPoolState;
+  const { invariantK, price } = useFeederPool(address) as FeederPoolState;
   const massetPrice = useSelectedMassetPrice();
 
   const { block24h } = useBlockNumbers();
@@ -111,18 +110,12 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
   });
 
   const fpTokenPrice = massetPrice ? price.simple * massetPrice : undefined;
+  const feederPoolApy = useFeederPoolApy(address);
 
   const stats = useMemo(() => {
-    // const rewardsPerWeek = new BigDecimal(
-    //   nowUnix < periodFinish
-    //     ? BigNumber.from(periodDuration).mul(rewardRate)
-    //     : 0,
-    // );
-
     const liquidity = parseInt(invariantK.toString()) / 1e18;
 
     // FIXME
-    const apy = 13.99;
     const boostApy = 28.96;
 
     // TODO calculate volume on the subgraph
@@ -143,7 +136,7 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
       return BigDecimal.ZERO;
     })();
 
-    return { apy, boostApy, volume, liquidity };
+    return { boostApy, volume, liquidity };
   }, [fpMetrics.data, invariantK]);
 
   return (
@@ -183,11 +176,15 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
         <p>Rewards APY</p>
         <div>
           <div>
-            <CountUp end={stats.apy} />% →&nbsp;
+            {feederPoolApy.value && <CountUp end={feederPoolApy.value.base} />}%
+            →&nbsp;
           </div>
           <div>
             {' '}
-            <CountUp end={stats.boostApy} />%{' '}
+            {feederPoolApy.value && (
+              <CountUp end={feederPoolApy.value.maxBoost} />
+            )}
+            %{' '}
             <UnderlinedTip
               tip="Max boost can be achieved by staking MTA"
               hideIcon

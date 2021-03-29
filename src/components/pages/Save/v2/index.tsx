@@ -1,5 +1,6 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
+import { useToggle } from 'react-use';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import {
@@ -9,8 +10,8 @@ import {
 import { useModalComponent } from '../../../../hooks/useModalComponent';
 
 import { BalanceRow, BalanceType, BalanceHeader } from '../BalanceRow';
-import { Boost } from '../../../rewards/Boost';
 import { BoostCalculator } from '../../../rewards/BoostCalculator';
+import { Boost } from '../../../rewards/Boost';
 import { MassetModal } from './MassetModal';
 import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
@@ -25,7 +26,6 @@ import { useSavePrices } from '../../../../hooks/usePrice';
 import { Button } from '../../../core/Button';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { SaveModalHeader } from './SaveModalHeader';
-import { useToggle } from 'react-use';
 import { VaultRewards } from './VaultRewards';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
