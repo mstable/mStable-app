@@ -113,10 +113,9 @@ export const SaveDepositAMM: FC<{
     fetching?: boolean;
     value?: BigDecimal;
   }>(() => {
-    if (!inputAmount || !saveExchangeRate)
-      return {
-        fetching: true,
-      };
+    if (!inputAmount) return {};
+
+    if (!saveExchangeRate) return { fetching: true };
 
     if (
       bAssetOutputAmount?.value &&

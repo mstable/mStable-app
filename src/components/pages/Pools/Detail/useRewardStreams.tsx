@@ -109,7 +109,7 @@ const calculateEarned = (
   const rewardPerToken = getRewardPerToken(currentTime, boostedSavingsVault);
   const {
     unlockPercentage,
-    account: { boostedBalance, rewardPerTokenPaid, rawBalance, rewards },
+    account: { boostedBalance, rewardPerTokenPaid, rewards },
   } = boostedSavingsVault as BoostedSavingsVaultState & {
     account: BoostedSavingsVaultAccountState;
   };

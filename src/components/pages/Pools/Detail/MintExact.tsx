@@ -109,13 +109,19 @@ export const MintExact: FC = () => {
     [assetAddressOptions, touched],
   );
 
+  const isMintingAndStakingLP = outputAddress === feederPool.vault.address;
+
+  const contractAddress = isMintingAndStakingLP
+    ? contracts?.feederWrapper.address
+    : contracts?.feederPool.address;
+
   const error = useMemo<string | undefined>(() => {
     if (!touched.length) return 'Enter an amount';
     if (!outputAddress) return 'Select a token';
 
     const addressesApprovalNeeded = assetAddressOptions.filter(t =>
       inputValues[t.address]?.amount?.exact.gt(
-        (t as SubscribedToken).allowances?.[outputAddress]?.exact ?? 0,
+        (t as SubscribedToken).allowances?.[contractAddress ?? '']?.exact ?? 0,
       ),
     );
 
@@ -130,6 +136,7 @@ export const MintExact: FC = () => {
     estimatedOutputAmount,
     inputValues,
     outputAddress,
+    contractAddress,
     touched,
   ]);
 
@@ -148,7 +155,7 @@ export const MintExact: FC = () => {
       setOutputAddress={setOutputAddress}
       outputAddress={outputAddress}
       setMaxCallbacks={setMaxCallbacks}
-      spender={outputAddress}
+      spender={contractAddress}
       minOutputAmount={minOutputAmount}
       error={penaltyBonus?.message}
     >
@@ -202,9 +209,8 @@ export const MintExact: FC = () => {
           const addresses = touched.map(v => v.address as string);
           const amounts = touched.map(v => (v.amount as BigDecimal).exact);
 
-          // TODO: FIXME reverting - might need approval called on Wrapper
           // mint & stake multi
-          if (outputAddress !== feederPool.address) {
+          if (isMintingAndStakingLP) {
             return propose<Interfaces.FeederWrapper, 'mintMultiAndStake'>(
               new TransactionManifest(
                 contracts.feederWrapper,

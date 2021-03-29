@@ -4,7 +4,7 @@ import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 import { UnstyledButton } from '../../../core/Button';
-import { CountUp, CountUpUSD } from '../../../core/CountUp';
+import { CountUp } from '../../../core/CountUp';
 import { useSelectedFeederPoolState } from '../FeederPoolProvider';
 import { Position } from './Position';
 import { ProvideLiquidityMessage } from './ProvideLiquidityMessage';
@@ -32,6 +32,7 @@ const Button = styled(UnstyledButton)<{ active?: boolean }>`
   transition: 0.25s all;
 
   h3 {
+    color: ${({ theme }) => theme.color.blue};
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
