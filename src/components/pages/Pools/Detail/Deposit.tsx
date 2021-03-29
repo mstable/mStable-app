@@ -31,10 +31,8 @@ const MintPathBox = styled.div`
   }
 `;
 
-export const Deposit: FC<{ disableExact?: boolean }> = ({
-  disableExact = false,
-}) => {
-  const [isMintExact, setMintExact] = useToggle(!disableExact);
+export const Deposit: FC<{ exactOnly?: boolean }> = ({ exactOnly = false }) => {
+  const [isMintExact, setMintExact] = useToggle(exactOnly);
 
   const feederPool = useSelectedFeederPoolState();
   const assets = useSelectedFeederPoolAssets();
@@ -43,9 +41,9 @@ export const Deposit: FC<{ disableExact?: boolean }> = ({
     <MultiAssetExchangeProvider assets={assets}>
       {isMintExact ? <MintExact /> : <MintLP />}
       <MintPathBox>
-        {disableExact ? (
+        {exactOnly ? (
           <UnstyledButton disabled>
-            Mint via {feederPool.token.symbol} disabled due to low liquidity
+            Single-asset deposits are disabled due to low liquidity
           </UnstyledButton>
         ) : (
           <UnstyledButton onClick={setMintExact}>

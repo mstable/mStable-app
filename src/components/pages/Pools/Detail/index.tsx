@@ -26,6 +26,7 @@ import {
 } from '../FeederPoolProvider';
 import { RewardStreamsProvider } from './useRewardStreams';
 import { Overview } from './Overview';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const HeaderChartsContainer = styled.div`
   position: relative;
@@ -184,19 +185,22 @@ const PoolDetailContent: FC = () => {
     title,
     liquidity,
   } = useSelectedFeederPoolState() as FeederPoolState;
+  const massetPrice = useSelectedMassetPrice();
 
   const color = assetColorMapping[title];
-  const isLowLiquidity = liquidity.simple < 100000;
+  const isLowLiquidity = massetPrice
+    ? liquidity.simple * massetPrice < 100000
+    : false;
 
   const tabs = useMemo(
     () => ({
       Deposit: {
         title: 'Deposit',
-        component: <Deposit disableExact={isLowLiquidity} />,
+        component: <Deposit exactOnly={isLowLiquidity} />,
       },
       Withdraw: {
         title: 'Withdraw',
-        component: <Withdraw />,
+        component: <Withdraw exactOnly={isLowLiquidity} />,
       },
     }),
     [isLowLiquidity],
