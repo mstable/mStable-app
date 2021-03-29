@@ -116,7 +116,7 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
 
   const stats = useMemo(() => {
     const invKSimple = parseInt(invariantK.toString()) / 1e18;
-    const priceInMassetTerms = (invKSimple * price) / 1e18;
+    const priceInMassetTerms = (invKSimple * price.simple) / 1e18;
     const priceInUsdTerms = priceInMassetTerms * (massetPrice ?? 0);
     const liquidity = BigDecimal.parse(priceInUsdTerms.toFixed(2));
 

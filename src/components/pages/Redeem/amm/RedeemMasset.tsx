@@ -145,13 +145,11 @@ export const RedeemMasset: FC = () => {
       />
       <div>
         <Arrow />
-        {exchangeRate && (
-          <ExchangeRate
-            inputToken={massetToken}
-            outputToken={outputToken}
-            exchangeRate={exchangeRate}
-          />
-        )}
+        <ExchangeRate
+          inputToken={massetToken}
+          outputToken={outputToken}
+          exchangeRate={exchangeRate}
+        />
       </div>
       <AssetInput
         address={outputAddress ?? addressOptions[0].address}

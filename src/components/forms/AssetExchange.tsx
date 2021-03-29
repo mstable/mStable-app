@@ -26,7 +26,7 @@ export interface Props {
   handleSetOutputAmount?(formValue?: string): void;
   handleSetOutputMax?(): void;
 
-  exchangeRate?: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
+  exchangeRate: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
   error?: string;
   className?: string;
   // TODO: Combine this with outputFormValue
@@ -87,13 +87,11 @@ export const AssetExchange: FC<Props> = ({
       />
       <div>
         <Arrow />
-        {exchangeRate && (
-          <ExchangeRate
-            exchangeRate={exchangeRate}
-            outputToken={outputToken}
-            inputToken={inputToken}
-          />
-        )}
+        <ExchangeRate
+          exchangeRate={exchangeRate}
+          outputToken={outputToken}
+          inputToken={inputToken}
+        />
       </div>
       <AssetInput
         address={outputAddress}
