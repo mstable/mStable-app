@@ -158,6 +158,7 @@ export const MintMasset: FC = () => {
         formValue={estimatedOutputAmount.value?.string}
         handleSetAddress={handleSetAddress}
         addressDisabled
+        isFetching={estimatedOutputAmount.fetching}
       />
       {penaltyBonus?.message && <ErrorMessage error={penaltyBonus?.message} />}
       <SendButton
