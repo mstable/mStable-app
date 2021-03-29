@@ -8,7 +8,7 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
-import { Interfaces } from '../../../../types';
+import { AddressOption, Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import {
@@ -30,16 +30,42 @@ export const MintLP: FC = () => {
   const propose = usePropose();
   const walletAddress = useWalletAddress();
 
-  // TODO should include FP token as input (and then use vault only as output)
-  const inputAddressOptions = useFPAssetAddressOptions();
-  const outputAddressOptions = useFPVaultAddressOptions();
+  const defaultInputOptions = useFPAssetAddressOptions(true);
+  const defaultOutputOptions = useFPVaultAddressOptions();
+
+  const [inputOptions, setInputOptions] = useState<AddressOption[]>(
+    defaultInputOptions,
+  );
+  const [outputOptions, setOutputOptions] = useState<AddressOption[]>(
+    defaultOutputOptions,
+  );
 
   const [inputAddress, setInputAddress] = useState<string | undefined>(
-    inputAddressOptions[0].address,
+    feederPool.fasset.address,
   );
   const [outputAddress, setOutputAddress] = useState<string | undefined>(
-    outputAddressOptions[0].address,
+    outputOptions[0].address,
   );
+
+  const handleSetInputAddress = (address: string): void => {
+    if (address === feederPool.address) {
+      setOutputOptions(defaultOutputOptions);
+      setOutputAddress(feederPool.vault.address);
+    } else {
+      setOutputOptions(defaultOutputOptions);
+    }
+    setInputAddress(address);
+  };
+
+  const handleSetOutputAddress = (address: string): void => {
+    if (address === feederPool.address) {
+      setInputOptions(defaultInputOptions);
+      setInputAddress(feederPool.fasset.address);
+    } else {
+      setInputOptions(defaultInputOptions);
+    }
+    setOutputAddress(address);
+  };
 
   const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
     min: 0.01,
@@ -47,12 +73,13 @@ export const MintLP: FC = () => {
   });
 
   const inputToken = useTokenSubscription(
-    inputAddressOptions.find(t => t.address === inputAddress)?.address,
+    inputOptions.find(t => t.address === inputAddress)?.address,
   );
 
-  const outputToken = outputAddressOptions.find(
-    t => t.address === outputAddress,
-  );
+  const outputToken = outputOptions.find(t => t.address === outputAddress);
+
+  const isStakingLP = inputAddress === feederPool.address;
+  const isMintingAndStakingLP = outputAddress !== feederPool.address;
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput(
     '0',
@@ -61,10 +88,11 @@ export const MintLP: FC = () => {
     },
   );
 
-  const contractAddress =
-    inputAddress === feederPool.address
-      ? feederPool.vault.address
-      : ADDRESSES.FEEDER_WRAPPER;
+  const contractAddress = isStakingLP
+    ? feederPool.vault.address
+    : isMintingAndStakingLP
+    ? ADDRESSES.FEEDER_WRAPPER
+    : feederPool.address;
 
   const approve = useMemo(
     () =>
@@ -77,12 +105,19 @@ export const MintLP: FC = () => {
     [inputAddress, contractAddress, inputAmount],
   );
 
+  const isStakingInVault =
+    inputAddress === feederPool.address &&
+    outputAddress === feederPool.vault.address;
+
+  const shouldSkipEstimation = isStakingInVault;
+
   const { estimatedOutputAmount, exchangeRate } = useEstimatedOutput(
     {
-      ...inputAddressOptions.find(t => t.address === inputAddress),
+      ...inputOptions.find(t => t.address === inputAddress),
       amount: inputAmount,
     } as BigDecimalInputValue,
     { ...outputToken, address: feederPool.address } as BigDecimalInputValue,
+    shouldSkipEstimation,
   );
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
@@ -93,9 +128,6 @@ export const MintLP: FC = () => {
 
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount';
-
-    if (!estimatedOutputAmount.value?.simple && !estimatedOutputAmount.fetching)
-      return `Not enough ${outputToken?.symbol} in basket`;
 
     if (
       feederPool.token.balance?.exact &&
@@ -112,36 +144,70 @@ export const MintLP: FC = () => {
       return 'Amount must be greater than zero';
     }
 
+    if (isStakingInVault) return;
+
+    if (!estimatedOutputAmount.value?.simple && !estimatedOutputAmount.fetching)
+      return `Not enough ${outputToken?.symbol} in basket`;
+
     return estimatedOutputAmount.error;
-  }, [inputAmount, feederPool.token, estimatedOutputAmount, outputToken]);
+  }, [
+    inputAmount,
+    feederPool.token,
+    estimatedOutputAmount,
+    outputToken,
+    isStakingInVault,
+  ]);
+
+  const title = isStakingLP
+    ? 'Stake'
+    : isMintingAndStakingLP
+    ? 'Mint & Stake'
+    : 'Mint';
 
   return (
     <AssetExchange
-      error={penaltyBonus?.message}
+      error={(!isStakingInVault && penaltyBonus?.message) || undefined}
       exchangeRate={exchangeRate}
-      handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={(): void => {
         setInputFormValue(inputToken?.balance?.string);
       }}
-      handleSetOutputAddress={setOutputAddress}
+      handleSetInputAddress={handleSetInputAddress}
+      handleSetOutputAddress={handleSetOutputAddress}
       inputAddress={inputAddress}
-      inputAddressOptions={inputAddressOptions}
+      inputAddressOptions={inputOptions}
       inputFormValue={inputFormValue}
       outputAddress={outputAddress}
-      outputAddressOptions={outputAddressOptions}
-      outputFormValue={estimatedOutputAmount.value?.string}
+      outputAddressOptions={outputOptions}
+      outputFormValue={
+        isStakingLP ? inputFormValue : estimatedOutputAmount.value?.string
+      }
+      isFetching={estimatedOutputAmount.fetching}
     >
       <SendButton
-        title={error ?? 'Mint'}
+        title={error ?? title}
         approve={approve}
-        penaltyBonusAmount={penaltyBonus?.percentage}
+        penaltyBonusAmount={
+          (!isStakingInVault && penaltyBonus?.percentage) || undefined
+        }
         valid={!error}
         handleSend={() => {
           if (!contracts || !walletAddress || !feederPool) return;
           if (!inputAddress || !inputAmount || !minOutputAmount) return;
 
-          if (outputAddress !== feederPool.address) {
+          if (isStakingLP) {
+            return propose<Interfaces.BoostedSavingsVault, 'stake(uint256)'>(
+              new TransactionManifest(
+                contracts.vault,
+                'stake(uint256)',
+                [inputAmount.exact],
+                { past: 'Staked', present: 'Staking' },
+                formId,
+              ),
+            );
+          }
+
+          if (isMintingAndStakingLP) {
             return propose<Interfaces.FeederWrapper, 'mintAndStake'>(
               new TransactionManifest(
                 contracts.feederWrapper,

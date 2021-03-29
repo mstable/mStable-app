@@ -8,12 +8,13 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { TransactionInfo } from '../../../core/TransactionInfo';
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
-import { Interfaces } from '../../../../types';
+import { AddressOption, Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import {
   useFPAssetAddressOptions,
-  useSelectedFeederPoolContract,
+  useFPVaultAddressOptions,
+  useSelectedFeederPoolContracts,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
 import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
@@ -22,29 +23,78 @@ const formId = 'RedeemLP';
 
 export const RedeemLP: FC = () => {
   const feederPool = useSelectedFeederPoolState();
-  const contract = useSelectedFeederPoolContract();
+  const contracts = useSelectedFeederPoolContracts();
   const propose = usePropose();
   const walletAddress = useWalletAddress();
 
-  const outputAddressOptions = useFPAssetAddressOptions();
+  const defaultInputOptions = useFPVaultAddressOptions();
+  const defaultOutputOptions = useFPAssetAddressOptions(true);
 
+  const [inputOptions, setInputOptions] = useState<AddressOption[]>(
+    defaultInputOptions,
+  );
+  const [outputOptions, setOutputOptions] = useState<AddressOption[]>(
+    defaultOutputOptions.filter(a => a.address === feederPool.address),
+  );
+
+  const [inputAddress, setInputAddress] = useState<string | undefined>(
+    feederPool.vault.address,
+  );
   const [outputAddress, setOutputAddress] = useState<string | undefined>(
-    outputAddressOptions[0].address,
+    feederPool.address,
   );
 
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput();
+
+  const handleSetInputAddress = (address: string): void => {
+    if (address === feederPool.address) {
+      setOutputOptions(
+        defaultOutputOptions.filter(
+          v =>
+            v.address !== feederPool.vault.address ||
+            v.address !== feederPool.address,
+        ),
+      );
+      setOutputAddress(feederPool.fasset.address);
+    } else {
+      setInputOptions(defaultInputOptions);
+    }
+    setInputAddress(address);
+  };
+
+  const handleSetOutputAddress = (address: string): void => {
+    if (address === feederPool.address) {
+      setInputOptions(
+        defaultInputOptions.filter(
+          v =>
+            v.address !== feederPool.vault.address ||
+            v.address !== feederPool.address,
+        ),
+      );
+      setInputAddress(feederPool.vault.address);
+    } else {
+      setInputOptions(defaultOutputOptions);
+    }
+    setOutputAddress(address);
+  };
 
   const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
     min: 0.01,
     max: 99.99,
   });
 
-  const { token: inputToken } = feederPool;
+  const inputToken = inputOptions.find(t => t.address === inputAddress);
 
   const outputToken = useMemo(
-    () => outputAddressOptions.find(t => t.address === outputAddress),
-    [outputAddress, outputAddressOptions],
+    () => outputOptions.find(t => t.address === outputAddress),
+    [outputAddress, outputOptions],
   );
+
+  const isUnstakingFromVault =
+    inputAddress === feederPool.vault.address &&
+    outputAddress === feederPool.address;
+
+  const shouldSkipEstimation = isUnstakingFromVault;
 
   const { estimatedOutputAmount, exchangeRate, feeRate } = useEstimatedOutput(
     {
@@ -52,8 +102,9 @@ export const RedeemLP: FC = () => {
       amount: inputAmount,
     } as BigDecimalInputValue,
     {
-      ...outputAddressOptions.find(t => t.address === outputAddress),
+      ...outputOptions.find(t => t.address === outputAddress),
     } as BigDecimalInputValue,
+    shouldSkipEstimation,
   );
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
@@ -64,9 +115,6 @@ export const RedeemLP: FC = () => {
 
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount';
-
-    if (!estimatedOutputAmount.value?.simple && !estimatedOutputAmount.fetching)
-      return `Not enough ${outputToken?.symbol} in basket`;
 
     if (
       feederPool.token.balance?.exact &&
@@ -83,36 +131,67 @@ export const RedeemLP: FC = () => {
       return 'Amount must be greater than zero';
     }
 
+    if (isUnstakingFromVault) return;
+
+    if (!estimatedOutputAmount.value?.simple && !estimatedOutputAmount.fetching)
+      return `Not enough ${outputToken?.symbol} in basket`;
+
     return estimatedOutputAmount.error;
-  }, [inputAmount, feederPool.token, estimatedOutputAmount, outputToken]);
+  }, [
+    inputAmount,
+    feederPool.token,
+    estimatedOutputAmount,
+    outputToken,
+    isUnstakingFromVault,
+  ]);
 
   return (
     <AssetExchange
-      inputAddressOptions={[inputToken]}
-      outputAddressOptions={outputAddressOptions}
-      error={penaltyBonus?.message}
+      inputAddressOptions={inputOptions}
+      outputAddressOptions={outputOptions}
+      error={(!isUnstakingFromVault && penaltyBonus?.message) || undefined}
       exchangeRate={exchangeRate}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={(): void => {
-        setInputFormValue(inputToken.balance?.string);
+        setInputFormValue(inputToken?.balance?.string);
       }}
-      handleSetOutputAddress={setOutputAddress}
-      inputAddress={feederPool.address}
+      handleSetInputAddress={handleSetInputAddress}
+      handleSetOutputAddress={handleSetOutputAddress}
+      inputAddress={inputAddress}
       inputFormValue={inputFormValue}
       outputAddress={outputAddress}
-      outputFormValue={estimatedOutputAmount.value?.string}
+      outputFormValue={
+        isUnstakingFromVault
+          ? inputFormValue
+          : estimatedOutputAmount.value?.string
+      }
+      isFetching={estimatedOutputAmount.fetching}
     >
       <SendButton
         title={error ?? 'Redeem'}
-        penaltyBonusAmount={penaltyBonus?.percentage}
+        penaltyBonusAmount={
+          (!isUnstakingFromVault && penaltyBonus?.percentage) || undefined
+        }
         valid={!error}
         handleSend={() => {
-          if (!contract || !walletAddress || !feederPool) return;
+          if (!contracts || !walletAddress || !feederPool) return;
           if (!outputAddress || !inputAmount || !minOutputAmount) return;
+
+          if (isUnstakingFromVault) {
+            return propose<Interfaces.BoostedSavingsVault, 'withdraw'>(
+              new TransactionManifest(
+                contracts.vault,
+                'withdraw',
+                [inputAmount.exact],
+                { past: 'Withdrew', present: 'Withdrawing' },
+                formId,
+              ),
+            );
+          }
 
           return propose<Interfaces.FeederPool, 'redeem'>(
             new TransactionManifest(
-              contract,
+              contracts.feederPool,
               'redeem',
               [
                 outputAddress,
