@@ -146,13 +146,11 @@ export const MintMasset: FC = () => {
       />
       <div>
         <Arrow />
-        {exchangeRate && (
-          <ExchangeRate
-            inputToken={inputToken}
-            outputToken={massetToken}
-            exchangeRate={exchangeRate}
-          />
-        )}
+        <ExchangeRate
+          inputToken={inputToken}
+          outputToken={massetToken}
+          exchangeRate={exchangeRate}
+        />
       </div>
       <AssetInput
         address={massetAddress}

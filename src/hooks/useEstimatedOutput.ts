@@ -1,12 +1,11 @@
-import { useMemo, useState } from 'react';
-
+import { useEffect, useMemo, useState } from 'react';
 import {
   FeederPool,
   FeederPool__factory,
   Masset,
   Masset__factory,
 } from '@mstable/protocol/types/generated';
-import { usePrevious, useThrottleFn } from 'react-use';
+import { usePrevious, useDebounce } from 'react-use';
 
 import { BigDecimal } from '../web3/BigDecimal';
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
@@ -92,111 +91,6 @@ export const useEstimatedOutput = (
 
   const isFeederPool = contract?.address === poolAddress;
 
-  /*
-   * |------------------------------------------------------|
-   * | ROUTES                                               |
-   * | -----------------------------------------------------|
-   * | Input  | Output | Function      | Tokens             |
-   * | -----------------------------------------------------|
-   * | basset | masset | masset mint   | 1 basset, 1 masset |
-   * | masset | basset | masset redeem | 1 masset, 1 basset |
-   * | basset | basset | masset swap   | 2 bassets          |
-   * | fasset | basset | fpool swap    | 1 fasset           |
-   * | fasset | masset | fpool swap    | 1 fasset           |
-   * |------------------------------------------------------|
-   */
-
-  useThrottleFn(
-    (
-      _contract?: Contract,
-      _inputValue?: BigDecimalInputValue,
-      _inputValuePrev?: BigDecimalInputValue,
-      _outputValue?: BigDecimalInputValue,
-      _outputValuePrev?: BigDecimalInputValue,
-      _isFeederPool?: boolean,
-    ) => {
-      if (!_inputValue || !_outputValue) return;
-
-      // This is symptom-fighting; new BigDecimals are being created somewhere,
-      // so strict equality always comes up false
-      const inputEq = inputValuesAreEqual(_inputValue, _inputValuePrev);
-      const outputEq = inputValuesAreEqual(_outputValue, _outputValuePrev);
-      if (inputEq && outputEq) return;
-
-      if (!_contract) return setEstimatedOutputAmount.fetching();
-
-      const { address: inputAddress, amount: inputAmount } = _inputValue;
-      const { address: outputAddress, decimals: outputDecimals } = _outputValue;
-
-      const isLPRedeem = _contract.address === inputAddress;
-      const isLPMint = _contract.address === outputAddress;
-
-      const isMassetMint =
-        bAssets[inputAddress]?.address && outputAddress === massetAddress;
-
-      const isBassetSwap =
-        [inputAddress, outputAddress].filter(
-          address => bAssets[address]?.address,
-        ).length === 2;
-
-      if (!inputAmount?.exact.gt(0)) return;
-
-      if (isMassetMint || isLPMint) {
-        setAction(Action.MINT);
-        setEstimatedOutputAmount.fetching();
-        return _contract
-          .getMintOutput(inputAddress, (inputAmount as BigDecimal).exact)
-          .then(_amount => {
-            setEstimatedOutputAmount.value(new BigDecimal(_amount));
-          })
-          .catch(_error => {
-            setEstimatedOutputAmount.error(sanitizeMassetError(_error));
-          });
-      }
-
-      if ((_isFeederPool || isBassetSwap) && !isLPRedeem) {
-        setAction(Action.SWAP);
-        setEstimatedOutputAmount.fetching();
-        return _contract
-          .getSwapOutput(inputAddress, outputAddress, inputAmount.exact)
-          .then(_swapOutput => {
-            setEstimatedOutputAmount.value(
-              new BigDecimal(_swapOutput, outputDecimals),
-            );
-          })
-          .catch(_error => {
-            setEstimatedOutputAmount.error(sanitizeMassetError(_error));
-          });
-      }
-
-      if (!_isFeederPool || isLPRedeem) {
-        setAction(Action.REDEEM);
-        setEstimatedOutputAmount.fetching();
-        return _contract
-          .getRedeemOutput(outputAddress, inputAmount.exact)
-          .then(_amount => {
-            setEstimatedOutputAmount.value(
-              new BigDecimal(_amount, outputDecimals),
-            );
-          })
-          .catch((_error: Error): void => {
-            setEstimatedOutputAmount.error(sanitizeMassetError(_error));
-          });
-      }
-
-      setEstimatedOutputAmount.value();
-    },
-    2500,
-    [
-      contract,
-      inputValue,
-      inputValuePrev,
-      outputValue,
-      outputValuePrev,
-      isFeederPool,
-    ],
-  );
-
   const exchangeRate = useMemo<FetchState<BigDecimal>>(() => {
     if (estimatedOutputAmount.fetching) return { fetching: true };
     if (!inputValue?.amount || !outputValue) return {};
@@ -266,7 +160,110 @@ export const useEstimatedOutput = (
       return { value };
     }
     return {};
-  }, [estimatedOutputAmount, swapFeeRate, action]);
+  }, [action, estimatedOutputAmount, swapFeeRate, redemptionFeeRate]);
+
+  /*
+   * |------------------------------------------------------|
+   * | ROUTES                                               |
+   * | -----------------------------------------------------|
+   * | Input  | Output | Function      | Tokens             |
+   * | -----------------------------------------------------|
+   * | basset | masset | masset mint   | 1 basset, 1 masset |
+   * | masset | basset | masset redeem | 1 masset, 1 basset |
+   * | basset | basset | masset swap   | 2 bassets          |
+   * | fasset | basset | fpool swap    | 1 fasset           |
+   * | fasset | masset | fpool swap    | 1 fasset           |
+   * |------------------------------------------------------|
+   */
+
+  const inputEq = inputValuesAreEqual(inputValue, inputValuePrev);
+  const outputEq = inputValuesAreEqual(outputValue, outputValuePrev);
+  const eq = inputEq && outputEq;
+
+  const [update] = useDebounce(
+    () => {
+      if (!inputValue || !outputValue) return;
+
+      if (!contract) return setEstimatedOutputAmount.fetching();
+
+      const { address: inputAddress, amount: inputAmount } = inputValue;
+      const { address: outputAddress, decimals: outputDecimals } = outputValue;
+
+      const isLPRedeem = contract.address === inputAddress;
+      const isLPMint = contract.address === outputAddress;
+
+      const isMassetMint =
+        bAssets[inputAddress]?.address && outputAddress === massetAddress;
+
+      const isBassetSwap =
+        [inputAddress, outputAddress].filter(
+          address => bAssets[address]?.address,
+        ).length === 2;
+
+      if (!inputAmount?.exact.gt(0)) return;
+
+      if (isMassetMint || isLPMint) {
+        setAction(Action.MINT);
+        setEstimatedOutputAmount.fetching();
+        contract
+          .getMintOutput(inputAddress, (inputAmount as BigDecimal).exact)
+          .then(_amount => {
+            setEstimatedOutputAmount.value(new BigDecimal(_amount));
+          })
+          .catch(_error => {
+            setEstimatedOutputAmount.error(sanitizeMassetError(_error));
+          });
+        return;
+      }
+
+      if ((isFeederPool || isBassetSwap) && !isLPRedeem) {
+        setAction(Action.SWAP);
+        setEstimatedOutputAmount.fetching();
+        contract
+          .getSwapOutput(inputAddress, outputAddress, inputAmount.exact)
+          .then(_swapOutput => {
+            setEstimatedOutputAmount.value(
+              new BigDecimal(_swapOutput, outputDecimals),
+            );
+          })
+          .catch(_error => {
+            setEstimatedOutputAmount.error(sanitizeMassetError(_error));
+          });
+        return;
+      }
+
+      if (!isFeederPool || isLPRedeem) {
+        setAction(Action.REDEEM);
+        setEstimatedOutputAmount.fetching();
+        contract
+          .getRedeemOutput(outputAddress, inputAmount.exact)
+          .then(_amount => {
+            setEstimatedOutputAmount.value(
+              new BigDecimal(_amount, outputDecimals),
+            );
+          })
+          .catch((_error: Error): void => {
+            setEstimatedOutputAmount.error(sanitizeMassetError(_error));
+          });
+        return;
+      }
+
+      setEstimatedOutputAmount.value();
+    },
+    2500,
+    [eq],
+  );
+
+  useEffect(() => {
+    if (!eq && contract && inputValue && outputValue) {
+      if (inputValue.amount?.exact.gt(0)) {
+        setEstimatedOutputAmount.fetching();
+        update();
+      } else {
+        setEstimatedOutputAmount.value();
+      }
+    }
+  }, [eq, contract, setEstimatedOutputAmount, update, inputValue, outputValue]);
 
   return { estimatedOutputAmount, exchangeRate, feeRate };
 };

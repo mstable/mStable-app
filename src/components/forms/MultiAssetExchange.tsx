@@ -86,7 +86,7 @@ interface Props {
   outputLabel?: string;
   spender?: string;
   setMaxCallbacks?: { [address: string]: () => void };
-  exchangeRate?: { value?: BigDecimal; fetching?: boolean };
+  exchangeRate: { value?: BigDecimal; fetching?: boolean };
   error?: string;
   price?: number;
   className?: string;
@@ -137,13 +137,11 @@ export const ManyToOneAssetExchange: FC<
           ),
       )}
       <Arrow />
-      {exchangeRate && (
-        <ExchangeRate
-          inputLabel={inputLabel}
-          outputLabel={outputLabel}
-          exchangeRate={exchangeRate}
-        />
-      )}
+      <ExchangeRate
+        inputLabel={inputLabel}
+        outputLabel={outputLabel}
+        exchangeRate={exchangeRate}
+      />
       <AssetInput
         amountDisabled
         address={outputAddress}
@@ -193,13 +191,11 @@ export const OneToManyAssetExchange: FC<
       />
       <div>
         <Arrow />
-        {exchangeRate && (
-          <ExchangeRate
-            inputLabel={inputLabel}
-            outputLabel={outputLabel}
-            exchangeRate={exchangeRate}
-          />
-        )}
+        <ExchangeRate
+          inputLabel={inputLabel}
+          outputLabel={outputLabel}
+          exchangeRate={exchangeRate}
+        />
       </div>
       {Object.keys(outputValues).map(address => (
         <AssetInput
