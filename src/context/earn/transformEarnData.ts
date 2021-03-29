@@ -133,9 +133,7 @@ const getStakingRewardsContractsMap = (
         const totalRemainingRewards = new BigDecimal(
           currentTime.gt(periodFinish)
             ? 0
-            : BigNumber.from(periodFinish)
-                .sub(currentTime)
-                .mul(rewardRate),
+            : BigNumber.from(periodFinish).sub(currentTime).mul(rewardRate),
           rewardsToken.decimals,
         );
 
@@ -262,7 +260,7 @@ const getStakingRewardsContractsMap = (
 
         const value =
           typeof apyValue === 'number'
-            ? new BigDecimal(apyValue.toString(), 18)
+            ? new BigDecimal(apyValue.toString().split('.')[0], 18)
             : undefined;
 
         const withApy = {
