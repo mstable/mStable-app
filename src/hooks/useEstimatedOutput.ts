@@ -48,6 +48,7 @@ const inputValuesAreEqual = (
 export const useEstimatedOutput = (
   inputValue?: BigDecimalInputValue,
   outputValue?: BigDecimalInputValue,
+  shouldSkip?: boolean,
 ): Output => {
   const inputValuePrev = usePrevious(inputValue);
   const outputValuePrev = usePrevious(outputValue);
@@ -92,6 +93,8 @@ export const useEstimatedOutput = (
   const isFeederPool = contract?.address === poolAddress;
 
   const exchangeRate = useMemo<FetchState<BigDecimal>>(() => {
+    if (shouldSkip) return {};
+
     if (estimatedOutputAmount.fetching) return { fetching: true };
     if (!inputValue?.amount || !outputValue) return {};
 
@@ -134,9 +137,12 @@ export const useEstimatedOutput = (
     inputValue,
     massetAddress,
     outputValue,
+    shouldSkip,
   ]);
 
   const feeRate = useMemo<FetchState<BigDecimal>>(() => {
+    if (shouldSkip) return {};
+
     // if not swap or redeem, return
     if (action === Action.MINT) return {};
 
@@ -160,7 +166,13 @@ export const useEstimatedOutput = (
       return { value };
     }
     return {};
-  }, [action, estimatedOutputAmount, swapFeeRate, redemptionFeeRate]);
+  }, [
+    action,
+    estimatedOutputAmount,
+    swapFeeRate,
+    redemptionFeeRate,
+    shouldSkip,
+  ]);
 
   /*
    * |------------------------------------------------------|
@@ -183,6 +195,7 @@ export const useEstimatedOutput = (
   const [update] = useDebounce(
     () => {
       if (!inputValue || !outputValue) return;
+      if (shouldSkip) return {};
 
       if (!contract) return setEstimatedOutputAmount.fetching();
 
@@ -255,6 +268,8 @@ export const useEstimatedOutput = (
   );
 
   useEffect(() => {
+    if (shouldSkip) return;
+
     if (!eq && contract && inputValue && outputValue) {
       if (inputValue.amount?.exact.gt(0)) {
         setEstimatedOutputAmount.fetching();
@@ -263,7 +278,15 @@ export const useEstimatedOutput = (
         setEstimatedOutputAmount.value();
       }
     }
-  }, [eq, contract, setEstimatedOutputAmount, update, inputValue, outputValue]);
+  }, [
+    eq,
+    contract,
+    setEstimatedOutputAmount,
+    update,
+    inputValue,
+    outputValue,
+    shouldSkip,
+  ]);
 
   return { estimatedOutputAmount, exchangeRate, feeRate };
 };
