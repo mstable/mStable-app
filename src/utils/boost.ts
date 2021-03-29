@@ -1,10 +1,10 @@
-import { BigDecimal } from '../../web3/BigDecimal';
+import { BigDecimal } from '../web3/BigDecimal';
 
 // Boost params
-const MAX_BOOST = 3;
-const MIN_BOOST = 1;
-const COEFFICIENT = 6;
-const EXPONENT = 0.875;
+export const MAX_BOOST = 3;
+export const MIN_BOOST = 1;
+export const COEFFICIENT = 6;
+export const EXPONENT = 0.875;
 
 export const calculateBoost = (
   stakingBalance?: BigDecimal,

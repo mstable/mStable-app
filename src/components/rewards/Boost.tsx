@@ -10,7 +10,7 @@ import { Widget } from '../core/Widget';
 import { ViewportWidth } from '../../theme';
 import type { BigDecimal } from '../../web3/BigDecimal';
 
-import { calculateBoost } from './utils';
+import { calculateBoost } from '../../utils/boost';
 import { BoostCalculator } from './BoostCalculator';
 
 const BoostBarLine = styled.div`

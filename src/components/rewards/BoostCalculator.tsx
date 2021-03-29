@@ -10,7 +10,7 @@ import { DifferentialCountup } from '../core/CountUp';
 import { InfoMessage } from '../core/InfoMessage';
 import { Widget } from '../core/Widget';
 import { AssetInput } from '../forms/AssetInput';
-import { calculateBoost, calculateVMTAForMaxBoost } from './utils';
+import { calculateBoost, calculateVMTAForMaxBoost } from '../../utils/boost';
 import { ReactComponent as ArrowsSvg } from '../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../icons/governance-icon.svg';
 import { BigDecimal } from '../../web3/BigDecimal';

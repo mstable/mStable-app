@@ -1,8 +1,10 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+
+import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy';
+import { CountUp, DifferentialCountup } from '../../../core/CountUp';
 import { Boost } from '../../../rewards/Boost';
 import { useSelectedFeederPoolState } from '../FeederPoolProvider';
-import { CountUp, DifferentialCountup } from '../../../core/CountUp';
 
 const Card = styled.div`
   border-radius: 1rem;
@@ -34,8 +36,7 @@ const Card = styled.div`
 export const UserBoost: FC = () => {
   const feederPool = useSelectedFeederPoolState();
 
-  const baseApy = 10.12;
-  const boostedApy = 33.55;
+  const apy = useFeederPoolApy(feederPool.address);
 
   return (
     <Card>
@@ -48,11 +49,17 @@ export const UserBoost: FC = () => {
           <div>
             <div>
               <h4>Base APY</h4>
-              <CountUp end={baseApy} suffix="%" />
+              {apy.value && <CountUp end={apy.value.base} suffix="%" />}
             </div>
             <div>
               <h4>My Boosted APY</h4>
-              <DifferentialCountup prev={baseApy} end={boostedApy} suffix="%" />
+              {apy.value && (
+                <DifferentialCountup
+                  prev={apy.value.base}
+                  end={apy.value.userBoost}
+                  suffix="%"
+                />
+              )}
             </div>
           </div>
         </div>
