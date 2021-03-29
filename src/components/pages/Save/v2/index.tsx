@@ -9,18 +9,24 @@ import {
 import { useModalComponent } from '../../../../hooks/useModalComponent';
 
 import { BalanceRow, BalanceType, BalanceHeader } from '../BalanceRow';
-import { Boost, BoostCalculator } from './Boost';
+import { Boost } from '../../../rewards/Boost';
+import { BoostCalculator } from '../../../rewards/BoostCalculator';
 import { MassetModal } from './MassetModal';
 import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
 import { BigDecimal } from '../../../../web3/BigDecimal';
-import { useRewards } from './SavingsVaultRewardsProvider';
+import {
+  SavingsVaultRewardsProvider,
+  useRewards,
+} from './SavingsVaultRewardsProvider';
 import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
 import { VaultROI } from './VaultROI';
 import { useSavePrices } from '../../../../hooks/usePrice';
 import { Button } from '../../../core/Button';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { SaveModalHeader } from './SaveModalHeader';
+import { useToggle } from 'react-use';
+import { VaultRewards } from './VaultRewards';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
 
@@ -54,7 +60,7 @@ const Container = styled.div`
 `;
 
 export const Save: FC = () => {
-  const [isCalculatorVisible, setCalculatorVisible] = useState(false);
+  const [isCalculatorVisible, toggleCalculatorVisible] = useToggle(false);
   const massetState = useSelectedMassetState();
   const massetName = useSelectedMassetName();
   const isMBTC = massetName?.toLowerCase() === 'mbtc';
@@ -135,13 +141,16 @@ export const Save: FC = () => {
               <PotentialBoost>
                 {isCalculatorVisible ? (
                   <BoostCalculator
-                    onBackClick={() => setCalculatorVisible(false)}
-                  />
-                ) : (
-                  <Button
-                    scale={0.875}
-                    onClick={() => setCalculatorVisible(true)}
+                    onClick={toggleCalculatorVisible}
+                    inputAddress={saveToken?.address}
+                    inputBalance={saveToken?.balance}
                   >
+                    <SavingsVaultRewardsProvider>
+                      <VaultRewards />
+                    </SavingsVaultRewardsProvider>
+                  </BoostCalculator>
+                ) : (
+                  <Button scale={0.875} onClick={toggleCalculatorVisible}>
                     Calculate rewards
                   </Button>
                 )}

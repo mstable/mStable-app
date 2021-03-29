@@ -25,6 +25,7 @@ import {
 } from '../FeederPoolProvider';
 import { RewardStreamsProvider } from './useRewardStreams';
 import { PoolComposition } from './PoolComposition';
+import { UserBoost } from './UserBoost';
 
 const Divider = styled.div`
   height: 1px;
@@ -188,6 +189,8 @@ const PoolDetailContent: FC = () => {
       </Row>
       <Divider />
       <UserPosition />
+      <Divider />
+      <UserBoost />
       <Divider />
       <Exchange>
         <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />

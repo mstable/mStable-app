@@ -1,20 +1,19 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 
-import { ADDRESSES } from '../../../../constants';
-import { useSaveV2Address } from '../../../../context/DataProvider/DataProvider';
-import { useTokenSubscription } from '../../../../context/TokensProvider';
-import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
-import { ViewportWidth } from '../../../../theme';
-import { Button } from '../../../core/Button';
-import { DifferentialCountup } from '../../../core/CountUp';
-import { InfoMessage } from '../../../core/InfoMessage';
-import { Widget } from '../../../core/Widget';
-import { AssetInput } from '../../../forms/AssetInput';
+import { ADDRESSES } from '../../constants';
+import { useTokenSubscription } from '../../context/TokensProvider';
+import { useBigDecimalInput } from '../../hooks/useBigDecimalInput';
+import { ViewportWidth } from '../../theme';
+import { Button } from '../core/Button';
+import { DifferentialCountup } from '../core/CountUp';
+import { InfoMessage } from '../core/InfoMessage';
+import { Widget } from '../core/Widget';
+import { AssetInput } from '../forms/AssetInput';
 import { calculateBoost, calculateVMTAForMaxBoost } from './utils';
-import { ReactComponent as ArrowsSvg } from '../../../icons/double-arrow.svg';
-import { ReactComponent as GovSvg } from '../../../icons/governance-icon.svg';
-import { BigDecimal } from '../../../../web3/BigDecimal';
+import { ReactComponent as ArrowsSvg } from '../icons/double-arrow.svg';
+import { ReactComponent as GovSvg } from '../icons/governance-icon.svg';
+import { BigDecimal } from '../../web3/BigDecimal';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
 
@@ -166,35 +165,24 @@ const Container = styled(Widget)`
   }
 `;
 
-export const SaveCalculator: FC<{ onClick?: () => void }> = ({ onClick }) => {
-  const saveAddress = useSaveV2Address();
-  const save = useTokenSubscription(saveAddress);
+export const BoostCalculator: FC<{
+  onClick?: () => void;
+  inputAddress?: string;
+  inputBalance?: BigDecimal;
+}> = ({ onClick, inputAddress, inputBalance }) => {
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
 
   const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTA?.balance);
-  const [saveValue, saveFormValue, setSave] = useBigDecimalInput(
-    save?.balance?.simpleRounded !== 0
-      ? save?.balance
-      : new BigDecimal((100e18).toString()),
+  const [inputValue, inputFormValue, setInput] = useBigDecimalInput(
+    inputBalance?.simpleRounded !== 0 ? inputBalance : BigDecimal.parse('100'),
   );
-
-  const navigateToGovernance = (): void => {
-    window?.open(GOVERNANCE_URL);
-  };
 
   const boost = useMemo(() => {
     return {
-      fromBalance: calculateBoost(save?.balance, vMTA?.balance),
-      fromInputs: calculateBoost(saveValue, vMTAValue),
+      fromBalance: calculateBoost(inputBalance, vMTA?.balance),
+      fromInputs: calculateBoost(inputValue, vMTAValue),
     };
-  }, [saveValue, vMTAValue, vMTA, save]);
-
-  const handlePreviewMax = useCallback(() => {
-    if (saveValue) {
-      const vMTARequired = calculateVMTAForMaxBoost(saveValue);
-      setVmta(vMTARequired?.toFixed(2));
-    }
-  }, [saveValue, setVmta]);
+  }, [inputValue, vMTAValue, vMTA, inputBalance]);
 
   return (
     <Container
@@ -220,10 +208,10 @@ export const SaveCalculator: FC<{ onClick?: () => void }> = ({ onClick }) => {
             handleSetAmount={setVmta}
           />
           <AssetInput
-            address={save?.address}
+            address={inputAddress}
             addressDisabled
-            formValue={saveFormValue}
-            handleSetAmount={setSave}
+            formValue={inputFormValue}
+            handleSetAmount={setInput}
           />
         </CalculatorInputs>
         <CalculatorActions>
@@ -239,13 +227,25 @@ export const SaveCalculator: FC<{ onClick?: () => void }> = ({ onClick }) => {
             </MultiplierBox>
           </MultiplierContainer>
           <BoostAndActions>
-            <StyledButton onClick={handlePreviewMax}>
+            <StyledButton
+              onClick={() => {
+                if (inputValue) {
+                  const vMTARequired = calculateVMTAForMaxBoost(inputValue);
+                  setVmta(vMTARequired?.toFixed(2));
+                }
+              }}
+            >
               <div>
                 <ArrowsSvg />
                 Preview Max
               </div>
             </StyledButton>
-            <StyledButton highlighted onClick={navigateToGovernance}>
+            <StyledButton
+              highlighted
+              onClick={() => {
+                window.open(GOVERNANCE_URL);
+              }}
+            >
               <div>
                 <GovSvg />
                 Get vMTA
