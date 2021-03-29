@@ -24,6 +24,7 @@ import {
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
 import { RewardStreamsProvider } from './useRewardStreams';
+import { PoolComposition } from './PoolComposition';
 
 const Divider = styled.div`
   height: 1px;
@@ -183,7 +184,7 @@ const PoolDetailContent: FC = () => {
       </HeaderContainer>
       <Row>
         <AssetDetails />
-        <UserLookup />
+        <PoolComposition />
       </Row>
       <Divider />
       <UserPosition />
@@ -219,11 +220,12 @@ const PoolDetailContent: FC = () => {
           </p>
         </Clippy>
       </Exchange>
+      <Divider />
+      <UserLookup />
     </Container>
   );
 };
 
-// TODO support more than just feeders
 export const PoolDetail: FC = () => {
   const { poolAddress } = useParams<{
     poolAddress: string;

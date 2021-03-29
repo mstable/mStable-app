@@ -19,9 +19,10 @@ import { SubscribedToken } from '../../../../types';
 import { TokenIcon } from '../../../icons/TokenIcon';
 import { ViewportWidth } from '../../../../theme';
 import { assetColorMapping } from '../constants';
+import { toK } from '../../../stats/utils';
 
 import { Card } from './Card';
-import { CountUp } from '../../../core/CountUp';
+import { CountUp, CountUpUSD } from '../../../core/CountUp';
 import { Tooltip } from '../../../core/ReactTooltip';
 
 interface Props {
@@ -97,14 +98,9 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
   isLarge = false,
   address,
 }) => {
-  const {
-    // vault: { rewardRate, periodFinish, periodDuration },
-    // totalSupply,
-    masset,
-    fasset,
-    invariantK,
-    price,
-  } = useFeederPool(address) as FeederPoolState;
+  const { masset, fasset, invariantK, price } = useFeederPool(
+    address,
+  ) as FeederPoolState;
   const massetPrice = useSelectedMassetPrice();
 
   const { block24h } = useBlockNumbers();
@@ -114,17 +110,16 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
     skip: !block24h,
   });
 
-  const stats = useMemo(() => {
-    const invKSimple = parseInt(invariantK.toString()) / 1e18;
-    const priceInMassetTerms = (invKSimple * price.simple) / 1e18;
-    const priceInUsdTerms = priceInMassetTerms * (massetPrice ?? 0);
-    const liquidity = BigDecimal.parse(priceInUsdTerms.toFixed(2));
+  const fpTokenPrice = massetPrice ? price.simple * massetPrice : undefined;
 
+  const stats = useMemo(() => {
     // const rewardsPerWeek = new BigDecimal(
     //   nowUnix < periodFinish
     //     ? BigNumber.from(periodDuration).mul(rewardRate)
     //     : 0,
     // );
+
+    const liquidity = parseInt(invariantK.toString()) / 1e18;
 
     // FIXME
     const apy = 13.99;
@@ -140,24 +135,32 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
         const minted = BigDecimal.fromMetric(current.cumulativeMinted).sub(
           BigDecimal.fromMetric(historic.cumulativeMinted),
         );
-        const redeemed = BigDecimal.fromMetric(current?.cumulativeRedeemed).sub(
-          BigDecimal.fromMetric(historic?.cumulativeRedeemed),
+        const redeemed = BigDecimal.fromMetric(current.cumulativeRedeemed).sub(
+          BigDecimal.fromMetric(historic.cumulativeRedeemed),
         );
         return swapped.add(minted).add(redeemed);
       }
       return BigDecimal.ZERO;
     })();
 
-    return { liquidity, apy, boostApy, volume };
-  }, [fpMetrics.data, invariantK, massetPrice, price]);
+    return { apy, boostApy, volume, liquidity };
+  }, [fpMetrics.data, invariantK]);
 
   return (
     <StatsContainer isLarge={isLarge}>
       <div>
         <p>Liquidity</p>
-        <p>
-          <span>${stats.liquidity.abbreviated}</span>
-        </p>
+        <CountUpUSD
+          end={stats.liquidity}
+          price={fpTokenPrice}
+          formattingFn={toK}
+        />
+      </div>
+      <div>
+        <p>Price</p>
+        <div>
+          <CountUpUSD end={price.simple} decimals={10} price={massetPrice} />
+        </div>
       </div>
       <RewardsAPY isLarge={isLarge}>
         <p>Rewards APY</p>
@@ -181,9 +184,12 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
         <>
           <div>
             <p>24h Volume</p>
-            <p>
-              <span>{stats.volume.abbreviated}</span>
-            </p>
+            <CountUpUSD
+              end={stats.volume.simple}
+              decimals={10}
+              price={massetPrice}
+              formattingFn={toK}
+            />
           </div>
           <div>
             <p>Assets</p>
