@@ -27,10 +27,6 @@ const Container = styled.div`
       font-weight: 600;
     }
 
-    > div:not(:last-child) {
-      margin-bottom: 1rem;
-    }
-
     @media (min-width: ${ViewportWidth.s}) {
       > div {
         flex-direction: row;
@@ -102,7 +98,6 @@ export const Position: FC = () => {
 
   return (
     <Container>
-      <h3>My Position</h3>
       <div>
         <div>
           <h4>Pool Share</h4>

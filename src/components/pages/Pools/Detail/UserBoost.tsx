@@ -19,11 +19,13 @@ const Container = styled.div`
     > div {
       > :last-child {
         > :last-child {
+          display: flex;
+          margin-top: 2rem;
           h4 {
             font-weight: 600;
           }
-          > * {
-            margin-bottom: 1rem;
+          > *:not(:last-child) {
+            margin-right: 3rem;
           }
         }
       }

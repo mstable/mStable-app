@@ -124,7 +124,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
     WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
-    FEEDER_WRAPPER: '0x4fd44282b182264de278573f42ebfa95a6dc8b5e',
+    FEEDER_WRAPPER: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5',
     musd: {
       SaveWrapper: '0xeb9201126a77dcd966c878ce81ea1146603b86ad',
     },
