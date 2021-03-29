@@ -40,6 +40,7 @@ export const CountUp: FC<Props> = ({
   suffix,
   separator = ',',
   duration = DEFAULT_DURATION,
+  formattingFn,
 }) => {
   // eslint-disable-next-line no-restricted-globals
   const isValid = typeof end === 'number' && !isNaN(end);
@@ -53,6 +54,7 @@ export const CountUp: FC<Props> = ({
     end: isValid ? end : 0,
     separator,
     start: prevEnd.current,
+    ...(formattingFn ? { formattingFn } : null),
     // ...(prefix ? { prefix } : null),
     // ...(suffix ? { suffix } : null),
   });
@@ -127,6 +129,7 @@ export const CountUpUSD: FC<
   suffix,
   price,
   priceDecimals,
+  formattingFn,
 }) => (
   <CountUpUSDContainer className={className}>
     <CountUp
@@ -136,10 +139,16 @@ export const CountUpUSD: FC<
       highlightColor={highlightColor}
       prefix={prefix}
       suffix={suffix}
+      formattingFn={formattingFn}
     />
     {price && (
       <>
-        <CountUp end={end * price} decimals={priceDecimals} prefix="$" />
+        <CountUp
+          end={end * price}
+          decimals={priceDecimals}
+          prefix="$"
+          formattingFn={formattingFn}
+        />
       </>
     )}
   </CountUpUSDContainer>
