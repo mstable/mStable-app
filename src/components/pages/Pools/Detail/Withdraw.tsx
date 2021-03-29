@@ -32,8 +32,10 @@ const RedeemPathBox = styled.div`
   }
 `;
 
-export const Withdraw: FC = () => {
-  const [isRedeemExact, setRedeemExact] = useToggle(false);
+export const Withdraw: FC<{ exactOnly?: boolean }> = ({
+  exactOnly = false,
+}) => {
+  const [isRedeemExact, setRedeemExact] = useToggle(exactOnly);
 
   const feederPool = useSelectedFeederPoolState();
   const assets = useSelectedFeederPoolAssets();
@@ -42,11 +44,17 @@ export const Withdraw: FC = () => {
     <MultiAssetExchangeProvider assets={assets}>
       {isRedeemExact ? <RedeemExact /> : <RedeemLP />}
       <RedeemPathBox>
-        <UnstyledButton onClick={setRedeemExact}>
-          {`Switch to ${
-            isRedeemExact ? feederPool.token.symbol : 'exact'
-          } amount redemption`}
-        </UnstyledButton>
+        {exactOnly ? (
+          <UnstyledButton disabled>
+            Single-asset withdraw disabled due to low liquidity
+          </UnstyledButton>
+        ) : (
+          <UnstyledButton onClick={setRedeemExact}>
+            {`Switch to ${
+              isRedeemExact ? feederPool.token.symbol : 'exact'
+            } amount redemption`}
+          </UnstyledButton>
+        )}
       </RedeemPathBox>
     </MultiAssetExchangeProvider>
   );
