@@ -51,7 +51,6 @@ export const CountUp: FC<Props> = ({
   const { countUp, update, pauseResume, start } = useCountUp({
     decimals,
     duration,
-    delay: 1,
     end: isValid ? end : 0,
     separator,
     start: prevEnd.current,
