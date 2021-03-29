@@ -166,7 +166,6 @@ const Card = styled.div`
   display: flex;
   justify-content: space-between;
   border-radius: 1rem;
-  padding: 1rem;
 
   > button {
     width: 100%;
@@ -182,7 +181,6 @@ const Card = styled.div`
 
 const RewardsCard = styled(Card)`
   display: block;
-  border: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
 
   > div {
     > :first-child {
@@ -251,15 +249,6 @@ export const UserRewards: FC = () => {
   return (
     <RewardsCard>
       <div>
-        <div>
-          <h3>My Rewards</h3>
-          <div>
-            <h4>Total earnings</h4>
-            <div>
-              <CountUp end={totalEarned} /> MTA
-            </div>
-          </div>
-        </div>
         {totalEarned > 0 && (
           <GraphAndValues>
             <ClaimGraph showPreview={isClaiming} />

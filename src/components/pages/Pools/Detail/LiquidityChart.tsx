@@ -44,6 +44,7 @@ const Container = styled(RechartsContainer)`
   border-radius: 1rem;
   position: relative;
   height: 100%;
+  min-height: 4rem;
 `;
 
 const nowUnix = getUnixTime(new Date());

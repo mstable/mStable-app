@@ -1,23 +1,15 @@
 import React, { FC, useMemo } from 'react';
+import CountUp from 'react-countup';
 import styled from 'styled-components';
-
-import { ViewportWidth } from '../../../../theme';
-import { CountUp, CountUpUSD } from '../../../core/CountUp';
-import { Tooltip } from '../../../core/ReactTooltip';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
-
+import { ViewportWidth } from '../../../../theme';
+import { CountUpUSD } from '../../../core/CountUp';
+import { Tooltip } from '../../../core/ReactTooltip';
 import { useSelectedFeederPoolState } from '../FeederPoolProvider';
-import { UserRewards } from './UserRewards';
 
-const Card = styled.div`
+const Container = styled.div`
   display: flex;
-  justify-content: space-between;
-  border-radius: 1rem;
-  padding: 1rem;
-
-  > button {
-    width: 100%;
-  }
+  flex-direction: column;
 
   h3 {
     font-size: 1.25rem;
@@ -25,16 +17,10 @@ const Card = styled.div`
     color: ${({ theme }) => theme.color.body};
     margin-bottom: 0.75rem;
   }
-`;
-
-const PositionContainer = styled(Card)`
-  border: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
-  display: flex;
-  flex-direction: column;
 
   > div {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-between;
 
     h4 {
@@ -44,65 +30,40 @@ const PositionContainer = styled(Card)`
     > div:not(:last-child) {
       margin-bottom: 1rem;
     }
-  }
 
-  @media (min-width: ${ViewportWidth.s}) {
-    > div {
-      flex-direction: row;
-      flex-wrap: wrap;
-
+    @media (min-width: ${ViewportWidth.s}) {
       > div {
-        flex-basis: calc(50% - 0.5rem);
-      }
+        flex-direction: row;
+        flex-wrap: wrap;
 
-      > div:nth-child(even) {
-        text-align: right;
+        > div {
+          flex-basis: calc(50% - 0.5rem);
+        }
+
+        > div:nth-child(even) {
+          text-align: right;
+        }
       }
     }
-  }
 
-  @media (min-width: ${ViewportWidth.l}) {
-    > div {
+    @media (min-width: ${ViewportWidth.l}) {
       > div {
-        flex-basis: 0;
-        flex: 1;
-      }
+        > div {
+          flex-basis: 0;
+          flex: 1;
+        }
 
-      > div:nth-child(even) {
-        text-align: left;
+        > div:nth-child(even) {
+          text-align: left;
+        }
       }
     }
   }
 `;
 
-const GetLPCard = styled(Card)`
-  background: ${({ theme }) => theme.color.backgroundAccent};
-  flex-direction: column;
-  align-items: center;
-
-  @media (min-width: ${ViewportWidth.m}) {
-    flex-direction: row;
-    align-items: flex-start;
-
-    > div {
-      margin-bottom: 0;
-    }
-
-    > button {
-      width: inherit;
-    }
-  }
-`;
-
-const Position: FC = () => {
-  const {
-    totalSupply,
-    vault,
-    token,
-    title,
-    account,
-    price: currentPrice,
-  } = useSelectedFeederPoolState();
+export const Position: FC = () => {
+  const { totalSupply, vault, token, title, account, price: currentPrice } =
+    useSelectedFeederPoolState() ?? {};
   const massetPrice = useSelectedMassetPrice() ?? 1;
 
   const userAmount = token.balance?.simple ?? 0;
@@ -140,7 +101,7 @@ const Position: FC = () => {
   }, [account, currentPrice]);
 
   return (
-    <PositionContainer>
+    <Container>
       <h3>My Position</h3>
       <div>
         <div>
@@ -170,54 +131,6 @@ const Position: FC = () => {
           <CountUpUSD end={userAmount} price={massetPrice} />
         </div>
       </div>
-    </PositionContainer>
-  );
-};
-
-const GetLP: FC = () => {
-  const feederPool = useSelectedFeederPoolState();
-  return (
-    <GetLPCard>
-      <div>
-        <h3>Need {feederPool.token.symbol} tokens to stake?</h3>
-        <p>
-          Provide liquidity by depositing below, and stake to earn rewards in
-          addition to trade fees
-        </p>
-      </div>
-    </GetLPCard>
-  );
-};
-
-const Container = styled.div`
-  width: 100%;
-  margin: 1rem 0;
-  display: flex;
-  flex-direction: column;
-
-  > *:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-`;
-
-export const UserPosition: FC = () => {
-  const { token, vault } = useSelectedFeederPoolState();
-
-  const userAmount = token.balance?.simple ?? 0;
-  const userStakedAmount = vault.account?.rawBalance.simple ?? 0;
-
-  const showLiquidityMessage = !userAmount && !userStakedAmount;
-
-  return (
-    <Container>
-      {showLiquidityMessage ? (
-        <GetLP />
-      ) : (
-        <>
-          <Position />
-          <UserRewards />
-        </>
-      )}
     </Container>
   );
 };
