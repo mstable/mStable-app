@@ -31,6 +31,7 @@ const HeaderChartsContainer = styled.div`
   position: relative;
   border: 1px solid ${({ theme }) => theme.color.accent};
   border-radius: 1rem;
+  overflow: hidden;
 
   > :last-child {
     position: absolute;
@@ -87,13 +88,7 @@ const HeaderCard = styled(AssetCard)`
 `;
 
 const HeaderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
   margin-bottom: 1.5rem;
-
-  > div {
-    flex: 1;
-  }
 
   > div:last-child {
     display: none;
@@ -107,8 +102,13 @@ const HeaderContainer = styled.div`
   }
 
   @media (min-width: ${ViewportWidth.l}) {
+    display: flex;
     justify-content: space-between;
     flex-direction: row;
+
+    > div {
+      flex: 1;
+    }
 
     > div:first-child {
       min-width: calc(65% - 2rem);
