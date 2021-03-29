@@ -136,7 +136,10 @@ export const Save: FC = () => {
             masset={massetName}
           >
             {vaultBalance || hasRewards ? (
-              <Boost />
+              <Boost
+                inputAddress={saveToken?.address}
+                inputBalance={vaultBalance}
+              />
             ) : (
               <PotentialBoost>
                 {isCalculatorVisible ? (
