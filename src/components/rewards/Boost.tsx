@@ -108,7 +108,7 @@ const BoostContent: FC<{
         />
       ) : (
         <>
-          <BoostBar />
+          <BoostBar inputBalance={inputBalance} />
           {children}
         </>
       )}
