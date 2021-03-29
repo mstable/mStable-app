@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import type { FC } from 'react';
 import { useParams } from 'react-router-dom';
+import { useToggle } from 'react-use';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
 
@@ -9,12 +10,14 @@ import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
 
 import { ViewportWidth } from '../../../../theme';
 import { TabCard } from '../../../core/Tabs';
+import { Button } from '../../../core/Button';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { AssetCard } from '../cards/AssetCard';
 
 import { assetColorMapping } from '../constants';
 import { LiquidityChart } from './LiquidityChart';
 import { AssetDetails } from './AssetDetails';
+import { PoolComposition } from './PoolComposition';
 import { Deposit } from './Deposit';
 import { Withdraw } from './Withdraw';
 import {
@@ -23,6 +26,52 @@ import {
 } from '../FeederPoolProvider';
 import { RewardStreamsProvider } from './useRewardStreams';
 import { Overview } from './Overview';
+
+const HeaderChartsContainer = styled.div`
+  position: relative;
+  border: 1px solid ${({ theme }) => theme.color.accent};
+  border-radius: 1rem;
+
+  > :last-child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    padding: 1rem;
+    justify-content: space-between;
+    pointer-events: none;
+
+    > h3 {
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    > :last-child {
+      pointer-events: auto;
+      height: 2rem;
+      width: 2rem;
+      padding: 0;
+      line-height: 2rem;
+    }
+  }
+`;
+
+const HeaderCharts: FC<{ color: string }> = ({ color }) => {
+  const [isLiquidity, toggleIsLiquidity] = useToggle(true);
+  return (
+    <HeaderChartsContainer>
+      <div>
+        {isLiquidity ? <LiquidityChart color={color} /> : <PoolComposition />}
+      </div>
+      <div>
+        <h3>{isLiquidity ? 'Liquidity' : 'Pool Composition'}</h3>
+        <Button onClick={toggleIsLiquidity}>{isLiquidity ? '↩' : '↪'}</Button>
+      </div>
+    </HeaderChartsContainer>
+  );
+};
 
 const Divider = styled.div`
   height: 1px;
@@ -68,9 +117,6 @@ const HeaderContainer = styled.div`
 
     > div:last-child {
       margin-top: 0;
-      > div {
-        height: 100%;
-      }
     }
   }
 `;
@@ -133,22 +179,27 @@ const Container = styled.div`
 `;
 
 const PoolDetailContent: FC = () => {
-  const { address, title } = useSelectedFeederPoolState() as FeederPoolState;
+  const {
+    address,
+    title,
+    liquidity,
+  } = useSelectedFeederPoolState() as FeederPoolState;
 
   const color = assetColorMapping[title];
+  const isLowLiquidity = liquidity.simple < 100000;
 
   const tabs = useMemo(
     () => ({
       Deposit: {
         title: 'Deposit',
-        component: <Deposit />,
+        component: <Deposit disableExact={isLowLiquidity} />,
       },
       Withdraw: {
         title: 'Withdraw',
         component: <Withdraw />,
       },
     }),
-    [],
+    [isLowLiquidity],
   );
 
   const [activeTab, setActiveTab] = useState<string>('Deposit');
@@ -158,8 +209,7 @@ const PoolDetailContent: FC = () => {
       <PageHeader action={PageAction.Pools} subtitle={title} />
       <HeaderContainer>
         <HeaderCard poolAddress={address} isLarge color={color} />
-        <LiquidityChart color={color} />
-        {/* PoolComposition */}
+        <HeaderCharts color={color} />
       </HeaderContainer>
       <AssetDetails />
       <Divider />

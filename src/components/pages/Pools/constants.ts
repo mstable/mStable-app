@@ -3,9 +3,9 @@ import { StreamType } from './Detail/useRewardStreams';
 export const assetColorMapping: Record<string, string> = {
   'mBTC/fAST': '#eb6ba9',
   'TUSD/WBTC': '#eb6ba9',
-  'mUSD/GUSD': '#3d68e9',
+  'mUSD/GUSD': '#1ecdea',
   fAST: '#eb6ba9',
-  GUSD: '#3d68e9',
+  GUSD: '#17d4f2',
   mBTC: '#000',
   mUSD: '#000',
 };
