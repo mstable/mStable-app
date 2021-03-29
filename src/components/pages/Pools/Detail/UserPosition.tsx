@@ -153,35 +153,33 @@ const Position: FC = () => {
 
   return (
     <PositionContainer>
+      <h3>My Position</h3>
       <div>
-        <h3>My Position</h3>
         <div>
-          <div>
-            <h4>Pool Share</h4>
-            <CountUp end={poolPercentage} decimals={4} suffix="%" />
-          </div>
-          <div>
-            <Tooltip
-              tip={`${token.symbol} $${feesEarned[0].toFixed(10)}, ${
-                token.symbol
-              } Vault $${feesEarned[1].toFixed(10)}`}
-            >
-              <h4>Fees earned</h4>
-            </Tooltip>
-            <CountUpUSD
-              end={feesEarned[0] + feesEarned[1]}
-              decimals={10}
-              price={massetPrice}
-            />
-          </div>
-          <div>
-            <h4>{title} Staked</h4>
-            <CountUpUSD end={userStakedAmount} price={massetPrice} />
-          </div>
-          <div>
-            <h4>{title} Balance</h4>
-            <CountUpUSD end={userAmount} price={massetPrice} />
-          </div>
+          <h4>Pool Share</h4>
+          <CountUp end={poolPercentage} decimals={4} suffix="%" />
+        </div>
+        <div>
+          <Tooltip
+            tip={`${token.symbol} $${feesEarned[0].toFixed(10)}, ${
+              token.symbol
+            } Vault $${feesEarned[1].toFixed(10)}`}
+          >
+            <h4>Fees earned</h4>
+          </Tooltip>
+          <CountUpUSD
+            end={feesEarned[0] + feesEarned[1]}
+            decimals={10}
+            price={massetPrice}
+          />
+        </div>
+        <div>
+          <h4>{title} Staked</h4>
+          <CountUpUSD end={userStakedAmount} price={massetPrice} />
+        </div>
+        <div>
+          <h4>{title} Balance</h4>
+          <CountUpUSD end={userAmount} price={massetPrice} />
         </div>
       </div>
     </PositionContainer>
