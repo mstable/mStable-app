@@ -107,7 +107,7 @@ const Chart: FC<{
   return (
     <RechartsContainer>
       {data.length < 1 && <NoData>No data yet</NoData>}
-      <ResponsiveContainer aspect={2}>
+      <ResponsiveContainer aspect={2} debounce={1} width="99%">
         <AreaChart
           margin={{ top: 40, right: 0, bottom: 0, left: 0 }}
           barCategoryGap={1}
@@ -169,7 +169,7 @@ const Chart: FC<{
           />
           {metrics.map(({ color, type, label, enabled }) => (
             <Area
-              isAnimationActive={false}
+              animationDuration={100}
               key={type}
               type="monotone"
               hide={!enabled}
