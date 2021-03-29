@@ -52,6 +52,7 @@ export interface FeederPoolState {
   price: BigDecimal;
   failed: boolean;
   title: string;
+  liquidity: BigDecimal;
   governanceFeeRate: BigNumber;
   feeRate: BigNumber;
   redemptionFeeRate: BigNumber;
