@@ -23,6 +23,9 @@ const EXPIRED_POOLS: Set<string> = new Set([
   '0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4', // MTA/mUSD 95/5
   '0xf4a7d2d85f4ba11b5c73c35e27044c0c49f7f027', // MTA/mUSD 5/95
   '0x881c72d1e6317f10a1cdcbe05040e7564e790c80', // USDC/mUSD 50:50
+  // '0xe6e6e25efda5f69687aa9914f8d750c523a1d261', // Curve 3pool/mUSD
+  // '0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb', // Balancer WETH/mUSD
+  // '0x6de3a957b0344e6adeeab4648b02108f35651fb5', // Sushi mBTC/WETH
 ]);
 
 const currentTime = BigNumber.from(Math.floor(Date.now() / 1e3));
@@ -133,9 +136,7 @@ const getStakingRewardsContractsMap = (
         const totalRemainingRewards = new BigDecimal(
           currentTime.gt(periodFinish)
             ? 0
-            : BigNumber.from(periodFinish)
-                .sub(currentTime)
-                .mul(rewardRate),
+            : BigNumber.from(periodFinish).sub(currentTime).mul(rewardRate),
           rewardsToken.decimals,
         );
 
@@ -262,7 +263,7 @@ const getStakingRewardsContractsMap = (
 
         const value =
           typeof apyValue === 'number'
-            ? new BigDecimal(apyValue.toString(), 18)
+            ? new BigDecimal(apyValue.toString().split('.')[0], 18)
             : undefined;
 
         const withApy = {
