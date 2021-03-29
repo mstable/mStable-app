@@ -220,7 +220,10 @@ export const ClaimGraph: FC<{ showPreview?: boolean }> = ({ showPreview }) => {
               // interval="preserveEnd"
               tick={false}
             />
-            <ReferenceLine x={rewardStreams?.currentTime}>
+            <ReferenceLine
+              x={rewardStreams?.currentTime}
+              stroke={Color.greyTransparent}
+            >
               <Label
                 position="insideTopRight"
                 value="Unclaimed"
@@ -230,7 +233,10 @@ export const ClaimGraph: FC<{ showPreview?: boolean }> = ({ showPreview }) => {
               />
             </ReferenceLine>
             {rewardStreams?.nextUnlock && (
-              <ReferenceLine x={rewardStreams.nextUnlock}>
+              <ReferenceLine
+                x={rewardStreams.nextUnlock}
+                stroke={Color.greyTransparent}
+              >
                 <Label
                   position="insideTopLeft"
                   value="Next unlock"
@@ -241,13 +247,14 @@ export const ClaimGraph: FC<{ showPreview?: boolean }> = ({ showPreview }) => {
               </ReferenceLine>
             )}
             {rewardStreams && showPreview && (
-              <ReferenceLine x={rewardStreams.previewStream.start}>
+              <ReferenceLine
+                x={rewardStreams.previewStream.start}
+                stroke={Color.greyTransparent}
+              >
                 <Label
                   position="insideTopLeft"
                   value="New unlock"
                   fontSize={14}
-                  dy={-20}
-                  dx={-6}
                 />
               </ReferenceLine>
             )}

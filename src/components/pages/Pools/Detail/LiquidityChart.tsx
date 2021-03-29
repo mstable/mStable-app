@@ -31,20 +31,14 @@ interface AggregateMetricsQueryResult {
   };
 }
 
-const Title = styled.h2`
-  font-size: 1.5rem;
-  font-weight: 600;
+const NoData = styled.div`
+  user-select: none;
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-`;
-
-const Container = styled(RechartsContainer)`
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  border-radius: 1rem;
-  position: relative;
   height: 100%;
-  min-height: 4rem;
+  opacity: 0.5;
+  padding: 1rem;
+  width: 100%;
+  text-align: center;
 `;
 
 const nowUnix = getUnixTime(new Date());
@@ -98,15 +92,6 @@ const useTotalLiquidity = (
   }, [query.data]);
 };
 
-const NoData = styled.div`
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  opacity: 0.5;
-`;
-
 const Chart: FC<{
   aggregateMetrics: {
     type: string;
@@ -120,98 +105,87 @@ const Chart: FC<{
   const dateFilter = useDateFilter();
   const { metrics } = useMetricsState();
   return (
-    <Container>
-      <Title>Liquidity</Title>
-      {data.length > 1 ? (
-        <ResponsiveContainer aspect={2}>
-          <AreaChart
-            margin={{ top: 40, right: 0, bottom: 0, left: 0 }}
-            barCategoryGap={1}
-            data={data}
-          >
-            <defs>
-              {aggregateMetrics.map(({ type, color }) => (
-                <linearGradient
-                  id={type}
-                  key={type}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="5%" stopColor={color} stopOpacity={0.5} />
-                  <stop offset="95%" stopColor={color} stopOpacity={0} />
-                </linearGradient>
-              ))}
-            </defs>
-            <XAxis
-              dataKey="timestamp"
-              axisLine={false}
-              xAxisId={0}
-              height={0}
-              tick={false}
-              tickFormatter={timestamp =>
-                timestamp
-                  ? format(
-                      timestamp * 1000,
-                      periodFormatMapping[dateFilter.period],
-                    )
-                  : ''
-              }
-            />
-            <YAxis
-              type="number"
-              orientation="left"
-              tickFormatter={toK}
-              axisLine={false}
-              interval="preserveEnd"
-              yAxisId={0}
-              tick={false}
-              width={0}
-            />
-            <Tooltip
-              cursor
-              labelFormatter={timestamp =>
-                format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
-              }
-              formatter={toK as never}
-              separator=""
-              contentStyle={{
-                fontSize: '14px',
-                padding: '8px',
-                background: 'rgba(255, 255, 255, 0.8)',
-                textAlign: 'right',
-                border: 'none',
-                borderRadius: '4px',
-                color: Color.black,
-              }}
-              wrapperStyle={{
-                top: 0,
-                left: 0,
-              }}
-            />
-            {metrics.map(({ color, type, label, enabled }) => (
-              <Area
-                isAnimationActive={false}
-                key={type}
-                type="monotone"
-                hide={!enabled}
-                dataKey={type}
-                name={`${label} `}
-                opacity={1}
-                dot={false}
-                yAxisId={0}
-                stroke={color}
-                strokeWidth={2}
-                fill={`url(#${type})`}
-              />
+    <RechartsContainer>
+      {data.length < 1 && <NoData>No data yet</NoData>}
+      <ResponsiveContainer aspect={2}>
+        <AreaChart
+          margin={{ top: 40, right: 0, bottom: 0, left: 0 }}
+          barCategoryGap={1}
+          data={data}
+        >
+          <defs>
+            {aggregateMetrics.map(({ type, color }) => (
+              <linearGradient id={type} key={type} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={color} stopOpacity={0.5} />
+                <stop offset="95%" stopColor={color} stopOpacity={0} />
+              </linearGradient>
             ))}
-          </AreaChart>
-        </ResponsiveContainer>
-      ) : (
-        <NoData>No data yet</NoData>
-      )}
-    </Container>
+          </defs>
+          <XAxis
+            dataKey="timestamp"
+            axisLine={false}
+            xAxisId={0}
+            height={0}
+            tick={false}
+            tickFormatter={timestamp =>
+              timestamp
+                ? format(
+                    timestamp * 1000,
+                    periodFormatMapping[dateFilter.period],
+                  )
+                : ''
+            }
+          />
+          <YAxis
+            type="number"
+            orientation="left"
+            tickFormatter={toK}
+            axisLine={false}
+            interval="preserveEnd"
+            yAxisId={0}
+            tick={false}
+            width={0}
+          />
+          <Tooltip
+            cursor
+            labelFormatter={timestamp =>
+              format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
+            }
+            formatter={toK as never}
+            separator=""
+            contentStyle={{
+              fontSize: '14px',
+              padding: '8px',
+              background: 'rgba(255, 255, 255, 0.8)',
+              textAlign: 'right',
+              border: 'none',
+              borderRadius: '4px',
+              color: Color.black,
+            }}
+            wrapperStyle={{
+              top: 0,
+              left: 0,
+            }}
+          />
+          {metrics.map(({ color, type, label, enabled }) => (
+            <Area
+              isAnimationActive={false}
+              key={type}
+              type="monotone"
+              hide={!enabled}
+              dataKey={type}
+              name={`${label} `}
+              opacity={1}
+              dot={false}
+              yAxisId={0}
+              stroke={color}
+              strokeWidth={2}
+              fill={`url(#${type})`}
+            />
+          ))}
+        </AreaChart>
+      </ResponsiveContainer>
+    </RechartsContainer>
   );
 };
 

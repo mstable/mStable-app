@@ -109,13 +109,14 @@ const calculateEarned = (
   const rewardPerToken = getRewardPerToken(currentTime, boostedSavingsVault);
   const {
     unlockPercentage,
-    account: { boostedBalance, rewardPerTokenPaid },
+    account: { boostedBalance, rewardPerTokenPaid, rawBalance, rewards },
   } = boostedSavingsVault as BoostedSavingsVaultState & {
     account: BoostedSavingsVaultAccountState;
   };
 
   // Current rate per token - rate user previously received
   const userRewardDelta = rewardPerToken.sub(rewardPerTokenPaid);
+  // const userRewardDelta = rewardPerToken.sub('3375933888495844996748');
 
   if (userRewardDelta.eq(0)) {
     // Short circuit if there is nothing new to distribute
@@ -128,7 +129,10 @@ const calculateEarned = (
 
   const unlockPercentageSimple = parseInt(unlockPercentage.toString()) / 1e18;
 
-  const unlocked = Math.max(total * unlockPercentageSimple, 0);
+  const unlocked =
+    Math.max(total * unlockPercentageSimple, 0) +
+    parseInt(rewards.toString()) / 1e18;
+
   const locked = Math.max(total - unlocked, 0);
 
   return { total, unlocked, locked };
@@ -228,7 +232,7 @@ export const RewardStreamsProvider: FC<{ refreshInterval?: number }> = ({
       const earnedStream: Stream = {
         amount: {
           [StreamType.Earned]: earned.total,
-          // FIXME Unclaimed and earned can overlap (but not immediately)
+          // TODO Unclaimed and earned can overlap (but not immediately)
           // [StreamType.Unclaimed]: earned.total,
         },
         start: lastClaim > 0 ? Math.min(lastClaim, lastAction) : lastAction,
@@ -245,7 +249,7 @@ export const RewardStreamsProvider: FC<{ refreshInterval?: number }> = ({
         finish: currentTime + lockupDuration,
       };
 
-      // FIXME Unclaimed and earned can overlap (but not immediately)
+      // TODO Unclaimed and earned can overlap (but not immediately)
       //   amount: {
       //     [StreamType.Unclaimed]: unclaimed,
       //     [StreamType.Earned]: earned.total,

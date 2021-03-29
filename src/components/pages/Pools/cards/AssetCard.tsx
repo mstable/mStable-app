@@ -2,9 +2,6 @@ import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import Skeleton from 'react-loading-skeleton';
-// eslint-disable-next-line
-import { BigNumber } from 'ethers';
-import { getUnixTime } from 'date-fns';
 
 import { useFeederPoolMetricsQuery } from '../../../../graphql/feeders';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
@@ -92,14 +89,11 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
   }
 `;
 
-// eslint-disable-next-line
-const nowUnix = getUnixTime(Date.now());
-
 const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
   isLarge = false,
   address,
 }) => {
-  const { invariantK, price } = useFeederPool(address) as FeederPoolState;
+  const { liquidity, price } = useFeederPool(address) as FeederPoolState;
   const massetPrice = useSelectedMassetPrice();
 
   const { block24h } = useBlockNumbers();
@@ -112,39 +106,29 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
   const fpTokenPrice = massetPrice ? price.simple * massetPrice : undefined;
   const feederPoolApy = useFeederPoolApy(address);
 
-  const stats = useMemo(() => {
-    const liquidity = parseInt(invariantK.toString()) / 1e18;
-
-    // FIXME
-    const boostApy = 28.96;
-
-    // TODO calculate volume on the subgraph
-    const volume = (() => {
-      if (fpMetrics.data?.historic && fpMetrics.data.current) {
-        const { current, historic } = fpMetrics.data;
-        const swapped = BigDecimal.fromMetric(current.cumulativeSwapped).sub(
-          BigDecimal.fromMetric(historic.cumulativeSwapped),
-        );
-        const minted = BigDecimal.fromMetric(current.cumulativeMinted).sub(
-          BigDecimal.fromMetric(historic.cumulativeMinted),
-        );
-        const redeemed = BigDecimal.fromMetric(current.cumulativeRedeemed).sub(
-          BigDecimal.fromMetric(historic.cumulativeRedeemed),
-        );
-        return swapped.add(minted).add(redeemed);
-      }
-      return BigDecimal.ZERO;
-    })();
-
-    return { boostApy, volume, liquidity };
-  }, [fpMetrics.data, invariantK]);
+  const volume = useMemo(() => {
+    if (fpMetrics.data?.historic && fpMetrics.data.current) {
+      const { current, historic } = fpMetrics.data;
+      const swapped = BigDecimal.fromMetric(current.cumulativeSwapped).sub(
+        BigDecimal.fromMetric(historic.cumulativeSwapped),
+      );
+      const minted = BigDecimal.fromMetric(current.cumulativeMinted).sub(
+        BigDecimal.fromMetric(historic.cumulativeMinted),
+      );
+      const redeemed = BigDecimal.fromMetric(current.cumulativeRedeemed).sub(
+        BigDecimal.fromMetric(historic.cumulativeRedeemed),
+      );
+      return swapped.add(minted).add(redeemed);
+    }
+    return BigDecimal.ZERO;
+  }, [fpMetrics.data]);
 
   return (
     <StatsContainer isLarge={isLarge}>
       <div>
         <p>Liquidity</p>
         <CountUpUSD
-          end={stats.liquidity}
+          end={liquidity.simple}
           price={fpTokenPrice}
           formattingFn={toK}
         />
@@ -164,7 +148,7 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
           <div>
             <p>24h Volume</p>
             <CountUpUSD
-              end={stats.volume.simple}
+              end={volume.simple}
               decimals={10}
               price={massetPrice}
               formattingFn={toK}
