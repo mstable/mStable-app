@@ -17,6 +17,7 @@ import { SendButton } from '../../../forms/SendButton';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import { useIsMasquerading } from '../../../../context/UserProvider';
 
 const Card = styled.div`
   display: flex;
@@ -28,30 +29,57 @@ const Card = styled.div`
     width: 100%;
   }
 
-  > div {
-    display: flex;
-    flex-direction: column;
-
-    h3 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: ${({ theme }) => theme.color.body};
-      margin-bottom: 0.75rem;
-    }
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: ${({ theme }) => theme.color.body};
+    margin-bottom: 0.75rem;
   }
 `;
 
 const PositionContainer = styled(Card)`
   border: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
+  display: flex;
+  flex-direction: column;
 
   > div {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    h4 {
+      font-weight: 600;
+    }
+
+    > div:not(:last-child) {
+      margin-bottom: 1rem;
+    }
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
     > div {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      h4 {
-        font-weight: 600;
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      > div {
+        flex-basis: calc(50% - 0.5rem);
+      }
+
+      > div:nth-child(even) {
+        text-align: right;
+      }
+    }
+  }
+
+  @media (min-width: ${ViewportWidth.l}) {
+    > div {
+      > div {
+        flex-basis: 0;
+        flex: 1;
+      }
+
+      > div:nth-child(even) {
+        text-align: left;
       }
     }
   }
@@ -93,28 +121,23 @@ const Position: FC = () => {
 
   return (
     <PositionContainer>
+      <h3>My Position</h3>
       <div>
-        <h3>My Position</h3>
         <div>
-          <div>
-            <h4>Pool Share</h4>
-            <CountUp end={poolPercentage} decimals={4} suffix="%" />
-          </div>
-          <div>
-            <h4>Fees earned</h4>
-            <CountUp
-              end={account?.cumulativeEarned.simple ?? 0}
-              decimals={10}
-            />
-          </div>
-          <div>
-            <h4>{title} Staked</h4>
-            <CountUp end={userStakedAmount} />
-          </div>
-          <div>
-            <h4>{title} Balance</h4>
-            <CountUp end={userAmount} />
-          </div>
+          <h4>Pool Share</h4>
+          <CountUp end={poolPercentage} decimals={4} suffix="%" />
+        </div>
+        <div>
+          <h4>Fees earned</h4>
+          <CountUp end={account?.cumulativeEarned.simple ?? 0} decimals={10} />
+        </div>
+        <div>
+          <h4>{title} Staked</h4>
+          <CountUp end={userStakedAmount} />
+        </div>
+        <div>
+          <h4>{title} Balance</h4>
+          <CountUp end={userAmount} />
         </div>
       </div>
     </PositionContainer>
@@ -139,6 +162,7 @@ const GetLP: FC = () => {
 const RewardValues = styled.div`
   > div {
     margin-bottom: 0.5rem;
+
     &:last-child {
       margin-bottom: 0;
     }
@@ -158,15 +182,47 @@ const RewardValues = styled.div`
   }
 `;
 
-const ClaimContainer = styled.div`
+const ClaimContainer = styled.div<{ isClaiming?: boolean }>`
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+
+  > * {
+    flex-basis: calc(50% - 0.5rem);
+    height: 2.75rem;
+  }
+
+  > div {
+    width: 100%;
+  }
 
   button {
     height: 2.75rem;
     min-width: 11rem;
-    margin-left: 1rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+    flex-direction: ${({ isClaiming }) => (isClaiming ? 'row-reverse' : 'row')};
+
+    button {
+      margin-bottom: 0;
+    }
+  }
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
+    justify-content: ${({ isClaiming }) =>
+      isClaiming ? 'flex-start' : 'flex-end'};
+
+    > * {
+      flex-basis: calc(33% - 0.5rem);
+    }
+    > *:first-child {
+      margin-right: ${({ isClaiming }) => (isClaiming ? '0' : '1rem')};
+      margin-left: ${({ isClaiming }) => (isClaiming ? '1rem' : '0')};
+    }
   }
 `;
 
@@ -176,6 +232,10 @@ const GraphAndValues = styled.div`
   justify-content: flex-end;
   margin-bottom: 0;
 
+  > div:first-child {
+    display: none;
+  }
+
   > *:not(:last-child) {
     margin-bottom: 1rem;
   }
@@ -183,6 +243,12 @@ const GraphAndValues = styled.div`
   > * {
     min-width: 11rem;
     border-radius: 2rem;
+  }
+
+  @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
+    > div:first-child {
+      display: inherit;
+    }
   }
 `;
 
@@ -211,35 +277,32 @@ const RewardsCard = styled(Card)`
 `;
 
 const RewardValueContainer = styled.div<{ streamType: StreamType }>`
-  @media (min-width: ${ViewportWidth.s}) {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    transition: background-color 0.5s ease;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.75rem;
-    min-height: 5.5rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: background-color 0.5s ease;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
 
-    > :first-child {
-      > h4 {
-        font-weight: 600;
-      }
-      > div {
-        font-size: 0.85rem;
-      }
-      transition: color 0.5s ease;
+  > :first-child {
+    > h4 {
+      font-weight: 600;
     }
-    > :last-child {
-      text-align: right;
-      span {
-        transition: color 0.5s ease;
-        font-size: 1.25rem;
-      }
-      > div {
-        margin-top: 0.5rem;
-        color: ${({ theme }) => theme.color.bodyAccent};
-        font-size: 0.85rem;
-      }
+    > div {
+      font-size: 0.85rem;
+    }
+    transition: color 0.5s ease;
+  }
+  > :last-child {
+    text-align: right;
+    span {
+      transition: color 0.5s ease;
+      font-size: 1.25rem;
+    }
+    > div {
+      margin-top: 0.5rem;
+      color: ${({ theme }) => theme.color.bodyAccent};
+      font-size: 0.85rem;
     }
   }
 
@@ -256,10 +319,14 @@ const RewardValueContainer = styled.div<{ streamType: StreamType }>`
 `;
 
 const ClaimButton = styled(SendButton)<{ visible: boolean }>`
-  transition: all 1s ease;
+  transition-property: opacity, height, visibility;
+  transition-duration: 0.5s, 0.5s, 0.5s;
+  transition-timing-function: ease, ease, ease;
   ${({ visible }) => `
   visibility: ${visible ? 'visible' : 'hidden'};
   opacity: ${visible ? 1 : 0};
+  height: ${visible ? 1 : 0};
+  flex-basis: ${visible ? `flex-basis: calc(50% - 0.5rem)` : '0'};
 `}
 `;
 
@@ -299,6 +366,7 @@ const RewardValue: FC<{
 
 const Rewards: FC = () => {
   const rewardStreams = useRewardStreams();
+  const isMasquerading = useIsMasquerading();
   const [isClaiming, toggleIsClaiming] = useToggle(false);
   const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0;
 
@@ -351,36 +419,38 @@ const Rewards: FC = () => {
                 showPreview={isClaiming}
               />
             </RewardValues>
-            <ClaimContainer>
-              <ClaimButton
-                visible={isClaiming}
-                valid={isClaiming}
-                title="Claim Rewards"
-                handleSend={() => {
-                  if (contract && rewardStreams) {
-                    propose<
-                      Interfaces.BoostedSavingsVault,
-                      'claimRewards(uint256,uint256)'
-                    >(
-                      new TransactionManifest(
-                        contract,
-                        'claimRewards(uint256,uint256)',
-                        rewardStreams.claimRange,
-                        {
-                          present: 'Claiming rewards',
-                          past: 'Claimed rewards',
-                        },
-                      ),
-                    );
-                  }
-                }}
-              />
-              {canClaim && (
-                <Button onClick={toggleIsClaiming}>
-                  {isClaiming ? 'Cancel' : 'Preview Claim'}
-                </Button>
-              )}
-            </ClaimContainer>
+            {!isMasquerading && (
+              <ClaimContainer isClaiming={isClaiming}>
+                <ClaimButton
+                  visible={isClaiming}
+                  valid={isClaiming}
+                  title="Claim Rewards"
+                  handleSend={() => {
+                    if (contract && rewardStreams) {
+                      propose<
+                        Interfaces.BoostedSavingsVault,
+                        'claimRewards(uint256,uint256)'
+                      >(
+                        new TransactionManifest(
+                          contract,
+                          'claimRewards(uint256,uint256)',
+                          rewardStreams.claimRange,
+                          {
+                            present: 'Claiming rewards',
+                            past: 'Claimed rewards',
+                          },
+                        ),
+                      );
+                    }
+                  }}
+                />
+                {canClaim && (
+                  <Button onClick={toggleIsClaiming}>
+                    {isClaiming ? 'Cancel' : 'Preview Claim'}
+                  </Button>
+                )}
+              </ClaimContainer>
+            )}
           </GraphAndValues>
         )}
       </div>
