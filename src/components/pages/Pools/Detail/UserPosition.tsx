@@ -1,10 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useToggle } from 'react-use';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
 
 import { ViewportWidth } from '../../../../theme';
-import { CountUp } from '../../../core/CountUp';
+import { CountUp, CountUpUSD } from '../../../core/CountUp';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import {
   useSelectedFeederPoolState,
   useSelectedFeederPoolVaultContract,
@@ -18,6 +19,7 @@ import { usePropose } from '../../../../context/TransactionsProvider';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useIsMasquerading } from '../../../../context/UserProvider';
+import { Tooltip } from '../../../core/ReactTooltip';
 
 const Card = styled.div`
   display: flex;
@@ -111,7 +113,9 @@ const Position: FC = () => {
     token,
     title,
     account,
+    price: currentPrice,
   } = useSelectedFeederPoolState();
+  const massetPrice = useSelectedMassetPrice() ?? 1;
 
   const userAmount = token.balance?.simple ?? 0;
   const userStakedAmount = vault.account?.rawBalance.simple ?? 0;
@@ -119,25 +123,65 @@ const Position: FC = () => {
   const poolTotal = totalSupply.simple;
   const poolPercentage = 100 * ((userAmount + userStakedAmount) / poolTotal);
 
+  const feesEarned = useMemo<[number, number]>(() => {
+    if (account) {
+      const {
+        balanceVault,
+        balance,
+        cumulativeEarned,
+        cumulativeEarnedVault,
+        price,
+        priceVault,
+      } = account;
+
+      const currentEarned =
+        price.simple < currentPrice.simple
+          ? balance.simple * currentPrice.simple - balance.simple * price.simple
+          : cumulativeEarned.simple;
+
+      const currentEarnedVault =
+        priceVault.simple < currentPrice.simple
+          ? balanceVault.simple * currentPrice.simple -
+            balanceVault.simple * priceVault.simple
+          : cumulativeEarnedVault.simple;
+
+      return [currentEarned, currentEarnedVault];
+    }
+
+    return [0, 0];
+  }, [account, currentPrice]);
+
   return (
     <PositionContainer>
-      <h3>My Position</h3>
       <div>
+        <h3>My Position</h3>
         <div>
-          <h4>Pool Share</h4>
-          <CountUp end={poolPercentage} decimals={4} suffix="%" />
-        </div>
-        <div>
-          <h4>Fees earned</h4>
-          <CountUp end={account?.cumulativeEarned.simple ?? 0} decimals={10} />
-        </div>
-        <div>
-          <h4>{title} Staked</h4>
-          <CountUp end={userStakedAmount} />
-        </div>
-        <div>
-          <h4>{title} Balance</h4>
-          <CountUp end={userAmount} />
+          <div>
+            <h4>Pool Share</h4>
+            <CountUp end={poolPercentage} decimals={4} suffix="%" />
+          </div>
+          <div>
+            <Tooltip
+              tip={`${token.symbol} $${feesEarned[0].toFixed(10)}, ${
+                token.symbol
+              } Vault $${feesEarned[1].toFixed(10)}`}
+            >
+              <h4>Fees earned</h4>
+            </Tooltip>
+            <CountUpUSD
+              end={feesEarned[0] + feesEarned[1]}
+              decimals={10}
+              price={massetPrice}
+            />
+          </div>
+          <div>
+            <h4>{title} Staked</h4>
+            <CountUpUSD end={userStakedAmount} price={massetPrice} />
+          </div>
+          <div>
+            <h4>{title} Balance</h4>
+            <CountUpUSD end={userAmount} price={massetPrice} />
+          </div>
         </div>
       </div>
     </PositionContainer>
@@ -373,7 +417,7 @@ const Rewards: FC = () => {
   const propose = usePropose();
   const contract = useSelectedFeederPoolVaultContract();
 
-  const isZeroState = (rewardStreams?.amounts.cumulativeEarned ?? 0) > 0;
+  const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
 
   return (
     <RewardsCard>
@@ -383,11 +427,11 @@ const Rewards: FC = () => {
           <div>
             <h4>Total earnings</h4>
             <div>
-              <CountUp end={rewardStreams?.amounts.cumulativeEarned ?? 0} /> MTA
+              <CountUp end={totalEarned} /> MTA
             </div>
           </div>
         </div>
-        {isZeroState && (
+        {totalEarned > 0 && (
           <GraphAndValues>
             <ClaimGraph showPreview={isClaiming} />
             <RewardValues>

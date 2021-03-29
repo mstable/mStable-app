@@ -246,6 +246,7 @@ const transformTokenData = (
 
 const transformFeederPoolAccountData = ({
   cumulativeEarned,
+  cumulativeEarnedVault,
   balance,
   balanceVault,
   price,
@@ -256,10 +257,11 @@ const transformFeederPoolAccountData = ({
   NonNullableFeederPools[number]['accounts']
 >[number]): FeederPoolAccountState => ({
   cumulativeEarned: BigDecimal.fromMetric(cumulativeEarned),
-  balance: BigDecimal.parse(balance),
-  balanceVault: BigDecimal.parse(balanceVault),
-  price: BigDecimal.parse(price),
-  priceVault: BigDecimal.parse(priceVault),
+  cumulativeEarnedVault: BigDecimal.fromMetric(cumulativeEarnedVault),
+  balance: new BigDecimal(balance),
+  balanceVault: new BigDecimal(balanceVault),
+  price: new BigDecimal(price),
+  priceVault: new BigDecimal(priceVault),
   lastUpdate,
   lastUpdateVault,
 });
@@ -296,7 +298,7 @@ const transformFeederPoolsData = (
           redemptionFeeRate: BigNumber.from(redemptionFeeRate),
           invariantK: BigNumber.from(invariantK),
           dailyApy: parseFloat(dailyAPY),
-          price: parseFloat(price),
+          price: new BigDecimal(price ?? 0),
           failed,
           title: bassets.map(b => b.token.symbol).join('/'),
           undergoingRecol,

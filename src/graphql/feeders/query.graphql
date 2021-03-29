@@ -40,6 +40,10 @@ query FeederPools($account: String!, $hasAccount: Boolean!)
         exact
         decimals
       }
+      cumulativeEarnedVault {
+        exact
+        decimals
+      }
     }
   }
 }

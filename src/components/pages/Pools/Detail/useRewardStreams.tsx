@@ -38,7 +38,6 @@ export interface RewardStreams {
       unlocked: number;
       locked: number;
     };
-    cumulativeEarned: number;
     locked: number;
     previewLocked: number;
     received: number;
@@ -281,12 +280,8 @@ export const RewardStreamsProvider: FC<{ refreshInterval?: number }> = ({
           },
         ]);
 
-      // TODO
-      const cumulativeEarned = earned.total;
-
       return {
         amounts: {
-          cumulativeEarned,
           earned,
           locked,
           previewLocked,

@@ -31,6 +31,7 @@ export interface BassetState {
 
 export interface FeederPoolAccountState {
   cumulativeEarned: BigDecimal;
+  cumulativeEarnedVault: BigDecimal;
   balance: BigDecimal;
   balanceVault: BigDecimal;
   price: BigDecimal;
@@ -48,7 +49,7 @@ export interface FeederPoolState {
   vault: BoostedSavingsVaultState;
   invariantK: BigNumber;
   dailyApy: number;
-  price: number;
+  price: BigDecimal;
   failed: boolean;
   title: string;
   governanceFeeRate: BigNumber;

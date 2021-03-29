@@ -1950,6 +1950,7 @@ export type FeederPoolAccount = {
   account: Account;
   feederPool: FeederPool;
   cumulativeEarned: Metric;
+  cumulativeEarnedVault: Metric;
   balance: Scalars['BigInt'];
   price: Scalars['BigInt'];
   lastUpdate: Scalars['Int'];
@@ -2009,6 +2010,20 @@ export type FeederPoolAccount_Filter = {
   cumulativeEarned_not_starts_with?: Maybe<Scalars['String']>;
   cumulativeEarned_ends_with?: Maybe<Scalars['String']>;
   cumulativeEarned_not_ends_with?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_not?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_gt?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_lt?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_gte?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_lte?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeEarnedVault_not_in?: Maybe<Array<Scalars['String']>>;
+  cumulativeEarnedVault_contains?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_not_contains?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_starts_with?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_not_starts_with?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_ends_with?: Maybe<Scalars['String']>;
+  cumulativeEarnedVault_not_ends_with?: Maybe<Scalars['String']>;
   balance?: Maybe<Scalars['BigInt']>;
   balance_not?: Maybe<Scalars['BigInt']>;
   balance_gt?: Maybe<Scalars['BigInt']>;
@@ -2064,133 +2079,7 @@ export enum FeederPoolAccount_OrderBy {
   Account = 'account',
   FeederPool = 'feederPool',
   CumulativeEarned = 'cumulativeEarned',
-  Balance = 'balance',
-  Price = 'price',
-  LastUpdate = 'lastUpdate',
-  BalanceVault = 'balanceVault',
-  PriceVault = 'priceVault',
-  LastUpdateVault = 'lastUpdateVault'
-}
-
-export type FeederPoolAccount = {
-  id: Scalars['ID'];
-  account: Account;
-  feederPool: FeederPool;
-  cumulativeEarned: Metric;
-  balance: Scalars['BigInt'];
-  price: Scalars['BigInt'];
-  lastUpdate: Scalars['Int'];
-  balanceVault: Scalars['BigInt'];
-  priceVault: Scalars['BigInt'];
-  lastUpdateVault: Scalars['Int'];
-};
-
-export type FeederPoolAccount_Filter = {
-  id?: Maybe<Scalars['ID']>;
-  id_not?: Maybe<Scalars['ID']>;
-  id_gt?: Maybe<Scalars['ID']>;
-  id_lt?: Maybe<Scalars['ID']>;
-  id_gte?: Maybe<Scalars['ID']>;
-  id_lte?: Maybe<Scalars['ID']>;
-  id_in?: Maybe<Array<Scalars['ID']>>;
-  id_not_in?: Maybe<Array<Scalars['ID']>>;
-  account?: Maybe<Scalars['String']>;
-  account_not?: Maybe<Scalars['String']>;
-  account_gt?: Maybe<Scalars['String']>;
-  account_lt?: Maybe<Scalars['String']>;
-  account_gte?: Maybe<Scalars['String']>;
-  account_lte?: Maybe<Scalars['String']>;
-  account_in?: Maybe<Array<Scalars['String']>>;
-  account_not_in?: Maybe<Array<Scalars['String']>>;
-  account_contains?: Maybe<Scalars['String']>;
-  account_not_contains?: Maybe<Scalars['String']>;
-  account_starts_with?: Maybe<Scalars['String']>;
-  account_not_starts_with?: Maybe<Scalars['String']>;
-  account_ends_with?: Maybe<Scalars['String']>;
-  account_not_ends_with?: Maybe<Scalars['String']>;
-  feederPool?: Maybe<Scalars['String']>;
-  feederPool_not?: Maybe<Scalars['String']>;
-  feederPool_gt?: Maybe<Scalars['String']>;
-  feederPool_lt?: Maybe<Scalars['String']>;
-  feederPool_gte?: Maybe<Scalars['String']>;
-  feederPool_lte?: Maybe<Scalars['String']>;
-  feederPool_in?: Maybe<Array<Scalars['String']>>;
-  feederPool_not_in?: Maybe<Array<Scalars['String']>>;
-  feederPool_contains?: Maybe<Scalars['String']>;
-  feederPool_not_contains?: Maybe<Scalars['String']>;
-  feederPool_starts_with?: Maybe<Scalars['String']>;
-  feederPool_not_starts_with?: Maybe<Scalars['String']>;
-  feederPool_ends_with?: Maybe<Scalars['String']>;
-  feederPool_not_ends_with?: Maybe<Scalars['String']>;
-  cumulativeEarned?: Maybe<Scalars['String']>;
-  cumulativeEarned_not?: Maybe<Scalars['String']>;
-  cumulativeEarned_gt?: Maybe<Scalars['String']>;
-  cumulativeEarned_lt?: Maybe<Scalars['String']>;
-  cumulativeEarned_gte?: Maybe<Scalars['String']>;
-  cumulativeEarned_lte?: Maybe<Scalars['String']>;
-  cumulativeEarned_in?: Maybe<Array<Scalars['String']>>;
-  cumulativeEarned_not_in?: Maybe<Array<Scalars['String']>>;
-  cumulativeEarned_contains?: Maybe<Scalars['String']>;
-  cumulativeEarned_not_contains?: Maybe<Scalars['String']>;
-  cumulativeEarned_starts_with?: Maybe<Scalars['String']>;
-  cumulativeEarned_not_starts_with?: Maybe<Scalars['String']>;
-  cumulativeEarned_ends_with?: Maybe<Scalars['String']>;
-  cumulativeEarned_not_ends_with?: Maybe<Scalars['String']>;
-  balance?: Maybe<Scalars['BigInt']>;
-  balance_not?: Maybe<Scalars['BigInt']>;
-  balance_gt?: Maybe<Scalars['BigInt']>;
-  balance_lt?: Maybe<Scalars['BigInt']>;
-  balance_gte?: Maybe<Scalars['BigInt']>;
-  balance_lte?: Maybe<Scalars['BigInt']>;
-  balance_in?: Maybe<Array<Scalars['BigInt']>>;
-  balance_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  price?: Maybe<Scalars['BigInt']>;
-  price_not?: Maybe<Scalars['BigInt']>;
-  price_gt?: Maybe<Scalars['BigInt']>;
-  price_lt?: Maybe<Scalars['BigInt']>;
-  price_gte?: Maybe<Scalars['BigInt']>;
-  price_lte?: Maybe<Scalars['BigInt']>;
-  price_in?: Maybe<Array<Scalars['BigInt']>>;
-  price_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  lastUpdate?: Maybe<Scalars['Int']>;
-  lastUpdate_not?: Maybe<Scalars['Int']>;
-  lastUpdate_gt?: Maybe<Scalars['Int']>;
-  lastUpdate_lt?: Maybe<Scalars['Int']>;
-  lastUpdate_gte?: Maybe<Scalars['Int']>;
-  lastUpdate_lte?: Maybe<Scalars['Int']>;
-  lastUpdate_in?: Maybe<Array<Scalars['Int']>>;
-  lastUpdate_not_in?: Maybe<Array<Scalars['Int']>>;
-  balanceVault?: Maybe<Scalars['BigInt']>;
-  balanceVault_not?: Maybe<Scalars['BigInt']>;
-  balanceVault_gt?: Maybe<Scalars['BigInt']>;
-  balanceVault_lt?: Maybe<Scalars['BigInt']>;
-  balanceVault_gte?: Maybe<Scalars['BigInt']>;
-  balanceVault_lte?: Maybe<Scalars['BigInt']>;
-  balanceVault_in?: Maybe<Array<Scalars['BigInt']>>;
-  balanceVault_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  priceVault?: Maybe<Scalars['BigInt']>;
-  priceVault_not?: Maybe<Scalars['BigInt']>;
-  priceVault_gt?: Maybe<Scalars['BigInt']>;
-  priceVault_lt?: Maybe<Scalars['BigInt']>;
-  priceVault_gte?: Maybe<Scalars['BigInt']>;
-  priceVault_lte?: Maybe<Scalars['BigInt']>;
-  priceVault_in?: Maybe<Array<Scalars['BigInt']>>;
-  priceVault_not_in?: Maybe<Array<Scalars['BigInt']>>;
-  lastUpdateVault?: Maybe<Scalars['Int']>;
-  lastUpdateVault_not?: Maybe<Scalars['Int']>;
-  lastUpdateVault_gt?: Maybe<Scalars['Int']>;
-  lastUpdateVault_lt?: Maybe<Scalars['Int']>;
-  lastUpdateVault_gte?: Maybe<Scalars['Int']>;
-  lastUpdateVault_lte?: Maybe<Scalars['Int']>;
-  lastUpdateVault_in?: Maybe<Array<Scalars['Int']>>;
-  lastUpdateVault_not_in?: Maybe<Array<Scalars['Int']>>;
-};
-
-export enum FeederPoolAccount_OrderBy {
-  Id = 'id',
-  Account = 'account',
-  FeederPool = 'feederPool',
-  CumulativeEarned = 'cumulativeEarned',
+  CumulativeEarnedVault = 'cumulativeEarnedVault',
   Balance = 'balance',
   Price = 'price',
   LastUpdate = 'lastUpdate',
@@ -3803,7 +3692,7 @@ export type FeederPoolsQuery = { feederPools: Array<(
       & { bassets: Array<BassetAllFragment> }
     ), token: TokenAllFragment, fasset: TokenAllFragment, masset: Pick<Token, 'id'>, vault: BoostedSavingsVaultAllFragment, accounts: Array<(
       Pick<FeederPoolAccount, 'balance' | 'price' | 'lastUpdate' | 'balanceVault' | 'priceVault' | 'lastUpdateVault'>
-      & { cumulativeEarned: Pick<Metric, 'exact' | 'decimals'> }
+      & { cumulativeEarned: Pick<Metric, 'exact' | 'decimals'>, cumulativeEarnedVault: Pick<Metric, 'exact' | 'decimals'> }
     )> }
   )> };
 
@@ -3972,6 +3861,10 @@ export const FeederPoolsDocument = gql`
       priceVault
       lastUpdateVault
       cumulativeEarned {
+        exact
+        decimals
+      }
+      cumulativeEarnedVault {
         exact
         decimals
       }
