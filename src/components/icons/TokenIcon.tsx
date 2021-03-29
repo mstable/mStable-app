@@ -9,6 +9,7 @@ import USDC, { ReactComponent as UsdcSvg } from './tokens/USDC.svg';
 import DAI, { ReactComponent as DaiSvg } from './tokens/DAI.svg';
 import BUSD, { ReactComponent as BusdSvg } from './tokens/BUSD.svg';
 import SUSD, { ReactComponent as SusdSvg } from './tokens/sUSD.svg';
+import GUSD, { ReactComponent as GusdSvg } from './tokens/GUSD.svg';
 import CRV, { ReactComponent as CrvSvg } from './tokens/CRV.svg';
 import MUSD3CRV, { ReactComponent as Musd3CrvSvg } from './tokens/musd3CRV.svg';
 import Curve3Pool, {
@@ -77,7 +78,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   CREAM,
   IMBTCMTA,
   FAST: FAKE,
-  GUSD: FAKE,
+  GUSD,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -113,7 +114,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   CREAM: CreamSvg as SvgComponent,
   IMBTCMTA: ImbtcmtaSvg as SvgComponent,
   FAST: FakeSvg as SvgComponent,
-  GUSD: FakeSvg as SvgComponent,
+  GUSD: GusdSvg as SvgComponent,
 };
 
 const Image = styled.img`
