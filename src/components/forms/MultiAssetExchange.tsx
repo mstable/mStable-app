@@ -148,6 +148,7 @@ export const ManyToOneAssetExchange: FC<
         addressOptions={outputAddressOptions}
         handleSetAddress={setOutputAddress}
         formValue={outputAmount.value?.string}
+        isFetching={exchangeRate.fetching}
       />
       {error && <ErrorMessage error={error} />}
       {children}
@@ -188,6 +189,7 @@ export const OneToManyAssetExchange: FC<
         addressDisabled
         formValue={inputAmount.value?.string}
         amountDisabled
+        isFetching={exchangeRate.fetching}
       />
       <div>
         <Arrow />
