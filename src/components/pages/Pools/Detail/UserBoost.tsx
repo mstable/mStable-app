@@ -6,10 +6,7 @@ import { CountUp, DifferentialCountup } from '../../../core/CountUp';
 import { Boost } from '../../../rewards/Boost';
 import { useSelectedFeederPoolState } from '../FeederPoolProvider';
 
-const Card = styled.div`
-  border-radius: 1rem;
-  border: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
-
+const Container = styled.div`
   h3 {
     font-size: 1.25rem;
     font-weight: 600;
@@ -18,6 +15,7 @@ const Card = styled.div`
   }
 
   > div {
+    padding: 0;
     > div {
       > :last-child {
         > :last-child {
@@ -35,11 +33,10 @@ const Card = styled.div`
 
 export const UserBoost: FC = () => {
   const feederPool = useSelectedFeederPoolState();
-
   const apy = useFeederPoolApy(feederPool.address);
 
   return (
-    <Card>
+    <Container>
       <Boost
         inputAddress={feederPool.token.address}
         inputBalance={feederPool.token.balance}
@@ -64,6 +61,6 @@ export const UserBoost: FC = () => {
           </div>
         </div>
       </Boost>
-    </Card>
+    </Container>
   );
 };

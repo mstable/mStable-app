@@ -35,11 +35,14 @@ const Container = styled.div`
   }
 
   @media (min-width: ${ViewportWidth.m}) {
+    display: flex;
     align-items: center;
     flex-direction: row;
+    justify-content: space-between;
 
     > h3 {
       font-size: 1.25rem;
+      margin: 0;
     }
 
     > div a {

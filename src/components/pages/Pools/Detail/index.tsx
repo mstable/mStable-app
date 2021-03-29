@@ -14,9 +14,7 @@ import { AssetCard } from '../cards/AssetCard';
 
 import { assetColorMapping } from '../constants';
 import { LiquidityChart } from './LiquidityChart';
-import { UserPosition } from './UserPosition';
 import { AssetDetails } from './AssetDetails';
-import { UserLookup } from './UserLookup';
 import { Deposit } from './Deposit';
 import { Withdraw } from './Withdraw';
 import {
@@ -24,8 +22,7 @@ import {
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
 import { RewardStreamsProvider } from './useRewardStreams';
-import { PoolComposition } from './PoolComposition';
-import { UserBoost } from './UserBoost';
+import { Overview } from './Overview';
 
 const Divider = styled.div`
   height: 1px;
@@ -43,7 +40,7 @@ const HeaderCard = styled(AssetCard)`
 const HeaderContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 
   > div {
     flex: 1;
@@ -131,26 +128,6 @@ const Exchange = styled.div`
   }
 `;
 
-const Row = styled.div`
-  > * {
-    margin-bottom: 1rem;
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-  @media (min-width: ${ViewportWidth.l}) {
-    display: flex;
-    justify-content: space-between;
-    > * {
-      margin-bottom: 0;
-      margin-right: 1rem;
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-  }
-`;
-
 const Container = styled.div`
   width: 100%;
 `;
@@ -182,15 +159,11 @@ const PoolDetailContent: FC = () => {
       <HeaderContainer>
         <HeaderCard poolAddress={address} isLarge color={color} />
         <LiquidityChart color={color} />
+        {/* PoolComposition */}
       </HeaderContainer>
-      <Row>
-        <AssetDetails />
-        <PoolComposition />
-      </Row>
+      <AssetDetails />
       <Divider />
-      <UserPosition />
-      <Divider />
-      <UserBoost />
+      <Overview />
       <Divider />
       <Exchange>
         <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
@@ -224,7 +197,7 @@ const PoolDetailContent: FC = () => {
         </Clippy>
       </Exchange>
       <Divider />
-      <UserLookup />
+      {/* <UserLookup /> */}
     </Container>
   );
 };
