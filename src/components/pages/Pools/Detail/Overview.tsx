@@ -13,6 +13,7 @@ import { ProvideLiquidityMessage } from './ProvideLiquidityMessage';
 import { UserBoost } from './UserBoost';
 import { useRewardStreams } from './useRewardStreams';
 import { UserRewards } from './UserRewards';
+import { ViewportWidth } from '../../../../theme';
 
 enum Selection {
   Stake = 'stake',
@@ -95,7 +96,7 @@ const Button = styled(UnstyledButton)<{ active?: boolean }>`
 
 const Header = styled.div<{ showBorder?: boolean }>`
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   border-bottom: 1px solid
     ${({ theme, showBorder }) =>
       showBorder ? theme.color.accent : 'transparent'};
@@ -103,6 +104,11 @@ const Header = styled.div<{ showBorder?: boolean }>`
 
   > * {
     flex-basis: calc(33.3% - 0.5rem);
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    justify-content: space-between;
   }
 `;
 
@@ -181,5 +187,3 @@ export const Overview: FC = () => {
     </Container>
   );
 };
-// {selection === Boost && <UserBoost key="boost" />}
-// {selection === Rewards && <UserRewards key="rewards" />}

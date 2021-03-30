@@ -15,6 +15,13 @@ import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useIsMasquerading } from '../../../../context/UserProvider';
 
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+`;
+
 const RewardValues = styled.div`
   > div {
     margin-bottom: 0.5rem;
@@ -24,7 +31,7 @@ const RewardValues = styled.div`
     }
   }
 
-  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
+  @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
     display: flex;
     > div {
       flex-basis: 33%;
@@ -40,31 +47,36 @@ const RewardValues = styled.div`
 
 const RewardValueContainer = styled.div<{ streamType: StreamType }>`
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  flex-direction: column;
   transition: background-color 0.5s ease;
   padding: 0.5rem 0.75rem;
   border-radius: 0.75rem;
 
-  > :first-child {
-    > h4 {
-      font-weight: 600;
-    }
-    > div {
-      font-size: 0.85rem;
-    }
-    transition: color 0.5s ease;
+  > *:not(:last-child) {
+    margin-bottom: 0.25rem;
   }
-  > :last-child {
+
+  > :first-child {
+    display: flex;
+    justify-content: space-between;
+
     span {
       transition: color 0.5s ease;
       font-size: 1.25rem;
     }
+    > h4 {
+      font-weight: 600;
+    }
+
+    transition: color 0.5s ease;
+  }
+  > :last-child {
     > div {
       margin-top: 0.5rem;
       color: ${({ theme }) => theme.color.bodyAccent};
       font-size: 0.85rem;
     }
+    font-size: 0.85rem;
   }
 
   ${({ streamType }) => `
@@ -219,17 +231,17 @@ const RewardValue: FC<{
   <RewardValueContainer streamType={streamType}>
     <div>
       <h4>{title}</h4>
-      <div>{showPreview ? previewLabel : label}</div>
+      {typeof value === 'number' || typeof previewValue === 'number' ? (
+        <div>
+          <CountUp
+            end={showPreview ? (previewValue as number) : (value as number)}
+          />
+        </div>
+      ) : (
+        <Skeleton height={20} />
+      )}
     </div>
-    {typeof value === 'number' || typeof previewValue === 'number' ? (
-      <div>
-        <CountUp
-          end={showPreview ? (previewValue as number) : (value as number)}
-        />
-      </div>
-    ) : (
-      <Skeleton height={20} />
-    )}
+    <div>{showPreview ? previewLabel : label}</div>
   </RewardValueContainer>
 );
 
@@ -248,7 +260,7 @@ export const UserRewards: FC = () => {
   return (
     <RewardsCard>
       <div>
-        {totalEarned > 0 && (
+        {totalEarned > 0 ? (
           <GraphAndValues>
             <ClaimGraph showPreview={isClaiming} />
             <RewardValues>
@@ -313,6 +325,10 @@ export const UserRewards: FC = () => {
               </ClaimContainer>
             )}
           </GraphAndValues>
+        ) : (
+          <EmptyState>
+            <p>No rewards to claim</p>
+          </EmptyState>
         )}
       </div>
     </RewardsCard>
