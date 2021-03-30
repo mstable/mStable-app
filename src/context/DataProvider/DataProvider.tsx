@@ -98,7 +98,8 @@ export const useSaveV2Address = (): string | undefined => {
 };
 
 export const useFeederPool = (address: string): FeederPoolState | undefined => {
-  return useSelectedMassetState()?.feederPools[address];
+  const massetState = useSelectedMassetState();
+  return massetState?.feederPools[address];
 };
 
 export const DataProvider: FC = ({ children }) => {

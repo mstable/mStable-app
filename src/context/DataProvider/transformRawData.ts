@@ -413,13 +413,15 @@ export const transformRawData = ([massetsData, feedersData, tokens]: [
   FeederPoolsQueryResult['data'],
   Tokens,
 ]): DataState => {
+  if (!massetsData?.massets || !feedersData?.feederPools) return {};
+
   return Object.fromEntries(
-    (massetsData?.massets ?? [])
-      .filter(masset => !!masset.token.symbol)
-      .map(masset => {
-        const feeders = feedersData?.feederPools ?? [];
-        const massetName = masset.token.symbol.toLowerCase() as MassetName;
-        return [massetName, transformMassetData(masset, feeders, tokens)];
-      }),
+    massetsData.massets.map(masset => {
+      const massetName = masset.token.symbol.toLowerCase() as MassetName;
+      return [
+        massetName,
+        transformMassetData(masset, feedersData.feederPools, tokens),
+      ];
+    }),
   );
 };
