@@ -52,7 +52,7 @@ export const MintExact: FC = () => {
 
   const exchangeRate = useExchangeRateForFPInputs(
     feederPool.address,
-    estimatedOutputAmount.value,
+    estimatedOutputAmount,
     inputValues,
   );
 
