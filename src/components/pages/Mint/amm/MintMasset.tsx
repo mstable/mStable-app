@@ -29,6 +29,7 @@ import { TransactionInfo } from '../../../core/TransactionInfo';
 import { useMinimumOutput } from '../../../../hooks/useOutput';
 import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
 import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
+import { BigDecimal } from '../../../../web3/BigDecimal';
 
 const formId = 'mint';
 
@@ -103,12 +104,13 @@ export const MintMasset: FC = () => {
     [bAssets, feederOptions],
   );
 
-  const massetBalance = massetToken?.balance.exact;
   const error = useMemo(() => {
     if (!inputAmount?.simple) return 'Enter an amount';
 
     if (inputAmount) {
-      if (massetBalance && inputAmount.exact.gt(massetBalance)) {
+      if (
+        inputAmount.exact.gt(inputToken?.balance.exact ?? BigDecimal.ZERO.exact)
+      ) {
         return 'Insufficient balance';
       }
 
@@ -128,7 +130,7 @@ export const MintMasset: FC = () => {
     inputAmount,
     estimatedOutputAmount.fetching,
     estimatedOutputAmount.error,
-    massetBalance,
+    inputToken,
     inputAddress,
   ]);
 
@@ -173,7 +175,7 @@ export const MintMasset: FC = () => {
       <SendButton
         valid={valid}
         title={error ?? 'Mint'}
-        penaltyBonusAmount={penaltyBonus?.percentage}
+        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         handleSend={() => {
           if (
             masset &&
