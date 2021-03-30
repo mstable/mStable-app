@@ -46,7 +46,8 @@ export const InputV2 = styled.input<{
 `;
 
 const trimInput = (value?: string, decimals?: number): string => {
-  if (!decimals || !value) return '';
+  if (!value) return '';
+  if (!decimals) return value;
 
   const split = value?.split('.');
   if (split.length > 1) {
@@ -96,6 +97,7 @@ export const AmountInputV2: FC<Props> = ({
       error={error}
       min={min}
       max={max}
+      type="number"
       placeholder={placeholder}
       step={step}
       value={trimmedValue}
