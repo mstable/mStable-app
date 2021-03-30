@@ -133,6 +133,7 @@ export const ManyToOneAssetExchange: FC<
               handleSetAmount={inputCallbacks[address].setFormValue}
               handleSetMax={setMaxCallbacks?.[address]}
               spender={spender}
+              decimals={inputValues[address].decimals}
             />
           ),
       )}
@@ -208,6 +209,7 @@ export const OneToManyAssetExchange: FC<
           handleSetAmount={outputCallbacks[address].setFormValue}
           handleSetMax={setMaxCallbacks?.[address]}
           spender={spender}
+          decimals={outputValues[address].decimals}
         />
       ))}
       {error && <ErrorMessage error={error} />}

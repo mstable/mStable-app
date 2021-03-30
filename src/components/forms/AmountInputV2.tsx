@@ -3,6 +3,7 @@ import React, {
   FC,
   KeyboardEventHandler,
   useCallback,
+  useMemo,
 } from 'react';
 import styled from 'styled-components';
 
@@ -17,6 +18,7 @@ interface Props {
   min?: string;
   max?: string;
   step?: string;
+  decimals?: number;
 }
 
 export const InputV2 = styled.input<{
@@ -43,6 +45,18 @@ export const InputV2 = styled.input<{
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};
 `;
 
+const trimInput = (value?: string, decimals?: number): string => {
+  if (!decimals || !value) return '';
+
+  const split = value?.split('.');
+  if (split.length > 1) {
+    if (split[1].length >= decimals) {
+      return [split[0], split[1].substr(0, decimals)].join('.');
+    }
+  }
+  return value;
+};
+
 export const AmountInputV2: FC<Props> = ({
   className,
   error,
@@ -53,7 +67,13 @@ export const AmountInputV2: FC<Props> = ({
   min = '0',
   max,
   step = '0.01',
+  decimals,
 }) => {
+  const trimmedValue = useMemo(() => trimInput(value, decimals), [
+    value,
+    decimals,
+  ]);
+
   const handleKeyPress = useCallback<KeyboardEventHandler<HTMLInputElement>>(
     event => {
       // Prevent 'minus' key
@@ -67,21 +87,23 @@ export const AmountInputV2: FC<Props> = ({
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
+      if (decimals) {
+        trimInput(event.target.value, decimals);
+      }
       onChange?.(event.target.value ?? undefined);
     },
-    [onChange],
+    [onChange, decimals],
   );
 
   return (
     <InputV2
       className={className}
       error={error}
-      type="number"
       min={min}
       max={max}
       placeholder={placeholder}
       step={step}
-      value={value || ''}
+      value={trimmedValue}
       onKeyPress={handleKeyPress}
       onChange={handleChange}
       disabled={disabled}

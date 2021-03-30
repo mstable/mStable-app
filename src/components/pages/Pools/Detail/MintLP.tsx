@@ -181,6 +181,7 @@ export const MintLP: FC = () => {
         isStakingLP ? inputFormValue : estimatedOutputAmount.value?.string
       }
       isFetching={estimatedOutputAmount.fetching}
+      inputDecimals={inputAmount?.decimals}
     >
       <SendButton
         title={error ?? title}

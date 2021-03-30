@@ -216,6 +216,7 @@ const SwapLogic: FC = () => {
       outputAddress={outputAddress ?? addressOptions[0].address}
       outputFormValue={swapOutput.value?.string}
       isFetching={swapOutput?.fetching}
+      inputDecimals={inputDecimals}
     >
       <SendButton
         valid={valid}

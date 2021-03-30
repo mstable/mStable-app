@@ -148,6 +148,7 @@ export const RedeemMasset: FC = () => {
         handleSetMax={() => {
           handleSetMassetFormValue(massetToken?.balance.string);
         }}
+        decimals={massetState.token.decimals}
       />
       <div>
         <Arrow />

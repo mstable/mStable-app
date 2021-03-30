@@ -148,7 +148,7 @@ const Option: FC<{
       <TokenDetails>
         <span>{label ?? symbol}</span>
         {(balance?.simple ?? 0) > 0 && (
-          <Balance>{balance?.format(4, false)}</Balance>
+          <Balance>{balance?.format(2, false)}</Balance>
         )}
       </TokenDetails>
       {dropdownEnabled && (
