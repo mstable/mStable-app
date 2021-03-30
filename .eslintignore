@@ -11,4 +11,5 @@ src/graphql/vault.tsx
 src/react-app-env.d.ts
 src/typechain/*
 scripts/*
+src/@mstable/*
 lib/
