@@ -101,7 +101,7 @@ export const useEstimatedOutput = (
     const { amount: inputAmount, address: inputAddress } = inputValue;
     const { address: outputAddress } = outputValue;
 
-    if (!estimatedOutputAmount.value) return { fetching: true };
+    if (!estimatedOutputAmount.value) return {};
 
     if (!estimatedOutputAmount.value.exact.gt(0) || !inputAmount.exact.gt(0)) {
       return { error: 'Amount must be greater than zero' };

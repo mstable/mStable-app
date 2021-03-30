@@ -72,9 +72,7 @@ export const MintLP: FC = () => {
     max: 99.99,
   });
 
-  const inputToken = useTokenSubscription(
-    inputOptions.find(t => t.address === inputAddress)?.address,
-  );
+  const inputToken = useTokenSubscription(inputAddress);
 
   const outputToken = outputOptions.find(t => t.address === outputAddress);
 
@@ -130,8 +128,8 @@ export const MintLP: FC = () => {
     if (!inputAmount?.simple) return 'Enter an amount';
 
     if (
-      feederPool.token.balance?.exact &&
-      inputAmount.exact.gt(feederPool.token.balance.exact)
+      inputToken?.balance?.exact &&
+      inputAmount.exact.gt(inputToken.balance.exact)
     ) {
       return 'Insufficient balance';
     }
@@ -146,16 +144,16 @@ export const MintLP: FC = () => {
 
     if (isStakingInVault) return;
 
-    if (!estimatedOutputAmount.value?.simple && !estimatedOutputAmount.fetching)
-      return `Not enough ${outputToken?.symbol} in basket`;
+    if (estimatedOutputAmount.fetching) return 'Validating…';
 
     return estimatedOutputAmount.error;
   }, [
     inputAmount,
-    feederPool.token,
-    estimatedOutputAmount,
+    inputToken,
     outputToken,
     isStakingInVault,
+    estimatedOutputAmount.fetching,
+    estimatedOutputAmount.error,
   ]);
 
   const title = isStakingLP

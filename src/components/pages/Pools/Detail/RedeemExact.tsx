@@ -87,6 +87,8 @@ export const RedeemExact: FC = () => {
       return 'Insufficient balance';
     }
 
+    if (estimatedOutputAmount.fetching) return 'Validating…';
+
     return estimatedOutputAmount.error;
   }, [estimatedOutputAmount, feederPool.token.balance, touched]);
 

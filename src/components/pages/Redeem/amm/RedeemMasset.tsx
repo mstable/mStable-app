@@ -102,14 +102,12 @@ export const RedeemMasset: FC = () => {
     [bAssets, feederOptions],
   );
 
+  const massetBalance = massetToken?.balance;
   const error = useMemo(() => {
     if (!massetAmount?.simple) return 'Enter an amount';
 
     if (massetAmount) {
-      if (
-        massetToken?.balance.exact &&
-        massetAmount.exact.gt(massetToken.balance.exact)
-      ) {
+      if (massetBalance && massetAmount.exact.gt(massetBalance.exact)) {
         return 'Insufficient balance';
       }
 
@@ -122,8 +120,16 @@ export const RedeemMasset: FC = () => {
       }
     }
 
+    if (estimatedOutputAmount.fetching) return 'Validating…';
+
     return estimatedOutputAmount.error;
-  }, [estimatedOutputAmount.error, massetAmount, massetToken, outputAddress]);
+  }, [
+    estimatedOutputAmount.error,
+    estimatedOutputAmount.fetching,
+    massetAmount,
+    massetBalance,
+    outputAddress,
+  ]);
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippageSimple,
@@ -172,9 +178,7 @@ export const RedeemMasset: FC = () => {
             minOutputAmount
           ) {
             if (
-              Object.keys(fAssets).find(
-                address => fAssets[address].address === outputAddress,
-              ) &&
+              Object.values(fAssets).find(f => f.address === outputAddress) &&
               fasset
             ) {
               return propose<Interfaces.FeederPool, 'swap'>(
