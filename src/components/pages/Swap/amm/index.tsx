@@ -42,7 +42,7 @@ const Container = styled(AssetSwap)`
     margin: 0;
   }
   > *:not(:first-child) {
-    margin: 0.5rem 0;
+    margin: 0.25rem 0;
   }
 `;
 
@@ -222,7 +222,7 @@ const SwapLogic: FC = () => {
         valid={valid}
         title={error ?? 'Swap'}
         approve={approve}
-        penaltyBonusAmount={penaltyBonus?.percentage}
+        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         handleSend={() => {
           if (
             masset &&

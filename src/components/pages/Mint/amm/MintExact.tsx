@@ -166,7 +166,7 @@ const MintExactLogic: FC = () => {
     >
       <SendButton
         valid={valid}
-        penaltyBonusAmount={penaltyBonus?.percentage}
+        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         title={error ?? 'Mint'}
         handleSend={() => {
           if (masset && walletAddress && minOutputAmount) {
