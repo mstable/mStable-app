@@ -32,6 +32,8 @@ import Sushi, { ReactComponent as SushiSvg } from './tokens/Sushi.svg';
 import BADGER, { ReactComponent as BadgerSvg } from './tokens/Badger.svg';
 import CREAM, { ReactComponent as CreamSvg } from './tokens/Cream.svg';
 import FAKE, { ReactComponent as FakeSvg } from './tokens/FAKE.svg';
+import HBTC, { ReactComponent as HbtcSvg } from './tokens/HBTC.svg';
+import TBTC, { ReactComponent as TbtcSvg } from './tokens/tBTC.svg';
 import IMBTCMTA, {
   ReactComponent as ImbtcmtaSvg,
 } from './tokens/imbtc-mta.svg';
@@ -79,6 +81,8 @@ export const TOKEN_ICONS: Record<string, string> = {
   IMBTCMTA,
   FAST: FAKE,
   GUSD,
+  HBTC,
+  TBTC,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -115,6 +119,8 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   IMBTCMTA: ImbtcmtaSvg as SvgComponent,
   FAST: FakeSvg as SvgComponent,
   GUSD: GusdSvg as SvgComponent,
+  HBTC: HbtcSvg as SvgComponent,
+  TBTC: TbtcSvg as SvgComponent,
 };
 
 const Image = styled.img`

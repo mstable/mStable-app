@@ -49,7 +49,7 @@ export const ProvideLiquidityMessage: FC = () => {
         <h3>Need {feederPool.token.symbol} tokens to stake?</h3>
         <p>
           Provide liquidity by depositing below, and stake to earn rewards in
-          addition to trading fees
+          addition to trade fees
         </p>
       </div>
     </Container>
