@@ -1,5 +1,7 @@
-import React, { FC, useCallback, useState } from 'react';
-import styled from 'styled-components';
+import React, { FC, useState } from 'react';
+import styled, { keyframes } from 'styled-components';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
 import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
@@ -13,15 +15,59 @@ import { useRewardStreams } from './useRewardStreams';
 import { UserRewards } from './UserRewards';
 
 enum Selection {
-  Fees = 'fees',
+  Stake = 'stake',
   Boost = 'boost',
   Rewards = 'rewards',
 }
 
-const { Fees, Boost, Rewards } = Selection;
+const { Stake, Boost, Rewards } = Selection;
+
+const components = {
+  [Stake]: Position,
+  [Boost]: UserBoost,
+  [Rewards]: UserRewards,
+};
+
+const slideIn = keyframes`
+  0% {
+    transform: translateY(-25%);
+    filter: blur(10px);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0);
+    filter: blur(0);
+    opacity: 1;
+  }
+`;
+
+const fadeOut = keyframes`
+  0% {
+    transform: translateY(0);
+    filter: blur(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(25%);
+    filter: blur(20px);
+    opacity: 0;
+  }
+`;
 
 const Content = styled.div`
   padding: 1.75rem 1.5rem;
+
+  .item-enter {
+    animation: ${slideIn} 0.5s cubic-bezier(0.19, 1, 0.22, 1) none;
+  }
+
+  .item-exit {
+    animation: ${fadeOut} 0.8s cubic-bezier(0.19, 1, 0.22, 1) normal;
+  }
+
+  .item-exit {
+    display: none;
+  }
 `;
 
 const Button = styled(UnstyledButton)<{ active?: boolean }>`
@@ -29,7 +75,6 @@ const Button = styled(UnstyledButton)<{ active?: boolean }>`
     active ? theme.color.backgroundAccent : 'none'};
   border-radius: 1rem;
   padding: 1rem;
-  transition: 0.25s all;
 
   h3 {
     color: ${({ theme }) => theme.color.blue};
@@ -67,7 +112,7 @@ const Container = styled.div`
 `;
 
 export const Overview: FC = () => {
-  const [selection, setSelection] = useState<Selection | undefined>();
+  const [selection, setSelection] = useState<Selection>(Stake);
 
   const rewardStreams = useRewardStreams();
   const feederPool = useSelectedFeederPoolState();
@@ -81,11 +126,6 @@ export const Overview: FC = () => {
 
   const showLiquidityMessage = !userAmount && !userStakedAmount;
 
-  const handleSelection = useCallback(
-    (type: Selection) => setSelection(type !== selection ? type : undefined),
-    [selection],
-  );
-
   return (
     <Container>
       {showLiquidityMessage ? (
@@ -94,36 +134,49 @@ export const Overview: FC = () => {
         <>
           <Header showBorder={!!selection}>
             <Button
-              active={selection === Fees}
-              onClick={() => handleSelection(Fees)}
+              active={selection === Stake}
+              onClick={() => setSelection(Stake)}
             >
               <h3>{userStakedAmount ? 'Staked' : 'Unstaked'} balance</h3>
               <CountUp end={(userStakedAmount || userAmount) * massetPrice} />
             </Button>
             <Button
               active={selection === Boost}
-              onClick={() => handleSelection(Boost)}
+              onClick={() => setSelection(Boost)}
             >
               <h3>Boosted APY</h3>
               <CountUp end={apy?.value?.base ?? 0} suffix="%" />
             </Button>
             <Button
               active={selection === Rewards}
-              onClick={() => handleSelection(Rewards)}
+              onClick={() => setSelection(Rewards)}
             >
               <h3>Rewards Earned</h3>
               <CountUp end={totalEarned} /> MTA
             </Button>
           </Header>
-          {!!selection && (
-            <Content>
-              {selection === Fees && <Position />}
-              {selection === Boost && <UserBoost />}
-              {selection === Rewards && <UserRewards />}
-            </Content>
-          )}
+          <Content>
+            <TransitionGroup>
+              {[Stake, Boost, Rewards]
+                .filter(type => type === selection)
+                .map(type => {
+                  const Comp = components[type];
+                  return (
+                    <CSSTransition
+                      timeout={{ enter: 500, exit: 700 }}
+                      classNames="item"
+                      key={type}
+                    >
+                      <Comp />
+                    </CSSTransition>
+                  );
+                })}
+            </TransitionGroup>
+          </Content>
         </>
       )}
     </Container>
   );
 };
+// {selection === Boost && <UserBoost key="boost" />}
+// {selection === Rewards && <UserRewards key="rewards" />}

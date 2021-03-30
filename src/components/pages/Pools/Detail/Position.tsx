@@ -11,13 +11,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
 
-  h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: ${({ theme }) => theme.color.body};
-    margin-bottom: 0.75rem;
-  }
-
   > div {
     display: flex;
     flex-direction: row;
