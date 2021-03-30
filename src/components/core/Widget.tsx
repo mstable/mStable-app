@@ -39,7 +39,6 @@ const Header = styled.div`
   > button {
     align-self: flex-end;
     width: 100%;
-    margin-bottom: 0.5rem;
   }
 
   @media (min-width: ${ViewportWidth.s}) {

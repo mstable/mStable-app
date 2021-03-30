@@ -11,13 +11,15 @@ const Container = styled.div`
     font-size: 1.25rem;
     font-weight: 600;
     color: ${({ theme }) => theme.color.body};
-    margin-bottom: 0.75rem;
   }
 
   > div {
     padding: 0;
     > div {
+      display: flex;
+      justify-content: space-between;
       > :last-child {
+        padding-top: 0.25rem;
         > :last-child {
           display: flex;
           margin-top: 2rem;

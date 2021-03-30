@@ -1,9 +1,8 @@
 import React, { FC, useMemo } from 'react';
-import CountUp from 'react-countup';
 import styled from 'styled-components';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import { ViewportWidth } from '../../../../theme';
-import { CountUpUSD } from '../../../core/CountUp';
+import { CountUp } from '../../../core/CountUp';
 import { Tooltip } from '../../../core/ReactTooltip';
 import { useSelectedFeederPoolState } from '../FeederPoolProvider';
 
@@ -14,44 +13,51 @@ const Container = styled.div`
   > div {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
+    text-align: center;
+
+    > div {
+      flex-basis: calc(33.3% - 0.5rem);
+      justify-content: center;
+      align-items: center;
+    }
 
     h4 {
       font-weight: 600;
     }
+  }
 
-    @media (min-width: ${ViewportWidth.s}) {
+  @media (min-width: ${ViewportWidth.s}) {
+    > div > div {
+      display: flex;
+      flex-direction: column;
+
       > div {
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-basis: calc(50% - 0.5rem);
+      }
 
-        > div {
-          flex-basis: calc(50% - 0.5rem);
-        }
-
-        > div:nth-child(even) {
-          text-align: right;
-        }
+      > div:nth-child(even) {
+        text-align: right;
       }
     }
+  }
 
-    @media (min-width: ${ViewportWidth.l}) {
+  @media (min-width: ${ViewportWidth.l}) {
+    > div > div {
       > div {
-        > div {
-          flex-basis: 0;
-          flex: 1;
-        }
+        flex-basis: 0;
+        flex: 1;
+      }
 
-        > div:nth-child(even) {
-          text-align: left;
-        }
+      > div:nth-child(even) {
+        text-align: center;
       }
     }
   }
 `;
 
 export const Position: FC = () => {
-  const { totalSupply, vault, token, title, account, price: currentPrice } =
+  const { totalSupply, vault, token, account, price: currentPrice } =
     useSelectedFeederPoolState() ?? {};
   const massetPrice = useSelectedMassetPrice() ?? 1;
 
@@ -104,19 +110,15 @@ export const Position: FC = () => {
           >
             <h4>Fees earned</h4>
           </Tooltip>
-          <CountUpUSD
-            end={feesEarned[0] + feesEarned[1]}
-            decimals={10}
-            price={massetPrice}
+          <CountUp
+            end={(feesEarned[0] + feesEarned[1]) * massetPrice}
+            decimals={2}
+            prefix="$"
           />
         </div>
         <div>
-          <h4>{title} Staked</h4>
-          <CountUpUSD end={userStakedAmount} price={massetPrice} />
-        </div>
-        <div>
-          <h4>{title} Balance</h4>
-          <CountUpUSD end={userAmount} price={massetPrice} />
+          <h4>Unstaked Balance</h4>
+          <CountUp end={userAmount * massetPrice} prefix="$" decimals={2} />
         </div>
       </div>
     </Container>
