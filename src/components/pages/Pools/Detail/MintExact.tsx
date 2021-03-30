@@ -20,6 +20,7 @@ import {
   useFPVaultAddressOptions,
   useFPAssetAddressOptions,
 } from '../FeederPoolProvider';
+import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
 
 const formId = 'DepositLP';
 
@@ -119,20 +120,32 @@ export const MintExact: FC = () => {
     if (!touched.length) return 'Enter an amount';
     if (!outputAddress) return 'Select a token';
 
-    if (
-      !contractAddress ||
-      !assetAddressOptions.some(
-        option =>
-          !(option as SubscribedToken).balance || !inputValues[option.address],
-      )
-    ) {
+    const touchedOptions = assetAddressOptions
+      .map(opt => ({
+        ...opt,
+        input: touched.find(t => t.address === opt.address),
+      }))
+      .filter(opt => opt.input) as (SubscribedToken & {
+      input: BigDecimalInputValue;
+    })[];
+
+    if (!contractAddress || !touchedOptions.every(opt => opt.balance)) {
       return 'Fetching balances…';
     }
 
-    const addressesApprovalNeeded = assetAddressOptions.filter(t =>
-      inputValues[t.address]?.amount?.exact.gt(
-        (t as SubscribedToken).allowances?.[contractAddress]?.exact ?? 0,
-      ),
+    const addressesBalanceTooLow = touchedOptions.filter(
+      opt => opt.input.amount && opt.balance?.exact.lt(opt.input.amount.exact),
+    );
+
+    if (addressesBalanceTooLow.length)
+      return `Insufficient ${addressesBalanceTooLow
+        .map(t => t.symbol)
+        .join(', ')} balance`;
+
+    const addressesApprovalNeeded = touchedOptions.filter(
+      opt =>
+        opt.input.amount &&
+        opt.allowances[contractAddress]?.exact.lt(opt.input.amount.exact),
     );
 
     if (addressesApprovalNeeded.length)
@@ -146,7 +159,6 @@ export const MintExact: FC = () => {
   }, [
     assetAddressOptions,
     estimatedOutputAmount,
-    inputValues,
     outputAddress,
     contractAddress,
     touched,
