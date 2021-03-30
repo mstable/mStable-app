@@ -32,7 +32,7 @@ const components = {
 const slideIn = keyframes`
   0% {
     transform: translateY(-25%);
-    filter: blur(10px);
+    filter: blur(8px);
     opacity: 0.5;
   }
   100% {
@@ -50,24 +50,39 @@ const fadeOut = keyframes`
   }
   100% {
     transform: translateY(25%);
-    filter: blur(20px);
+    filter: blur(8px);
     opacity: 0;
   }
 `;
 
-const Content = styled.div`
-  padding: 1.75rem 1.5rem;
+const Content = styled.div<{ open: boolean }>`
+  padding: ${({ open }) => (open ? '1.75rem 1.5rem' : '0 1.5rem')};
+  transition: padding 0.2s ease;
+  > div {
+    overflow: hidden;
 
-  .item-enter {
-    animation: ${slideIn} 0.5s cubic-bezier(0.19, 1, 0.22, 1) none;
-  }
+    > div {
+      overflow: hidden;
+      transition: max-height 0.2s ease-in-out;
+      max-height: 24rem;
+      transform-origin: center top;
 
-  .item-exit {
-    animation: ${fadeOut} 0.8s cubic-bezier(0.19, 1, 0.22, 1) normal;
-  }
+      &.item-enter {
+        animation: ${slideIn} 0.5s cubic-bezier(0.19, 1, 0.22, 1) none;
+      }
 
-  .item-exit {
-    display: none;
+      &.item-exit,
+      &.item-exit-active,
+      &.item-exit-done {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 0.2s cubic-bezier(0, 1, 0, 1);
+      }
+
+      &.item-exit {
+        animation: ${fadeOut} 0.8s cubic-bezier(0.19, 1, 0.22, 1) none;
+      }
+    }
   }
 `;
 
@@ -171,26 +186,24 @@ export const Overview: FC = () => {
               <CountUp end={totalEarned} /> MTA
             </Button>
           </Header>
-          {selection && (
-            <Content>
-              <TransitionGroup>
-                {[Stake, Boost, Rewards]
-                  .filter(type => type === selection)
-                  .map(type => {
-                    const Comp = components[type];
-                    return (
-                      <CSSTransition
-                        timeout={{ enter: 500, exit: 700 }}
-                        classNames="item"
-                        key={type}
-                      >
-                        <Comp />
-                      </CSSTransition>
-                    );
-                  })}
-              </TransitionGroup>
-            </Content>
-          )}
+          <Content open={!!selection}>
+            <TransitionGroup>
+              {[Stake, Boost, Rewards]
+                .filter(type => type === selection)
+                .map(type => {
+                  const Comp = components[type];
+                  return (
+                    <CSSTransition
+                      timeout={{ enter: 500, exit: 700 }}
+                      classNames="item"
+                      key={type}
+                    >
+                      <Comp />
+                    </CSSTransition>
+                  );
+                })}
+            </TransitionGroup>
+          </Content>
         </>
       )}
     </Container>
