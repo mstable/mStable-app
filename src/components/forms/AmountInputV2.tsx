@@ -86,13 +86,8 @@ export const AmountInputV2: FC<Props> = ({
   );
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    event => {
-      if (decimals) {
-        trimInput(event.target.value, decimals);
-      }
-      onChange?.(event.target.value ?? undefined);
-    },
-    [onChange, decimals],
+    event => onChange?.(event.target.value ?? undefined),
+    [onChange],
   );
 
   return (
