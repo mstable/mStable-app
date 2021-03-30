@@ -169,7 +169,7 @@ export const RedeemMasset: FC = () => {
       <SendButton
         valid={!error}
         title={error ?? 'Redeem'}
-        penaltyBonusAmount={penaltyBonus?.percentage}
+        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         handleSend={() => {
           if (
             masset &&

@@ -284,7 +284,7 @@ export const SaveDepositAMM: FC<{
         <SendButton
           valid={valid}
           title={`Mint ${saveTokenSymbol}`}
-          penaltyBonusAmount={penaltyBonusAmount}
+          penaltyBonusAmount={(!error && penaltyBonusAmount) || undefined}
           handleSend={async () => {
             if (
               signer &&

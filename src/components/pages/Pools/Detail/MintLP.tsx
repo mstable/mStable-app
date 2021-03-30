@@ -187,7 +187,7 @@ export const MintLP: FC = () => {
         title={error ?? title}
         approve={approve}
         penaltyBonusAmount={
-          (!isStakingInVault && penaltyBonus?.percentage) || undefined
+          (!isStakingInVault && !error && penaltyBonus?.percentage) || undefined
         }
         valid={!error}
         handleSend={() => {
