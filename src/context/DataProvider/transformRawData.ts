@@ -409,12 +409,10 @@ const transformMassetData = (
 };
 
 export const transformRawData = ([massetsData, feedersData, tokens]: [
-  MassetsQueryResult['data'],
-  FeederPoolsQueryResult['data'],
+  NonNullable<MassetsQueryResult['data']>,
+  NonNullable<FeederPoolsQueryResult['data']>,
   Tokens,
 ]): DataState => {
-  if (!massetsData?.massets || !feedersData?.feederPools) return {};
-
   return Object.fromEntries(
     massetsData.massets.map(masset => {
       const massetName = masset.token.symbol.toLowerCase() as MassetName;
