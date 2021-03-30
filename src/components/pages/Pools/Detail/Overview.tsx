@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -118,7 +118,7 @@ const Container = styled.div`
 `;
 
 export const Overview: FC = () => {
-  const [selection, setSelection] = useState<Selection>(Stake);
+  const [selection, setSelection] = useState<Selection | undefined>(Stake);
 
   const rewardStreams = useRewardStreams();
   const feederPool = useSelectedFeederPoolState();
@@ -129,6 +129,13 @@ export const Overview: FC = () => {
   const { vault, token } = feederPool;
   const userAmount = token.balance?.simple ?? 0;
   const userStakedAmount = vault.account?.rawBalance.simple ?? 0;
+
+  // enable collapse
+  const handleSelection = useCallback(
+    (newValue: Selection) =>
+      setSelection(selection === newValue ? undefined : newValue),
+    [selection],
+  );
 
   const showLiquidityMessage = !userAmount && !userStakedAmount;
 
@@ -141,7 +148,7 @@ export const Overview: FC = () => {
           <Header showBorder={!!selection}>
             <Button
               active={selection === Stake}
-              onClick={() => setSelection(Stake)}
+              onClick={() => handleSelection(Stake)}
             >
               <h3>{userStakedAmount ? 'Staked' : 'Unstaked'} balance</h3>
               <CountUp
@@ -151,37 +158,39 @@ export const Overview: FC = () => {
             </Button>
             <Button
               active={selection === Boost}
-              onClick={() => setSelection(Boost)}
+              onClick={() => handleSelection(Boost)}
             >
               <h3>Boosted APY</h3>
               <CountUp end={apy?.value?.base ?? 0} suffix="%" />
             </Button>
             <Button
               active={selection === Rewards}
-              onClick={() => setSelection(Rewards)}
+              onClick={() => handleSelection(Rewards)}
             >
               <h3>Rewards Earned</h3>
               <CountUp end={totalEarned} /> MTA
             </Button>
           </Header>
-          <Content>
-            <TransitionGroup>
-              {[Stake, Boost, Rewards]
-                .filter(type => type === selection)
-                .map(type => {
-                  const Comp = components[type];
-                  return (
-                    <CSSTransition
-                      timeout={{ enter: 500, exit: 700 }}
-                      classNames="item"
-                      key={type}
-                    >
-                      <Comp />
-                    </CSSTransition>
-                  );
-                })}
-            </TransitionGroup>
-          </Content>
+          {selection && (
+            <Content>
+              <TransitionGroup>
+                {[Stake, Boost, Rewards]
+                  .filter(type => type === selection)
+                  .map(type => {
+                    const Comp = components[type];
+                    return (
+                      <CSSTransition
+                        timeout={{ enter: 500, exit: 700 }}
+                        classNames="item"
+                        key={type}
+                      >
+                        <Comp />
+                      </CSSTransition>
+                    );
+                  })}
+              </TransitionGroup>
+            </Content>
+          )}
         </>
       )}
     </Container>
