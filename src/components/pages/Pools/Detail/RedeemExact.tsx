@@ -40,7 +40,7 @@ export const RedeemExact: FC = () => {
   );
   const exchangeRate = useExchangeRateForFPInputs(
     feederPool.address,
-    estimatedOutputAmount.value,
+    estimatedOutputAmount,
     outputValues,
   );
 

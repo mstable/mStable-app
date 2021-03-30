@@ -53,7 +53,7 @@ const RedeemExactBassetsLogic: FC = () => {
 
   const estimatedOutputAmount = useEstimatedRedeemOutput(masset, bassetAmounts);
   const exchangeRate = useExchangeRateForMassetInputs(
-    estimatedOutputAmount.value,
+    estimatedOutputAmount,
     bassetAmounts,
   );
 

@@ -65,7 +65,7 @@ const MintExactLogic: FC = () => {
 
   const estimatedOutputAmount = useEstimatedMintOutput(masset, inputValues);
   const exchangeRate = useExchangeRateForMassetInputs(
-    estimatedOutputAmount.value,
+    estimatedOutputAmount,
     inputValues,
   );
 

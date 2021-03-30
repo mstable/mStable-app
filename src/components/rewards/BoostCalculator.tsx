@@ -33,6 +33,13 @@ const StyledButton = styled(Button)`
     margin-right: 0.5rem;
   }
 
+  > .gov svg {
+    path,
+    rect {
+      fill: ${({ theme }) => theme.color.white};
+    }
+  }
+
   div {
     display: flex;
     align-items: center;
@@ -246,7 +253,7 @@ export const BoostCalculator: FC<{
                 window.open(GOVERNANCE_URL);
               }}
             >
-              <div>
+              <div className="gov">
                 <GovSvg />
                 Get vMTA
               </div>

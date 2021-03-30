@@ -12,7 +12,7 @@ import type {
 } from './useBigDecimalInputs';
 
 export const useExchangeRateForMassetInputs = (
-  estimatedOutputAmount?: BigDecimal,
+  estimatedOutputAmount?: FetchState<BigDecimal>,
   inputValues?: BigDecimalInputValues,
 ): FetchState<BigDecimal> => {
   const massetState = useSelectedMassetState() as MassetState;
@@ -23,7 +23,8 @@ export const useExchangeRateForMassetInputs = (
     const touched = Object.values(inputValues).filter(v => v.touched);
 
     if (!touched.length) return {};
-    if (!estimatedOutputAmount) return { fetching: true };
+    if (estimatedOutputAmount?.error) return {};
+    if (!estimatedOutputAmount?.value) return { fetching: true };
 
     // Scale asset via ratio
     const scaleAssetValue = (input: BigDecimalInputValue): BigDecimal => {
@@ -43,11 +44,11 @@ export const useExchangeRateForMassetInputs = (
     );
 
     if (totalAmount) {
-      if (estimatedOutputAmount.exact.eq(0) || totalAmount.exact.eq(0)) {
+      if (estimatedOutputAmount.value.exact.eq(0) || totalAmount.exact.eq(0)) {
         return { error: 'Output amount must be greater than zero' };
       }
 
-      const value = estimatedOutputAmount.divPrecisely(totalAmount);
+      const value = estimatedOutputAmount.value.divPrecisely(totalAmount);
       return { value };
     }
 
@@ -57,7 +58,7 @@ export const useExchangeRateForMassetInputs = (
 
 export const useExchangeRateForFPInputs = (
   poolAddress: string,
-  estimatedOutputAmount?: BigDecimal,
+  estimatedOutputAmount?: FetchState<BigDecimal>,
   inputValues?: BigDecimalInputValues,
 ): FetchState<BigDecimal> => {
   const feederPool = useSelectedFeederPoolState();
@@ -68,7 +69,8 @@ export const useExchangeRateForFPInputs = (
     const touched = Object.values(inputValues).filter(v => v.touched);
 
     if (!touched.length) return {};
-    if (!estimatedOutputAmount) return { fetching: true };
+    if (estimatedOutputAmount?.error) return {};
+    if (!estimatedOutputAmount?.value) return { fetching: true };
 
     // Scale asset via ratio
     const scaleAssetValue = (input: BigDecimalInputValue): BigDecimal => {
@@ -90,11 +92,11 @@ export const useExchangeRateForFPInputs = (
     );
 
     if (totalAmount) {
-      if (estimatedOutputAmount.exact.eq(0) || totalAmount.exact.eq(0)) {
+      if (estimatedOutputAmount.value.exact.eq(0) || totalAmount.exact.eq(0)) {
         return { error: 'Output amount must be greater than zero' };
       }
 
-      const value = estimatedOutputAmount.divPrecisely(totalAmount);
+      const value = estimatedOutputAmount.value.divPrecisely(totalAmount);
       return { value };
     }
 
