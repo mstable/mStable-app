@@ -1,4 +1,4 @@
-import React, { createContext, FC, useContext, useMemo } from 'react';
+import React, { createContext, FC, useContext, useMemo, useState } from 'react';
 import { pipe } from 'ts-pipe-compose';
 
 import { Tokens, useTokensState } from '../TokensProvider';
@@ -24,6 +24,12 @@ import {
   useFeederPoolsLazyQuery,
 } from '../../graphql/feeders';
 import { useSelectedMassetName } from '../SelectedMassetNameProvider';
+
+type NonNullableRawData = [
+  NonNullable<MassetsQueryResult['data']>,
+  NonNullable<FeederPoolsQueryResult['data']>,
+  Tokens,
+];
 
 const dataStateCtx = createContext<DataState>({});
 
@@ -103,23 +109,34 @@ export const useFeederPool = (address: string): FeederPoolState | undefined => {
 };
 
 export const DataProvider: FC = ({ children }) => {
-  const data = useRawData();
+  const rawData = useRawData();
 
-  const dataState = useMemo<DataState>(
-    () =>
-      pipe<typeof data, DataState, DataState>(
-        data,
+  const [dataStatePrev, setDataStatePrev] = useState<DataState>({});
+
+  const nextDataState = useMemo<DataState | undefined>(() => {
+    // Since multiple data sources are used, wait for the data to be
+    // present in both results
+    if (rawData[0]?.massets && rawData[1]?.feederPools) {
+      const result = pipe<NonNullableRawData, DataState, DataState>(
+        rawData as NonNullableRawData,
         transformRawData,
         recalculateState,
-      ),
-    [data],
-  );
+      );
+      // Set the previous data state to this valid state
+      setDataStatePrev(result);
+      return result;
+    }
+  }, [rawData]);
+
+  // Use the previous data state as a fallback; prevents re-renders
+  // with missing data
+  const value = nextDataState ?? dataStatePrev;
 
   if (process.env.NODE_ENV === 'development') {
-    (window as { dataState?: DataState }).dataState = dataState;
+    (window as { dataState?: DataState }).dataState = value;
   }
 
   return (
-    <dataStateCtx.Provider value={dataState}>{children}</dataStateCtx.Provider>
+    <dataStateCtx.Provider value={value}>{children}</dataStateCtx.Provider>
   );
 };
