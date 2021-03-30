@@ -56,7 +56,6 @@ const RewardValueContainer = styled.div<{ streamType: StreamType }>`
     transition: color 0.5s ease;
   }
   > :last-child {
-    text-align: right;
     span {
       transition: color 0.5s ease;
       font-size: 1.25rem;
@@ -187,7 +186,6 @@ const RewardsCard = styled(Card)`
       display: flex;
       justify-content: space-between;
       > div {
-        text-align: right;
         font-size: 1.125rem; // 18px
         h4 {
           font-weight: 600;
@@ -236,6 +234,7 @@ const RewardValue: FC<{
 );
 
 export const UserRewards: FC = () => {
+  // const [isShowingGraph, toggleIsShowingGraph] = useToggle(false);
   const rewardStreams = useRewardStreams();
   const isMasquerading = useIsMasquerading();
   const [isClaiming, toggleIsClaiming] = useToggle(false);
@@ -319,3 +318,6 @@ export const UserRewards: FC = () => {
     </RewardsCard>
   );
 };
+// <Button onClick={toggleIsShowingGraph}>
+//   {isShowingGraph ? 'Amounts' : 'Streams'}
+// </Button>
