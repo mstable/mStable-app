@@ -9,22 +9,31 @@ import {
 
 const Title = styled.div`
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.85rem;
 `;
 
 const Link = styled.a<{ nType: NotificationType }>`
-  font-size: 1rem;
   color: ${({ theme, nType }) =>
     nType === NotificationType.Success ? theme.color.black : theme.color.white};
-  border-color: ${({ theme, nType }) =>
-    nType === NotificationType.Success ? theme.color.black : theme.color.white};
+  border-top: 1px
+    ${({ theme, nType }) =>
+      nType === NotificationType.Success
+        ? theme.color.blackTransparent
+        : theme.color.whiteTransparent}
+    solid;
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding-top: 0.1rem;
+
   &:after {
     content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==');
     margin: 0 3px 0 5px;
     filter: ${({ nType }) =>
       nType === NotificationType.Success
         ? 'none'
-        : 'invert(99%) sepia(1%) saturate(2%) hue-rotate(39deg) brightness(100%) contrast(101%)'}
+        : 'invert(99%) sepia(1%) saturate(2%) hue-rotate(39deg) brightness(100%) contrast(101%)'};
+  }
 `;
 
 const Container = styled.div<
@@ -38,18 +47,16 @@ const Container = styled.div<
       : theme.color.red};
   color: ${({ theme, type }) =>
     type === NotificationType.Success ? theme.color.black : theme.color.white};
-  border-radius: 1rem;
-  padding: 1rem 2rem;
-  margin-bottom: 1rem;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
   transition: opacity 0.3s ease;
   cursor: pointer;
 
   > * {
-    margin-bottom: ${({ theme }) => theme.spacing.s};
-  }
-
-  > :last-child {
-    margin-bottom: 0;
+    font-size: 0.85rem;
+    &:not(:last-child) {
+      margin-bottom: 0.25rem;
+    }
   }
 
   &:hover {

@@ -32,7 +32,7 @@ const description = {
   mBTC:
     'mStable mBTC is a meta-stablecoin based on tokenised Bitcoin, with a weight-limited basket of assets and a native interest rate.',
   mUSD:
-    'mStable mUSD is a meta-stablecoin based on USD, with with a weight-limited basket of assets, 1:1 zero-slippage swaps and a high native interest rate.',
+    'mStable mUSD is a meta-stablecoin based on USD, with a weight-limited basket of assets and a high native interest rate.',
 };
 
 const MassetAside: FC = () => {

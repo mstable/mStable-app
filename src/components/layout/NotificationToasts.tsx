@@ -22,22 +22,28 @@ const slideIn = keyframes`
 
 const Container = styled.div`
   position: fixed;
-  top: 32px;
-  right: 40px;
+  top: 4.5rem;
+  left: 1rem;
   width: 20%;
   min-width: 280px;
   z-index: 2;
+  > * {
+    > * {
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+  }
 `;
 
 const Animation = styled(CSSTransition)`
   ${({ classNames }) => `&.${classNames}-enter`} {
     animation: ${css`
-        ${slideIn}`} 0.6s cubic-bezier(0.19, 1, 0.22, 1) normal;
+        ${slideIn}`} 0.4s cubic-bezier(0.19, 1, 0.22, 1) normal;
   }
 
   ${({ classNames }) => `&.${classNames}-exit-active`} {
     animation: ${css`
-        ${slideIn}`} 0.3s cubic-bezier(0.19, 1, 0.22, 1) reverse;
+        ${slideIn}`} 0.2s cubic-bezier(0.19, 1, 0.22, 1) reverse;
   }
 `;
 
@@ -51,7 +57,7 @@ export const NotificationToasts: FC<{}> = () => {
           .filter(n => !(n.hideToast || n.read))
           .map(notification => (
             <Animation
-              timeout={{ enter: 500, exit: 200 }}
+              timeout={{ enter: 350, exit: 150 }}
               classNames="item"
               key={notification.id}
             >

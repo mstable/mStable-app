@@ -306,7 +306,7 @@ export const TransactionsProvider: FC = ({ children }) => {
           hash = response.hash as string;
 
           addInfoNotification(
-            'Transaction awaiting confirmation',
+            'Transaction pending',
             manifest.purpose.present,
             getEtherscanLinkForHash(hash),
           );
