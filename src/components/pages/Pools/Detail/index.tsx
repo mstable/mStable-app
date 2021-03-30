@@ -224,16 +224,16 @@ const PoolDetailContent: FC = () => {
         <Clippy>
           <h4>Using mStable Feeder Pools</h4>
           <p>
-            Feeder Pools offer a way to earn with your assets{' '}
-            <span>without exposure to impermanent loss.</span>
+            Feeder Pools offer a way to earn with your assets with{' '}
+            <span>low impermanent loss.</span>
           </p>
           <p>
             Liquidity providers passively gain yield from swap fees and also
             earn MTA rewards.
           </p>
           <p>
-            You can <span>multiply your rewards</span> across{' '}
-            <span>all pools</span> (and Save) by staking MTA.
+            You can <span>multiply your rewards</span> in mStable pools by
+            staking MTA.
           </p>
           <p>
             Rewards are streamed to you at a constant rate, and can be claimed
