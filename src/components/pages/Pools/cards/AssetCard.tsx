@@ -197,10 +197,10 @@ const IconContainer = styled.div<{ isLarge: boolean }>`
   }
 `;
 
-const TokenPair: FC<{ tokens?: SubscribedToken[]; isLarge?: boolean }> = ({
-  tokens,
-  isLarge = false,
-}) => {
+export const TokenPair: FC<{
+  tokens?: SubscribedToken[];
+  isLarge?: boolean;
+}> = ({ tokens, isLarge = false }) => {
   if (!tokens?.length || tokens.length < 2) return null;
 
   // TODO: Add skeleton
