@@ -344,10 +344,6 @@ const transformMassetData = (
     tokens,
   );
 
-  const fAssets = Object.fromEntries(
-    Object.values(feederPools).map(fp => [fp.address, fp.fasset]),
-  );
-
   return {
     address,
     failed,
@@ -374,7 +370,6 @@ const transformMassetData = (
     feeRate: BigNumber.from(feeRate),
     redemptionFeeRate: BigNumber.from(redemptionFeeRate),
     feederPools,
-    fAssets,
     savingsContracts: {
       v1: savingsContractV1
         ? transformSavingsContractV1(
@@ -400,7 +395,9 @@ const transformMassetData = (
     bassetRatios: Object.fromEntries(
       Object.values(bAssets).map(b => [b.address, b.ratio]),
     ),
-    // Initial values
+
+    // Initial values, set in recalculateState
+    fAssets: {},
     blacklistedBassets: [],
     overweightBassets: [],
     allBassetsNormal: true,

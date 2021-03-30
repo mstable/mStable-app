@@ -142,9 +142,14 @@ export const recalculateMasset = (masset: MassetState): MassetState => {
     ]),
   );
 
+  const fAssets = Object.fromEntries(
+    Object.values(feederPools).map(fp => [fp.address, fp.fasset]),
+  );
+
   return {
     ...masset,
     feederPools,
+    fAssets,
     bAssets,
     allBassetsNormal,
     blacklistedBassets,
