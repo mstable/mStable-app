@@ -28,6 +28,7 @@ interface Props {
   handleApprove?: (mode: Mode) => void;
   spender?: string;
   isFetching?: boolean;
+  decimals?: number;
 }
 
 const Input = styled.div`
@@ -151,6 +152,7 @@ const AssetInputContent: FC<Props> = ({
   handleApprove,
   spender,
   isFetching,
+  decimals,
 }) => {
   const [unlockState, setUnlockState] = useState(false);
 
@@ -184,6 +186,7 @@ const AssetInputContent: FC<Props> = ({
                   value={formValue}
                   onChange={handleSetAmount}
                   step="any"
+                  decimals={decimals}
                 />
               )}
               {handleSetMax && (
@@ -236,6 +239,7 @@ const AssetInputApproveContent: FC<Props> = ({
   handleSetAmount,
   handleSetMax,
   spender,
+  decimals,
 }) => {
   const [{ needsApprove }, handleApprove] = useApprove();
   return (
@@ -253,6 +257,7 @@ const AssetInputApproveContent: FC<Props> = ({
       handleSetMax={handleSetMax}
       needsApprove={needsApprove}
       spender={spender}
+      decimals={decimals}
     >
       {children}
     </AssetInputContent>
@@ -275,6 +280,7 @@ export const AssetInput: FC<Props> = ({
   handleApprove,
   addressDisabled,
   isFetching,
+  decimals,
 }) => {
   const amount = BigDecimal.parse(formValue ?? '0');
   return spender && address ? (
@@ -294,6 +300,7 @@ export const AssetInput: FC<Props> = ({
         handleApprove={handleApprove}
         addressDisabled={addressDisabled}
         isFetching={isFetching}
+        decimals={decimals}
       >
         {children}
       </AssetInputApproveContent>
@@ -314,6 +321,7 @@ export const AssetInput: FC<Props> = ({
       handleApprove={handleApprove}
       addressDisabled={addressDisabled}
       isFetching={isFetching}
+      decimals={decimals}
     >
       {children}
     </AssetInputContent>

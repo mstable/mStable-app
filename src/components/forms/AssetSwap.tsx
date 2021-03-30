@@ -20,6 +20,7 @@ export const AssetSwap: FC<Props> = ({
   children,
   className,
   isFetching,
+  inputDecimals,
 }) => {
   return (
     <AssetExchange
@@ -49,6 +50,7 @@ export const AssetSwap: FC<Props> = ({
       outputFormValue={outputFormValue}
       error={error}
       isFetching={isFetching}
+      inputDecimals={inputDecimals}
     >
       {children}
     </AssetExchange>

@@ -29,8 +29,10 @@ export interface Props {
   exchangeRate: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
   error?: string;
   className?: string;
-  // TODO: Combine this with outputFormValue
+  // TODO: Combine this with outputFormValue, same with decimals
   isFetching?: boolean;
+  inputDecimals?: number;
+  outputDecimals?: number;
 }
 
 const Container = styled.div`
@@ -59,6 +61,8 @@ export const AssetExchange: FC<Props> = ({
   children,
   className,
   isFetching,
+  inputDecimals,
+  outputDecimals,
 }) => {
   const inputToken =
     useTokenSubscription(inputAddress) ??
@@ -84,6 +88,7 @@ export const AssetExchange: FC<Props> = ({
         handleSetMax={handleSetInputMax}
         handleSetAddress={handleSetInputAddress}
         addressDisabled={inputAddressDisabled}
+        decimals={inputDecimals}
       />
       <div>
         <Arrow />
@@ -103,6 +108,7 @@ export const AssetExchange: FC<Props> = ({
         handleSetAddress={handleSetOutputAddress}
         addressDisabled={outputAddressDisabled}
         isFetching={isFetching}
+        decimals={outputDecimals}
       />
       {error && <ErrorMessage error={error} />}
       {children}

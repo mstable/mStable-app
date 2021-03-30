@@ -148,9 +148,10 @@ export const MintMasset: FC = () => {
         formValue={inputFormValue}
         handleSetAddress={handleSetAddress}
         handleSetAmount={handleSetMassetFormValue}
-        handleSetMax={() => {
-          handleSetMassetFormValue(massetToken?.balance.string);
-        }}
+        handleSetMax={() =>
+          handleSetMassetFormValue(inputToken?.balance.string)
+        }
+        decimals={inputDecimals}
       />
       <div>
         <Arrow />
