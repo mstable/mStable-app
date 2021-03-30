@@ -138,7 +138,10 @@ export const Overview: FC = () => {
               onClick={() => setSelection(Stake)}
             >
               <h3>{userStakedAmount ? 'Staked' : 'Unstaked'} balance</h3>
-              <CountUp end={(userStakedAmount || userAmount) * massetPrice} />
+              <CountUp
+                end={(userStakedAmount || userAmount) * massetPrice}
+                prefix="$"
+              />
             </Button>
             <Button
               active={selection === Boost}
