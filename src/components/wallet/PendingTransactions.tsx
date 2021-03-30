@@ -140,7 +140,7 @@ const Animation = styled(CSSTransition)`
 const FixedContainer = styled.div`
   position: fixed;
   right: 1rem;
-  top: 7rem;
+  top: 4.5rem;
   bottom: 1rem;
   z-index: 2;
 `;

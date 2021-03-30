@@ -177,7 +177,7 @@ const StickyHeader = styled.div`
   position: sticky;
   top: 0;
   width: 100%;
-  z-index: 2;
+  z-index: 3;
 `;
 
 const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
