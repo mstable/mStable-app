@@ -57,8 +57,13 @@ const Container = styled.div`
 `;
 
 export const Position: FC = () => {
-  const { totalSupply, vault, token, account, price: currentPrice } =
-    useSelectedFeederPoolState() ?? {};
+  const {
+    vault,
+    token: { totalSupply },
+    token,
+    account,
+    price: currentPrice,
+  } = useSelectedFeederPoolState() ?? {};
   const massetPrice = useSelectedMassetPrice() ?? 1;
 
   const userAmount = token.balance?.simple ?? 0;
@@ -104,9 +109,9 @@ export const Position: FC = () => {
         </div>
         <div>
           <Tooltip
-            tip={`${token.symbol} $${feesEarned[0].toFixed(10)}, ${
+            tip={`${token.symbol} ${feesEarned[0].toFixed(10)}, ${
               token.symbol
-            } Vault $${feesEarned[1].toFixed(10)}`}
+            } Vault ${feesEarned[1].toFixed(10)}`}
           >
             <h4>Fees earned</h4>
           </Tooltip>
