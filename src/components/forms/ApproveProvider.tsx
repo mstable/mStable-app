@@ -73,7 +73,8 @@ export const ApproveProvider: FC<{
     allowance.exact.lt(amount.exact)
   );
 
-  const needsApprove = !!(allowance && amount?.exact.gt(allowance.exact));
+  const needsApprove =
+    address !== spender && !!(allowance && amount?.exact.gt(allowance.exact));
 
   const handleApprove = (_mode: Mode): void => {
     setMode(_mode);

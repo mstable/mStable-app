@@ -83,6 +83,7 @@ export const RedeemLP: FC = () => {
     max: 99.99,
   });
 
+  // Can't use useTokenSubscription because the input might be e.g. vault
   const inputToken = inputOptions.find(t => t.address === inputAddress);
 
   const outputToken = useMemo(
@@ -135,6 +136,8 @@ export const RedeemLP: FC = () => {
 
     if (!estimatedOutputAmount.value?.simple && !estimatedOutputAmount.fetching)
       return `Not enough ${outputToken?.symbol} in basket`;
+
+    if (estimatedOutputAmount.fetching) return 'Validating…';
 
     return estimatedOutputAmount.error;
   }, [

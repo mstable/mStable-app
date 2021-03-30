@@ -106,10 +106,20 @@ const RedeemExactBassetsLogic: FC = () => {
       return 'Insufficient balance';
     }
 
+    if (massetAmount.fetching) return 'Validating…';
+
     return massetAmount.error;
-  }, [massetAmount, massetBalance, maxOutputAmount, touched]);
+  }, [
+    massetAmount.error,
+    massetAmount.fetching,
+    massetBalance,
+    maxOutputAmount,
+    touched,
+  ]);
 
   const massetPrice = useSelectedMassetPrice();
+
+  const valid = !error && !massetAmount.fetching && touched.length > 0;
 
   return (
     <OneToManyAssetExchange
@@ -122,7 +132,7 @@ const RedeemExactBassetsLogic: FC = () => {
       price={massetPrice}
     >
       <SendButton
-        valid={!error && Object.values(bassetAmounts).some(v => v.touched)}
+        valid={valid}
         penaltyBonusAmount={penaltyBonus?.percentage}
         title={error ?? 'Redeem'}
         handleSend={() => {

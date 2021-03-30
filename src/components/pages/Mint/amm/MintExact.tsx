@@ -138,10 +138,19 @@ const MintExactLogic: FC = () => {
         .map(t => tokenState.tokens[t]?.symbol)
         .join(', ')} needed`;
 
+    if (outputAmount.fetching) return 'Validating…';
+
     return outputAmount.error;
   }, [inputValues, massetState, outputAmount, tokenState, touched]);
 
   const massetPrice = useSelectedMassetPrice();
+
+  const valid = !!(
+    !error &&
+    !outputAmount.fetching &&
+    outputAmount.value?.exact.gt(0) &&
+    touched.length > 0
+  );
 
   return (
     <Container
@@ -156,7 +165,7 @@ const MintExactLogic: FC = () => {
       price={massetPrice}
     >
       <SendButton
-        valid={!error && Object.values(inputValues).some(v => v.touched)}
+        valid={valid}
         penaltyBonusAmount={penaltyBonus?.percentage}
         title={error ?? 'Mint'}
         handleSend={() => {
@@ -199,11 +208,11 @@ const MintExactLogic: FC = () => {
 };
 
 export const MintExact: React.FC = () => {
-  const massetState = useSelectedMassetState();
+  const massetState = useSelectedMassetState() as MassetState;
   const inputAssets = useMemo(
     () =>
       Object.fromEntries(
-        Object.entries(massetState?.bAssets ?? {}).map(
+        Object.entries(massetState.bAssets).map(
           ([
             address,
             {

@@ -103,14 +103,12 @@ export const MintMasset: FC = () => {
     [bAssets, feederOptions],
   );
 
+  const massetBalance = massetToken?.balance.exact;
   const error = useMemo(() => {
     if (!inputAmount?.simple) return 'Enter an amount';
 
     if (inputAmount) {
-      if (
-        massetToken?.balance.exact &&
-        inputAmount.exact.gt(massetToken.balance.exact)
-      ) {
+      if (massetBalance && inputAmount.exact.gt(massetBalance)) {
         return 'Insufficient balance';
       }
 
@@ -123,14 +121,24 @@ export const MintMasset: FC = () => {
       }
     }
 
+    if (estimatedOutputAmount.fetching) return 'Validating…';
+
     return estimatedOutputAmount.error;
-  }, [estimatedOutputAmount.error, inputAmount, massetToken, inputAddress]);
+  }, [
+    inputAmount,
+    estimatedOutputAmount.fetching,
+    estimatedOutputAmount.error,
+    massetBalance,
+    inputAddress,
+  ]);
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippageSimple,
     inputAmount,
     estimatedOutputAmount.value,
   );
+
+  const valid = !error;
 
   return (
     <Container>
@@ -162,7 +170,7 @@ export const MintMasset: FC = () => {
       />
       {penaltyBonus?.message && <ErrorMessage error={penaltyBonus?.message} />}
       <SendButton
-        valid={!error}
+        valid={valid}
         title={error ?? 'Mint'}
         penaltyBonusAmount={penaltyBonus?.percentage}
         handleSend={() => {
@@ -174,9 +182,7 @@ export const MintMasset: FC = () => {
             minOutputAmount
           ) {
             if (
-              Object.keys(fAssets).find(
-                address => fAssets[address].address === inputAddress,
-              ) &&
+              Object.values(fAssets).find(f => f.address === inputAddress) &&
               fasset
             ) {
               return propose<Interfaces.FeederPool, 'swap'>(

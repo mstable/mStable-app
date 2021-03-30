@@ -135,8 +135,6 @@ const SwapLogic: FC = () => {
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount';
 
-    if (swapOutput.error) return swapOutput.error;
-
     if (inputAmount) {
       if (!inputToken) {
         return 'Select asset to send';
@@ -153,7 +151,17 @@ const SwapLogic: FC = () => {
         return 'Insufficient balance';
       }
     }
-  }, [swapOutput.error, inputAmount, inputToken, outputToken]);
+
+    if (swapOutput.fetching) return 'Validating…';
+
+    return swapOutput.error;
+  }, [
+    inputAmount,
+    swapOutput.fetching,
+    swapOutput.error,
+    inputToken,
+    outputToken,
+  ]);
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(
     slippageSimple,
@@ -174,6 +182,8 @@ const SwapLogic: FC = () => {
   );
 
   const massetPrice = useSelectedMassetPrice();
+
+  const valid = !error && !!swapOutput.value;
 
   return (
     <Container
@@ -208,7 +218,7 @@ const SwapLogic: FC = () => {
       isFetching={swapOutput?.fetching}
     >
       <SendButton
-        valid={!error && !!swapOutput.value}
+        valid={valid}
         title={error ?? 'Swap'}
         approve={approve}
         penaltyBonusAmount={penaltyBonus?.percentage}

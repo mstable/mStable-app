@@ -119,9 +119,19 @@ export const MintExact: FC = () => {
     if (!touched.length) return 'Enter an amount';
     if (!outputAddress) return 'Select a token';
 
+    if (
+      !contractAddress ||
+      !assetAddressOptions.some(
+        option =>
+          !(option as SubscribedToken).balance || !inputValues[option.address],
+      )
+    ) {
+      return 'Fetching balances…';
+    }
+
     const addressesApprovalNeeded = assetAddressOptions.filter(t =>
       inputValues[t.address]?.amount?.exact.gt(
-        (t as SubscribedToken).allowances?.[contractAddress ?? '']?.exact ?? 0,
+        (t as SubscribedToken).allowances?.[contractAddress]?.exact ?? 0,
       ),
     );
 
@@ -129,6 +139,8 @@ export const MintExact: FC = () => {
       return `Approval for ${addressesApprovalNeeded
         .map(t => t.symbol)
         .join(', ')} needed`;
+
+    if (estimatedOutputAmount.fetching) return 'Validating…';
 
     return estimatedOutputAmount.error;
   }, [
