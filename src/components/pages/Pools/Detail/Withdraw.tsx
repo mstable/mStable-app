@@ -18,14 +18,14 @@ const RedeemPathBox = styled.div`
   text-align: center;
   justify-content: center;
   padding: 1rem;
-  border: 1px dashed ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.blueTransparent};
   border-radius: 0.75rem;
   margin-top: 1rem;
 
-  button {
+  ${UnstyledButton} {
     font-size: 1rem;
     font-weight: 600;
-    color: ${({ theme }) => theme.color.grey};
+    color: ${({ theme }) => theme.color.blue};
     :hover {
       color: ${({ theme }) => theme.color.gold};
     }
@@ -44,17 +44,19 @@ export const Withdraw: FC<{ isLowLiquidity?: boolean }> = ({
     <MultiAssetExchangeProvider assets={assets}>
       {isRedeemExact ? <RedeemExact /> : <RedeemLP />}
       <RedeemPathBox>
-        <UnstyledButton onClick={setRedeemExact}>
-          {isLowLiquidity
-            ? `Withdraw from ${
-                isRedeemExact
-                  ? `${feederPool.token.symbol} Vault`
-                  : feederPool.token.symbol
-              }`
-            : `Switch to ${
-                isRedeemExact ? feederPool.token.symbol : 'exact'
-              } amount redemption`}
-        </UnstyledButton>
+        <div>
+          <UnstyledButton onClick={setRedeemExact}>
+            {isLowLiquidity
+              ? `Withdraw from ${
+                  isRedeemExact
+                    ? `${feederPool.token.symbol} Vault`
+                    : feederPool.token.symbol
+                }`
+              : `Switch to ${
+                  isRedeemExact ? feederPool.token.symbol : 'exact'
+                } amount redemption`}
+          </UnstyledButton>
+        </div>
       </RedeemPathBox>
     </MultiAssetExchangeProvider>
   );
