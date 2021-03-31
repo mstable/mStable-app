@@ -64,7 +64,7 @@ const Container = styled.div<{
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 3rem 0;
+  padding: 2rem 0 3rem;
 
   h2 {
     font-size: 2rem;
@@ -72,8 +72,8 @@ const Container = styled.div<{
   }
 
   p {
-    padding: 0;
-    font-size: 1.125rem;
+    padding: 0.25rem 0 0;
+    font-size: 1rem;
     color: ${({ theme }) => theme.color.bodyAccent};
   }
 `;

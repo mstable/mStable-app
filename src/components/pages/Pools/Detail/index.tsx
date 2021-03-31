@@ -174,7 +174,7 @@ const Exchange = styled.div`
 const Container = styled.div`
   width: 100%;
 
-  > div:not(:last-child) {
+  > div:not(:first-child):not(:last-child) {
     margin-bottom: 1.5rem;
   }
 `;
