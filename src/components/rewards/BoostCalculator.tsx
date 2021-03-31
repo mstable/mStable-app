@@ -182,8 +182,9 @@ const Container = styled(Widget)`
 export const BoostCalculator: FC<{
   vault: BoostedSavingsVaultState;
   onClick?: () => void;
+  noBackButton?: boolean;
   isImusd?: boolean;
-}> = ({ onClick, vault, isImusd }) => {
+}> = ({ noBackButton, onClick, vault, isImusd }) => {
   const inputAddress = vault.stakingContract;
   const inputToken = useTokenSubscription(inputAddress);
   const inputBalance = inputToken?.balance;
@@ -214,9 +215,11 @@ export const BoostCalculator: FC<{
       title="Earning Power Calculator"
       tooltip="Calculate your optimal MTA rewards multiplier"
       headerContent={
-        <Button scale={0.7} onClick={onClick}>
-          Back
-        </Button>
+        noBackButton ? null : (
+          <Button scale={0.7} onClick={onClick}>
+            Back
+          </Button>
+        )
       }
     >
       <InfoMessage>
