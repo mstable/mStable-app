@@ -1,7 +1,8 @@
 import type { FeederPool, Masset } from '@mstable/protocol/types/generated';
-import { useThrottleFn } from 'react-use';
-
+import { useEffect } from 'react';
+import { useDebounce } from 'react-use';
 import type { BigDecimalInputValues } from './useBigDecimalInputs';
+
 import { sanitizeMassetError } from '../utils/strings';
 import { BigDecimal } from '../web3/BigDecimal';
 
@@ -25,12 +26,12 @@ export const useEstimatedRedeemOutput = (
   ] = useFetchState<BigDecimal>();
 
   // Get the swap output with a throttle so it's not called too often
-  useThrottleFn(
-    (_contract?: RedeemableContract, _inputValues?: BigDecimalInputValues) => {
-      if (!_inputValues) return;
-      if (!_contract) return setEstimatedOutputAmount.fetching();
+  const [update] = useDebounce(
+    () => {
+      if (!inputValues) return;
+      if (!contract) return setEstimatedOutputAmount.fetching();
 
-      const touched = Object.values(_inputValues).filter(v => v.touched);
+      const touched = Object.values(inputValues).filter(v => v.touched);
 
       if (touched.length) {
         setEstimatedOutputAmount.fetching();
@@ -38,12 +39,12 @@ export const useEstimatedRedeemOutput = (
         const promise = (() => {
           const inputs = touched.map(v => v.address);
           const amounts = touched.map(v => (v.amount as BigDecimal).exact);
-          return _contract.getRedeemExactBassetsOutput(inputs, amounts);
+          return contract.getRedeemExactBassetsOutput(inputs, amounts);
         })();
 
         return promise
-          .then(_amount => {
-            setEstimatedOutputAmount.value(new BigDecimal(_amount));
+          .then(amount => {
+            setEstimatedOutputAmount.value(new BigDecimal(amount));
           })
           .catch((_error: Error): void => {
             setEstimatedOutputAmount.error(sanitizeMassetError(_error));
@@ -54,6 +55,18 @@ export const useEstimatedRedeemOutput = (
     2500,
     [contract, inputValues],
   );
+
+  useEffect(() => {
+    if (contract && inputValues) {
+      const touched = Object.values(inputValues).filter(v => v.touched);
+      if (touched) {
+        setEstimatedOutputAmount.fetching();
+        update();
+      } else {
+        setEstimatedOutputAmount.value();
+      }
+    }
+  }, [contract, inputValues, setEstimatedOutputAmount, update]);
 
   return estimatedOutputAmount;
 };

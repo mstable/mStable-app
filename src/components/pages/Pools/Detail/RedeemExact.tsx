@@ -19,6 +19,7 @@ import {
   useSelectedFeederPoolContract,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'RedeemExactLP';
 
@@ -32,30 +33,31 @@ export const RedeemExact: FC = () => {
     [feederPool],
   );
 
-  const [outputValues, , slippage] = useMultiAssetExchangeState();
+  const massetPrice = useSelectedMassetPrice();
+  const isLowLiquidity =
+    feederPool?.liquidity.simple * (massetPrice ?? 0) < 100000;
+
+  const [inputValues, , slippage] = useMultiAssetExchangeState();
   const [, setOutputAmount] = useMultiAssetExchangeDispatch();
-  const estimatedOutputAmount = useEstimatedRedeemOutput(
-    contract,
-    outputValues,
-  );
+  const estimatedOutputAmount = useEstimatedRedeemOutput(contract, inputValues);
   const exchangeRate = useExchangeRateForFPInputs(
     feederPool.address,
     estimatedOutputAmount,
-    outputValues,
+    inputValues,
   );
 
   const touched = useMemo(
-    () => Object.values(outputValues).filter(v => v.touched),
-    [outputValues],
+    () => Object.values(inputValues).filter(v => v.touched),
+    [inputValues],
   );
 
   const inputAmount = useMemo(() => {
-    if (!Object.keys(outputValues).length || !touched.length) return;
+    if (!Object.keys(inputValues).length || !touched.length) return;
 
     return touched
       .map(v => v.amount)
       .reduce((a, b) => (a as BigDecimal).add(b as BigDecimal));
-  }, [outputValues, touched]);
+  }, [inputValues, touched]);
 
   const { maxOutputAmount, penaltyBonus } = useMaximumOutput(
     slippage?.simple,
@@ -81,6 +83,18 @@ export const RedeemExact: FC = () => {
   const error = useMemo<string | undefined>(() => {
     if (!touched.length) return 'Enter an amount';
 
+    if (isLowLiquidity) {
+      const minAssetSimple = (inputAmount?.simple ?? 0) * 0.3;
+
+      if (touched.length !== Object.keys(inputValues).length) {
+        return 'Assets must be withdrawn in pairs';
+      }
+
+      if (touched.find(v => (v.amount?.simple ?? 0) < minAssetSimple)) {
+        return 'Assets must be withdrawn at a minimum 30/70 ratio';
+      }
+    }
+
     if (
       estimatedOutputAmount.value?.exact.gt(feederPool.token.balance.exact ?? 0)
     ) {
@@ -90,7 +104,14 @@ export const RedeemExact: FC = () => {
     if (estimatedOutputAmount.fetching) return 'Validating…';
 
     return estimatedOutputAmount.error;
-  }, [estimatedOutputAmount, feederPool.token.balance, touched]);
+  }, [
+    estimatedOutputAmount,
+    feederPool,
+    touched,
+    isLowLiquidity,
+    inputValues,
+    inputAmount,
+  ]);
 
   useEffect(() => {
     setOutputAmount(estimatedOutputAmount);
