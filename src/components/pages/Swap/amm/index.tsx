@@ -112,6 +112,18 @@ const SwapLogic: FC = () => {
     [currentFeederAddress, signer],
   );
 
+  const isFassetSwap = useMemo(
+    () =>
+      !!Object.keys(fAssets)
+        .filter(address => fAssets[address].address !== massetAddress)
+        .find(
+          address =>
+            fAssets[address].address === inputAddress ||
+            fAssets[address].address === outputAddress,
+        ),
+    [fAssets, inputAddress, massetAddress, outputAddress],
+  );
+
   const {
     estimatedOutputAmount: swapOutput,
     exchangeRate,
@@ -163,14 +175,20 @@ const SwapLogic: FC = () => {
       inputAddress
         ? {
             spender:
-              inputAddress === currentFeederAddress
+              isFassetSwap && currentFeederAddress
                 ? currentFeederAddress
                 : massetAddress,
             address: inputAddress,
             amount: inputAmount,
           }
         : undefined,
-    [inputAddress, inputAmount, massetAddress, currentFeederAddress],
+    [
+      inputAddress,
+      isFassetSwap,
+      currentFeederAddress,
+      massetAddress,
+      inputAmount,
+    ],
   );
 
   const massetPrice = useSelectedMassetPrice();
@@ -257,14 +275,6 @@ const SwapLogic: FC = () => {
               [inputAddress, outputAddress].filter(
                 address => bAssets[address]?.address,
               ).length === 2;
-
-            const isFassetSwap = !!Object.keys(fAssets)
-              .filter(address => fAssets[address].address !== massetAddress)
-              .find(
-                address =>
-                  fAssets[address].address === inputAddress ||
-                  fAssets[address].address === outputAddress,
-              );
 
             // mAsset mint
             if (isMassetMint) {
