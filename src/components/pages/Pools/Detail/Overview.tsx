@@ -150,7 +150,7 @@ const LiquidityMessageContent: FC<{ vault: BoostedSavingsVaultState }> = ({
   const [showEarningPower] = useShowEarningPower();
   return (
     <>
-      <HeaderNoAccount showBorder>
+      <HeaderNoAccount showBorder={showEarningPower}>
         <ProvideLiquidityMessage />
       </HeaderNoAccount>
       {showEarningPower && (
