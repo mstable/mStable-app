@@ -255,23 +255,26 @@ export const BoostCalculator: FC<{
             </MultiplierBox>
           </MultiplierContainer>
           <BoostAndActions>
-            <StyledButton
-              onClick={() => {
-                if (inputValue) {
-                  const coeffs = getCoeffs(vault);
-                  const vMTARequired =
-                    isImusd || !coeffs
-                      ? calculateVMTAForMaxBoostImusd(inputValue)
-                      : calculateVMTAForMaxBoost(inputValue, ...coeffs);
-                  setVmta(vMTARequired?.toFixed(2));
-                }
-              }}
-            >
-              <div>
-                <ArrowsSvg />
-                Preview Max
-              </div>
-            </StyledButton>
+            {/* FIXME should appear for all */}
+            {isImusd && (
+              <StyledButton
+                onClick={() => {
+                  if (inputValue) {
+                    const coeffs = getCoeffs(vault);
+                    const vMTARequired =
+                      isImusd || !coeffs
+                        ? calculateVMTAForMaxBoostImusd(inputValue)
+                        : calculateVMTAForMaxBoost(inputValue, ...coeffs);
+                    setVmta(vMTARequired?.toFixed(2));
+                  }
+                }}
+              >
+                <div>
+                  <ArrowsSvg />
+                  Preview Max
+                </div>
+              </StyledButton>
+            )}
             <StyledButton
               highlighted
               onClick={() => {
