@@ -28,8 +28,8 @@ const List = styled.div`
 `;
 
 const navItems: NavItem[] = [
-  { title: 'Save', path: '/save' },
   { title: 'Pools', path: '/pools' },
+  { title: 'Save', path: '/save' },
   { title: 'Mint', path: '/mint' },
   { title: 'Swap', path: '/swap' },
   { title: 'Redeem', path: '/redeem' },

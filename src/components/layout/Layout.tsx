@@ -17,10 +17,9 @@ import {
 } from '../../context/AppProvider';
 import { Background } from './Background';
 import { AppBar } from './AppBar';
-import { NotificationToasts } from './NotificationToasts';
+import { Toasts } from './Toasts';
 import { containerBackground } from './css';
 import { Color, ViewportWidth } from '../../theme';
-import { PendingTransactions } from '../wallet/PendingTransactions';
 import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
@@ -298,8 +297,7 @@ export const Layout: FC = ({ children }) => {
         )}
       </Container>
       <Footer />
-      <PendingTransactions />
-      <NotificationToasts />
+      <Toasts />
       <Tooltip tip="" hideIcon />
       <ReactTooltip id="global" place="top" />
       <GlobalStyle />

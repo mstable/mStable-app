@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
-import styled, { css, keyframes } from 'styled-components';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import styled from 'styled-components';
 
 import {
   useTransactionsDispatch,
@@ -10,7 +9,7 @@ import { TransactionStatus } from '../../web3/TransactionManifest';
 
 import { Button } from '../core/Button';
 import { GasStation } from './GasStation';
-import { TransactionGasProvider, useGas } from './TransactionGasProvider';
+import { useGas } from './TransactionGasProvider';
 
 const Buttons = styled.div`
   display: flex;
@@ -56,7 +55,7 @@ const Container = styled.div<{ status: TransactionStatus }>`
   background: ${({ theme }) => theme.color.background};
 `;
 
-const PendingTransaction: FC<{
+export const PendingTransaction: FC<{
   id: string;
 }> = ({ id }) => {
   const { [id]: transaction } = useTransactionsState();
@@ -107,73 +106,5 @@ const PendingTransaction: FC<{
         </Button>
       </Buttons>
     </Container>
-  );
-};
-
-const slideIn = keyframes`
-  0% {
-    transform: translateY(-1000px) scaleY(2.5) scaleX(0.2);
-    transform-origin: 50% 0;
-    filter: blur(40px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0) scaleY(1) scaleX(1);
-    transform-origin: 50% 50%;
-    filter: blur(0);
-    opacity: 1;
-  }
-`;
-
-const Animation = styled(CSSTransition)`
-  ${({ classNames }) => `&.${classNames}-enter`} {
-    animation: ${css`
-        ${slideIn}`} 0.6s cubic-bezier(0.19, 1, 0.22, 1) normal;
-  }
-
-  ${({ classNames }) => `&.${classNames}-exit-active`} {
-    animation: ${css`
-        ${slideIn}`} 0.3s cubic-bezier(0.19, 1, 0.22, 1) reverse;
-  }
-`;
-
-const FixedContainer = styled.div`
-  position: fixed;
-  right: 1rem;
-  top: 4.5rem;
-  bottom: 1rem;
-  z-index: 2;
-`;
-
-export const PendingTransactions: FC = () => {
-  const state = useTransactionsState();
-
-  return (
-    <FixedContainer>
-      <TransitionGroup>
-        {Object.keys(state)
-          .filter(
-            id =>
-              state[id].status === TransactionStatus.Pending ||
-              state[id].status === TransactionStatus.Sent,
-          )
-          .sort(
-            (a, b) => state[b].manifest.createdAt - state[a].manifest.createdAt,
-          )
-          .map(id => (
-            <Animation
-              timeout={{ enter: 500, exit: 200 }}
-              classNames="item"
-              key={id}
-            >
-              <div>
-                <TransactionGasProvider id={id}>
-                  <PendingTransaction id={id} />
-                </TransactionGasProvider>
-              </div>
-            </Animation>
-          ))}
-      </TransitionGroup>
-    </FixedContainer>
   );
 };

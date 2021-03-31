@@ -51,6 +51,7 @@ const Container = styled.div<
   padding: 0.25rem 0.5rem;
   transition: opacity 0.3s ease;
   cursor: pointer;
+  text-align: right;
 
   > * {
     font-size: 0.85rem;
