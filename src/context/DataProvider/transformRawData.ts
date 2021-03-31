@@ -284,7 +284,8 @@ const transformFeederPoolsData = (
       ({
         id: address,
         basket: { bassets, failed, undergoingRecol },
-        fasset,
+        fasset: fassetToken,
+        masset: massetToken,
         price,
         token,
         dailyAPY,
@@ -294,30 +295,38 @@ const transformFeederPoolsData = (
         swapFeeRate,
         vault,
         accounts,
-      }) => [
-        address,
-        {
+      }) => {
+        const masset = bassets.find(
+          b => b.token.address === massetToken.id,
+        ) as NonNullableMasset['basket']['bassets'][0];
+        const fasset = bassets.find(
+          b => b.token.address === fassetToken.id,
+        ) as NonNullableMasset['basket']['bassets'][0];
+        return [
           address,
-          masset: transformBasset(bassets[0], tokens),
-          fasset: transformBasset(bassets[1], tokens),
-          token: { ...token, ...tokens[address] } as SubscribedToken,
-          totalSupply: BigDecimal.fromMetric(fasset.totalSupply),
-          governanceFeeRate: BigNumber.from(governanceFeeRate),
-          liquidity: new BigDecimal(invariantK).mulTruncate(price),
-          feeRate: BigNumber.from(swapFeeRate),
-          redemptionFeeRate: BigNumber.from(redemptionFeeRate),
-          invariantK: BigNumber.from(invariantK),
-          dailyApy: parseFloat(dailyAPY),
-          price: new BigDecimal(price ?? 0),
-          failed,
-          title: bassets.map(b => b.token.symbol).join('/'),
-          undergoingRecol,
-          vault: transformBoostedSavingsVault(vault),
-          account: accounts?.length
-            ? transformFeederPoolAccountData(accounts[0])
-            : undefined,
-        },
-      ],
+          {
+            address,
+            masset: transformBasset(masset, tokens),
+            fasset: transformBasset(fasset, tokens),
+            token: { ...token, ...tokens[address] } as SubscribedToken,
+            totalSupply: BigDecimal.fromMetric(fassetToken.totalSupply),
+            governanceFeeRate: BigNumber.from(governanceFeeRate),
+            liquidity: new BigDecimal(invariantK).mulTruncate(price),
+            feeRate: BigNumber.from(swapFeeRate),
+            redemptionFeeRate: BigNumber.from(redemptionFeeRate),
+            invariantK: BigNumber.from(invariantK),
+            dailyApy: parseFloat(dailyAPY),
+            price: new BigDecimal(price ?? 0),
+            failed,
+            title: bassets.map(b => b.token.symbol).join('/'),
+            undergoingRecol,
+            vault: transformBoostedSavingsVault(vault),
+            account: accounts?.length
+              ? transformFeederPoolAccountData(accounts[0])
+              : undefined,
+          },
+        ];
+      },
     ),
   );
 };

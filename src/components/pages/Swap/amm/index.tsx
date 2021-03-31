@@ -14,7 +14,7 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { useTokenSubscription } from '../../../../context/TokensProvider';
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
-import { Interfaces } from '../../../../types';
+import { AddressOption, Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useSimpleInput } from '../../../../hooks/useSimpleInput';
 
@@ -96,19 +96,9 @@ const SwapLogic: FC = () => {
     [bAssets],
   );
 
-  const fassetOptions = useMemo(
-    () =>
-      Object.keys(feederPools).map(address => ({
-        address: feederPools[address].fasset.address,
-      })),
-    [feederPools],
-  );
-
-  const addressOptions = [
-    { address: massetAddress },
-    ...bassetOptions,
-    ...fassetOptions,
-  ];
+  const fassetOptions = Object.values(feederPools).map(fp => ({
+    address: fp.fasset.address,
+  }));
 
   const masset = useMemo(
     () => (signer ? Masset__factory.connect(massetAddress, signer) : undefined),
@@ -185,24 +175,47 @@ const SwapLogic: FC = () => {
 
   const valid = !error && !!swapOutput.value;
 
+  const fAssetAddress = currentFeederAddress
+    ? fAssets[currentFeederAddress].address
+    : undefined;
+
+  const combinedAddressOptions = useMemo<{
+    input: AddressOption[];
+    output: AddressOption[];
+  }>(() => {
+    const addressOptions = [
+      { address: massetAddress },
+      ...bassetOptions,
+      ...fassetOptions,
+    ];
+
+    if (!fAssetAddress)
+      return { input: addressOptions, output: addressOptions };
+
+    const input =
+      outputAddress === fAssetAddress
+        ? [{ address: massetAddress }, ...bassetOptions]
+        : addressOptions;
+
+    const output =
+      inputAddress === fAssetAddress
+        ? [{ address: massetAddress }, ...bassetOptions]
+        : addressOptions;
+
+    return { input, output };
+  }, [
+    massetAddress,
+    bassetOptions,
+    fassetOptions,
+    fAssetAddress,
+    outputAddress,
+    inputAddress,
+  ]);
+
   return (
     <Container
-      inputAddressOptions={(() => {
-        if (!currentFeederAddress) return addressOptions;
-        const fAssetAddress = fAssets[currentFeederAddress].address;
-        if (outputAddress === fAssetAddress) {
-          return [{ address: massetAddress }, ...bassetOptions];
-        }
-        return addressOptions;
-      })()}
-      outputAddressOptions={(() => {
-        if (!currentFeederAddress) return addressOptions;
-        const fAssetAddress = fAssets[currentFeederAddress].address;
-        if (inputAddress === fAssetAddress) {
-          return [{ address: massetAddress }, ...bassetOptions];
-        }
-        return addressOptions;
-      })()}
+      inputAddressOptions={combinedAddressOptions.input}
+      outputAddressOptions={combinedAddressOptions.output}
       error={penaltyBonus?.message}
       exchangeRate={exchangeRate}
       handleSetInputAddress={setInputAddress}
@@ -213,7 +226,7 @@ const SwapLogic: FC = () => {
       handleSetOutputAddress={setOutputAddress}
       inputAddress={inputAddress}
       inputFormValue={inputFormValue}
-      outputAddress={outputAddress ?? addressOptions[0].address}
+      outputAddress={outputAddress ?? combinedAddressOptions.output[0].address}
       outputFormValue={swapOutput.value?.string}
       isFetching={swapOutput?.fetching}
       inputDecimals={inputDecimals}
