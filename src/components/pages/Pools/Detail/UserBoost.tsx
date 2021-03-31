@@ -41,10 +41,7 @@ export const UserBoost: FC = () => {
 
   return (
     <Container>
-      <Boost
-        inputAddress={feederPool.token.address}
-        inputBalance={feederPool.token.balance}
-      >
+      <Boost vault={feederPool.vault} disableCalculator>
         <div>
           <h3>Rewards APY</h3>
           <div>

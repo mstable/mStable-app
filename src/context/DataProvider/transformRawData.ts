@@ -131,10 +131,15 @@ const transformBoostedSavingsVault = ({
   rewardRate,
   stakingContract,
   totalStakingRewards,
+  priceCoeff,
+  boostCoeff,
   totalSupply,
   unlockPercentage,
 }: NonNullable<
-  SavingsContractV2QueryResult['boostedSavingsVaults'][number]
+  SavingsContractV2QueryResult['boostedSavingsVaults'][number] & {
+    priceCoeff?: string | null;
+    boostCoeff?: string | null;
+  }
 >): BoostedSavingsVaultState => {
   let account: BoostedSavingsVaultState['account'];
 
@@ -187,6 +192,8 @@ const transformBoostedSavingsVault = ({
     totalStakingRewards: BigDecimal.parse(totalStakingRewards),
     totalSupply: new BigDecimal(totalSupply),
     unlockPercentage: BigNumber.from(unlockPercentage),
+    boostCoeff: boostCoeff ? parseFloat(boostCoeff) : undefined,
+    priceCoeff: priceCoeff ? parseFloat(priceCoeff) : undefined,
   };
 };
 

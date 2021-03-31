@@ -46,6 +46,9 @@ query FeederPools($account: String!, $hasAccount: Boolean!)
       }
     }
   }
+  otherVaults: boostedSavingsVaults(where: { feederPool: null }) {
+    ...BoostedSavingsVaultAll
+  }
 }
 
 query FeederTokens @api(name: feeders) {

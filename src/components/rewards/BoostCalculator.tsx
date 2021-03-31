@@ -10,10 +10,17 @@ import { DifferentialCountup } from '../core/CountUp';
 import { InfoMessage } from '../core/InfoMessage';
 import { Widget } from '../core/Widget';
 import { AssetInput } from '../forms/AssetInput';
-import { calculateBoost, calculateVMTAForMaxBoost } from '../../utils/boost';
+import {
+  calculateBoost,
+  calculateBoostImusd,
+  calculateVMTAForMaxBoost,
+  calculateVMTAForMaxBoostImusd,
+  getCoeffs,
+} from '../../utils/boost';
 import { ReactComponent as ArrowsSvg } from '../icons/double-arrow.svg';
 import { ReactComponent as GovSvg } from '../icons/governance-icon.svg';
 import { BigDecimal } from '../../web3/BigDecimal';
+import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
 
 const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
 
@@ -173,23 +180,34 @@ const Container = styled(Widget)`
 `;
 
 export const BoostCalculator: FC<{
+  vault: BoostedSavingsVaultState;
   onClick?: () => void;
-  inputAddress?: string;
-  inputBalance?: BigDecimal;
-}> = ({ onClick, inputAddress, inputBalance }) => {
+  isImusd?: boolean;
+}> = ({ onClick, vault, isImusd }) => {
+  const inputAddress = vault.stakingContract;
+  const inputToken = useTokenSubscription(inputAddress);
+  const inputBalance = inputToken?.balance;
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
+  const vMTABalance = vMTA?.balance;
 
-  const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTA?.balance);
+  const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTABalance);
   const [inputValue, inputFormValue, setInput] = useBigDecimalInput(
     inputBalance?.simpleRounded !== 0 ? inputBalance : BigDecimal.parse('100'),
   );
 
   const boost = useMemo(() => {
+    const coeffs = getCoeffs(vault);
     return {
-      fromBalance: calculateBoost(inputBalance, vMTA?.balance),
-      fromInputs: calculateBoost(inputValue, vMTAValue),
+      fromBalance:
+        isImusd || !coeffs
+          ? calculateBoostImusd(inputBalance, vMTABalance)
+          : calculateBoost(...coeffs, inputBalance, vMTABalance),
+      fromInputs:
+        isImusd || !coeffs
+          ? calculateBoostImusd(inputValue, vMTAValue)
+          : calculateBoost(...coeffs, inputValue, vMTAValue),
     };
-  }, [inputValue, vMTAValue, vMTA, inputBalance]);
+  }, [isImusd, inputBalance, vMTABalance, vault, inputValue, vMTAValue]);
 
   return (
     <Container
@@ -237,7 +255,11 @@ export const BoostCalculator: FC<{
             <StyledButton
               onClick={() => {
                 if (inputValue) {
-                  const vMTARequired = calculateVMTAForMaxBoost(inputValue);
+                  const coeffs = getCoeffs(vault);
+                  const vMTARequired =
+                    isImusd || !coeffs
+                      ? calculateVMTAForMaxBoostImusd(inputValue)
+                      : calculateVMTAForMaxBoost(inputValue, ...coeffs);
                   setVmta(vMTARequired?.toFixed(2));
                 }
               }}

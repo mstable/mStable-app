@@ -8,10 +8,14 @@ import { ProgressBar } from '../core/ProgressBar';
 import { Button } from '../core/Button';
 import { Widget } from '../core/Widget';
 import { ViewportWidth } from '../../theme';
-import type { BigDecimal } from '../../web3/BigDecimal';
 
-import { calculateBoost } from '../../utils/boost';
+import {
+  calculateBoost,
+  calculateBoostImusd,
+  getCoeffs,
+} from '../../utils/boost';
 import { BoostCalculator } from './BoostCalculator';
+import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
 
 const BoostBarLine = styled.div`
   width: 100%;
@@ -35,24 +39,34 @@ const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
   false,
 );
 
-const BoostBar: FC<{ inputBalance?: BigDecimal }> = ({ inputBalance }) => {
+const BoostBar: FC<{
+  vault: BoostedSavingsVaultState;
+  disableCalculator?: boolean;
+  isImusd?: boolean;
+}> = ({ vault, disableCalculator, isImusd }) => {
   const [, toggleShowCalculator] = useShowCalculatorCtx();
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
   const vMTABalance = vMTA?.balance;
+  const stakingToken = useTokenSubscription(vault.stakingContract);
+  const inputBalance = stakingToken?.balance;
 
-  const boost = useMemo<number>(
-    () => calculateBoost(inputBalance, vMTABalance),
-    [inputBalance, vMTABalance],
-  );
+  const boost = useMemo<number>(() => {
+    const coeffs = getCoeffs(vault);
+    return isImusd || !coeffs
+      ? calculateBoostImusd(inputBalance, vMTABalance)
+      : calculateBoost(...coeffs, vMTABalance);
+  }, [inputBalance, isImusd, vMTABalance, vault]);
 
   return (
     <Widget
       title="Earning Power Multiplier"
       tooltip="Rewards are boosted by a multiplier (1x to 3x)"
       headerContent={
-        <Button scale={0.7} onClick={toggleShowCalculator}>
-          Calculator
-        </Button>
+        disableCalculator ? null : (
+          <Button scale={0.7} onClick={toggleShowCalculator}>
+            Calculator
+          </Button>
+        )
       }
     >
       <div>
@@ -93,22 +107,27 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
 `;
 
 const BoostContent: FC<{
-  inputAddress?: string;
-  inputBalance?: BigDecimal;
-}> = ({ children, inputAddress, inputBalance }) => {
+  vault: BoostedSavingsVaultState;
+  disableCalculator?: boolean;
+  isImusd?: boolean;
+}> = ({ children, vault, isImusd, disableCalculator }) => {
   const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx();
 
   return (
     <Container padding showCalculator={showCalculator}>
-      {showCalculator ? (
+      {showCalculator && !disableCalculator ? (
         <BoostCalculator
-          inputAddress={inputAddress}
-          inputBalance={inputBalance}
+          vault={vault}
+          isImusd={isImusd}
           onClick={toggleShowCalculator}
         />
       ) : (
         <>
-          <BoostBar inputBalance={inputBalance} />
+          <BoostBar
+            vault={vault}
+            isImusd={isImusd}
+            disableCalculator={disableCalculator}
+          />
           {children}
         </>
       )}
@@ -117,11 +136,16 @@ const BoostContent: FC<{
 };
 
 export const Boost: FC<{
-  inputAddress?: string;
-  inputBalance?: BigDecimal;
-}> = ({ children, inputAddress, inputBalance }) => (
+  vault: BoostedSavingsVaultState;
+  disableCalculator?: boolean;
+  isImusd?: boolean;
+}> = ({ children, vault, isImusd, disableCalculator }) => (
   <ShowCalculatorProvider>
-    <BoostContent inputAddress={inputAddress} inputBalance={inputBalance}>
+    <BoostContent
+      vault={vault}
+      isImusd={isImusd}
+      disableCalculator={disableCalculator}
+    >
       {children}
     </BoostContent>
   </ShowCalculatorProvider>
