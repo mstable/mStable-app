@@ -2,8 +2,12 @@ import React, { FC } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
+import { PendingTransaction } from '../wallet/PendingTransactions';
 import { useNotificationsState } from '../../context/NotificationsProvider';
 import { NotificationItem } from '../core/NotificationItem';
+import { useTransactionsState } from '../../context/TransactionsProvider';
+import { TransactionStatus } from '../../web3/TransactionManifest';
+import { TransactionGasProvider } from '../wallet/TransactionGasProvider';
 
 const slideIn = keyframes`
   0% {
@@ -23,11 +27,14 @@ const slideIn = keyframes`
 const Container = styled.div`
   position: fixed;
   top: 4.5rem;
-  left: 1rem;
+  right: 1rem;
   width: 20%;
   min-width: 280px;
   z-index: 2;
   > * {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
     > * {
       display: inline-block;
       margin-bottom: 0.5rem;
@@ -47,12 +54,33 @@ const Animation = styled(CSSTransition)`
   }
 `;
 
-export const NotificationToasts: FC<{}> = () => {
+export const Toasts: FC<{}> = () => {
   const notifications = useNotificationsState();
+  const txs = useTransactionsState();
 
   return (
     <Container>
       <TransitionGroup>
+        {Object.keys(txs)
+          .filter(
+            id =>
+              txs[id].status === TransactionStatus.Pending ||
+              txs[id].status === TransactionStatus.Sent,
+          )
+          .sort((a, b) => txs[b].manifest.createdAt - txs[a].manifest.createdAt)
+          .map(id => (
+            <Animation
+              timeout={{ enter: 350, exit: 150 }}
+              classNames="item"
+              key={id}
+            >
+              <div>
+                <TransactionGasProvider id={id}>
+                  <PendingTransaction id={id} />
+                </TransactionGasProvider>
+              </div>
+            </Animation>
+          ))}
         {notifications
           .filter(n => !(n.hideToast || n.read))
           .map(notification => (
