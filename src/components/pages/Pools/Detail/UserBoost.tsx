@@ -41,7 +41,7 @@ export const UserBoost: FC = () => {
 
   return (
     <Container>
-      <Boost vault={feederPool.vault}>
+      <Boost vault={feederPool.vault} apy={apy.value?.base}>
         <div>
           <h3>Rewards APY</h3>
           <div>

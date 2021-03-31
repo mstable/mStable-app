@@ -108,15 +108,17 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
 
 const BoostContent: FC<{
   vault: BoostedSavingsVaultState;
+  apy?: number;
   disableCalculator?: boolean;
   isImusd?: boolean;
-}> = ({ children, vault, isImusd, disableCalculator }) => {
+}> = ({ children, apy, vault, isImusd, disableCalculator }) => {
   const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx();
 
   return (
     <Container padding showCalculator={showCalculator}>
       {showCalculator && !disableCalculator ? (
         <BoostCalculator
+          apy={apy}
           vault={vault}
           isImusd={isImusd}
           onClick={toggleShowCalculator}
@@ -137,11 +139,13 @@ const BoostContent: FC<{
 
 export const Boost: FC<{
   vault: BoostedSavingsVaultState;
+  apy?: number;
   disableCalculator?: boolean;
   isImusd?: boolean;
-}> = ({ children, vault, isImusd, disableCalculator }) => (
+}> = ({ apy, children, vault, isImusd, disableCalculator }) => (
   <ShowCalculatorProvider>
     <BoostContent
+      apy={apy}
       vault={vault}
       isImusd={isImusd}
       disableCalculator={disableCalculator}

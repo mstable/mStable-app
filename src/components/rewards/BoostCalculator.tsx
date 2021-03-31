@@ -61,31 +61,38 @@ const StyledButton = styled(Button)`
 
 const MultiplierBox = styled.div`
   border: 1px solid ${({ theme }) => theme.color.accent};
-  display: flex;
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   width: 100%;
   justify-content: space-between;
 
-  > span:first-child {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: ${({ theme }) => theme.color.body};
-  }
+  > div {
+    display: flex;
 
-  @media (min-width: ${ViewportWidth.m}) {
-    > span:first-child {
-      margin-right: 1rem;
-    }
-  }
-
-  @media (min-width: ${ViewportWidth.l}) {
-    max-width: 12.5rem;
-    margin-right: 2rem;
-    flex-direction: column;
-
-    > span:first-child {
+    &:not(:last-child) {
       margin-bottom: 1rem;
+    }
+
+    > span:first-child {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: ${({ theme }) => theme.color.body};
+    }
+
+    @media (min-width: ${ViewportWidth.m}) {
+      > span:first-child {
+        margin-right: 1rem;
+      }
+    }
+
+    @media (min-width: ${ViewportWidth.l}) {
+      max-width: 12.5rem;
+      margin-right: 2rem;
+      flex-direction: column;
+
+      > span:first-child {
+        margin-bottom: 1rem;
+      }
     }
   }
 `;
@@ -181,10 +188,11 @@ const Container = styled(Widget)`
 
 export const BoostCalculator: FC<{
   vault: BoostedSavingsVaultState;
+  apy?: number;
   onClick?: () => void;
   noBackButton?: boolean;
   isImusd?: boolean;
-}> = ({ noBackButton, onClick, vault, isImusd }) => {
+}> = ({ apy, noBackButton, onClick, vault, isImusd }) => {
   const inputAddress = vault.stakingToken;
 
   const inputToken = useTokenSubscription(inputAddress);
@@ -194,6 +202,7 @@ export const BoostCalculator: FC<{
 
   const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTABalance);
   const [inputValue, inputFormValue, setInput] = useBigDecimalInput(
+    // TODO default to a USD value of $100, 100 mBTC is $$$
     inputBalance?.simpleRounded !== 0 ? inputBalance : BigDecimal.parse('100'),
   );
 
@@ -247,35 +256,44 @@ export const BoostCalculator: FC<{
           <MultiplierContainer>
             <Equal>=</Equal>
             <MultiplierBox>
-              <span>Multiplier</span>
-              <BoostCountup
-                end={boost.fromInputs}
-                prev={boost.fromBalance}
-                suffix="x"
-              />
+              <div>
+                <span>Multiplier</span>
+                <BoostCountup
+                  end={boost.fromInputs}
+                  prev={boost.fromBalance}
+                  suffix="x"
+                />
+              </div>
+              {apy && (
+                <div>
+                  <span>APY</span>
+                  <BoostCountup
+                    end={apy * boost.fromInputs}
+                    prev={apy * boost.fromBalance}
+                    suffix="%"
+                  />
+                </div>
+              )}
             </MultiplierBox>
           </MultiplierContainer>
           <BoostAndActions>
-            {/* FIXME should appear for all */}
-            {isImusd && (
-              <StyledButton
-                onClick={() => {
-                  if (inputValue) {
-                    const coeffs = getCoeffs(vault);
-                    const vMTARequired =
-                      isImusd || !coeffs
-                        ? calculateVMTAForMaxBoostImusd(inputValue)
-                        : calculateVMTAForMaxBoost(inputValue, ...coeffs);
-                    setVmta(vMTARequired?.toFixed(2));
-                  }
-                }}
-              >
-                <div>
-                  <ArrowsSvg />
-                  Preview Max
-                </div>
-              </StyledButton>
-            )}
+            <StyledButton
+              onClick={() => {
+                if (inputValue) {
+                  const coeffs = getCoeffs(vault);
+                  const vMTARequired =
+                    isImusd || !coeffs
+                      ? calculateVMTAForMaxBoostImusd(inputValue)
+                      : calculateVMTAForMaxBoost(inputValue, ...coeffs);
+                  setVmta(vMTARequired?.toFixed(2));
+                }
+              }}
+            >
+              <div>
+                <ArrowsSvg />
+                Preview Max
+              </div>
+            </StyledButton>
             <StyledButton
               highlighted
               onClick={() => {
