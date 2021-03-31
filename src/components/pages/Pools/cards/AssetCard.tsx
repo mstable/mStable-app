@@ -86,6 +86,9 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
         justifyContent: 'space-between',
       }}
   }
+  > div > div {
+    font-size: ${({ isLarge }) => !isLarge && `1rem`};
+  }
 `;
 
 const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
