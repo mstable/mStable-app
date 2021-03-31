@@ -43,15 +43,22 @@ export const FLOOR = 0.95;
 export const VMTA_CAP = 400000;
 export const MIN_DEPOSIT = 1;
 
+// 100 deposit, priceCoeff = 1, 0.3 vMTA = 1x
+// 100 deposit, priceCoeff = 1, 32 vMTA = 1.314x
+// 1000 deposit, priceCoeff = 3, 225 vMTA = 1.929x
+// 100000 deposit, priceCoeff = 0.1, 1000 vMTA = 2.468x
+// 100000 deposit, priceCoeff = 1, 11000 vMTA = 3x
+
 // TODO needs examining for new vaults
 export const calculateVMTAForMaxBoost = (
   stakingBalance: BigDecimal,
   boostCoeff: number,
   priceCoeff: number,
 ): number => {
-  const unbounded =
-    ((MAX_BOOST - FLOOR) * (stakingBalance.simple * priceCoeff) ** EXPONENT) /
-    boostCoeff;
+  // (MAX_BOOST - FLOOR) * (deposit * priceCoeff)**EXPONENT / boostCoeff
+  const x = MAX_BOOST - FLOOR;
+  const y = (stakingBalance.simple * priceCoeff) ** EXPONENT;
+  const unbounded = (x * y) / boostCoeff;
   return Math.min(unbounded, VMTA_CAP);
 };
 
@@ -67,14 +74,13 @@ export const calculateBoost = (
     vMTABalance.simple > 0 &&
     stakingBalance.simple > MIN_DEPOSIT
   ) {
-    const unboundedBoost =
-      (FLOOR +
-        boostCoeff *
-          (Math.min(vMTABalance.simple, VMTA_CAP) /
-            (stakingBalance.simple * priceCoeff))) **
-      EXPONENT;
+    const unbounded =
+      FLOOR +
+      (boostCoeff * Math.min(vMTABalance.simple, VMTA_CAP)) /
+        (stakingBalance.simple * priceCoeff) ** EXPONENT;
 
-    return Math.min(MAX_BOOST, Math.max(MIN_BOOST, unboundedBoost));
+    // bounded
+    return Math.min(MAX_BOOST, Math.max(MIN_BOOST, unbounded));
   }
 
   return MIN_BOOST;
@@ -92,13 +98,14 @@ export const getCoeffs = (
     case '0xb3114e33fc6ff5f3c452980ccbe7cf1de1fc822b': // ropsten
     case '0xd124b55f70d374f58455c8aedf308e52cf2a6207':
     case '0xadeedd3e5768f7882572ad91065f93ba88343c99':
-      return [43, 1];
+      return [4.8, 1];
+
     // All BTC
-    // mBTC/fAST
     case '0xae077412fe8c3df00393a63e49caae2658a33019': // ropsten
     case '0x760ea8cfdcc4e78d8b9ca3088ecd460246dc0731':
     case '0xf65d53aa6e2e4a5f4f026e73cb3e22c22d75e35c':
-      return [43, 58000];
+      return [4.8, 58000];
+
     default:
       return undefined;
   }
