@@ -1,7 +1,9 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
+import { createToggleContext } from '../../../../hooks/createToggleContext';
 
 import { ViewportWidth } from '../../../../theme';
+import { Button } from '../../../core/Button';
 import { useSelectedFeederPoolState } from '../FeederPoolProvider';
 
 const Card = styled.div`
@@ -27,6 +29,13 @@ const Container = styled(Card)`
   flex-direction: column;
   align-items: center;
 
+  > div:last-child {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    margin-top: 1rem;
+  }
+
   @media (min-width: ${ViewportWidth.m}) {
     flex-direction: row;
     align-items: flex-start;
@@ -38,19 +47,33 @@ const Container = styled(Card)`
     > button {
       width: inherit;
     }
+
+    > div:last-child {
+      margin-top: 0;
+    }
   }
 `;
 
+export const [useShowEarningPower, ShowEarningPower] = createToggleContext(
+  false,
+);
+
 export const ProvideLiquidityMessage: FC = () => {
   const feederPool = useSelectedFeederPoolState();
+  const [, setShowEarningPower] = useShowEarningPower();
   return (
     <Container>
       <div>
         <h3>Need {feederPool.token.symbol} tokens to stake?</h3>
         <p>
-          Provide liquidity by depositing below, and stake to earn rewards in
-          addition to trade fees
+          Provide liquidity by depositing below, and stake to earn rewards and
+          trade fees
         </p>
+      </div>
+      <div>
+        <Button highlighted onClick={setShowEarningPower}>
+          Calculate Boost
+        </Button>
       </div>
     </Container>
   );

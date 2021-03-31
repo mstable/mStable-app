@@ -9,12 +9,17 @@ import { UnstyledButton } from '../../../core/Button';
 import { CountUp } from '../../../core/CountUp';
 import { useSelectedFeederPoolState } from '../FeederPoolProvider';
 import { Position } from './Position';
-import { ProvideLiquidityMessage } from './ProvideLiquidityMessage';
+import {
+  ProvideLiquidityMessage,
+  ShowEarningPower,
+  useShowEarningPower,
+} from './ProvideLiquidityMessage';
 import { UserBoost } from './UserBoost';
 import { useRewardStreams } from './useRewardStreams';
 import { UserRewards } from './UserRewards';
 import { ViewportWidth } from '../../../../theme';
 import { BoostCalculator } from '../../../rewards/BoostCalculator';
+import { BoostedSavingsVaultState } from '../../../../context/DataProvider/types';
 
 enum Selection {
   Stake = 'stake',
@@ -139,6 +144,24 @@ const Container = styled.div`
   border-radius: 1rem;
 `;
 
+const LiquidityMessageContent: FC<{ vault: BoostedSavingsVaultState }> = ({
+  vault,
+}) => {
+  const [showEarningPower] = useShowEarningPower();
+  return (
+    <>
+      <HeaderNoAccount showBorder>
+        <ProvideLiquidityMessage />
+      </HeaderNoAccount>
+      {showEarningPower && (
+        <Content open>
+          <BoostCalculator vault={vault} noBackButton />
+        </Content>
+      )}
+    </>
+  );
+};
+
 export const Overview: FC = () => {
   const [selection, setSelection] = useState<Selection | undefined>(Stake);
 
@@ -164,14 +187,9 @@ export const Overview: FC = () => {
   return (
     <Container>
       {showLiquidityMessage ? (
-        <>
-          <HeaderNoAccount showBorder>
-            <ProvideLiquidityMessage />
-          </HeaderNoAccount>
-          <Content open>
-            <BoostCalculator vault={vault} noBackButton />
-          </Content>
-        </>
+        <ShowEarningPower>
+          <LiquidityMessageContent vault={vault} />
+        </ShowEarningPower>
       ) : (
         <>
           <Header showBorder={!!selection}>
