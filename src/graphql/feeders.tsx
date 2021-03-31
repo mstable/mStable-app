@@ -3807,7 +3807,7 @@ export type BassetAllFragment = (
 
 export type BoostedSavingsVaultAllFragment = (
   Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply' | 'priceCoeff' | 'boostCoeff'>
-  & { accounts: Array<(
+  & { stakingToken: Pick<Token, 'address'>, accounts: Array<(
     Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
     & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
   )> }
@@ -3937,6 +3937,9 @@ export const BoostedSavingsVaultAllFragmentDoc = gql`
   rewardPerTokenStored
   rewardRate
   stakingContract
+  stakingToken {
+    address
+  }
   totalStakingRewards
   totalSupply
   priceCoeff
