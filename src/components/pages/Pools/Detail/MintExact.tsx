@@ -135,14 +135,14 @@ export const MintExact: FC = () => {
     })[];
 
     if (isLowLiquidity) {
-      const minAssetSimple = (inputAmount?.simple ?? 0) * 0.3;
+      const minAssetSimple = (inputAmount?.simple ?? 0) * 0.4;
 
       if (touchedOptions.length !== Object.keys(inputValues).length) {
         return 'Assets must be deposited in pairs';
       }
 
       if (touched.find(v => (v.amount?.simple ?? 0) < minAssetSimple)) {
-        return 'Assets must be deposited at a minimum 30/70 ratio';
+        return 'Assets must be deposited at a minimum 40/60 ratio';
       }
     }
 
