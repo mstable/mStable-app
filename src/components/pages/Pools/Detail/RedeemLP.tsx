@@ -18,6 +18,7 @@ import {
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
 import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'RedeemLP';
 
@@ -26,8 +27,21 @@ export const RedeemLP: FC = () => {
   const contracts = useSelectedFeederPoolContracts();
   const propose = usePropose();
   const walletAddress = useWalletAddress();
+  const massetPrice = useSelectedMassetPrice();
 
-  const defaultInputOptions = useFPVaultAddressOptions();
+  const isLowLiquidity =
+    feederPool?.liquidity.simple * (massetPrice ?? 0) < 100000;
+
+  const vaultAddressOptions = useFPVaultAddressOptions();
+
+  const defaultInputOptions = isLowLiquidity
+    ? [
+        vaultAddressOptions.find(
+          v => v.address === feederPool.vault.address,
+        ) as AddressOption,
+      ]
+    : vaultAddressOptions;
+
   const defaultOutputOptions = useFPAssetAddressOptions(true);
 
   const [inputOptions, setInputOptions] = useState<AddressOption[]>(
@@ -118,8 +132,8 @@ export const RedeemLP: FC = () => {
     if (!inputAmount?.simple) return 'Enter an amount';
 
     if (
-      feederPool.token.balance?.exact &&
-      inputAmount.exact.gt(feederPool.token.balance.exact)
+      inputToken?.balance?.exact &&
+      inputAmount.exact.gt(inputToken?.balance?.exact)
     ) {
       return 'Insufficient balance';
     }
@@ -142,10 +156,10 @@ export const RedeemLP: FC = () => {
     return estimatedOutputAmount.error;
   }, [
     inputAmount,
-    feederPool.token,
-    estimatedOutputAmount,
+    inputToken,
     outputToken,
     isUnstakingFromVault,
+    estimatedOutputAmount,
   ]);
 
   return (
@@ -178,7 +192,7 @@ export const RedeemLP: FC = () => {
         valid={!error}
         handleSend={() => {
           if (!contracts || !walletAddress || !feederPool) return;
-          if (!outputAddress || !inputAmount || !minOutputAmount) return;
+          if (!outputAddress || !inputAmount) return;
 
           if (isUnstakingFromVault) {
             return propose<Interfaces.BoostedSavingsVault, 'withdraw'>(
@@ -191,6 +205,8 @@ export const RedeemLP: FC = () => {
               ),
             );
           }
+
+          if (!minOutputAmount) return;
 
           return propose<Interfaces.FeederPool, 'redeem'>(
             new TransactionManifest(
