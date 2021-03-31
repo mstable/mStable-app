@@ -14,6 +14,7 @@ import { UserBoost } from './UserBoost';
 import { useRewardStreams } from './useRewardStreams';
 import { UserRewards } from './UserRewards';
 import { ViewportWidth } from '../../../../theme';
+import { BoostCalculator } from '../../../rewards/BoostCalculator';
 
 enum Selection {
   Stake = 'stake',
@@ -127,6 +128,12 @@ const Header = styled.div<{ showBorder?: boolean }>`
   }
 `;
 
+const HeaderNoAccount = styled(Header)`
+  > * {
+    flex: 1;
+  }
+`;
+
 const Container = styled.div`
   border: 1px solid ${({ theme }) => theme.color.accent};
   border-radius: 1rem;
@@ -157,7 +164,14 @@ export const Overview: FC = () => {
   return (
     <Container>
       {showLiquidityMessage ? (
-        <ProvideLiquidityMessage />
+        <>
+          <HeaderNoAccount showBorder>
+            <ProvideLiquidityMessage />
+          </HeaderNoAccount>
+          <Content open>
+            <BoostCalculator vault={vault} noBackButton />
+          </Content>
+        </>
       ) : (
         <>
           <Header showBorder={!!selection}>
