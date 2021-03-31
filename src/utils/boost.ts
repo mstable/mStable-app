@@ -49,7 +49,6 @@ export const MIN_DEPOSIT = 1;
 // 100000 deposit, priceCoeff = 0.1, 1000 vMTA = 2.468x
 // 100000 deposit, priceCoeff = 1, 11000 vMTA = 3x
 
-// TODO needs examining for new vaults
 export const calculateVMTAForMaxBoost = (
   stakingBalance: BigDecimal,
   boostCoeff: number,
