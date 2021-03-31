@@ -47,15 +47,14 @@ const BoostBar: FC<{
   const [, toggleShowCalculator] = useShowCalculatorCtx();
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
   const vMTABalance = vMTA?.balance;
-  const stakingToken = useTokenSubscription(vault.stakingContract);
-  const inputBalance = stakingToken?.balance;
+  const rawBalance = vault.account?.rawBalance;
 
   const boost = useMemo<number>(() => {
     const coeffs = getCoeffs(vault);
     return isImusd || !coeffs
-      ? calculateBoostImusd(inputBalance, vMTABalance)
-      : calculateBoost(...coeffs, vMTABalance);
-  }, [inputBalance, isImusd, vMTABalance, vault]);
+      ? calculateBoostImusd(rawBalance, vMTABalance)
+      : calculateBoost(...coeffs, rawBalance, vMTABalance);
+  }, [rawBalance, isImusd, vMTABalance, vault]);
 
   return (
     <Widget
