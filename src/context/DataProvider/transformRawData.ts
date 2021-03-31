@@ -341,7 +341,10 @@ const transformMassetData = (
     savingsContractsV1: [savingsContractV1],
     savingsContractsV2: [savingsContractV2],
   }: NonNullableMasset,
-  allFeederPools: NonNullableFeederPools,
+  {
+    feederPools: allFeederPools,
+    otherVaults,
+  }: NonNullable<FeederPoolsQueryResult['data']>,
   tokens: Tokens,
 ): MassetState => {
   const bAssets = transformBassets(_bassets, tokens);
@@ -350,6 +353,17 @@ const transformMassetData = (
     allFeederPools.filter(fp => fp.masset.id === address),
     tokens,
   );
+
+  // mBTC vault is in feeders subgraph
+  if (
+    savingsContractV2 &&
+    token.address === '0x945facb997494cc2570096c74b5f66a3507330a1'
+  ) {
+    // eslint-disable-next-line no-param-reassign
+    savingsContractV2.boostedSavingsVaults = otherVaults.filter(
+      v => v.stakingContract === savingsContractV2.id,
+    );
+  }
 
   return {
     address,
@@ -379,24 +393,10 @@ const transformMassetData = (
     feederPools,
     savingsContracts: {
       v1: savingsContractV1
-        ? transformSavingsContractV1(
-            savingsContractV1,
-            tokens,
-            address,
-            // savingsContractV1.id === currentSavingsContract?.id,
-            // TODO marking as inactive manually because of a subgraph issue
-            false,
-          )
+        ? transformSavingsContractV1(savingsContractV1, tokens, address, false)
         : undefined,
       v2: savingsContractV2
-        ? transformSavingsContractV2(
-            savingsContractV2,
-            tokens,
-            address,
-            // savingsContractV2.id === currentSavingsContract?.id,
-            // TODO marking as active manually because of a subgraph issue
-            true,
-          )
+        ? transformSavingsContractV2(savingsContractV2, tokens, address, true)
         : undefined,
     },
     bassetRatios: Object.fromEntries(
@@ -420,10 +420,7 @@ export const transformRawData = ([massetsData, feedersData, tokens]: [
   return Object.fromEntries(
     massetsData.massets.map(masset => {
       const massetName = masset.token.symbol.toLowerCase() as MassetName;
-      return [
-        massetName,
-        transformMassetData(masset, feedersData.feederPools, tokens),
-      ];
+      return [massetName, transformMassetData(masset, feedersData, tokens)];
     }),
   );
 };
