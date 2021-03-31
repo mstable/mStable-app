@@ -101,9 +101,8 @@ const Section = styled.div``;
 
 const Container = styled.div`
   > ${Section}:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.color.accent};
-    padding-bottom: 3rem;
-    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
   }
 `;
 
