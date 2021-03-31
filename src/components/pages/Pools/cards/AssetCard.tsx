@@ -31,12 +31,14 @@ interface Props {
 }
 
 const RewardsAPY = styled.div<{ isLarge?: boolean }>`
-  > div {
-    ${({ isLarge }) =>
-      !isLarge && {
-        display: 'flex',
-        flexDirection: 'row',
-      }}
+  @media (min-width: ${ViewportWidth.s}) {
+    > div {
+      ${({ isLarge }) =>
+        !isLarge && {
+          display: 'flex',
+          flexDirection: 'row',
+        }}
+    }
   }
 `;
 
@@ -163,19 +165,17 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
         <div>
           <div>
             {feederPoolApy.value && <CountUp end={feederPoolApy.value.base} />}%
-            →&nbsp;
           </div>
           <div>
-            {' '}
-            {feederPoolApy.value && (
-              <CountUp end={feederPoolApy.value.maxBoost} />
-            )}
-            %{' '}
+            &nbsp;→&nbsp;
             <UnderlinedTip
               tip="Max boost can be achieved by staking MTA"
               hideIcon
             >
-              vMTA
+              {feederPoolApy.value && (
+                <CountUp end={feederPoolApy.value.maxBoost} />
+              )}
+              %
             </UnderlinedTip>
           </div>
         </div>
