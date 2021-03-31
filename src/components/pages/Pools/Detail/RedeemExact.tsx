@@ -97,14 +97,14 @@ export const RedeemExact: FC = () => {
     if (!touched.length) return 'Enter an amount';
 
     if (isLowLiquidity) {
-      const minAssetSimple = (inputAmount?.simple ?? 0) * 0.3;
+      const minAssetSimple = (inputAmount?.simple ?? 0) * 0.4;
 
       if (touched.length !== Object.keys(inputValues).length) {
         return 'Assets must be withdrawn in pairs';
       }
 
       if (touched.find(v => (v.amount?.simple ?? 0) < minAssetSimple)) {
-        return 'Assets must be withdrawn at a minimum 30/70 ratio';
+        return 'Assets must be withdrawn at a minimum 40/60 ratio';
       }
     }
 
