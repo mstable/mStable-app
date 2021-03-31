@@ -318,7 +318,10 @@ const transformFeederPoolsData = (
             dailyApy: parseFloat(dailyAPY),
             price: new BigDecimal(price ?? 0),
             failed,
-            title: bassets.map(b => b.token.symbol).join('/'),
+            title: bassets
+              .map(b => b.token.symbol)
+              .sort(s => (s === 'mUSD' || s === 'mBTC' ? -1 : 1))
+              .join('/'),
             undergoingRecol,
             vault: transformBoostedSavingsVault(vault),
             account: accounts?.length
