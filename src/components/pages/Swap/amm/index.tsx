@@ -85,11 +85,10 @@ const SwapLogic: FC = () => {
     },
   );
 
-  const currentFeederAddress = Object.keys(feederPools).find(
-    address =>
-      feederPools[address].fasset.address === inputAddress ||
-      feederPools[address].fasset.address === outputAddress,
-  );
+  const currentFeederAddress = Object.values(feederPools).find(
+    ({ fasset: { address } }) =>
+      address === inputAddress || address === outputAddress,
+  )?.address;
 
   const bassetOptions = useMemo(
     () => Object.keys(bAssets).map(address => ({ address })),
@@ -100,12 +99,12 @@ const SwapLogic: FC = () => {
     address: fp.fasset.address,
   }));
 
-  const masset = useMemo(
+  const massetContract = useMemo(
     () => (signer ? Masset__factory.connect(massetAddress, signer) : undefined),
     [massetAddress, signer],
   );
 
-  const fasset = useMemo(
+  const feederPoolContract = useMemo(
     () =>
       signer && currentFeederAddress
         ? FeederPool__factory.connect(currentFeederAddress, signer)
@@ -163,12 +162,15 @@ const SwapLogic: FC = () => {
     () =>
       inputAddress
         ? {
-            spender: massetAddress,
+            spender:
+              inputAddress === currentFeederAddress
+                ? currentFeederAddress
+                : massetAddress,
             address: inputAddress,
             amount: inputAmount,
           }
         : undefined,
-    [inputAddress, inputAmount, massetAddress],
+    [inputAddress, inputAmount, massetAddress, currentFeederAddress],
   );
 
   const massetPrice = useSelectedMassetPrice();
@@ -238,7 +240,7 @@ const SwapLogic: FC = () => {
         penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         handleSend={() => {
           if (
-            masset &&
+            massetContract &&
             walletAddress &&
             inputAmount &&
             minOutputAmount &&
@@ -268,7 +270,7 @@ const SwapLogic: FC = () => {
             if (isMassetMint) {
               return propose<Interfaces.Masset, 'mint'>(
                 new TransactionManifest(
-                  masset,
+                  massetContract,
                   'mint',
                   [
                     inputAddress,
@@ -286,7 +288,7 @@ const SwapLogic: FC = () => {
             if (isMassetRedeem) {
               return propose<Interfaces.Masset, 'redeem'>(
                 new TransactionManifest(
-                  masset,
+                  massetContract,
                   'redeem',
                   [
                     outputAddress,
@@ -302,7 +304,9 @@ const SwapLogic: FC = () => {
 
             // bAsset or fAsset swap
             if (isBassetSwap || isFassetSwap) {
-              const contract = isFassetSwap ? fasset : masset;
+              const contract = isFassetSwap
+                ? feederPoolContract
+                : massetContract;
               if (!contract) return;
 
               return propose<Interfaces.Masset | Interfaces.FeederPool, 'swap'>(
