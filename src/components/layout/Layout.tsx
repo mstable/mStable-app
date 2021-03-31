@@ -28,8 +28,11 @@ import { SCALE } from '../../constants';
 import { MessageHandler } from './MessageHandler';
 
 const Main = styled.main<{ marginTop?: boolean }>`
-  padding: 0 1rem;
   margin-top: ${({ marginTop }) => marginTop && `2rem`};
+
+  @media (min-width: ${ViewportWidth.s}) {
+    padding: 0 1rem;
+  }
 `;
 
 const BackgroundContainer = styled.div`

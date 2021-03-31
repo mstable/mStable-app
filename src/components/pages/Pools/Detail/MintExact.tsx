@@ -138,11 +138,11 @@ export const MintExact: FC = () => {
       const minAssetSimple = (inputAmount?.simple ?? 0) * 0.3;
 
       if (touchedOptions.length !== Object.keys(inputValues).length) {
-        return 'Low liquidity, both assets must be deposited';
+        return 'Assets must be deposited in pairs';
       }
 
       if (touched.find(v => (v.amount?.simple ?? 0) < minAssetSimple)) {
-        return 'Low liquidity, assets must be added in at least 30/70 ratio';
+        return 'Assets must be deposited at a minimum 30/70 ratio';
       }
     }
 

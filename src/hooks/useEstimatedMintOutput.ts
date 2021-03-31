@@ -1,6 +1,7 @@
 import type { FeederPool, Masset } from '@mstable/protocol/types/generated';
 import type { BigNumber } from 'ethers';
-import { useThrottleFn } from 'react-use';
+import { useEffect } from 'react';
+import { useDebounce } from 'react-use';
 
 import { sanitizeMassetError } from '../utils/strings';
 import { BigDecimal } from '../web3/BigDecimal';
@@ -22,12 +23,12 @@ export const useEstimatedMintOutput = (
     setEstimatedOutputAmount,
   ] = useFetchState<BigDecimal>();
 
-  useThrottleFn(
-    (_contract?: MintableContract, _inputValues?: BigDecimalInputValues) => {
-      if (!_inputValues) return;
-      if (!_contract) return setEstimatedOutputAmount.fetching();
+  const [update] = useDebounce(
+    () => {
+      if (!inputValues) return;
+      if (!contract) return setEstimatedOutputAmount.fetching();
 
-      const touched = Object.values(_inputValues).filter(v => v.touched);
+      const touched = Object.values(inputValues).filter(v => v.touched);
 
       if (touched.length) {
         setEstimatedOutputAmount.fetching();
@@ -35,7 +36,7 @@ export const useEstimatedMintOutput = (
         const promise = (() => {
           if (touched.length === 1) {
             const [{ address, amount }] = touched;
-            return _contract.getMintOutput(
+            return contract.getMintOutput(
               address,
               (amount as BigDecimal).exact,
             );
@@ -43,7 +44,7 @@ export const useEstimatedMintOutput = (
 
           const inputs = touched.map(v => v.address);
           const amounts = touched.map(v => (v.amount as BigDecimal).exact);
-          return _contract.getMintMultiOutput(inputs, amounts);
+          return contract.getMintMultiOutput(inputs, amounts);
         })();
 
         return promise
@@ -59,6 +60,18 @@ export const useEstimatedMintOutput = (
     2500,
     [contract, inputValues],
   );
+
+  useEffect(() => {
+    if (contract && inputValues) {
+      const touched = Object.values(inputValues).filter(v => v.touched);
+      if (touched) {
+        setEstimatedOutputAmount.fetching();
+        update();
+      } else {
+        setEstimatedOutputAmount.value();
+      }
+    }
+  }, [contract, inputValues, setEstimatedOutputAmount, update]);
 
   return estimatedOutputAmount;
 };
