@@ -242,8 +242,8 @@ const PoolDetailContent: FC = () => {
                 staking MTA.
               </p>
               <p>
-                Claiming rewards will send 20% → 33% of the unclaimed amount to
-                you immediately, with the rest safely locked in a stream vesting
+                Claiming rewards will send 33% of the unclaimed amount to you
+                immediately, with the rest safely locked in a stream vesting
                 linearly and finishing 26 weeks from the time at which you
                 claimed.
               </p>
