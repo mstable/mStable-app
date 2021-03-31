@@ -14,5 +14,5 @@ export const calculateApy = (
   const rewardPerDayPerToken =
     (rewardRate * SECONDS_IN_DAY * rewardsTokenPrice) / totalSupply.simple;
 
-  return (rewardPerDayPerToken / stakingTokenPrice) * 365;
+  return (rewardPerDayPerToken / stakingTokenPrice) * 365 * 100;
 };

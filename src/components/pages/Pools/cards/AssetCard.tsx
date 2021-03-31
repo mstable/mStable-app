@@ -91,6 +91,10 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
   > div > div {
     font-size: ${({ isLarge }) => !isLarge && `1rem`};
   }
+
+  ${RewardsAPY} + div {
+    text-align: left;
+  }
 `;
 
 const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
@@ -180,6 +184,9 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
           </div>
         </div>
       </RewardsAPY>
+      {feederPoolApy.value && feederPoolApy.value.base > 1000 && (
+        <div>While liquidity is low, this APY is highly volatile</div>
+      )}
     </StatsContainer>
   );
 };
