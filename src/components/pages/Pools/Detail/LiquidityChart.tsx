@@ -106,12 +106,12 @@ const Chart: FC<{
   const { metrics } = useMetricsState();
   return (
     <RechartsContainer>
-      {data.length < 1 && <NoData>No data yet</NoData>}
+      {data.length < 2 && <NoData>No data yet</NoData>}
       <ResponsiveContainer aspect={2} debounce={1} width="99%">
         <AreaChart
           margin={{ top: 40, right: 0, bottom: 0, left: 0 }}
           barCategoryGap={1}
-          data={data}
+          data={data.length > 1 ? data : []}
         >
           <defs>
             {aggregateMetrics.map(({ type, color }) => (
