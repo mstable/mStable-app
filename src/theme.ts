@@ -39,6 +39,7 @@ interface ColorTheme {
   bodyTransparenter: string;
   background: string;
   backgroundAccent: string;
+  offYellow: string;
 }
 
 export const colorTheme = (
@@ -61,6 +62,7 @@ export const colorTheme = (
       : Color.whiteTransparenter,
     background: isLight ? Color.white : Color.black,
     backgroundAccent: isLight ? '#f3f3f3' : '#222',
+    offYellow: isLight ? 'rgba(102, 88, 72, 0.8)' : 'rgba(194, 174, 152, 1)',
   };
 };
 
