@@ -116,24 +116,24 @@ const calculateEarned = (
 
   // Current rate per token - rate user previously received
   const userRewardDelta = rewardPerToken.sub(rewardPerTokenPaid);
-  // const userRewardDelta = rewardPerToken.sub('3375933888495844996748');
 
   if (userRewardDelta.eq(0)) {
     // Short circuit if there is nothing new to distribute
     return { total: 0, unlocked: 0, locked: 0 };
   }
 
-  // New reward = staked tokens * difference in rate
-  const earned = boostedBalance.mulTruncate(userRewardDelta);
-  const total = earned.simple;
-
   const unlockPercentageSimple = parseInt(unlockPercentage.toString()) / 1e18;
+  const rewardsSimple = parseInt(rewards.toString()) / 1e18;
+
+  // New reward = staked tokens * difference in rate
+  const newReward = boostedBalance.mulTruncate(userRewardDelta).simple;
 
   const unlocked =
-    Math.max(total * unlockPercentageSimple, 0) +
-    parseInt(rewards.toString()) / 1e18;
+    Math.max(newReward * unlockPercentageSimple, 0) + rewardsSimple;
 
-  const locked = Math.max(total - unlocked, 0);
+  const locked = Math.max(newReward * (1 - unlockPercentageSimple), 0);
+
+  const total = unlocked + locked;
 
   return { total, unlocked, locked };
 };
