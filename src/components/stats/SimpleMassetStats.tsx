@@ -3,11 +3,10 @@ import styled from 'styled-components';
 
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 import { MassetState } from '../../context/DataProvider/types';
-import { TokenIcon } from '../icons/TokenIcon';
+import { TokenIcon, TokenPair } from '../icons/TokenIcon';
 import { useSelectedMassetPrice } from '../../hooks/usePrice';
 import { CountUp, CountUpUSD } from '../core/CountUp';
 import { toK } from './utils';
-import { TokenPair } from '../pages/Pools/cards/AssetCard';
 
 const Label = styled.div`
   font-weight: 600;
@@ -105,7 +104,9 @@ export const SimpleMassetStats: FC = () => {
           {Object.values(masset.feederPools).map(fp => (
             <AssetRow key={fp.address}>
               <Label>
-                <TokenPair tokens={[fp.masset.token, fp.fasset.token]} />
+                <TokenPair
+                  symbols={[fp.masset.token.symbol, fp.fasset.token.symbol]}
+                />
                 {fp.token.symbol}
               </Label>
               <CountUpUSD

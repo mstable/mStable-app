@@ -12,8 +12,7 @@ import { FeederPoolState } from '../../../../context/DataProvider/types';
 import { useBlockNumbers } from '../../../../context/BlockProvider';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
-import { SubscribedToken } from '../../../../types';
-import { TokenIcon } from '../../../icons/TokenIcon';
+import { TokenPair } from '../../../icons/TokenIcon';
 import { ViewportWidth } from '../../../../theme';
 import { assetColorMapping } from '../constants';
 import { toK } from '../../../stats/utils';
@@ -182,36 +181,6 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
   );
 };
 
-const IconContainer = styled.div<{ isLarge: boolean }>`
-  display: flex;
-
-  img {
-    height: ${({ isLarge }) => (isLarge ? `2.5rem` : `2rem`)};
-    width: ${({ isLarge }) => (isLarge ? `2.5rem` : `2rem`)};
-    border-radius: ${({ isLarge }) => (isLarge ? `1.25rem` : `1rem`)};
-    background: ${({ theme }) => theme.color.white};
-  }
-
-  > img:last-child {
-    margin-left: -0.7rem;
-  }
-`;
-
-export const TokenPair: FC<{
-  tokens?: SubscribedToken[];
-  isLarge?: boolean;
-}> = ({ tokens, isLarge = false }) => {
-  if (!tokens?.length || tokens.length < 2) return null;
-
-  // TODO: Add skeleton
-  return (
-    <IconContainer isLarge={isLarge}>
-      <TokenIcon symbol={tokens?.[0].symbol} />
-      <TokenIcon symbol={tokens?.[1].symbol} />
-    </IconContainer>
-  );
-};
-
 const Background = styled.div<{ gradientColor?: string }>`
   position: absolute;
   top: 0;
@@ -271,7 +240,10 @@ const AssetCardContent: FC<Props> = ({
       title={
         <div>
           <TokenPair
-            tokens={[feederPool.masset.token, feederPool.fasset.token]}
+            symbols={[
+              feederPool.masset.token.symbol,
+              feederPool.fasset.token.symbol,
+            ]}
             isLarge={isLarge}
           />
           {feederPool.title}

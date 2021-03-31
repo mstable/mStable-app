@@ -83,12 +83,15 @@ export const TOKEN_ICONS: Record<string, string> = {
   GUSD,
   HBTC,
   TBTC,
+  FPMUSD: MUSD,
+  FPMBTC: MUSD,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
   ETH: EtherSvg as SvgComponent,
   WETH: EtherSvg as SvgComponent,
   MUSD: MusdSvg as SvgComponent,
+  FPMUSD: MusdSvg as SvgComponent,
   MBTC: MbtcSvg as SvgComponent,
   TUSD: TusdSvg as SvgComponent,
   USDT: UsdtSvg as SvgComponent,
@@ -123,6 +126,21 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   TBTC: TbtcSvg as SvgComponent,
 };
 
+const IconContainer = styled.div<{ isLarge: boolean }>`
+  display: flex;
+
+  img {
+    height: ${({ isLarge }) => (isLarge ? `2.5rem` : `2rem`)};
+    width: ${({ isLarge }) => (isLarge ? `2.5rem` : `2rem`)};
+    border-radius: ${({ isLarge }) => (isLarge ? `1.25rem` : `1rem`)};
+    background: ${({ theme }) => theme.color.white};
+  }
+
+  > img:last-child {
+    margin-left: -0.7rem;
+  }
+`;
+
 const Image = styled.img`
   width: 100%;
   height: auto;
@@ -140,6 +158,19 @@ export const TokenIcon: FC<Props> = ({ className, symbol }) =>
       className={className}
     />
   ) : null;
+
+export const TokenPair: FC<{
+  symbols: string[];
+  className?: string;
+  isLarge?: boolean;
+}> = ({ className, symbols, isLarge = false }) => {
+  return (
+    <IconContainer isLarge={isLarge} className={className}>
+      <TokenIcon symbol={symbols?.[0]} />
+      <TokenIcon symbol={symbols?.[1]} />
+    </IconContainer>
+  );
+};
 
 export const TokenIconSvg: FC<SvgProps> = ({
   symbol,
