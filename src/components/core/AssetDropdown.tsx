@@ -3,7 +3,7 @@ import { useToggle } from 'react-use';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
 
-import { TokenIcon } from '../icons/TokenIcon';
+import { TokenIcon, TokenPair } from '../icons/TokenIcon';
 import { UnstyledButton } from './Button';
 import { AddressOption } from '../../types';
 import { ThemedSkeleton } from './ThemedSkeleton';
@@ -137,6 +137,8 @@ const Option: FC<{
 
   const { symbol, label, balance } = option;
 
+  const symbols = symbol?.split('/') ?? [];
+
   return (
     <OptionContainer
       onClick={onClick}
@@ -144,7 +146,11 @@ const Option: FC<{
       selected={selected}
       disabled={disabled}
     >
-      {symbol && <TokenIcon symbol={symbol} />}
+      {symbol && symbols?.length <= 1 ? (
+        <TokenIcon symbol={symbol} />
+      ) : (
+        <TokenPair symbols={symbols} />
+      )}
       <TokenDetails>
         <span>{label ?? symbol}</span>
         {(balance?.simple ?? 0) > 0 && (
