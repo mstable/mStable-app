@@ -354,13 +354,13 @@ const transformMassetData = (
     tokens,
   );
 
-  // mBTC vault is in feeders subgraph
+  // Handle mBTC vault is in feeders subgraph
+  let saveVaults = savingsContractV2.boostedSavingsVaults;
   if (
     savingsContractV2 &&
     token.address === '0x945facb997494cc2570096c74b5f66a3507330a1'
   ) {
-    // eslint-disable-next-line no-param-reassign
-    savingsContractV2.boostedSavingsVaults = otherVaults.filter(
+    saveVaults = otherVaults.filter(
       v => v.stakingContract === savingsContractV2.id,
     );
   }
@@ -396,7 +396,12 @@ const transformMassetData = (
         ? transformSavingsContractV1(savingsContractV1, tokens, address, false)
         : undefined,
       v2: savingsContractV2
-        ? transformSavingsContractV2(savingsContractV2, tokens, address, true)
+        ? transformSavingsContractV2(
+            { ...savingsContractV2, boostedSavingsVaults: saveVaults },
+            tokens,
+            address,
+            true,
+          )
         : undefined,
     },
     bassetRatios: Object.fromEntries(
