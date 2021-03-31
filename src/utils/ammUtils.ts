@@ -27,7 +27,7 @@ export const getPenaltyMessage = (
 
   const abs = Math.abs(amount).toFixed(4);
   return amount > 0
-    ? `WARNING: There is a price bonus of +${abs}%`
+    ? `There is a price bonus of +${abs}%`
     : `WARNING: There is a price penalty of -${abs}%`;
 };
 

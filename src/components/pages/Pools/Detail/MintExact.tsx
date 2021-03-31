@@ -21,6 +21,7 @@ import {
   useFPAssetAddressOptions,
 } from '../FeederPoolProvider';
 import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
 const formId = 'DepositLP';
 
@@ -33,6 +34,10 @@ export const MintExact: FC = () => {
 
   const assetAddressOptions = useFPAssetAddressOptions(true);
   const vaultAddressOptions = useFPVaultAddressOptions();
+
+  const massetPrice = useSelectedMassetPrice();
+  const isLowLiquidity =
+    feederPool?.liquidity.simple * (massetPrice ?? 0) < 100000;
 
   const [outputAddress, setOutputAddress] = useState<string | undefined>(
     vaultAddressOptions[0].address,
@@ -129,6 +134,18 @@ export const MintExact: FC = () => {
       input: BigDecimalInputValue;
     })[];
 
+    if (isLowLiquidity) {
+      const minAssetSimple = (inputAmount?.simple ?? 0) * 0.3;
+
+      if (touchedOptions.length !== Object.keys(inputValues).length) {
+        return 'Low liquidity, both assets must be deposited';
+      }
+
+      if (touched.find(v => (v.amount?.simple ?? 0) < minAssetSimple)) {
+        return 'Low liquidity, assets must be added in at least 30/70 ratio';
+      }
+    }
+
     if (!contractAddress || !touchedOptions.every(opt => opt.balance)) {
       return 'Fetching balances…';
     }
@@ -162,6 +179,9 @@ export const MintExact: FC = () => {
     outputAddress,
     contractAddress,
     touched,
+    inputAmount,
+    isLowLiquidity,
+    inputValues,
   ]);
 
   useEffect(() => {
