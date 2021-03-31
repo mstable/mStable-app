@@ -256,7 +256,7 @@ export const Layout: FC = ({ children }) => {
   useLayoutEffect(() => {
     let message: BannerMessage | undefined;
 
-    if (massetName === 'musd' && !pathname.includes('pools')) {
+    if (massetName === 'musd' && pathname.includes('save')) {
       const saveV2Message = MessageHandler.saveV2({
         hasV1Balance: false,
         pathname,
