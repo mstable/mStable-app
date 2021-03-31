@@ -129,8 +129,7 @@ const Clippy = styled.div`
     theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none'};
   border-radius: 1rem;
   padding: 1rem;
-  color: ${({ theme }) =>
-    theme.isLight ? 'rgba(102, 88, 72, 0.8)' : 'rgba(194, 174, 152, 1)'};
+  color: ${({ theme }) => theme.color.offYellow};
 
   > *:not(:last-child) {
     margin-bottom: 1rem;
@@ -225,7 +224,7 @@ const PoolDetailContent: FC = () => {
           <h4>Using mStable Feeder Pools</h4>
           <p>
             Feeder Pools offer a way to earn with your assets with{' '}
-            <span>low impermanent loss.</span>
+            <span>low impermanent loss risk.</span>
           </p>
           <p>
             Liquidity providers passively gain yield from swap fees and also
@@ -236,13 +235,9 @@ const PoolDetailContent: FC = () => {
             staking MTA.
           </p>
           <p>
-            Rewards are streamed to you at a constant rate, and can be claimed
-            at any time.
-          </p>
-          <p>
-            Claiming rewards will send 20% of the unclaimed amount to you
-            immediately, with the rest safely locked in a future stream that
-            starts 26 weeks afterwards.
+            Claiming rewards will send 20% → 33% of the unclaimed amount to you
+            immediately, with the rest safely locked in a stream vesting
+            linearly and finishing 26 weeks from the time at which you claimed.
           </p>
           <p>
             When streams are unlocked, these rewards are sent to you in full

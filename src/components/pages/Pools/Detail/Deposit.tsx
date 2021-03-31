@@ -11,22 +11,30 @@ import { UnstyledButton } from '../../../core/Button';
 import { MintExact } from './MintExact';
 import { MintLP } from './MintLP';
 
-const MintPathBox = styled.div`
+const MintPathBox = styled.div<{ protip?: boolean }>`
   display: flex;
   align-items: center;
   text-align: center;
   justify-content: center;
   padding: 1rem;
-  border: 1px dashed ${({ theme }) => theme.color.accent};
+  border: 1px dashed
+    ${({ theme, protip }) => (protip ? theme.color.gold : theme.color.accent)};
   border-radius: 0.75rem;
   margin-top: 1rem;
 
   button {
     font-size: 1rem;
-    font-weight: 600;
-    color: ${({ theme }) => theme.color.grey};
+
+    ${({ protip, theme }) => ({
+      fontWeight: protip ? 500 : 600,
+      color: `${protip ? theme.color.offYellow : theme.color.grey}`,
+    })}
+
     :hover {
-      color: ${({ theme }) => theme.color.gold};
+      ${({ protip, theme }) => ({
+        color: `${!protip && theme.color.grey}`,
+        cursor: `${protip ? `not-allowed` : 'pointer'}`,
+      })};
     }
   }
 `;
@@ -40,7 +48,7 @@ export const Deposit: FC<{ exactOnly?: boolean }> = ({ exactOnly = false }) => {
   return (
     <MultiAssetExchangeProvider assets={assets}>
       {isMintExact ? <MintExact /> : <MintLP />}
-      <MintPathBox>
+      <MintPathBox protip={exactOnly}>
         {exactOnly ? (
           <UnstyledButton disabled>
             Single-asset deposits are disabled due to low liquidity
