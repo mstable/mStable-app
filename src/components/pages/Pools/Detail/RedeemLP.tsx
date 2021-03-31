@@ -87,7 +87,7 @@ export const RedeemLP: FC = () => {
       );
       setInputAddress(feederPool.vault.address);
     } else {
-      setInputOptions(defaultOutputOptions);
+      setOutputAddress(feederPool.address);
     }
     setOutputAddress(address);
   };
