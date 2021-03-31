@@ -10,7 +10,7 @@ import { useFeederPool } from '../../../../context/DataProvider/DataProvider';
 
 import { ViewportWidth } from '../../../../theme';
 import { TabCard } from '../../../core/Tabs';
-import { Button } from '../../../core/Button';
+import { Button, UnstyledButton } from '../../../core/Button';
 import { PageHeader, PageAction } from '../../PageHeader';
 import { AssetCard } from '../cards/AssetCard';
 
@@ -75,13 +75,6 @@ const HeaderCharts: FC<{ color: string }> = ({ color }) => {
   );
 };
 
-const Divider = styled.div`
-  height: 1px;
-  width: 100%;
-  border-bottom: 1px solid ${({ theme }) => theme.color.accent};
-  margin: 1.5rem 0;
-`;
-
 const HeaderCard = styled(AssetCard)`
   h2 {
     font-size: 1.75rem;
@@ -89,8 +82,6 @@ const HeaderCard = styled(AssetCard)`
 `;
 
 const HeaderContainer = styled.div`
-  margin-bottom: 1.5rem;
-
   > div:last-child {
     display: none;
   }
@@ -142,7 +133,13 @@ const Clippy = styled.div`
 
   p {
     font-size: 0.875rem;
+
     span {
+      font-weight: 600;
+    }
+
+    > button {
+      color: ${({ theme }) => theme.color.blue};
       font-weight: 600;
     }
   }
@@ -176,6 +173,10 @@ const Exchange = styled.div`
 
 const Container = styled.div`
   width: 100%;
+
+  > div:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
 `;
 
 const PoolDetailContent: FC = () => {
@@ -185,6 +186,8 @@ const PoolDetailContent: FC = () => {
     liquidity,
   } = useSelectedFeederPoolState() as FeederPoolState;
   const massetPrice = useSelectedMassetPrice();
+
+  const [readMore, setReadMore] = useToggle(false);
 
   const color = assetColorMapping[title];
   const isLowLiquidity = massetPrice
@@ -215,9 +218,7 @@ const PoolDetailContent: FC = () => {
         <HeaderCharts color={color} />
       </HeaderContainer>
       <AssetDetails />
-      <Divider />
       <Overview />
-      <Divider />
       <Exchange>
         <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
         <Clippy>
@@ -225,27 +226,34 @@ const PoolDetailContent: FC = () => {
           <p>
             Feeder Pools offer a way to earn with your assets with{' '}
             <span>low impermanent loss risk.</span>
+            {!readMore && (
+              <UnstyledButton onClick={setReadMore}>Read more</UnstyledButton>
+            )}
           </p>
-          <p>
-            Liquidity providers passively gain yield from swap fees and also
-            earn MTA rewards.
-          </p>
-          <p>
-            You can <span>multiply your rewards</span> in mStable pools by
-            staking MTA.
-          </p>
-          <p>
-            Claiming rewards will send 20% → 33% of the unclaimed amount to you
-            immediately, with the rest safely locked in a stream vesting
-            linearly and finishing 26 weeks from the time at which you claimed.
-          </p>
-          <p>
-            When streams are unlocked, these rewards are sent to you in full
-            along with unclaimed earnings.
-          </p>
+          {readMore && (
+            <>
+              <p>
+                Liquidity providers passively gain yield from swap fees and also
+                earn MTA rewards.
+              </p>
+              <p>
+                You can <span>multiply your rewards</span> in mStable pools by
+                staking MTA.
+              </p>
+              <p>
+                Claiming rewards will send 20% → 33% of the unclaimed amount to
+                you immediately, with the rest safely locked in a stream vesting
+                linearly and finishing 26 weeks from the time at which you
+                claimed.
+              </p>
+              <p>
+                When streams are unlocked, these rewards are sent to you in full
+                along with unclaimed earnings.
+              </p>
+            </>
+          )}
         </Clippy>
       </Exchange>
-      <Divider />
       {/* <UserLookup /> */}
     </Container>
   );
