@@ -31,7 +31,7 @@ const Main = styled.main<{ marginTop?: boolean }>`
   margin-top: ${({ marginTop }) => marginTop && `2rem`};
 
   @media (min-width: ${ViewportWidth.s}) {
-    padding: 0 1rem;
+    padding: 1rem;
   }
 `;
 
