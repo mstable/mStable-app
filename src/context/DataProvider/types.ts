@@ -118,6 +118,7 @@ export interface BoostedSavingsVaultState {
   rewardPerTokenStored: BigNumber;
   rewardRate: BigNumber;
   stakingContract: string;
+  stakingToken: string;
   totalStakingRewards: BigDecimal;
   totalSupply: BigDecimal;
   unlockPercentage: BigNumber;

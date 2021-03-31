@@ -185,7 +185,8 @@ export const BoostCalculator: FC<{
   noBackButton?: boolean;
   isImusd?: boolean;
 }> = ({ noBackButton, onClick, vault, isImusd }) => {
-  const inputAddress = vault.stakingContract;
+  const inputAddress = vault.stakingToken;
+
   const inputToken = useTokenSubscription(inputAddress);
   const inputBalance = inputToken?.balance;
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);

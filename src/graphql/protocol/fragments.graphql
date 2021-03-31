@@ -60,6 +60,9 @@ fragment BoostedSavingsVaultAll on BoostedSavingsVault {
   rewardPerTokenStored
   rewardRate
   stakingContract
+  stakingToken {
+    address
+  }
   totalStakingRewards
   totalSupply
   accounts(where: { account: $account }) @include(if: $hasAccount) {
