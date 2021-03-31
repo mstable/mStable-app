@@ -27,6 +27,7 @@ import {
 import { RewardStreamsProvider } from './useRewardStreams';
 import { Overview } from './Overview';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
+import { UserLookup } from './UserLookup';
 
 const HeaderChartsContainer = styled.div`
   position: relative;
@@ -254,7 +255,7 @@ const PoolDetailContent: FC = () => {
           )}
         </Clippy>
       </Exchange>
-      {/* <UserLookup /> */}
+      <UserLookup />
     </Container>
   );
 };
