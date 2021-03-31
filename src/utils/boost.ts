@@ -87,13 +87,17 @@ export const getCoeffs = (
     return [vault.boostCoeff, vault.priceCoeff];
   }
 
-  // test vaults
   switch (vault.address) {
-    // mUSD/GUSD
-    case '0xb3114e33fc6ff5f3c452980ccbe7cf1de1fc822b':
+    // All USD
+    case '0xb3114e33fc6ff5f3c452980ccbe7cf1de1fc822b': // ropsten
+    case '0xd124b55f70d374f58455c8aedf308e52cf2a6207':
+    case '0xadeedd3e5768f7882572ad91065f93ba88343c99':
       return [43, 1];
+    // All BTC
     // mBTC/fAST
-    case '0xae077412fe8c3df00393a63e49caae2658a33019':
+    case '0xae077412fe8c3df00393a63e49caae2658a33019': // ropsten
+    case '0x760ea8cfdcc4e78d8b9ca3088ecd460246dc0731':
+    case '0xf65d53aa6e2e4a5f4f026e73cb3e22c22d75e35c':
       return [43, 58000];
     default:
       return undefined;
