@@ -144,9 +144,10 @@ const Container = styled.div`
   border-radius: 1rem;
 `;
 
-const LiquidityMessageContent: FC<{ vault: BoostedSavingsVaultState }> = ({
-  vault,
-}) => {
+const LiquidityMessageContent: FC<{
+  vault: BoostedSavingsVaultState;
+  apy?: number;
+}> = ({ vault, apy }) => {
   const [showEarningPower] = useShowEarningPower();
   return (
     <>
@@ -155,7 +156,7 @@ const LiquidityMessageContent: FC<{ vault: BoostedSavingsVaultState }> = ({
       </HeaderNoAccount>
       {showEarningPower && (
         <Content open>
-          <BoostCalculator vault={vault} noBackButton />
+          <BoostCalculator vault={vault} noBackButton apy={apy} />
         </Content>
       )}
     </>
@@ -188,7 +189,7 @@ export const Overview: FC = () => {
     <Container>
       {showLiquidityMessage ? (
         <ShowEarningPower>
-          <LiquidityMessageContent vault={vault} />
+          <LiquidityMessageContent vault={vault} apy={apy.value?.base} />
         </ShowEarningPower>
       ) : (
         <>
