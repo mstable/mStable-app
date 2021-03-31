@@ -140,6 +140,22 @@ export const MintMasset: FC = () => {
     estimatedOutputAmount.value,
   );
 
+  const isFasset = Object.values(fAssets).find(f => f.address === inputAddress);
+
+  const approve = useMemo(
+    () =>
+      (inputAddress && {
+        spender:
+          isFasset && currentFeederAddress
+            ? currentFeederAddress
+            : massetAddress,
+        address: inputAddress,
+        amount: inputAmount,
+      }) ||
+      undefined,
+    [inputAddress, isFasset, currentFeederAddress, massetAddress, inputAmount],
+  );
+
   const valid = !error;
 
   return (
@@ -175,6 +191,7 @@ export const MintMasset: FC = () => {
       <SendButton
         valid={valid}
         title={error ?? 'Mint'}
+        approve={approve}
         penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         handleSend={() => {
           if (
@@ -184,10 +201,7 @@ export const MintMasset: FC = () => {
             inputAddress &&
             minOutputAmount
           ) {
-            if (
-              Object.values(fAssets).find(f => f.address === inputAddress) &&
-              fasset
-            ) {
+            if (isFasset && fasset) {
               return propose<Interfaces.FeederPool, 'swap'>(
                 new TransactionManifest(
                   fasset,
