@@ -2,7 +2,6 @@ import type { FC, ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Skeleton from 'react-loading-skeleton';
-import { Link } from 'react-router-dom';
 
 import type {
   FeederPoolState,
@@ -12,7 +11,7 @@ import type {
 import { PageAction, PageHeader } from '../PageHeader';
 import { Card } from './cards/Card';
 import { OnboardingCard } from './cards/OnboardingCard';
-import { AssetCard, CustomAssetCard } from './cards/AssetCard';
+import { AssetCard, EarnCard } from './cards/AssetCard';
 import { ViewportWidth } from '../../../theme';
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { PoolType } from './types';
@@ -116,16 +115,19 @@ const Title: Record<PoolType, string> = {
 
 const sections = [PoolType.User, PoolType.Active, PoolType.Deprecated];
 
+const EarnContent = styled.div`
+  font-size: 1rem;
+  max-width: 30ch;
+  text-align: left;
+  line-height: 1.5rem;
+`;
+
 const customEarnCard: CustomAssetCardProps = {
   isCustomAssetCard: true,
   key: 'earn',
   title: 'Earn Pools',
-  // TODO use selected masset earn route
-  // TODO better description
   component: (
-    <div>
-      Earn pools are available <Link to="/musd/earn">here</Link>
-    </div>
+    <EarnContent>Earn pools have moved and are now available here</EarnContent>
   ),
 };
 
@@ -188,12 +190,12 @@ const PoolsContent: FC = () => {
                   .filter((_, i) => i < numPoolsVisible[type])
                   .map(poolOrCard =>
                     (poolOrCard as CustomAssetCardProps).isCustomAssetCard ? (
-                      <CustomAssetCard
+                      <EarnCard
                         key={(poolOrCard as CustomAssetCardProps).key}
                         title={poolOrCard.title}
                       >
                         {(poolOrCard as CustomAssetCardProps).component}
-                      </CustomAssetCard>
+                      </EarnCard>
                     ) : (
                       <AssetCard
                         key={(poolOrCard as FeederPoolState).address}
