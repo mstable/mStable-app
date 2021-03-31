@@ -59,7 +59,7 @@ export const useEstimatedRedeemOutput = (
   useEffect(() => {
     if (contract && inputValues) {
       const touched = Object.values(inputValues).filter(v => v.touched);
-      if (touched) {
+      if (touched.length) {
         setEstimatedOutputAmount.fetching();
         update();
       } else {
