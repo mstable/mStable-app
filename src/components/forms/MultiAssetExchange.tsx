@@ -165,7 +165,9 @@ export const ManyToOneAssetExchange: FC<
 
 export const OneToManyAssetExchange: FC<
   Props & {
-    inputAddress: string;
+    inputAddress?: string;
+    inputAddressOptions?: AddressOption[];
+    setInputAddress?(address?: string): void;
     maxOutputAmount?: BigDecimal;
   }
 > = ({
@@ -174,6 +176,8 @@ export const OneToManyAssetExchange: FC<
   spender,
   setMaxCallbacks,
   inputAddress,
+  inputAddressOptions,
+  setInputAddress,
   inputLabel = 'Input',
   outputLabel = 'Output',
   maxOutputAmount,
@@ -186,11 +190,12 @@ export const OneToManyAssetExchange: FC<
   return (
     <Container>
       <AssetInput
+        addressOptions={inputAddressOptions}
         address={inputAddress}
-        addressDisabled
         formValue={inputAmount.value?.string}
         amountDisabled
         isFetching={exchangeRate.fetching}
+        handleSetAddress={setInputAddress}
       />
       <div>
         <Arrow />

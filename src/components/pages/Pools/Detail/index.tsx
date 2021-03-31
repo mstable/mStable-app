@@ -200,7 +200,7 @@ const PoolDetailContent: FC = () => {
       },
       Withdraw: {
         title: 'Withdraw',
-        component: <Withdraw exactOnly={isLowLiquidity} />,
+        component: <Withdraw isLowLiquidity={isLowLiquidity} />,
       },
     }),
     [isLowLiquidity],

@@ -52,12 +52,25 @@ export const RedeemExact: FC = () => {
   );
 
   const inputAmount = useMemo(() => {
-    if (!Object.keys(inputValues).length || !touched.length) return;
+    if (!touched.length) return;
 
-    return touched
-      .map(v => v.amount)
-      .reduce((a, b) => (a as BigDecimal).add(b as BigDecimal));
-  }, [inputValues, touched]);
+    const massetAmount = touched.find(
+      ({ address }) => address === feederPool.masset.address,
+    )?.amount;
+
+    const fassetAmount = touched.find(
+      ({ address }) => address === feederPool.fasset.address,
+    )?.amount;
+
+    if (fassetAmount && massetAmount) {
+      return fassetAmount
+        .mulRatioTruncate(feederPool.fasset.ratio)
+        .add(massetAmount)
+        .setDecimals(18);
+    }
+
+    return massetAmount ?? fassetAmount;
+  }, [feederPool, touched]);
 
   const { maxOutputAmount, penaltyBonus } = useMaximumOutput(
     slippage?.simple,
