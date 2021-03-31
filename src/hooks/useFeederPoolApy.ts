@@ -1,6 +1,6 @@
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
 import { useTokenSubscription } from '../context/TokensProvider';
-import { calculateBoost, MAX_BOOST } from '../utils/boost';
+import { calculateBoost, getCoeffs, MAX_BOOST } from '../utils/boost';
 import { calculateApy } from '../utils/calculateApy';
 import { ADDRESSES } from '../constants';
 import { useMtaPrice, useSelectedMassetPrice } from './usePrice';
@@ -21,13 +21,14 @@ export const useFeederPoolApy = (
     price,
     vault: { rewardRate, totalSupply, account },
   } = massetState.feederPools[poolAddress];
+  const rewardRateSimple = parseInt(rewardRate.toString()) / 1e18;
 
   const stakingTokenPrice = price.simple * massetPrice;
 
   const base = calculateApy(
     stakingTokenPrice,
     mtaPrice,
-    rewardRate,
+    rewardRateSimple,
     totalSupply,
   ) as number;
 
@@ -35,11 +36,13 @@ export const useFeederPoolApy = (
 
   let userBoost = base;
 
-  if (account && vMta) {
-    const boost = calculateBoost(account.rawBalance, vMta.balance);
+  const { vault } = massetState.feederPools[poolAddress];
+  const coeffs = getCoeffs(vault);
+  if (account && vMta && coeffs) {
+    const boost = calculateBoost(...coeffs, account.rawBalance, vMta.balance);
 
     if (boost) {
-      const boostedRewardRate = rewardRate.mul(boost);
+      const boostedRewardRate = rewardRateSimple * boost;
 
       userBoost = calculateApy(
         stakingTokenPrice,

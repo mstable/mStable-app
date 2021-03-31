@@ -88,6 +88,8 @@ fragment BoostedSavingsVaultAll on BoostedSavingsVault {
     stakingContract
     totalStakingRewards
     totalSupply
+    priceCoeff
+    boostCoeff
     accounts(where: { account: $account }) @include(if: $hasAccount) {
         id
         boostedBalance

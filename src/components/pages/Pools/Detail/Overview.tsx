@@ -175,8 +175,15 @@ export const Overview: FC = () => {
               active={selection === Boost}
               onClick={() => handleSelection(Boost)}
             >
-              <h3>Boosted APY</h3>
-              <CountUp end={apy?.value?.base ?? 0} suffix="%" />
+              <h3>
+                {apy.value?.userBoost && apy.value.userBoost > apy.value.base
+                  ? 'Boosted APY'
+                  : 'APY'}
+              </h3>
+              <CountUp
+                end={apy.value?.userBoost ?? apy.value?.base ?? 0}
+                suffix="%"
+              />
             </Button>
             <Button
               active={selection === Rewards}

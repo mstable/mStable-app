@@ -97,6 +97,7 @@ export type Account = {
   id: Scalars['ID'];
   boostedSavingsVaultAccounts: Array<BoostedSavingsVaultAccount>;
   feederPoolAccounts: Array<FeederPoolAccount>;
+  boostDirection: Array<BoostedSavingsVault>;
 };
 
 
@@ -117,6 +118,15 @@ export type AccountFeederPoolAccountsArgs = {
   where?: Maybe<FeederPoolAccount_Filter>;
 };
 
+
+export type AccountBoostDirectionArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVault_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVault_Filter>;
+};
+
 export type Account_Filter = {
   id?: Maybe<Scalars['ID']>;
   id_not?: Maybe<Scalars['ID']>;
@@ -126,12 +136,17 @@ export type Account_Filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_in?: Maybe<Array<Scalars['ID']>>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
+  boostDirection?: Maybe<Array<Scalars['String']>>;
+  boostDirection_not?: Maybe<Array<Scalars['String']>>;
+  boostDirection_contains?: Maybe<Array<Scalars['String']>>;
+  boostDirection_not_contains?: Maybe<Array<Scalars['String']>>;
 };
 
 export enum Account_OrderBy {
   Id = 'id',
   BoostedSavingsVaultAccounts = 'boostedSavingsVaultAccounts',
-  FeederPoolAccounts = 'feederPoolAccounts'
+  FeederPoolAccounts = 'feederPoolAccounts',
+  BoostDirection = 'boostDirection'
 }
 
 /**
@@ -558,10 +573,66 @@ export type Block_Height = {
   number?: Maybe<Scalars['Int']>;
 };
 
+export type BoostDirector = {
+  id: Scalars['ID'];
+  stakingContract: Token;
+  whitelisted: Array<BoostedSavingsVault>;
+};
+
+
+export type BoostDirectorWhitelistedArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostedSavingsVault_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostedSavingsVault_Filter>;
+};
+
+export type BoostDirector_Filter = {
+  id?: Maybe<Scalars['ID']>;
+  id_not?: Maybe<Scalars['ID']>;
+  id_gt?: Maybe<Scalars['ID']>;
+  id_lt?: Maybe<Scalars['ID']>;
+  id_gte?: Maybe<Scalars['ID']>;
+  id_lte?: Maybe<Scalars['ID']>;
+  id_in?: Maybe<Array<Scalars['ID']>>;
+  id_not_in?: Maybe<Array<Scalars['ID']>>;
+  stakingContract?: Maybe<Scalars['String']>;
+  stakingContract_not?: Maybe<Scalars['String']>;
+  stakingContract_gt?: Maybe<Scalars['String']>;
+  stakingContract_lt?: Maybe<Scalars['String']>;
+  stakingContract_gte?: Maybe<Scalars['String']>;
+  stakingContract_lte?: Maybe<Scalars['String']>;
+  stakingContract_in?: Maybe<Array<Scalars['String']>>;
+  stakingContract_not_in?: Maybe<Array<Scalars['String']>>;
+  stakingContract_contains?: Maybe<Scalars['String']>;
+  stakingContract_not_contains?: Maybe<Scalars['String']>;
+  stakingContract_starts_with?: Maybe<Scalars['String']>;
+  stakingContract_not_starts_with?: Maybe<Scalars['String']>;
+  stakingContract_ends_with?: Maybe<Scalars['String']>;
+  stakingContract_not_ends_with?: Maybe<Scalars['String']>;
+  whitelisted?: Maybe<Array<Scalars['String']>>;
+  whitelisted_not?: Maybe<Array<Scalars['String']>>;
+  whitelisted_contains?: Maybe<Array<Scalars['String']>>;
+  whitelisted_not_contains?: Maybe<Array<Scalars['String']>>;
+};
+
+export enum BoostDirector_OrderBy {
+  Id = 'id',
+  StakingContract = 'stakingContract',
+  Whitelisted = 'whitelisted'
+}
+
 export type BoostedSavingsVault = {
   id: Scalars['ID'];
-  /** The Feeder Pool associated with this vault */
-  feederPool: FeederPool;
+  /** ID of the vault on the BoostDirector contract */
+  directorVaultId?: Maybe<Scalars['Int']>;
+  /** The boost coefficient */
+  boostCoeff?: Maybe<Scalars['BigInt']>;
+  /** The price coefficient */
+  priceCoeff?: Maybe<Scalars['BigInt']>;
+  /** The Feeder Pool associated with this vault (optional) */
+  feederPool?: Maybe<FeederPool>;
   accounts: Array<BoostedSavingsVaultAccount>;
   rewardEntries: Array<BoostedSavingsVaultRewardEntry>;
   /** Length of token lockup (in seconds), after rewards are earned */
@@ -659,6 +730,30 @@ export type BoostedSavingsVault_Filter = {
   id_lte?: Maybe<Scalars['ID']>;
   id_in?: Maybe<Array<Scalars['ID']>>;
   id_not_in?: Maybe<Array<Scalars['ID']>>;
+  directorVaultId?: Maybe<Scalars['Int']>;
+  directorVaultId_not?: Maybe<Scalars['Int']>;
+  directorVaultId_gt?: Maybe<Scalars['Int']>;
+  directorVaultId_lt?: Maybe<Scalars['Int']>;
+  directorVaultId_gte?: Maybe<Scalars['Int']>;
+  directorVaultId_lte?: Maybe<Scalars['Int']>;
+  directorVaultId_in?: Maybe<Array<Scalars['Int']>>;
+  directorVaultId_not_in?: Maybe<Array<Scalars['Int']>>;
+  boostCoeff?: Maybe<Scalars['BigInt']>;
+  boostCoeff_not?: Maybe<Scalars['BigInt']>;
+  boostCoeff_gt?: Maybe<Scalars['BigInt']>;
+  boostCoeff_lt?: Maybe<Scalars['BigInt']>;
+  boostCoeff_gte?: Maybe<Scalars['BigInt']>;
+  boostCoeff_lte?: Maybe<Scalars['BigInt']>;
+  boostCoeff_in?: Maybe<Array<Scalars['BigInt']>>;
+  boostCoeff_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  priceCoeff?: Maybe<Scalars['BigInt']>;
+  priceCoeff_not?: Maybe<Scalars['BigInt']>;
+  priceCoeff_gt?: Maybe<Scalars['BigInt']>;
+  priceCoeff_lt?: Maybe<Scalars['BigInt']>;
+  priceCoeff_gte?: Maybe<Scalars['BigInt']>;
+  priceCoeff_lte?: Maybe<Scalars['BigInt']>;
+  priceCoeff_in?: Maybe<Array<Scalars['BigInt']>>;
+  priceCoeff_not_in?: Maybe<Array<Scalars['BigInt']>>;
   feederPool?: Maybe<Scalars['String']>;
   feederPool_not?: Maybe<Scalars['String']>;
   feederPool_gt?: Maybe<Scalars['String']>;
@@ -789,6 +884,9 @@ export type BoostedSavingsVault_Filter = {
 
 export enum BoostedSavingsVault_OrderBy {
   Id = 'id',
+  DirectorVaultId = 'directorVaultId',
+  BoostCoeff = 'boostCoeff',
+  PriceCoeff = 'priceCoeff',
   FeederPool = 'feederPool',
   Accounts = 'accounts',
   RewardEntries = 'rewardEntries',
@@ -2665,6 +2763,8 @@ export type Query = {
   fpmintMultiTransactions: Array<FpMintMultiTransaction>;
   fpredeemTransaction?: Maybe<FpRedeemTransaction>;
   fpredeemTransactions: Array<FpRedeemTransaction>;
+  boostDirector?: Maybe<BoostDirector>;
+  boostDirectors: Array<BoostDirector>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
@@ -2992,6 +3092,22 @@ export type QueryFpredeemTransactionsArgs = {
 };
 
 
+export type QueryBoostDirectorArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type QueryBoostDirectorsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostDirector_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostDirector_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
 export type QueryTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -3053,6 +3169,8 @@ export type Subscription = {
   fpmintMultiTransactions: Array<FpMintMultiTransaction>;
   fpredeemTransaction?: Maybe<FpRedeemTransaction>;
   fpredeemTransactions: Array<FpRedeemTransaction>;
+  boostDirector?: Maybe<BoostDirector>;
+  boostDirectors: Array<BoostDirector>;
   transaction?: Maybe<Transaction>;
   transactions: Array<Transaction>;
   /** Access to subgraph metadata */
@@ -3380,6 +3498,22 @@ export type SubscriptionFpredeemTransactionsArgs = {
 };
 
 
+export type SubscriptionBoostDirectorArgs = {
+  id: Scalars['ID'];
+  block?: Maybe<Block_Height>;
+};
+
+
+export type SubscriptionBoostDirectorsArgs = {
+  skip?: Maybe<Scalars['Int']>;
+  first?: Maybe<Scalars['Int']>;
+  orderBy?: Maybe<BoostDirector_OrderBy>;
+  orderDirection?: Maybe<OrderDirection>;
+  where?: Maybe<BoostDirector_Filter>;
+  block?: Maybe<Block_Height>;
+};
+
+
 export type SubscriptionTransactionArgs = {
   id: Scalars['ID'];
   block?: Maybe<Block_Height>;
@@ -3672,7 +3806,7 @@ export type BassetAllFragment = (
 );
 
 export type BoostedSavingsVaultAllFragment = (
-  Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
+  Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply' | 'priceCoeff' | 'boostCoeff'>
   & { accounts: Array<(
     Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
     & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
@@ -3694,7 +3828,7 @@ export type FeederPoolsQuery = { feederPools: Array<(
       Pick<FeederPoolAccount, 'balance' | 'price' | 'lastUpdate' | 'balanceVault' | 'priceVault' | 'lastUpdateVault'>
       & { cumulativeEarned: Pick<Metric, 'exact' | 'decimals'>, cumulativeEarnedVault: Pick<Metric, 'exact' | 'decimals'> }
     )> }
-  )> };
+  )>, otherVaults: Array<BoostedSavingsVaultAllFragment> };
 
 export type FeederTokensQueryVariables = {};
 
@@ -3805,6 +3939,8 @@ export const BoostedSavingsVaultAllFragmentDoc = gql`
   stakingContract
   totalStakingRewards
   totalSupply
+  priceCoeff
+  boostCoeff
   accounts(where: {account: $account}) @include(if: $hasAccount) {
     id
     boostedBalance
@@ -3869,6 +4005,9 @@ export const FeederPoolsDocument = gql`
         decimals
       }
     }
+  }
+  otherVaults: boostedSavingsVaults(where: {feederPool: null}) {
+    ...BoostedSavingsVaultAll
   }
 }
     ${BassetAllFragmentDoc}
