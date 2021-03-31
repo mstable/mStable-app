@@ -320,7 +320,7 @@ const transformFeederPoolsData = (
             failed,
             title: bassets
               .map(b => b.token.symbol)
-              .sort(s => (s === 'mUSD' || s === 'mBTC' ? -1 : 1))
+              .sort(s => (s === masset.token.symbol ? -1 : 1))
               .join('/'),
             undergoingRecol,
             vault: transformBoostedSavingsVault(vault),
