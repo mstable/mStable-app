@@ -279,6 +279,26 @@ export const AssetCard: FC<Props> = ({
   );
 };
 
+export const EarnCard: FC<Omit<Props, 'poolAddress'> & { title: string }> = ({
+  className,
+  title,
+  children,
+}) => {
+  const massetName = useSelectedMassetName();
+  const history = useHistory();
+  return (
+    <Container
+      className={className}
+      title={title}
+      iconType="chevron"
+      onClick={() => history.push(`/${massetName}/earn/`)}
+    >
+      <Background gradientColor="#eba062" />
+      {children}
+    </Container>
+  );
+};
+
 export const CustomAssetCard: FC<
   Omit<Props, 'poolAddress'> & { title: string }
 > = ({ className, title, children }) => (
