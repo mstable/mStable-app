@@ -2877,10 +2877,10 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
-"@mstable/protocol@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@mstable/protocol/-/protocol-2.0.0.tgz#db9c1e51f86edb8693b3861a8e23a9b7aeb5feb5"
-  integrity sha512-JQXKay8JWndg98+NIhTIvRaxGH+5U+9twLRZreIZBO1SgIk04hsbWbelX+jHOIWVOF/UaqBtlHJZ+AFOJ5RSRQ==
+"@mstable/protocol@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@mstable/protocol/-/protocol-2.1.0.tgz#1f708165524870befcfe691dae70dab51ea05b72"
+  integrity sha512-oo3AWDkARLtgu6P2j3l1uAaIDA5Kp4ZCEpdNKO1dh6IAl9wazgc0+1gMluvGY3F8v7PhdjH4gmz+lN0W4467oA==
 
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"

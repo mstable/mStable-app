@@ -15,7 +15,7 @@
     "@ethersproject/logger": "^5.0.9",
     "@ethersproject/providers": "^5.0.23",
     "@habx/apollo-multi-endpoint-link": "^1.1.0",
-    "@mstable/protocol": "2.0.0",
+    "@mstable/protocol": "2.1.0",
     "@rescripts/cli": "0.0.16",
     "@sentry/react": "^5.19.0",
     "@testing-library/jest-dom": "^5.7.0",
