@@ -36,6 +36,7 @@ import { Idle } from '../icons/Idle';
 import { MassetSelector } from '../core/MassetSelector';
 import { LocalStorage } from '../../localStorage';
 import { Navigation } from './Navigation';
+import { useTCModal } from '../../hooks/useTCModal';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -244,7 +245,7 @@ const StatusWarningsRow: FC = () => {
 
   return (
     <StatusWarningsRowContainer>
-      {warnings.map((warning) => (
+      {warnings.map(warning => (
         <StatusWarning key={warning} error={statusWarnings[warning].error}>
           {statusWarnings[warning].label}
         </StatusWarning>
@@ -261,13 +262,22 @@ const WalletButton: FC = () => {
 
   const truncatedAddress = useTruncatedAddress(account);
   const connect = useConnect();
+  const showTCModal = useTCModal();
+
+  const viewedTerms = LocalStorage.get('tcsViewed');
+
+  const handleClick = (): void => {
+    if (connected && account) {
+      return toggleWallet();
+    }
+    if (!viewedTerms) {
+      return showTCModal();
+    }
+    connect();
+  };
 
   return (
-    <WalletButtonBtn
-      title="Account"
-      onClick={connected && account ? toggleWallet : connect}
-      active={accountOpen}
-    >
+    <WalletButtonBtn title="Account" onClick={handleClick} active={accountOpen}>
       {connected ? (
         <>
           <Idle>
@@ -288,7 +298,7 @@ const TransactionsSpinner: FC = () => {
   const pending = useMemo(
     () =>
       Object.values(transactions).some(
-        (tx) =>
+        tx =>
           tx.status === TransactionStatus.Response ||
           tx.status === TransactionStatus.Sent,
       ),

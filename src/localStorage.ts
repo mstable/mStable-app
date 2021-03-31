@@ -28,6 +28,7 @@ export interface StorageV3 extends VersionedStorage<3, StorageV2> {
     user?: boolean;
     active?: boolean;
   };
+  tcsViewed?: boolean;
 }
 
 export type AllStorage = { version: number } & Omit<StorageV0, 'version'> &
