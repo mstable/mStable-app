@@ -301,7 +301,7 @@ export const EarnCard: FC<Omit<Props, 'poolAddress'> & { title: string }> = ({
       className={className}
       title={title}
       iconType="chevron"
-      onClick={() => history.push(`/${massetName}/earn/`)}
+      onClick={() => history.push(`/${massetName}/earn`)}
     >
       <Background gradientColor="#eba062" />
       {children}
