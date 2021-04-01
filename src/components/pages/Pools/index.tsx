@@ -140,7 +140,10 @@ const PoolsContent: FC = () => {
         deprecated: FeederPoolState[];
       }>(
         (prev, current) => {
-          if (current.token.balance?.exact.gt(0)) {
+          if (
+            current.token.balance?.exact.gt(0) ||
+            current.vault.account?.rawBalance.exact.gt(0)
+          ) {
             return { ...prev, user: [...prev.user, current] };
           }
           // TODO determine deprecated somehow
