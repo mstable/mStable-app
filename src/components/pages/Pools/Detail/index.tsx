@@ -199,7 +199,7 @@ const PoolDetailContent: FC = () => {
     () => ({
       Deposit: {
         title: 'Deposit',
-        component: <Deposit exactOnly={isLowLiquidity} />,
+        component: <Deposit isLowLiquidity={isLowLiquidity} />,
       },
       Withdraw: {
         title: 'Withdraw',
