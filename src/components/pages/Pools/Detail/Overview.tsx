@@ -172,6 +172,7 @@ export const Overview: FC = () => {
   const apy = useFeederPoolApy(feederPool.address);
 
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
+  const totalLocked = rewardStreams?.amounts.locked ?? 0;
   const { vault, token } = feederPool;
   const userAmount = token.balance?.simple ?? 0;
   const userStakedAmount = vault.account?.rawBalance.simple ?? 0;
@@ -183,7 +184,7 @@ export const Overview: FC = () => {
     [selection],
   );
 
-  const showLiquidityMessage = !userAmount && !userStakedAmount;
+  const showLiquidityMessage = totalEarned === 0 && totalLocked === 0;
 
   return (
     <Container>
