@@ -9,7 +9,6 @@ import {
 import { useSigner } from '../context/OnboardProvider';
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
 import { truncateAddress } from '../utils/strings';
-import { LegacyMasset, LegacyMasset__factory } from '../typechain';
 
 export const useTruncatedAddress = (address?: string | null): string | null =>
   useMemo(() => (address ? truncateAddress(address) : null), [address]);
@@ -24,22 +23,6 @@ export const useErc20Contract = (
   return useMemo(
     () =>
       signer && address ? ERC20__factory.connect(address, signer) : undefined,
-    [address, signer],
-  );
-};
-
-/**
- * @deprecated
- */
-export const useSelectedLegacyMassetContract = (): LegacyMasset | undefined => {
-  const massetState = useSelectedMassetState();
-  const address = massetState?.address;
-  const signer = useSigner();
-  return useMemo(
-    () =>
-      signer && address
-        ? LegacyMasset__factory.connect(address, signer)
-        : undefined,
     [address, signer],
   );
 };

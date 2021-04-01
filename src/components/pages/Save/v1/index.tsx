@@ -6,16 +6,6 @@ import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
 
 import { BalanceHeader, BalanceRow, BalanceType } from '../BalanceRow';
 import { SaveMigration } from './SaveMigration';
-import { SaveForm } from './SaveForm';
-import { SaveProvider } from './SaveProvider';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-
-const SaveV1Separator = styled.div`
-  margin-top: 5rem;
-  border-top: 1px #eee solid;
-  padding-top: 1rem;
-  font-size: 1.5rem;
-`;
 
 const Container = styled.div`
   display: flex;
@@ -30,10 +20,7 @@ const Container = styled.div`
 
 export const Save: FC = () => {
   const apy = useAvailableSaveApy();
-  const massetState = useSelectedMassetState();
-  const saveV2Exists = !!massetState?.savingsContracts.v2;
   const savingsContractState = useSelectedSavingsContractState();
-  const isCurrent = savingsContractState?.current;
   const saveV1Balance = savingsContractState?.savingsBalance?.balance;
 
   return (
@@ -46,12 +33,6 @@ export const Save: FC = () => {
         warning
       />
       <SaveMigration />
-      {isCurrent && (
-        <SaveProvider>
-          {saveV2Exists && <SaveV1Separator>Save v1</SaveV1Separator>}
-          <SaveForm />
-        </SaveProvider>
-      )}
     </Container>
   );
 };

@@ -5,31 +5,28 @@ import {
   FeederPool__factory,
   Masset__factory,
 } from '@mstable/protocol/types/generated';
-import { usePropose } from '../../../../context/TransactionsProvider';
-import {
-  useSigner,
-  useWalletAddress,
-} from '../../../../context/OnboardProvider';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { MassetState } from '../../../../context/DataProvider/types';
-import { useTokenSubscription } from '../../../../context/TokensProvider';
+import { usePropose } from '../../../context/TransactionsProvider';
+import { useSigner, useWalletAddress } from '../../../context/OnboardProvider';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
+import { MassetState } from '../../../context/DataProvider/types';
+import { useTokenSubscription } from '../../../context/TokensProvider';
 
-import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
-import { useSimpleInput } from '../../../../hooks/useSimpleInput';
-import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import { useBigDecimalInput } from '../../../hooks/useBigDecimalInput';
+import { useSimpleInput } from '../../../hooks/useSimpleInput';
+import { TransactionManifest } from '../../../web3/TransactionManifest';
 
-import { Interfaces } from '../../../../types';
+import { Interfaces } from '../../../types';
 
-import { SendButton } from '../../../forms/SendButton';
-import { AssetInput } from '../../../forms/AssetInput';
-import { Arrow } from '../../../core/Arrow';
-import { ErrorMessage } from '../../../core/ErrorMessage';
-import { ExchangeRate } from '../../../core/ExchangeRate';
-import { TransactionInfo } from '../../../core/TransactionInfo';
-import { useMinimumOutput } from '../../../../hooks/useOutput';
-import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
-import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
-import { BigDecimal } from '../../../../web3/BigDecimal';
+import { SendButton } from '../../forms/SendButton';
+import { AssetInput } from '../../forms/AssetInput';
+import { Arrow } from '../../core/Arrow';
+import { ErrorMessage } from '../../core/ErrorMessage';
+import { ExchangeRate } from '../../core/ExchangeRate';
+import { TransactionInfo } from '../../core/TransactionInfo';
+import { useMinimumOutput } from '../../../hooks/useOutput';
+import { BigDecimalInputValue } from '../../../hooks/useBigDecimalInputs';
+import { useEstimatedOutput } from '../../../hooks/useEstimatedOutput';
+import { BigDecimal } from '../../../web3/BigDecimal';
 
 const formId = 'mint';
 

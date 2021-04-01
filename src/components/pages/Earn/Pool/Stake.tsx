@@ -3,7 +3,6 @@ import React, { FC, useCallback } from 'react';
 import styled from 'styled-components';
 import { Interfaces } from '../../../../types';
 import { TransactionForm } from '../../../forms/TransactionForm';
-import { TokenAmountInput } from '../../../forms/TokenAmountInput';
 import { H3, P } from '../../../core/Typography';
 import {
   useCurrentStakingRewardsContractCtx,
@@ -18,6 +17,7 @@ import { Protip } from '../../../core/Protip';
 import { Tabs } from '../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
+import { AssetInput } from '../../../forms/AssetInput';
 
 const Row = styled.div`
   width: 100%;
@@ -31,7 +31,7 @@ const ExitLink = styled.span`
 
 const Input: FC = () => {
   const {
-    stake: { amount, formValue, error, needsUnlock },
+    stake: { formValue, error, needsUnlock },
     stakingRewardsContract,
   } = useStakingRewardsContractState();
   const {
@@ -55,19 +55,15 @@ const Input: FC = () => {
     <Row>
       <H3>Deposit stake</H3>
       <div>
-        <TokenAmountInput
-          needsUnlock={needsUnlock}
-          amountValue={formValue}
-          error={error}
-          exactDecimals
-          name="stake"
+        <AssetInput
+          formValue={formValue}
+          error={error ? 'error' : undefined}
           spender={address}
-          onChangeAmount={setStakeAmount}
-          onSetMax={setMaxStakeAmount}
-          tokenAddresses={[stakingToken?.address as string]}
-          tokenDisabled
-          tokenValue={stakingToken?.address}
-          approveAmount={amount}
+          needsApprove={needsUnlock}
+          handleSetAmount={setStakeAmount}
+          handleSetMax={setMaxStakeAmount}
+          address={stakingToken?.address as string}
+          addressDisabled
         />
         {metadata && stakingToken?.balance.exact.lte(0) ? (
           <Protip title="Need tokens to stake?">

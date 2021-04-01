@@ -1,6 +1,4 @@
-import { BigNumber } from 'ethers';
-
-import {
+import type {
   ERC20,
   BoostedSavingsVault,
   ISavingsContractV2,
@@ -8,7 +6,7 @@ import {
   FeederPool,
 } from '@mstable/protocol/types/generated';
 
-import {
+import type {
   CurveDeposit,
   MerkleDrop,
   MusdGauge,
@@ -16,14 +14,13 @@ import {
   StakingRewards,
   StakingRewardsWithPlatformToken,
   UniswapRouter02,
-  LegacyMasset,
   SaveWrapper,
   SaveWrapperV2,
   TokenMinter,
   FeederWrapper,
 } from './typechain';
 
-import { BigDecimal } from './web3/BigDecimal';
+import type { BigDecimal } from './web3/BigDecimal';
 
 export type MassetName = 'musd' | 'mbtc';
 
@@ -34,7 +31,6 @@ export interface Purpose {
 
 /* eslint-disable @typescript-eslint/no-shadow */
 export enum Interfaces {
-  LegacyMasset,
   Masset,
   ERC20,
   SavingsContract,
@@ -55,7 +51,6 @@ export enum Interfaces {
 /* eslint-enable @typescript-eslint/no-shadow */
 
 export interface Instances {
-  [Interfaces.LegacyMasset]: LegacyMasset;
   [Interfaces.Masset]: Masset;
   [Interfaces.ERC20]: ERC20;
   [Interfaces.SavingsContract]: ISavingsContractV2;
@@ -89,27 +84,6 @@ export interface Allowances {
 export interface SubscribedToken extends Token {
   balance: BigDecimal;
   allowances: Allowances;
-}
-
-/**
- * @deprecated
- */
-export interface Amount {
-  simple: number | null;
-  exact: BigNumber | null;
-}
-
-/**
- * @deprecated
- */
-export interface TokenQuantityV1 {
-  formValue?: string;
-  amount: Amount;
-  token: {
-    address: string | null;
-    decimals: number | null;
-    symbol: string | null;
-  };
 }
 
 export enum Platforms {

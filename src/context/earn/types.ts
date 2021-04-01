@@ -7,9 +7,8 @@ import {
   StakingRewardsContractType,
 } from '../../graphql/ecosystem';
 import { PoolsQueryResult as BalancerPoolsQueryResult } from '../../graphql/balancer';
-// import { PoolsQueryResult as CurvePoolsQueryResult } from '../../graphql/curve';
 import { PairsQueryResult } from '../../graphql/uniswap';
-import { CurveBalances, CurveJsonData } from './CurveProvider';
+import { CurveBalances } from './CurveProvider';
 
 export type RawPoolData = NonNullable<
   BalancerPoolsQueryResult['data']
@@ -19,13 +18,10 @@ export type RawPairData = NonNullable<
   PairsQueryResult['data']
 >['pairs'][number];
 
-// export type RawCurvePoolsData = CurvePoolsQueryResult['data'];
-
 export interface RawPlatformPools {
   [Platforms.Balancer]: RawPoolData[];
   [Platforms.Uniswap]: RawPairData[];
   [Platforms.Sushi]: RawPairData[];
-  // [Platforms.Curve]: RawCurvePoolsData;
 }
 
 export interface TokenPricesMap {
@@ -42,25 +38,13 @@ export interface RawSyncedEarnData {
   tokenPrices: TokenPricesMap;
   rawPlatformPools: RawPlatformPools;
   merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
-  curveJsonData?: CurveJsonData;
-  // rawCurveData?: RawCurveData;
 }
 
 export interface SyncedEarnData {
   pools: NormalizedPoolsMap;
   tokenPrices: TokenPricesMap;
   merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
-  curveJsonData?: CurveJsonData;
 }
-
-// export interface RawCurveData {
-//   virtualPrice: BigNumber;
-//   inflationRate: BigNumber;
-//   relativeWeight: BigNumber;
-//   workingSupply: BigNumber;
-//   balance0: BigNumber;
-//   balance1: BigNumber;
-// }
 
 export interface RawEarnData {
   curveBalances: CurveBalances;
@@ -89,13 +73,6 @@ export type NormalizedPool = {
     }
   | {}
 );
-
-export interface CurvePool {
-  address: string;
-  platform: Platforms.Curve;
-  onlyStablecoins: true;
-  tokens: {}[];
-}
 
 export interface StakingRewardsContract {
   address: string;

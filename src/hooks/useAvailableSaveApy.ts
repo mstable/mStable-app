@@ -5,7 +5,6 @@ import { useSelectedSavingsContractState } from '../context/SelectedSaveVersionP
 
 import { useBlockTimesForDates } from './useBlockTimesForDates';
 import { useDailyApysForBlockTimes } from './useDailyApysForBlockTimes';
-import { useSelectedMassetState } from '../context/DataProvider/DataProvider';
 
 const now = new Date();
 const timestampsForWeek = eachDayOfInterval({
@@ -20,9 +19,8 @@ export const useAvailableSaveApy = (): {
   v1Apy: number;
   type: 'live' | 'average' | 'inactive' | 'fetching' | 'bootstrapping';
 } => {
-  const massetState = useSelectedMassetState();
+  const v1Apy = 0;
   const savingsContract = useSelectedSavingsContractState();
-  const v1Apy = massetState?.savingsContracts.v1?.dailyAPY ?? 0;
   const liveAPY = savingsContract?.dailyAPY;
 
   const blockTimes = useBlockTimesForDates(timestampsForWeek);

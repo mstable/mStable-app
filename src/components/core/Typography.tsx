@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 import { FontSize, mapSizeToFontSize, Size } from '../../theme';
 
+/**
+ * @deprecated
+ */
 export const P = styled.p<{ center?: boolean; size?: Size }>`
   font-size: ${({ theme, size = theme.size.m }) => mapSizeToFontSize(size)};
   padding-top: 4px;
@@ -13,6 +16,9 @@ export const P = styled.p<{ center?: boolean; size?: Size }>`
   ${({ theme }) => theme.mixins.textAlign}
 `;
 
+/**
+ * @deprecated
+ */
 export const H2 = styled.h2<{ center?: boolean }>`
   font-size: ${FontSize.l};
   font-weight: bold;
@@ -23,6 +29,9 @@ export const H2 = styled.h2<{ center?: boolean }>`
   ${({ theme }) => theme.mixins.textAlign}
 `;
 
+/**
+ * @deprecated
+ */
 export const H3 = styled.h3`
   font-size: ${FontSize.l};
   line-height: 1.5rem;
@@ -30,6 +39,9 @@ export const H3 = styled.h3`
   padding-top: 4px;
 `;
 
+/**
+ * @deprecated
+ */
 export const H4 = styled.h4`
   font-size: 12px;
   text-transform: uppercase;

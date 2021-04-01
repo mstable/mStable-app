@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { Button } from '../core/Button';
 import { H3 } from '../core/Typography';
 import { Address } from '../core/Address';
-import { FlexRow } from '../core/Containers';
 import { PageAction, PageHeader } from '../pages/PageHeader';
 import { Balances } from './Balances';
 import { HistoricTransactions } from './HistoricTransactions';
@@ -26,6 +25,22 @@ const Container = styled.div`
 
   a {
     color: white;
+  }
+
+  > div {
+    > :last-child {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      > * {
+        margin-right: 1rem;
+      }
+      > :last-child {
+        margin-right: 0;
+      }
+    }
   }
 `;
 
@@ -109,11 +124,11 @@ export const Wallet: FC = () => {
               : 'Connect wallet'
           }
         />
-        <FlexRow>
+        <div>
           {connected && address && wallet && (
             <Connected walletLabel={wallet.name as string} account={address} />
           )}
-        </FlexRow>
+        </div>
       </div>
     </Container>
   );
