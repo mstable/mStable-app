@@ -193,9 +193,7 @@ export const MintExact: FC = () => {
       exchangeRate={exchangeRate}
       inputLabel={inputLabel}
       outputAddressOptions={vaultAddressOptions}
-      outputLabel={
-        vaultAddressOptions.find(v => v.address === outputAddress)?.label
-      }
+      outputLabel={feederPool.token.symbol}
       setOutputAddress={setOutputAddress}
       outputAddress={outputAddress}
       setMaxCallbacks={setMaxCallbacks}

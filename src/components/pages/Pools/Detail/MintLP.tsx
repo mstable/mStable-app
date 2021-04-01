@@ -192,7 +192,7 @@ export const MintLP: FC = () => {
         valid={!error}
         handleSend={() => {
           if (!contracts || !walletAddress || !feederPool) return;
-          if (!inputAddress || !inputAmount || !minOutputAmount) return;
+          if (!inputAddress || !inputAmount) return;
 
           if (isStakingLP) {
             return propose<Interfaces.BoostedSavingsVault, 'stake(uint256)'>(
@@ -205,6 +205,8 @@ export const MintLP: FC = () => {
               ),
             );
           }
+
+          if (!minOutputAmount) return;
 
           if (isMintingAndStakingLP) {
             return propose<Interfaces.FeederWrapper, 'mintAndStake'>(
