@@ -18,7 +18,7 @@ const RedeemPathBox = styled.div`
   text-align: center;
   justify-content: center;
   padding: 1rem;
-  border: 1px solid ${({ theme }) => theme.color.blueTransparent};
+  border: 1px dashed ${({ theme }) => theme.color.blueTransparent};
   border-radius: 0.75rem;
   margin-top: 1rem;
 

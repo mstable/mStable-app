@@ -142,6 +142,7 @@ const Clippy = styled.div`
     > button {
       color: ${({ theme }) => theme.color.blue};
       font-weight: 600;
+      font-size: 0.875rem;
     }
   }
 `;
@@ -199,7 +200,7 @@ const PoolDetailContent: FC = () => {
     () => ({
       Deposit: {
         title: 'Deposit',
-        component: <Deposit exactOnly={isLowLiquidity} />,
+        component: <Deposit isLowLiquidity={isLowLiquidity} />,
       },
       Withdraw: {
         title: 'Withdraw',
@@ -227,16 +228,16 @@ const PoolDetailContent: FC = () => {
           <p>
             Feeder Pools offer a way to earn with your assets with{' '}
             <span>low impermanent loss risk.</span>
+          </p>
+          <p>
+            Liquidity providers passively earn swap fees. Deposits to the Vault
+            will earn swap fees in addition to MTA rewards which vest over time.
             {!readMore && (
-              <UnstyledButton onClick={setReadMore}>Read more</UnstyledButton>
+              <UnstyledButton onClick={setReadMore}>Learn more</UnstyledButton>
             )}
           </p>
           {readMore && (
             <>
-              <p>
-                Liquidity providers passively gain yield from swap fees and also
-                earn MTA rewards.
-              </p>
               <p>
                 You can <span>multiply your rewards</span> in mStable pools by
                 staking MTA.

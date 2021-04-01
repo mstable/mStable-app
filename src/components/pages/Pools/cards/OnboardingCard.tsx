@@ -31,7 +31,7 @@ const Container = styled(Card)`
 export const OnboardingCard: FC<Props> = ({ className, type }) => {
   const [clicked, setClicked] = useState<boolean>(false);
 
-  if (!(type === 'user' || type === 'active')) return null;
+  if (type !== 'user') return null;
 
   const title = Title[type];
   const content = Content[type];
@@ -40,8 +40,7 @@ export const OnboardingCard: FC<Props> = ({ className, type }) => {
   const viewedUser = viewedPoolOnboarding?.user;
   const viewedActive = viewedPoolOnboarding?.active;
 
-  const shouldShow =
-    !(viewedUser && type === 'user') && !(viewedActive && type === 'active');
+  const shouldShow = !(viewedUser && type === 'user');
 
   const handleClick = (): void => {
     LocalStorage.set(

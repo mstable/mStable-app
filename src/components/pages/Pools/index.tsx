@@ -11,19 +11,26 @@ import type {
 import { PageAction, PageHeader } from '../PageHeader';
 import { Card } from './cards/Card';
 import { OnboardingCard } from './cards/OnboardingCard';
-import { AssetCard, EarnCard } from './cards/AssetCard';
+import { AssetCard, CustomAssetCard } from './cards/AssetCard';
 import { ViewportWidth } from '../../../theme';
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
 import { PoolType } from './types';
+import {
+  formatMassetName,
+  useSelectedMassetName,
+} from '../../../context/SelectedMassetNameProvider';
+import { MassetName } from '../../../types';
 
 interface CustomAssetCardProps {
-  isCustomAssetCard: true;
+  isCustomAssetCard: boolean;
   key: string;
   title: string;
+  url: string;
+  color: string;
   component: ReactElement;
 }
 
-const DEFAULT_ITEM_COUNT = 3;
+const DEFAULT_ITEM_COUNT = 4;
 
 const EmptyCard = styled(Card)`
   min-height: 6rem;
@@ -114,24 +121,44 @@ const Title: Record<PoolType, string> = {
 
 const sections = [PoolType.User, PoolType.Active, PoolType.Deprecated];
 
-const EarnContent = styled.div`
+const CustomContent = styled.div`
   font-size: 1rem;
   max-width: 30ch;
   text-align: left;
   line-height: 1.5rem;
 `;
 
-const customEarnCard: CustomAssetCardProps = {
+const customEarnCard = (massetName: MassetName): CustomAssetCardProps => ({
   isCustomAssetCard: true,
   key: 'earn',
   title: 'Earn Pools',
+  url: `/${massetName}/earn`,
+  color: '#eba062',
   component: (
-    <EarnContent>Earn pools have moved and are now available here</EarnContent>
+    <CustomContent>
+      Earn pools have moved and are now available here
+    </CustomContent>
   ),
+});
+
+const customPoolCard = (massetName: MassetName): CustomAssetCardProps => {
+  const reversedMasset = massetName === 'musd' ? 'mbtc' : 'musd';
+  const formattedReverse = formatMassetName(reversedMasset);
+  return {
+    isCustomAssetCard: true,
+    key: 'mpool',
+    title: `${formattedReverse} Pools`,
+    url: `/${massetName === 'musd' ? 'mbtc' : 'musd'}/pools`,
+    color: '#eee',
+    component: (
+      <CustomContent>More pools available for {formattedReverse}</CustomContent>
+    ),
+  };
 };
 
 const PoolsContent: FC = () => {
   const { feederPools } = useSelectedMassetState() as MassetState;
+  const massetName = useSelectedMassetName();
   const pools = useMemo(
     () =>
       Object.values(feederPools).reduce<{
@@ -147,15 +174,15 @@ const PoolsContent: FC = () => {
             return { ...prev, user: [...prev.user, current] };
           }
           // TODO determine deprecated somehow
-          return { ...prev, active: [...prev.active, current] };
+          return { ...prev, active: [current, ...prev.active] };
         },
         {
           user: [],
-          active: [customEarnCard],
+          active: [customEarnCard(massetName), customPoolCard(massetName)],
           deprecated: [],
         },
       ),
-    [feederPools],
+    [feederPools, massetName],
   );
 
   const [numPoolsVisible, setNumPoolsVisible] = useState({
@@ -192,12 +219,14 @@ const PoolsContent: FC = () => {
                   .filter((_, i) => i < numPoolsVisible[type])
                   .map(poolOrCard =>
                     (poolOrCard as CustomAssetCardProps).isCustomAssetCard ? (
-                      <EarnCard
+                      <CustomAssetCard
                         key={(poolOrCard as CustomAssetCardProps).key}
                         title={poolOrCard.title}
+                        url={(poolOrCard as CustomAssetCardProps).url}
+                        color={(poolOrCard as CustomAssetCardProps).color}
                       >
                         {(poolOrCard as CustomAssetCardProps).component}
-                      </EarnCard>
+                      </CustomAssetCard>
                     ) : (
                       <AssetCard
                         key={(poolOrCard as FeederPoolState).address}

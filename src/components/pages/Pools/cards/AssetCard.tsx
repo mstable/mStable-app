@@ -51,6 +51,15 @@ const StatsContainer = styled.div<{ isLarge?: boolean }>`
   flex-direction: column;
   flex: 1;
 
+  // hide amount on small card
+  > div:first-child {
+    > div {
+      > span:first-child {
+        display: ${({ isLarge }) => (isLarge ? 'inherit' : 'none')};
+      }
+    }
+  }
+
   > div:not(:last-child) {
     margin-bottom: 0.5rem;
   }
@@ -289,30 +298,19 @@ export const AssetCard: FC<Props> = ({
   );
 };
 
-export const EarnCard: FC<Omit<Props, 'poolAddress'> & { title: string }> = ({
-  className,
-  title,
-  children,
-}) => {
-  const massetName = useSelectedMassetName();
+export const CustomAssetCard: FC<
+  Omit<Props, 'poolAddress'> & { title: string; url: string; color: string }
+> = ({ className, title, children, url, color }) => {
   const history = useHistory();
   return (
     <Container
       className={className}
       title={title}
       iconType="chevron"
-      onClick={() => history.push(`/${massetName}/earn`)}
+      onClick={() => history.push(url)}
     >
-      <Background gradientColor="#eba062" />
+      <Background gradientColor={color} />
       {children}
     </Container>
   );
 };
-
-export const CustomAssetCard: FC<
-  Omit<Props, 'poolAddress'> & { title: string }
-> = ({ className, title, children }) => (
-  <Container className={className} title={title}>
-    {children}
-  </Container>
-);

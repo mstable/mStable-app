@@ -18,29 +18,33 @@ const MintPathBox = styled.div<{ protip?: boolean }>`
   justify-content: center;
   padding: 1rem;
   border: 1px dashed
-    ${({ theme, protip }) => (protip ? theme.color.gold : theme.color.accent)};
+    ${({ theme, protip }) =>
+      protip ? theme.color.gold : theme.color.blueTransparent};
   border-radius: 0.75rem;
   margin-top: 1rem;
 
-  button {
+  ${UnstyledButton} {
     font-size: 1rem;
+    font-weight: 600;
+    color: ${({ theme }) => theme.color.blue};
 
     ${({ protip, theme }) => ({
-      fontWeight: protip ? 500 : 600,
-      color: `${protip ? theme.color.offYellow : theme.color.grey}`,
+      color: `${protip ? theme.color.offYellow : theme.color.blue}`,
     })}
 
     :hover {
       ${({ protip, theme }) => ({
-        color: `${!protip && theme.color.grey}`,
+        color: `${!protip && theme.color.gold}`,
         cursor: `${protip ? `not-allowed` : 'pointer'}`,
       })};
     }
   }
 `;
 
-export const Deposit: FC<{ exactOnly?: boolean }> = ({ exactOnly = false }) => {
-  const [isMintExact, setMintExact] = useToggle(exactOnly);
+export const Deposit: FC<{ isLowLiquidity?: boolean }> = ({
+  isLowLiquidity = false,
+}) => {
+  const [isMintExact, setMintExact] = useToggle(isLowLiquidity);
 
   const feederPool = useSelectedFeederPoolState();
   const assets = useSelectedFeederPoolAssets();
@@ -48,8 +52,8 @@ export const Deposit: FC<{ exactOnly?: boolean }> = ({ exactOnly = false }) => {
   return (
     <MultiAssetExchangeProvider assets={assets}>
       {isMintExact ? <MintExact /> : <MintLP />}
-      <MintPathBox protip={exactOnly}>
-        {exactOnly ? (
+      <MintPathBox protip={isLowLiquidity}>
+        {isLowLiquidity ? (
           <UnstyledButton disabled>
             Single-asset deposits are disabled due to low liquidity
           </UnstyledButton>
