@@ -183,7 +183,7 @@ export const Overview: FC = () => {
     [selection],
   );
 
-  const showLiquidityMessage = !userAmount && !userStakedAmount;
+  const showLiquidityMessage = totalEarned === 0;
 
   return (
     <Container>
