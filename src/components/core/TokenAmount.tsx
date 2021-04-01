@@ -35,6 +35,9 @@ const Container = styled.div<{ size: Size }>`
   }
 `;
 
+/**
+ * @deprecated
+ */
 export const TokenAmount: FC<Props> = ({
   address,
   amount,

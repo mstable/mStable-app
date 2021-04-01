@@ -31,7 +31,7 @@ const EXPIRED_POOLS: Set<string> = new Set([
 const currentTime = BigNumber.from(Math.floor(Date.now() / 1e3));
 
 const getStakingRewardsContractsMap = (
-  { pools, tokenPrices, curveJsonData }: SyncedEarnData,
+  { pools, tokenPrices }: SyncedEarnData,
   { rawStakingRewardsContracts, curveBalances }: RawEarnData,
 ): StakingRewardsContractsMap => {
   const curvePool = Object.values(pools).find(
@@ -271,10 +271,6 @@ const getStakingRewardsContractsMap = (
           apy: {
             value,
             waitingForData: !rewardPerTokenStored,
-            yieldApy:
-              isCurve && curveJsonData?.yieldApy?.toString
-                ? BigDecimal.maybeParse(curveJsonData.yieldApy.toString(), 18)
-                : undefined,
           },
         };
 

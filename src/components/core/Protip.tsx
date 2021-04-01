@@ -28,6 +28,9 @@ const Container = styled.div`
   }
 `;
 
+/**
+ * @deprecated
+ */
 export const Protip: FC<Props> = ({
   className,
   children,

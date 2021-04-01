@@ -8,19 +8,6 @@ import {
 } from '../pages/Earn/StakingRewardsContractProvider';
 import { Tooltip } from '../core/ReactTooltip';
 
-// TODO use props
-// eslint-disable-next-line
-interface Props {
-  name: string;
-  error?: string;
-  errorLabel?: string;
-  amountValue?: string;
-  amountDisabled?: boolean;
-  exactDecimals?: boolean;
-  onChangeAmount?(formValue?: string): void;
-  onSetMax?(): void;
-}
-
 const Error = styled.div`
   color: ${({ theme }) => theme.color.red};
   font-size: ${({ theme }) => theme.fontSize.s};

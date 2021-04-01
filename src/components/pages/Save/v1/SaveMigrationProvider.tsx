@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { BigNumber, constants } from 'ethers';
+import { ERC20__factory } from '@mstable/protocol/types/generated';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useTokenAllowance } from '../../../../context/TokensProvider';
@@ -17,10 +18,7 @@ import {
   useTransactionsDispatch,
   useTransactionsState,
 } from '../../../../context/TransactionsProvider';
-import {
-  useSelectedLegacyMassetContract,
-  useSelectedSaveV1Contract,
-} from '../../../../web3/hooks';
+import { useSelectedSaveV1Contract } from '../../../../web3/hooks';
 import {
   TransactionManifest,
   TransactionStatus,
@@ -30,6 +28,7 @@ import { StepProps } from '../../../core/Step';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
 import { MassetModal } from '../v2/MassetModal';
 import { SaveModalHeader } from '../v2/SaveModalHeader';
+import { useSigner } from '../../../../context/OnboardProvider';
 
 const isTxPending = (
   transactions: Record<string, Transaction>,
@@ -55,17 +54,18 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const [withdrawId, setWithdrawId] = useState<string | undefined>();
   const [approveId, setApproveId] = useState<string | undefined>();
 
+  const signer = useSigner();
   const { propose } = useTransactionsDispatch();
   const transactions = useTransactionsState();
   const massetState = useSelectedMassetState();
+  const massetAddress = massetState?.address;
   const massetSymbol = massetState?.token.symbol;
   const v1SavingsBalance = massetState?.savingsContracts.v1?.savingsBalance;
   const v2Address = massetState?.savingsContracts.v2?.address;
 
   const savingsContractV1 = useSelectedSaveV1Contract();
-  const massetContract = useSelectedLegacyMassetContract();
 
-  const allowance = useTokenAllowance(massetState?.address, v2Address);
+  const allowance = useTokenAllowance(massetAddress, v2Address);
 
   const [showDepositModal] = useModalComponent({
     title: <SaveModalHeader masset="musd" type="masset" />,
@@ -105,7 +105,8 @@ export const SaveMigrationProvider: FC = ({ children }) => {
         v2Address &&
         massetSymbol &&
         v1SavingsBalance?.balance &&
-        massetContract
+        signer &&
+        massetAddress
       )
     ) {
       return;
@@ -113,7 +114,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
 
     const body = `transfer of ${massetSymbol}`;
     const tx = new TransactionManifest<Interfaces.ERC20, 'approve'>(
-      massetContract as never,
+      ERC20__factory.connect(massetAddress, signer),
       'approve',
       [
         v2Address,
@@ -132,10 +133,11 @@ export const SaveMigrationProvider: FC = ({ children }) => {
     propose(tx);
   }, [
     approveInfinite,
-    massetContract,
+    massetAddress,
     massetSymbol,
     propose,
-    v1SavingsBalance,
+    signer,
+    v1SavingsBalance?.balance,
     v2Address,
   ]);
 

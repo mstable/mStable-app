@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAccount } from '../UserProvider';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { usePoolsQuery as useBalancerPoolsQuery } from '../../graphql/balancer';
-// import { usePoolsQuery as useCurvePoolsQuery } from '../../graphql/curve';
 import { useStakingRewardsContractsQuery } from '../../graphql/ecosystem';
 import { usePairsQuery } from '../../graphql/uniswap';
 import { useSushiPairsQuery } from '../../graphql/sushi';
@@ -25,7 +24,6 @@ import {
 } from '../../utils/fetchCoingeckoPrices';
 import { STABLECOIN_SYMBOLS, ADDRESSES } from '../../constants';
 import { useMerkleDrops } from './useMerkleDrops';
-import { CurveJsonData, useCurveJsonData } from './CurveProvider';
 
 const getUniqueTokens = (
   rawStakingContractsData: RawStakingRewardsContracts,
@@ -220,38 +218,23 @@ const normalizeSushiPool = ({
   };
 };
 
-const normalizeCurvePools = (
-  curveJsonData?: CurveJsonData,
-): NormalizedPool[] => {
-  const {
-    stats: { balances, prices, supply },
-  } = curveJsonData || { stats: {} };
-
+const normalizeCurvePools = (): NormalizedPool[] => {
   return [
     {
       address: ADDRESSES.CURVE.MUSD_LP_TOKEN,
       platform: Platforms.Curve,
-      totalSupply: supply?.value ? new BigDecimal(supply.value, 18) : undefined,
       tokens: [
         {
           address: ADDRESSES.CURVE.MUSD_TOKEN,
           symbol: 'mUSD',
           decimals: 18,
-          liquidity: balances?.[0]?.value
-            ? new BigDecimal(balances[0].value, 18)
-            : undefined,
-          price: BigDecimal.maybeParse(prices?.['0-2']?.[0]?.value, 18),
-          totalSupply: new BigDecimal(0, 18),
+          totalSupply: BigDecimal.ZERO,
         },
         {
           address: ADDRESSES.CURVE['3POOL_TOKEN'],
           symbol: '3POOL',
           decimals: 18,
-          liquidity: balances?.[1]?.value
-            ? new BigDecimal(balances[1].value, 18)
-            : undefined,
-          price: BigDecimal.maybeParse(prices?.['0-2']?.[1]?.value, 18),
-          totalSupply: new BigDecimal(0, 18),
+          totalSupply: BigDecimal.ZERO,
         },
       ],
       onlyStablecoins: true,
@@ -369,10 +352,9 @@ const getPools = ({
     [Platforms.Uniswap]: uniswap,
     [Platforms.Sushi]: sushi,
   },
-  curveJsonData,
   tokenPrices,
 }: RawSyncedEarnData): NormalizedPoolsMap => {
-  const curvePools = normalizeCurvePools(curveJsonData);
+  const curvePools = normalizeCurvePools();
 
   const pools = [
     ...balancer.map(normalizeBalancerPool),
@@ -419,14 +401,13 @@ const getStakingTokenPrices = (
 const transformRawSyncedEarnData = (
   rawSyncedEarnData: RawSyncedEarnData,
 ): SyncedEarnData => {
-  const { tokenPrices, curveJsonData, merkleDrops } = rawSyncedEarnData;
+  const { tokenPrices, merkleDrops } = rawSyncedEarnData;
 
   const pools = getPools(rawSyncedEarnData);
 
   const stakingTokensPrices = getStakingTokenPrices(pools);
 
   return {
-    curveJsonData,
     pools,
     tokenPrices: {
       ...tokenPrices,
@@ -450,8 +431,6 @@ export const useSyncedEarnData = (): SyncedEarnData => {
     stakingRewardsContractsQuery.data,
   );
 
-  const curveJsonData = useCurveJsonData();
-
   const tokenPrices = useTokenPrices(
     stakingRewardsContractsQuery.data,
     rawPlatformPools,
@@ -463,8 +442,7 @@ export const useSyncedEarnData = (): SyncedEarnData => {
         rawPlatformPools,
         tokenPrices,
         merkleDrops,
-        curveJsonData,
       }),
-    [rawPlatformPools, tokenPrices, merkleDrops, curveJsonData],
+    [rawPlatformPools, tokenPrices, merkleDrops],
   );
 };

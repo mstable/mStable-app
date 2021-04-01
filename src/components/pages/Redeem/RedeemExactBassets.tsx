@@ -1,34 +1,31 @@
 import React, { FC, useEffect, useMemo } from 'react';
 
 import { Masset__factory } from '@mstable/protocol/types/generated';
-import { usePropose } from '../../../../context/TransactionsProvider';
-import {
-  useSigner,
-  useWalletAddress,
-} from '../../../../context/OnboardProvider';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { MassetState } from '../../../../context/DataProvider/types';
+import { usePropose } from '../../../context/TransactionsProvider';
+import { useSigner, useWalletAddress } from '../../../context/OnboardProvider';
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
+import { MassetState } from '../../../context/DataProvider/types';
 import {
   useTokens,
   useTokenSubscription,
-} from '../../../../context/TokensProvider';
+} from '../../../context/TokensProvider';
 
-import { Interfaces } from '../../../../types';
+import { Interfaces } from '../../../types';
 
-import { BigDecimal } from '../../../../web3/BigDecimal';
-import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import { BigDecimal } from '../../../web3/BigDecimal';
+import { TransactionManifest } from '../../../web3/TransactionManifest';
 
-import { SendButton } from '../../../forms/SendButton';
+import { SendButton } from '../../forms/SendButton';
 import {
   MultiAssetExchangeProvider,
   OneToManyAssetExchange,
   useMultiAssetExchangeDispatch,
   useMultiAssetExchangeState,
-} from '../../../forms/MultiAssetExchange';
-import { useEstimatedRedeemOutput } from '../../../../hooks/useEstimatedRedeemOutput';
-import { useMaximumOutput } from '../../../../hooks/useOutput';
-import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
-import { useExchangeRateForMassetInputs } from '../../../../hooks/useMassetExchangeRate';
+} from '../../forms/MultiAssetExchange';
+import { useEstimatedRedeemOutput } from '../../../hooks/useEstimatedRedeemOutput';
+import { useMaximumOutput } from '../../../hooks/useOutput';
+import { useSelectedMassetPrice } from '../../../hooks/usePrice';
+import { useExchangeRateForMassetInputs } from '../../../hooks/useMassetExchangeRate';
 
 const formId = 'redeem';
 

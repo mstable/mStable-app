@@ -102,9 +102,7 @@ const ExitFormConfirm: FC = () => {
         ) : (
           <P>No staking balance.</P>
         )
-      ) : (
-        <ThemedSkeleton />
-      )}
+      ) : null}
     </div>
   );
 };

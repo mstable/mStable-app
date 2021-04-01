@@ -6,8 +6,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { parse, LosslessNumber } from 'lossless-json';
-import { DeepPartial } from 'utility-types';
 
 import {
   CurveDeposit__factory,
@@ -46,37 +44,10 @@ export interface CurveBalances {
   stakingBalance?: BigDecimal;
 }
 
-export interface CurveJsonData {
-  yieldApy: LosslessNumber;
-  stats: DeepPartial<{
-    A: LosslessNumber;
-    fee: LosslessNumber;
-    admin_fee: LosslessNumber;
-    supply: LosslessNumber;
-    virtual_price: LosslessNumber;
-    timestamp: LosslessNumber;
-    balances: [LosslessNumber, LosslessNumber];
-    rates: [LosslessNumber, LosslessNumber];
-    underlying_rate: LosslessNumber;
-    volume: {
-      '0-2': [LosslessNumber, LosslessNumber];
-      '0-3': [LosslessNumber, LosslessNumber];
-    };
-    prices: {
-      '0-2': [LosslessNumber, LosslessNumber, LosslessNumber, LosslessNumber];
-      '0-3': [LosslessNumber, LosslessNumber, LosslessNumber, LosslessNumber];
-    };
-  }>;
-}
-
 const contractsCtx = createContext<CurveContracts>({});
 const balancesCtx = createContext<CurveBalances>({});
-const jsonDataCtx = createContext<CurveJsonData | undefined>(undefined);
 
 export const useCurveContracts = (): CurveContracts => useContext(contractsCtx);
-
-export const useCurveJsonData = (): CurveJsonData | undefined =>
-  useContext(jsonDataCtx);
 
 export const useCurveBalances = (): CurveBalances => useContext(balancesCtx);
 
@@ -153,52 +124,10 @@ const CurveBalancesProvider: FC = ({ children }) => {
   );
 };
 
-const CurveJsonDataProvider: FC = ({ children }) => {
-  const [jsonData, setJsonData] = useState<CurveJsonData>();
-
-  useEffect(() => {
-    Promise.all([
-      fetch('https://stats.curve.fi/raw-stats/apys.json'),
-      fetch('https://stats.curve.fi/raw-stats/musd-1440m.json'),
-    ])
-      .then(([apyRes, statsRes]) => {
-        Promise.all([apyRes.text(), statsRes.text()]).then(([_apy, _stats]) => {
-          const apyJson = parse(_apy);
-          const statsJson: CurveJsonData['stats'][] = parse(_stats);
-          const yieldApy = apyJson.apy.day.musd;
-
-          // Find last valid entry
-          const validStats = statsJson.filter(
-            item =>
-              item &&
-              item.prices?.['0-2'] &&
-              item.balances?.[0] &&
-              item.balances[1],
-          );
-          const stats =
-            validStats.length > 1
-              ? validStats[validStats.length - 1]
-              : validStats[0];
-
-          setJsonData({ yieldApy, stats });
-        });
-      })
-      .catch(error => {
-        console.error(`Error retrieving Curve data`, error);
-      });
-  }, [setJsonData]);
-
-  return (
-    <jsonDataCtx.Provider value={jsonData}>{children}</jsonDataCtx.Provider>
-  );
-};
-
 export const CurveProvider: FC = ({ children }) => {
   return (
     <CurveContractsProvider>
-      <CurveBalancesProvider>
-        <CurveJsonDataProvider>{children}</CurveJsonDataProvider>
-      </CurveBalancesProvider>
+      <CurveBalancesProvider>{children}</CurveBalancesProvider>
     </CurveContractsProvider>
   );
 };
