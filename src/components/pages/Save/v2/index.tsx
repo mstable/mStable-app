@@ -136,15 +136,15 @@ export const Save: FC = () => {
             masset={massetName}
           >
             {vaultBalance || hasRewards ? (
-              <Boost vault={vault} isImusd />
+              <Boost vault={vault} isImusd>
+                <SavingsVaultRewardsProvider>
+                  <VaultRewards />
+                </SavingsVaultRewardsProvider>
+              </Boost>
             ) : (
               <PotentialBoost>
                 {isCalculatorVisible ? (
-                  <BoostCalculator vault={vault} isImusd>
-                    <SavingsVaultRewardsProvider>
-                      <VaultRewards />
-                    </SavingsVaultRewardsProvider>
-                  </BoostCalculator>
+                  <BoostCalculator vault={vault} isImusd />
                 ) : (
                   <Button scale={0.875} onClick={toggleCalculatorVisible}>
                     Calculate rewards

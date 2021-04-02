@@ -246,7 +246,6 @@ const RewardValue: FC<{
 );
 
 export const UserRewards: FC = () => {
-  // const [isShowingGraph, toggleIsShowingGraph] = useToggle(false);
   const rewardStreams = useRewardStreams();
   const isMasquerading = useIsMasquerading();
   const [isClaiming, toggleIsClaiming] = useToggle(false);
@@ -334,6 +333,3 @@ export const UserRewards: FC = () => {
     </RewardsCard>
   );
 };
-// <Button onClick={toggleIsShowingGraph}>
-//   {isShowingGraph ? 'Amounts' : 'Streams'}
-// </Button>
