@@ -33,6 +33,8 @@ export interface Props {
   isFetching?: boolean;
   inputDecimals?: number;
   outputDecimals?: number;
+  inputLabel?: string;
+  outputLabel?: string;
 }
 
 const Container = styled.div`
@@ -63,6 +65,8 @@ export const AssetExchange: FC<Props> = ({
   isFetching,
   inputDecimals,
   outputDecimals,
+  inputLabel,
+  outputLabel,
 }) => {
   const inputToken =
     useTokenSubscription(inputAddress) ??
@@ -96,6 +100,8 @@ export const AssetExchange: FC<Props> = ({
           exchangeRate={exchangeRate}
           outputToken={outputToken}
           inputToken={inputToken}
+          outputLabel={outputLabel}
+          inputLabel={inputLabel}
         />
       </div>
       <AssetInput

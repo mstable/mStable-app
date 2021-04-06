@@ -34,6 +34,7 @@ import CREAM, { ReactComponent as CreamSvg } from './tokens/Cream.svg';
 import FAKE, { ReactComponent as FakeSvg } from './tokens/FAKE.svg';
 import HBTC, { ReactComponent as HbtcSvg } from './tokens/HBTC.svg';
 import TBTC, { ReactComponent as TbtcSvg } from './tokens/tBTC.svg';
+import VAULT, { ReactComponent as VaultSvg } from './tokens/vault.svg';
 import IMBTCMTA, {
   ReactComponent as ImbtcmtaSvg,
 } from './tokens/imbtc-mta.svg';
@@ -85,6 +86,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   TBTC,
   FPMUSD: MUSD,
   FPMBTC: MUSD,
+  VAULT,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -124,6 +126,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   GUSD: GusdSvg as SvgComponent,
   HBTC: HbtcSvg as SvgComponent,
   TBTC: TbtcSvg as SvgComponent,
+  VAULT: VaultSvg as SvgComponent,
 };
 
 const IconContainer = styled.div<{ isLarge: boolean }>`

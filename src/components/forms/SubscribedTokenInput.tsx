@@ -19,8 +19,12 @@ export const SubscribedTokenInput: FC<Props> = ({
   onChange,
   disabled = false,
 }) => {
-  // Subscribe to the selected token
-  const token = useTokenSubscription(value);
+  // Subscribe to the selected token or use custom
+  const subscribedToken = useTokenSubscription(value);
+  const token =
+    (_options.filter(
+      option => typeof option !== 'string' && option.custom,
+    ) as AddressOption[])?.find(v => v.address === value) ?? subscribedToken;
 
   // Subscribe the other options
   const tokens = useTokens(
@@ -39,7 +43,10 @@ export const SubscribedTokenInput: FC<Props> = ({
         token,
         ...tokens.filter(t => t.address !== token?.address),
         ..._options.filter(
-          option => typeof option !== 'string' && option.custom,
+          option =>
+            typeof option !== 'string' &&
+            option.custom &&
+            option.label !== (token as AddressOption)?.label,
         ),
       ].filter(Boolean) as AddressOption[],
     [_options, token, tokens],

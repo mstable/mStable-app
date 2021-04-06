@@ -70,7 +70,16 @@ export const useFPAssetAddressOptions = (
       masset.token,
       fasset.token,
       ...Object.values(bAssets).map(b => b.token),
-      ...(includeFpToken ? [token] : []),
+      ...(includeFpToken
+        ? [
+            {
+              ...token,
+              custom: true,
+              label: `Pool`,
+              tip: `${token.symbol} Pool`,
+            },
+          ]
+        : []),
     ],
     [bAssets, fasset.token, includeFpToken, masset.token, token],
   );
@@ -82,12 +91,19 @@ export const useFPVaultAddressOptions = (): AddressOption[] => {
     () => [
       {
         custom: true,
-        label: `${token.symbol} Vault`,
+        label: `Vault`,
         address: vault.address,
-        symbol: token.symbol,
+        symbol: `vault`,
         balance: vault.account?.rawBalance,
+        tip: `${token.symbol} Pool Vault`,
       },
-      token,
+      {
+        address: token.address,
+        label: `Pool`,
+        custom: true,
+        symbol: token.symbol,
+        tip: `${token.symbol} Pool`,
+      },
     ],
     [vault, token],
   );

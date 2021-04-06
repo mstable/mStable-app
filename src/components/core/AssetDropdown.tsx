@@ -8,6 +8,7 @@ import { UnstyledButton } from './Button';
 import { AddressOption } from '../../types';
 import { ThemedSkeleton } from './ThemedSkeleton';
 import { Chevron } from './Chevron';
+import { Tooltip } from './ReactTooltip';
 
 interface Props {
   defaultAddress?: string;
@@ -43,13 +44,24 @@ const Balance = styled.span`
   color: ${({ theme }) => theme.color.bodyAccent};
 `;
 
+const Tip = styled(Tooltip)`
+  > svg {
+    margin-left: 0.5rem;
+  }
+`;
+
 const TokenDetails = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
 
-  > span:first-child {
-    font-weight: bold;
+  > div {
+    display: flex;
+    align-items: center;
+
+    span {
+      font-weight: bold;
+    }
   }
 `;
 
@@ -103,6 +115,7 @@ const OptionList = styled.div`
   border: 1px solid ${({ theme }) => theme.color.accent};
   min-width: 9.5rem;
   z-index: 2;
+  width: 100%;
 `;
 
 const Container = styled.div<{
@@ -135,7 +148,7 @@ const Option: FC<{
       </OptionContainer>
     );
 
-  const { symbol, label, balance } = option;
+  const { symbol, label, balance, tip } = option;
 
   const symbols = symbol?.split('/') ?? [];
 
@@ -152,7 +165,10 @@ const Option: FC<{
         <TokenPair symbols={symbols} />
       )}
       <TokenDetails>
-        <span>{label ?? symbol}</span>
+        <div>
+          <span>{label ?? symbol}</span>
+          {tip && <Tip tip={tip} />}
+        </div>
         {(balance?.simple ?? 0) > 0 && (
           <Balance>{balance?.format(2, false)}</Balance>
         )}

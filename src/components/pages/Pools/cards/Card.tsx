@@ -10,6 +10,7 @@ interface Props {
   title?: ReactElement | string;
   iconType?: 'checkmark' | 'chevron';
   onClick?: () => void;
+  gradientColor?: string;
 }
 
 const Icon = styled.div<{ isChevron?: boolean }>`
@@ -28,6 +29,20 @@ const Icon = styled.div<{ isChevron?: boolean }>`
       fill: ${({ theme }) => theme.color.body};
     }
   }
+`;
+
+const Background = styled.div<{ gradientColor?: string }>`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: ${({ gradientColor, theme }) =>
+    gradientColor
+      ? `linear-gradient(180deg, ${gradientColor} 0%, ${theme.color.background} 100%);`
+      : `none`};
+  border-radius: 1rem;
+  opacity: 0.33;
 `;
 
 const ContainerStyle = css`
@@ -95,16 +110,24 @@ const CardContent: FC<Props> = props => {
   );
 };
 
-export const Card: FC<Props> = props => {
-  const { className, onClick, children, title, iconType } = props;
+export const Card: FC<Props> = ({
+  className,
+  onClick,
+  children,
+  title,
+  iconType,
+  gradientColor,
+}) => {
   return onClick ? (
     <ContainerButton className={className} onClick={onClick}>
+      {gradientColor && <Background gradientColor={gradientColor} />}
       <CardContent title={title} iconType={iconType}>
         {children}
       </CardContent>
     </ContainerButton>
   ) : (
     <Container className={className}>
+      {gradientColor && <Background gradientColor={gradientColor} />}
       <CardContent title={title} iconType={iconType}>
         {children}
       </CardContent>

@@ -174,7 +174,11 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
         </>
       )}
       <RewardsAPY isLarge={isLarge}>
-        <p>Rewards APY</p>
+        <p>
+          <Tooltip tip="33% of earned MTA rewards are claimable immediately. The remaining rewards are streamed linearly for 26 weeks">
+            Rewards APY
+          </Tooltip>
+        </p>
         <div>
           <div>
             {feederPoolApy.value && <CountUp end={feederPoolApy.value.base} />}%
@@ -200,21 +204,6 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
   );
 };
 
-const Background = styled.div<{ gradientColor?: string }>`
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: ${({ gradientColor }) =>
-    gradientColor
-      ? `linear-gradient(180deg, ${gradientColor} 0%, transparent 100%);`
-      : `none`};
-  border-radius: 1rem;
-  opacity: 0.33;
-  z-index: -1;
-`;
-
 const Container = styled(Card)`
   position: relative;
 
@@ -229,6 +218,7 @@ const Container = styled(Card)`
 
   > div {
     width: 100%;
+    z-index: 1;
   }
 `;
 
@@ -255,6 +245,7 @@ const AssetCardContent: FC<Props> = ({
 
   return (
     <Container
+      gradientColor={!deprecated ? gradientColor : undefined}
       className={className}
       title={
         <div>
@@ -271,7 +262,6 @@ const AssetCardContent: FC<Props> = ({
       iconType={(!isLarge && 'chevron') || undefined}
       onClick={(!isLarge && handleClick) || undefined}
     >
-      <Background gradientColor={!deprecated ? gradientColor : undefined} />
       {!deprecated && <PoolStats address={poolAddress} isLarge={isLarge} />}
     </Container>
   );
@@ -308,8 +298,8 @@ export const CustomAssetCard: FC<
       title={title}
       iconType="chevron"
       onClick={() => history.push(url)}
+      gradientColor={color}
     >
-      <Background gradientColor={color} />
       {children}
     </Container>
   );

@@ -113,4 +113,5 @@ export interface AddressOption {
   symbol?: string;
   label?: string;
   custom?: boolean;
+  tip?: string;
 }
