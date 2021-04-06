@@ -182,6 +182,7 @@ export const MintLP: FC = () => {
       }
       isFetching={estimatedOutputAmount.fetching}
       inputDecimals={inputAmount?.decimals}
+      outputLabel={feederPool.token.symbol}
     >
       <SendButton
         title={error ?? title}

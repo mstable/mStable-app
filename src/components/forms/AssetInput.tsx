@@ -72,7 +72,6 @@ const TokenContainer = styled.div`
   justify-content: flex-end;
 
   > div {
-    margin-right: 1rem;
   }
 `;
 
