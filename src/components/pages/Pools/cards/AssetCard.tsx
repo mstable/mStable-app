@@ -174,7 +174,11 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
         </>
       )}
       <RewardsAPY isLarge={isLarge}>
-        <p>Rewards APY</p>
+        <p>
+          <Tooltip tip="33% of earned rewards are claimable immediately. The remaining tokens are streamed linearly for 26 weeks">
+            Rewards APY
+          </Tooltip>
+        </p>
         <div>
           <div>
             {feederPoolApy.value && <CountUp end={feederPoolApy.value.base} />}%

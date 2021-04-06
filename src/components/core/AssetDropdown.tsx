@@ -44,13 +44,24 @@ const Balance = styled.span`
   color: ${({ theme }) => theme.color.bodyAccent};
 `;
 
+const Tip = styled(Tooltip)`
+  > svg {
+    margin-left: 0.5rem;
+  }
+`;
+
 const TokenDetails = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
 
-  > span:first-child {
-    font-weight: bold;
+  > div {
+    display: flex;
+    align-items: center;
+
+    span {
+      font-weight: bold;
+    }
   }
 `;
 
@@ -153,20 +164,12 @@ const Option: FC<{
         <TokenPair symbols={symbols} />
       )}
       <TokenDetails>
-        {tip ? (
-          <Tooltip tip={tip}>
-            <span>{label ?? symbol}</span>
-            {(balance?.simple ?? 0) > 0 && (
-              <Balance>{balance?.format(2, false)}</Balance>
-            )}
-          </Tooltip>
-        ) : (
-          <>
-            <span>{label ?? symbol}</span>
-            {(balance?.simple ?? 0) > 0 && (
-              <Balance>{balance?.format(2, false)}</Balance>
-            )}
-          </>
+        <div>
+          <span>{label ?? symbol}</span>
+          {tip && <Tip tip={tip} />}
+        </div>
+        {(balance?.simple ?? 0) > 0 && (
+          <Balance>{balance?.format(2, false)}</Balance>
         )}
       </TokenDetails>
       {dropdownEnabled && (
