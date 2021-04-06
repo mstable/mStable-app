@@ -175,7 +175,7 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({
       )}
       <RewardsAPY isLarge={isLarge}>
         <p>
-          <Tooltip tip="33% of earned rewards are claimable immediately. The remaining tokens are streamed linearly for 26 weeks">
+          <Tooltip tip="33% of earned MTA rewards are claimable immediately. The remaining rewards are streamed linearly for 26 weeks">
             Rewards APY
           </Tooltip>
         </p>
