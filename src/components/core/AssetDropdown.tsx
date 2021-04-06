@@ -8,6 +8,7 @@ import { UnstyledButton } from './Button';
 import { AddressOption } from '../../types';
 import { ThemedSkeleton } from './ThemedSkeleton';
 import { Chevron } from './Chevron';
+import { Tooltip } from './ReactTooltip';
 
 interface Props {
   defaultAddress?: string;
@@ -135,7 +136,7 @@ const Option: FC<{
       </OptionContainer>
     );
 
-  const { symbol, label, balance } = option;
+  const { symbol, label, balance, tip } = option;
 
   const symbols = symbol?.split('/') ?? [];
 
@@ -152,9 +153,20 @@ const Option: FC<{
         <TokenPair symbols={symbols} />
       )}
       <TokenDetails>
-        <span>{label ?? symbol}</span>
-        {(balance?.simple ?? 0) > 0 && (
-          <Balance>{balance?.format(2, false)}</Balance>
+        {tip ? (
+          <Tooltip tip={tip}>
+            <span>{label ?? symbol}</span>
+            {(balance?.simple ?? 0) > 0 && (
+              <Balance>{balance?.format(2, false)}</Balance>
+            )}
+          </Tooltip>
+        ) : (
+          <>
+            <span>{label ?? symbol}</span>
+            {(balance?.simple ?? 0) > 0 && (
+              <Balance>{balance?.format(2, false)}</Balance>
+            )}
+          </>
         )}
       </TokenDetails>
       {dropdownEnabled && (

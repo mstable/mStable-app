@@ -70,6 +70,11 @@ export const RedeemLP: FC = () => {
         ),
       );
       setOutputAddress(feederPool.fasset.address);
+    } else if (address === feederPool.vault.address) {
+      setOutputOptions(
+        defaultOutputOptions.filter(v => v.address === feederPool.address),
+      );
+      setOutputAddress(feederPool.address);
     } else {
       setInputOptions(defaultInputOptions);
     }
@@ -84,6 +89,9 @@ export const RedeemLP: FC = () => {
             v.address !== feederPool.vault.address ||
             v.address !== feederPool.address,
         ),
+      );
+      setOutputOptions(
+        outputOptions.filter(v => v.address === feederPool.address),
       );
       setInputAddress(feederPool.vault.address);
     } else {
