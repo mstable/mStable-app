@@ -115,6 +115,7 @@ const OptionList = styled.div`
   border: 1px solid ${({ theme }) => theme.color.accent};
   min-width: 9.5rem;
   z-index: 2;
+  width: 100%;
 `;
 
 const Container = styled.div<{
