@@ -3,6 +3,8 @@ import { useToggle } from 'react-use';
 import styled from 'styled-components';
 import useOnClickOutside from 'use-onclickoutside';
 
+import { useTokenSubscription } from '../../context/TokensProvider';
+
 import { TokenIcon, TokenPair } from '../icons/TokenIcon';
 import { UnstyledButton } from './Button';
 import { AddressOption } from '../../types';
@@ -141,6 +143,8 @@ const Option: FC<{
   disabled = false,
   dropdownEnabled = false,
 }) => {
+  useTokenSubscription(option?.address);
+
   if (!option)
     return (
       <OptionContainer active disabled>
@@ -159,7 +163,7 @@ const Option: FC<{
       selected={selected}
       disabled={disabled}
     >
-      {symbol && symbols?.length <= 1 ? (
+      {symbol && symbols.length <= 1 ? (
         <TokenIcon symbol={symbol} />
       ) : (
         <TokenPair symbols={symbols} />
