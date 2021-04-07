@@ -15,7 +15,6 @@ import type {
   StakingRewardsWithPlatformToken,
   UniswapRouter02,
   SaveWrapper,
-  SaveWrapperV2,
   TokenMinter,
   FeederWrapper,
 } from './typechain';
@@ -42,7 +41,6 @@ export enum Interfaces {
   CurveTokenMinter,
   CurveDeposit,
   SaveWrapper,
-  SaveWrapperV2,
   BoostedSavingsVault,
   UniswapRouter02,
   FeederPool,
@@ -62,7 +60,6 @@ export interface Instances {
   [Interfaces.CurveTokenMinter]: TokenMinter;
   [Interfaces.CurveDeposit]: CurveDeposit;
   [Interfaces.SaveWrapper]: SaveWrapper;
-  [Interfaces.SaveWrapperV2]: SaveWrapperV2;
   [Interfaces.BoostedSavingsVault]: BoostedSavingsVault;
   [Interfaces.UniswapRouter02]: UniswapRouter02;
   [Interfaces.FeederPool]: FeederPool;
@@ -73,6 +70,7 @@ export interface Token {
   address: string;
   decimals: number;
   symbol: string;
+  name?: string;
   totalSupply: BigDecimal;
   price?: BigDecimal;
 }

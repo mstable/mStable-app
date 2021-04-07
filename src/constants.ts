@@ -20,12 +20,7 @@ interface Addresses {
   MTA: string;
   vMTA: string;
   FEEDER_WRAPPER: string;
-  musd: {
-    SaveWrapper?: string;
-  };
-  mbtc?: {
-    SaveWrapper: string;
-  };
+  SAVE_WRAPPER: string;
   BALANCER: {
     BAL: string;
   };
@@ -72,12 +67,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     MTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
     vMTA: '0xae8bc96da4f9a9613c323478be181fdb2aa0e1bf',
     FEEDER_WRAPPER: '0xdc66115Be4eaA30FE8Ca3b262bB8E3FF889F3A35',
-    musd: {
-      SaveWrapper: '0xD7c346C228bDdd8a6a4c1a69E6cC82292909dcAD',
-    },
-    mbtc: {
-      SaveWrapper: '0x7CB1576dcC0D8FCb32eBD21204899ef6C0270Eb9',
-    },
+    SAVE_WRAPPER: '0xd082363752d08c54ab47c248fd5a11f8ee634bb9',
     BALANCER: {
       BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },
@@ -125,12 +115,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
     WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
     FEEDER_WRAPPER: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5',
-    musd: {
-      SaveWrapper: '0xeb9201126a77dcd966c878ce81ea1146603b86ad',
-    },
-    mbtc: {
-      SaveWrapper: '0x6f5b3bb45b05558b7cacd9f96f82406cc6b4a694',
-    },
+    SAVE_WRAPPER: '0xf565973Be72ECD565Eca7543867a12F7e4d6D961',
     BALANCER: {
       BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },
@@ -156,9 +141,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
     MTA: '0xcda64b5d3ca85800ab9f7409686985b59f2b9598',
     vMTA: 'TODO',
     FEEDER_WRAPPER: 'TODO',
-    musd: {
-      SaveWrapper: 'TODO',
-    },
+    SAVE_WRAPPER: 'TODO',
     BALANCER: {
       BAL: '0xba100000625a3754423978a60c9317c58a424e3d',
     },
