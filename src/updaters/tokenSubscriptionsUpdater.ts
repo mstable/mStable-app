@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { usePrevious } from 'react-use';
 import { Interface } from '@ethersproject/abi';
 import { Provider } from '@ethersproject/providers';
+import { constants } from 'ethers';
 import type { ERC20Interface } from '@mstable/protocol/types/generated/ERC20';
 
 import { useBlockNow } from '../context/BlockProvider';
@@ -12,6 +13,7 @@ import {
   useTokensDispatch,
 } from '../context/TokensProvider';
 import { useSigner } from '../context/OnboardProvider';
+import { useEthBalance } from '../context/EthProvider';
 import { BigDecimal } from '../web3/BigDecimal';
 
 const contractInterface = (() => {
@@ -78,6 +80,7 @@ export const TokenSubscriptionsUpdater = (): null => {
   const account = useAccount();
   const prevAccount = usePrevious(account);
   const blockNumber = useBlockNow();
+  const ethBalance = useEthBalance();
 
   const balanceSubscriptionsSerialized = useBalanceSubscriptionsSerialized();
   const allowanceSubscriptionsSerialized = useAllowanceSubscriptionsSerialized();
@@ -147,17 +150,19 @@ export const TokenSubscriptionsUpdater = (): null => {
         balanceSubscriptionsSerialized,
       );
 
-      const balancePromises = balanceSubs.map(async ({ address, decimals }) => {
-        const data = await (signer.provider as Provider).call({
-          to: address,
-          data: contractInterface.encodeFunctionData('balanceOf', [account]),
+      const balancePromises = balanceSubs
+        .filter(({ address }) => address !== constants.AddressZero)
+        .map(async ({ address, decimals }) => {
+          const data = await (signer.provider as Provider).call({
+            to: address,
+            data: contractInterface.encodeFunctionData('balanceOf', [account]),
+          });
+          const balance = contractInterface.decodeFunctionResult(
+            'balanceOf',
+            data,
+          );
+          return [address, new BigDecimal(balance[0], decimals)];
         });
-        const balance = contractInterface.decodeFunctionResult(
-          'balanceOf',
-          data,
-        );
-        return [address, new BigDecimal(balance[0], decimals)];
-      });
 
       Promise.all(balancePromises)
         .then(balances => {
@@ -172,6 +177,12 @@ export const TokenSubscriptionsUpdater = (): null => {
     signer,
     updateBalances,
   ]);
+
+  useEffect(() => {
+    updateBalances({
+      [constants.AddressZero as string]: ethBalance as BigDecimal,
+    });
+  }, [ethBalance, updateBalances]);
 
   return null;
 };

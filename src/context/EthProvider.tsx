@@ -28,7 +28,7 @@ interface CoingeckoPriceResponse {
   };
 }
 
-interface EthPrices {
+interface NetworkPrices {
   eth?: number;
   gas?: {
     standard: number;
@@ -40,7 +40,7 @@ interface EthPrices {
 
 type EthBalance = BigDecimal | undefined;
 
-const ethPricesCtx = createContext<EthPrices>({});
+const networkPricesCtx = createContext<NetworkPrices>({});
 
 const ethBalanceCtx = createContext<EthBalance>(undefined);
 
@@ -68,12 +68,13 @@ const EthBalanceProvider: FC = ({ children }) => {
   );
 };
 
-export const useGasPrices = (): EthPrices => useContext(ethPricesCtx);
+export const useNetworkPrices = (): NetworkPrices =>
+  useContext(networkPricesCtx);
 
 export const useEthBalance = (): EthBalance => useContext(ethBalanceCtx);
 
 export const EthProvider: FC = ({ children }) => {
-  const [prices, setPrices] = useState<EthPrices>({});
+  const [prices, setPrices] = useState<NetworkPrices>({});
 
   const fetchPrices = useCallback(async () => {
     const [gasPriceResponse, ethPriceResponse] = await Promise.all([
@@ -110,7 +111,9 @@ export const EthProvider: FC = ({ children }) => {
 
   return (
     <EthBalanceProvider>
-      <ethPricesCtx.Provider value={prices}>{children}</ethPricesCtx.Provider>
+      <networkPricesCtx.Provider value={prices}>
+        {children}
+      </networkPricesCtx.Provider>
     </EthBalanceProvider>
   );
 };
