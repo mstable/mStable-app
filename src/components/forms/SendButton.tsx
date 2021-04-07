@@ -89,7 +89,7 @@ const SendButtonContent: FC<Omit<Props, 'approve'>> = ({
           handleSend();
         }}
       >
-        {`${title} ${!!penaltyBonusAmount && valid ? 'Anyway' : ''}`}
+        {`${title} ${!!penaltyBonusAmount && valid ? 'anyway' : ''}`}
       </StyledButton>
     </Container>
   );
@@ -223,7 +223,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({
             }
           }}
         >
-          {`${title} ${!!penaltyBonusAmount && valid ? 'Anyway' : ''}`}
+          {`${title} ${!!penaltyBonusAmount && valid ? 'anyway' : ''}`}
         </StyledButton>
       ) : (
         <ApproveContent

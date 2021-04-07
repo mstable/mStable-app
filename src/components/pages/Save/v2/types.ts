@@ -1,0 +1,17 @@
+import type { BigDecimal } from '../../../../web3/BigDecimal';
+
+export enum SaveRoutes {
+  Save,
+  Stake,
+  SaveAndStake,
+  MintAndSave,
+  MintAndStake,
+  BuyAndSave,
+  BuyAndStake,
+}
+
+export interface SaveOutput {
+  amount: BigDecimal;
+  amountOut?: BigDecimal;
+  path?: [string, string];
+}

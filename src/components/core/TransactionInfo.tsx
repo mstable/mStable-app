@@ -57,7 +57,11 @@ export const TransactionInfo: FC<Props> = ({
   saveExchangeRate,
   price,
 }) => {
-  const showAdditionalInfo = feeAmount || minOutputAmount || maxOutputAmount;
+  const showAdditionalInfo =
+    feeAmount ||
+    minOutputAmount ||
+    maxOutputAmount ||
+    (!minOutputAmount && !maxOutputAmount);
 
   const { min, max, fee } = useMemo<{
     fee?: BigDecimal;
@@ -140,6 +144,11 @@ export const TransactionInfo: FC<Props> = ({
                   <DollarEstimate>{` ≈ $${max?.format(2)}`}</DollarEstimate>
                 )}
               </span>
+            </Info>
+          )}
+          {!minOutputAmount && !maxOutputAmount && (
+            <Info>
+              <p>&nbsp;</p>
             </Info>
           )}
         </AdditionalInfo>
