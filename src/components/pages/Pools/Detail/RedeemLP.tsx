@@ -6,7 +6,7 @@ import { SendButton } from '../../../forms/SendButton';
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
 import { TransactionInfo } from '../../../core/TransactionInfo';
-import { useSimpleInput } from '../../../../hooks/useSimpleInput';
+import { useSlippage } from '../../../../hooks/useSimpleInput';
 import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
 import { AddressOption, Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
@@ -100,10 +100,7 @@ export const RedeemLP: FC = () => {
     setOutputAddress(address);
   };
 
-  const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
-    min: 0.01,
-    max: 99.99,
-  });
+  const [slippageSimple, slippageFormValue, setSlippage] = useSlippage();
 
   // Can't use useTokenSubscription because the input might be e.g. vault
   const inputToken = inputOptions.find(t => t.address === inputAddress);
