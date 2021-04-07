@@ -88,49 +88,28 @@ type Action =
   | { type: Actions.Reset };
 
 const initialState: State = {
-  tokens: {
-    // TODO later: Remove hardcoded token when it's on the subgraph
-    [ADDRESSES.CURVE.CRV_TOKEN]: {
-      symbol: 'CRV',
-      address: ADDRESSES.CURVE.CRV_TOKEN,
-      decimals: 18,
-      balance: new BigDecimal(0, 18),
-      allowances: {},
-      totalSupply: new BigDecimal(0, 18),
-    },
-    [ADDRESSES.SUSHI.SUSHI_TOKEN]: {
-      symbol: 'SUSHI',
-      address: ADDRESSES.SUSHI.SUSHI_TOKEN,
-      decimals: 18,
-      balance: new BigDecimal(0, 18),
-      allowances: {},
-      totalSupply: new BigDecimal(0, 18),
-    },
-    [ADDRESSES.BADGER.BADGER_TOKEN]: {
-      symbol: 'BADGER',
-      address: ADDRESSES.BADGER.BADGER_TOKEN,
-      decimals: 18,
-      balance: new BigDecimal(0, 18),
-      allowances: {},
-      totalSupply: new BigDecimal(0, 18),
-    },
-    [ADDRESSES.CREAM.CREAM_TOKEN]: {
-      symbol: 'CREAM',
-      address: ADDRESSES.CREAM.CREAM_TOKEN,
-      decimals: 18,
-      balance: new BigDecimal(0, 18),
-      allowances: {},
-      totalSupply: new BigDecimal(0, 18),
-    },
-    [constants.AddressZero as string]: {
-      symbol: 'ETH',
-      address: constants.AddressZero,
-      decimals: 18,
-      balance: new BigDecimal(0),
-      allowances: {},
-      totalSupply: new BigDecimal(0),
-    },
-  },
+  tokens: Object.fromEntries(
+    ([
+      [constants.AddressZero, 'ETH'],
+      [ADDRESSES.CURVE.CRV_TOKEN, 'CRV'],
+      [ADDRESSES.SUSHI.SUSHI_TOKEN, 'SUSHI'],
+      [ADDRESSES.BADGER.BADGER_TOKEN, 'BADGER'],
+      [ADDRESSES.CREAM.CREAM_TOKEN, 'CREAM'],
+    ] as ([string, string] | [string, string, string])[]).map(
+      ([address, symbol, name]): [string, SubscribedToken] => [
+        address,
+        {
+          address,
+          decimals: 18,
+          symbol,
+          name,
+          allowances: {},
+          balance: new BigDecimal(0, 18),
+          totalSupply: new BigDecimal(0, 18),
+        },
+      ],
+    ),
+  ),
   subscriptions: {},
 };
 
@@ -519,6 +498,9 @@ export const useTokenSubscription = (
 
 export const useMetaToken = (): SubscribedToken | undefined =>
   useTokenSubscription(ADDRESSES.MTA.toLowerCase());
+
+export const useETH = (): SubscribedToken =>
+  useTokensState().tokens[constants.AddressZero] as SubscribedToken;
 
 export const useTokenAllowance = (
   address: string | undefined | null,
