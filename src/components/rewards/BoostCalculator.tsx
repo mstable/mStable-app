@@ -200,10 +200,13 @@ export const BoostCalculator: FC<{
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
   const vMTABalance = vMTA?.balance;
 
+  const defaultInputValue = isImusd
+    ? BigDecimal.parse('100')
+    : BigDecimal.parse('1');
+
   const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTABalance);
   const [inputValue, inputFormValue, setInput] = useBigDecimalInput(
-    // TODO default to a USD value of $100, 100 mBTC is $$$
-    inputBalance?.simpleRounded !== 0 ? inputBalance : BigDecimal.parse('100'),
+    inputBalance?.simpleRounded !== 0 ? inputBalance : defaultInputValue,
   );
 
   const boost = useMemo(() => {
