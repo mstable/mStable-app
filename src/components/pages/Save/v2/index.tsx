@@ -12,7 +12,6 @@ import { useModalComponent } from '../../../../hooks/useModalComponent';
 import { BalanceRow, BalanceType, BalanceHeader } from '../BalanceRow';
 import { BoostCalculator } from '../../../rewards/BoostCalculator';
 import { Boost } from '../../../rewards/Boost';
-import { MassetModal } from './MassetModal';
 import { SaveModal } from './SaveModal';
 import { VaultModal } from './VaultModal';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -80,10 +79,6 @@ export const Save: FC = () => {
   const metaToken = useMetaToken();
   const vMetaToken = useTokenSubscription(vault?.stakingContract);
 
-  const [showMassetModal] = useModalComponent({
-    title: <SaveModalHeader masset={massetName} type="masset" />,
-    children: <MassetModal />,
-  });
   const [showSaveModal] = useModalComponent({
     title: <SaveModalHeader masset={massetName} type="imasset" />,
     children: <SaveModal />,
@@ -107,7 +102,6 @@ export const Save: FC = () => {
       <BalanceHeader />
       <BalanceRow
         token={BalanceType.Masset}
-        onClick={showMassetModal}
         balance={massetToken?.balance}
         dollarExchangeRate={exchangeRate}
         masset={massetName}
