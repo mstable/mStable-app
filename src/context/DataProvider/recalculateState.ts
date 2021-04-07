@@ -48,7 +48,7 @@ const recalculateSavingsContracts = ({
   savingsContracts: { v1, v2 },
 }: MassetState): MassetState['savingsContracts'] => ({
   v1: v1 ? recalculateSavingsContractV1(v1, token) : undefined,
-  v2: v2 ? recalculateSavingsContractV2(v2) : undefined,
+  v2: recalculateSavingsContractV2(v2),
 });
 
 const recalculateBasset = (

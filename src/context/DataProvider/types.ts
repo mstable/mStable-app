@@ -80,7 +80,7 @@ export interface MassetState {
   undergoingRecol: boolean;
   savingsContracts: {
     v1?: Extract<SavingsContractState, { version: 1 }>;
-    v2?: Extract<SavingsContractState, { version: 2 }>;
+    v2: Extract<SavingsContractState, { version: 2 }>;
   };
   isLegacy: boolean;
   feederPools: {
