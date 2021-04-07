@@ -1,6 +1,5 @@
 import React, { FC, SVGProps } from 'react';
 import styled from 'styled-components';
-import mUSDTransparent from './tokens/mUSD-transparent.svg';
 import MUSD, { ReactComponent as MusdSvg } from './tokens/mUSD.svg';
 import MBTC, { ReactComponent as MbtcSvg } from './tokens/mBTC.svg';
 import TUSD, { ReactComponent as TusdSvg } from './tokens/TUSD.svg';

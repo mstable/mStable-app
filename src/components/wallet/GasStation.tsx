@@ -2,7 +2,7 @@ import React, { FC, ChangeEventHandler, useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { useEffectOnce } from 'react-use';
 
-import { useGasPrices } from '../../context/EthProvider';
+import { useNetworkPrices } from '../../context/EthProvider';
 import { useGas } from './TransactionGasProvider';
 import { Button } from '../core/Button';
 
@@ -109,7 +109,7 @@ const Container = styled.div`
 `;
 
 export const GasStation: FC = () => {
-  const gasPrices = useGasPrices();
+  const gasPrices = useNetworkPrices();
   const { gasLimit, gasPrice, setGasPrice } = useGas();
 
   const [gasPriceType, setGasPriceType] = useState<GasPriceType>(

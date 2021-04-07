@@ -26,7 +26,7 @@ import {
 import { Interfaces } from '../../../../types';
 import { StepProps } from '../../../core/Step';
 import { useModalComponent } from '../../../../hooks/useModalComponent';
-import { MassetModal } from '../v2/MassetModal';
+import { SaveDeposit } from '../v2/SaveDeposit';
 import { SaveModalHeader } from '../v2/SaveModalHeader';
 import { useSigner } from '../../../../context/OnboardProvider';
 
@@ -69,7 +69,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
 
   const [showDepositModal] = useModalComponent({
     title: <SaveModalHeader masset="musd" type="masset" />,
-    children: <MassetModal />,
+    children: <SaveDeposit />,
   });
 
   const proposeWithdrawTx = useCallback(() => {
