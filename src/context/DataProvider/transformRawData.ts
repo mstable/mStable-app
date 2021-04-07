@@ -409,14 +409,12 @@ const transformMassetData = (
       v1: savingsContractV1
         ? transformSavingsContractV1(savingsContractV1, tokens, address, false)
         : undefined,
-      v2: savingsContractV2
-        ? transformSavingsContractV2(
-            { ...savingsContractV2, boostedSavingsVaults: saveVaults },
-            tokens,
-            address,
-            true,
-          )
-        : undefined,
+      v2: transformSavingsContractV2(
+        { ...savingsContractV2, boostedSavingsVaults: saveVaults },
+        tokens,
+        address,
+        true,
+      ),
     },
     bassetRatios: Object.fromEntries(
       Object.values(bAssets).map(b => [b.address, b.ratio]),
