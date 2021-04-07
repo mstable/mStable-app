@@ -43,15 +43,13 @@ export const ExchangeRate: FC<Props> = ({
     <Container>
       {fetching ? (
         <ThemedSkeleton height={16} width={150} />
-      ) : value ? (
+      ) : value && (
         <>
           <span>≈ </span>
           <Numeric>{value.format(6)}</Numeric>
           <span> {outputLabel ?? outputToken?.symbol} </span>
           {hasInput && <span>per {inputLabel ?? inputToken?.symbol}</span>}
         </>
-      ) : (
-        <span>&nbsp;</span>
       )}
     </Container>
   );

@@ -31,7 +31,7 @@ interface Props {
 
 const StyledButton = styled(Button)<{ isPenalty?: boolean; isBonus?: boolean }>`
   width: 100%;
-  height: 3.75rem;
+  height: 3rem;
   border-radius: 2rem;
   background: ${({ isBonus, isPenalty, theme }) =>
     isPenalty ? theme.color.red : isBonus && theme.color.orange};
@@ -52,8 +52,11 @@ const ApproveContainer = styled.div`
   position: relative;
   width: 100%;
   justify-content: space-between;
-  gap: 1rem;
   align-items: center;
+
+  > button:not(:last-child) {
+    margin-right: 0.75rem;
+  }
 `;
 
 const Container = styled.div`
@@ -145,8 +148,8 @@ export const ApproveContent: FC<{
           >
             <div>
               {hasPendingApproval && mode === 'exact' ? 'Approving' : 'Approve'}
+              {' Exact'}
             </div>
-            <div>Exact</div>
           </Tooltip>
         </StyledButton>
         <StyledButton
@@ -165,8 +168,8 @@ export const ApproveContent: FC<{
               {hasPendingApproval && mode === Mode.Infinite
                 ? 'Approving'
                 : 'Approve'}
+              {' ∞'}
             </div>
-            <div>∞</div>
           </Tooltip>
         </StyledButton>
       </>

@@ -1,168 +1,94 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import styled from 'styled-components';
-import { useToggle } from 'react-use';
 
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import {
-  useMetaToken,
-  useTokenSubscription,
-} from '../../../../context/TokensProvider';
-import { useModalComponent } from '../../../../hooks/useModalComponent';
-
-import { BalanceRow, BalanceType, BalanceHeader } from '../BalanceRow';
-import { BoostCalculator } from '../../../rewards/BoostCalculator';
-import { Boost } from '../../../rewards/Boost';
-import { SaveModal } from './SaveModal';
-import { VaultModal } from './VaultModal';
-import { BigDecimal } from '../../../../web3/BigDecimal';
-import {
-  SavingsVaultRewardsProvider,
-  useRewards,
-} from './SavingsVaultRewardsProvider';
-import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
-import { VaultROI } from './VaultROI';
-import { useSavePrices } from '../../../../hooks/usePrice';
-import { Button } from '../../../core/Button';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
-import { SaveModalHeader } from './SaveModalHeader';
-import { VaultRewards } from './VaultRewards';
+import { ViewportWidth } from '../../../../theme';
+import { SaveDeposit } from './SaveDeposit';
+import { SaveRedeem } from './SaveRedeem';
+import { TabSwitch } from '../../../core/Tabs';
+import { ToggleSave } from '../ToggleSave';
 
-const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
+enum Tabs {
+  Deposit = 'Deposit',
+  Redeem = 'Redeem',
+}
 
-const PotentialBoost = styled.div`
-  border-top: 1px solid ${({ theme }) => theme.color.accent};
-  padding: 1rem;
+const ButtonPanel = styled.div`
   display: flex;
-  align-items: center;
-  flex-direction: column;
+  background: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.accent};
 
-  > div {
-    width: 100%;
+  align-items: flex-start;
+  justify-content: center;
+  border-radius: 1rem;
+  padding: 1rem;
+`;
+
+const Sidebar = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border-radius: 1rem;
+  padding: 0 1rem;
+
+  > * {
+    margin-bottom: 1rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-basis: calc(35% - 0.5rem);
   }
 `;
 
-const Divider = styled.div`
-  height: 1px;
-  background: ${({ theme }) => theme.color.accent};
+const Exchange = styled.div`
+  display: flex;
+  flex-direction: column;
+  border: 1px solid ${({ theme }) => theme.color.accent};
+  padding: 0.25rem 1rem 1rem;
+  border-radius: 1rem;
   width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-basis: calc(65% - 0.5rem);
+  }
 `;
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  border-radius: 0 0 2px 2px;
-  text-align: left;
 
-  > * {
-    margin: 0.5rem 0;
+  @media (min-width: ${ViewportWidth.m}) {
+    flex-direction: row;
+    justify-content: space-between;
   }
 `;
 
 export const Save: FC = () => {
-  const [isCalculatorVisible, toggleCalculatorVisible] = useToggle(false);
-  const massetState = useSelectedMassetState();
   const massetName = useSelectedMassetName();
-  const isMBTC = massetName?.toLowerCase() === 'mbtc';
-  const [mtaPrice, wbtcPrice] = useSavePrices() ?? [];
+  const [activeTab, setActiveTab] = useState<string>(Tabs.Deposit as string);
 
-  const savingsContract = massetState?.savingsContracts?.v2;
-  const vault = savingsContract?.boostedSavingsVault;
-  const vaultBalance = vault?.account?.rawBalance;
-
-  const exchangeRate = (isMBTC && wbtcPrice) || undefined;
-  const imExchangeRate = isMBTC
-    ? wbtcPrice * (savingsContract?.latestExchangeRate?.rate.simple ?? 0)
-    : savingsContract?.latestExchangeRate?.rate.simple;
-
-  const massetToken = useTokenSubscription(massetState?.address);
-  const saveToken = useTokenSubscription(savingsContract?.address);
-  const metaToken = useMetaToken();
-  const vMetaToken = useTokenSubscription(vault?.stakingContract);
-
-  const [showSaveModal] = useModalComponent({
-    title: <SaveModalHeader masset={massetName} type="imasset" />,
-    children: <SaveModal />,
-  });
-  const [showVaultModal] = useModalComponent({
-    title: <SaveModalHeader masset={massetName} type="vault" />,
-    children: <VaultModal />,
-  });
-
-  const saveApy = useAvailableSaveApy();
-  const rewards = useRewards();
-
-  const hasRewards = !!(rewards?.now.claimable || rewards?.now.vesting.locked);
-
-  const navigateToGovernance = (): void => {
-    window?.open(GOVERNANCE_URL);
+  const tabs = {
+    [Tabs.Deposit]: {
+      title: `Deposit`,
+      component: <SaveDeposit />,
+    },
+    [Tabs.Redeem]: {
+      title: `Redeem`,
+      component: <SaveRedeem />,
+    },
   };
 
   return (
     <Container>
-      <BalanceHeader />
-      <BalanceRow
-        token={BalanceType.Masset}
-        balance={massetToken?.balance}
-        dollarExchangeRate={exchangeRate}
-        masset={massetName}
-      />
-      <BalanceRow
-        token={BalanceType.Savings}
-        apy={saveApy?.value}
-        onClick={showSaveModal}
-        balance={saveToken?.balance}
-        dollarExchangeRate={imExchangeRate}
-        masset={massetName}
-      />
-      {vault && (
-        <>
-          <div />
-          <Divider />
-          <div />
-          <BalanceRow
-            token={BalanceType.BoostedSavingsVault}
-            apy={saveApy?.value}
-            highlight
-            rewards={<VaultROI />}
-            onClick={showVaultModal}
-            balance={vaultBalance ?? BigDecimal.ZERO}
-            dollarExchangeRate={imExchangeRate}
-            masset={massetName}
-          >
-            {vaultBalance || hasRewards ? (
-              <Boost vault={vault} isImusd>
-                <SavingsVaultRewardsProvider>
-                  <VaultRewards />
-                </SavingsVaultRewardsProvider>
-              </Boost>
-            ) : (
-              <PotentialBoost>
-                {isCalculatorVisible ? (
-                  <BoostCalculator vault={vault} isImusd />
-                ) : (
-                  <Button scale={0.875} onClick={toggleCalculatorVisible}>
-                    Calculate rewards
-                  </Button>
-                )}
-              </PotentialBoost>
-            )}
-          </BalanceRow>
-          <BalanceRow
-            token={BalanceType.Meta}
-            balance={metaToken?.balance}
-            dollarExchangeRate={mtaPrice}
-            masset={massetName}
-          />
-          <BalanceRow
-            token={BalanceType.VMeta}
-            balance={vMetaToken?.balance}
-            onClick={navigateToGovernance}
-            apy="Variable APY"
-            external
-            masset={massetName}
-          />
-        </>
-      )}
+      <Exchange>
+        <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab} />
+      </Exchange>
+      <Sidebar>
+        <ButtonPanel>
+          {massetName === 'musd' ? <ToggleSave /> : <div />}
+        </ButtonPanel>
+      </Sidebar>
     </Container>
   );
 };
