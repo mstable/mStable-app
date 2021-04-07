@@ -41,7 +41,7 @@ import IMBTCMTA, {
 
 interface Props {
   className?: string;
-  symbol: string;
+  symbol?: string;
 }
 
 type SvgProps = Props & SVGProps<never>;
@@ -69,11 +69,13 @@ export const TOKEN_ICONS: Record<string, string> = {
   'MK-MTA': MTA,
   'MK-BAL': Balancer,
   IMUSD,
+  'V-IMUSD': IMUSD,
   VMTA,
   RENBTC,
   WBTC,
   SBTC,
   IMBTC,
+  'V-IMBTC': IMBTC,
   IMUSDMTA,
   SUSHI: Sushi,
   SLP: Sushi,
@@ -111,6 +113,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   'MK-MTA': MtaSvg as SvgComponent,
   'MK-BAL': BalancerSvg as SvgComponent,
   IMUSD: ImusdSvg as SvgComponent,
+  'V-IMUSD': ImusdSvg as SvgComponent,
   VMTA: VmtaSvg as SvgComponent,
   RENBTC: RenbtcSvg as SvgComponent,
   WBTC: WbtcSvg as SvgComponent,
@@ -144,23 +147,51 @@ const IconContainer = styled.div<{ isLarge: boolean }>`
   }
 `;
 
+const PathContainer = styled(IconContainer)`
+  align-items: center;
+  font-size: 1.5rem;
+
+  > span {
+    margin: 0 0.5rem 0 0.3rem;
+  }
+
+  > img:last-child {
+    margin-left: 0;
+  }
+`;
+
 const Image = styled.img`
   width: 100%;
   height: auto;
 `;
 
-export const MUSDIconTransparent = (): JSX.Element => (
-  <img src={mUSDTransparent} alt="mUSD" />
-);
+const PlaceholderIcon = styled.div`
+  border-radius: 100%;
+  width: 2rem;
+  height: 2rem;
+  background: grey;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  text-shadow: black 0 1px 1px;
+`;
 
-export const TokenIcon: FC<Props> = ({ className, symbol }) =>
-  TOKEN_ICONS[symbol.toUpperCase()] ? (
+export const TokenIcon: FC<Props> = ({ className, symbol }) => {
+  return symbol && TOKEN_ICONS[symbol.toUpperCase()] ? (
     <Image
       alt={symbol}
       src={TOKEN_ICONS[symbol.toUpperCase()]}
       className={className}
     />
-  ) : null;
+  ) : (
+    <PlaceholderIcon className={className} title={symbol}>
+      {symbol}
+    </PlaceholderIcon>
+  );
+};
 
 export const TokenPair: FC<{
   symbols: string[];
@@ -169,9 +200,22 @@ export const TokenPair: FC<{
 }> = ({ className, symbols, isLarge = false }) => {
   return (
     <IconContainer isLarge={isLarge} className={className}>
-      <TokenIcon symbol={symbols?.[0]} />
-      <TokenIcon symbol={symbols?.[1]} />
+      <TokenIcon symbol={symbols[0]} />
+      <TokenIcon symbol={symbols[1]} />
     </IconContainer>
+  );
+};
+
+export const TokenPath: FC<{
+  symbols: string[];
+  className?: string;
+}> = ({ className, symbols }) => {
+  return (
+    <PathContainer isLarge={false} className={className}>
+      <TokenIcon symbol={symbols[0]} />
+      <span>→</span>
+      <TokenIcon symbol={symbols[1]} />
+    </PathContainer>
   );
 };
 
@@ -183,7 +227,7 @@ export const TokenIconSvg: FC<SvgProps> = ({
   y,
   className,
 }) => {
-  if (!SVG_ICONS[symbol.toUpperCase()]) return null;
+  if (!symbol || !SVG_ICONS[symbol.toUpperCase()]) return null;
   const Icon = SVG_ICONS[symbol.toUpperCase()];
   return (
     <Icon width={width} height={height} x={x} y={y} className={className} />
