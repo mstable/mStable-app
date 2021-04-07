@@ -32,3 +32,8 @@ export const useSimpleInput = (
 
   return [value, formValue, onChange];
 };
+
+export const useSlippage = useSimpleInput.bind(null, 0.1, {
+  min: 0.01,
+  max: 99.99,
+});
