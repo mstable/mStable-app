@@ -68,6 +68,11 @@ export class BigDecimal {
     return new BigDecimal(exact, decimals);
   }
 
+  static fromJSON(json: string): BigDecimal {
+    const { decimals, exact } = JSON.parse(json);
+    return new BigDecimal(exact, decimals);
+  }
+
   decimals: number;
 
   exact: BigNumber;
@@ -100,6 +105,10 @@ export class BigDecimal {
    */
   get string(): string {
     return formatUnits(this.exact, this.decimals);
+  }
+
+  toJSON(): string {
+    return JSON.stringify({ decimals: this.decimals, exact: this.exact });
   }
 
   /**
