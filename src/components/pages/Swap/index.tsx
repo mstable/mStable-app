@@ -13,7 +13,7 @@ import { usePropose } from '../../../context/TransactionsProvider';
 import { useBigDecimalInput } from '../../../hooks/useBigDecimalInput';
 import { AddressOption, Interfaces } from '../../../types';
 import { TransactionManifest } from '../../../web3/TransactionManifest';
-import { useSimpleInput } from '../../../hooks/useSimpleInput';
+import { useSlippage } from '../../../hooks/useSimpleInput';
 
 import { AssetSwap } from '../../forms/AssetSwap';
 import { SendButton } from '../../forms/SendButton';
@@ -51,10 +51,7 @@ const SwapLogic: FC = () => {
   const walletAddress = useWalletAddress();
   const propose = usePropose();
 
-  const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
-    min: 0.01,
-    max: 99.99,
-  });
+  const [slippageSimple, slippageFormValue, setSlippage] = useSlippage();
 
   const assetsByBalance = useMemo(
     () =>

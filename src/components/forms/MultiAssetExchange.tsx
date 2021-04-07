@@ -9,7 +9,7 @@ import {
 } from '../../hooks/useBigDecimalInputs';
 
 import { BigDecimal } from '../../web3/BigDecimal';
-import { useSimpleInput } from '../../hooks/useSimpleInput';
+import { useSlippage } from '../../hooks/useSimpleInput';
 import type { FetchState } from '../../hooks/useFetchState';
 
 import { ExchangeRate } from '../core/ExchangeRate';
@@ -46,10 +46,7 @@ export const MultiAssetExchangeProvider: FC<{
   const [values, callbacks] = useBigDecimalInputs(assets);
   const [amount, setAmount] = useState<State[1]>({});
 
-  const [slippageSimple, slippageFormValue, setSlippage] = useSimpleInput(0.1, {
-    min: 0.01,
-    max: 99.99,
-  });
+  const [slippageSimple, slippageFormValue, setSlippage] = useSlippage();
 
   const dispatch = useMemo<Dispatch>(
     () => [callbacks, setAmount, setSlippage],

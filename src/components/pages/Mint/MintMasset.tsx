@@ -12,7 +12,7 @@ import { MassetState } from '../../../context/DataProvider/types';
 import { useTokenSubscription } from '../../../context/TokensProvider';
 
 import { useBigDecimalInput } from '../../../hooks/useBigDecimalInput';
-import { useSimpleInput } from '../../../hooks/useSimpleInput';
+import { useSlippage } from '../../../hooks/useSimpleInput';
 import { TransactionManifest } from '../../../web3/TransactionManifest';
 
 import { Interfaces } from '../../../types';
@@ -59,13 +59,7 @@ export const MintMasset: FC = () => {
     handleSetMassetFormValue,
   ] = useBigDecimalInput('0', { decimals: inputDecimals });
 
-  const [slippageSimple, slippageFormValue, handleSetSlippage] = useSimpleInput(
-    0.1,
-    {
-      min: 0.01,
-      max: 99.99,
-    },
-  );
+  const [slippageSimple, slippageFormValue, handleSetSlippage] = useSlippage();
 
   const currentFeederAddress = Object.keys(feederPools).find(
     address => feederPools[address].fasset.address === inputAddress,
