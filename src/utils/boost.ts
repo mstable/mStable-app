@@ -67,21 +67,21 @@ export const calculateBoost = (
   stakingBalance?: BigDecimal,
   vMTABalance?: BigDecimal,
 ): number => {
+  const scaledBalance = (stakingBalance?.simple ?? 0) * priceCoeff;
   if (
     vMTABalance &&
     stakingBalance &&
     vMTABalance.simple > 0 &&
-    stakingBalance.simple > MIN_DEPOSIT
+    scaledBalance >= MIN_DEPOSIT
   ) {
     const unbounded =
       FLOOR +
       (boostCoeff * Math.min(vMTABalance.simple, VMTA_CAP)) /
-        (stakingBalance.simple * priceCoeff) ** EXPONENT;
+        scaledBalance ** EXPONENT;
 
     // bounded
     return Math.min(MAX_BOOST, Math.max(MIN_BOOST, unbounded));
   }
-
   return MIN_BOOST;
 };
 
