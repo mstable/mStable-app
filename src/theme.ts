@@ -40,6 +40,7 @@ interface ColorTheme {
   background: string;
   backgroundAccent: string;
   offYellow: string;
+  disabled: string;
 }
 
 export const colorTheme = (
@@ -56,6 +57,7 @@ export const colorTheme = (
     bodyAccent: Color.grey,
     accent: isLight ? '#eeeeee' : '#222222',
     accentContrast: isLight ? '#cccccc' : '#3333333',
+    disabled: '#888',
     bodyTransparent: isLight ? Color.blackTransparent : Color.whiteTransparent,
     bodyTransparenter: isLight
       ? Color.blackTransparenter

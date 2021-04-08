@@ -19,14 +19,17 @@ const ButtonCss = css<Props>`
       ? theme.color.primary
       : transparent
       ? 'transparent'
-      : theme.color.accent};
-  color: ${({ theme, highlighted }) =>
-    highlighted ? theme.color.white : theme.color.body};
+      : theme.color.backgroundAccent};
+  color: ${({ theme, highlighted, disabled }) =>
+    highlighted
+      ? theme.color.white
+      : disabled
+      ? theme.color.disabled
+      : theme.color.body};
   z-index: ${({ highlighted }) => (highlighted ? 1 : 0)};
   font-weight: 600;
   position: relative;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   transition: 0.2s ease all;
   border: 1px solid
     ${({ transparent, theme }) =>
