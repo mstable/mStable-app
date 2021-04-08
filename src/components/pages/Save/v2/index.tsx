@@ -7,6 +7,7 @@ import { SaveDeposit } from './SaveDeposit';
 import { SaveRedeem } from './SaveRedeem';
 import { TabSwitch } from '../../../core/Tabs';
 import { ToggleSave } from '../ToggleSave';
+import { SaveOverview } from './SaveOverview';
 
 enum Tabs {
   Deposit = 'Deposit',
@@ -58,9 +59,15 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
 
-  @media (min-width: ${ViewportWidth.m}) {
-    flex-direction: row;
-    justify-content: space-between;
+  > div:last-child {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+
+    @media (min-width: ${ViewportWidth.m}) {
+      flex-direction: row;
+      justify-content: space-between;
+    }
   }
 `;
 
@@ -81,14 +88,17 @@ export const Save: FC = () => {
 
   return (
     <Container>
-      <Exchange>
-        <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab} />
-      </Exchange>
-      <Sidebar>
-        <ButtonPanel>
-          {massetName === 'musd' ? <ToggleSave /> : <div />}
-        </ButtonPanel>
-      </Sidebar>
+      <SaveOverview />
+      <div>
+        <Exchange>
+          <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab} />
+        </Exchange>
+        <Sidebar>
+          <ButtonPanel>
+            {massetName === 'musd' ? <ToggleSave /> : <div />}
+          </ButtonPanel>
+        </Sidebar>
+      </div>
     </Container>
   );
 };
