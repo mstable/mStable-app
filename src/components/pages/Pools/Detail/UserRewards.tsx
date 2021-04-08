@@ -6,7 +6,10 @@ import styled from 'styled-components';
 import { CountUp } from '../../../core/CountUp';
 import { useSelectedFeederPoolVaultContract } from '../FeederPoolProvider';
 import { ClaimGraph } from './ClaimGraph';
-import { StreamType, useRewardStreams } from './useRewardStreams';
+import {
+  StreamType,
+  useRewardStreams,
+} from '../../../../context/RewardStreamsProvider';
 import { Button } from '../../../core/Button';
 import { rewardsColorMapping } from '../constants';
 import { SendButton } from '../../../forms/SendButton';

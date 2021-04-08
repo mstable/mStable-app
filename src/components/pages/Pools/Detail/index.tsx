@@ -24,10 +24,10 @@ import {
   FeederPoolProvider,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
-import { RewardStreamsProvider } from './useRewardStreams';
-import { Overview } from './Overview';
+import { RewardStreamsProvider } from '../../../../context/RewardStreamsProvider';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import { UserLookup } from './UserLookup';
+import { PoolOverview } from './PoolOverview';
 
 const HeaderChartsContainer = styled.div`
   position: relative;
@@ -186,6 +186,7 @@ const PoolDetailContent: FC = () => {
     address,
     title,
     liquidity,
+    vault,
   } = useSelectedFeederPoolState() as FeederPoolState;
   const massetPrice = useSelectedMassetPrice();
 
@@ -213,51 +214,56 @@ const PoolDetailContent: FC = () => {
   const [activeTab, setActiveTab] = useState<string>('Deposit');
 
   return (
-    <Container>
-      <PageHeader action={PageAction.Pools} subtitle={title} />
-      <HeaderContainer>
-        <HeaderCard poolAddress={address} isLarge color={color} />
-        <HeaderCharts color={color} />
-      </HeaderContainer>
-      <AssetDetails />
-      <Overview />
-      <Exchange>
-        <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
-        <Clippy>
-          <h4>Using mStable Feeder Pools</h4>
-          <p>
-            Feeder Pools offer a way to earn with your assets with{' '}
-            <span>low impermanent loss risk.</span>
-          </p>
-          <p>
-            Liquidity providers passively earn swap fees. Deposits to the Vault
-            will earn swap fees in addition to MTA rewards which vest over time.
-            {!readMore && (
-              <UnstyledButton onClick={setReadMore}>Learn more</UnstyledButton>
+    <RewardStreamsProvider vault={vault}>
+      <Container>
+        <PageHeader action={PageAction.Pools} subtitle={title} />
+        <HeaderContainer>
+          <HeaderCard poolAddress={address} isLarge color={color} />
+          <HeaderCharts color={color} />
+        </HeaderContainer>
+        <AssetDetails />
+        <PoolOverview />
+        <Exchange>
+          <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
+          <Clippy>
+            <h4>Using mStable Feeder Pools</h4>
+            <p>
+              Feeder Pools offer a way to earn with your assets with{' '}
+              <span>low impermanent loss risk.</span>
+            </p>
+            <p>
+              Liquidity providers passively earn swap fees. Deposits to the
+              Vault will earn swap fees in addition to MTA rewards which vest
+              over time.
+              {!readMore && (
+                <UnstyledButton onClick={setReadMore}>
+                  Learn more
+                </UnstyledButton>
+              )}
+            </p>
+            {readMore && (
+              <>
+                <p>
+                  You can <span>multiply your rewards</span> in mStable pools by
+                  staking MTA.
+                </p>
+                <p>
+                  Claiming rewards will send 33% of the unclaimed amount to you
+                  immediately, with the rest safely locked in a stream vesting
+                  linearly and finishing 26 weeks from the time at which you
+                  claimed.
+                </p>
+                <p>
+                  When streams are unlocked, these rewards are sent to you in
+                  full along with unclaimed earnings.
+                </p>
+              </>
             )}
-          </p>
-          {readMore && (
-            <>
-              <p>
-                You can <span>multiply your rewards</span> in mStable pools by
-                staking MTA.
-              </p>
-              <p>
-                Claiming rewards will send 33% of the unclaimed amount to you
-                immediately, with the rest safely locked in a stream vesting
-                linearly and finishing 26 weeks from the time at which you
-                claimed.
-              </p>
-              <p>
-                When streams are unlocked, these rewards are sent to you in full
-                along with unclaimed earnings.
-              </p>
-            </>
-          )}
-        </Clippy>
-      </Exchange>
-      <UserLookup />
-    </Container>
+          </Clippy>
+        </Exchange>
+        <UserLookup />
+      </Container>
+    </RewardStreamsProvider>
   );
 };
 
@@ -268,9 +274,7 @@ export const PoolDetail: FC = () => {
   const feederPool = useFeederPool(poolAddress);
   return feederPool ? (
     <FeederPoolProvider poolAddress={poolAddress}>
-      <RewardStreamsProvider>
-        <PoolDetailContent />
-      </RewardStreamsProvider>
+      <PoolDetailContent />
     </FeederPoolProvider>
   ) : (
     <Skeleton height={300} />

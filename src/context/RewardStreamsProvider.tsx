@@ -6,9 +6,8 @@ import { BigNumber } from 'ethers';
 import {
   BoostedSavingsVaultAccountState,
   BoostedSavingsVaultState,
-} from '../../../../context/DataProvider/types';
-import { SCALE } from '../../../../constants';
-import { useSelectedFeederPoolState } from '../FeederPoolProvider';
+} from './DataProvider/types';
+import { SCALE } from '../constants';
 
 type RewardEntry = BoostedSavingsVaultAccountState['rewardEntries'][number];
 
@@ -140,24 +139,22 @@ const calculateEarned = (
 
 const ctx = createContext<RewardStreams | undefined>(undefined);
 
-export const RewardStreamsProvider: FC<{ refreshInterval?: number }> = ({
-  children,
-  refreshInterval = 15e3,
-}) => {
+export const RewardStreamsProvider: FC<{
+  refreshInterval?: number;
+  vault?: BoostedSavingsVaultState;
+}> = ({ children, refreshInterval = 15e3, vault }) => {
   const [currentTime, setCurrentTime] = useState<number>(nowUnix);
 
   useInterval(() => {
     setCurrentTime(getUnixTime(Date.now()));
   }, refreshInterval);
 
-  const feederPool = useSelectedFeederPoolState();
-
   const rewardStreams = useMemo(() => {
-    if (feederPool.vault.account) {
+    if (vault?.account) {
       const {
         lockupDuration,
         account: { rewardEntries, lastClaim, lastAction },
-      } = feederPool.vault;
+      } = vault;
 
       const [unlockedStreams, lockedStreams] = rewardEntries
         // Remove fully claimed entries
@@ -225,7 +222,7 @@ export const RewardStreamsProvider: FC<{ refreshInterval?: number }> = ({
         (prev, stream) => prev + (stream.amount[StreamType.Locked] as number),
         0,
       );
-      const earned = calculateEarned(currentTime, feederPool.vault);
+      const earned = calculateEarned(currentTime, vault);
       const unclaimed = unlocked + earned.total;
       const received = unlocked + earned.unlocked;
 
@@ -300,7 +297,7 @@ export const RewardStreamsProvider: FC<{ refreshInterval?: number }> = ({
         previewStream,
       };
     }
-  }, [currentTime, feederPool.vault]);
+  }, [currentTime, vault]);
 
   return <ctx.Provider value={rewardStreams}>{children}</ctx.Provider>;
 };

@@ -1,4 +1,4 @@
-import { StreamType } from './Detail/useRewardStreams';
+import { StreamType } from '../../../context/RewardStreamsProvider';
 
 // Need to replace symbol mapping, probably ...
 export const assetColorMapping: Record<string, string> = {

@@ -15,7 +15,10 @@ import styled from 'styled-components';
 import { RechartsContainer as RechartsContainerBase } from '../../../stats/RechartsContainer';
 import { toK } from '../../../stats/utils';
 import { Color, ViewportWidth } from '../../../../theme';
-import { StreamType, useRewardStreams } from './useRewardStreams';
+import {
+  StreamType,
+  useRewardStreams,
+} from '../../../../context/RewardStreamsProvider';
 import { rewardsColorMapping } from '../constants';
 
 const green = {
