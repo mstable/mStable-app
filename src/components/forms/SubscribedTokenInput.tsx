@@ -23,17 +23,17 @@ export const SubscribedTokenInput: FC<Props> = ({
   const subscribedToken = useTokenSubscription(value);
   const token =
     (_options.filter(
-      option => typeof option !== 'string' && option.custom,
-    ) as AddressOption[])?.find(v => v.address === value) ?? subscribedToken;
+      option => typeof option !== 'string' && option?.custom,
+    ) as AddressOption[])?.find(v => v?.address === value) ?? subscribedToken;
 
   // Subscribe the other options
   const tokens = useTokens(
     _options
       .filter(
         (option: AddressOption | string) =>
-          typeof option === 'string' || !option.custom,
+          typeof option === 'string' || !option?.custom,
       )
-      .map(option => (typeof option === 'string' ? option : option.address)),
+      .map(option => (typeof option === 'string' ? option : option?.address)),
   );
 
   const options = useMemo<AddressOption[]>(
@@ -41,12 +41,12 @@ export const SubscribedTokenInput: FC<Props> = ({
       // Merge selected token, subscribed options and custom options & filter out token duplication
       [
         token,
-        ...tokens.filter(t => t.address !== token?.address),
+        ...tokens.filter(t => t?.address !== token?.address),
         ..._options.filter(
           option =>
             typeof option !== 'string' &&
-            option.custom &&
-            option.label !== (token as AddressOption)?.label,
+            option?.custom &&
+            option?.label !== (token as AddressOption)?.label,
         ),
       ].filter(Boolean) as AddressOption[],
     [_options, token, tokens],

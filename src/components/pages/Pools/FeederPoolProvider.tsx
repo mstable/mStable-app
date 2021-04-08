@@ -57,7 +57,7 @@ export const useSelectedFeederPoolContract = (): FeederPool | undefined => {
 export const useSelectedFeederPoolVaultContract = ():
   | BoostedSavingsVault
   | undefined => {
-  return useContext(ctx).contracts?.vault;
+  return useContext(ctx)?.contracts?.vault;
 };
 
 export const useFPAssetAddressOptions = (

@@ -31,7 +31,7 @@ interface Props {
 
 const StyledButton = styled(Button)<{ isPenalty?: boolean; isBonus?: boolean }>`
   width: 100%;
-  height: 3rem;
+  height: 3.75rem;
   border-radius: 2rem;
   background: ${({ isBonus, isPenalty, theme }) =>
     isPenalty ? theme.color.red : isBonus && theme.color.orange};

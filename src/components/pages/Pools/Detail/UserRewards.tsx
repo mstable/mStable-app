@@ -17,6 +17,7 @@ import { usePropose } from '../../../../context/TransactionsProvider';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useIsMasquerading } from '../../../../context/UserProvider';
+import { useSelectedSaveVaultContract } from '../../../../context/DataProvider/DataProvider';
 
 const EmptyState = styled.div`
   display: flex;
@@ -252,12 +253,15 @@ export const UserRewards: FC = () => {
   const rewardStreams = useRewardStreams();
   const isMasquerading = useIsMasquerading();
   const [isClaiming, toggleIsClaiming] = useToggle(false);
-  const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0;
+
+  const feederVault = useSelectedFeederPoolVaultContract();
+  const saveVault = useSelectedSaveVaultContract();
 
   const propose = usePropose();
-  const contract = useSelectedFeederPoolVaultContract();
+  const contract = feederVault ?? saveVault;
 
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
+  const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0;
 
   return (
     <RewardsCard>

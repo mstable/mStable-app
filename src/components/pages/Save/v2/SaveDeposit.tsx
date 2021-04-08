@@ -25,7 +25,7 @@ import {
   getPenaltyPercentage,
 } from '../../../../utils/ammUtils';
 import { SaveWrapper__factory } from '../../../../typechain';
-import { AddressOption, Interfaces, SubscribedToken } from '../../../../types';
+import { AddressOption, Interfaces } from '../../../../types';
 
 import { AssetExchange } from '../../../forms/AssetExchange';
 import { TransactionInfo } from '../../../core/TransactionInfo';
@@ -99,14 +99,12 @@ const withSlippage = new Set([
 
 const withEth = new Set([SaveRoutes.BuyAndSave, SaveRoutes.BuyAndStake]);
 
-export const SaveDeposit: FC<{
-  saveAndStake?: boolean;
-}> = ({ saveAndStake }) => {
+export const SaveDeposit: FC = () => {
   const signer = useSigner();
   const propose = usePropose();
-
   const massetState = useSelectedMassetState() as MassetState;
   const ETH = useETH();
+
   const {
     address: massetAddress,
     token: massetToken,
@@ -150,6 +148,10 @@ export const SaveDeposit: FC<{
     })(),
   );
 
+  const [outputAddress, setOutputAddress] = useState<string | undefined>(
+    saveAddress,
+  );
+
   const inputToken = useTokenSubscription(inputAddress);
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput(
     '0',
@@ -165,6 +167,8 @@ export const SaveDeposit: FC<{
   }, [feederPools, inputAddress]);
 
   const saveRoute = useMemo<SaveRoutes>(() => {
+    const saveAndStake = vaultAddress && outputAddress === vaultAddress;
+
     if (inputAddress === saveAddress) return SaveRoutes.Stake;
 
     if (inputAddress === massetAddress) {
@@ -353,19 +357,19 @@ export const SaveDeposit: FC<{
     [outputs.exchangeRate, saveOutput],
   );
 
-  const outputAddressOptions = useMemo(
-    () => [
-      saveAndStake && saveToken
-        ? {
-            address: vaultAddress as string,
-            label: `${saveToken.symbol} Vault`,
-            custom: true,
-            symbol: `v-${saveToken.symbol}`,
-          }
-        : (saveToken as SubscribedToken),
-    ],
-    [saveAndStake, saveToken, vaultAddress],
-  );
+  const outputAddressOptions = useMemo(() => {
+    if (!saveToken) return;
+    if (!vaultAddress) return [saveToken as AddressOption];
+    return [
+      {
+        address: vaultAddress as string,
+        label: `${saveToken.symbol} Vault`,
+        custom: true,
+        symbol: `v-${saveToken.symbol}`,
+      } as AddressOption,
+      saveToken as AddressOption,
+    ];
+  }, [saveToken, vaultAddress]);
 
   return (
     <AssetExchange
@@ -379,14 +383,14 @@ export const SaveDeposit: FC<{
       inputFormValue={inputFormValue}
       inputAddressOptions={inputAddressOptions}
       exchangeRate={exchangeRate}
-      outputAddressDisabled
-      outputAddress={outputAddressOptions[0]?.address}
-      outputAddressOptions={outputAddressOptions}
+      outputAddress={outputAddress}
+      outputAddressOptions={outputAddressOptions ?? []}
+      handleSetOutputAddress={setOutputAddress}
     >
       <SendButton
         approve={approve}
         penaltyBonusAmount={
-          hasSlippage ? outputs.penaltyBonus.percentage : undefined
+          !error && hasSlippage ? outputs.penaltyBonus.percentage : undefined
         }
         valid={!error}
         title={error ?? titles[saveRoute]}
