@@ -349,7 +349,7 @@ export const SaveDeposit: FC<{
       inputAddressOptions={inputAddressOptions}
       exchangeRate={exchangeRate}
       outputAddressDisabled
-      outputAddress={outputAddressOptions[0].address}
+      outputAddress={outputAddressOptions[0]?.address}
       outputAddressOptions={outputAddressOptions}
     >
       <SendButton
