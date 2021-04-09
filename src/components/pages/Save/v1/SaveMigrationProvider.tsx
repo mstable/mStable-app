@@ -9,7 +9,11 @@ import React, {
   useState,
 } from 'react';
 import { BigNumber, constants } from 'ethers';
-import { ERC20__factory } from '@mstable/protocol/types/generated';
+import {
+  ERC20__factory,
+  ISavingsContractV1,
+  ISavingsContractV1__factory,
+} from '@mstable/protocol/types/generated';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { useTokenAllowance } from '../../../../context/TokensProvider';
@@ -18,7 +22,6 @@ import {
   useTransactionsDispatch,
   useTransactionsState,
 } from '../../../../context/TransactionsProvider';
-import { useSelectedSaveV1Contract } from '../../../../web3/hooks';
 import {
   TransactionManifest,
   TransactionStatus,
@@ -48,6 +51,19 @@ const isTxPending = (
 const stepsCtx = createContext<StepProps[]>([]);
 
 const formId = 'saveMigration';
+
+const useSelectedSaveV1Contract = (): ISavingsContractV1 | undefined => {
+  const massetState = useSelectedMassetState();
+  const address = massetState?.savingsContracts.v1?.address;
+  const signer = useSigner();
+  return useMemo(
+    () =>
+      signer && address
+        ? ISavingsContractV1__factory.connect(address, signer)
+        : undefined,
+    [address, signer],
+  );
+};
 
 export const SaveMigrationProvider: FC = ({ children }) => {
   const [approveInfinite, setApproveInfinite] = useState<boolean>(true);

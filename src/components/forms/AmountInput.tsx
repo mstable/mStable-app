@@ -58,6 +58,9 @@ export const Input = styled.input<{
   ${({ theme }) => theme.mixins.numeric};
 `;
 
+/**
+ * @deprecated
+ */
 export const AmountInput: FC<Props> = ({
   className,
   error,
