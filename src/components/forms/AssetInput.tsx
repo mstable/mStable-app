@@ -70,9 +70,6 @@ const TokenContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-
-  > div {
-  }
 `;
 
 const InputContainer = styled.div`
@@ -168,7 +165,6 @@ const AssetInputContent: FC<Props> = ({
     <Container error={error} disabled={disabled ?? false}>
       {needsApprove && unlockState && handleApprove ? (
         <Approve
-          mode="exact"
           onCloseClick={() => setUnlockState(false)}
           onApproveClick={handleApprove}
           hasPendingApproval={false}

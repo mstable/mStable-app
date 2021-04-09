@@ -7,23 +7,28 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { BigNumber, constants } from 'ethers';
+import { constants } from 'ethers';
+import { ERC20__factory } from '@mstable/protocol/types/generated';
 
-import { useErc20Contract } from '../../web3/hooks';
 import { BigDecimal } from '../../web3/BigDecimal';
 import { TransactionManifest } from '../../web3/TransactionManifest';
 
 import {
   useHasPendingApproval,
-  useTransactionsDispatch,
+  usePropose,
 } from '../../context/TransactionsProvider';
 import {
   useTokenAllowance,
   useTokenSubscription,
 } from '../../context/TokensProvider';
 import { Interfaces } from '../../types';
+import { useSigner } from '../../context/OnboardProvider';
 
-export type Mode = 'exact' | 'infinite' | 'zero';
+export enum Mode {
+  Exact = 'exact',
+  Infinite = 'infinite',
+  Zero = 'zero',
+}
 
 type HandleApprove = (mode: Mode) => void;
 
@@ -40,7 +45,7 @@ const APPROVE_EDGE_CASES: Record<string, string> = {
   '0xb404c51bbc10dcbe948077f18a4b8e553d160084': 'USDT', // Ropsten
 };
 
-const INFINITE = new BigDecimal(constants.MaxUint256, 18);
+const INFINITE = new BigDecimal(constants.MaxUint256);
 
 const handleApproveCtx = createContext<HandleApprove>(null as never);
 
@@ -56,14 +61,15 @@ export const ApproveProvider: FC<{
   spender: string;
   amount?: BigDecimal;
 }> = ({ address, spender, amount, children }) => {
-  const contract = useErc20Contract(address);
+  const signer = useSigner();
+  const propose = usePropose();
+
   const hasPendingApproval = useHasPendingApproval(address, spender);
   const token = useTokenSubscription(address);
   const tokenSymbol = token?.symbol;
   const allowance = useTokenAllowance(address, spender);
-  const { propose } = useTransactionsDispatch();
 
-  const [mode, setMode] = useState<Mode>('infinite');
+  const [mode, setMode] = useState<Mode>(Mode.Infinite);
 
   const isApproveEdgeCase = !!(
     APPROVE_EDGE_CASES[address] &&
@@ -76,23 +82,23 @@ export const ApproveProvider: FC<{
   const needsApprove =
     address !== spender && !!(allowance && amount?.exact.gt(allowance.exact));
 
-  const handleApprove = (_mode: Mode): void => {
+  const handleApprove: HandleApprove = _mode => {
     setMode(_mode);
 
     const approveAmount =
-      _mode === 'infinite'
+      _mode === Mode.Infinite
         ? INFINITE
-        : _mode === 'zero'
-        ? new BigDecimal(0, amount?.decimals)
+        : _mode === Mode.Zero
+        ? BigDecimal.ZERO
         : amount;
 
-    if (!(contract && spender && approveAmount)) return;
+    if (!(signer && spender && approveAmount)) return;
 
     propose<Interfaces.ERC20, 'approve'>(
       new TransactionManifest(
-        contract as never,
+        ERC20__factory.connect(address, signer),
         'approve',
-        [spender, approveAmount.exact as BigNumber],
+        [spender, approveAmount.exact],
         {
           present: `Approve transfer${tokenSymbol ? ` of ${tokenSymbol}` : ''}`,
           past: `Approved transfer${tokenSymbol ? ` of ${tokenSymbol}` : ''}`,
@@ -101,22 +107,20 @@ export const ApproveProvider: FC<{
     );
   };
 
+  const value = useMemo(
+    () => ({
+      mode,
+      setMode,
+      hasPendingApproval,
+      isApproveEdgeCase,
+      needsApprove,
+    }),
+    [mode, hasPendingApproval, isApproveEdgeCase, needsApprove],
+  );
+
   return (
     <handleApproveCtx.Provider value={handleApprove}>
-      <approveCtx.Provider
-        value={useMemo(
-          () => ({
-            mode,
-            setMode,
-            hasPendingApproval,
-            isApproveEdgeCase,
-            needsApprove,
-          }),
-          [mode, hasPendingApproval, isApproveEdgeCase, needsApprove],
-        )}
-      >
-        {children}
-      </approveCtx.Provider>
+      <approveCtx.Provider value={value}>{children}</approveCtx.Provider>
     </handleApproveCtx.Provider>
   );
 };

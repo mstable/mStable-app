@@ -1,10 +1,10 @@
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-alert */
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { BigDecimal } from '../../web3/BigDecimal';
-import { ApproveProvider, useApprove, Mode } from './ApproveProvider';
+import { ApproveProvider, Mode, useApprove } from './ApproveProvider';
 import { Button, UnstyledButton } from '../core/Button';
 import { Tooltip } from '../core/ReactTooltip';
 
@@ -97,7 +97,7 @@ const SendButtonContent: FC<Omit<Props, 'approve'>> = ({
 
 export const ApproveContent: FC<{
   onApproveClick: (mode: Mode) => void;
-  mode: Mode;
+  mode?: Mode;
   onCloseClick: () => void;
   hasPendingApproval: boolean;
   isApproveEdgeCase?: boolean;
@@ -116,14 +116,16 @@ export const ApproveContent: FC<{
         highlighted
         disabled={hasPendingApproval}
         scale={0.875}
-        onClick={() => onApproveClick('zero')}
+        onClick={() => {
+          onApproveClick(Mode.Zero);
+        }}
       >
         <Tooltip
           tip="The approved amount is less than the required amount, but this token requires resetting the approved amount first."
           hideIcon
         >
           <div>
-            {hasPendingApproval && mode === 'zero' ? 'Resetting' : 'Reset'}
+            {hasPendingApproval && mode === Mode.Zero ? 'Resetting' : 'Reset'}
           </div>
         </Tooltip>
       </StyledButton>
@@ -133,7 +135,9 @@ export const ApproveContent: FC<{
           highlighted
           disabled={hasPendingApproval}
           scale={0.875}
-          onClick={() => onApproveClick('exact')}
+          onClick={() => {
+            onApproveClick(Mode.Exact);
+          }}
         >
           <Tooltip
             tip="Approve this contract to spend enough for this transaction"
@@ -149,14 +153,16 @@ export const ApproveContent: FC<{
           highlighted
           disabled={hasPendingApproval}
           scale={0.875}
-          onClick={() => onApproveClick('infinite')}
+          onClick={() => {
+            onApproveClick(Mode.Infinite);
+          }}
         >
           <Tooltip
             tip="Approve this contract to spend an infinite amount"
             hideIcon
           >
             <div>
-              {hasPendingApproval && mode === 'infinite'
+              {hasPendingApproval && mode === Mode.Infinite
                 ? 'Approving'
                 : 'Approve'}
             </div>
