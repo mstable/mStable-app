@@ -5,11 +5,9 @@ import styled from 'styled-components';
 import { useTokenAllowance } from '../../../../context/TokensProvider';
 import { useOwnAccount } from '../../../../context/UserProvider';
 import { TransactionForm } from '../../../forms/TransactionForm';
-import { ApproveButton } from '../../../forms/ApproveButton';
 import { TokenAmount } from '../../../core/TokenAmount';
 import { NumberFormat } from '../../../core/Amount';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
-import { H3, H4 } from '../../../core/Typography';
 import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider';
 import { Interfaces } from '../../../../types';
 import { RewardsDistributor__factory } from '../../../../typechain';
@@ -17,6 +15,7 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { Button } from '../../../core/Button';
 import { useSigner } from '../../../../context/OnboardProvider';
+import { SendButton } from '../../../forms/SendButton';
 
 const Row = styled.div`
   margin-bottom: 16px;
@@ -34,7 +33,7 @@ const Confirm: FC = () => {
   return (
     <>
       <Row>
-        <H3>Total amount</H3>
+        <h3>Total amount</h3>
         <TokenAmount
           symbol={token.symbol}
           amount={totalFunds}
@@ -44,7 +43,7 @@ const Confirm: FC = () => {
         />
       </Row>
       <Row>
-        <H3>Breakdown</H3>
+        <h3>Breakdown</h3>
         <code>
           {Object.keys(recipientAmounts)
             .sort()
@@ -79,14 +78,19 @@ const Input: FC = () => {
       {totalFunds &&
       rewardsToken?.allowances[spender]?.exact.lt(totalFunds.exact) ? (
         <>
-          <H3>Approve amount</H3>
+          <h3>Approve amount</h3>
           <p>
             Approve transfer of {totalFunds?.simple} {rewardsToken.symbol}
           </p>
-          <ApproveButton
-            address={rewardsToken.address}
-            spender={spender}
-            amount={totalFunds}
+          <SendButton
+            valid
+            title="Approve"
+            handleSend={() => {}}
+            approve={{
+              address: rewardsToken?.address,
+              amount: totalFunds,
+              spender,
+            }}
           />
         </>
       ) : null}
@@ -108,7 +112,7 @@ const CustomRecipients: FC = () => {
   return (
     <div>
       <Row>
-        <H4>Recipients</H4>
+        <h4>Recipients</h4>
         <div>
           <input
             placeholder="Recipient"
@@ -167,7 +171,7 @@ const Inputs: FC<{ reason?: string }> = ({ reason }) => {
     <div>
       {reason ? (
         <Row>
-          <H3>Validation</H3>
+          <h3>Validation</h3>
           <div>{reason}</div>
         </Row>
       ) : null}
@@ -178,7 +182,7 @@ const Inputs: FC<{ reason?: string }> = ({ reason }) => {
       </Row>
       {useCustomRecipients ? (
         <Row>
-          <H3>Custom recipients/amounts</H3>
+          <h3>Custom recipients/amounts</h3>
           <CustomRecipients />
         </Row>
       ) : null}

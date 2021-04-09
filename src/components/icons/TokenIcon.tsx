@@ -166,8 +166,8 @@ const Image = styled.img`
 
 const PlaceholderIcon = styled.div`
   border-radius: 100%;
-  width: 2rem;
-  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
   background: grey;
   display: flex;
   align-items: center;

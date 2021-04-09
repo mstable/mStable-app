@@ -15,7 +15,7 @@ import { Color, ViewportWidth } from '../../theme';
 import { ReactComponent as LogoSvg } from '../icons/mstable-small.svg';
 import { UnstyledButton } from '../core/Button';
 import { ActivitySpinner } from '../core/ActivitySpinner';
-import { useTruncatedAddress } from '../../web3/hooks';
+import { truncateAddress } from '../../utils/strings';
 import {
   useConnect,
   useConnected,
@@ -260,7 +260,6 @@ const WalletButton: FC = () => {
   const connected = useConnected();
   const account = useWalletAddress();
 
-  const truncatedAddress = useTruncatedAddress(account);
   const connect = useConnect();
   const showTCModal = useTCModal();
 
@@ -283,7 +282,9 @@ const WalletButton: FC = () => {
           <Idle>
             <WalletIcon />
           </Idle>
-          <TruncatedAddress>{truncatedAddress}</TruncatedAddress>
+          <TruncatedAddress>
+            {account && truncateAddress(account)}
+          </TruncatedAddress>
         </>
       ) : (
         <span>Connect</span>

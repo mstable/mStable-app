@@ -7,6 +7,7 @@ import { TokenIcon, TokenPair } from '../icons/TokenIcon';
 import { useSelectedMassetPrice } from '../../hooks/usePrice';
 import { CountUp, CountUpUSD } from '../core/CountUp';
 import { toK } from './utils';
+import { EtherscanLink } from '../core/EtherscanLink';
 
 const Label = styled.div`
   font-weight: 600;
@@ -69,7 +70,9 @@ export const SimpleMassetStats: FC = () => {
       <AssetRow>
         <Label>
           <TokenIcon symbol={masset.token.symbol} />
-          Total {masset.token.symbol}
+          <EtherscanLink data={masset.address}>
+            mStable {masset.token.symbol}
+          </EtherscanLink>
         </Label>
         <CountUpUSD
           end={masset.token.totalSupply.simple}
@@ -81,7 +84,7 @@ export const SimpleMassetStats: FC = () => {
         <AssetRow key={b.token.address}>
           <Label>
             <TokenIcon symbol={b.token.symbol} />
-            {b.token.symbol}
+            <EtherscanLink data={b.address}>{b.token.symbol}</EtherscanLink>
           </Label>
           <Percentage>
             <CountUp end={b.totalVaultInMasset.simple} formattingFn={toK} />
