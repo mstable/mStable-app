@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { constants } from 'ethers';
 import {
   BoostedSavingsVault__factory,
@@ -132,6 +132,20 @@ export const SaveDeposit: FC = () => {
     [massetToken, saveAndStake, saveToken, bAssets, fAssets, ETH],
   );
 
+  const defaultOutputOptions = useMemo(() => {
+    if (!saveToken) return [];
+    if (!vaultAddress) return [saveToken as AddressOption];
+    return [
+      {
+        address: vaultAddress as string,
+        label: `${saveToken.symbol} Vault`,
+        custom: true,
+        symbol: `v-${saveToken.symbol}`,
+      } as AddressOption,
+      saveToken as AddressOption,
+    ];
+  }, [saveToken, vaultAddress]);
+
   const [inputAddress, setInputAddress] = useState<string | undefined>(
     (() => {
       // Select the highest masset-denominated balance (ignore ETH)
@@ -150,6 +164,42 @@ export const SaveDeposit: FC = () => {
 
   const [outputAddress, setOutputAddress] = useState<string | undefined>(
     saveAddress,
+  );
+
+  const [inputOptions, setInputOptions] = useState<AddressOption[]>(
+    defaultInputOptions,
+  );
+  const [outputOptions, setOutputOptions] = useState<AddressOption[]>(
+    defaultOutputOptions,
+  );
+
+  const handleSetInputAddress = useCallback(
+    (address: string): void => {
+      if (address === saveAddress) {
+        setOutputOptions(
+          defaultOutputOptions.filter(v => v.address === vaultAddress),
+        );
+        setOutputAddress(vaultAddress);
+      } else {
+        setOutputOptions(defaultOutputOptions);
+      }
+      setInputAddress(address);
+    },
+    [defaultOutputOptions, saveAddress, vaultAddress],
+  );
+
+  const handleSetOutputAddress = useCallback(
+    (address: string): void => {
+      if (address === saveAddress) {
+        setInputOptions(
+          defaultInputOptions.filter(v => v.address !== saveAddress),
+        );
+      } else {
+        setInputOptions(defaultInputOptions);
+      }
+      setOutputAddress(address);
+    },
+    [defaultInputOptions, saveAddress],
   );
 
   const inputToken = useTokenSubscription(inputAddress);
@@ -357,35 +407,21 @@ export const SaveDeposit: FC = () => {
     [outputs.exchangeRate, saveOutput],
   );
 
-  const outputAddressOptions = useMemo(() => {
-    if (!saveToken) return;
-    if (!vaultAddress) return [saveToken as AddressOption];
-    return [
-      {
-        address: vaultAddress as string,
-        label: `${saveToken.symbol} Vault`,
-        custom: true,
-        symbol: `v-${saveToken.symbol}`,
-      } as AddressOption,
-      saveToken as AddressOption,
-    ];
-  }, [saveToken, vaultAddress]);
-
   return (
     <AssetExchange
       error={error ?? hasSlippage ? outputs.penaltyBonus.message : undefined}
-      handleSetInputAddress={setInputAddress}
+      handleSetInputAddress={handleSetInputAddress}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={() => {
         if (inputToken) setInputFormValue(inputToken.balance.string);
       }}
       inputAddress={inputAddress}
       inputFormValue={inputFormValue}
-      inputAddressOptions={inputAddressOptions}
+      inputAddressOptions={inputOptions}
       exchangeRate={exchangeRate}
       outputAddress={outputAddress}
-      outputAddressOptions={outputAddressOptions ?? []}
-      handleSetOutputAddress={setOutputAddress}
+      outputAddressOptions={outputOptions}
+      handleSetOutputAddress={handleSetOutputAddress}
     >
       <SendButton
         approve={approve}

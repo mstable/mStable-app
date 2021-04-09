@@ -118,7 +118,6 @@ export const ApproveContent: FC<{
       <StyledButton
         highlighted
         disabled={hasPendingApproval}
-        scale={0.875}
         onClick={() => {
           onApproveClick(Mode.Zero);
         }}
@@ -137,7 +136,6 @@ export const ApproveContent: FC<{
         <StyledButton
           highlighted
           disabled={hasPendingApproval}
-          scale={0.875}
           onClick={() => {
             onApproveClick(Mode.Exact);
           }}
@@ -155,7 +153,6 @@ export const ApproveContent: FC<{
         <StyledButton
           highlighted
           disabled={hasPendingApproval}
-          scale={0.875}
           onClick={() => {
             onApproveClick(Mode.Infinite);
           }}

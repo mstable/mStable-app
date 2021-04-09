@@ -15,6 +15,7 @@ import {
   CardButton as Button,
 } from '../../../core/TransitionCard';
 import { WeeklySaveAPY } from '../WeeklySaveAPY';
+import { Tooltip } from '../../../core/ReactTooltip';
 
 enum Selection {
   Balance = 'balance',
@@ -35,6 +36,17 @@ const components: Record<string, ReactElement> = {
   [APY]: <UserAPY />,
   [Rewards]: <UserRewards />,
 };
+
+const ApyTip = styled(Tooltip)`
+  > span > span > span {
+    font-size: 1.5rem;
+    font-weight: normal;
+
+    > span {
+      font-size: 1rem;
+    }
+  }
+`;
 
 const OnboardingMessage = styled.div`
   display: flex;
@@ -59,16 +71,6 @@ const OnboardingMessage = styled.div`
     color: ${({ theme }) => theme.color.body};
     opacity: 0.675;
     margin-top: 0.625rem;
-  }
-
-  > div:last-child {
-    padding: 1rem;
-    font-size: 1.5rem;
-    font-weight: normal;
-
-    > span:last-child {
-      font-size: 1rem;
-    }
   }
 `;
 
@@ -109,9 +111,9 @@ export const SaveOverview: FC = () => {
         <h2>The best passive savings account in DeFi.</h2>
         <h3>Secure, high yielding, dependable.</h3>
       </div>
-      <div>
+      <ApyTip tip="7-day MA (Moving Average) APY">
         <CountUp end={saveApy?.value ?? 0} suffix="%" /> <span>APY</span>
-      </div>
+      </ApyTip>
     </OnboardingMessage>
   ) : (
     <Overview components={components} selection={selection}>
