@@ -1,13 +1,17 @@
 import React, { FC, useState } from 'react';
 import styled from 'styled-components';
 
-import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
+import {
+  formatMassetName,
+  useSelectedMassetName,
+} from '../../../../context/SelectedMassetNameProvider';
 import { ViewportWidth } from '../../../../theme';
 import { SaveDeposit } from './SaveDeposit';
 import { SaveRedeem } from './SaveRedeem';
-import { TabSwitch } from '../../../core/Tabs';
+import { TabCard } from '../../../core/Tabs';
 import { ToggleSave } from '../ToggleSave';
 import { SaveOverview } from './SaveOverview';
+import { InfoBox } from '../../../core/InfoBox';
 
 enum Tabs {
   Deposit = 'Deposit',
@@ -27,31 +31,26 @@ const ButtonPanel = styled.div`
 
 const Sidebar = styled.div`
   display: flex;
+  flex-direction: column;
+
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
   border-radius: 1rem;
-  padding: 0 1rem;
 
   > * {
     margin-bottom: 1rem;
-  }
-
-  @media (min-width: ${ViewportWidth.m}) {
-    flex-basis: calc(35% - 0.5rem);
+    width: 100%;
   }
 `;
 
-const Exchange = styled.div`
-  display: flex;
-  flex-direction: column;
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  padding: 0.25rem 1rem 1rem;
-  border-radius: 1rem;
-  width: 100%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-
+const Content = styled.div`
   @media (min-width: ${ViewportWidth.m}) {
-    flex-basis: calc(65% - 0.5rem);
+    > div:first-child {
+      flex-basis: calc(65% - 0.5rem);
+    }
+    > div:last-child {
+      flex-basis: calc(35% - 0.5rem);
+    }
   }
 `;
 
@@ -73,6 +72,7 @@ const Container = styled.div`
 
 export const Save: FC = () => {
   const massetName = useSelectedMassetName();
+  const formattedName = formatMassetName(massetName);
   const [activeTab, setActiveTab] = useState<string>(Tabs.Deposit as string);
 
   const tabs = {
@@ -89,16 +89,29 @@ export const Save: FC = () => {
   return (
     <Container>
       <SaveOverview />
-      <div>
-        <Exchange>
-          <TabSwitch tabs={tabs} active={activeTab} onClick={setActiveTab} />
-        </Exchange>
+      <Content>
+        <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
         <Sidebar>
-          <ButtonPanel>
-            {massetName === 'musd' ? <ToggleSave /> : <div />}
-          </ButtonPanel>
+          {massetName === 'musd' && (
+            <ButtonPanel>
+              {massetName === 'musd' ? <ToggleSave /> : <div />}
+            </ButtonPanel>
+          )}
+          <InfoBox>
+            <p>
+              <span>imAssets are interest-bearing.</span>
+            </p>
+            <p>
+              By depositing to {`i${formattedName}`} you will begin earning
+              interest on your underlying {formattedName}.
+            </p>
+            <p>
+              Deposits from assets other than {formattedName} will first mint{' '}
+              {formattedName} before being deposited.
+            </p>
+          </InfoBox>
         </Sidebar>
-      </div>
+      </Content>
     </Container>
   );
 };

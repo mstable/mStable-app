@@ -256,15 +256,11 @@ export const Layout: FC = ({ children }) => {
     let message: BannerMessage | undefined;
 
     if (massetName === 'musd' && pathname.includes('save')) {
-      const saveV2Message = MessageHandler.saveV2({
-        hasV1Balance: false,
-        pathname,
-      });
       const recollatMessage =
         (undergoingRecol && MessageHandler.recollat({ massetName })) ||
         undefined;
 
-      message = recollatMessage ?? saveV2Message;
+      message = recollatMessage;
     } else if (massetName === 'mbtc') {
       message =
         (pathname === '/mbtc/mint' && MessageHandler.tvlCap({ tvlCap })) ||

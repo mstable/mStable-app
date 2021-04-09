@@ -67,6 +67,9 @@ export const TabSwitch: FC<{
 
 export const TabCard = styled(TabSwitch)`
   ${({ theme }) => theme.mixins.card};
+  @media (min-width: ${ViewportWidth.m}) {
+    padding: 0.75rem 1.5rem 1.5rem;
+  }
 `;
 
 export const MoreInfo = styled.div`

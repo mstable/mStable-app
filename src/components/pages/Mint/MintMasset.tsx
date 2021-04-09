@@ -36,6 +36,9 @@ const Container = styled.div`
     &:first-child {
       margin-top: 0;
     }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 `;
 

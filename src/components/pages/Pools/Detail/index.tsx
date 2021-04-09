@@ -28,6 +28,7 @@ import { RewardStreamsProvider } from '../../../../context/RewardStreamsProvider
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import { UserLookup } from './UserLookup';
 import { PoolOverview } from './PoolOverview';
+import { InfoBox } from '../../../core/InfoBox';
 
 const HeaderChartsContainer = styled.div`
   position: relative;
@@ -114,39 +115,6 @@ const HeaderContainer = styled.div`
   }
 `;
 
-// Pull out & make generic for message reuse
-const Clippy = styled.div`
-  border: 1px rgba(255, 179, 52, 0.2) solid;
-  background: ${({ theme }) =>
-    theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none'};
-  border-radius: 1rem;
-  padding: 1rem;
-  color: ${({ theme }) => theme.color.offYellow};
-
-  > *:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-
-  h4 {
-    font-weight: 600;
-    font-size: 1rem;
-  }
-
-  p {
-    font-size: 0.875rem;
-
-    span {
-      font-weight: 600;
-    }
-
-    > button {
-      color: ${({ theme }) => theme.color.blue};
-      font-weight: 600;
-      font-size: 0.875rem;
-    }
-  }
-`;
-
 const Exchange = styled.div`
   display: flex;
   flex-direction: column;
@@ -225,7 +193,7 @@ const PoolDetailContent: FC = () => {
         <PoolOverview />
         <Exchange>
           <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
-          <Clippy>
+          <InfoBox>
             <h4>Using mStable Feeder Pools</h4>
             <p>
               Feeder Pools offer a way to earn with your assets with{' '}
@@ -259,7 +227,7 @@ const PoolDetailContent: FC = () => {
                 </p>
               </>
             )}
-          </Clippy>
+          </InfoBox>
         </Exchange>
         <UserLookup />
       </Container>
