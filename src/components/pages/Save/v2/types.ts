@@ -8,6 +8,8 @@ export enum SaveRoutes {
   MintAndStake,
   BuyAndSave,
   BuyAndStake,
+  SwapAndSave,
+  SwapAndStake,
 }
 
 export interface SaveOutput {

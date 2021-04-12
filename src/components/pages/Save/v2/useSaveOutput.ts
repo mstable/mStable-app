@@ -2,7 +2,10 @@ import type { BigNumber } from 'ethers';
 import { Signer } from 'ethers';
 import { useEffect } from 'react';
 import { useDebounce } from 'react-use';
-import { Masset__factory } from '@mstable/protocol/types/generated';
+import {
+  FeederPool__factory,
+  Masset__factory,
+} from '@mstable/protocol/types/generated';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { MassetState } from '../../../../context/DataProvider/types';
@@ -18,7 +21,7 @@ import {
 } from '../../../../typechain';
 import { ADDRESSES } from '../../../../constants';
 
-import { SaveRoutes, SaveOutput } from './types';
+import { SaveOutput, SaveRoutes } from './types';
 
 const getOptimalBasset = async (
   saveWrapper: SaveWrapper,
@@ -85,18 +88,32 @@ export const useSaveOutput = (
   const {
     address: massetAddress,
     bAssets,
+    feederPools,
     savingsContracts: {
       v2: { latestExchangeRate: { rate: latestExchangeRate } = {} },
     },
   } = massetState;
 
   const inputAmountSerialized = inputAmount?.toJSON();
+  const feederPoolAddress =
+    inputAddress &&
+    Object.values(feederPools).find(fp => fp.fasset.address === inputAddress)
+      ?.address;
+
   const [update] = useDebounce(
     () => {
       if (!inputAmountSerialized || !inputAddress) return setSaveOutput.value();
+
       const _inputAmount = BigDecimal.fromJSON(inputAmountSerialized);
 
-      if (!latestExchangeRate) return setSaveOutput.fetching();
+      if (
+        !latestExchangeRate ||
+        ((route === SaveRoutes.SwapAndSave ||
+          route === SaveRoutes.SwapAndStake) &&
+          !feederPoolAddress)
+      ) {
+        return setSaveOutput.fetching();
+      }
 
       let promise: Promise<SaveOutput>;
       switch (route) {
@@ -131,6 +148,19 @@ export const useSaveOutput = (
           })();
           break;
 
+        case SaveRoutes.SwapAndSave:
+        case SaveRoutes.SwapAndStake:
+          promise = (async () => {
+            const swapOutput = await FeederPool__factory.connect(
+              feederPoolAddress as string,
+              signer,
+            ).getSwapOutput(inputAddress, massetAddress, _inputAmount.exact);
+            return {
+              amount: new BigDecimal(swapOutput),
+            };
+          })();
+          break;
+
         default:
           return setSaveOutput.value();
       }
@@ -146,7 +176,7 @@ export const useSaveOutput = (
         });
     },
     1000,
-    [inputAmountSerialized, inputAddress, massetAddress],
+    [inputAmountSerialized, inputAddress, massetAddress, feederPoolAddress],
   );
 
   useEffect(() => {
