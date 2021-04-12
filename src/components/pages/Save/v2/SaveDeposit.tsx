@@ -45,6 +45,8 @@ const titles = {
   [SaveRoutes.MintAndStake]: 'Mint and deposit to Vault',
   [SaveRoutes.BuyAndSave]: 'Swap and save',
   [SaveRoutes.BuyAndStake]: 'Swap and deposit to Vault',
+  [SaveRoutes.SwapAndSave]: 'Swap and save',
+  [SaveRoutes.SwapAndStake]: 'Swap and deposit to Vault',
 };
 
 const purposes = {
@@ -76,6 +78,14 @@ const purposes = {
     past: 'Swapped and deposited to Vault',
     present: 'Swapping and depositing to Vault',
   },
+  [SaveRoutes.SwapAndSave]: {
+    past: 'Swapped and deposited savings',
+    present: 'Swapping and depositing savings',
+  },
+  [SaveRoutes.SwapAndStake]: {
+    past: 'Swapped and deposited to Vault',
+    present: 'Swapping and depositing to Vault',
+  },
 };
 
 const withSlippage = new Set([
@@ -83,9 +93,9 @@ const withSlippage = new Set([
   SaveRoutes.MintAndStake,
   SaveRoutes.BuyAndSave,
   SaveRoutes.BuyAndStake,
+  SaveRoutes.SwapAndSave,
+  SaveRoutes.SwapAndStake,
 ]);
-
-const withBasset = new Set([SaveRoutes.MintAndSave, SaveRoutes.MintAndStake]);
 
 const withEth = new Set([SaveRoutes.BuyAndSave, SaveRoutes.BuyAndStake]);
 
@@ -99,7 +109,10 @@ export const SaveDeposit: FC<{
   const ETH = useETH();
   const {
     address: massetAddress,
-    bassetRatios,
+    token: massetToken,
+    bAssets,
+    fAssets,
+    feederPools,
     savingsContracts: {
       v2: {
         latestExchangeRate: { rate: saveExchangeRate } = {},
@@ -112,31 +125,24 @@ export const SaveDeposit: FC<{
 
   const inputAddressOptions = useMemo<AddressOption[]>(
     () => [
-      massetState.token,
-      ...(saveAndStake
-        ? [massetState.savingsContracts.v2.token as SubscribedToken]
-        : []),
-      ...Object.values(massetState.bAssets).map(b => b.token),
+      massetToken,
+      ...(saveAndStake ? [saveToken as SubscribedToken] : []),
+      ...Object.values(bAssets).map(b => b.token),
+      ...Object.values(fAssets).map(b => b.token),
       ETH,
     ],
-    [
-      ETH,
-      massetState.bAssets,
-      massetState.savingsContracts.v2.token,
-      massetState.token,
-      saveAndStake,
-    ],
+    [massetToken, saveAndStake, saveToken, bAssets, fAssets, ETH],
   );
 
   const [inputAddress, setInputAddress] = useState<string | undefined>(
     (() => {
       // Select the highest masset-denominated balance (ignore ETH)
       const [[first]] = ([
-        ...Object.values(massetState.bAssets).map(b => [
+        ...Object.values(bAssets).map(b => [
           b.address,
           b.token.balance.simple ?? 0,
         ]),
-        [massetState.address, massetState.token.balance.simple ?? 0],
+        [massetAddress, massetToken.balance.simple ?? 0],
       ] as [string, number][]).sort(
         (a, b) => (b[1] as number) - (a[1] as number),
       );
@@ -150,6 +156,14 @@ export const SaveDeposit: FC<{
     inputToken?.decimals,
   );
 
+  const feederPoolAddress = useMemo<string | undefined>(() => {
+    if (inputAddress) {
+      return Object.values(feederPools).find(
+        fp => fp.fasset.address === inputAddress,
+      )?.address;
+    }
+  }, [feederPools, inputAddress]);
+
   const saveRoute = useMemo<SaveRoutes>(() => {
     if (inputAddress === saveAddress) return SaveRoutes.Stake;
 
@@ -161,8 +175,18 @@ export const SaveDeposit: FC<{
       return saveAndStake ? SaveRoutes.BuyAndStake : SaveRoutes.BuyAndSave;
     }
 
+    if (feederPoolAddress) {
+      return saveAndStake ? SaveRoutes.SwapAndStake : SaveRoutes.SwapAndSave;
+    }
+
     return saveAndStake ? SaveRoutes.MintAndStake : SaveRoutes.MintAndSave;
-  }, [inputAddress, massetAddress, saveAddress, saveAndStake]);
+  }, [
+    inputAddress,
+    saveAddress,
+    massetAddress,
+    feederPoolAddress,
+    saveAndStake,
+  ]);
 
   const saveOutput = useSaveOutput(saveRoute, inputAddress, inputAmount);
 
@@ -241,9 +265,14 @@ export const SaveDeposit: FC<{
     );
 
     // Scale input to mAsset units, if necessary
-    const inputMasset = withBasset.has(saveRoute)
-      ? inputAmount.mulRatioTruncate(bassetRatios[inputAddress]).setDecimals(18)
-      : inputAmount;
+    const inputBasset = bAssets[inputAddress];
+    const inputFasset = feederPoolAddress && fAssets[feederPoolAddress];
+    const inputMasset =
+      inputBasset || inputFasset
+        ? inputAmount
+            .mulRatioTruncate((inputBasset || inputFasset).ratio)
+            .setDecimals(18)
+        : inputAmount;
 
     // If coming from ETH, convert to mAsset value
     const ethPriceExact = BigDecimal.parse(ethPrice.toFixed(10)).exact;
@@ -277,15 +306,17 @@ export const SaveDeposit: FC<{
       },
     };
   }, [
-    massetPrice,
-    bassetRatios,
-    ethPrice,
+    saveOutput.value,
+    slippageSimple,
+    saveExchangeRate,
     inputAddress,
     inputAmount,
-    saveExchangeRate,
-    saveOutput.value,
+    ethPrice,
     saveRoute,
-    slippageSimple,
+    bAssets,
+    feederPoolAddress,
+    fAssets,
+    massetPrice,
   ]);
 
   const approve = useMemo(() => {
@@ -413,6 +444,31 @@ export const SaveDeposit: FC<{
                       inputAmount.exact,
                       (outputs.minOutputMasset as BigDecimal).exact,
                       saveRoute === SaveRoutes.MintAndStake,
+                    ],
+                    purpose,
+                    formId,
+                  ),
+                );
+
+              case SaveRoutes.SwapAndSave:
+              case SaveRoutes.SwapAndStake:
+                if (!feederPoolAddress) return;
+                return propose<Interfaces.SaveWrapper, 'saveViaSwap'>(
+                  new TransactionManifest(
+                    SaveWrapper__factory.connect(
+                      ADDRESSES.SAVE_WRAPPER,
+                      signer,
+                    ),
+                    'saveViaSwap',
+                    [
+                      massetAddress,
+                      saveAddress,
+                      vaultAddress,
+                      feederPoolAddress,
+                      inputAddress,
+                      inputAmount.exact,
+                      (outputs.minOutputMasset as BigDecimal).exact,
+                      saveRoute === SaveRoutes.SwapAndStake,
                     ],
                     purpose,
                     formId,
