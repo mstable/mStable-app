@@ -61,14 +61,6 @@ const MassetAside: FC = () => {
   );
 };
 
-const Separator = styled.div`
-  height: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.color.accent};
-  width: 100%;
-  padding-bottom: 2rem;
-  margin-bottom: 2rem;
-`;
-
 const Inner = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
     display: flex;
@@ -79,6 +71,9 @@ const Inner = styled.div`
     > * {
       width: 36rem;
     }
+  }
+  > div:not(:last-child) {
+    margin-bottom: 1.5rem;
   }
 `;
 
@@ -125,7 +120,6 @@ export const MassetPage: FC<{ asideVisible?: boolean }> = ({
       {asideVisible ? (
         <Inner>
           <div>{children}</div>
-          <Separator />
           <Overview
             components={{ root: <MassetAside /> }}
             selection={selection}
