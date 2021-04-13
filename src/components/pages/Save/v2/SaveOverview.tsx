@@ -14,11 +14,11 @@ import {
   CardContainer as Container,
   CardButton as Button,
 } from '../../../core/TransitionCard';
-import { WeeklySaveAPY } from '../WeeklySaveAPY';
-import { Tooltip } from '../../../core/ReactTooltip';
-import { DailyApys } from '../../../stats/DailyApys';
 import { SavePosition } from './SavePosition';
-import { ViewportWidth } from '../../../../theme';
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
+import { ReactComponent as WarningBadge } from '../../../icons/badges/warning.svg';
+import { OnboardingMessage } from './OnboardingMessage';
+import { ApyInfo } from './ApyInfo';
 
 enum Selection {
   Balance = 'balance',
@@ -28,142 +28,30 @@ enum Selection {
 
 const { Balance, APY, Rewards } = Selection;
 
-const UserAPYContainer = styled.div`
+const StyledWarningBadge = styled(WarningBadge)`
+  position: absolute;
+  top: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  right: -1.5rem;
+`;
+
+const BalanceHeading = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 12rem;
+  justify-content: center;
 
   > div:first-child {
-    flex-basis: calc(60% - 0.5rem);
-    padding-right: 2rem;
-  }
-  > div:last-child {
-    flex-basis: calc(40% - 0.5rem);
+    display: flex;
+    justify-content: center;
+    position: relative;
   }
 `;
-
-const SaveAPY = styled(DailyApys)`
-  position: relative;
-  border: 1px solid ${({ theme }) => theme.color.accent};
-  border-radius: 1rem;
-  overflow: hidden;
-`;
-
-const UserAPY: FC = () => {
-  return (
-    <UserAPYContainer>
-      <WeeklySaveAPY />
-      <SaveAPY hideControls shimmerHeight={180} tick={false} />
-    </UserAPYContainer>
-  );
-};
 
 const components: Record<string, ReactElement> = {
   [Balance]: <SavePosition />,
-  [APY]: <UserAPY />,
+  [APY]: <ApyInfo />,
   [Rewards]: <UserRewards />,
 };
-
-const ApyTip = styled(Tooltip)`
-  > span > span > span {
-    font-size: 1.5rem;
-    font-weight: normal;
-
-    > span {
-      font-size: 1rem;
-    }
-  }
-`;
-
-const OnboardingMessage = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  > div {
-    flex: 1;
-  }
-
-  > div:first-child {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 100%;
-    border-radius: 1rem;
-    padding: 2rem;
-    border: 1px solid ${({ theme }) => theme.color.accent};
-    margin-bottom: 1rem;
-
-    &:before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      background: ${({ theme }) =>
-        `linear-gradient(180deg, #d2aceb 0%, ${theme.color.background} 100%)`};
-      border-radius: 1rem;
-      opacity: 0.33;
-    }
-
-    > * {
-      z-index: 1;
-    }
-
-    h2 {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: ${({ theme }) => theme.color.body};
-    }
-
-    h3 {
-      font-size: 1rem;
-      color: ${({ theme }) => theme.color.body};
-      opacity: 0.675;
-      margin-top: 0.625rem;
-    }
-  }
-
-  > div:last-child {
-    position: relative;
-    z-index: 1;
-
-    > :last-child {
-      position: absolute;
-      top: 0;
-      left: 0;
-      padding: 1rem;
-      font-size: 1.25rem;
-
-      span {
-        font-size: 1.25rem;
-      }
-    }
-  }
-
-  @media (min-width: ${ViewportWidth.l}) {
-    flex-direction: row;
-    justify-content: space-between;
-
-    max-height: 10rem;
-
-    > div {
-      flex: 0;
-    }
-
-    > div:first-child {
-      flex-basis: calc(65% - 0.5rem);
-      margin-bottom: 0;
-    }
-
-    > div:last-child {
-      flex-basis: calc(35% - 0.5rem);
-    }
-  }
-`;
 
 export const SaveOverview: FC = () => {
   const [selection, setSelection] = useState<Selection | undefined>();
@@ -171,12 +59,13 @@ export const SaveOverview: FC = () => {
   const massetPrice = useSelectedMassetPrice();
   const rewardStreams = useRewardStreams();
   const saveApy = useAvailableSaveApy();
+  const [selectedSaveVersion] = useSelectedSaveVersion();
 
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
-  const showOnboardingMessage = false;
 
   const {
     savingsContracts: {
+      v1: { savingsBalance: saveV1Balance } = {},
       v2: {
         boostedSavingsVault,
         token: saveToken,
@@ -185,13 +74,24 @@ export const SaveOverview: FC = () => {
     },
   } = massetState as MassetState;
 
-  const userBalance = useMemo(
-    () =>
+  const userBalance = useMemo(() => {
+    if (selectedSaveVersion === 1) return saveV1Balance?.balance;
+
+    return (
       boostedSavingsVault?.account?.rawBalance
         .add(saveToken?.balance ?? BigDecimal.ZERO)
-        .mulTruncate(saveExchangeRate?.exact ?? BigDecimal.ONE.exact),
-    [boostedSavingsVault, saveToken, saveExchangeRate],
-  );
+        .mulTruncate(saveExchangeRate?.exact ?? BigDecimal.ONE.exact) ??
+      BigDecimal.ZERO
+    );
+  }, [
+    boostedSavingsVault,
+    saveToken,
+    saveExchangeRate,
+    selectedSaveVersion,
+    saveV1Balance,
+  ]);
+
+  const showOnboardingMessage = userBalance?.exact.eq(0);
 
   // enable collapse
   const handleSelection = useCallback(
@@ -201,26 +101,7 @@ export const SaveOverview: FC = () => {
   );
 
   return showOnboardingMessage ? (
-    <OnboardingMessage>
-      <div>
-        <h2>The best passive savings account in DeFi.</h2>
-        <h3>Secure, high yielding, dependable.</h3>
-      </div>
-      <div>
-        <SaveAPY
-          hideControls
-          shimmerHeight={160}
-          tick={false}
-          marginTop={48}
-          color="#d2aceb"
-        />
-        <div>
-          <ApyTip tip="7-day MA (Moving Average) APY">
-            <CountUp end={saveApy?.value ?? 0} suffix="%" /> <span>APY</span>
-          </ApyTip>
-        </div>
-      </div>
-    </OnboardingMessage>
+    <OnboardingMessage />
   ) : (
     <Overview components={components} selection={selection}>
       <Container>
@@ -228,7 +109,12 @@ export const SaveOverview: FC = () => {
           active={selection === Balance}
           onClick={() => handleSelection(Balance)}
         >
-          <h3>Balance</h3>
+          <BalanceHeading>
+            <div>
+              <h3>Balance</h3>
+              {selectedSaveVersion === 1 && <StyledWarningBadge />}
+            </div>
+          </BalanceHeading>
           <CountUp
             end={(userBalance?.simple ?? 0) * (massetPrice ?? 0)}
             prefix="$"

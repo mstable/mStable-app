@@ -1,6 +1,5 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
-import { useToggle } from 'react-use';
 
 import { useTransactionsState } from '../../../../context/TransactionsProvider';
 import { TransactionStatus } from '../../../../web3/TransactionManifest';
@@ -8,7 +7,6 @@ import { TransactionStatus } from '../../../../web3/TransactionManifest';
 import { ViewportWidth, gradientShift } from '../../../../theme';
 import { H2 } from '../../../core/Typography';
 import { Steps } from '../../../core/Steps';
-import { Button } from '../../../core/Button';
 
 import {
   SaveMigrationProvider,
@@ -30,6 +28,10 @@ const ExchangeRate = styled.div`
   font-size: 1rem;
   flex: 1;
   justify-content: center;
+  border: 1px dashed ${({ theme }) => theme.color.accent};
+  justify-self: center;
+  padding: 1rem;
+  border-radius: 1rem;
 
   span {
     ${({ theme }) => theme.mixins.numeric};
@@ -40,12 +42,14 @@ const Inner = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
   width: 100%;
+  height: 100%;
+  text-align: center;
 `;
 
 const Card = styled.div`
-  margin-top: 1.5rem;
   padding: 1.5rem;
   border-radius: 1.5rem;
   display: flex;
@@ -80,7 +84,6 @@ const Card = styled.div`
 `;
 
 const SaveMigrationContent: FC = () => {
-  const [active, toggleActive] = useToggle(false);
   const steps = useMigrationSteps();
   const transactions = useTransactionsState();
   const massetState = useSelectedMassetState();
@@ -100,41 +103,33 @@ const SaveMigrationContent: FC = () => {
     <Card>
       <Inner>
         <H2>
-          {active ? (
-            !stepsComplete ? (
-              `Migration Assistant`
-            ) : (
-              `Migration Complete! 🎉`
-            )
-          ) : (
-            <Button highlighted onClick={toggleActive}>
-              Migrate your Save V1 balance
-            </Button>
-          )}
+          {!stepsComplete ? `Migration Assistant` : `Migration Complete! 🎉`}
         </H2>
-        {(!active || !stepsComplete) && (
-          <div>
-            To continue earning interest, please migrate your <b>Save V1</b>{' '}
-            balance.
-            <ExchangeRate>
-              <div>
-                <span>1</span>&nbsp; mUSD = &nbsp;
-                <span>
-                  {savingsContract?.latestExchangeRate?.rate &&
-                    (
-                      1 / savingsContract.latestExchangeRate?.rate.simple
-                    ).toFixed(2)}
-                </span>
-                &nbsp; imUSD
-              </div>
-            </ExchangeRate>
-          </div>
+        {!stepsComplete && (
+          <>
+            <div>
+              <p>
+                To continue earning interest on your <b>Save V1</b> balance,
+                please migrate your balance by following the steps below:
+              </p>
+              <ExchangeRate>
+                <div>
+                  <span>1</span>&nbsp; mUSD = &nbsp;
+                  <span>
+                    {savingsContract?.latestExchangeRate?.rate &&
+                      (
+                        1 / savingsContract.latestExchangeRate?.rate.simple
+                      ).toFixed(2)}
+                  </span>
+                  &nbsp; imUSD
+                </div>
+              </ExchangeRate>
+            </div>
+          </>
         )}
-        {active && (
-          <StepsContainer>
-            {steps.length && <Steps steps={steps} pending={submitting} />}
-          </StepsContainer>
-        )}
+        <StepsContainer>
+          {steps.length && <Steps steps={steps} pending={submitting} />}
+        </StepsContainer>
       </Inner>
     </Card>
   );

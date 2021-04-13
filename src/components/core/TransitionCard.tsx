@@ -18,7 +18,7 @@ export const CardButton = styled(UnstyledButton)<{
     font-weight: 600;
   }
 
-  h3:not(:last-child) {
+  h3 {
     margin-bottom: 0.5rem;
   }
 

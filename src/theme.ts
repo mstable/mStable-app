@@ -222,7 +222,7 @@ export const gradientShift = css`
       rgb(251, 7, 217) 90%,
       rgb(255, 0, 0) 100%
     );
-    filter: blur(0.25rem);
+    filter: blur(0.15rem);
     inset: 1px;
     z-index: -1;
     border-radius: 0.75rem;
