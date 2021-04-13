@@ -4,7 +4,32 @@ import styled from 'styled-components';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 
 import { SimpleMassetStats } from '../stats/SimpleMassetStats';
-import { Overview, CardButton } from '../core/TransitionCard';
+import { Overview } from '../core/TransitionCard';
+import { UnstyledButton } from '../core/Button';
+
+export const Button = styled(UnstyledButton)`
+  border-radius: 1rem;
+  padding: 1rem;
+
+  h3 {
+    color: ${({ theme }) => theme.color.bodyAccent};
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  h3:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+
+  span {
+    ${({ theme }) => theme.mixins.numeric};
+    font-size: 1.125rem;
+  }
+
+  :hover {
+    background: ${({ theme }) => theme.color.backgroundAccent};
+  }
+`;
 
 const MassetAsideContainer = styled.aside`
   padding: 0 1rem 1rem;
@@ -105,9 +130,9 @@ export const MassetPage: FC<{ asideVisible?: boolean }> = ({
             components={{ root: <MassetAside /> }}
             selection={selection}
           >
-            <CardButton onClick={() => handleSelection('root')}>
+            <Button onClick={() => handleSelection('root')}>
               <h3>View Basket Stats</h3>
-            </CardButton>
+            </Button>
           </Overview>
         </Inner>
       ) : (

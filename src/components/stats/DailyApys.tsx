@@ -49,7 +49,13 @@ const formatApy = (percentage: number): string =>
     ? `${percentageFormat(percentage as number)} 🔥`
     : percentageFormat(percentage as number);
 
-const DailyApysChart: FC = () => {
+const DailyApysChart: FC<{
+  shimmerHeight?: number;
+  tick?: boolean;
+  marginTop?: number;
+  className?: string;
+  color?: string;
+}> = ({ shimmerHeight = 270, tick, className, marginTop, color }) => {
   const dateFilter = useDateFilter();
   const { DailyApy, UtilisationRate } = useMetrics<MetricTypes>();
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
@@ -65,11 +71,15 @@ const DailyApysChart: FC = () => {
   }
 
   return (
-    <RechartsContainer>
+    <RechartsContainer className={className}>
       {dailyApys && dailyApys.length ? (
         <ResponsiveContainer aspect={2}>
           <AreaChart
-            margin={{ top: 0, right: 16, bottom: 16, left: 16 }}
+            margin={
+              tick
+                ? { top: marginTop, right: 16, bottom: 16, left: 16 }
+                : { top: marginTop, right: 0, bottom: 0, left: 0 }
+            }
             barCategoryGap={1}
             data={dailyApys}
           >
@@ -87,18 +97,28 @@ const DailyApysChart: FC = () => {
                 />
               </linearGradient>
               <linearGradient id="dailyAPY" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={Color.gold} stopOpacity={0.5} />
-                <stop offset="95%" stopColor={Color.gold} stopOpacity={0} />
+                <stop
+                  offset="5%"
+                  stopColor={color ?? Color.gold}
+                  stopOpacity={0.5}
+                />
+                <stop
+                  offset="95%"
+                  stopColor={color ?? Color.gold}
+                  stopOpacity={0}
+                />
               </linearGradient>
             </defs>
             <XAxis
               dataKey="timestamp"
               axisLine={false}
+              tick={tick}
               xAxisId={0}
               tickSize={12}
-              padding={{ left: 16 }}
+              padding={tick ? { left: 16 } : { left: 0 }}
               minTickGap={16}
               tickLine
+              height={!tick ? 0 : undefined}
               tickFormatter={(timestamp: number) =>
                 timestamp
                   ? format(
@@ -113,12 +133,14 @@ const DailyApysChart: FC = () => {
               orientation="left"
               tickFormatter={formatApy}
               axisLine={false}
+              tick={tick}
               tickLine
               tickSize={12}
-              padding={{ bottom: 16 }}
+              padding={tick ? { bottom: 16 } : { bottom: 0 }}
               interval="preserveEnd"
               minTickGap={8}
               yAxisId={0}
+              width={!tick ? 0 : undefined}
             />
             <Tooltip
               cursor
@@ -161,19 +183,43 @@ const DailyApysChart: FC = () => {
               opacity={1}
               yAxisId={0}
               fill="url(#dailyAPY)"
-              stroke={DailyApy.color}
+              stroke={color ?? DailyApy.color}
             />
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <ThemedSkeleton height={270} />
+        <ThemedSkeleton height={shimmerHeight} />
       )}
     </RechartsContainer>
   );
 };
 
-export const DailyApys: FC = () => (
-  <Metrics defaultDateRange={DateRange.Month} metrics={dailyApyMetrics}>
-    <DailyApysChart />
+export const DailyApys: FC<{
+  hideControls?: boolean;
+  shimmerHeight?: number;
+  tick?: boolean;
+  marginTop?: number;
+  className?: string;
+  color?: string;
+}> = ({
+  hideControls = false,
+  shimmerHeight,
+  tick = true,
+  className,
+  marginTop,
+  color,
+}) => (
+  <Metrics
+    defaultDateRange={DateRange.Month}
+    metrics={dailyApyMetrics}
+    hideControls={hideControls}
+  >
+    <DailyApysChart
+      shimmerHeight={shimmerHeight}
+      tick={tick}
+      marginTop={marginTop}
+      className={className}
+      color={color}
+    />
   </Metrics>
 );

@@ -81,7 +81,6 @@ const Content = styled.div<{ open: boolean }>`
     > div {
       overflow: hidden;
       transition: max-height 0.2s ease-in-out;
-      max-height: 24rem;
       transform-origin: center top;
 
       &.item-enter {

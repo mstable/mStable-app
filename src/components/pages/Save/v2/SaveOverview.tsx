@@ -16,6 +16,8 @@ import {
 } from '../../../core/TransitionCard';
 import { WeeklySaveAPY } from '../WeeklySaveAPY';
 import { Tooltip } from '../../../core/ReactTooltip';
+import { DailyApys } from '../../../stats/DailyApys';
+import { SavePosition } from './SavePosition';
 
 enum Selection {
   Balance = 'balance',
@@ -25,14 +27,39 @@ enum Selection {
 
 const { Balance, APY, Rewards } = Selection;
 
-const Blank: FC = () => <p>test</p>;
+const UserAPYContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 12rem;
+
+  > div:first-child {
+    flex-basis: calc(60% - 0.5rem);
+    padding-right: 2rem;
+  }
+  > div:last-child {
+    flex-basis: calc(40% - 0.5rem);
+  }
+`;
+
+const SaveAPY = styled(DailyApys)`
+  position: relative;
+  border: 1px solid ${({ theme }) => theme.color.accent};
+  border-radius: 1rem;
+  overflow: hidden;
+`;
 
 const UserAPY: FC = () => {
-  return <WeeklySaveAPY />;
+  return (
+    <UserAPYContainer>
+      <WeeklySaveAPY />
+      <SaveAPY hideControls shimmerHeight={180} tick={false} />
+    </UserAPYContainer>
+  );
 };
 
 const components: Record<string, ReactElement> = {
-  [Balance]: <Blank />,
+  [Balance]: <SavePosition />,
   [APY]: <UserAPY />,
   [Rewards]: <UserRewards />,
 };
@@ -51,26 +78,67 @@ const ApyTip = styled(Tooltip)`
 const OnboardingMessage = styled.div`
   display: flex;
   justify-content: space-between;
-  background: linear-gradient(
-    177.69deg,
-    #f1efff 1.94%,
-    rgba(255, 255, 255, 0) 133.71%
-  );
-  width: 100%;
-  border-radius: 1rem;
-  padding: 1.5rem;
+  height: 10rem;
 
-  h2 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: ${({ theme }) => theme.color.body};
+  > div:first-child {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-basis: calc(65% - 0.5rem);
+    width: 100%;
+    border-radius: 1rem;
+    padding: 0 2rem;
+    border: 1px solid ${({ theme }) => theme.color.accent};
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: ${({ theme }) =>
+        `linear-gradient(180deg, #d2aceb 0%, ${theme.color.background} 100%)`};
+      border-radius: 1rem;
+      opacity: 0.33;
+    }
+
+    > * {
+      z-index: 1;
+    }
+
+    h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: ${({ theme }) => theme.color.body};
+    }
+
+    h3 {
+      font-size: 1rem;
+      color: ${({ theme }) => theme.color.body};
+      opacity: 0.675;
+      margin-top: 0.625rem;
+    }
   }
 
-  h3 {
-    font-size: 1rem;
-    color: ${({ theme }) => theme.color.body};
-    opacity: 0.675;
-    margin-top: 0.625rem;
+  > div:last-child {
+    position: relative;
+    flex-basis: calc(35% - 0.5rem);
+    z-index: 1;
+
+    > :last-child {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 1rem;
+      font-size: 1.25rem;
+
+      span {
+        font-size: 1.25rem;
+      }
+    }
   }
 `;
 
@@ -86,16 +154,20 @@ export const SaveOverview: FC = () => {
 
   const {
     savingsContracts: {
-      v2: { boostedSavingsVault, token: saveToken },
+      v2: {
+        boostedSavingsVault,
+        token: saveToken,
+        latestExchangeRate: { rate: saveExchangeRate } = {},
+      },
     },
   } = massetState as MassetState;
 
   const userBalance = useMemo(
     () =>
-      boostedSavingsVault?.account?.rawBalance.add(
-        saveToken?.balance ?? BigDecimal.ZERO,
-      ),
-    [boostedSavingsVault, saveToken],
+      boostedSavingsVault?.account?.rawBalance
+        .add(saveToken?.balance ?? BigDecimal.ZERO)
+        .mulTruncate(saveExchangeRate?.exact ?? BigDecimal.ONE.exact),
+    [boostedSavingsVault, saveToken, saveExchangeRate],
   );
 
   // enable collapse
@@ -111,9 +183,20 @@ export const SaveOverview: FC = () => {
         <h2>The best passive savings account in DeFi.</h2>
         <h3>Secure, high yielding, dependable.</h3>
       </div>
-      <ApyTip tip="7-day MA (Moving Average) APY">
-        <CountUp end={saveApy?.value ?? 0} suffix="%" /> <span>APY</span>
-      </ApyTip>
+      <div>
+        <SaveAPY
+          hideControls
+          shimmerHeight={160}
+          tick={false}
+          marginTop={48}
+          color="#d2aceb"
+        />
+        <div>
+          <ApyTip tip="7-day MA (Moving Average) APY">
+            <CountUp end={saveApy?.value ?? 0} suffix="%" /> <span>APY</span>
+          </ApyTip>
+        </div>
+      </div>
     </OnboardingMessage>
   ) : (
     <Overview components={components} selection={selection}>
@@ -129,7 +212,7 @@ export const SaveOverview: FC = () => {
           />
         </Button>
         <Button active={selection === APY} onClick={() => handleSelection(APY)}>
-          <h3>Save APY</h3>
+          <h3>Save APY*</h3>
           <CountUp end={saveApy?.value ?? 0} suffix="%" />
         </Button>
         <Button
