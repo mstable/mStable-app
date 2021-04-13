@@ -18,6 +18,7 @@ import { WeeklySaveAPY } from '../WeeklySaveAPY';
 import { Tooltip } from '../../../core/ReactTooltip';
 import { DailyApys } from '../../../stats/DailyApys';
 import { SavePosition } from './SavePosition';
+import { ViewportWidth } from '../../../../theme';
 
 enum Selection {
   Balance = 'balance',
@@ -77,19 +78,22 @@ const ApyTip = styled(Tooltip)`
 
 const OnboardingMessage = styled.div`
   display: flex;
-  justify-content: space-between;
-  height: 10rem;
+  flex-direction: column;
+
+  > div {
+    flex: 1;
+  }
 
   > div:first-child {
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    flex-basis: calc(65% - 0.5rem);
     width: 100%;
     border-radius: 1rem;
-    padding: 0 2rem;
+    padding: 2rem;
     border: 1px solid ${({ theme }) => theme.color.accent};
+    margin-bottom: 1rem;
 
     &:before {
       content: '';
@@ -125,7 +129,6 @@ const OnboardingMessage = styled.div`
 
   > div:last-child {
     position: relative;
-    flex-basis: calc(35% - 0.5rem);
     z-index: 1;
 
     > :last-child {
@@ -140,6 +143,26 @@ const OnboardingMessage = styled.div`
       }
     }
   }
+
+  @media (min-width: ${ViewportWidth.l}) {
+    flex-direction: row;
+    justify-content: space-between;
+
+    max-height: 10rem;
+
+    > div {
+      flex: 0;
+    }
+
+    > div:first-child {
+      flex-basis: calc(65% - 0.5rem);
+      margin-bottom: 0;
+    }
+
+    > div:last-child {
+      flex-basis: calc(35% - 0.5rem);
+    }
+  }
 `;
 
 export const SaveOverview: FC = () => {
@@ -150,7 +173,7 @@ export const SaveOverview: FC = () => {
   const saveApy = useAvailableSaveApy();
 
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
-  const showOnboardingMessage = true;
+  const showOnboardingMessage = false;
 
   const {
     savingsContracts: {

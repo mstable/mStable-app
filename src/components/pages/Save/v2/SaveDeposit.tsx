@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { constants } from 'ethers';
 import {
   BoostedSavingsVault__factory,
@@ -121,31 +121,6 @@ export const SaveDeposit: FC = () => {
     },
   } = massetState;
 
-  const inputAddressOptions = useMemo<AddressOption[]>(
-    () => [
-      massetToken,
-      ...(saveAndStake ? [saveToken as SubscribedToken] : []),
-      ...Object.values(bAssets).map(b => b.token),
-      ...Object.values(fAssets).map(b => b.token),
-      ETH,
-    ],
-    [massetToken, saveAndStake, saveToken, bAssets, fAssets, ETH],
-  );
-
-  const defaultOutputOptions = useMemo(() => {
-    if (!saveToken) return [];
-    if (!vaultAddress) return [saveToken as AddressOption];
-    return [
-      {
-        address: vaultAddress as string,
-        label: `${saveToken.symbol} Vault`,
-        custom: true,
-        symbol: `v-${saveToken.symbol}`,
-      } as AddressOption,
-      saveToken as AddressOption,
-    ];
-  }, [saveToken, vaultAddress]);
-
   const [inputAddress, setInputAddress] = useState<string | undefined>(
     (() => {
       // Select the highest masset-denominated balance (ignore ETH)
@@ -166,41 +141,44 @@ export const SaveDeposit: FC = () => {
     saveAddress,
   );
 
-  const [inputOptions, setInputOptions] = useState<AddressOption[]>(
-    defaultInputOptions,
-  );
-  const [outputOptions, setOutputOptions] = useState<AddressOption[]>(
-    defaultOutputOptions,
-  );
+  const inputAddressOptions = useMemo<AddressOption[]>(() => {
+    const inputs = [
+      massetToken,
+      ...(saveToken ? [saveToken] : []),
+      ...Object.values(bAssets).map(b => b.token),
+      ...Object.values(fAssets).map(b => b.token),
+      ETH,
+    ];
 
-  const handleSetInputAddress = useCallback(
-    (address: string): void => {
-      if (address === saveAddress) {
-        setOutputOptions(
-          defaultOutputOptions.filter(v => v.address === vaultAddress),
-        );
-        setOutputAddress(vaultAddress);
-      } else {
-        setOutputOptions(defaultOutputOptions);
-      }
-      setInputAddress(address);
-    },
-    [defaultOutputOptions, saveAddress, vaultAddress],
-  );
+    if (outputAddress === saveAddress) {
+      return inputs.filter(v => v.address !== saveAddress);
+    }
+    return inputs;
+  }, [
+    massetToken,
+    saveToken,
+    saveAddress,
+    bAssets,
+    fAssets,
+    ETH,
+    outputAddress,
+  ]);
 
-  const handleSetOutputAddress = useCallback(
-    (address: string): void => {
-      if (address === saveAddress) {
-        setInputOptions(
-          defaultInputOptions.filter(v => v.address !== saveAddress),
-        );
-      } else {
-        setInputOptions(defaultInputOptions);
-      }
-      setOutputAddress(address);
-    },
-    [defaultInputOptions, saveAddress],
-  );
+  const outputAddressOptions = useMemo(() => {
+    if (!saveToken) return [];
+    if (!vaultAddress) return [saveToken as AddressOption];
+
+    const vault = {
+      address: vaultAddress as string,
+      label: `${saveToken.symbol} Vault`,
+      custom: true,
+      symbol: `v-${saveToken.symbol}`,
+    } as AddressOption;
+
+    if (inputAddress === saveAddress) return [vault];
+
+    return [vault, saveToken as AddressOption];
+  }, [saveToken, vaultAddress, saveAddress, inputAddress]);
 
   const inputToken = useTokenSubscription(inputAddress);
   const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput(
@@ -235,11 +213,12 @@ export const SaveDeposit: FC = () => {
 
     return saveAndStake ? SaveRoutes.MintAndStake : SaveRoutes.MintAndSave;
   }, [
+    vaultAddress,
+    outputAddress,
     inputAddress,
     saveAddress,
     massetAddress,
     feederPoolAddress,
-    saveAndStake,
   ]);
 
   const saveOutput = useSaveOutput(saveRoute, inputAddress, inputAmount);
@@ -410,18 +389,18 @@ export const SaveDeposit: FC = () => {
   return (
     <AssetExchange
       error={error ?? hasSlippage ? outputs.penaltyBonus.message : undefined}
-      handleSetInputAddress={handleSetInputAddress}
+      handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={() => {
         if (inputToken) setInputFormValue(inputToken.balance.string);
       }}
       inputAddress={inputAddress}
       inputFormValue={inputFormValue}
-      inputAddressOptions={inputOptions}
+      inputAddressOptions={inputAddressOptions}
       exchangeRate={exchangeRate}
       outputAddress={outputAddress}
-      outputAddressOptions={outputOptions}
-      handleSetOutputAddress={handleSetOutputAddress}
+      outputAddressOptions={outputAddressOptions}
+      handleSetOutputAddress={setOutputAddress}
     >
       <SendButton
         approve={approve}

@@ -73,7 +73,7 @@ const DailyApysChart: FC<{
   return (
     <RechartsContainer className={className}>
       {dailyApys && dailyApys.length ? (
-        <ResponsiveContainer aspect={2}>
+        <ResponsiveContainer aspect={2} debounce={1} width="99%">
           <AreaChart
             margin={
               tick

@@ -44,7 +44,7 @@ const Sidebar = styled.div`
 `;
 
 const Content = styled.div`
-  @media (min-width: ${ViewportWidth.m}) {
+  @media (min-width: ${ViewportWidth.l}) {
     > div:first-child {
       flex-basis: calc(65% - 0.5rem);
     }
@@ -60,10 +60,10 @@ const Container = styled.div`
 
   > div:last-child {
     display: flex;
-    flex-direction: column;
-    margin-top: 1rem;
+    flex-direction: column-reverse;
+    margin-top: 1.5rem;
 
-    @media (min-width: ${ViewportWidth.m}) {
+    @media (min-width: ${ViewportWidth.l}) {
       flex-direction: row;
       justify-content: space-between;
     }
