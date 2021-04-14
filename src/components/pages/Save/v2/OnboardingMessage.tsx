@@ -5,6 +5,8 @@ import { ViewportWidth } from '../../../../theme';
 import { CountUp } from '../../../core/CountUp';
 import { Tooltip } from '../../../core/ReactTooltip';
 import { DailyApys } from '../../../stats/DailyApys';
+import { useOnboarding } from '../hooks';
+import { Button } from '../../../core/Button';
 
 const APYChart = styled(DailyApys)`
   position: relative;
@@ -33,28 +35,20 @@ const Container = styled.div`
   }
 
   > div:first-child {
-    position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: ${({ theme }) =>
+      `linear-gradient(180deg, rgba(210,172,235,0.3) 0%, ${theme.color.background} 100%)`};
     border-radius: 1rem;
-    padding: 2rem;
+    padding: 1.5rem 2rem;
     border: 1px solid ${({ theme }) => theme.color.accent};
     margin-bottom: 1rem;
 
-    &:before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      background: ${({ theme }) =>
-        `linear-gradient(180deg, #d2aceb 0%, ${theme.color.background} 100%)`};
-      border-radius: 1rem;
-      opacity: 0.33;
+    button {
+      border-color: rgba(210, 172, 235, 0.5);
+      background: rgba(210, 172, 235, 0.3);
     }
 
     > * {
@@ -115,11 +109,17 @@ const Container = styled.div`
 
 export const OnboardingMessage: FC = () => {
   const saveApy = useAvailableSaveApy();
+  const [onboarding, toggleOnboarding] = useOnboarding();
   return (
     <Container>
       <div>
-        <h2>The best passive savings account in DeFi.</h2>
-        <h3>Secure, high yielding, dependable.</h3>
+        <div>
+          <h2>The best passive savings account in DeFi.</h2>
+          <h3>Secure, high yielding, dependable.</h3>
+        </div>
+        <Button onClick={toggleOnboarding}>
+          {onboarding ? 'Back to form' : 'How to use Save'}
+        </Button>
       </div>
       <div>
         <APYChart
@@ -131,7 +131,7 @@ export const OnboardingMessage: FC = () => {
         />
         <div>
           <ApyTip tip="7-day MA (Moving Average) APY">
-            <CountUp end={saveApy?.value ?? 0} suffix="%" /> <span>APY</span>
+            <CountUp end={saveApy.value ?? 0} suffix="%" /> <span>APY</span>
           </ApyTip>
         </div>
       </div>

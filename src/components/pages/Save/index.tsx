@@ -16,6 +16,7 @@ import { InfoBox } from '../../core/InfoBox';
 import { ToggleSave } from './ToggleSave';
 import { useSelectedSaveVersion } from '../../../context/SelectedSaveVersionProvider';
 import { SaveMigration } from './v1/SaveMigration';
+import { OnboardingProvider } from './hooks';
 
 const ButtonPanel = styled.div`
   display: flex;
@@ -77,36 +78,38 @@ export const Save: FC = () => {
 
   return massetState ? (
     <RewardStreamsProvider vault={vault}>
-      <PageHeader
-        action={PageAction.Save}
-        subtitle={`Native interest on ${formatMassetName(massetName)}`}
-      />
-      <Container>
-        <SaveOverview />
-        <Content>
-          {selectedSaveVersion === 1 ? <SaveMigration /> : <SaveV2 />}
-          <Sidebar>
-            {massetName === 'musd' && (
-              <ButtonPanel>
-                {massetName === 'musd' ? <ToggleSave /> : <div />}
-              </ButtonPanel>
-            )}
-            <InfoBox>
-              <p>
-                <span>imAssets are interest-bearing.</span>
-              </p>
-              <p>
-                By depositing to {`i${formattedName}`} you will begin earning
-                interest on your underlying {formattedName}.
-              </p>
-              <p>
-                Deposits from assets other than {formattedName} will first mint{' '}
-                {formattedName} before being deposited.
-              </p>
-            </InfoBox>
-          </Sidebar>
-        </Content>
-      </Container>
+      <OnboardingProvider>
+        <PageHeader
+          action={PageAction.Save}
+          subtitle={`Native interest on ${formatMassetName(massetName)}`}
+        />
+        <Container>
+          <SaveOverview />
+          <Content>
+            {selectedSaveVersion === 1 ? <SaveMigration /> : <SaveV2 />}
+            <Sidebar>
+              {massetName === 'musd' && (
+                <ButtonPanel>
+                  {massetName === 'musd' ? <ToggleSave /> : <div />}
+                </ButtonPanel>
+              )}
+              <InfoBox>
+                <p>
+                  <span>imAssets are interest-bearing.</span>
+                </p>
+                <p>
+                  By depositing to {`i${formattedName}`} you will begin earning
+                  interest on your underlying {formattedName}.
+                </p>
+                <p>
+                  Deposits from assets other than {formattedName} will first
+                  mint {formattedName} before being deposited.
+                </p>
+              </InfoBox>
+            </Sidebar>
+          </Content>
+        </Container>
+      </OnboardingProvider>
     </RewardStreamsProvider>
   ) : (
     <Skeleton height={400} />
