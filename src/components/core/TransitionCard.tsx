@@ -96,7 +96,7 @@ const Content = styled.div<{ open: boolean }>`
       }
 
       &.item-exit {
-        animation: ${fadeOut} 0.8s cubic-bezier(0.19, 1, 0.22, 1) none;
+        animation: ${fadeOut} 0.3s cubic-bezier(0.19, 1, 0.22, 1) none;
       }
     }
   }
@@ -134,7 +134,7 @@ export const Overview: FC<{
               const Comp = components[type];
               return (
                 <CSSTransition
-                  timeout={{ enter: 500, exit: 700 }}
+                  timeout={{ enter: 500, exit: 200 }}
                   classNames="item"
                   key={type}
                 >
