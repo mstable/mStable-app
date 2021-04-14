@@ -42,8 +42,7 @@ const ButtonCss = css<Props>`
     }
   }
 
-  &:hover,
-  &:focus {
+  &:hover {
     ${({ disabled, theme, highlighted }) =>
       !disabled && {
         background: `${highlighted ? theme.color.gold : theme.color.accent}`,
