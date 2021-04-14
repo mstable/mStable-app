@@ -279,6 +279,10 @@ export const RewardStreamsProvider: FC<{
             ...amount,
             t: finish,
           },
+          {
+            ...ZERO_AMOUNTS,
+            t: finish + 1,
+          },
         ]);
 
       return {

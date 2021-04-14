@@ -104,9 +104,11 @@ export const ClaimGraph: FC<{ showPreview?: boolean }> = ({ showPreview }) => {
 
         // More than 2 months? Too much of a gap, make a new group
         // Otherwise the chart is hard to read
-        if (x - last[1] > 5184000) {
-          return [...prev, [x, x]];
-        }
+        // TODO needs more logic here... if I didn't claim for more than that
+        //  time since I started earning, it won't show correctly
+        // if (x - last[1] > 5184000) {
+        //   return [...prev, [x, x]];
+        // }
 
         return [...prev.slice(0, -1), [last[0], x]];
       }, []);
