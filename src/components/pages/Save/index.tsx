@@ -59,7 +59,7 @@ const Container = styled.div`
 
   > div:last-child {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     margin-top: 1.5rem;
 
     @media (min-width: ${ViewportWidth.l}) {

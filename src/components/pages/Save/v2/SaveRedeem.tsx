@@ -49,7 +49,7 @@ export const SaveRedeem: FC = () => {
       v2: {
         latestExchangeRate: { rate: saveExchangeRate } = {},
         address: saveAddress,
-        boostedSavingsVault: { address: vaultAddress } = {},
+        boostedSavingsVault: { address: vaultAddress, account } = {},
         token: saveToken,
       },
     },
@@ -83,11 +83,12 @@ export const SaveRedeem: FC = () => {
       {
         address: vaultAddress as string,
         label: `${saveToken.symbol} Vault`,
+        balance: account?.rawBalance,
         custom: true,
         symbol: `v-${saveToken.symbol}`,
       } as AddressOption,
     ];
-  }, [saveAddress, vaultAddress, saveToken]);
+  }, [saveAddress, vaultAddress, saveToken, account]);
 
   const outputAddressOptions = useMemo<AddressOption[]>(() => {
     if (inputAddress === vaultAddress) return [{ address: saveAddress }];
@@ -128,6 +129,8 @@ export const SaveRedeem: FC = () => {
       handleSetInputMax={() => {
         if (inputToken) {
           setInputFormValue(inputToken.balance.string);
+        } else if (inputAddress === vaultAddress && account?.rawBalance) {
+          setInputFormValue(account.rawBalance.string);
         }
       }}
     >

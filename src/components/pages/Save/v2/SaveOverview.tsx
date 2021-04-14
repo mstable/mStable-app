@@ -1,32 +1,44 @@
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
-
+import React, {
+  FC,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import styled from 'styled-components';
-import { CountUp } from '../../../core/CountUp';
+
 import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { MassetState } from '../../../../context/DataProvider/types';
-import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
-import { BigDecimal } from '../../../../web3/BigDecimal';
-import { UserRewards } from '../../Pools/Detail/UserRewards';
 import { useRewardStreams } from '../../../../context/RewardStreamsProvider';
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
+import { FetchState, useFetchState } from '../../../../hooks/useFetchState';
+import { BigDecimal } from '../../../../web3/BigDecimal';
+
+import { CountUp } from '../../../core/CountUp';
 import {
   Overview,
   CardContainer as Container,
   CardButton as Button,
 } from '../../../core/TransitionCard';
-import { SavePosition } from './SavePosition';
-import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
+import { UserBoost } from '../../../rewards/UserBoost';
+import { UserRewards } from '../../Pools/Detail/UserRewards';
 import { ReactComponent as WarningBadge } from '../../../icons/badges/warning.svg';
-import { OnboardingMessage } from './OnboardingMessage';
+
+import { SavePosition } from './SavePosition';
 import { ApyInfo } from './ApyInfo';
+import { OnboardingMessage } from './OnboardingMessage';
 
 enum Selection {
-  Balance = 'balance',
-  APY = 'apy',
-  Rewards = 'rewards',
+  Balance = 'Balance',
+  SaveAPY = 'SaveApy',
+  VaultAPY = 'VaultApy',
+  Rewards = 'Rewards',
 }
 
-const { Balance, APY, Rewards } = Selection;
+const { Balance, SaveAPY, Rewards, VaultAPY } = Selection;
 
 const StyledWarningBadge = styled(WarningBadge)`
   position: absolute;
@@ -47,9 +59,79 @@ const BalanceHeading = styled.div`
   }
 `;
 
+interface BoostedApy {
+  base: number;
+  userBoost?: number;
+  maxBoost: number;
+}
+
+interface PoolsAPIResponse {
+  pools: {
+    name: string;
+    apy: string;
+    apyDetails:
+      | {
+          rewardsOnlyBase: string;
+          rewardsOnlyMax: string;
+          combinedBase: string;
+          combinedMax: string;
+          yieldOnly: string;
+        }
+      | {
+          rewardsOnlyBase: string;
+          rewardsOnlyMax: string;
+        };
+    pair: string[];
+    pairLink: string;
+    poolRewards: string[];
+    totalStakedUSD: string;
+    logo: string;
+  }[];
+}
+
+// TODO this can be done without API
+const useSaveVaultAPY = (symbol?: string): FetchState<BoostedApy> => {
+  const [apy, setApy] = useFetchState<BoostedApy>();
+
+  useEffect(() => {
+    if (!symbol) return;
+
+    setApy.fetching();
+    fetch('https://api-dot-mstable.appspot.com/pools')
+      .then(res =>
+        res.json().then(({ pools }: PoolsAPIResponse) => {
+          const pool = pools.find(p => p.pair[0] === symbol);
+          if (pool) {
+            setApy.value({
+              base: parseFloat(pool.apyDetails.rewardsOnlyBase),
+              maxBoost: parseFloat(pool.apyDetails.rewardsOnlyMax),
+            });
+          }
+        }),
+      )
+      .catch(error => setApy.error(error.message));
+  }, [setApy, symbol]);
+
+  return apy;
+};
+
+const UserSaveBoost: FC = () => {
+  const {
+    savingsContracts: {
+      v2: { token, boostedSavingsVault },
+    },
+  } = useSelectedMassetState() as MassetState;
+
+  const apy = useSaveVaultAPY(token?.symbol);
+  return boostedSavingsVault ? (
+    <UserBoost vault={boostedSavingsVault} apy={apy} />
+  ) : null;
+};
+
 const components: Record<string, ReactElement> = {
   [Balance]: <SavePosition />,
-  [APY]: <ApyInfo />,
+  [SaveAPY]: <ApyInfo />,
+  [VaultAPY]: <UserSaveBoost />,
   [Rewards]: <UserRewards />,
 };
 
@@ -120,9 +202,19 @@ export const SaveOverview: FC = () => {
             prefix="$"
           />
         </Button>
-        <Button active={selection === APY} onClick={() => handleSelection(APY)}>
+        <Button
+          active={selection === SaveAPY}
+          onClick={() => handleSelection(SaveAPY)}
+        >
           <h3>Save APY*</h3>
-          <CountUp end={saveApy?.value ?? 0} suffix="%" />
+          <CountUp end={saveApy.value ?? 0} suffix="%" />
+        </Button>
+        <Button
+          active={selection === VaultAPY}
+          onClick={() => handleSelection(VaultAPY)}
+        >
+          <h3>Rewards APY</h3>
+          <div>&nbsp;</div>
         </Button>
         <Button
           active={selection === Rewards}

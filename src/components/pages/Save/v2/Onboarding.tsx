@@ -5,6 +5,7 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { MassetState } from '../../../../context/DataProvider/types';
 import { Tooltip } from '../../../core/ReactTooltip';
 import { Arrow } from '../../../core/Arrow';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 const StyledTokenIcon = styled(TokenIcon)`
   width: 3rem;
@@ -35,12 +36,15 @@ const Container = styled.div`
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;
-      align-items: center;
+      align-items: flex-start;
       font-weight: 600;
 
       p {
         font-weight: normal;
         font-size: 0.9rem;
+        span {
+          font-weight: 600;
+        }
       }
 
       > *:not(:last-child) {
@@ -59,6 +63,7 @@ export const OnboardingCard: FC = () => {
     bAssets,
     fAssets,
   } = useSelectedMassetState() as MassetState;
+  const massetName = useSelectedMassetName();
 
   const inputAssets = useMemo<string[]>(
     () =>
@@ -93,7 +98,7 @@ export const OnboardingCard: FC = () => {
       <div>
         <h4>
           <span>2.</span> Receive {saveToken?.symbol} directly, or deposit it in
-          the Vault.
+          the Vault
         </h4>
         <div>
           <div>
@@ -103,8 +108,13 @@ export const OnboardingCard: FC = () => {
           </div>
           <div>
             <StyledTokenIcon symbol={`v-${saveToken?.symbol}`} />
-            <div>Vault</div>
-            <p>Earns MTA rewards and interest</p>
+            <div>{saveToken?.symbol} Vault</div>
+            <p>Earns interest and MTA rewards</p>
+            {massetName === 'mbtc' && (
+              <p>
+                <span>Recommended for BTC</span>
+              </p>
+            )}
           </div>
         </div>
       </div>

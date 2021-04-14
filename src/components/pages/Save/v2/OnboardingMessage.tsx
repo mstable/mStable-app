@@ -7,6 +7,7 @@ import { Tooltip } from '../../../core/ReactTooltip';
 import { DailyApys } from '../../../stats/DailyApys';
 import { useOnboarding } from '../hooks';
 import { Button } from '../../../core/Button';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 const APYChart = styled(DailyApys)`
   position: relative;
@@ -47,6 +48,7 @@ const Container = styled.div`
     margin-bottom: 1rem;
 
     button {
+      margin-top: 1rem;
       border-color: rgba(210, 172, 235, 0.5);
       background: rgba(210, 172, 235, 0.3);
     }
@@ -110,11 +112,16 @@ const Container = styled.div`
 export const OnboardingMessage: FC = () => {
   const saveApy = useAvailableSaveApy();
   const [onboarding, toggleOnboarding] = useOnboarding();
+  const massetName = useSelectedMassetName();
   return (
     <Container>
       <div>
         <div>
-          <h2>The best passive savings account in DeFi.</h2>
+          <h2>
+            {massetName === 'mbtc'
+              ? 'Safely put your BTC to work in DeFi.'
+              : 'The best passive savings account in DeFi.'}
+          </h2>
           <h3>Secure, high yielding, dependable.</h3>
         </div>
         <Button onClick={toggleOnboarding}>
