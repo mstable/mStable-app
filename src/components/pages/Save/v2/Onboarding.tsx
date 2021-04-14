@@ -6,6 +6,7 @@ import { MassetState } from '../../../../context/DataProvider/types';
 import { Tooltip } from '../../../core/ReactTooltip';
 import { Arrow } from '../../../core/Arrow';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
+import { ExternalLink } from '../../../core/ExternalLink';
 
 const StyledTokenIcon = styled(TokenIcon)`
   width: 3rem;
@@ -25,6 +26,8 @@ const Container = styled.div`
       margin: 0.5rem 0;
       span {
         font-weight: normal;
+        margin-right: 0.25rem;
+        font-size: 0.9rem;
       }
     }
 
@@ -80,7 +83,7 @@ export const OnboardingCard: FC = () => {
     <Container>
       <div>
         <h4>
-          <span>1.</span> Select an asset to deposit
+          <span>1</span> Select an asset to deposit
         </h4>
         <p>
           This is swapped for {saveToken?.symbol}. You can swap back at any
@@ -97,7 +100,7 @@ export const OnboardingCard: FC = () => {
       <Arrow />
       <div>
         <h4>
-          <span>2.</span> Receive {saveToken?.symbol} directly, or deposit it in
+          <span>2</span> Receive {saveToken?.symbol} directly, or deposit it in
           the Vault
         </h4>
         <div>
@@ -121,13 +124,31 @@ export const OnboardingCard: FC = () => {
       <Arrow />
       <div>
         <h4>
-          <span>3.</span> Earn interest on your deposit
+          <span>3</span> Earn interest on your deposit
         </h4>
         <p>
           Over time, your {saveToken?.symbol} can be exchanged for more{' '}
           {massetToken.symbol}.
         </p>
       </div>
+      {massetName === 'musd' && (
+        <>
+          <Arrow />
+          <div>
+            <h4>
+              <span>4</span> Do more with your imUSD in DeFi{' '}
+              <span>(optional)</span>
+            </h4>
+            <p>
+              You can even mint{' '}
+              <ExternalLink href="https://app.arcx.money/mint">
+                StableX tokens
+              </ExternalLink>{' '}
+              with your imUSD as collateral!
+            </p>
+          </div>
+        </>
+      )}
     </Container>
   );
 };
