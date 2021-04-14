@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy';
-import { CountUp, DifferentialCountup } from '../../../core/CountUp';
-import { Boost } from '../../../rewards/Boost';
-import { useSelectedFeederPoolState } from '../FeederPoolProvider';
+import { CountUp, DifferentialCountup } from '../core/CountUp';
+import { Boost } from './Boost';
+import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
+import { FetchState } from '../../hooks/useFetchState';
 
 const Container = styled.div`
   h3 {
@@ -35,13 +35,13 @@ const Container = styled.div`
   }
 `;
 
-export const UserBoost: FC = () => {
-  const feederPool = useSelectedFeederPoolState();
-  const apy = useFeederPoolApy(feederPool.address);
-
+export const UserBoost: FC<{
+  vault: BoostedSavingsVaultState;
+  apy: FetchState<{ base: number; maxBoost: number; userBoost?: number }>;
+}> = ({ vault, apy }) => {
   return (
     <Container>
-      <Boost vault={feederPool.vault} apy={apy.value?.base}>
+      <Boost vault={vault} apy={apy.value?.base}>
         <div>
           <h3>Rewards APY</h3>
           <div>
@@ -50,15 +50,21 @@ export const UserBoost: FC = () => {
               {apy.value && <CountUp end={apy.value.base} suffix="%" />}
             </div>
             <div>
-              <h4>My Boosted APY</h4>
-              {apy.value && (
-                <DifferentialCountup
-                  prev={apy.value.base}
-                  end={apy.value.userBoost}
-                  suffix="%"
-                />
-              )}
+              <h4>Max APY</h4>
+              {apy.value && <CountUp end={apy.value.maxBoost} suffix="%" />}
             </div>
+            {apy.value?.userBoost && (
+              <div>
+                <h4>My Boosted APY</h4>
+                {apy.value && (
+                  <DifferentialCountup
+                    prev={apy.value.base}
+                    end={apy.value.userBoost}
+                    suffix="%"
+                  />
+                )}
+              </div>
+            )}
           </div>
         </div>
       </Boost>

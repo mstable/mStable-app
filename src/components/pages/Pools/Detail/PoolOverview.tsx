@@ -11,7 +11,7 @@ import {
   ShowEarningPower,
   useShowEarningPower,
 } from './ProvideLiquidityMessage';
-import { UserBoost } from './UserBoost';
+import { UserBoost } from '../../../rewards/UserBoost';
 import { useRewardStreams } from '../../../../context/RewardStreamsProvider';
 import { UserRewards } from './UserRewards';
 import { BoostCalculator } from '../../../rewards/BoostCalculator';
@@ -30,9 +30,15 @@ enum Selection {
 
 const { Stake, Boost, Rewards } = Selection;
 
+const UserVaultBoost: FC = () => {
+  const feederPool = useSelectedFeederPoolState();
+  const apy = useFeederPoolApy(feederPool.address);
+  return <UserBoost vault={feederPool.vault} apy={apy} />;
+};
+
 const components: Record<string, ReactElement> = {
   [Stake]: <Position />,
-  [Boost]: <UserBoost />,
+  [Boost]: <UserVaultBoost />,
   [Rewards]: <UserRewards />,
 };
 

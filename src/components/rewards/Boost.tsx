@@ -41,9 +41,8 @@ const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
 
 const BoostBar: FC<{
   vault: BoostedSavingsVaultState;
-  disableCalculator?: boolean;
   isImusd?: boolean;
-}> = ({ vault, disableCalculator, isImusd }) => {
+}> = ({ vault, isImusd }) => {
   const [, toggleShowCalculator] = useShowCalculatorCtx();
   const vMTA = useTokenSubscription(ADDRESSES.vMTA);
   const vMTABalance = vMTA?.balance;
@@ -61,11 +60,9 @@ const BoostBar: FC<{
       title="Earning Power Multiplier"
       tooltip="Rewards are boosted by a multiplier (1x to 3x)"
       headerContent={
-        disableCalculator ? null : (
-          <Button scale={0.7} onClick={toggleShowCalculator}>
-            Calculator
-          </Button>
-        )
+        <Button scale={0.7} onClick={toggleShowCalculator}>
+          Calculator
+        </Button>
       }
     >
       <div>
@@ -108,14 +105,13 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
 const BoostContent: FC<{
   vault: BoostedSavingsVaultState;
   apy?: number;
-  disableCalculator?: boolean;
   isImusd?: boolean;
-}> = ({ children, apy, vault, isImusd, disableCalculator }) => {
+}> = ({ children, apy, vault, isImusd }) => {
   const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx();
 
   return (
     <Container padding showCalculator={showCalculator}>
-      {showCalculator && !disableCalculator ? (
+      {showCalculator ? (
         <BoostCalculator
           apy={apy}
           vault={vault}
@@ -124,11 +120,7 @@ const BoostContent: FC<{
         />
       ) : (
         <>
-          <BoostBar
-            vault={vault}
-            isImusd={isImusd}
-            disableCalculator={disableCalculator}
-          />
+          <BoostBar vault={vault} isImusd={isImusd} />
           {children}
         </>
       )}
@@ -139,16 +131,10 @@ const BoostContent: FC<{
 export const Boost: FC<{
   vault: BoostedSavingsVaultState;
   apy?: number;
-  disableCalculator?: boolean;
   isImusd?: boolean;
-}> = ({ apy, children, vault, isImusd, disableCalculator }) => (
+}> = ({ apy, children, vault, isImusd }) => (
   <ShowCalculatorProvider>
-    <BoostContent
-      apy={apy}
-      vault={vault}
-      isImusd={isImusd}
-      disableCalculator={disableCalculator}
-    >
+    <BoostContent apy={apy} vault={vault} isImusd={isImusd}>
       {children}
     </BoostContent>
   </ShowCalculatorProvider>
