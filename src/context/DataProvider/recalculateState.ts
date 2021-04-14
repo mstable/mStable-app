@@ -16,7 +16,7 @@ const recalculateSavingsContractV1 = (
     creditBalance = new BigDecimal(0, token?.decimals),
   } = v1;
 
-  if (latestExchangeRate) {
+  if (latestExchangeRate && creditBalance) {
     const balance = creditBalance.mulTruncate(latestExchangeRate.rate.exact);
     return {
       ...v1,
@@ -33,7 +33,7 @@ const recalculateSavingsContractV2 = (
 
   if (token && latestExchangeRate) {
     const { balance } = token;
-    const credits = balance.mulTruncate(latestExchangeRate.rate.exact);
+    const credits = balance?.mulTruncate(latestExchangeRate.rate.exact);
     return {
       ...v2,
       savingsBalance: { balance, credits },
