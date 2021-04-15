@@ -174,6 +174,7 @@ export const SaveOverview: FC = () => {
   ]);
 
   const showOnboardingMessage = userBalance?.exact.eq(0);
+  const isSaveV1 = selectedSaveVersion === 1;
 
   // enable collapse
   const handleSelection = useCallback(
@@ -194,7 +195,7 @@ export const SaveOverview: FC = () => {
           <BalanceHeading>
             <div>
               <h3>Balance</h3>
-              {selectedSaveVersion === 1 && <StyledWarningBadge />}
+              {isSaveV1 && <StyledWarningBadge />}
             </div>
           </BalanceHeading>
           <CountUp
@@ -209,13 +210,15 @@ export const SaveOverview: FC = () => {
           <h3>Save APY*</h3>
           <CountUp end={saveApy.value ?? 0} suffix="%" />
         </Button>
-        <Button
-          active={selection === VaultAPY}
-          onClick={() => handleSelection(VaultAPY)}
-        >
-          <h3>Rewards APY</h3>
-          <div>&nbsp;</div>
-        </Button>
+        {!isSaveV1 && (
+          <Button
+            active={selection === VaultAPY}
+            onClick={() => handleSelection(VaultAPY)}
+          >
+            <h3>Rewards APY</h3>
+            <div>&nbsp;</div>
+          </Button>
+        )}
         <Button
           active={selection === Rewards}
           onClick={() => handleSelection(Rewards)}

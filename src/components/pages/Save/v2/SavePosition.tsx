@@ -2,6 +2,7 @@ import React, { FC, useMemo } from 'react';
 import styled from 'styled-components';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { MassetState } from '../../../../context/DataProvider/types';
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import { ViewportWidth } from '../../../../theme';
 import { BigDecimal } from '../../../../web3/BigDecimal';
@@ -60,6 +61,7 @@ const Container = styled.div`
 export const SavePosition: FC = () => {
   const massetState = useSelectedMassetState();
   const massetPrice = useSelectedMassetPrice() ?? 1;
+  const [selectedSaveVersion] = useSelectedSaveVersion();
 
   const {
     savingsContracts: {
@@ -91,7 +93,7 @@ export const SavePosition: FC = () => {
     <Container>
       <div>
         <div>
-          <h4>Save Balance</h4>
+          <h4>Save {selectedSaveVersion === 1 ? 'V2' : ''} Balance</h4>
           <CountUp end={saveBalance?.simple ?? 0} prefix="$" decimals={2} />
         </div>
         <div>

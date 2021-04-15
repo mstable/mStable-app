@@ -18,6 +18,7 @@ import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useIsMasquerading } from '../../../../context/UserProvider';
 import { useSelectedSaveVaultContract } from '../../../../context/DataProvider/DataProvider';
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
 
 const EmptyState = styled.div`
   display: flex;
@@ -187,10 +188,10 @@ const Card = styled.div`
   }
 
   h3 {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: ${({ theme }) => theme.color.body};
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 `;
 
@@ -256,6 +257,7 @@ export const UserRewards: FC = () => {
 
   const feederVault = useSelectedFeederPoolVaultContract();
   const saveVault = useSelectedSaveVaultContract();
+  const [selectedSaveVersion] = useSelectedSaveVersion();
 
   const propose = usePropose();
   const contract = feederVault ?? saveVault;
@@ -333,7 +335,15 @@ export const UserRewards: FC = () => {
           </GraphAndValues>
         ) : (
           <EmptyState>
-            <p>No rewards to claim</p>
+            <h3>No rewards to claim</h3>
+            {selectedSaveVersion === 1 ? (
+              <p>
+                Migrate your balance and deposit to the Vault to earn MTA
+                rewards.
+              </p>
+            ) : (
+              <p>Deposit to the Vault to earn MTA rewards.</p>
+            )}
           </EmptyState>
         )}
       </div>
