@@ -7,9 +7,31 @@ import { Tooltip } from '../../../core/ReactTooltip';
 import { Arrow } from '../../../core/Arrow';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 import { ExternalLink } from '../../../core/ExternalLink';
+import { UnstyledButton } from '../../../core/Button';
+import { useOnboarding } from '../hooks';
 
 const StyledTokenIcon = styled(TokenIcon)`
   width: 3rem;
+`;
+
+const CloseButton = styled(UnstyledButton)`
+  padding: 1rem;
+  background: rgba(255, 179, 52, 0.3);
+  position: absolute;
+  width: 2rem;
+  height: 2rem;
+  right: -0.5rem;
+  top: -0.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  font-size: 1rem;
+
+  :hover {
+    background: rgba(255, 179, 52, 0.45);
+  }
 `;
 
 const Container = styled.div`
@@ -19,6 +41,7 @@ const Container = styled.div`
     theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none'};
   color: ${({ theme }) => theme.color.offYellow};
   text-align: center;
+  position: relative;
 
   > div {
     h4 {
@@ -67,6 +90,7 @@ export const OnboardingCard: FC = () => {
     fAssets,
   } = useSelectedMassetState() as MassetState;
   const massetName = useSelectedMassetName();
+  const [, toggleOnboarding] = useOnboarding();
 
   const inputAssets = useMemo<string[]>(
     () =>
@@ -81,6 +105,7 @@ export const OnboardingCard: FC = () => {
 
   return (
     <Container>
+      <CloseButton onClick={toggleOnboarding}>✕</CloseButton>
       <div>
         <h4>
           <span>1</span> Select an asset to deposit
