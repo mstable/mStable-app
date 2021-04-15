@@ -79,9 +79,10 @@ const Container = styled.div`
     border-radius: 1rem;
     padding: 1.5rem;
     border: 1px solid ${({ theme }) => theme.color.accent};
+    margin-bottom: 1.25rem;
 
     button {
-      margin-top: 0.25rem;
+      margin-top: 1rem;
       border-color: rgba(210, 172, 235, 0.25);
       background: rgba(210, 172, 235, 0.1);
       font-size: 0.875rem;
@@ -104,6 +105,7 @@ const Container = styled.div`
 
     h2 {
       font-size: 1.25rem;
+      line-height: 2rem;
       font-weight: 600;
       color: ${({ theme }) => theme.color.body};
     }
@@ -134,6 +136,10 @@ const Container = styled.div`
     > div:first-child {
       flex-basis: calc(65% - 0.5rem);
       margin-bottom: 0;
+
+      button {
+        margin-top: 0.25rem;
+      }
     }
 
     > div:last-child {
@@ -174,10 +180,10 @@ export const OnboardingBanner: FC = () => {
       <div>
         <APYChart
           hideControls
-          shimmerHeight={138}
+          shimmerHeight={150}
           tick={false}
           marginTop={48}
-          aspect={2.25}
+          aspect={2.07}
           color="#d2aceb"
         />
         <APYText>

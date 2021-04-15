@@ -37,8 +37,16 @@ const Sidebar = styled.div`
   border-radius: 1rem;
 
   > * {
-    margin-bottom: 1rem;
     width: 100%;
+    margin-top: 1rem;
+  }
+
+  @media (min-width: ${ViewportWidth.l}) {
+    > * {
+      margin-bottom: 1rem;
+      margin-top: 0;
+      width: 100%;
+    }
   }
 `;
 
