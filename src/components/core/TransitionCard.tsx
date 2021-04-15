@@ -42,7 +42,7 @@ export const CardContainer = styled.div`
 
   @media (min-width: ${ViewportWidth.m}) {
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
   }
 `;
 

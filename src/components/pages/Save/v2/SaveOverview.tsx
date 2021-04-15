@@ -20,7 +20,7 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 import { CountUp } from '../../../core/CountUp';
 import {
   TransitionCard,
-  CardContainer as Container,
+  CardContainer as TransitionContainer,
   CardButton as Button,
 } from '../../../core/TransitionCard';
 import { UserBoost } from '../../../rewards/UserBoost';
@@ -56,6 +56,12 @@ const BalanceHeading = styled.div`
     display: flex;
     justify-content: center;
     position: relative;
+  }
+`;
+
+const Container = styled.div`
+  > div:first-child {
+    margin-bottom: 1.5rem;
   }
 `;
 
@@ -183,50 +189,55 @@ export const SaveOverview: FC = () => {
     [selection],
   );
 
-  return showOnboardingMessage ? (
-    <OnboardingMessage />
-  ) : (
-    <TransitionCard components={components} selection={selection}>
-      <Container>
-        <Button
-          active={selection === Balance}
-          onClick={() => handleSelection(Balance)}
-        >
-          <BalanceHeading>
-            <div>
-              <h3>Balance</h3>
-              {isSaveV1 && <StyledWarningBadge />}
-            </div>
-          </BalanceHeading>
-          <CountUp
-            end={(userBalance?.simple ?? 0) * (massetPrice ?? 0)}
-            prefix="$"
-          />
-        </Button>
-        <Button
-          active={selection === SaveAPY}
-          onClick={() => handleSelection(SaveAPY)}
-        >
-          <h3>Save APY*</h3>
-          <CountUp end={saveApy.value ?? 0} suffix="%" />
-        </Button>
-        {!isSaveV1 && (
+  return (
+    <Container>
+      {showOnboardingMessage && <OnboardingMessage />}
+      <TransitionCard components={components} selection={selection}>
+        <TransitionContainer>
+          {!showOnboardingMessage && (
+            <Button
+              active={selection === Balance}
+              onClick={() => handleSelection(Balance)}
+            >
+              <BalanceHeading>
+                <div>
+                  <h3>Balance</h3>
+                  {isSaveV1 && <StyledWarningBadge />}
+                </div>
+              </BalanceHeading>
+              <CountUp
+                end={(userBalance?.simple ?? 0) * (massetPrice ?? 0)}
+                prefix="$"
+              />
+            </Button>
+          )}
           <Button
-            active={selection === VaultAPY}
-            onClick={() => handleSelection(VaultAPY)}
+            active={selection === SaveAPY}
+            onClick={() => handleSelection(SaveAPY)}
           >
-            <h3>Rewards APY</h3>
-            <div>&nbsp;</div>
+            <h3>Save APY*</h3>
+            <CountUp end={saveApy.value ?? 0} suffix="%" />
           </Button>
-        )}
-        <Button
-          active={selection === Rewards}
-          onClick={() => handleSelection(Rewards)}
-        >
-          <h3>Rewards</h3>
-          <CountUp end={totalEarned} /> MTA
-        </Button>
-      </Container>
-    </TransitionCard>
+          {!isSaveV1 && (
+            <Button
+              active={selection === VaultAPY}
+              onClick={() => handleSelection(VaultAPY)}
+            >
+              <h3>Rewards APY</h3>
+              <div>&nbsp;</div>
+            </Button>
+          )}
+          {!showOnboardingMessage && (
+            <Button
+              active={selection === Rewards}
+              onClick={() => handleSelection(Rewards)}
+            >
+              <h3>Rewards</h3>
+              <CountUp end={totalEarned} /> MTA
+            </Button>
+          )}
+        </TransitionContainer>
+      </TransitionCard>
+    </Container>
   );
 };
