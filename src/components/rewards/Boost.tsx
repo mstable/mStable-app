@@ -94,10 +94,13 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
       align-items: stretch;
     }
 
-    > div > * {
+    > div > *:first-child {
       flex: ${({ showCalculator }) => !showCalculator && 0};
-      flex-basis: ${({ showCalculator }) =>
-        !showCalculator && `calc(47.5% - 0.75rem)`};
+      flex-basis: ${({ showCalculator }) => !showCalculator && `calc(55% )`};
+    }
+    > div > *:last-child {
+      flex: ${({ showCalculator }) => !showCalculator && 0};
+      flex-basis: ${({ showCalculator }) => !showCalculator && `calc(35% )`};
     }
   }
 `;

@@ -10,7 +10,7 @@ export const CardButton = styled(UnstyledButton)<{
   background: ${({ theme, active }) =>
     active ? theme.color.backgroundAccent : 'none'};
   border-radius: 1rem;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
 
   h3 {
     color: ${({ theme }) => theme.color.body};
@@ -30,19 +30,30 @@ export const CardButton = styled(UnstyledButton)<{
   :hover {
     background: ${({ theme }) => theme.color.backgroundAccent};
   }
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 export const CardContainer = styled.div`
   display: flex;
   flex-direction: column;
+  padding: 0.5rem;
 
   > * {
-    flex-basis: calc(33.3% - 0.5rem);
+    flex: 1;
+  }
+
+  > *:not(:last-child) {
+    margin-right: 0.5rem;
   }
 
   @media (min-width: ${ViewportWidth.m}) {
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
   }
 `;
 
@@ -107,7 +118,6 @@ const Header = styled.div<{ showBorder?: boolean }>`
   border-bottom: 1px solid
     ${({ theme, showBorder }) =>
       showBorder ? theme.color.accent : 'transparent'};
-  padding: 0.5rem;
 
   > * {
     flex: 1;

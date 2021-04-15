@@ -5,6 +5,7 @@ import { CountUp, DifferentialCountup } from '../core/CountUp';
 import { Boost } from './Boost';
 import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
 import { FetchState } from '../../hooks/useFetchState';
+import { ThemedSkeleton } from '../core/ThemedSkeleton';
 
 const Container = styled.div`
   h3 {
@@ -47,11 +48,19 @@ export const UserBoost: FC<{
           <div>
             <div>
               <h4>Base APY</h4>
-              {apy.value && <CountUp end={apy.value.base} suffix="%" />}
+              {apy.fetching ? (
+                <ThemedSkeleton height={24} width={64} />
+              ) : (
+                apy.value && <CountUp end={apy.value.base} suffix="%" />
+              )}
             </div>
             <div>
               <h4>Max APY</h4>
-              {apy.value && <CountUp end={apy.value.maxBoost} suffix="%" />}
+              {apy.fetching ? (
+                <ThemedSkeleton height={24} width={64} />
+              ) : (
+                apy.value && <CountUp end={apy.value.maxBoost} suffix="%" />
+              )}
             </div>
             {apy.value?.userBoost && (
               <div>

@@ -94,12 +94,16 @@ export const SavePosition: FC = () => {
       <div>
         <div>
           <h4>Save {selectedSaveVersion === 1 ? 'V2' : ''} Balance</h4>
-          <CountUp end={saveBalance?.simple ?? 0} prefix="$" decimals={2} />
+          <CountUp
+            end={(saveBalance?.simple ?? 0) * massetPrice}
+            prefix="$"
+            decimals={2}
+          />
         </div>
         <div>
           <h4>Vault Balance</h4>
           <CountUp
-            end={vaultBalance?.simple ?? 0 * massetPrice}
+            end={(vaultBalance?.simple ?? 0) * massetPrice}
             prefix="$"
             decimals={2}
           />

@@ -8,6 +8,7 @@ import { DailyApys } from '../../../stats/DailyApys';
 import { useOnboarding } from '../hooks';
 import { Button } from '../../../core/Button';
 import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
 
 const APYChart = styled(DailyApys)`
   position: relative;
@@ -17,14 +18,37 @@ const APYChart = styled(DailyApys)`
 `;
 
 const ApyTip = styled(Tooltip)`
-  > span > span > span {
-    font-size: 1.5rem;
-    font-weight: normal;
+  font-weight: 600;
+  font-size: 1.25rem;
 
-    > span {
-      font-size: 1rem;
-    }
+  > span > span {
+    font-weight: normal;
+    font-size: 1.125rem;
+    margin-left: 0.5rem;
   }
+`;
+
+const APYText = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.5rem 1rem 0;
+  font-size: 1.25rem;
+`;
+
+const InfoLink = styled.a`
+  pointer-events: auto;
+  height: 2rem;
+  width: 2rem;
+  line-height: 2rem;
+  background: ${({ theme }) => theme.color.accent};
+  border-radius: 1rem;
+  text-align: center;
+  color: ${({ theme }) => theme.color.body};
+  font-size: 0.875rem;
 `;
 
 const Container = styled.div`
@@ -74,18 +98,6 @@ const Container = styled.div`
   > div:last-child {
     position: relative;
     z-index: 1;
-
-    > :last-child {
-      position: absolute;
-      top: 0;
-      left: 0;
-      padding: 1rem;
-      font-size: 1.25rem;
-
-      span {
-        font-size: 1.25rem;
-      }
-    }
   }
 
   @media (min-width: ${ViewportWidth.l}) {
@@ -109,10 +121,18 @@ const Container = styled.div`
   }
 `;
 
-export const OnboardingMessage: FC = () => {
+export const OnboardingBanner: FC = () => {
   const saveApy = useAvailableSaveApy();
   const [onboarding, toggleOnboarding] = useOnboarding();
   const massetName = useSelectedMassetName();
+  const [selectedSaveVersion] = useSelectedSaveVersion();
+  const isSaveV1 = selectedSaveVersion === 1;
+
+  const tip =
+    massetName === 'mbtc'
+      ? 'This APY is purely derived from internal swap fees, and is not reflective of future rates.'
+      : 'This APY is derived from internal swap fees and lending markets, and is not reflective of future rates.';
+
   return (
     <Container>
       <div>
@@ -124,9 +144,11 @@ export const OnboardingMessage: FC = () => {
           </h2>
           <h3>Secure, high yielding, dependable.</h3>
         </div>
-        <Button onClick={toggleOnboarding}>
-          {onboarding ? 'Back to form' : 'How to use Save'}
-        </Button>
+        {!isSaveV1 && (
+          <Button onClick={toggleOnboarding}>
+            {onboarding ? 'Back to form' : 'How to use Save'}
+          </Button>
+        )}
       </div>
       <div>
         <APYChart
@@ -136,11 +158,21 @@ export const OnboardingMessage: FC = () => {
           marginTop={48}
           color="#d2aceb"
         />
-        <div>
-          <ApyTip tip="7-day MA (Moving Average) APY">
-            <CountUp end={saveApy.value ?? 0} suffix="%" /> <span>APY</span>
+        <APYText>
+          <ApyTip tip={tip}>
+            Save APY
+            <CountUp end={saveApy.value ?? 0} suffix="%" />
           </ApyTip>
-        </div>
+          <InfoLink
+            href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Tooltip tip="Learn about how this is calculated" hideIcon>
+              ↗
+            </Tooltip>
+          </InfoLink>
+        </APYText>
       </div>
     </Container>
   );

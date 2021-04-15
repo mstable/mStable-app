@@ -50,7 +50,6 @@ const useTotalLiquidity = (
   totalLiquidity: number;
 }[] => {
   const dateFilter = useDateFilter();
-
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
 
   const metricsDoc = useMemo<DocumentNode>(() => {

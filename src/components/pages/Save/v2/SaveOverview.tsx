@@ -8,7 +8,6 @@ import React, {
 } from 'react';
 import styled from 'styled-components';
 
-import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy';
 import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { MassetState } from '../../../../context/DataProvider/types';
@@ -28,8 +27,10 @@ import { UserRewards } from '../../Pools/Detail/UserRewards';
 import { ReactComponent as WarningBadge } from '../../../icons/badges/warning.svg';
 
 import { SavePosition } from './SavePosition';
-import { ApyInfo } from './ApyInfo';
-import { OnboardingMessage } from './OnboardingMessage';
+import { OnboardingBanner } from './OnboardingBanner';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
+import { Tooltip } from '../../../core/ReactTooltip';
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 enum Selection {
   Balance = 'Balance',
@@ -38,7 +39,7 @@ enum Selection {
   Rewards = 'Rewards',
 }
 
-const { Balance, SaveAPY, Rewards, VaultAPY } = Selection;
+const { Balance, Rewards, VaultAPY } = Selection;
 
 const StyledWarningBadge = styled(WarningBadge)`
   position: absolute;
@@ -60,7 +61,7 @@ const BalanceHeading = styled.div`
 `;
 
 const Container = styled.div`
-  > div:first-child {
+  > div {
     margin-bottom: 1.5rem;
   }
 `;
@@ -136,7 +137,6 @@ const UserSaveBoost: FC = () => {
 
 const components: Record<string, ReactElement> = {
   [Balance]: <SavePosition />,
-  [SaveAPY]: <ApyInfo />,
   [VaultAPY]: <UserSaveBoost />,
   [Rewards]: <UserRewards />,
 };
@@ -145,11 +145,9 @@ export const SaveOverview: FC = () => {
   const [selection, setSelection] = useState<Selection | undefined>();
   const massetState = useSelectedMassetState();
   const massetPrice = useSelectedMassetPrice();
+  const massetName = useSelectedMassetName();
   const rewardStreams = useRewardStreams();
-  const saveApy = useAvailableSaveApy();
   const [selectedSaveVersion] = useSelectedSaveVersion();
-
-  const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
 
   const {
     savingsContracts: {
@@ -161,6 +159,16 @@ export const SaveOverview: FC = () => {
       },
     },
   } = massetState as MassetState;
+
+  const vaultApy = useSaveVaultAPY(saveToken?.symbol);
+  const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
+
+  const averageVaultApy = useMemo((): FetchState<number> => {
+    if (vaultApy?.fetching) return { fetching: true };
+    const { maxBoost, base } = vaultApy?.value ?? {};
+    if (!maxBoost || !base) return { fetching: true };
+    return { value: (maxBoost + base) / 2 };
+  }, [vaultApy]);
 
   const userBalance = useMemo(() => {
     if (selectedSaveVersion === 1) return saveV1Balance?.balance;
@@ -179,10 +187,8 @@ export const SaveOverview: FC = () => {
     saveV1Balance,
   ]);
 
-  const showOnboardingMessage = userBalance?.exact.eq(0);
   const isSaveV1 = selectedSaveVersion === 1;
 
-  // enable collapse
   const handleSelection = useCallback(
     (newValue: Selection) =>
       setSelection(selection === newValue ? undefined : newValue),
@@ -191,32 +197,23 @@ export const SaveOverview: FC = () => {
 
   return (
     <Container>
-      {showOnboardingMessage && <OnboardingMessage />}
+      <OnboardingBanner />
       <TransitionCard components={components} selection={selection}>
         <TransitionContainer>
-          {!showOnboardingMessage && (
-            <Button
-              active={selection === Balance}
-              onClick={() => handleSelection(Balance)}
-            >
-              <BalanceHeading>
-                <div>
-                  <h3>Balance</h3>
-                  {isSaveV1 && <StyledWarningBadge />}
-                </div>
-              </BalanceHeading>
-              <CountUp
-                end={(userBalance?.simple ?? 0) * (massetPrice ?? 0)}
-                prefix="$"
-              />
-            </Button>
-          )}
           <Button
-            active={selection === SaveAPY}
-            onClick={() => handleSelection(SaveAPY)}
+            active={selection === Balance}
+            onClick={() => handleSelection(Balance)}
           >
-            <h3>Save APY*</h3>
-            <CountUp end={saveApy.value ?? 0} suffix="%" />
+            <BalanceHeading>
+              <div>
+                <h3>Balance</h3>
+                {isSaveV1 && <StyledWarningBadge />}
+              </div>
+            </BalanceHeading>
+            <CountUp
+              end={(userBalance?.simple ?? 0) * (massetPrice ?? 0)}
+              prefix="$"
+            />
           </Button>
           {!isSaveV1 && (
             <Button
@@ -224,18 +221,27 @@ export const SaveOverview: FC = () => {
               onClick={() => handleSelection(VaultAPY)}
             >
               <h3>Rewards APY</h3>
-              <div>&nbsp;</div>
+              {averageVaultApy?.fetching ? (
+                <ThemedSkeleton height={24} width={64} />
+              ) : (
+                <div>
+                  <CountUp end={averageVaultApy?.value ?? 0} suffix="%" />
+                  <Tooltip
+                    tip={`${
+                      massetName === 'musd' ? 20 : 33
+                    }% of earned MTA rewards are claimable immediately. The remaining rewards are streamed linearly for 26 weeks`}
+                  />
+                </div>
+              )}
             </Button>
           )}
-          {!showOnboardingMessage && (
-            <Button
-              active={selection === Rewards}
-              onClick={() => handleSelection(Rewards)}
-            >
-              <h3>Rewards</h3>
-              <CountUp end={totalEarned} /> MTA
-            </Button>
-          )}
+          <Button
+            active={selection === Rewards}
+            onClick={() => handleSelection(Rewards)}
+          >
+            <h3>Rewards</h3>
+            <CountUp end={totalEarned} /> MTA
+          </Button>
         </TransitionContainer>
       </TransitionCard>
     </Container>

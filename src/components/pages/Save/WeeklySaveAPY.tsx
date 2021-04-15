@@ -80,7 +80,7 @@ export const WeeklySaveAPY: FC = () => {
             <div>
               <p>
                 {apy.type === 'average'
-                  ? '*7-day MA (Moving Average) APY'
+                  ? '7-day MA (Moving Average) APY'
                   : 'Live APY (unstable)'}
               </p>
               <p>

@@ -69,7 +69,7 @@ const Cards = styled.div`
 
     > * {
       flex: 0;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       flex-basis: calc(50% - 0.75rem);
     }
   }

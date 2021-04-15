@@ -9,21 +9,12 @@ import { UnstyledButton } from '../core/Button';
 
 export const Button = styled(UnstyledButton)`
   border-radius: 1rem;
-  padding: 1rem;
+  padding: 0.75rem;
 
   h3 {
     color: ${({ theme }) => theme.color.bodyAccent};
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
-  }
-
-  h3:not(:last-child) {
-    margin-bottom: 0.5rem;
-  }
-
-  span {
-    ${({ theme }) => theme.mixins.numeric};
-    font-size: 1.125rem;
   }
 
   :hover {

@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useCallback, useState } from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 
 import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
@@ -54,13 +54,15 @@ const LiquidityMessageContent: FC<{
         boost: <BoostCalculator vault={vault} noBackButton apy={apy} />,
       }}
     >
-      <ProvideLiquidityMessage />
+      <Container>
+        <ProvideLiquidityMessage />
+      </Container>
     </TransitionCard>
   );
 };
 
 export const PoolOverview: FC = () => {
-  const [selection, setSelection] = useState<Selection | undefined>(Stake);
+  const [selection, setSelection] = useState<Selection | undefined>();
 
   const rewardStreams = useRewardStreams();
   const feederPool = useSelectedFeederPoolState();
@@ -75,11 +77,15 @@ export const PoolOverview: FC = () => {
   const totalLocked = rewardStreams?.amounts.locked ?? 0;
   const showLiquidityMessage = totalEarned === 0 && totalLocked === 0;
 
-  // enable collapse
   const handleSelection = useCallback(
     (newValue?: Selection) =>
       setSelection(selection === newValue ? undefined : newValue),
     [selection],
+  );
+
+  const totalUserBalance = useMemo(
+    () => (userStakedAmount + userAmount) * massetPrice,
+    [massetPrice, userAmount, userStakedAmount],
   );
 
   return showLiquidityMessage ? (
@@ -93,11 +99,8 @@ export const PoolOverview: FC = () => {
           active={selection === Stake}
           onClick={() => handleSelection(Stake)}
         >
-          <h3>{userStakedAmount ? 'Staked' : 'Unstaked'} balance</h3>
-          <CountUp
-            end={(userStakedAmount || userAmount) * massetPrice}
-            prefix="$"
-          />
+          <h3>Balance</h3>
+          <CountUp end={totalUserBalance} prefix="$" />
         </Button>
         <Button
           active={selection === Boost}
@@ -113,7 +116,7 @@ export const PoolOverview: FC = () => {
           active={selection === Rewards}
           onClick={() => handleSelection(Rewards)}
         >
-          <h3>Rewards Earned</h3>
+          <h3>Rewards</h3>
           <CountUp end={totalEarned} /> MTA
         </Button>
       </Container>

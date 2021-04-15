@@ -60,7 +60,6 @@ const Container = styled.div`
   > div:last-child {
     display: flex;
     flex-direction: column;
-    margin-top: 1.5rem;
 
     @media (min-width: ${ViewportWidth.l}) {
       flex-direction: row;
@@ -95,11 +94,12 @@ export const Save: FC = () => {
               )}
               <InfoBox>
                 <h4>
-                  <span>imAssets are interest-bearing.</span>
+                  <span>Using mStable Save</span>
                 </h4>
                 <p>
                   By depositing to {`i${formattedName}`} you will begin earning
-                  interest on your underlying {formattedName}.
+                  interest on your underlying {formattedName}. Deposits to the
+                  Vault will earn interest in addition to MTA rewards.
                 </p>
                 <p>
                   Deposits from assets other than {formattedName} will first
