@@ -94,9 +94,9 @@ export const Save: FC = () => {
                 </ButtonPanel>
               )}
               <InfoBox>
-                <p>
+                <h4>
                   <span>imAssets are interest-bearing.</span>
-                </p>
+                </h4>
                 <p>
                   By depositing to {`i${formattedName}`} you will begin earning
                   interest on your underlying {formattedName}.

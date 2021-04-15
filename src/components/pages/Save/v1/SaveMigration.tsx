@@ -5,7 +5,6 @@ import { useTransactionsState } from '../../../../context/TransactionsProvider';
 import { TransactionStatus } from '../../../../web3/TransactionManifest';
 
 import { ViewportWidth, gradientShift } from '../../../../theme';
-import { H2 } from '../../../core/Typography';
 import { Steps } from '../../../core/Steps';
 
 import {
@@ -61,7 +60,7 @@ const Card = styled.div`
   }
 
   h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
     line-height: 2rem;
   }
@@ -102,9 +101,9 @@ const SaveMigrationContent: FC = () => {
   return (
     <Card>
       <Inner>
-        <H2>
+        <h2>
           {!stepsComplete ? `Migration Assistant` : `Migration Complete! 🎉`}
-        </H2>
+        </h2>
         {!stepsComplete && (
           <>
             <div>
