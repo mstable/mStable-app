@@ -19,7 +19,7 @@ import { BigDecimal } from '../../../../web3/BigDecimal';
 
 import { CountUp } from '../../../core/CountUp';
 import {
-  Overview,
+  TransitionCard,
   CardContainer as Container,
   CardButton as Button,
 } from '../../../core/TransitionCard';
@@ -185,7 +185,7 @@ export const SaveOverview: FC = () => {
   return showOnboardingMessage ? (
     <OnboardingMessage />
   ) : (
-    <Overview components={components} selection={selection}>
+    <TransitionCard components={components} selection={selection}>
       <Container>
         <Button
           active={selection === Balance}
@@ -224,6 +224,6 @@ export const SaveOverview: FC = () => {
           <CountUp end={totalEarned} /> MTA
         </Button>
       </Container>
-    </Overview>
+    </TransitionCard>
   );
 };

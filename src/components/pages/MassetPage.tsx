@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 
 import { SimpleMassetStats } from '../stats/SimpleMassetStats';
-import { Overview } from '../core/TransitionCard';
+import { TransitionCard } from '../core/TransitionCard';
 import { UnstyledButton } from '../core/Button';
 
 export const Button = styled(UnstyledButton)`
@@ -120,14 +120,15 @@ export const MassetPage: FC<{ asideVisible?: boolean }> = ({
       {asideVisible ? (
         <Inner>
           <div>{children}</div>
-          <Overview
+          {/* // FIXME: - Replace w/ dropdown? */}
+          <TransitionCard
             components={{ root: <MassetAside /> }}
             selection={selection}
           >
             <Button onClick={() => handleSelection('root')}>
               <h3>View Basket Stats</h3>
             </Button>
-          </Overview>
+          </TransitionCard>
         </Inner>
       ) : (
         <div>{children}</div>

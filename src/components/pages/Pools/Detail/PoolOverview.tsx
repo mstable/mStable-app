@@ -17,7 +17,7 @@ import { UserRewards } from './UserRewards';
 import { BoostCalculator } from '../../../rewards/BoostCalculator';
 import { BoostedSavingsVaultState } from '../../../../context/DataProvider/types';
 import {
-  Overview,
+  TransitionCard,
   CardContainer as Container,
   CardButton as Button,
 } from '../../../core/TransitionCard';
@@ -48,14 +48,14 @@ const LiquidityMessageContent: FC<{
 }> = ({ vault, apy }) => {
   const [showEarningPower] = useShowEarningPower();
   return (
-    <Overview
+    <TransitionCard
       selection={showEarningPower ? 'boost' : undefined}
       components={{
         boost: <BoostCalculator vault={vault} noBackButton apy={apy} />,
       }}
     >
       <ProvideLiquidityMessage />
-    </Overview>
+    </TransitionCard>
   );
 };
 
@@ -87,7 +87,7 @@ export const PoolOverview: FC = () => {
       <LiquidityMessageContent vault={vault} apy={apy.value?.base} />
     </ShowEarningPower>
   ) : (
-    <Overview components={components} selection={selection}>
+    <TransitionCard components={components} selection={selection}>
       <Container>
         <Button
           active={selection === Stake}
@@ -117,6 +117,6 @@ export const PoolOverview: FC = () => {
           <CountUp end={totalEarned} /> MTA
         </Button>
       </Container>
-    </Overview>
+    </TransitionCard>
   );
 };

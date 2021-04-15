@@ -119,7 +119,7 @@ const Container = styled.div`
   border-radius: 1rem;
 `;
 
-export const Overview: FC<{
+export const TransitionCard: FC<{
   components: Record<string, ReactElement>;
   selection?: string;
 }> = ({ components, selection, children }) => {
