@@ -64,7 +64,7 @@ export const UserBoost: FC<{
             </div>
             {apy.value?.userBoost && (
               <div>
-                <h4>My Boosted APY</h4>
+                <h4>My APY</h4>
                 {apy.value && (
                   <DifferentialCountup
                     prev={apy.value.base}

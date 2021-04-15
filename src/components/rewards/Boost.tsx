@@ -96,11 +96,11 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
 
     > div > *:first-child {
       flex: ${({ showCalculator }) => !showCalculator && 0};
-      flex-basis: ${({ showCalculator }) => !showCalculator && `calc(55% )`};
+      flex-basis: ${({ showCalculator }) => !showCalculator && `50%`};
     }
     > div > *:last-child {
       flex: ${({ showCalculator }) => !showCalculator && 0};
-      flex-basis: ${({ showCalculator }) => !showCalculator && `calc(35% )`};
+      flex-basis: ${({ showCalculator }) => !showCalculator && `40%`};
     }
   }
 `;

@@ -62,7 +62,7 @@ const BalanceHeading = styled.div`
 
 const Container = styled.div`
   > div {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 `;
 
@@ -222,7 +222,7 @@ export const SaveOverview: FC = () => {
             >
               <h3>Rewards APY</h3>
               {averageVaultApy?.fetching ? (
-                <ThemedSkeleton height={24} width={64} />
+                <ThemedSkeleton height={20} width={64} />
               ) : (
                 <div>
                   <CountUp end={averageVaultApy?.value ?? 0} suffix="%" />

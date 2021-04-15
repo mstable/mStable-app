@@ -53,9 +53,17 @@ const DailyApysChart: FC<{
   shimmerHeight?: number;
   tick?: boolean;
   marginTop?: number;
+  aspect?: number;
   className?: string;
   color?: string;
-}> = ({ shimmerHeight = 270, tick, className, marginTop, color }) => {
+}> = ({
+  shimmerHeight = 270,
+  tick,
+  className,
+  marginTop,
+  color,
+  aspect = 2,
+}) => {
   const dateFilter = useDateFilter();
   const { DailyApy, UtilisationRate } = useMetrics<MetricTypes>();
   const blockTimes = useBlockTimesForDates(dateFilter.dates);
@@ -73,7 +81,7 @@ const DailyApysChart: FC<{
   return (
     <RechartsContainer className={className}>
       {dailyApys && dailyApys.length ? (
-        <ResponsiveContainer aspect={2} debounce={1} width="99%">
+        <ResponsiveContainer aspect={aspect} debounce={1} width="99%">
           <AreaChart
             margin={
               tick
@@ -194,6 +202,7 @@ const DailyApysChart: FC<{
   );
 };
 
+// TODO: - Probably pull out to another component to stop all the prop passing
 export const DailyApys: FC<{
   hideControls?: boolean;
   shimmerHeight?: number;
@@ -201,6 +210,7 @@ export const DailyApys: FC<{
   marginTop?: number;
   className?: string;
   color?: string;
+  aspect?: number;
 }> = ({
   hideControls = false,
   shimmerHeight,
@@ -208,6 +218,7 @@ export const DailyApys: FC<{
   className,
   marginTop,
   color,
+  aspect,
 }) => (
   <Metrics
     defaultDateRange={DateRange.Month}
@@ -220,6 +231,7 @@ export const DailyApys: FC<{
       marginTop={marginTop}
       className={className}
       color={color}
+      aspect={aspect}
     />
   </Metrics>
 );

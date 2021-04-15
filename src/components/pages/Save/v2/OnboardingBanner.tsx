@@ -24,7 +24,6 @@ const ApyTip = styled(Tooltip)`
   > span > span {
     font-weight: normal;
     font-size: 1.125rem;
-    margin-left: 0.5rem;
   }
 `;
 
@@ -35,20 +34,31 @@ const APYText = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  padding: 0.5rem 1rem 0;
+  padding: 1rem 1rem 0;
   font-size: 1.25rem;
+  align-items: flex-start;
 `;
 
-const InfoLink = styled.a`
-  pointer-events: auto;
-  height: 2rem;
-  width: 2rem;
-  line-height: 2rem;
+const InfoLink = styled.div`
+  position: absolute;
+  right: 1rem;
+  top: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: ${({ theme }) => theme.color.accent};
   border-radius: 1rem;
-  text-align: center;
-  color: ${({ theme }) => theme.color.body};
-  font-size: 0.875rem;
+  height: 2rem;
+  width: 2rem;
+  ${({ theme }) => theme.mixins.numeric};
+
+  a {
+    pointer-events: auto;
+    height: 1.5rem;
+    text-align: center;
+    color: ${({ theme }) => theme.color.body};
+    font-size: 1.125rem;
+  }
 `;
 
 const Container = styled.div`
@@ -67,14 +77,25 @@ const Container = styled.div`
     background: ${({ theme }) =>
       `linear-gradient(180deg, rgba(210,172,235,0.3) 0%, ${theme.color.background} 100%)`};
     border-radius: 1rem;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem;
     border: 1px solid ${({ theme }) => theme.color.accent};
-    margin-bottom: 1rem;
 
     button {
-      margin-top: 1rem;
-      border-color: rgba(210, 172, 235, 0.5);
-      background: rgba(210, 172, 235, 0.3);
+      margin-top: 0.25rem;
+      border-color: rgba(210, 172, 235, 0.25);
+      background: rgba(210, 172, 235, 0.1);
+      font-size: 0.875rem;
+      align-self: flex-end;
+
+      span {
+        opacity: 0.675;
+      }
+    }
+
+    button:hover {
+      span {
+        opacity: 1;
+      }
     }
 
     > * {
@@ -82,7 +103,7 @@ const Container = styled.div`
     }
 
     h2 {
-      font-size: 1.125rem;
+      font-size: 1.25rem;
       font-weight: 600;
       color: ${({ theme }) => theme.color.body};
     }
@@ -146,32 +167,34 @@ export const OnboardingBanner: FC = () => {
         </div>
         {!isSaveV1 && (
           <Button onClick={toggleOnboarding}>
-            {onboarding ? 'Back to form' : 'How to use Save'}
+            <span>{onboarding ? 'Back to form' : 'How to use Save'}</span>
           </Button>
         )}
       </div>
       <div>
         <APYChart
           hideControls
-          shimmerHeight={160}
+          shimmerHeight={138}
           tick={false}
           marginTop={48}
+          aspect={2.25}
           color="#d2aceb"
         />
         <APYText>
           <ApyTip tip={tip}>
-            Save APY
-            <CountUp end={saveApy.value ?? 0} suffix="%" />
+            <CountUp end={saveApy.value ?? 0} suffix="% APY" />
           </ApyTip>
-          <InfoLink
-            href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Tooltip tip="Learn about how this is calculated" hideIcon>
-              ↗
-            </Tooltip>
-          </InfoLink>
+          <Tooltip tip="Learn about how this is calculated" hideIcon>
+            <InfoLink>
+              <a
+                href="https://docs.mstable.org/mstable-assets/massets/native-interest-rate#how-is-the-24h-apy-calculated"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ↗
+              </a>
+            </InfoLink>
+          </Tooltip>
         </APYText>
       </div>
     </Container>

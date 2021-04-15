@@ -64,7 +64,7 @@ const Inner = styled.div`
     }
   }
   > div:not(:last-child) {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 `;
 
