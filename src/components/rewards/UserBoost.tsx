@@ -6,6 +6,8 @@ import { Boost } from './Boost';
 import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
 import { FetchState } from '../../hooks/useFetchState';
 import { ThemedSkeleton } from '../core/ThemedSkeleton';
+import { Tooltip } from '../core/ReactTooltip';
+import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
 
 const Container = styled.div`
   h3 {
@@ -40,11 +42,18 @@ export const UserBoost: FC<{
   vault: BoostedSavingsVaultState;
   apy: FetchState<{ base: number; maxBoost: number; userBoost?: number }>;
 }> = ({ vault, apy }) => {
+  const massetName = useSelectedMassetName();
   return (
     <Container>
       <Boost vault={vault} apy={apy.value?.base}>
         <div>
-          <h3>Rewards APY</h3>
+          <Tooltip
+            tip={`${
+              massetName === 'musd' ? 20 : 33
+            }% of earned MTA rewards are claimable immediately. Remaining rewards are streamed linearly for 26 weeks`}
+          >
+            <h3>Rewards</h3>
+          </Tooltip>
           <div>
             <div>
               <h4>Base APY</h4>

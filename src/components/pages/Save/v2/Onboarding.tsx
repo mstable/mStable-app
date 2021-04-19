@@ -9,6 +9,7 @@ import { useSelectedMassetName } from '../../../../context/SelectedMassetNamePro
 import { ExternalLink } from '../../../core/ExternalLink';
 import { UnstyledButton } from '../../../core/Button';
 import { useOnboarding } from '../hooks';
+import { ViewportWidth } from '../../../../theme';
 
 const StyledTokenIcon = styled(TokenIcon)`
   width: 3rem;
@@ -74,8 +75,15 @@ const Container = styled.div`
       }
 
       > *:not(:last-child) {
-        margin-right: 1rem;
+        margin-bottom: 1rem;
       }
+    }
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    > div > div > *:not(:last-child) {
+      margin-right: 1rem;
+      margin-bottom: 0;
     }
   }
 `;

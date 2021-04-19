@@ -16,7 +16,7 @@ import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import { FetchState, useFetchState } from '../../../../hooks/useFetchState';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
-import { CountUp } from '../../../core/CountUp';
+import { CountUp, DifferentialCountup } from '../../../core/CountUp';
 import {
   TransitionCard,
   CardContainer as TransitionContainer,
@@ -29,8 +29,6 @@ import { ReactComponent as WarningBadge } from '../../../icons/badges/warning.sv
 import { SavePosition } from './SavePosition';
 import { OnboardingBanner } from './OnboardingBanner';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
-import { Tooltip } from '../../../core/ReactTooltip';
-import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
 
 enum Selection {
   Balance = 'Balance',
@@ -145,7 +143,6 @@ export const SaveOverview: FC = () => {
   const [selection, setSelection] = useState<Selection | undefined>();
   const massetState = useSelectedMassetState();
   const massetPrice = useSelectedMassetPrice();
-  const massetName = useSelectedMassetName();
   const rewardStreams = useRewardStreams();
   const [selectedSaveVersion] = useSelectedSaveVersion();
 
@@ -160,15 +157,8 @@ export const SaveOverview: FC = () => {
     },
   } = massetState as MassetState;
 
-  const vaultApy = useSaveVaultAPY(saveToken?.symbol);
+  const apy = useSaveVaultAPY(saveToken?.symbol);
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
-
-  const averageVaultApy = useMemo((): FetchState<number> => {
-    if (vaultApy?.fetching) return { fetching: true };
-    const { maxBoost, base } = vaultApy?.value ?? {};
-    if (!maxBoost || !base) return { fetching: true };
-    return { value: (maxBoost + base) / 2 };
-  }, [vaultApy]);
 
   const userBalance = useMemo(() => {
     if (selectedSaveVersion === 1) return saveV1Balance?.balance;
@@ -221,16 +211,23 @@ export const SaveOverview: FC = () => {
               onClick={() => handleSelection(VaultAPY)}
             >
               <h3>Rewards APY</h3>
-              {averageVaultApy?.fetching ? (
+              {apy?.fetching ? (
                 <ThemedSkeleton height={20} width={64} />
               ) : (
                 <div>
-                  <CountUp end={averageVaultApy?.value ?? 0} suffix="%" />
-                  <Tooltip
-                    tip={`${
-                      massetName === 'musd' ? 20 : 33
-                    }% of earned MTA rewards are claimable immediately. The remaining rewards are streamed linearly for 26 weeks`}
-                  />
+                  {apy?.value?.userBoost ? (
+                    <DifferentialCountup
+                      prev={apy?.value?.base}
+                      end={apy?.value?.userBoost}
+                      suffix="%"
+                    />
+                  ) : (
+                    <>
+                      <CountUp end={apy?.value?.base ?? 0} />
+                      &nbsp;-&nbsp;
+                      <CountUp end={apy?.value?.maxBoost ?? 0} suffix="%" />
+                    </>
+                  )}
                 </div>
               )}
             </Button>
