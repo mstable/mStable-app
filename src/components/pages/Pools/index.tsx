@@ -37,7 +37,7 @@ const EmptyCard = styled(Card)`
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px dashed ${({ theme }) => theme.color.accent};
+  border: 1px dashed ${({ theme }) => theme.color.defaultBorder};
 `;
 
 const LoadCard = styled(Card)`
@@ -69,7 +69,7 @@ const Cards = styled.div`
 
     > * {
       flex: 0;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
       flex-basis: calc(50% - 0.75rem);
     }
   }

@@ -38,7 +38,7 @@ const StyledButton = styled(Button)<{ isPenalty?: boolean; isBonus?: boolean }>`
 `;
 
 const CloseButton = styled(UnstyledButton)`
-  background: ${({ theme }) => theme.color.accent};
+  background: ${({ theme }) => theme.color.backgroundAccent};
   width: 2.25rem;
   height: 2.25rem;
   text-align: center;
@@ -52,8 +52,11 @@ const ApproveContainer = styled.div`
   position: relative;
   width: 100%;
   justify-content: space-between;
-  gap: 1rem;
   align-items: center;
+
+  > button:not(:last-child) {
+    margin-right: 0.75rem;
+  }
 `;
 
 const Container = styled.div`
@@ -115,7 +118,6 @@ export const ApproveContent: FC<{
       <StyledButton
         highlighted
         disabled={hasPendingApproval}
-        scale={0.875}
         onClick={() => {
           onApproveClick(Mode.Zero);
         }}
@@ -134,7 +136,6 @@ export const ApproveContent: FC<{
         <StyledButton
           highlighted
           disabled={hasPendingApproval}
-          scale={0.875}
           onClick={() => {
             onApproveClick(Mode.Exact);
           }}
@@ -145,14 +146,13 @@ export const ApproveContent: FC<{
           >
             <div>
               {hasPendingApproval && mode === 'exact' ? 'Approving' : 'Approve'}
+              {' Exact'}
             </div>
-            <div>Exact</div>
           </Tooltip>
         </StyledButton>
         <StyledButton
           highlighted
           disabled={hasPendingApproval}
-          scale={0.875}
           onClick={() => {
             onApproveClick(Mode.Infinite);
           }}
@@ -165,8 +165,8 @@ export const ApproveContent: FC<{
               {hasPendingApproval && mode === Mode.Infinite
                 ? 'Approving'
                 : 'Approve'}
+              {' ∞'}
             </div>
-            <div>∞</div>
           </Tooltip>
         </StyledButton>
       </>

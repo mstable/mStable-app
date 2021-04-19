@@ -35,6 +35,7 @@ const SocialIcons = styled(Links)`
     width: 24px;
     height: auto;
     opacity: 0.8;
+    filter: sepia(0%) saturate(300%) brightness(250%);
   }
 `;
 

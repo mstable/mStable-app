@@ -19,17 +19,17 @@ const MintPathBox = styled.div<{ protip?: boolean }>`
   padding: 1rem;
   border: 1px dashed
     ${({ theme, protip }) =>
-      protip ? theme.color.gold : theme.color.blueTransparent};
+      protip ? theme.color.gold : theme.color.defaultBorder};
   border-radius: 0.75rem;
   margin-top: 1rem;
 
   ${UnstyledButton} {
     font-size: 1rem;
     font-weight: 600;
-    color: ${({ theme }) => theme.color.blue};
+    color: ${({ theme }) => theme.color.primary};
 
     ${({ protip, theme }) => ({
-      color: `${protip ? theme.color.offYellow : theme.color.blue}`,
+      color: `${protip ? theme.color.offYellow : theme.color.primary}`,
     })}
 
     :hover {

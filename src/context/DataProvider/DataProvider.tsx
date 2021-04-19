@@ -1,10 +1,13 @@
 import React, { createContext, FC, useContext, useMemo, useState } from 'react';
 import { pipe } from 'ts-pipe-compose';
 
+import {
+  BoostedSavingsVault,
+  BoostedSavingsVault__factory,
+} from '@mstable/protocol/types/generated';
 import { Tokens, useTokensState } from '../TokensProvider';
 import {
   BassetState,
-  BoostedSavingsVaultState,
   DataState,
   FeederPoolState,
   MassetState,
@@ -24,6 +27,7 @@ import {
   useFeederPoolsLazyQuery,
 } from '../../graphql/feeders';
 import { useSelectedMassetName } from '../SelectedMassetNameProvider';
+import { useSigner } from '../OnboardProvider';
 
 type NonNullableRawData = [
   NonNullable<MassetsQueryResult['data']>,
@@ -79,11 +83,15 @@ export const useSelectedMassetState = (): MassetState | undefined => {
   return useDataState()[masset];
 };
 
-export const useSelectedBoostedSavingsVault = ():
-  | BoostedSavingsVaultState
+export const useSelectedSaveVaultContract = ():
+  | BoostedSavingsVault
   | undefined => {
+  const signer = useSigner();
   const masset = useSelectedMassetState();
-  return masset?.savingsContracts?.v2?.boostedSavingsVault;
+  const vaultAddress =
+    masset?.savingsContracts?.v2?.boostedSavingsVault?.address;
+  if (!signer || !vaultAddress) return;
+  return BoostedSavingsVault__factory.connect(vaultAddress, signer);
 };
 
 export const useV1SavingsBalance = ():

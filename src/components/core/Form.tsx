@@ -65,7 +65,7 @@ export const SubmitButton = styled(Button)`
   border-color: ${({ theme, disabled }) =>
     disabled ? theme.color.blackTransparent : theme.color.greenTransparent};
   background: ${({ theme, disabled }) =>
-    disabled ? theme.color.accent : theme.color.green};
+    disabled ? theme.color.backgroundAccent : theme.color.green};
   width: 100%;
   margin-bottom: ${({ theme }) => theme.spacing.m};
   padding-top: 16px;

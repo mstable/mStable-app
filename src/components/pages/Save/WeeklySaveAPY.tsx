@@ -4,40 +4,32 @@ import CountUp from 'react-countup';
 
 import { useAvailableSaveApy } from '../../../hooks/useAvailableSaveApy';
 import { ThemedSkeleton } from '../../core/ThemedSkeleton';
-import {
-  formatMassetName,
-  useSelectedMassetName,
-} from '../../../context/SelectedMassetNameProvider';
+import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
 
 const InfoAPY = styled.div`
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   margin-top: 0.5rem;
-  color: ${({ theme }) => theme.color.grey};
+  padding-right: 1rem;
 
   > :first-child {
-    max-width: 50ch;
-    margin: 0 auto;
-    p {
-      font-size: 0.8rem;
-    }
+    max-width: 60ch;
+    color: ${({ theme }) => theme.color.body};
+
     > :first-child {
+      font-size: 1.125rem;
       font-weight: 600;
+      margin-bottom: 0.5rem;
     }
   }
 
   a {
     border: none;
+    font-size: 0.875rem;
 
     :hover {
       color: ${({ theme }) => theme.color.gold};
     }
   }
-`;
-
-const InfoCountUp = styled(CountUp)`
-  font-size: 1.125rem;
-  font-family: 'DM Mono', monospace;
-  color: ${({ theme }) => theme.color.primary};
 `;
 
 const InfoMsg = styled.div`
@@ -58,19 +50,16 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  text-align: center;
   flex: 1;
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     margin: 0;
-    text-align: center;
   }
 `;
 
 export const WeeklySaveAPY: FC = () => {
   const apy = useAvailableSaveApy();
   const massetName = useSelectedMassetName();
-  const formattedMasset = formatMassetName(massetName);
   return (
     <Container>
       {apy.type === 'fetching' ? (
@@ -86,11 +75,6 @@ export const WeeklySaveAPY: FC = () => {
         </div>
       ) : (
         <>
-          <p>
-            Earn <InfoCountUp end={apy?.value} suffix="%" decimals={2} /> on
-            your {formattedMasset}
-          </p>
-
           <InfoAPY>
             {' '}
             <div>

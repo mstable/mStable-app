@@ -24,14 +24,15 @@ import {
   FeederPoolProvider,
   useSelectedFeederPoolState,
 } from '../FeederPoolProvider';
-import { RewardStreamsProvider } from './useRewardStreams';
-import { Overview } from './Overview';
+import { RewardStreamsProvider } from '../../../../context/RewardStreamsProvider';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import { UserLookup } from './UserLookup';
+import { PoolOverview } from './PoolOverview';
+import { InfoBox } from '../../../core/InfoBox';
 
 const HeaderChartsContainer = styled.div`
   position: relative;
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   border-radius: 1rem;
   overflow: hidden;
 
@@ -114,39 +115,6 @@ const HeaderContainer = styled.div`
   }
 `;
 
-// Pull out & make generic for message reuse
-const Clippy = styled.div`
-  border: 1px rgba(255, 179, 52, 0.2) solid;
-  background: ${({ theme }) =>
-    theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none'};
-  border-radius: 1rem;
-  padding: 1rem;
-  color: ${({ theme }) => theme.color.offYellow};
-
-  > *:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-
-  h4 {
-    font-weight: 600;
-    font-size: 1rem;
-  }
-
-  p {
-    font-size: 0.875rem;
-
-    span {
-      font-weight: 600;
-    }
-
-    > button {
-      color: ${({ theme }) => theme.color.blue};
-      font-weight: 600;
-      font-size: 0.875rem;
-    }
-  }
-`;
-
 const Exchange = styled.div`
   display: flex;
   flex-direction: column;
@@ -177,7 +145,7 @@ const Container = styled.div`
   width: 100%;
 
   > div:not(:first-child):not(:last-child) {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
   }
 `;
 
@@ -186,6 +154,7 @@ const PoolDetailContent: FC = () => {
     address,
     title,
     liquidity,
+    vault,
   } = useSelectedFeederPoolState() as FeederPoolState;
   const massetPrice = useSelectedMassetPrice();
 
@@ -213,51 +182,56 @@ const PoolDetailContent: FC = () => {
   const [activeTab, setActiveTab] = useState<string>('Deposit');
 
   return (
-    <Container>
-      <PageHeader action={PageAction.Pools} subtitle={title} />
-      <HeaderContainer>
-        <HeaderCard poolAddress={address} isLarge color={color} />
-        <HeaderCharts color={color} />
-      </HeaderContainer>
-      <AssetDetails />
-      <Overview />
-      <Exchange>
-        <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
-        <Clippy>
-          <h4>Using mStable Feeder Pools</h4>
-          <p>
-            Feeder Pools offer a way to earn with your assets with{' '}
-            <span>low impermanent loss risk.</span>
-          </p>
-          <p>
-            Liquidity providers passively earn swap fees. Deposits to the Vault
-            will earn swap fees in addition to MTA rewards which vest over time.
-            {!readMore && (
-              <UnstyledButton onClick={setReadMore}>Learn more</UnstyledButton>
+    <RewardStreamsProvider vault={vault}>
+      <Container>
+        <PageHeader action={PageAction.Pools} subtitle={title} />
+        <HeaderContainer>
+          <HeaderCard poolAddress={address} isLarge color={color} />
+          <HeaderCharts color={color} />
+        </HeaderContainer>
+        <AssetDetails />
+        <PoolOverview />
+        <Exchange>
+          <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
+          <InfoBox>
+            <h4>Using mStable Feeder Pools</h4>
+            <p>
+              Feeder Pools offer a way to earn with your assets with{' '}
+              <span>low impermanent loss risk.</span>
+            </p>
+            <p>
+              Liquidity providers passively earn swap fees. Deposits to the
+              Vault will earn swap fees in addition to MTA rewards which vest
+              over time.
+              {!readMore && (
+                <UnstyledButton onClick={setReadMore}>
+                  Learn more
+                </UnstyledButton>
+              )}
+            </p>
+            {readMore && (
+              <>
+                <p>
+                  You can <span>multiply your rewards</span> in mStable pools by
+                  staking MTA.
+                </p>
+                <p>
+                  Claiming rewards will send 33% of the unclaimed amount to you
+                  immediately, with the rest safely locked in a stream vesting
+                  linearly and finishing 26 weeks from the time at which you
+                  claimed.
+                </p>
+                <p>
+                  When streams are unlocked, these rewards are sent to you in
+                  full along with unclaimed earnings.
+                </p>
+              </>
             )}
-          </p>
-          {readMore && (
-            <>
-              <p>
-                You can <span>multiply your rewards</span> in mStable pools by
-                staking MTA.
-              </p>
-              <p>
-                Claiming rewards will send 33% of the unclaimed amount to you
-                immediately, with the rest safely locked in a stream vesting
-                linearly and finishing 26 weeks from the time at which you
-                claimed.
-              </p>
-              <p>
-                When streams are unlocked, these rewards are sent to you in full
-                along with unclaimed earnings.
-              </p>
-            </>
-          )}
-        </Clippy>
-      </Exchange>
-      <UserLookup />
-    </Container>
+          </InfoBox>
+        </Exchange>
+        <UserLookup />
+      </Container>
+    </RewardStreamsProvider>
   );
 };
 
@@ -268,9 +242,7 @@ export const PoolDetail: FC = () => {
   const feederPool = useFeederPool(poolAddress);
   return feederPool ? (
     <FeederPoolProvider poolAddress={poolAddress}>
-      <RewardStreamsProvider>
-        <PoolDetailContent />
-      </RewardStreamsProvider>
+      <PoolDetailContent />
     </FeederPoolProvider>
   ) : (
     <Skeleton height={300} />

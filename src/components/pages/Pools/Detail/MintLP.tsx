@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 
 import { usePropose } from '../../../../context/TransactionsProvider';
 import { useWalletAddress } from '../../../../context/OnboardProvider';
@@ -47,25 +47,31 @@ export const MintLP: FC = () => {
     outputOptions[0].address,
   );
 
-  const handleSetInputAddress = (address: string): void => {
-    if (address === feederPool.address) {
-      setOutputOptions(defaultOutputOptions);
-      setOutputAddress(feederPool.vault.address);
-    } else {
-      setOutputOptions(defaultOutputOptions);
-    }
-    setInputAddress(address);
-  };
+  const handleSetInputAddress = useCallback(
+    (address: string): void => {
+      if (address === feederPool.address) {
+        setOutputOptions(defaultOutputOptions);
+        setOutputAddress(feederPool.vault.address);
+      } else {
+        setOutputOptions(defaultOutputOptions);
+      }
+      setInputAddress(address);
+    },
+    [defaultOutputOptions, feederPool],
+  );
 
-  const handleSetOutputAddress = (address: string): void => {
-    if (address === feederPool.address) {
-      setInputOptions(defaultInputOptions);
-      setInputAddress(feederPool.fasset.address);
-    } else {
-      setInputOptions(defaultInputOptions);
-    }
-    setOutputAddress(address);
-  };
+  const handleSetOutputAddress = useCallback(
+    (address: string): void => {
+      if (address === feederPool.address) {
+        setInputOptions(defaultInputOptions);
+        setInputAddress(feederPool.fasset.address);
+      } else {
+        setInputOptions(defaultInputOptions);
+      }
+      setOutputAddress(address);
+    },
+    [defaultInputOptions, feederPool],
+  );
 
   const [slippageSimple, slippageFormValue, setSlippage] = useSlippage();
 

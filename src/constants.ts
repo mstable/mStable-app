@@ -14,6 +14,8 @@ export const EXP_SCALE = BigNumber.from((1e18).toString());
 // For now, support one chain ID per deployment; also a `use-wallet` restriction
 export const CHAIN_ID = parseInt(process.env.REACT_APP_CHAIN_ID as string, 10);
 
+export const DEAD_ADDRESS = '0x0000000000000000000000000000000000000001';
+
 interface Addresses {
   UNISWAP_ROUTER02: string;
   WETH: string;

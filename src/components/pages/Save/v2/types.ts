@@ -12,6 +12,11 @@ export enum SaveRoutes {
   SwapAndStake,
 }
 
+export enum SaveRoutesOut {
+  Withdraw,
+  VaultWithdraw,
+}
+
 export interface SaveOutput {
   amount: BigDecimal;
   amountOut?: BigDecimal;

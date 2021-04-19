@@ -1,5 +1,6 @@
 import React, { FC, useLayoutEffect } from 'react';
 import styled from 'styled-components';
+import Skeleton from 'react-loading-skeleton';
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { H2, H3 } from '../../../core/Typography';
@@ -86,10 +87,39 @@ const ToggleContainer = styled.div`
   }
 `;
 
+const StatsContent: FC = () => (
+  <>
+    <Section id="save">
+      <ToggleContainer>
+        <H2>SAVE</H2>
+        <ToggleSave />
+      </ToggleContainer>
+      <DailyApys />
+    </Section>
+    <Section id="volumes">
+      <H2>Volumes</H2>
+      <VolumeChart />
+    </Section>
+    <Section id="totals">
+      <H2>Totals</H2>
+      <NiceBigNumbers>
+        <TotalSupply />
+        <TotalSavings />
+      </NiceBigNumbers>
+      <AggregateChart />
+    </Section>
+    <Section id="basket">
+      <H2>Basket share</H2>
+      <SimpleMassetStats />
+    </Section>
+  </>
+);
+
 export const Stats: FC = () => {
   useLayoutEffect(() => {
     window.scrollTo({ top: 0 });
   }, []);
+  const massetState = useSelectedMassetState();
 
   return (
     <div>
@@ -97,29 +127,7 @@ export const Stats: FC = () => {
         action={PageAction.Stats}
         subtitle="Explore activity across mStable"
       />
-      <Section id="save">
-        <ToggleContainer>
-          <H2>SAVE</H2>
-          <ToggleSave />
-        </ToggleContainer>
-        <DailyApys />
-      </Section>
-      <Section id="volumes">
-        <H2>Volumes</H2>
-        <VolumeChart />
-      </Section>
-      <Section id="totals">
-        <H2>Totals</H2>
-        <NiceBigNumbers>
-          <TotalSupply />
-          <TotalSavings />
-        </NiceBigNumbers>
-        <AggregateChart />
-      </Section>
-      <Section id="basket">
-        <H2>Basket share</H2>
-        <SimpleMassetStats />
-      </Section>
+      {massetState ? <StatsContent /> : <Skeleton height={500} />}
     </div>
   );
 };

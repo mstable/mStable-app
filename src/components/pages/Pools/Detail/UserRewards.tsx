@@ -6,7 +6,10 @@ import styled from 'styled-components';
 import { CountUp } from '../../../core/CountUp';
 import { useSelectedFeederPoolVaultContract } from '../FeederPoolProvider';
 import { ClaimGraph } from './ClaimGraph';
-import { StreamType, useRewardStreams } from './useRewardStreams';
+import {
+  StreamType,
+  useRewardStreams,
+} from '../../../../context/RewardStreamsProvider';
 import { Button } from '../../../core/Button';
 import { rewardsColorMapping } from '../constants';
 import { SendButton } from '../../../forms/SendButton';
@@ -14,6 +17,8 @@ import { usePropose } from '../../../../context/TransactionsProvider';
 import { Interfaces } from '../../../../types';
 import { TransactionManifest } from '../../../../web3/TransactionManifest';
 import { useIsMasquerading } from '../../../../context/UserProvider';
+import { useSelectedSaveVaultContract } from '../../../../context/DataProvider/DataProvider';
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
 
 const EmptyState = styled.div`
   display: flex;
@@ -79,11 +84,15 @@ const RewardValueContainer = styled.div<{ streamType: StreamType }>`
     font-size: 0.85rem;
   }
 
-  ${({ streamType }) => `
+  ${({ streamType, theme }) => `
   background: ${rewardsColorMapping[streamType].fill2};
   
   > :first-child {
-    color: ${rewardsColorMapping[streamType].dark}};
+    color: ${
+      theme.isLight
+        ? rewardsColorMapping[streamType].light
+        : rewardsColorMapping[streamType].dark
+    };
   }
   > :last-child span {
     color: ${rewardsColorMapping[streamType].point}};
@@ -183,10 +192,10 @@ const Card = styled.div`
   }
 
   h3 {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: ${({ theme }) => theme.color.body};
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 `;
 
@@ -249,12 +258,16 @@ export const UserRewards: FC = () => {
   const rewardStreams = useRewardStreams();
   const isMasquerading = useIsMasquerading();
   const [isClaiming, toggleIsClaiming] = useToggle(false);
-  const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0;
+
+  const feederVault = useSelectedFeederPoolVaultContract();
+  const saveVault = useSelectedSaveVaultContract();
+  const [selectedSaveVersion] = useSelectedSaveVersion();
 
   const propose = usePropose();
-  const contract = useSelectedFeederPoolVaultContract();
+  const contract = feederVault ?? saveVault;
 
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
+  const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0;
 
   return (
     <RewardsCard>
@@ -326,7 +339,15 @@ export const UserRewards: FC = () => {
           </GraphAndValues>
         ) : (
           <EmptyState>
-            <p>No rewards to claim</p>
+            <h3>No rewards to claim</h3>
+            {selectedSaveVersion === 1 ? (
+              <p>
+                Migrate your balance and deposit to the Vault to earn MTA
+                rewards.
+              </p>
+            ) : (
+              <p>Deposit to the Vault to earn MTA rewards.</p>
+            )}
           </EmptyState>
         )}
       </div>

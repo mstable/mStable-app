@@ -28,10 +28,8 @@ import {
 } from '../../../../web3/TransactionManifest';
 import { Interfaces } from '../../../../types';
 import { StepProps } from '../../../core/Step';
-import { useModalComponent } from '../../../../hooks/useModalComponent';
-import { SaveDeposit } from '../v2/SaveDeposit';
-import { SaveModalHeader } from '../v2/SaveModalHeader';
 import { useSigner } from '../../../../context/OnboardProvider';
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
 
 const isTxPending = (
   transactions: Record<string, Transaction>,
@@ -74,6 +72,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const { propose } = useTransactionsDispatch();
   const transactions = useTransactionsState();
   const massetState = useSelectedMassetState();
+  const [, setSelectedSaveVersion] = useSelectedSaveVersion();
   const massetAddress = massetState?.address;
   const massetSymbol = massetState?.token.symbol;
   const v1SavingsBalance = massetState?.savingsContracts.v1?.savingsBalance;
@@ -82,11 +81,6 @@ export const SaveMigrationProvider: FC = ({ children }) => {
   const savingsContractV1 = useSelectedSaveV1Contract();
 
   const allowance = useTokenAllowance(massetAddress, v2Address);
-
-  const [showDepositModal] = useModalComponent({
-    title: <SaveModalHeader masset="musd" type="masset" />,
-    children: <SaveDeposit />,
-  });
 
   const proposeWithdrawTx = useCallback(() => {
     if (
@@ -192,7 +186,7 @@ export const SaveMigrationProvider: FC = ({ children }) => {
       },
       {
         key: 'approve',
-        complete: approveComplete,
+        complete: approveComplete || !!v1.savingsBalance.balance?.exact.eq(0),
         options: [
           {
             title: 'Approve',
@@ -224,23 +218,23 @@ export const SaveMigrationProvider: FC = ({ children }) => {
         ),
         options: [
           {
-            title: 'Deposit to Save V2',
+            title: 'Deposit to Save V2 (imUSD)',
             buttonTitle: 'Deposit',
             key: 'deposit',
-            onClick: showDepositModal,
+            onClick: () => setSelectedSaveVersion(2),
             pending: false,
           },
         ],
       },
     ];
   }, [
-    allowance?.exact,
+    allowance,
     approveId,
     approveInfinite,
     massetState,
     proposeApproveTx,
     proposeWithdrawTx,
-    showDepositModal,
+    setSelectedSaveVersion,
     transactions,
     withdrawId,
   ]);

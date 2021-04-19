@@ -9,7 +9,7 @@ const Message = styled.div`
   border-radius: 1rem;
   font-size: 1rem;
   color: ${({ theme }) => theme.color.bodyAccent};
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   text-align: center;
 `;
 

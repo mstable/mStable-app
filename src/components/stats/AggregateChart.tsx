@@ -102,8 +102,8 @@ const useAggregateMetrics = (): {
     return filtered
       .sort(([a], [b]) => (a > b ? 1 : -1))
       .map(([timestamp, { totalSupply, savingsContracts }]) => {
-        const v1 = savingsContracts.find((sc) => sc.version === 1);
-        const v2 = savingsContracts.find((sc) => sc.version === 2);
+        const v1 = savingsContracts.find(sc => sc.version === 1);
+        const v2 = savingsContracts.find(sc => sc.version === 2);
         const totalSavingsV1 = parseFloat(v1 ? v1.totalSavings.simple : '0');
         const totalSavingsV2 =
           parseFloat(v2 ? v2.totalSavings.simple : '0') *
@@ -161,7 +161,7 @@ const Chart: FC<{
               padding={{ left: 16 }}
               minTickGap={16}
               tickLine
-              tickFormatter={(timestamp) =>
+              tickFormatter={timestamp =>
                 timestamp
                   ? format(
                       timestamp * 1000,
@@ -184,7 +184,7 @@ const Chart: FC<{
             />
             <Tooltip
               cursor
-              labelFormatter={(timestamp) =>
+              labelFormatter={timestamp =>
                 format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
               }
               formatter={toK as never}

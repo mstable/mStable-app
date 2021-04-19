@@ -21,7 +21,7 @@ const Container = styled.div<{ valid: boolean; touched: boolean }>`
       solid;
     padding: 4px 16px;
     outline: 0;
-    background: ${({ theme }) => theme.color.accent};
+    background: ${({ theme }) => theme.color.backgroundAccent};
   }
 `;
 

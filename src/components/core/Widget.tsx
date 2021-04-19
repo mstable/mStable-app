@@ -1,7 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import styled from 'styled-components';
 import { ViewportWidth } from '../../theme';
-import { UnstyledButton } from './Button';
 import { Tooltip } from './ReactTooltip';
 
 interface Props {
@@ -54,32 +53,7 @@ const Header = styled.div`
 const Container = styled.div<{ border?: boolean; padding?: boolean }>`
   ${({ border, padding, theme }) => ({
     padding: border || padding ? '1.25rem' : '0',
-    border: border ? `1px ${theme.color.accent} solid` : 0,
-    borderRadius: border ? '0.75rem' : 'none',
-  })}
-`;
-
-const ContainerButton = styled(UnstyledButton)<{
-  border?: boolean;
-  padding?: boolean;
-  disabled?: boolean;
-}>`
-  width: 100%;
-  transition: background-color 0.2s ease;
-
-  :hover {
-    background: ${({ theme, disabled }) => !disabled && theme.color.accent};
-    cursor: ${({ disabled }) => (disabled ? `not-allowed` : `pointer`)};
-  }
-
-  :active {
-    background: ${({ theme, disabled }) =>
-      !disabled && theme.color.accentContrast};
-  }
-
-  ${({ border, padding, theme }) => ({
-    padding: border || padding ? '1.25rem' : '0',
-    border: border ? `1px ${theme.color.accent} solid` : 0,
+    border: border ? `1px ${theme.color.defaultBorder} solid` : 0,
     borderRadius: border ? '0.75rem' : 'none',
   })}
 `;
@@ -132,36 +106,5 @@ export const Widget: FC<Props> = ({
         {children}
       </DefaultWidget>
     </Container>
-  );
-};
-
-export const WidgetButton: FC<Props & { onClick?: () => void }> = ({
-  border,
-  padding,
-  children,
-  className,
-  headerContent,
-  title,
-  tooltip,
-  boldTitle,
-  onClick,
-}) => {
-  return (
-    <ContainerButton
-      border={border}
-      padding={padding}
-      className={className}
-      onClick={onClick}
-      disabled={!onClick}
-    >
-      <DefaultWidget
-        title={title}
-        tooltip={tooltip}
-        headerContent={headerContent}
-        boldTitle={boldTitle}
-      >
-        {children}
-      </DefaultWidget>
-    </ContainerButton>
   );
 };

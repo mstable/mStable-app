@@ -1,13 +1,29 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import styled from 'styled-components';
 
-import { MassetState } from '../../context/DataProvider/types';
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
 
 import { SimpleMassetStats } from '../stats/SimpleMassetStats';
+import { TransitionCard } from '../core/TransitionCard';
+import { UnstyledButton } from '../core/Button';
+
+export const Button = styled(UnstyledButton)`
+  border-radius: 1rem;
+  padding: 0.75rem;
+
+  h3 {
+    color: ${({ theme }) => theme.color.bodyAccent};
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  :hover {
+    background: ${({ theme }) => theme.color.backgroundAccent};
+  }
+`;
 
 const MassetAsideContainer = styled.aside`
-  padding: 1rem;
+  padding: 0 1rem 1rem;
   border-radius: 0.75rem;
   flex-shrink: 1;
   height: auto;
@@ -28,52 +44,27 @@ const MassetAsideContainer = styled.aside`
   }
 `;
 
-const description = {
-  mBTC:
-    'mStable mBTC is a meta-stablecoin based on tokenised Bitcoin, with a weight-limited basket of assets and a native interest rate.',
-  mUSD:
-    'mStable mUSD is a meta-stablecoin based on USD, with a weight-limited basket of assets and a high native interest rate.',
-};
-
 const MassetAside: FC = () => {
-  const massetState = useSelectedMassetState() as MassetState;
   return (
     <MassetAsideContainer>
-      <h3>About {massetState.token.symbol}</h3>
-      <p>{description[massetState.token.symbol as keyof typeof description]}</p>
       <SimpleMassetStats />
     </MassetAsideContainer>
   );
 };
 
-const Separator = styled.div`
-  height: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.color.accent};
-  width: 100%;
-  padding-bottom: 2rem;
-  margin-bottom: 2rem;
-
-  @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
-    display: none;
-  }
-`;
-
 const Inner = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
     display: flex;
-    flex-direction: row;
-    gap: 2rem;
-    justify-content: space-between;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    > :first-child {
-      flex-basis: 70%;
+    > * {
+      width: 36rem;
     }
-
-    > :last-child {
-      flex-basis: 30%;
-      min-width: 12rem;
-    }
+  }
+  > div:not(:last-child) {
+    margin-bottom: 1.25rem;
   }
 `;
 
@@ -95,6 +86,9 @@ const MigrationOverlay = styled.div`
 
 const Container = styled.div`
   position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 `;
 
 export const MassetPage: FC<{ asideVisible?: boolean }> = ({
@@ -102,14 +96,30 @@ export const MassetPage: FC<{ asideVisible?: boolean }> = ({
   asideVisible,
 }) => {
   const { undergoingRecol } = useSelectedMassetState() ?? {};
+  const [selection, setSelection] = useState<string | undefined>();
+
+  // enable collapse
+  const handleSelection = useCallback(
+    (newValue?: string) =>
+      setSelection(selection === newValue ? undefined : newValue),
+    [selection],
+  );
+
   return (
     <Container>
       {undergoingRecol && <MigrationOverlay />}
       {asideVisible ? (
         <Inner>
           <div>{children}</div>
-          <Separator />
-          <MassetAside />
+          {/* // FIXME: - Replace w/ dropdown? */}
+          <TransitionCard
+            components={{ root: <MassetAside /> }}
+            selection={selection}
+          >
+            <Button onClick={() => handleSelection('root')}>
+              <h3>View Basket Stats</h3>
+            </Button>
+          </TransitionCard>
         </Inner>
       ) : (
         <div>{children}</div>

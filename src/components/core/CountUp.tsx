@@ -80,7 +80,13 @@ export const CountUp: FC<Props> = ({
       highlightColor={highlightColor}
     >
       {prefix ? <PrefixOrSuffix>{prefix}</PrefixOrSuffix> : null}
-      <Number>{isValid && countUp.toString() !== 'NaN' ? countUp : '–'}</Number>
+      <Number>
+        {isValid && countUp !== 'NaN'
+          ? typeof countUp === 'number'
+            ? countUp.toFixed(decimals)
+            : countUp
+          : '–'}
+      </Number>
       {suffix ? <PrefixOrSuffix>{suffix}</PrefixOrSuffix> : null}
     </Container>
   );

@@ -48,9 +48,9 @@ const Background = styled.div<{ gradientColor?: string }>`
 const ContainerStyle = css`
   display: flex;
   flex-direction: column;
-  border: 1px solid ${({ theme }) => theme.color.accent};
   padding: 1rem;
   border-radius: 1rem;
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   justify-content: flex-start;
   transition: 0.25s ease all;
 
@@ -81,9 +81,24 @@ const ContainerStyle = css`
 
 const ContainerButton = styled(UnstyledButton)`
   ${ContainerStyle};
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 0;
 
-  :hover {
-    opacity: 0.75;
+  &:before {
+    content: ' ';
+    position: absolute;
+    border-radius: 1rem;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: opacity 250ms;
+  }
+
+  :hover:before {
+    opacity: 1;
   }
 `;
 

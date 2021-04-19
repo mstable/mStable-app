@@ -14,23 +14,28 @@ const ButtonCss = css<Props>`
   padding: ${({ scale }) =>
     scale ? `${scale * 0.75}em ${scale * 1.5}em` : `0.5rem 1.25rem`};
   border-radius: 1.5em;
-  background: ${({ theme, highlighted, transparent }) =>
+  background: ${({ theme, highlighted, transparent, disabled }) =>
     highlighted
       ? theme.color.primary
       : transparent
       ? 'transparent'
-      : theme.color.accent};
-  color: ${({ theme, highlighted }) =>
-    highlighted ? theme.color.white : theme.color.body};
+      : disabled
+      ? theme.color.disabledButton
+      : theme.color.backgroundAccent};
+  color: ${({ theme, highlighted, disabled }) =>
+    highlighted
+      ? theme.color.white
+      : disabled
+      ? theme.color.disabled
+      : theme.color.body};
   z-index: ${({ highlighted }) => (highlighted ? 1 : 0)};
   font-weight: 600;
   position: relative;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   transition: 0.2s ease all;
   border: 1px solid
     ${({ transparent, theme }) =>
-      transparent ? theme.color.accentContrast : 'transparent'};
+      transparent ? theme.color.defaultBorder : 'transparent'};
 
   svg {
     rect {
@@ -39,11 +44,10 @@ const ButtonCss = css<Props>`
     }
   }
 
-  &:hover,
-  &:focus {
+  &:hover {
     ${({ disabled, theme, highlighted }) =>
       !disabled && {
-        background: `${highlighted ? theme.color.gold : theme.color.accent}`,
+        background: `${highlighted && theme.color.gold}`,
         color: `${highlighted ? theme.color.white : theme.color.gold}`,
       }}
   }

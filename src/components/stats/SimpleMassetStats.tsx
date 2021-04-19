@@ -30,7 +30,6 @@ const Percentage = styled.div`
 
 const AssetRow = styled.div`
   display: flex;
-  gap: 1rem;
   justify-content: space-between;
   padding: 0.75rem 0;
   border-bottom: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
@@ -55,10 +54,6 @@ const FeederRow = styled(AssetRow)`
 
 const Container = styled.div`
   font-size: 0.875rem;
-
-  > :first-child {
-    border-top: 1px ${({ theme }) => theme.color.bodyTransparent} solid;
-  }
 `;
 
 export const SimpleMassetStats: FC = () => {

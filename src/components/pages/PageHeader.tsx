@@ -82,7 +82,6 @@ const Row = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 0.5rem;
-  padding-right: 1rem;
 `;
 
 const ChildrenRow = styled.div`

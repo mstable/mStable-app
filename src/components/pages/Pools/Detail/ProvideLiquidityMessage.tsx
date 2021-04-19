@@ -28,6 +28,7 @@ const Container = styled(Card)`
   background: ${({ theme }) => theme.color.backgroundAccent};
   flex-direction: column;
   align-items: center;
+  padding: 1rem ;
 
   > div:last-child {
     display: flex;
