@@ -10,10 +10,10 @@ import {
   useSetSelectedMassetName,
 } from '../../context/SelectedMassetNameProvider';
 import { ViewportWidth } from '../../theme';
-import { AddressOption, MassetName } from '../../types';
-import { AssetDropdown } from './AssetDropdown';
+import { MassetName } from '../../types';
+import { Dropdown, DropdownOption } from './Dropdown';
 
-const StyledDropdown = styled(AssetDropdown)`
+const StyledDropdown = styled(Dropdown)`
   @media (max-width: ${ViewportWidth.m}) {
     min-width: 5.5rem;
 
@@ -34,12 +34,16 @@ export const MassetSelector: FC = () => {
   const history = useHistory();
   const [selected, setMassetName] = useSelectedMasset();
 
-  const options = useMemo<AddressOption[]>(
+  const options = useMemo<Record<string, DropdownOption>>(
     () =>
-      Object.values(dataState).map(massetState => ({
-        address: massetState.token.address,
-        symbol: massetState.token.symbol,
-      })),
+      Object.fromEntries([
+        ...Object.values(dataState).map(massetState => [
+          massetState.token.symbol,
+          {
+            symbol: massetState.token.symbol,
+          },
+        ]),
+      ]),
     [dataState],
   );
 
@@ -61,17 +65,17 @@ export const MassetSelector: FC = () => {
       onChange={(selectedAddress?: string): void => {
         if (!selectedAddress) return;
 
-        const slug = options
-          .find(({ address }) => address === selectedAddress)
-          ?.symbol?.toLowerCase() as MassetName;
+        const slug = Object.keys(options)
+          .find(address => address === selectedAddress)
+          ?.toLowerCase() as MassetName;
 
         setMassetName(slug as MassetName);
 
         const tab = window.location.hash.split('/')[2];
         history.push(`/${slug}/${tab}`);
       }}
-      addressOptions={options}
-      defaultAddress={dataState[selected]?.token?.address}
+      options={options}
+      defaultOption={dataState[selected]?.token?.symbol}
     />
   );
 };
