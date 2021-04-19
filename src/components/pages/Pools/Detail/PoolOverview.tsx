@@ -3,7 +3,7 @@ import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 
-import { CountUp } from '../../../core/CountUp';
+import { CountUp, DifferentialCountup } from '../../../core/CountUp';
 import { useSelectedFeederPoolState } from '../FeederPoolProvider';
 import { Position } from './Position';
 import {
@@ -107,10 +107,15 @@ export const PoolOverview: FC = () => {
           onClick={() => handleSelection(Boost)}
         >
           <h3>Rewards APY</h3>
-          <CountUp
-            end={apy.value?.userBoost ?? apy.value?.base ?? 0}
-            suffix="%"
-          />
+          {apy.value?.userBoost ? (
+            <DifferentialCountup
+              prev={apy.value.base}
+              end={apy.value.userBoost}
+              suffix="%"
+            />
+          ) : (
+            <CountUp end={apy.value?.base ?? 0} suffix="%" />
+          )}
         </Button>
         <Button
           active={selection === Rewards}
