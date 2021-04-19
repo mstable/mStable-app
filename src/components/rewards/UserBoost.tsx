@@ -45,7 +45,11 @@ export const UserBoost: FC<{
   const massetName = useSelectedMassetName();
   return (
     <Container>
-      <Boost vault={vault} apy={apy.value?.base}>
+      <Boost
+        vault={vault}
+        apy={apy.value?.base}
+        isImusd={massetName === 'musd'}
+      >
         <div>
           <Tooltip
             tip={`${

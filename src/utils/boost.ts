@@ -95,14 +95,15 @@ export const getCoeffs = (
   switch (vault.address) {
     // All USD
     case '0xb3114e33fc6ff5f3c452980ccbe7cf1de1fc822b': // ropsten
-    case '0xd124b55f70d374f58455c8aedf308e52cf2a6207':
-    case '0xadeedd3e5768f7882572ad91065f93ba88343c99':
+    case '0xd124b55f70d374f58455c8aedf308e52cf2a6207': // musd/busd
+    case '0xadeedd3e5768f7882572ad91065f93ba88343c99': // musd/gusd
       return [4.8, 1];
 
     // All BTC
     case '0xae077412fe8c3df00393a63e49caae2658a33019': // ropsten
-    case '0x760ea8cfdcc4e78d8b9ca3088ecd460246dc0731':
-    case '0xf65d53aa6e2e4a5f4f026e73cb3e22c22d75e35c':
+    case '0xf38522f63f40f9dd81abafd2b8efc2ec958a3016': // save vault
+    case '0x760ea8cfdcc4e78d8b9ca3088ecd460246dc0731': // mbtc/tbtc
+    case '0xf65d53aa6e2e4a5f4f026e73cb3e22c22d75e35c': // mbtc/hbtc
       return [4.8, 58000];
 
     default:
