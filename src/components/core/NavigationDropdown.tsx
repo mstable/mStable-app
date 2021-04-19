@@ -39,7 +39,7 @@ export const NavigationDropdown: FC<Props> = ({ items, massetName }) => {
   return option ? (
     <Dropdown
       onChange={handleSelect}
-      options={options}
+      options={Object.fromEntries([...options.map(v => [v, {}])])}
       defaultOption={option}
     />
   ) : null;

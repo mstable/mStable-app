@@ -193,10 +193,11 @@ export const TokenIcon: FC<Props> = ({ className, symbol }) => {
 };
 
 export const TokenPair: FC<{
-  symbols: string[];
+  symbols?: string[];
   className?: string;
   isLarge?: boolean;
 }> = ({ className, symbols, isLarge = false }) => {
+  if (!symbols || (symbols?.length ?? 0) < 2) return null;
   return (
     <IconContainer isLarge={isLarge} className={className}>
       <TokenIcon symbol={symbols[0]} />

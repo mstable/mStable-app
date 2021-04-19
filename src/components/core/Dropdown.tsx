@@ -6,32 +6,28 @@ import useOnClickOutside from 'use-onclickoutside';
 import { UnstyledButton } from './Button';
 import { ThemedSkeleton } from './ThemedSkeleton';
 import { Chevron } from './Chevron';
+import { TokenIcon, TokenPair } from '../icons/TokenIcon';
+import { Tooltip } from './ReactTooltip';
+import { AddressOption } from '../../types';
 
-interface Props {
-  defaultOption?: string;
-  options?: string[];
-  onChange?(title?: string): void;
-  className?: string;
+export interface DropdownOption {
+  symbol?: string; // for TokenIcon use
+  subtext?: JSX.Element;
+  asset?: AddressOption;
 }
 
-const ChevronContainer = styled.span<{ selected?: boolean; active?: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex: 1;
-  opacity: ${({ selected }) => (selected ? 1 : 0)};
+interface Props {
+  className?: string;
+  defaultOption?: string;
+  options?: Record<string, DropdownOption>;
+  onChange?(title?: string): void;
+  disabled?: boolean;
+}
 
-  svg {
-    height: 8px;
-    width: auto;
-    margin-left: 0.5rem;
-    transform: ${({ active }) => (active ? `rotate(180deg)` : `auto`)};
-    transition: 0.1s ease-out transform;
-
-    path {
-      fill: ${({ theme }) => theme.color.body};
-    }
-  }
+const Balance = styled.span`
+  ${({ theme }) => theme.mixins.numeric};
+  font-size: 0.75rem;
+  color: ${({ theme }) => theme.color.bodyAccent};
 `;
 
 const TokenDetails = styled.div`
@@ -39,11 +35,19 @@ const TokenDetails = styled.div`
   flex-direction: column;
   justify-content: center;
 
-  > span:first-child {
-    font-weight: 600;
+  > div {
+    display: flex;
+    align-items: center;
+
+    span {
+      font-weight: 600;
+    }
+
+    > * svg {
+      margin-left: 0.5rem;
+    }
   }
 `;
-
 const OptionContainer = styled(UnstyledButton)<{
   active?: boolean;
   selected?: boolean;
@@ -56,7 +60,7 @@ const OptionContainer = styled(UnstyledButton)<{
   text-align: left;
   padding: 0.5rem 0.5rem;
   align-items: center;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 
   border-top-left-radius: ${({ active, selected }) =>
@@ -94,18 +98,44 @@ const OptionList = styled.div`
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   min-width: 5.5rem;
   z-index: 2;
+  width: 100%;
 `;
 
 const Container = styled.div`
   position: relative;
 `;
 
+const Asset: FC<{ asset?: AddressOption }> = ({ asset }) => {
+  if (!asset) return null;
+  const { tip, label, symbol, balance } = asset;
+  return (
+    <>
+      <div>
+        <span>{label ?? symbol}</span>
+        {tip && <Tooltip tip={tip} />}
+      </div>
+      {(balance?.simple ?? 0) > 0 && (
+        <Balance>{balance?.format(2, false)}</Balance>
+      )}
+    </>
+  );
+};
+
 const Option: FC<{
   selected?: boolean;
   active?: boolean;
   onClick: () => void;
   option?: string;
-}> = ({ onClick, option, selected = false, active = false }) => {
+  options?: Record<string, DropdownOption>;
+  disabled?: boolean;
+}> = ({
+  onClick,
+  option,
+  options,
+  selected = false,
+  active = false,
+  disabled,
+}) => {
   if (!option)
     return (
       <OptionContainer active disabled>
@@ -113,14 +143,36 @@ const Option: FC<{
       </OptionContainer>
     );
 
+  const { symbol, subtext, asset } = options?.[option] ?? {};
+  const symbols = symbol?.split('/');
+
   return (
-    <OptionContainer onClick={onClick} active={active} selected={selected}>
+    <OptionContainer
+      onClick={onClick}
+      active={active}
+      selected={selected}
+      disabled={disabled}
+    >
+      {symbol && (symbols?.length ?? 0) <= 1 ? (
+        <TokenIcon symbol={symbol} />
+      ) : (
+        <TokenPair symbols={symbols} />
+      )}
       <TokenDetails>
-        <span>{option}</span>
+        {asset ? (
+          <Asset asset={asset} />
+        ) : (
+          <>
+            <div>
+              <span>{option}</span>
+            </div>
+            {!!subtext && subtext}
+          </>
+        )}
       </TokenDetails>
-      <ChevronContainer selected={selected} active={active}>
+      {Object.keys(options ?? {}).length > 1 && selected && (
         <Chevron direction={active ? 'up' : 'down'} />
-      </ChevronContainer>
+      )}
     </OptionContainer>
   );
 };
@@ -129,6 +181,7 @@ export const Dropdown: FC<Props> = ({
   defaultOption,
   options,
   onChange,
+  disabled,
   className,
 }) => {
   const [show, toggleShow] = useToggle(false);
@@ -136,7 +189,7 @@ export const Dropdown: FC<Props> = ({
   const selected = useMemo(
     () =>
       defaultOption && options
-        ? options.find(
+        ? Object.keys(options).find(
             option => defaultOption.toLowerCase() === option.toLowerCase(),
           )
         : undefined,
@@ -153,7 +206,7 @@ export const Dropdown: FC<Props> = ({
     toggleShow(false);
   });
 
-  const isDropdown = (options?.length ?? 0) > 1;
+  const isDropdown = (Object.keys(options ?? {})?.length ?? 0) > 1;
 
   return (
     <Container ref={container} className={className}>
@@ -162,18 +215,21 @@ export const Dropdown: FC<Props> = ({
           if (isDropdown) toggleShow();
         }}
         option={selected}
+        options={options}
         selected
         active={show}
+        disabled={disabled}
       />
       {options && (
         <OptionList hidden={!show}>
-          {options
+          {Object.keys(options)
             .filter(m => m !== selected)
             .map(option => (
               <Option
                 key={option}
                 onClick={() => handleSelect(option)}
                 option={option}
+                options={options}
               />
             ))}
         </OptionList>
