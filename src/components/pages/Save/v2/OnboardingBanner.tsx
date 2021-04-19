@@ -12,7 +12,7 @@ import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionP
 
 const APYChart = styled(DailyApys)`
   position: relative;
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   border-radius: 1rem;
   overflow: hidden;
 `;
@@ -46,7 +46,7 @@ const InfoLink = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.color.accent};
+  background: ${({ theme }) => theme.color.backgroundAccent};
   border-radius: 1rem;
   height: 2rem;
   width: 2rem;
@@ -78,7 +78,7 @@ const Container = styled.div`
       `linear-gradient(180deg, rgba(210,172,235,0.3) 0%, ${theme.color.background} 100%)`};
     border-radius: 1rem;
     padding: 1.5rem;
-    border: 1px solid ${({ theme }) => theme.color.accent};
+    border: 1px solid ${({ theme }) => theme.color.defaultBorder};
     margin-bottom: 1.25rem;
 
     button {

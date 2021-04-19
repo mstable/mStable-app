@@ -27,7 +27,7 @@ const ExchangeRate = styled.div`
   font-size: 1rem;
   flex: 1;
   justify-content: center;
-  border: 1px dashed ${({ theme }) => theme.color.accent};
+  border: 1px dashed ${({ theme }) => theme.color.defaultBorder};
   justify-self: center;
   padding: 1rem;
   border-radius: 1rem;

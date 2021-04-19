@@ -28,12 +28,12 @@ export const Input = styled.input<{
     error
       ? theme.color.redTransparenter
       : disabled
-      ? theme.color.accent
+      ? theme.color.disabledInput
       : 'transparent'};
 
   border: ${({ theme, error }) =>
     `1px ${
-      error ? theme.color.redTransparent : theme.color.accentContrast
+      error ? theme.color.redTransparent : theme.color.defaultBorder
     } solid`};
 
   color: ${({ error, theme, disabled }) =>

@@ -14,11 +14,13 @@ const ButtonCss = css<Props>`
   padding: ${({ scale }) =>
     scale ? `${scale * 0.75}em ${scale * 1.5}em` : `0.5rem 1.25rem`};
   border-radius: 1.5em;
-  background: ${({ theme, highlighted, transparent }) =>
+  background: ${({ theme, highlighted, transparent, disabled }) =>
     highlighted
       ? theme.color.primary
       : transparent
       ? 'transparent'
+      : disabled
+      ? theme.color.disabledButton
       : theme.color.backgroundAccent};
   color: ${({ theme, highlighted, disabled }) =>
     highlighted
@@ -33,7 +35,7 @@ const ButtonCss = css<Props>`
   transition: 0.2s ease all;
   border: 1px solid
     ${({ transparent, theme }) =>
-      transparent ? theme.color.accentContrast : 'transparent'};
+      transparent ? theme.color.defaultBorder : 'transparent'};
 
   svg {
     rect {
@@ -45,7 +47,7 @@ const ButtonCss = css<Props>`
   &:hover {
     ${({ disabled, theme, highlighted }) =>
       !disabled && {
-        background: `${highlighted ? theme.color.gold : theme.color.accent}`,
+        background: `${highlighted && theme.color.gold}`,
         color: `${highlighted ? theme.color.white : theme.color.gold}`,
       }}
   }

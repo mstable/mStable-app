@@ -41,7 +41,7 @@ const Input = styled.div`
     border-radius: 0.5rem;
     text-transform: uppercase;
     color: ${({ theme }) => theme.color.body};
-    border: 1px solid ${({ theme }) => theme.color.accent};
+    border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   }
 `;
 
@@ -104,11 +104,10 @@ const Container = styled.div<{
         ? '#F4C886'
         : error === 'error'
         ? theme.color.red
-        : theme.color.accent};
+        : theme.color.defaultBorder};
   border-radius: 0.75rem;
   padding: 0.5rem;
-  background: ${({ theme, disabled }) =>
-    disabled && theme.color.backgroundAccent};
+  background: ${({ theme, disabled }) => disabled && theme.color.disabledInput};
   height: 4.25rem;
 
   &:focus-within {

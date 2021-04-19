@@ -24,7 +24,7 @@ const Content: Record<OnboardingType, string> = {
 };
 
 const Container = styled(Card)`
-  background: ${({ theme }) => theme.color.accent};
+  background: ${({ theme }) => theme.color.backgroundAccent};
   border: none;
 `;
 

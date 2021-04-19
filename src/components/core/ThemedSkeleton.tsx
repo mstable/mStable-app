@@ -13,8 +13,8 @@ export const ThemedSkeleton: FC<
   return (
     <div className={className}>
       <SkeletonTheme
-        color={theme.accent}
-        highlightColor={theme.bodyTransparent}
+        color={theme.backgroundAccent}
+        highlightColor={theme.background}
       >
         <Skeleton {...props} />
       </SkeletonTheme>

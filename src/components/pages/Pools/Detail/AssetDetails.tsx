@@ -9,7 +9,7 @@ import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 const Container = styled.div`
   padding: 1rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   border-radius: 1rem;
 
   > h3 {

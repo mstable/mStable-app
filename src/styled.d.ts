@@ -20,7 +20,6 @@ declare module 'styled-components' {
         body: string;
         bodyAccent: string;
         accent: string;
-        accentContrast: string;
         bodyTransparent: string;
         bodyTransparenter: string;
         background: string;

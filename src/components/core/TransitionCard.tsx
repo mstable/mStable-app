@@ -117,7 +117,7 @@ const Header = styled.div<{ showBorder?: boolean }>`
   display: flex;
   border-bottom: 1px solid
     ${({ theme, showBorder }) =>
-      showBorder ? theme.color.accent : 'transparent'};
+      showBorder ? theme.color.defaultBorder : 'transparent'};
 
   > * {
     flex: 1;
@@ -125,7 +125,7 @@ const Header = styled.div<{ showBorder?: boolean }>`
 `;
 
 const Container = styled.div`
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   border-radius: 1rem;
 `;
 

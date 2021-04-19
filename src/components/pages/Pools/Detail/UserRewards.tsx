@@ -84,11 +84,15 @@ const RewardValueContainer = styled.div<{ streamType: StreamType }>`
     font-size: 0.85rem;
   }
 
-  ${({ streamType }) => `
+  ${({ streamType, theme }) => `
   background: ${rewardsColorMapping[streamType].fill2};
   
   > :first-child {
-    color: ${rewardsColorMapping[streamType].dark}};
+    color: ${
+      theme.isLight
+        ? rewardsColorMapping[streamType].light
+        : rewardsColorMapping[streamType].dark
+    };
   }
   > :last-child span {
     color: ${rewardsColorMapping[streamType].point}};

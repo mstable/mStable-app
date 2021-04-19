@@ -20,8 +20,7 @@ import { OnboardingProvider } from './hooks';
 
 const ButtonPanel = styled.div`
   display: flex;
-  background: 1px solid ${({ theme }) => theme.color.accent};
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   align-items: flex-start;
   justify-content: center;
   border-radius: 1rem;

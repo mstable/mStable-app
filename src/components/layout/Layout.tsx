@@ -42,7 +42,7 @@ const BackgroundContainer = styled.div`
 const GlobalStyle = createGlobalStyle`
   ${reset}
   a {
-    color: ${Color.blue};
+    color: ${({ theme }) => theme.color.primary};
     text-decoration: none;
     transition: color 0.4s ease;
     &:hover {

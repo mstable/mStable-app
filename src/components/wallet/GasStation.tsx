@@ -65,7 +65,7 @@ const Input = styled.input<{ error?: string | void; disabled?: boolean }>`
   text-align: center;
 
   &:focus {
-    border-color: ${({ theme }) => theme.color.blue};
+    border-color: ${({ theme }) => theme.color.primary};
     background: ${({ theme }) => theme.color.blueTransparent};
   }
 

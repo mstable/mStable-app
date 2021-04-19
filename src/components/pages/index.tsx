@@ -22,6 +22,7 @@ const StyledTokenIcon = styled(TokenIcon)`
 `;
 
 const StyledButton = styled(UnstyledButton)<{ asset: MassetName }>`
+  position: relative;
   width: 100%;
   max-width: 20rem;
   font-size: 2rem;
@@ -38,12 +39,21 @@ const StyledButton = styled(UnstyledButton)<{ asset: MassetName }>`
     margin-bottom: 2rem;
   }
 
-  &:hover {
-    background: ${({ theme }) => theme.color.accentContrast};
+  &:before {
+    content: ' ';
+    position: absolute;
+    border-radius: 2rem;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transition: opacity 250ms;
   }
 
-  &:active {
-    background: ${({ theme }) => theme.color.accentContrast};
+  :hover:before {
+    opacity: 1;
   }
 `;
 

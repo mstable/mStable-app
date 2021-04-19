@@ -22,7 +22,7 @@ const BoostBarLine = styled.div`
   height: 2px;
   margin-left: 16px;
   margin-right: 16px;
-  background: ${({ theme }) => theme.color.accent};
+  background: ${({ theme }) => theme.color.backgroundAccent};
 `;
 
 const BoostBarRange = styled.div`

@@ -39,7 +39,7 @@ export const InputV2 = styled.input<{
       ? theme.color.disabled
       : theme.color.body};
   background: ${({ theme, disabled }) =>
-    disabled ? theme.color.accent : 'none'};
+    disabled ? theme.color.disabledInput : 'none'};
   opacity: ${({ disabled }) => (disabled ? 0.85 : 1)};
   font-weight: normal;
   border-radius: 0.5rem;

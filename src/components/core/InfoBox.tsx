@@ -26,7 +26,7 @@ export const InfoBox = styled.div`
     }
 
     > button {
-      color: ${({ theme }) => theme.color.blue};
+      color: ${({ theme }) => theme.color.primary};
       font-weight: 600;
       font-size: 0.875rem;
     }

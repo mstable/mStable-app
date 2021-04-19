@@ -32,7 +32,7 @@ import { InfoBox } from '../../../core/InfoBox';
 
 const HeaderChartsContainer = styled.div`
   position: relative;
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   border-radius: 1rem;
   overflow: hidden;
 

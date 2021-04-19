@@ -31,7 +31,7 @@ const SubmitButton = styled(Button)`
   gap: 0.5rem;
 
   svg circle {
-    stroke: white;
+    stroke: ${({ theme }) => theme.color.body};
   }
 `;
 
@@ -92,7 +92,7 @@ const Container = styled.div<{
         ? `1px solid ${theme.color.primaryTransparent}`
         : `none`};
     background: ${({ theme, active, complete }) =>
-      complete || active ? theme.color.background : theme.color.accent};
+      complete || active ? theme.color.background : theme.color.disabledButton};
   }
 
   ${Title} {

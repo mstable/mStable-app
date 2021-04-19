@@ -14,7 +14,7 @@ export const TabBtn = styled(UnstyledButton)<{ active: boolean }>`
   cursor: pointer;
   border-bottom: 2px
     ${({ active, theme }) =>
-      active ? theme.color.primary : theme.color.accent}
+      active ? theme.color.primary : theme.color.defaultBorder}
     solid;
   background: transparent;
   color: ${({ active, theme }) => (active ? theme.color.primary : Color.grey)};

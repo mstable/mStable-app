@@ -15,9 +15,9 @@ export enum Color {
   redTransparenter = 'rgba(202,0,27,0.1)',
   white = 'rgb(255,255,255)',
   black = 'rgb(0,0,0)',
-  whiteTransparent = 'rgba(255,255,255,0.2)',
+  whiteTransparent = 'rgba(255,255,255,0.7)',
   whiteTransparenter = 'rgba(255,255,255,0.1)',
-  blackTransparent = 'rgba(0,0,0,0.1)',
+  blackTransparent = 'rgba(0,0,0,0.35)',
   blackTransparenter = 'rgba(0,0,0,0.06)',
   offWhite = 'rgb(249,245,242)',
   offBlackAccent = 'rgb(63,67,77)',
@@ -28,19 +28,41 @@ export enum Color {
   greyTransparent = 'rgba(146, 154, 162, 0.5)',
 }
 
+const ColorNew: {
+  spaceBlue: Record<string, string>;
+  white: Record<string, string>;
+} = {
+  spaceBlue: {
+    0: 'rgba(5, 20, 44, 1)',
+    1: 'rgba(12, 27, 50, 1)',
+    2: 'rgba(23, 36, 59, 1)',
+    3: 'rgba(35, 48, 69, 1)',
+    4: 'rgba(45, 58, 78, 1)',
+  },
+  white: {
+    0: 'rgba(255, 255, 255, 1)',
+    1: 'rgba(247, 247, 247, 1)',
+    2: 'rgba(242, 242, 242, 1)',
+    3: 'rgba(235, 235, 235, 1)',
+    4: 'rgba(232, 232, 232, 1)',
+  },
+};
+
 interface ColorTheme {
   primary: string;
   primaryTransparent: string;
   body: string;
   bodyAccent: string;
-  accent: string;
-  accentContrast: string;
   bodyTransparent: string;
   bodyTransparenter: string;
-  background: string;
-  backgroundAccent: string;
   offYellow: string;
   disabled: string;
+  background: string;
+  backgroundAccent: string;
+  disabledInput: string;
+  disabledButton: string;
+  defaultBorder: string;
+  defaultToggle: string;
 }
 
 export const colorTheme = (
@@ -49,22 +71,24 @@ export const colorTheme = (
   const isLight = theme === 'light';
   return {
     ...Color,
+    disabled: isLight ? Color.blackTransparent : Color.whiteTransparent,
+    offYellow: isLight ? 'rgba(102, 88, 72, 0.8)' : 'rgba(194, 174, 152, 1)',
     primary: isLight ? Color.blue : Color.coolBlue,
     primaryTransparent: isLight
       ? Color.blueTransparent
       : Color.coolBlueTransparent,
-    body: isLight ? Color.offBlack : Color.offWhite,
-    bodyAccent: Color.grey,
-    accent: isLight ? '#eeeeee' : '#222222',
-    accentContrast: isLight ? '#cccccc' : '#3333333',
-    disabled: '#888',
+    body: isLight ? Color.offBlack : Color.white,
     bodyTransparent: isLight ? Color.blackTransparent : Color.whiteTransparent,
     bodyTransparenter: isLight
       ? Color.blackTransparenter
       : Color.whiteTransparenter,
-    background: isLight ? Color.white : Color.black,
-    backgroundAccent: isLight ? '#f3f3f3' : '#222',
-    offYellow: isLight ? 'rgba(102, 88, 72, 0.8)' : 'rgba(194, 174, 152, 1)',
+    bodyAccent: isLight ? Color.grey : ColorNew.white[4],
+    background: isLight ? ColorNew.white[0] : ColorNew.spaceBlue[0],
+    backgroundAccent: isLight ? ColorNew.white[2] : ColorNew.spaceBlue[3],
+    disabledInput: isLight ? ColorNew.white[2] : ColorNew.spaceBlue[3],
+    disabledButton: isLight ? ColorNew.white[2] : ColorNew.spaceBlue[2],
+    defaultBorder: isLight ? ColorNew.white[3] : ColorNew.spaceBlue[4],
+    defaultToggle: isLight ? ColorNew.white[3] : ColorNew.spaceBlue[3],
   };
 };
 
@@ -170,7 +194,7 @@ export const mixins = {
     display: flex;
     position: relative;
     flex-direction: column;
-    border: 1px solid ${({ theme }) => theme.color.accent};
+    border: 1px solid ${({ theme }) => theme.color.defaultBorder};
     padding: 1rem;
     border-radius: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);

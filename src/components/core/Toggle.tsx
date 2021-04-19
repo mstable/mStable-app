@@ -12,7 +12,11 @@ interface Props {
 const Container = styled.div`
   padding: 0;
   border-radius: 1.5rem;
-  background: ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
+
+  button {
+    border: none;
+  }
 
   button:not(:first-child) {
     margin-left: -0.5rem;
@@ -34,6 +38,7 @@ export const Toggle: FC<Props> = ({ className, options }) => {
             type="button"
             highlighted={active}
             scale={0.875}
+            transparent={!active}
           >
             {title}
           </Button>

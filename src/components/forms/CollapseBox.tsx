@@ -23,7 +23,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 0.75rem;
-  border: 1px ${({ theme }) => theme.color.accent} solid;
+  border: 1px ${({ theme }) => theme.color.defaultBorder} solid;
 
   > :first-child {
     display: flex;

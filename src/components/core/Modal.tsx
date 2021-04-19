@@ -39,7 +39,7 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
-  border-bottom: 1px ${({ theme }) => theme.color.accent} solid;
+  border-bottom: 1px ${({ theme }) => theme.color.defaultBorder} solid;
 `;
 
 const CloseButton = styled(UnstyledButton)`
@@ -48,10 +48,7 @@ const CloseButton = styled(UnstyledButton)`
   border-radius: 1rem;
 
   :hover {
-    background: ${({ theme }) => theme.color.accent};
-  }
-  :active {
-    background: ${({ theme }) => theme.color.accentContrast};
+    background: ${({ theme }) => theme.color.backgroundAccent};
   }
 `;
 

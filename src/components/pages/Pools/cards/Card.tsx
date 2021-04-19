@@ -50,7 +50,7 @@ const ContainerStyle = css`
   flex-direction: column;
   padding: 1rem;
   border-radius: 1rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   justify-content: flex-start;
   transition: 0.25s ease all;
 

@@ -40,6 +40,13 @@ const StyledButton = styled(Button)`
     margin-right: 0.5rem;
   }
 
+  > .preview svg {
+    path,
+    rect {
+      fill: ${({ theme }) => theme.color.body};
+    }
+  }
+
   > .gov svg {
     path,
     rect {
@@ -60,7 +67,7 @@ const StyledButton = styled(Button)`
 `;
 
 const MultiplierBox = styled.div`
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   width: 100%;
@@ -292,7 +299,7 @@ export const BoostCalculator: FC<{
                 }
               }}
             >
-              <div>
+              <div className="preview">
                 <ArrowsSvg />
                 Preview Max
               </div>

@@ -163,7 +163,7 @@ const Container = styled.div<{ inverted: boolean }>`
   justify-content: center;
 
   padding-top: 2px;
-  border-bottom: 1px solid ${({ theme }) => theme.color.bodyTransparenter};
+  border-bottom: 1px solid ${({ theme }) => theme.color.defaultBorder};
 
   ${AccountButton} {
     color: ${({ inverted, theme }) =>

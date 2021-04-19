@@ -11,7 +11,7 @@ const Container = styled.div`
   align-items: center;
   padding: 1rem 1.5rem;
   line-height: 1.5rem;
-  border: 1px solid ${({ theme }) => theme.color.accent};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
 
   a {
     border: none;

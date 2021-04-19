@@ -20,9 +20,10 @@ import { useDailyApysForBlockTimes } from '../../hooks/useDailyApysForBlockTimes
 
 const NoData = styled.div`
   display: flex;
-  height: 16rem;
   justify-content: center;
   align-items: center;
+  min-height: 10rem;
+  color: ${({ theme }) => theme.color.bodyAccent};
 `;
 
 enum MetricTypes {
@@ -75,7 +76,7 @@ const DailyApysChart: FC<{
   );
 
   if (dailyApys.some(value => value.dailyAPY === 0 || value.dailyAPY > 1000)) {
-    return <NoData>No data available yet</NoData>;
+    return <NoData className={className}>No data available yet</NoData>;
   }
 
   return (

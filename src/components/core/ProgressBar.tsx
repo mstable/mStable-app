@@ -81,7 +81,7 @@ export const ProgressBar: FC<Props> = ({
           y={0}
           rx={HEIGHT / 2}
           ry={HEIGHT / 2}
-          fill={colorTheme(themeMode).accent}
+          fill={colorTheme(themeMode).backgroundAccent}
         />
         <rect
           width={progressWidth}

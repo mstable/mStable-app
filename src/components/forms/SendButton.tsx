@@ -38,7 +38,7 @@ const StyledButton = styled(Button)<{ isPenalty?: boolean; isBonus?: boolean }>`
 `;
 
 const CloseButton = styled(UnstyledButton)`
-  background: ${({ theme }) => theme.color.accent};
+  background: ${({ theme }) => theme.color.backgroundAccent};
   width: 2.25rem;
   height: 2.25rem;
   text-align: center;

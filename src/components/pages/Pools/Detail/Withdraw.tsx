@@ -18,14 +18,14 @@ const RedeemPathBox = styled.div`
   text-align: center;
   justify-content: center;
   padding: 1rem;
-  border: 1px dashed ${({ theme }) => theme.color.blueTransparent};
+  border: 1px dashed ${({ theme }) => theme.color.defaultBorder};
   border-radius: 0.75rem;
   margin-top: 1rem;
 
   ${UnstyledButton} {
     font-size: 1rem;
     font-weight: 600;
-    color: ${({ theme }) => theme.color.blue};
+    color: ${({ theme }) => theme.color.primary};
     :hover {
       color: ${({ theme }) => theme.color.gold};
     }
