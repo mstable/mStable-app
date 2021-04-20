@@ -15,9 +15,11 @@ const StyledDropdown = styled(Dropdown)`
 
 const options = {
   [Network.Ethereum]: {
-    symbol: 'ETH',
+    symbol: 'Ethereum',
   },
-  [Network.Polygon]: {},
+  [Network.Polygon]: {
+    symbol: 'Polygon',
+  },
 };
 
 export const NetworkDropdown: FC = () => {
