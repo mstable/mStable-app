@@ -33,10 +33,11 @@ import { ReactComponent as WalletConnectIcon } from '../icons/wallets/walletconn
 import { ReactComponent as CoinbaseIcon } from '../icons/wallets/coinbase.svg';
 import { ReactComponent as MeetOneIcon } from '../icons/wallets/meetone.svg';
 import { Idle } from '../icons/Idle';
-import { MassetSelector } from '../core/MassetSelector';
+import { MassetDropdown } from '../core/MassetDropdown';
 import { LocalStorage } from '../../localStorage';
 import { Navigation } from './Navigation';
 import { useTCModal } from '../../hooks/useTCModal';
+import { NetworkDropdown } from '../core/NetworkDropdown';
 
 const statusWarnings: Record<
   StatusWarnings,
@@ -152,7 +153,11 @@ const MassetContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 1rem;
+  margin-left: 2rem;
+
+  > *:not(:last-child) {
+    margin-right: 1rem;
+  }
 `;
 
 const Container = styled.div<{ inverted: boolean }>`
@@ -327,7 +332,10 @@ export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
           <Link to="/" title="Home" onClick={closeAccount}>
             <Logo />
           </Link>
-          <MassetContainer>{!home && <MassetSelector />}</MassetContainer>
+          <MassetContainer>
+            {!home && <MassetDropdown />}
+            <NetworkDropdown />
+          </MassetContainer>
         </LogoAndMasset>
         {home ? (
           accountOpen && <CloseAccount />
