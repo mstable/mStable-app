@@ -82,6 +82,15 @@ const GlobalStyle = createGlobalStyle`
      width: 100% !important;
      height: 100% !important;
      
+     .bn-onboard-modal-content-close:hover {
+      background: none;
+      opacity: 0.75;
+     }
+     
+     button:hover {
+      background: ${({ theme }) => theme.color.onboardItemHover};
+     }
+     
     .bn-onboard-modal-content {
       position: absolute;
       left: 0;
@@ -96,15 +105,16 @@ const GlobalStyle = createGlobalStyle`
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
       transition: all ease-in;
+      background: ${({ theme }) => theme.color.onboardBackground};
     }
     .bn-onboard-modal-content-header {
       font-family: 'Poppins', sans-serif !important;
-      color: ${({ theme }) => theme.color.offBlack};
+      color: ${({ theme }) => theme.color.body};
       justify-content: center;
     }
     h3 {
       font-family: 'Poppins', sans-serif !important;
-      color: ${({ theme }) => theme.color.offBlack};
+      color: ${({ theme }) => theme.color.body};
       font-weight: 600;
       font-size: 1.125rem;
     }
@@ -116,7 +126,7 @@ const GlobalStyle = createGlobalStyle`
       font-weight: normal;
       padding: 0.5rem 1rem;
       width: 100%;
-      border: 1px ${Color.blackTransparent} solid;
+      border: 1px ${({ theme }) => theme.color.defaultBorder} solid;
       border-radius: 0.5rem;
       > :first-child {
         min-width: 32px;
@@ -124,10 +134,9 @@ const GlobalStyle = createGlobalStyle`
       > span {
         font-weight: 500;
         font-size: 1rem;
-        color: ${({ theme }) => theme.color.offBlack};
+        color: ${({ theme }) => theme.color.body};
       }
       &:hover {
-        border: 1px solid ${({ theme }) => theme.color.offBlack};
         box-shadow: none;
       }
     }
@@ -139,7 +148,7 @@ const GlobalStyle = createGlobalStyle`
     }
     .bn-onboard-modal-select-wallets {
       .bn-onboard-prepare-button { 
-        color: 1px solid ${({ theme }) => theme.color.offBlack} !important;
+        color: 1px solid ${({ theme }) => theme.color.body} !important;
         border: 1px ${Color.blackTransparent} solid !important;
       }
     }
