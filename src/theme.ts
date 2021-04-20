@@ -63,6 +63,8 @@ interface ColorTheme {
   disabledButton: string;
   defaultBorder: string;
   defaultToggle: string;
+  onboardBackground: string;
+  onboardItemHover: string;
 }
 
 export const colorTheme = (
@@ -89,6 +91,8 @@ export const colorTheme = (
     disabledButton: isLight ? ColorNew.white[2] : ColorNew.spaceBlue[2],
     defaultBorder: isLight ? ColorNew.white[3] : ColorNew.spaceBlue[4],
     defaultToggle: isLight ? ColorNew.white[3] : ColorNew.spaceBlue[3],
+    onboardBackground: isLight ? ColorNew.white[0] : ColorNew.spaceBlue[1],
+    onboardItemHover: isLight ? ColorNew.white[1] : ColorNew.spaceBlue[2],
   };
 };
 
