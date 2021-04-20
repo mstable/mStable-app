@@ -37,6 +37,10 @@ import VAULT, { ReactComponent as VaultSvg } from './tokens/vault.svg';
 import IMBTCMTA, {
   ReactComponent as ImbtcmtaSvg,
 } from './tokens/imbtc-mta.svg';
+import ETHEREUM, {
+  ReactComponent as EthereumSvg,
+} from './networks/Ethereum.svg';
+import POLYGON, { ReactComponent as PolygonSvg } from './networks/Polygon.svg';
 
 interface Props {
   className?: string;
@@ -88,6 +92,8 @@ export const TOKEN_ICONS: Record<string, string> = {
   FPMUSD: MUSD,
   FPMBTC: MUSD,
   VAULT,
+  ETHEREUM,
+  POLYGON,
 };
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -129,6 +135,8 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   HBTC: HbtcSvg as SvgComponent,
   TBTC: TbtcSvg as SvgComponent,
   VAULT: VaultSvg as SvgComponent,
+  ETHEREUM: EthereumSvg as SvgComponent,
+  POLYGON: PolygonSvg as SvgComponent,
 };
 
 const IconContainer = styled.div<{ isLarge: boolean }>`

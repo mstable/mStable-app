@@ -14,6 +14,10 @@ import { MassetName } from '../../types';
 import { Dropdown, DropdownOption } from './Dropdown';
 
 const StyledDropdown = styled(Dropdown)`
+  * {
+    font-size: 1rem;
+  }
+
   @media (max-width: ${ViewportWidth.m}) {
     min-width: 5.5rem;
 
@@ -29,7 +33,7 @@ const StyledDropdown = styled(Dropdown)`
   }
 `;
 
-export const MassetSelector: FC = () => {
+export const MassetDropdown: FC = () => {
   const dataState = useDataState();
   const history = useHistory();
   const [selected, setMassetName] = useSelectedMasset();
