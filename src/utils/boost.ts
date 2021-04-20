@@ -101,11 +101,12 @@ export const getCoeffs = (
 
     // All BTC
     case '0xae077412fe8c3df00393a63e49caae2658a33019': // ropsten
-    case '0xf38522f63f40f9dd81abafd2b8efc2ec958a3016': // save vault
     case '0x760ea8cfdcc4e78d8b9ca3088ecd460246dc0731': // mbtc/tbtc
     case '0xf65d53aa6e2e4a5f4f026e73cb3e22c22d75e35c': // mbtc/hbtc
       return [4.8, 58000];
 
+    case '0xf38522f63f40f9dd81abafd2b8efc2ec958a3016': // save vault
+      return [4.8, 5800];
     default:
       return undefined;
   }
