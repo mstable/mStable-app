@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 import { API, Subscriptions } from 'bnc-onboard/dist/src/interfaces';
-import Onboard from 'bnc-onboard';
+import Onboard from '@gnosis.pm/safe-apps-onboard';
 import { CHAIN_ID, rpcUrl } from '../constants';
 
 export const WALLETS = [

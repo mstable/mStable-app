@@ -2279,6 +2279,27 @@
     "@ethersproject/properties" "^5.0.7"
     "@ethersproject/strings" "^5.0.8"
 
+"@gnosis.pm/safe-apps-onboard@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-onboard/-/safe-apps-onboard-0.2.2.tgz#f67f0cb4a148d0148ccfe7f103ddeb2a4eca0ac9"
+  integrity sha512-RVrtxK6cglGdjGldu89mIaRx+2bvcXn5hccRY6b+bnuKX5mez8CQyBBB68+hExqBhMVvVOxlEolyzRMDIA5T1g==
+  dependencies:
+    "@gnosis.pm/safe-apps-provider" "0.2.4"
+
+"@gnosis.pm/safe-apps-provider@0.2.4":
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.2.4.tgz#5d78a0954791aa01344afdb701886fe5d3077905"
+  integrity sha512-C9JrY/UAU0I6GO3YoI2w/uTxoNiU3AlH2ou/1SrXW6W1f8oBnG0sb3LbYlko16TsGCc1CGTKzGb6aD2e6a45Vg==
+  dependencies:
+    "@gnosis.pm/safe-apps-sdk" "2.2.0"
+
+"@gnosis.pm/safe-apps-sdk@2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-2.2.0.tgz#aaaeb74d122816407fb2ac4333322355891ac774"
+  integrity sha512-4CCrTfCAGrT1NiYpOs22B/YSycEymC6lxO5h37H8LFC9WNjUijhrxsQZiu7rPzDE9VDXe6s2YOiaGgKCthoorA==
+  dependencies:
+    semver "^7.3.2"
+
 "@graphql-codegen/cli@1.13.5":
   version "1.13.5"
   resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-1.13.5.tgz#578c96dcbee68190b0365634214a25dfe067f4c8"
