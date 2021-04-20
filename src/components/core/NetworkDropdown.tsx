@@ -30,6 +30,14 @@ export const NetworkDropdown: FC = () => {
   const handleSelect = (selectedTitle?: string): void => {
     if (!selectedTitle) return;
     setSelected(selectedTitle);
+
+    switch (selectedTitle as Network) {
+      case Network.Polygon:
+        // polygon
+        break;
+      default:
+      // eth
+    }
   };
 
   return (
