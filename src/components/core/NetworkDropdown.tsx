@@ -11,6 +11,9 @@ const StyledDropdown = styled(Dropdown)`
   * {
     font-size: 1rem;
   }
+  p {
+    font-size: 0.875rem;
+  }
 `;
 
 const options = {
@@ -19,6 +22,7 @@ const options = {
   },
   [Network.Polygon]: {
     symbol: 'Polygon',
+    subtext: <p>Mainnet</p>, // option
   },
 };
 
