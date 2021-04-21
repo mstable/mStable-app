@@ -42,7 +42,7 @@ export const calculateVMTAForMaxBoostImusd = (
 export const MAX_BOOST = 3;
 export const MIN_BOOST = 1;
 export const EXPONENT = 7 / 8;
-export const FLOOR = 0.95;
+export const FLOOR = 1;
 export const VMTA_CAP = 400000;
 export const MIN_DEPOSIT = 1;
 
@@ -57,9 +57,9 @@ export const calculateVMTAForMaxBoost = (
   boostCoeff: number,
   priceCoeff: number,
 ): number => {
-  // (MAX_BOOST - FLOOR) * (deposit * priceCoeff)**EXPONENT / boostCoeff
+  const scaledBalance = (stakingBalance?.simple ?? 0) * priceCoeff;
   const x = MAX_BOOST - FLOOR;
-  const y = (stakingBalance.simple * priceCoeff) ** EXPONENT;
+  const y = scaledBalance ** EXPONENT;
   const unbounded = (x * y) / boostCoeff;
   return Math.min(unbounded, VMTA_CAP);
 };
