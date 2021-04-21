@@ -66,14 +66,15 @@ describe('test boost calculations', () => {
     ];
 
     testValues.forEach(({ amount, mta, expected }) => {
+      // calc boost & make sure == expected
       const boost = calculateBoostImusd(amount, mta).toFixed(2);
       expect(boost).toEqual(expected);
-      const maxBoost = calculateBoostImusd(
-        amount,
-        BigDecimal.parse(
-          calculateVMTAForMaxBoostImusd(amount)?.toFixed(2) ?? '0',
-        ),
-      ).toFixed(2);
+
+      // calc max mta & make sure boost == 3
+      const maxMTA = BigDecimal.parse(
+        calculateVMTAForMaxBoostImusd(amount)?.toFixed(2) ?? '0',
+      );
+      const maxBoost = calculateBoostImusd(amount, maxMTA).toFixed(2);
       expect(maxBoost).toEqual('3.00');
     });
   });
@@ -106,15 +107,15 @@ describe('test boost calculations', () => {
     ];
 
     testValues.forEach(({ amount, mta, expected }) => {
+      // calc boost & make sure == expected
       const boost = calculateBoost(...coeffs, amount, mta).toFixed(2);
       expect(boost).toEqual(expected);
-      const maxBoost = calculateBoost(
-        ...coeffs,
-        amount,
-        BigDecimal.parse(
-          calculateVMTAForMaxBoost(amount, ...coeffs).toFixed(2),
-        ),
-      ).toFixed(2);
+
+      // calc max mta & make sure boost == 3
+      const maxMTA = BigDecimal.parse(
+        calculateVMTAForMaxBoost(amount, ...coeffs).toFixed(2),
+      );
+      const maxBoost = calculateBoost(...coeffs, amount, maxMTA).toFixed(2);
       expect(maxBoost).toEqual('3.00');
     });
   });
@@ -150,15 +151,15 @@ describe('test boost calculations', () => {
         return;
       }
       testValues.forEach(({ amount, mta, expected }) => {
+        // calc boost & make sure == expected
         const boost = calculateBoost(...coeff, amount, mta).toFixed(2);
         expect(boost).toEqual(expected);
-        const maxBoost = calculateBoost(
-          ...coeff,
-          amount,
-          BigDecimal.parse(
-            calculateVMTAForMaxBoost(amount, ...coeff).toFixed(2),
-          ),
-        ).toFixed(2);
+
+        // calc max mta & make sure boost == 3
+        const maxMTA = BigDecimal.parse(
+          calculateVMTAForMaxBoost(amount, ...coeff).toFixed(2),
+        );
+        const maxBoost = calculateBoost(...coeff, amount, maxMTA).toFixed(2);
         expect(maxBoost).toEqual('3.00');
       });
     });
@@ -195,15 +196,15 @@ describe('test boost calculations', () => {
         return;
       }
       testValues.forEach(({ amount, mta, expected }) => {
+        // calc boost & make sure == expected
         const boost = calculateBoost(...coeff, amount, mta).toFixed(2);
         expect(boost).toEqual(expected);
-        const maxBoost = calculateBoost(
-          ...coeff,
-          amount,
-          BigDecimal.parse(
-            calculateVMTAForMaxBoost(amount, ...coeff).toFixed(2),
-          ),
-        ).toFixed(2);
+
+        // calc max mta & make sure boost == 3
+        const maxMTA = BigDecimal.parse(
+          calculateVMTAForMaxBoost(amount, ...coeff).toFixed(2),
+        );
+        const maxBoost = calculateBoost(...coeff, amount, maxMTA).toFixed(2);
         expect(maxBoost).toEqual('3.00');
       });
     });
