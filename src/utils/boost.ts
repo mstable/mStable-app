@@ -57,7 +57,7 @@ export const calculateVMTAForMaxBoost = (
   boostCoeff: number,
   priceCoeff: number,
 ): number => {
-  const scaledBalance = (stakingBalance?.simple ?? 0) * priceCoeff;
+  const scaledBalance = stakingBalance.simple * priceCoeff;
   const x = MAX_BOOST - FLOOR;
   const y = scaledBalance ** EXPONENT;
   const unbounded = (x * y) / boostCoeff;

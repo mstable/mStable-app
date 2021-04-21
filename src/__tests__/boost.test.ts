@@ -143,6 +143,11 @@ describe('test boost calculations', () => {
         mta: BigDecimal.parse('100'),
         expected: '1.06',
       },
+      {
+        amount: BigDecimal.parse('100000'), // $100k
+        mta: BigDecimal.parse('5000'),
+        expected: '2.01',
+      },
     ];
 
     coeffs.forEach(coeff => {
