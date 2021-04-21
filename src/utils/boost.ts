@@ -81,7 +81,6 @@ export const calculateBoost = (
       FLOOR +
       (boostCoeff * Math.min(vMTABalance.simple, VMTA_CAP)) /
         scaledBalance ** EXPONENT;
-
     // bounded
     return Math.min(MAX_BOOST, Math.max(MIN_BOOST, unbounded));
   }
