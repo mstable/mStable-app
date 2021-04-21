@@ -6,11 +6,13 @@ export const MAX_BOOST_IMUSD = 3;
 export const MIN_BOOST_IMUSD = 1;
 export const COEFFICIENT_IMUSD = 6;
 export const EXPONENT_IMUSD = 0.875;
+export const PRICE_IMUSD = 0.1;
 
 export const calculateBoostImusd = (
   stakingBalance?: BigDecimal,
   vMTABalance?: BigDecimal,
 ): number => {
+  const scaledBalance = (stakingBalance?.simple ?? 0) * PRICE_IMUSD;
   if (
     vMTABalance &&
     stakingBalance &&
@@ -20,7 +22,7 @@ export const calculateBoostImusd = (
     const boost =
       MIN_BOOST_IMUSD +
       (COEFFICIENT_IMUSD * vMTABalance.simple) /
-        stakingBalance.simple ** EXPONENT_IMUSD;
+        scaledBalance ** EXPONENT_IMUSD;
     return Math.min(MAX_BOOST_IMUSD, boost);
   }
   return MIN_BOOST_IMUSD;
@@ -29,9 +31,10 @@ export const calculateBoostImusd = (
 export const calculateVMTAForMaxBoostImusd = (
   stakingBalance: BigDecimal,
 ): number | undefined => {
+  const scaledBalance = (stakingBalance?.simple ?? 0) * PRICE_IMUSD;
   const vMTA =
     ((MAX_BOOST_IMUSD - MIN_BOOST_IMUSD) / COEFFICIENT_IMUSD) *
-    stakingBalance.simple ** EXPONENT_IMUSD;
+    scaledBalance ** EXPONENT_IMUSD;
   return vMTA !== 0 ? vMTA : undefined;
 };
 
@@ -39,7 +42,7 @@ export const calculateVMTAForMaxBoostImusd = (
 export const MAX_BOOST = 3;
 export const MIN_BOOST = 1;
 export const EXPONENT = 7 / 8;
-export const FLOOR = 0.95;
+export const FLOOR = 1;
 export const VMTA_CAP = 400000;
 export const MIN_DEPOSIT = 1;
 
@@ -54,9 +57,9 @@ export const calculateVMTAForMaxBoost = (
   boostCoeff: number,
   priceCoeff: number,
 ): number => {
-  // (MAX_BOOST - FLOOR) * (deposit * priceCoeff)**EXPONENT / boostCoeff
+  const scaledBalance = stakingBalance.simple * priceCoeff;
   const x = MAX_BOOST - FLOOR;
-  const y = (stakingBalance.simple * priceCoeff) ** EXPONENT;
+  const y = scaledBalance ** EXPONENT;
   const unbounded = (x * y) / boostCoeff;
   return Math.min(unbounded, VMTA_CAP);
 };
@@ -78,7 +81,6 @@ export const calculateBoost = (
       FLOOR +
       (boostCoeff * Math.min(vMTABalance.simple, VMTA_CAP)) /
         scaledBalance ** EXPONENT;
-
     // bounded
     return Math.min(MAX_BOOST, Math.max(MIN_BOOST, unbounded));
   }
@@ -105,7 +107,7 @@ export const getCoeffs = (
     case '0xf65d53aa6e2e4a5f4f026e73cb3e22c22d75e35c': // mbtc/hbtc
       return [4.8, 58000];
 
-    case '0xf38522f63f40f9dd81abafd2b8efc2ec958a3016': // save vault
+    case '0xf38522f63f40f9dd81abafd2b8efc2ec958a3016': // imbtc vault
       return [4.8, 5800];
     default:
       return undefined;

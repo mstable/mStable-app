@@ -43,18 +43,17 @@ export const UserBoost: FC<{
   apy: FetchState<{ base: number; maxBoost: number; userBoost?: number }>;
 }> = ({ vault, apy }) => {
   const massetName = useSelectedMassetName();
+  // TODO: think of a better way to handle this
+  const isImusd =
+    vault?.address === '0x78befca7de27d07dc6e71da295cc2946681a6c7b'; // imUSD vault address
   return (
     <Container>
-      <Boost
-        vault={vault}
-        apy={apy.value?.base}
-        isImusd={massetName === 'musd'}
-      >
+      <Boost vault={vault} apy={apy.value?.base} isImusd={isImusd}>
         <div>
           <Tooltip
             tip={`${
               massetName === 'musd' ? 20 : 33
-            }% of earned MTA rewards are claimable immediately. Remaining rewards are streamed linearly for 26 weeks`}
+            }% of earned MTA rewards are claimable immediately. Remaining rewards are streamed linearly after 26 weeks`}
           >
             <h3>Rewards</h3>
           </Tooltip>

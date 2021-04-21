@@ -266,13 +266,15 @@ export const UserRewards: FC = () => {
   const propose = usePropose();
   const contract = feederVault ?? saveVault;
 
-  const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
+  const showGraph =
+    (rewardStreams?.amounts.earned.total ?? 0) > 0 ||
+    (rewardStreams?.amounts.locked ?? 0) > 0;
   const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0;
 
   return (
     <RewardsCard>
       <div>
-        {totalEarned > 0 ? (
+        {showGraph ? (
           <GraphAndValues>
             <ClaimGraph showPreview={isClaiming} />
             <RewardValues>
