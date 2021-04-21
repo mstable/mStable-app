@@ -57,7 +57,7 @@ export const ProgressBar: FC<Props> = ({
             from="4"
             to="0"
             begin="0"
-            dur={`${Math.sin(value)}s`}
+            dur="1s"
             repeatCount="indefinite"
             additive="sum"
           />
