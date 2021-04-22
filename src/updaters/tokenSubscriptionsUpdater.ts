@@ -8,7 +8,6 @@ import type { ERC20Interface } from '@mstable/protocol/types/generated/ERC20'
 import { useBlockNow } from '../context/BlockProvider'
 import { useAccount, useSigner } from '../context/AccountProvider'
 import { useAllowanceSubscriptionsSerialized, useBalanceSubscriptionsSerialized, useTokensDispatch } from '../context/TokensProvider'
-// import { useNativeTokenBalance } from '../context/NetworkProvider';
 import { BigDecimal } from '../web3/BigDecimal'
 import { useChainIdCtx } from '../context/NetworkProvider'
 
@@ -78,10 +77,6 @@ export const TokenSubscriptionsUpdater = (): null => {
   const account = useAccount()
   const prevAccount = usePrevious(account)
   const blockNumber = useBlockNow()
-
-  // FIXME
-  // const ethBalance = useNativeTokenBalance();
-  const ethBalance = BigDecimal.ZERO
 
   const balanceSubscriptionsSerialized = useBalanceSubscriptionsSerialized()
   const allowanceSubscriptionsSerialized = useAllowanceSubscriptionsSerialized()
@@ -156,10 +151,18 @@ export const TokenSubscriptionsUpdater = (): null => {
   }, [account, balanceSubscriptionsSerialized, blockNumber, chainId, prevChainId, signer, updateBalances])
 
   useEffect(() => {
-    updateBalances({
-      [constants.AddressZero as string]: ethBalance as BigDecimal,
-    })
-  }, [ethBalance, updateBalances])
+    if (account && signer?.provider) {
+      signer.provider.getBalance(account).then(_balance => {
+        updateBalances({
+          [constants.AddressZero as string]: new BigDecimal(_balance),
+        })
+      })
+    } else {
+      updateBalances({
+        [constants.AddressZero as string]: BigDecimal.ZERO,
+      })
+    }
+  }, [blockNumber, account, signer, updateBalances])
 
   return null
 }
