@@ -1,30 +1,26 @@
-import React, { FC, useLayoutEffect, useMemo } from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
-import reset from 'styled-reset';
-import { useLocation } from 'react-router-dom';
-import { TransitionGroup } from 'react-transition-group';
-import { ModalProvider } from 'react-modal-hook';
+import React, { FC, useLayoutEffect, useMemo } from 'react'
+import styled, { createGlobalStyle } from 'styled-components'
+import reset from 'styled-reset'
+import { useLocation } from 'react-router-dom'
+import { TransitionGroup } from 'react-transition-group'
+import { ModalProvider } from 'react-modal-hook'
 
-import { getUnixTime } from 'date-fns';
-import { BigNumber } from 'ethers';
-import { ReactTooltip, Tooltip } from '../core/ReactTooltip';
-import { Footer } from './Footer';
-import { Account } from './Account';
-import {
-  BannerMessage,
-  useAccountOpen,
-  useBannerMessage,
-} from '../../context/AppProvider';
-import { Background } from './Background';
-import { AppBar } from './AppBar';
-import { Toasts } from './Toasts';
-import { containerBackground } from './css';
-import { Color, ViewportWidth } from '../../theme';
-import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
-import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
-import { BigDecimal } from '../../web3/BigDecimal';
-import { SCALE } from '../../constants';
-import { MessageHandler } from './MessageHandler';
+import { getUnixTime } from 'date-fns'
+import { BigNumber } from 'ethers'
+import { ReactTooltip, Tooltip } from '../core/ReactTooltip'
+import { Footer } from './Footer'
+import { Account } from './Account'
+import { BannerMessage, useAccountOpen, useBannerMessage } from '../../context/AppProvider'
+import { Background } from './Background'
+import { AppBar } from './AppBar'
+import { Toasts } from './Toasts'
+import { containerBackground } from './css'
+import { Color, ViewportWidth } from '../../theme'
+import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
+import { BigDecimal } from '../../web3/BigDecimal'
+import { SCALE } from '../../constants'
+import { MessageHandler } from './MessageHandler'
 
 const Main = styled.main<{ marginTop?: boolean }>`
   margin-top: ${({ marginTop }) => marginTop && `2rem`};
@@ -32,12 +28,12 @@ const Main = styled.main<{ marginTop?: boolean }>`
   @media (min-width: ${ViewportWidth.s}) {
     padding: 1rem;
   }
-`;
+`
 
 const BackgroundContainer = styled.div`
   ${containerBackground}
   min-height: 50vh;
-`;
+`
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -182,14 +178,14 @@ const GlobalStyle = createGlobalStyle`
     }
   }
   
-`;
+`
 
 const StickyHeader = styled.div`
   position: sticky;
   top: 0;
   width: 100%;
   z-index: 3;
-`;
+`
 
 const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
   <>
@@ -197,7 +193,7 @@ const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
       <AppBar home={home} />
     </StickyHeader>
   </>
-);
+)
 
 const Container = styled.div<{ accountOpen?: boolean }>`
   display: grid;
@@ -208,8 +204,7 @@ const Container = styled.div<{ accountOpen?: boolean }>`
   // Space for the footer
   padding-bottom: 4rem;
 
-  background: ${({ accountOpen }) =>
-    accountOpen ? Color.black : 'transparent'};
+  background: ${({ accountOpen }) => (accountOpen ? Color.black : 'transparent')};
 
   grid-template-columns:
     1fr
@@ -219,74 +214,56 @@ const Container = styled.div<{ accountOpen?: boolean }>`
   > * {
     grid-column: 2;
   }
-`;
+`
 
 export const Layout: FC = ({ children }) => {
-  const accountOpen = useAccountOpen();
-  const { pathname } = useLocation();
-  const home = pathname === '/';
+  const accountOpen = useAccountOpen()
+  const { pathname } = useLocation()
+  const home = pathname === '/'
 
   // Message
-  const [bannerMessage, setBannerMessage] = useBannerMessage();
-  const massetState = useSelectedMassetState();
-  const massetName = useSelectedMassetName();
-  const { undergoingRecol } = useSelectedMassetState() ?? {};
+  const [bannerMessage, setBannerMessage] = useBannerMessage()
+  const massetState = useSelectedMassetState()
+  const massetName = useSelectedMassetName()
+  const { undergoingRecol } = useSelectedMassetState() ?? {}
 
   const tvlCap = useMemo(() => {
-    if (massetName !== 'mbtc') return;
+    if (massetName !== 'mbtc') return
 
-    const { invariantStartingCap, invariantStartTime, invariantCapFactor } =
-      massetState ?? {};
-    if (!invariantStartingCap || !invariantStartTime || !invariantCapFactor)
-      return;
+    const { invariantStartingCap, invariantStartTime, invariantCapFactor } = massetState ?? {}
+    if (!invariantStartingCap || !invariantStartTime || !invariantCapFactor) return
 
-    const currentTime = getUnixTime(Date.now());
-    const weeksSinceLaunch = BigNumber.from(currentTime)
-      .sub(invariantStartTime)
-      .mul(SCALE)
-      .div(604800);
+    const currentTime = getUnixTime(Date.now())
+    const weeksSinceLaunch = BigNumber.from(currentTime).sub(invariantStartTime).mul(SCALE).div(604800)
 
-    if (weeksSinceLaunch.gt(SCALE.mul(7))) return;
+    if (weeksSinceLaunch.gt(SCALE.mul(7))) return
 
-    const maxK = invariantStartingCap.add(
-      invariantCapFactor.mul(weeksSinceLaunch.pow(2)).div(SCALE.pow(2)),
-    );
+    const maxK = invariantStartingCap.add(invariantCapFactor.mul(weeksSinceLaunch.pow(2)).div(SCALE.pow(2)))
 
-    return new BigDecimal(maxK);
-  }, [massetName, massetState]);
+    return new BigDecimal(maxK)
+  }, [massetName, massetState])
 
   // Scroll to the top when the account view is toggled
   useLayoutEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, [accountOpen]);
+    window.scrollTo({ top: 0 })
+  }, [accountOpen])
 
   // Handle message prioritisation:
   useLayoutEffect(() => {
-    let message: BannerMessage | undefined;
+    let message: BannerMessage | undefined
 
     if (massetName === 'musd' && pathname.includes('save')) {
-      const recollatMessage =
-        (undergoingRecol && MessageHandler.recollat({ massetName })) ||
-        undefined;
+      const recollatMessage = (undergoingRecol && MessageHandler.recollat({ massetName })) || undefined
 
-      message = recollatMessage;
+      message = recollatMessage
     } else if (massetName === 'mbtc') {
-      message =
-        (pathname === '/mbtc/mint' && MessageHandler.tvlCap({ tvlCap })) ||
-        undefined;
+      message = (pathname === '/mbtc/mint' && MessageHandler.tvlCap({ tvlCap })) || undefined
     }
 
     if (bannerMessage?.title !== message?.title) {
-      setBannerMessage(message);
+      setBannerMessage(message)
     }
-  }, [
-    bannerMessage,
-    massetName,
-    pathname,
-    setBannerMessage,
-    tvlCap,
-    undergoingRecol,
-  ]);
+  }, [bannerMessage, massetName, pathname, setBannerMessage, tvlCap, undergoingRecol])
 
   return (
     <ModalProvider rootComponent={TransitionGroup}>
@@ -307,5 +284,5 @@ export const Layout: FC = ({ children }) => {
       <ReactTooltip id="global" place="top" />
       <GlobalStyle />
     </ModalProvider>
-  );
-};
+  )
+}

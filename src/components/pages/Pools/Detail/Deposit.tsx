@@ -1,15 +1,12 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { useToggle } from 'react-use';
-import { MultiAssetExchangeProvider } from '../../../forms/MultiAssetExchange';
-import {
-  useSelectedFeederPoolAssets,
-  useSelectedFeederPoolState,
-} from '../FeederPoolProvider';
-import { UnstyledButton } from '../../../core/Button';
-import { MintExact } from './MintExact';
-import { MintLP } from './MintLP';
+import { useToggle } from 'react-use'
+import { MultiAssetExchangeProvider } from '../../../forms/MultiAssetExchange'
+import { useSelectedFeederPoolAssets, useSelectedFeederPoolState } from '../FeederPoolProvider'
+import { UnstyledButton } from '../../../core/Button'
+import { MintExact } from './MintExact'
+import { MintLP } from './MintLP'
 
 const MintPathBox = styled.div<{ protip?: boolean }>`
   display: flex;
@@ -17,9 +14,7 @@ const MintPathBox = styled.div<{ protip?: boolean }>`
   text-align: center;
   justify-content: center;
   padding: 1rem;
-  border: 1px dashed
-    ${({ theme, protip }) =>
-      protip ? theme.color.gold : theme.color.defaultBorder};
+  border: 1px dashed ${({ theme, protip }) => (protip ? theme.color.gold : theme.color.defaultBorder)};
   border-radius: 0.75rem;
   margin-top: 1rem;
 
@@ -39,32 +34,26 @@ const MintPathBox = styled.div<{ protip?: boolean }>`
       })};
     }
   }
-`;
+`
 
-export const Deposit: FC<{ isLowLiquidity?: boolean }> = ({
-  isLowLiquidity = false,
-}) => {
-  const [isMintExact, setMintExact] = useToggle(isLowLiquidity);
+export const Deposit: FC<{ isLowLiquidity?: boolean }> = ({ isLowLiquidity = false }) => {
+  const [isMintExact, setMintExact] = useToggle(isLowLiquidity)
 
-  const feederPool = useSelectedFeederPoolState();
-  const assets = useSelectedFeederPoolAssets();
+  const feederPool = useSelectedFeederPoolState()
+  const assets = useSelectedFeederPoolAssets()
 
   return (
     <MultiAssetExchangeProvider assets={assets}>
       {isMintExact ? <MintExact /> : <MintLP />}
       <MintPathBox protip={isLowLiquidity}>
         {isLowLiquidity ? (
-          <UnstyledButton disabled>
-            Single-asset deposits are disabled due to low liquidity
-          </UnstyledButton>
+          <UnstyledButton disabled>Single-asset deposits are disabled due to low liquidity</UnstyledButton>
         ) : (
           <UnstyledButton onClick={setMintExact}>
-            {`Switch to mint via ${
-              isMintExact ? feederPool.token.symbol : 'multiple'
-            } `}
+            {`Switch to mint via ${isMintExact ? feederPool.token.symbol : 'multiple'} `}
           </UnstyledButton>
         )}
       </MintPathBox>
     </MultiAssetExchangeProvider>
-  );
-};
+  )
+}

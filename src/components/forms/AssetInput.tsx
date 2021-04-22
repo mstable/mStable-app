@@ -1,34 +1,34 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import React, { FC, useCallback, useEffect, useState } from 'react'
+import styled from 'styled-components'
 
-import { Button } from '../core/Button';
-import { SubscribedTokenInput } from './SubscribedTokenInput';
-import { AmountInputV2 as InputField } from './AmountInputV2';
-import { ApproveContent } from './SendButton';
-import { ReactComponent as LockIcon } from '../icons/lock-open.svg';
-import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg';
-import { ApproveProvider, Mode, useApprove } from './ApproveProvider';
-import type { AddressOption } from '../../types';
-import { ViewportWidth } from '../../theme';
-import { BigDecimal } from '../../web3/BigDecimal';
-import { ThemedSkeleton } from '../core/ThemedSkeleton';
+import { Button } from '../core/Button'
+import { SubscribedTokenInput } from './SubscribedTokenInput'
+import { AmountInputV2 as InputField } from './AmountInputV2'
+import { ApproveContent } from './SendButton'
+import { ReactComponent as LockIcon } from '../icons/lock-open.svg'
+import { ReactComponent as UnlockedIcon } from '../icons/lock-closed.svg'
+import { ApproveProvider, Mode, useApprove } from './ApproveProvider'
+import type { AddressOption } from '../../types'
+import { ViewportWidth } from '../../theme'
+import { BigDecimal } from '../../web3/BigDecimal'
+import { ThemedSkeleton } from '../core/ThemedSkeleton'
 
 interface Props {
-  disabled?: boolean;
-  amountDisabled?: boolean;
-  formValue?: string;
-  address?: string;
-  addressOptions?: (AddressOption | string)[];
-  addressDisabled?: boolean;
-  error?: 'warning' | 'error';
-  handleSetAmount?(formValue?: string): void;
-  handleSetAddress?(address: string): void;
-  handleSetMax?(): void;
-  needsApprove?: boolean;
-  handleApprove?: (mode: Mode) => void;
-  spender?: string;
-  isFetching?: boolean;
-  decimals?: number;
+  disabled?: boolean
+  amountDisabled?: boolean
+  formValue?: string
+  address?: string
+  addressOptions?: (AddressOption | string)[]
+  addressDisabled?: boolean
+  error?: 'warning' | 'error'
+  handleSetAmount?(formValue?: string): void
+  handleSetAddress?(address: string): void
+  handleSetMax?(): void
+  needsApprove?: boolean
+  handleApprove?: (mode: Mode) => void
+  spender?: string
+  isFetching?: boolean
+  decimals?: number
 }
 
 const Input = styled.div`
@@ -43,7 +43,7 @@ const Input = styled.div`
     color: ${({ theme }) => theme.color.body};
     border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   }
-`;
+`
 
 const LockButton = styled(Button)`
   border-radius: 0.5rem;
@@ -52,7 +52,7 @@ const LockButton = styled(Button)`
     width: 1rem;
     height: 1rem;
   }
-`;
+`
 
 const MaxButton = styled(Button)`
   display: none;
@@ -60,17 +60,17 @@ const MaxButton = styled(Button)`
   @media (min-width: ${ViewportWidth.m}) {
     display: inherit;
   }
-`;
+`
 
 const Approve = styled(ApproveContent)`
   margin-right: 0.5rem;
-`;
+`
 
 const TokenContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
-`;
+`
 
 const InputContainer = styled.div`
   display: flex;
@@ -89,36 +89,30 @@ const InputContainer = styled.div`
     height: 100%;
     width: 100%;
   }
-`;
+`
 
 const Container = styled.div<{
-  error?: 'warning' | 'error';
-  disabled: boolean;
+  error?: 'warning' | 'error'
+  disabled: boolean
 }>`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   border: 1px solid
-    ${({ theme, error }) =>
-      error === 'warning'
-        ? '#F4C886'
-        : error === 'error'
-        ? theme.color.red
-        : theme.color.defaultBorder};
+    ${({ theme, error }) => (error === 'warning' ? '#F4C886' : error === 'error' ? theme.color.red : theme.color.defaultBorder)};
   border-radius: 0.75rem;
   padding: 0.5rem;
   background: ${({ theme, disabled }) => disabled && theme.color.disabledInput};
   height: 4.25rem;
 
   &:focus-within {
-    border-color: ${({ theme, disabled }) =>
-      disabled ? 'transparent' : theme.color.primary};
+    border-color: ${({ theme, disabled }) => (disabled ? 'transparent' : theme.color.primary)};
   }
 
   ${InputContainer} {
     flex: 1;
   }
-`;
+`
 
 const StyledSkeleton = styled(ThemedSkeleton)`
   display: flex;
@@ -130,7 +124,7 @@ const StyledSkeleton = styled(ThemedSkeleton)`
   > * {
     width: 100%;
   }
-`;
+`
 
 const AssetInputContent: FC<Props> = ({
   disabled,
@@ -149,25 +143,21 @@ const AssetInputContent: FC<Props> = ({
   isFetching,
   decimals,
 }) => {
-  const [unlockState, setUnlockState] = useState(false);
+  const [unlockState, setUnlockState] = useState(false)
 
   const handleUnlockClick = useCallback(() => {
-    setUnlockState(true);
-  }, []);
+    setUnlockState(true)
+  }, [])
 
   useEffect(() => {
-    if (needsApprove) return;
-    setUnlockState(false);
-  }, [needsApprove]);
+    if (needsApprove) return
+    setUnlockState(false)
+  }, [needsApprove])
 
   return (
     <Container error={error} disabled={disabled ?? false}>
       {needsApprove && unlockState && handleApprove ? (
-        <Approve
-          onCloseClick={() => setUnlockState(false)}
-          onApproveClick={handleApprove}
-          hasPendingApproval={false}
-        />
+        <Approve onCloseClick={() => setUnlockState(false)} onApproveClick={handleApprove} hasPendingApproval={false} />
       ) : (
         <>
           <InputContainer>
@@ -175,33 +165,17 @@ const AssetInputContent: FC<Props> = ({
               {isFetching ? (
                 <StyledSkeleton />
               ) : (
-                <InputField
-                  disabled={amountDisabled}
-                  value={formValue}
-                  onChange={handleSetAmount}
-                  step="any"
-                  decimals={decimals}
-                />
+                <InputField disabled={amountDisabled} value={formValue} onChange={handleSetAmount} step="any" decimals={decimals} />
               )}
               {handleSetMax && (
-                <MaxButton
-                  type="button"
-                  onClick={handleSetMax}
-                  scale={0.75}
-                  transparent
-                >
+                <MaxButton type="button" onClick={handleSetMax} scale={0.75} transparent>
                   Max
                 </MaxButton>
               )}
             </Input>
           </InputContainer>
           <TokenContainer>
-            <SubscribedTokenInput
-              disabled={addressDisabled}
-              value={address}
-              options={addressOptions}
-              onChange={handleSetAddress}
-            />
+            <SubscribedTokenInput disabled={addressDisabled} value={address} options={addressOptions} onChange={handleSetAddress} />
             {spender && (
               <LockButton
                 scale={0.875}
@@ -217,8 +191,8 @@ const AssetInputContent: FC<Props> = ({
         </>
       )}
     </Container>
-  );
-};
+  )
+}
 
 const AssetInputApproveContent: FC<Props> = ({
   address,
@@ -235,7 +209,7 @@ const AssetInputApproveContent: FC<Props> = ({
   spender,
   decimals,
 }) => {
-  const [{ needsApprove }, handleApprove] = useApprove();
+  const [{ needsApprove }, handleApprove] = useApprove()
   return (
     <AssetInputContent
       address={address}
@@ -255,8 +229,8 @@ const AssetInputApproveContent: FC<Props> = ({
     >
       {children}
     </AssetInputContent>
-  );
-};
+  )
+}
 
 export const AssetInput: FC<Props> = ({
   address,
@@ -276,7 +250,7 @@ export const AssetInput: FC<Props> = ({
   isFetching,
   decimals,
 }) => {
-  const amount = BigDecimal.parse(formValue ?? '0');
+  const amount = BigDecimal.parse(formValue ?? '0')
   return spender && address ? (
     <ApproveProvider address={address} spender={spender} amount={amount}>
       <AssetInputApproveContent
@@ -319,5 +293,5 @@ export const AssetInput: FC<Props> = ({
     >
       {children}
     </AssetInputContent>
-  );
-};
+  )
+}

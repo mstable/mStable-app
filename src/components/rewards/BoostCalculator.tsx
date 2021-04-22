@@ -1,33 +1,28 @@
-import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
+import React, { FC, useMemo } from 'react'
+import styled from 'styled-components'
 
-import { ADDRESSES } from '../../constants';
-import { useTokenSubscription } from '../../context/TokensProvider';
-import { useBigDecimalInput } from '../../hooks/useBigDecimalInput';
-import { ViewportWidth } from '../../theme';
-import { Button } from '../core/Button';
-import { DifferentialCountup } from '../core/CountUp';
-import { InfoMessage } from '../core/InfoMessage';
-import { Widget } from '../core/Widget';
-import { AssetInput } from '../forms/AssetInput';
-import {
-  calculateBoost,
-  calculateBoostImusd,
-  calculateVMTAForMaxBoost,
-  calculateVMTAForMaxBoostImusd,
-  getCoeffs,
-} from '../../utils/boost';
-import { ReactComponent as ArrowsSvg } from '../icons/double-arrow.svg';
-import { ReactComponent as GovSvg } from '../icons/governance-icon.svg';
-import { BigDecimal } from '../../web3/BigDecimal';
-import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
+import { useTokenSubscription } from '../../context/TokensProvider'
+import { BoostedSavingsVaultState } from '../../context/DataProvider/types'
+import { useNetworkAddresses } from '../../context/NetworkProvider'
 
-const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake';
+import { useBigDecimalInput } from '../../hooks/useBigDecimalInput'
+import { ViewportWidth } from '../../theme'
+import { Button } from '../core/Button'
+import { DifferentialCountup } from '../core/CountUp'
+import { InfoMessage } from '../core/InfoMessage'
+import { Widget } from '../core/Widget'
+import { AssetInput } from '../forms/AssetInput'
+import { calculateBoost, calculateBoostImusd, calculateVMTAForMaxBoost, calculateVMTAForMaxBoostImusd, getCoeffs } from '../../utils/boost'
+import { ReactComponent as ArrowsSvg } from '../icons/double-arrow.svg'
+import { ReactComponent as GovSvg } from '../icons/governance-icon.svg'
+import { BigDecimal } from '../../web3/BigDecimal'
+
+const GOVERNANCE_URL = 'https://governance.mstable.org/#/stake'
 
 const BoostCountup = styled(DifferentialCountup)`
   font-weight: normal;
   font-size: 1.5rem;
-`;
+`
 
 const StyledButton = styled(Button)`
   display: flex;
@@ -64,7 +59,7 @@ const StyledButton = styled(Button)`
   @media (min-width: ${ViewportWidth.l}) {
     width: auto;
   }
-`;
+`
 
 const MultiplierBox = styled.div`
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
@@ -102,7 +97,7 @@ const MultiplierBox = styled.div`
       }
     }
   }
-`;
+`
 
 const CalculatorInputs = styled.div`
   display: flex;
@@ -120,7 +115,7 @@ const CalculatorInputs = styled.div`
   @media (min-width: ${ViewportWidth.l}) {
     flex-basis: 45%;
   }
-`;
+`
 
 const Equal = styled.div`
   display: none;
@@ -131,7 +126,7 @@ const Equal = styled.div`
     color: ${({ theme }) => theme.color.bodyAccent};
     display: inherit;
   }
-`;
+`
 
 const BoostAndActions = styled.div`
   display: flex;
@@ -143,7 +138,7 @@ const BoostAndActions = styled.div`
   > *:first-child {
     margin-bottom: 0.5rem;
   }
-`;
+`
 
 const MultiplierContainer = styled.div`
   display: flex;
@@ -154,7 +149,7 @@ const MultiplierContainer = styled.div`
   @media (min-width: ${ViewportWidth.l}) {
     margin-bottom: 0;
   }
-`;
+`
 
 const CalculatorActions = styled.div`
   display: flex;
@@ -171,7 +166,7 @@ const CalculatorActions = styled.div`
     flex-direction: row;
     flex-basis: 55%;
   }
-`;
+`
 
 const Container = styled(Widget)`
   gap: 1rem;
@@ -191,43 +186,35 @@ const Container = styled(Widget)`
       flex-direction: row;
     }
   }
-`;
+`
 
 export const BoostCalculator: FC<{
-  vault: BoostedSavingsVaultState;
-  apy?: number;
-  onClick?: () => void;
-  noBackButton?: boolean;
+  vault: BoostedSavingsVaultState
+  apy?: number
+  onClick?: () => void
+  noBackButton?: boolean
 }> = ({ apy, noBackButton, onClick, vault }) => {
-  const { stakingToken: inputAddress, isImusd } = vault;
+  const { stakingToken: inputAddress, isImusd } = vault
+  const networkAddresses = useNetworkAddresses()
 
-  const inputToken = useTokenSubscription(inputAddress);
-  const inputBalance = inputToken?.balance;
-  const vMTA = useTokenSubscription(ADDRESSES.vMTA);
-  const vMTABalance = vMTA?.balance;
+  const inputToken = useTokenSubscription(inputAddress)
+  const inputBalance = inputToken?.balance
+  const vMTA = useTokenSubscription(networkAddresses?.vMTA)
+  const vMTABalance = vMTA?.balance
 
-  const defaultInputValue = isImusd
-    ? BigDecimal.parse('100')
-    : BigDecimal.parse('1');
+  const defaultInputValue = isImusd ? BigDecimal.parse('100') : BigDecimal.parse('1')
 
-  const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTABalance);
-  const [inputValue, inputFormValue, setInput] = useBigDecimalInput(
-    inputBalance?.simpleRounded !== 0 ? inputBalance : defaultInputValue,
-  );
+  const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTABalance)
+  const [inputValue, inputFormValue, setInput] = useBigDecimalInput(inputBalance?.simpleRounded !== 0 ? inputBalance : defaultInputValue)
 
   const boost = useMemo(() => {
-    const coeffs = getCoeffs(vault);
+    const coeffs = getCoeffs(vault)
     return {
       fromBalance:
-        isImusd || !coeffs
-          ? calculateBoostImusd(inputBalance, vMTABalance)
-          : calculateBoost(...coeffs, inputBalance, vMTABalance),
-      fromInputs:
-        isImusd || !coeffs
-          ? calculateBoostImusd(inputValue, vMTAValue)
-          : calculateBoost(...coeffs, inputValue, vMTAValue),
-    };
-  }, [isImusd, inputBalance, vMTABalance, vault, inputValue, vMTAValue]);
+        isImusd || !coeffs ? calculateBoostImusd(inputBalance, vMTABalance) : calculateBoost(...coeffs, inputBalance, vMTABalance),
+      fromInputs: isImusd || !coeffs ? calculateBoostImusd(inputValue, vMTAValue) : calculateBoost(...coeffs, inputValue, vMTAValue),
+    }
+  }, [isImusd, inputBalance, vMTABalance, vault, inputValue, vMTAValue])
 
   return (
     <Container
@@ -242,24 +229,12 @@ export const BoostCalculator: FC<{
       }
     >
       <InfoMessage>
-        <span>
-          Use the calculator below to find your optimal MTA rewards multiplier
-        </span>
+        <span>Use the calculator below to find your optimal MTA rewards multiplier</span>
       </InfoMessage>
       <div>
         <CalculatorInputs>
-          <AssetInput
-            address={vMTA?.address}
-            addressDisabled
-            formValue={vMTAFormValue}
-            handleSetAmount={setVmta}
-          />
-          <AssetInput
-            address={inputAddress}
-            addressDisabled
-            formValue={inputFormValue}
-            handleSetAmount={setInput}
-          />
+          <AssetInput address={vMTA?.address} addressDisabled formValue={vMTAFormValue} handleSetAmount={setVmta} />
+          <AssetInput address={inputAddress} addressDisabled formValue={inputFormValue} handleSetAmount={setInput} />
         </CalculatorInputs>
         <CalculatorActions>
           <MultiplierContainer>
@@ -267,20 +242,12 @@ export const BoostCalculator: FC<{
             <MultiplierBox>
               <div>
                 <span>Multiplier</span>
-                <BoostCountup
-                  end={boost.fromInputs}
-                  prev={boost.fromBalance}
-                  suffix="x"
-                />
+                <BoostCountup end={boost.fromInputs} prev={boost.fromBalance} suffix="x" />
               </div>
               {apy && (
                 <div>
                   <span>APY</span>
-                  <BoostCountup
-                    end={apy * boost.fromInputs}
-                    prev={apy * boost.fromBalance}
-                    suffix="%"
-                  />
+                  <BoostCountup end={apy * boost.fromInputs} prev={apy * boost.fromBalance} suffix="%" />
                 </div>
               )}
             </MultiplierBox>
@@ -289,12 +256,10 @@ export const BoostCalculator: FC<{
             <StyledButton
               onClick={() => {
                 if (inputValue) {
-                  const coeffs = getCoeffs(vault);
+                  const coeffs = getCoeffs(vault)
                   const vMTARequired =
-                    isImusd || !coeffs
-                      ? calculateVMTAForMaxBoostImusd(inputValue)
-                      : calculateVMTAForMaxBoost(inputValue, ...coeffs);
-                  setVmta(vMTARequired?.toFixed(2));
+                    isImusd || !coeffs ? calculateVMTAForMaxBoostImusd(inputValue) : calculateVMTAForMaxBoost(inputValue, ...coeffs)
+                  setVmta(vMTARequired?.toFixed(2))
                 }
               }}
             >
@@ -306,7 +271,7 @@ export const BoostCalculator: FC<{
             <StyledButton
               highlighted
               onClick={() => {
-                window.open(GOVERNANCE_URL);
+                window.open(GOVERNANCE_URL)
               }}
             >
               <div className="gov">
@@ -318,5 +283,5 @@ export const BoostCalculator: FC<{
         </CalculatorActions>
       </div>
     </Container>
-  );
-};
+  )
+}

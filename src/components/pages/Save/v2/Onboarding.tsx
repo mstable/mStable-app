@@ -1,19 +1,19 @@
-import styled from 'styled-components';
-import React, { FC, useMemo } from 'react';
-import { TokenIcon } from '../../../icons/TokenIcon';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { MassetState } from '../../../../context/DataProvider/types';
-import { Tooltip } from '../../../core/ReactTooltip';
-import { Arrow } from '../../../core/Arrow';
-import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
-import { ExternalLink } from '../../../core/ExternalLink';
-import { UnstyledButton } from '../../../core/Button';
-import { useOnboarding } from '../hooks';
-import { ViewportWidth } from '../../../../theme';
+import styled from 'styled-components'
+import React, { FC, useMemo } from 'react'
+import { TokenIcon } from '../../../icons/TokenIcon'
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
+import { MassetState } from '../../../../context/DataProvider/types'
+import { Tooltip } from '../../../core/ReactTooltip'
+import { Arrow } from '../../../core/Arrow'
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider'
+import { ExternalLink } from '../../../core/ExternalLink'
+import { UnstyledButton } from '../../../core/Button'
+import { useOnboarding } from '../hooks'
+import { ViewportWidth } from '../../../../theme'
 
 const StyledTokenIcon = styled(TokenIcon)`
   width: 3rem;
-`;
+`
 
 const CloseButton = styled(UnstyledButton)`
   padding: 1rem;
@@ -33,13 +33,12 @@ const CloseButton = styled(UnstyledButton)`
   :hover {
     background: rgba(255, 179, 52, 0.45);
   }
-`;
+`
 
 const Container = styled.div`
   ${({ theme }) => theme.mixins.card}
   border-color: rgba(255, 179, 52, 0.2);
-  background: ${({ theme }) =>
-    theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none'};
+  background: ${({ theme }) => (theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none')};
   color: ${({ theme }) => theme.color.offYellow};
   text-align: center;
   position: relative;
@@ -86,7 +85,7 @@ const Container = styled.div`
       margin-bottom: 0;
     }
   }
-`;
+`
 
 export const OnboardingCard: FC = () => {
   const {
@@ -96,20 +95,17 @@ export const OnboardingCard: FC = () => {
     },
     bAssets,
     fAssets,
-  } = useSelectedMassetState() as MassetState;
-  const massetName = useSelectedMassetName();
-  const [, toggleOnboarding] = useOnboarding();
+  } = useSelectedMassetState() as MassetState
+  const massetName = useSelectedMassetName()
+  const [, toggleOnboarding] = useOnboarding()
 
   const inputAssets = useMemo<string[]>(
     () =>
-      [
-        massetToken,
-        ...Object.values(bAssets).map(b => b.token),
-        ...Object.values(fAssets).map(b => b.token),
-        { symbol: 'ETH' },
-      ].map(t => t.symbol),
+      [massetToken, ...Object.values(bAssets).map(b => b.token), ...Object.values(fAssets).map(b => b.token), { symbol: 'ETH' }].map(
+        t => t.symbol,
+      ),
     [bAssets, fAssets, massetToken],
-  );
+  )
 
   return (
     <Container>
@@ -118,10 +114,7 @@ export const OnboardingCard: FC = () => {
         <h4>
           <span>1</span> Select an asset to deposit
         </h4>
-        <p>
-          This is swapped for {saveToken?.symbol}. You can swap back at any
-          time.
-        </p>
+        <p>This is swapped for {saveToken?.symbol}. You can swap back at any time.</p>
         <div>
           {inputAssets.map(symbol => (
             <Tooltip tip={symbol} key={symbol} hideIcon>
@@ -133,8 +126,7 @@ export const OnboardingCard: FC = () => {
       <Arrow />
       <div>
         <h4>
-          <span>2</span> Receive {saveToken?.symbol} directly, or deposit it in
-          the Vault
+          <span>2</span> Receive {saveToken?.symbol} directly, or deposit it in the Vault
         </h4>
         <div>
           <div>
@@ -160,8 +152,7 @@ export const OnboardingCard: FC = () => {
           <span>3</span> Earn interest on your deposit
         </h4>
         <p>
-          Over time, your {saveToken?.symbol} can be exchanged for more{' '}
-          {massetToken.symbol}.
+          Over time, your {saveToken?.symbol} can be exchanged for more {massetToken.symbol}.
         </p>
       </div>
       {massetName === 'musd' && (
@@ -169,19 +160,15 @@ export const OnboardingCard: FC = () => {
           <Arrow />
           <div>
             <h4>
-              <span>4</span> Do more with your imUSD in DeFi{' '}
-              <span>(optional)</span>
+              <span>4</span> Do more with your imUSD in DeFi <span>(optional)</span>
             </h4>
             <p>
-              You can even mint{' '}
-              <ExternalLink href="https://app.arcx.money/mint">
-                StableX tokens
-              </ExternalLink>{' '}
-              with your imUSD as collateral!
+              You can even mint <ExternalLink href="https://app.arcx.money/mint">StableX tokens</ExternalLink> with your imUSD as
+              collateral!
             </p>
           </div>
         </>
       )}
     </Container>
-  );
-};
+  )
+}

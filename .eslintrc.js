@@ -7,6 +7,7 @@ const realConfig = {
     'prettier/react',
     'prettier/@typescript-eslint',
   ],
+  plugins: ['prettier'],
   env: {
     node: true,
     browser: true,
@@ -16,10 +17,7 @@ const realConfig = {
     project: './tsconfig.json',
   },
   rules: {
-    '@typescript-eslint/explicit-function-return-type': [
-      'error',
-      { allowExpressions: true, allowTypedFunctionExpressions: true },
-    ],
+    '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true, allowTypedFunctionExpressions: true }],
     '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '_' }],
     '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/naming-convention': 'off',
@@ -34,7 +32,7 @@ const realConfig = {
     'consistent-return': 'off',
     'no-nested-ternary': 'off',
   },
-};
+}
 
 const nopConfig = {
   /*
@@ -50,6 +48,6 @@ const nopConfig = {
   */
 
   ignorePatterns: ['**/*.ts', '**/*.tsx', './*.js', 'config/*.js'],
-};
+}
 
-module.exports = process.env.DISABLE_ESLINT ? nopConfig : realConfig;
+module.exports = process.env.DISABLE_ESLINT ? nopConfig : realConfig

@@ -1,16 +1,13 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import {
-  Transaction,
-  useOrderedCurrentTransactions,
-} from '../../context/TransactionsProvider';
-import { TransactionStatus } from '../../web3/TransactionManifest';
-import { EMOJIS } from '../../constants';
-import { ActivitySpinner } from '../core/ActivitySpinner';
-import { EtherscanLink } from '../core/EtherscanLink';
-import { List, ListItem } from '../core/List';
-import { P } from '../core/Typography';
+import { Transaction, useOrderedCurrentTransactions } from '../../context/TransactionsProvider'
+import { TransactionStatus } from '../../web3/TransactionManifest'
+import { EMOJIS } from '../../constants'
+import { ActivitySpinner } from '../core/ActivitySpinner'
+import { ExplorerLink } from '../core/ExplorerLink'
+import { List, ListItem } from '../core/List'
+import { P } from '../core/Typography'
 
 const PendingTxContainer = styled.div<{ inverted?: boolean }>`
   display: flex;
@@ -19,23 +16,19 @@ const PendingTxContainer = styled.div<{ inverted?: boolean }>`
   }
 
   a {
-    color: ${({ theme, inverted }) =>
-      inverted ? theme.color.white : theme.color.black};
+    color: ${({ theme, inverted }) => (inverted ? theme.color.white : theme.color.black)};
     border-bottom: none;
 
     span {
-      border-bottom: 1px
-        ${({ theme, inverted }) =>
-          inverted ? theme.color.white : theme.color.black}
-        solid;
+      border-bottom: 1px ${({ theme, inverted }) => (inverted ? theme.color.white : theme.color.black)} solid;
     }
   }
-`;
+`
 
 const TxStatusContainer = styled.div`
   height: 16px;
   width: 16px;
-`;
+`
 
 const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
   return (
@@ -48,31 +41,29 @@ const TxStatusIndicator: FC<{ tx: Transaction }> = ({ tx }) => {
         <span>{EMOJIS[tx.manifest.fn as keyof typeof EMOJIS]}</span>
       )}
     </TxStatusContainer>
-  );
-};
+  )
+}
 
 const PendingTx: FC<{
-  tx: Transaction;
-  inverted: boolean;
+  tx: Transaction
+  inverted: boolean
 }> = ({ tx, inverted }) => {
   return (
     <PendingTxContainer inverted={inverted}>
       <TxStatusIndicator tx={tx} />
-      <EtherscanLink data={tx.hash as string} type="transaction">
+      <ExplorerLink data={tx.hash as string} type="transaction">
         {tx.status === TransactionStatus.Error ? 'Error: ' : ''}
-        {tx.status === TransactionStatus.Confirmed
-          ? tx.manifest.purpose.past
-          : tx.manifest.purpose.present}
-      </EtherscanLink>
+        {tx.status === TransactionStatus.Confirmed ? tx.manifest.purpose.past : tx.manifest.purpose.present}
+      </ExplorerLink>
     </PendingTxContainer>
-  );
-};
+  )
+}
 
 /**
  * List of recently-sent transactions.
  */
 export const Transactions: FC = () => {
-  const pending = useOrderedCurrentTransactions();
+  const pending = useOrderedCurrentTransactions()
 
   return (
     <div>
@@ -88,5 +79,5 @@ export const Transactions: FC = () => {
         </List>
       )}
     </div>
-  );
-};
+  )
+}

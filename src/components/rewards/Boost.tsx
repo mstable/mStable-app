@@ -1,15 +1,16 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { createToggleContext } from '../../hooks/createToggleContext';
-import { ProgressBar } from '../core/ProgressBar';
-import { Button } from '../core/Button';
-import { Widget } from '../core/Widget';
-import { ViewportWidth } from '../../theme';
-
-import { BoostCalculator } from './BoostCalculator';
-import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
+import { BoostedSavingsVaultState } from '../../context/DataProvider/types'
 import { useCalculateUserBoost } from '../../hooks/useCalculateUserBoost';
+import { createToggleContext } from '../../hooks/createToggleContext'
+
+import { ProgressBar } from '../core/ProgressBar'
+import { Button } from '../core/Button'
+import { Widget } from '../core/Widget'
+import { ViewportWidth } from '../../theme'
+
+import { BoostCalculator } from './BoostCalculator'
 
 const BoostBarLine = styled.div`
   width: 100%;
@@ -17,7 +18,7 @@ const BoostBarLine = styled.div`
   margin-left: 16px;
   margin-right: 16px;
   background: ${({ theme }) => theme.color.backgroundAccent};
-`;
+`
 
 const BoostBarRange = styled.div`
   ${({ theme }) => theme.mixins.numeric};
@@ -27,14 +28,12 @@ const BoostBarRange = styled.div`
   align-items: center;
   color: grey;
   padding: 0.5rem 0;
-`;
+`
 
-const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
-  false,
-);
+const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(false)
 
 const BoostBar: FC<{
-  vault: BoostedSavingsVaultState;
+  vault: BoostedSavingsVaultState
 }> = ({ vault }) => {
   const [, toggleShowCalculator] = useShowCalculatorCtx();
   const boost = useCalculateUserBoost(vault);
@@ -58,8 +57,8 @@ const BoostBar: FC<{
         </BoostBarRange>
       </div>
     </Widget>
-  );
-};
+  )
+}
 
 const Container = styled(Widget)<{ showCalculator?: boolean }>`
   > div {
@@ -87,11 +86,11 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
       flex-basis: ${({ showCalculator }) => !showCalculator && `40%`};
     }
   }
-`;
+`
 
 const BoostContent: FC<{
-  vault: BoostedSavingsVaultState;
-  apy?: number;
+  vault: BoostedSavingsVaultState
+  apy?: number
 }> = ({ children, apy, vault }) => {
   const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx();
 
@@ -110,16 +109,16 @@ const BoostContent: FC<{
         </>
       )}
     </Container>
-  );
-};
+  )
+}
 
 export const Boost: FC<{
-  vault: BoostedSavingsVaultState;
-  apy?: number;
+  vault: BoostedSavingsVaultState
+  apy?: number
 }> = ({ apy, children, vault }) => (
   <ShowCalculatorProvider>
     <BoostContent apy={apy} vault={vault}>
       {children}
     </BoostContent>
   </ShowCalculatorProvider>
-);
+)

@@ -1,14 +1,14 @@
-import React, { FC, useEffect, useLayoutEffect } from 'react';
-import styled from 'styled-components';
-import { useParams } from 'react-router-dom';
+import React, { FC, useEffect, useLayoutEffect } from 'react'
+import styled from 'styled-components'
+import { useParams } from 'react-router-dom'
 
-import { useMatchStakingRewardsAddressFromUrl } from '../../../../context/earn/useMatchStakingRewardsAddressFromUrl';
-import { StakingRewardsContractProvider } from '../StakingRewardsContractProvider';
-import { PoolContent } from './PoolContent';
-import { useMasquerade } from '../../../../context/UserProvider';
-import { CurveProvider } from '../../../../context/earn/CurveProvider';
-import { EarnDataProvider } from '../../../../context/earn/EarnDataProvider';
-import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
+import { useMatchStakingRewardsAddressFromUrl } from '../../../../context/earn/useMatchStakingRewardsAddressFromUrl'
+import { StakingRewardsContractProvider } from '../StakingRewardsContractProvider'
+import { PoolContent } from './PoolContent'
+import { useMasquerade } from '../../../../context/AccountProvider'
+import { CurveProvider } from '../../../../context/earn/CurveProvider'
+import { EarnDataProvider } from '../../../../context/earn/EarnDataProvider'
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
 
 const Container = styled.div`
   width: 100%;
@@ -17,32 +17,32 @@ const Container = styled.div`
   justify-content: center;
   align-items: flex-start;
   flex: 1;
-`;
+`
 
 const EarnPageContent: FC = () => {
   const { userAddress, slugOrAddress } = useParams<{
-    slugOrAddress?: string;
-    userAddress?: string;
-  }>();
-  const address = useMatchStakingRewardsAddressFromUrl(slugOrAddress);
-  const masquerade = useMasquerade();
+    slugOrAddress?: string
+    userAddress?: string
+  }>()
+  const address = useMatchStakingRewardsAddressFromUrl(slugOrAddress)
+  const masquerade = useMasquerade()
 
   useEffect(() => {
     if (userAddress) {
-      masquerade(userAddress);
+      masquerade(userAddress)
     }
 
     return () => {
-      masquerade();
-    };
-  }, [userAddress, masquerade]);
+      masquerade()
+    }
+  }, [userAddress, masquerade])
 
   useLayoutEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, []);
+    window.scrollTo({ top: 0 })
+  }, [])
 
   if (address === false) {
-    return <>404</>;
+    return <>404</>
   }
 
   return address ? (
@@ -53,8 +53,8 @@ const EarnPageContent: FC = () => {
     </StakingRewardsContractProvider>
   ) : (
     <ThemedSkeleton height={225} />
-  );
-};
+  )
+}
 
 export const EarnPage: FC = () => (
   <CurveProvider>
@@ -62,4 +62,4 @@ export const EarnPage: FC = () => (
       <EarnPageContent />
     </EarnDataProvider>
   </CurveProvider>
-);
+)

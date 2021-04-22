@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
-import { usePrevious } from 'react-use';
+import { useCallback, useEffect, useState } from 'react'
+import { usePrevious } from 'react-use'
 
-import { BigDecimal } from '../web3/BigDecimal';
+import { BigDecimal } from '../web3/BigDecimal'
 
 /**
  * This hook is designed to be used in tandem with amount inputs.
@@ -19,45 +19,39 @@ export const useBigDecimalInput = (
   (formValue: (string | null) | (string | undefined)) => void,
   (amount?: BigDecimal) => void,
 ] => {
-  const decimals =
-    (typeof options === 'number' ? options : options?.decimals) ?? 18;
-  const prevDecimals = usePrevious(decimals);
+  const decimals = (typeof options === 'number' ? options : options?.decimals) ?? 18
+  const prevDecimals = usePrevious(decimals)
 
   const [value, setValue] = useState<BigDecimal | undefined>(
-    initialValue instanceof BigDecimal
-      ? initialValue
-      : BigDecimal.maybeParse(initialValue, decimals),
-  );
+    initialValue instanceof BigDecimal ? initialValue : BigDecimal.maybeParse(initialValue, decimals),
+  )
 
-  const [formValue, setFormValue] = useState<string | undefined>(
-    value?.simple !== 0 ? value?.string : undefined,
-  );
+  const [formValue, setFormValue] = useState<string | undefined>(value?.simple !== 0 ? value?.string : undefined)
 
   const onChange = useCallback(
     _formValue => {
-      const amount = BigDecimal.maybeParse(_formValue, decimals);
+      const amount = BigDecimal.maybeParse(_formValue, decimals)
 
       if (
         amount &&
         typeof options === 'object' &&
-        ((options.min && amount.simple < options.min) ||
-          (options.max && amount.simple > options.max))
+        ((options.min && amount.simple < options.min) || (options.max && amount.simple > options.max))
       ) {
         // Ignore inputs outside parameters
-        return;
+        return
       }
 
-      setFormValue(_formValue ?? undefined);
-      setValue(BigDecimal.maybeParse(_formValue, decimals));
+      setFormValue(_formValue ?? undefined)
+      setValue(BigDecimal.maybeParse(_formValue, decimals))
     },
     [decimals, options],
-  );
+  )
 
   useEffect(() => {
     if (decimals !== prevDecimals) {
-      setValue(BigDecimal.maybeParse(formValue, decimals));
+      setValue(BigDecimal.maybeParse(formValue, decimals))
     }
-  }, [decimals, formValue, prevDecimals]);
+  }, [decimals, formValue, prevDecimals])
 
-  return [value, formValue, onChange, setValue];
-};
+  return [value, formValue, onChange, setValue]
+}

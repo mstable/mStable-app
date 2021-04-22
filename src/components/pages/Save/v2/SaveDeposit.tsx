@@ -1,41 +1,31 @@
-import React, { FC, useMemo, useState } from 'react';
-import { constants } from 'ethers';
-import {
-  BoostedSavingsVault__factory,
-  ISavingsContractV2__factory,
-} from '@mstable/protocol/types/generated';
+import React, { FC, useMemo, useState } from 'react'
+import { constants } from 'ethers'
+import { BoostedSavingsVault__factory, ISavingsContractV2__factory } from '@mstable/protocol/types/generated'
 
-import { useSigner } from '../../../../context/OnboardProvider';
-import { usePropose } from '../../../../context/TransactionsProvider';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { useNetworkPrices } from '../../../../context/EthProvider';
-import { MassetState } from '../../../../context/DataProvider/types';
-import {
-  useETH,
-  useTokenSubscription,
-} from '../../../../context/TokensProvider';
+import { useSigner } from '../../../../context/AccountProvider'
+import { usePropose } from '../../../../context/TransactionsProvider'
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
+import { useNetworkPrices, useNetworkAddresses } from '../../../../context/NetworkProvider'
+import { MassetState } from '../../../../context/DataProvider/types'
+import { useETH, useTokenSubscription } from '../../../../context/TokensProvider'
 
-import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput';
-import { useSlippage } from '../../../../hooks/useSimpleInput';
-import { ADDRESSES } from '../../../../constants';
-import { BigDecimal } from '../../../../web3/BigDecimal';
-import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import {
-  getPenaltyMessage,
-  getPenaltyPercentage,
-} from '../../../../utils/ammUtils';
-import { SaveWrapper__factory } from '../../../../typechain';
-import { AddressOption, Interfaces } from '../../../../types';
+import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
+import { useSlippage } from '../../../../hooks/useSimpleInput'
+import { BigDecimal } from '../../../../web3/BigDecimal'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
+import { getPenaltyMessage, getPenaltyPercentage } from '../../../../utils/ammUtils'
+import { SaveWrapper__factory } from '../../../../typechain'
+import { AddressOption, Interfaces } from '../../../../types'
 
-import { AssetExchange } from '../../../forms/AssetExchange';
-import { TransactionInfo } from '../../../core/TransactionInfo';
-import { SendButton } from '../../../forms/SendButton';
+import { AssetExchange } from '../../../forms/AssetExchange'
+import { TransactionInfo } from '../../../core/TransactionInfo'
+import { SendButton } from '../../../forms/SendButton'
 
-import { useSaveOutput } from './useSaveOutput';
-import { SaveRoutes } from './types';
-import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
+import { useSaveOutput } from './useSaveOutput'
+import { SaveRoutes } from './types'
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
 
-const formId = 'SaveDeposit';
+const formId = 'SaveDeposit'
 
 const titles = {
   [SaveRoutes.Save]: 'Save',
@@ -47,7 +37,7 @@ const titles = {
   [SaveRoutes.BuyAndStake]: 'Swap and deposit to Vault',
   [SaveRoutes.SwapAndSave]: 'Swap and save',
   [SaveRoutes.SwapAndStake]: 'Swap and deposit to Vault',
-};
+}
 
 const purposes = {
   [SaveRoutes.Save]: {
@@ -86,7 +76,7 @@ const purposes = {
     past: 'Swapped and deposited to Vault',
     present: 'Swapping and depositing to Vault',
   },
-};
+}
 
 const withSlippage = new Set([
   SaveRoutes.MintAndSave,
@@ -95,15 +85,17 @@ const withSlippage = new Set([
   SaveRoutes.BuyAndStake,
   SaveRoutes.SwapAndSave,
   SaveRoutes.SwapAndStake,
-]);
+])
 
-const withEth = new Set([SaveRoutes.BuyAndSave, SaveRoutes.BuyAndStake]);
+const withEth = new Set([SaveRoutes.BuyAndSave, SaveRoutes.BuyAndStake])
 
 export const SaveDeposit: FC = () => {
-  const signer = useSigner();
-  const propose = usePropose();
-  const massetState = useSelectedMassetState() as MassetState;
-  const ETH = useETH();
+  const signer = useSigner()
+  const propose = usePropose()
+  const networkAddresses = useNetworkAddresses()
+
+  const massetState = useSelectedMassetState() as MassetState
+  const ETH = useETH() // FIXME
 
   const {
     address: massetAddress,
@@ -119,27 +111,20 @@ export const SaveDeposit: FC = () => {
         token: saveToken,
       },
     },
-  } = massetState;
+  } = massetState
 
   const [inputAddress, setInputAddress] = useState<string | undefined>(
     (() => {
       // Select the highest masset-denominated balance (ignore ETH)
       const [[first]] = ([
-        ...Object.values(bAssets).map(b => [
-          b.address,
-          b.token.balance.simple ?? 0,
-        ]),
+        ...Object.values(bAssets).map(b => [b.address, b.token.balance.simple ?? 0]),
         [massetAddress, massetToken.balance.simple ?? 0],
-      ] as [string, number][]).sort(
-        (a, b) => (b[1] as number) - (a[1] as number),
-      );
-      return first;
+      ] as [string, number][]).sort((a, b) => (b[1] as number) - (a[1] as number))
+      return first
     })(),
-  );
+  )
 
-  const [outputAddress, setOutputAddress] = useState<string | undefined>(
-    saveAddress,
-  );
+  const [outputAddress, setOutputAddress] = useState<string | undefined>(saveAddress)
 
   const inputAddressOptions = useMemo<AddressOption[]>(() => {
     const inputs = [
@@ -148,124 +133,99 @@ export const SaveDeposit: FC = () => {
       ...Object.values(bAssets).map(b => b.token),
       ...Object.values(fAssets).map(b => b.token),
       ETH,
-    ];
+    ]
 
     if (outputAddress === saveAddress) {
-      return inputs.filter(v => v.address !== saveAddress);
+      return inputs.filter(v => v.address !== saveAddress)
     }
-    return inputs;
-  }, [
-    massetToken,
-    saveToken,
-    saveAddress,
-    bAssets,
-    fAssets,
-    ETH,
-    outputAddress,
-  ]);
+    return inputs
+  }, [massetToken, saveToken, saveAddress, bAssets, fAssets, ETH, outputAddress])
 
   const outputAddressOptions = useMemo(() => {
-    if (!saveToken) return [];
-    if (!vaultAddress) return [saveToken as AddressOption];
+    if (!saveToken) return []
+    if (!vaultAddress) return [saveToken as AddressOption]
 
     const vault = {
       address: vaultAddress as string,
       label: `${saveToken.symbol} Vault`,
       custom: true,
       symbol: `v-${saveToken.symbol}`,
-    } as AddressOption;
+    } as AddressOption
 
-    if (inputAddress === saveAddress) return [vault];
+    if (inputAddress === saveAddress) return [vault]
 
-    return [vault, saveToken as AddressOption];
-  }, [saveToken, vaultAddress, saveAddress, inputAddress]);
+    return [vault, saveToken as AddressOption]
+  }, [saveToken, vaultAddress, saveAddress, inputAddress])
 
-  const inputToken = useTokenSubscription(inputAddress);
-  const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput(
-    '0',
-    inputToken?.decimals,
-  );
+  const inputToken = useTokenSubscription(inputAddress)
+  const [inputAmount, inputFormValue, setInputFormValue] = useBigDecimalInput('0', inputToken?.decimals)
 
   const feederPoolAddress = useMemo<string | undefined>(() => {
     if (inputAddress) {
-      return Object.values(feederPools).find(
-        fp => fp.fasset.address === inputAddress,
-      )?.address;
+      return Object.values(feederPools).find(fp => fp.fasset.address === inputAddress)?.address
     }
-  }, [feederPools, inputAddress]);
+  }, [feederPools, inputAddress])
 
   const saveRoute = useMemo<SaveRoutes>(() => {
-    const saveAndStake = vaultAddress && outputAddress === vaultAddress;
+    const saveAndStake = vaultAddress && outputAddress === vaultAddress
 
-    if (inputAddress === saveAddress) return SaveRoutes.Stake;
+    if (inputAddress === saveAddress) return SaveRoutes.Stake
 
     if (inputAddress === massetAddress) {
-      return saveAndStake ? SaveRoutes.SaveAndStake : SaveRoutes.Save;
+      return saveAndStake ? SaveRoutes.SaveAndStake : SaveRoutes.Save
     }
 
     if (inputAddress === constants.AddressZero) {
-      return saveAndStake ? SaveRoutes.BuyAndStake : SaveRoutes.BuyAndSave;
+      return saveAndStake ? SaveRoutes.BuyAndStake : SaveRoutes.BuyAndSave
     }
 
     if (feederPoolAddress) {
-      return saveAndStake ? SaveRoutes.SwapAndStake : SaveRoutes.SwapAndSave;
+      return saveAndStake ? SaveRoutes.SwapAndStake : SaveRoutes.SwapAndSave
     }
 
-    return saveAndStake ? SaveRoutes.MintAndStake : SaveRoutes.MintAndSave;
-  }, [
-    vaultAddress,
-    outputAddress,
-    inputAddress,
-    saveAddress,
-    massetAddress,
-    feederPoolAddress,
-  ]);
+    return saveAndStake ? SaveRoutes.MintAndStake : SaveRoutes.MintAndSave
+  }, [vaultAddress, outputAddress, inputAddress, saveAddress, massetAddress, feederPoolAddress])
 
-  const saveOutput = useSaveOutput(saveRoute, inputAddress, inputAmount);
+  const saveOutput = useSaveOutput(saveRoute, inputAddress, inputAmount)
 
-  const [slippageSimple, slippageFormValue, handleSetSlippage] = useSlippage();
+  const [slippageSimple, slippageFormValue, handleSetSlippage] = useSlippage()
 
   const error = useMemo(() => {
-    if (!inputAmount?.simple) return 'Enter an amount';
+    if (!inputAmount?.simple) return 'Enter an amount'
 
     if (inputAmount && inputToken?.balance) {
       if (inputAmount.simple > inputToken.balance.simple) {
-        return 'Insufficient balance';
+        return 'Insufficient balance'
       }
 
       if (!inputAddress) {
-        return 'Must select an asset';
+        return 'Must select an asset'
       }
 
       if (inputAmount.exact.eq(0)) {
-        return 'Amount must be greater than zero';
+        return 'Amount must be greater than zero'
       }
     }
 
-    if (saveOutput.fetching) return 'Validating…';
+    if (saveOutput.fetching) return 'Validating…'
 
-    return saveOutput.error;
-  }, [
-    inputAmount,
-    saveOutput.fetching,
-    saveOutput.error,
-    inputToken,
-    inputAddress,
-  ]);
+    return saveOutput.error
+  }, [inputAmount, saveOutput.fetching, saveOutput.error, inputToken, inputAddress])
 
-  const { eth: ethPrice } = useNetworkPrices();
-  const massetPrice = useSelectedMassetPrice();
+  const networkPrices = useNetworkPrices()
+  const nativeTokenPrice = networkPrices.value?.nativeToken
+  const massetPrice = useSelectedMassetPrice()
 
   const outputs = useMemo<{
-    outputImasset?: BigDecimal;
-    outputMasset?: BigDecimal;
-    minOutputImasset?: BigDecimal;
-    minOutputMasset?: BigDecimal;
-    exchangeRate?: BigDecimal;
+    outputImasset?: BigDecimal
+    outputMasset?: BigDecimal
+    minOutputImasset?: BigDecimal
+    minOutputMasset?: BigDecimal
+    exchangeRate?: BigDecimal
     penaltyBonus: {
-      percentage?: number;
-      message?: string;
-    };
+      percentage?: number
+      message?: string
+    }
   }>(() => {
     if (
       !saveOutput.value?.amount ||
@@ -273,9 +233,9 @@ export const SaveDeposit: FC = () => {
       !saveExchangeRate ||
       !inputAddress ||
       !inputAmount?.exact.gt(0) ||
-      !ethPrice
+      !nativeTokenPrice
     ) {
-      return { penaltyBonus: {} };
+      return { penaltyBonus: {} }
     }
 
     if (saveRoute === SaveRoutes.Stake) {
@@ -284,48 +244,40 @@ export const SaveDeposit: FC = () => {
         minOutputImasset: inputAmount,
         exchangeRate: BigDecimal.parse('1'),
         penaltyBonus: {},
-      };
+      }
     }
 
-    const { amount: outputMasset } = saveOutput.value;
+    const { amount: outputMasset } = saveOutput.value
 
     // Apply slippage
     const minOutputMasset = BigDecimal.parse(
-      (outputMasset.simple * (1 - slippageSimple / 100)).toFixed(
-        outputMasset.decimals,
-      ),
+      (outputMasset.simple * (1 - slippageSimple / 100)).toFixed(outputMasset.decimals),
       outputMasset.decimals,
-    );
+    )
 
     // Scale input to mAsset units, if necessary
-    const inputBasset = bAssets[inputAddress];
-    const inputFasset = feederPoolAddress && fAssets[feederPoolAddress];
+    const inputBasset = bAssets[inputAddress]
+    const inputFasset = feederPoolAddress && fAssets[feederPoolAddress]
     const inputMasset =
-      inputBasset || inputFasset
-        ? inputAmount
-            .mulRatioTruncate((inputBasset || inputFasset).ratio)
-            .setDecimals(18)
-        : inputAmount;
+      inputBasset || inputFasset ? inputAmount.mulRatioTruncate((inputBasset || inputFasset).ratio).setDecimals(18) : inputAmount
 
     // If coming from ETH, convert to mAsset value
-    const ethPriceExact = BigDecimal.parse(ethPrice.toFixed(10)).exact;
+    const nativeTokenPriceExact = BigDecimal.parse(nativeTokenPrice.toFixed(10)).exact
     const inputMassetValue =
       withEth.has(saveRoute) && massetPrice
-        ? inputAmount
-            .mulTruncate(ethPriceExact)
-            .divPrecisely(BigDecimal.parse(massetPrice.toFixed(10)))
-        : inputMasset;
+        ? inputAmount.mulTruncate(nativeTokenPriceExact).divPrecisely(BigDecimal.parse(massetPrice.toFixed(10)))
+        : inputMasset
 
     // Scale amounts to imAsset value
-    const inputImasset = inputMassetValue.divPrecisely(saveExchangeRate);
-    const outputImasset = outputMasset.divPrecisely(saveExchangeRate);
-    const minOutputImasset = minOutputMasset.divPrecisely(saveExchangeRate);
+    const inputImasset = inputMassetValue.divPrecisely(saveExchangeRate)
+    const outputImasset = outputMasset.divPrecisely(saveExchangeRate)
+    const minOutputImasset = minOutputMasset.divPrecisely(saveExchangeRate)
 
     // Rate == output in imAsset/input in mAsset
-    const _exchangeRate = outputImasset.divPrecisely(inputMasset);
+    const _exchangeRate = outputImasset.divPrecisely(inputMasset)
 
-    const percentage = getPenaltyPercentage(inputImasset, outputImasset);
-    const message = getPenaltyMessage(percentage);
+    const percentage = getPenaltyPercentage(inputImasset, outputImasset)
+    const message = getPenaltyMessage(percentage)
 
     return {
       outputImasset,
@@ -337,46 +289,37 @@ export const SaveDeposit: FC = () => {
         percentage,
         message,
       },
-    };
+    }
   }, [
     saveOutput.value,
     slippageSimple,
     saveExchangeRate,
     inputAddress,
     inputAmount,
-    ethPrice,
+    nativeTokenPrice,
     saveRoute,
     bAssets,
     feederPoolAddress,
     fAssets,
     massetPrice,
-  ]);
+  ])
 
   const approve = useMemo(() => {
-    if (
-      !inputAddress ||
-      !saveAddress ||
-      !vaultAddress ||
-      withEth.has(saveRoute)
-    ) {
-      return;
+    if (!inputAddress || !saveAddress || !networkAddresses || !vaultAddress || withEth.has(saveRoute)) {
+      return
     }
 
     const spender =
-      saveRoute === SaveRoutes.Save
-        ? saveAddress
-        : saveRoute === SaveRoutes.Stake
-        ? vaultAddress
-        : ADDRESSES.SAVE_WRAPPER;
+      saveRoute === SaveRoutes.Save ? saveAddress : saveRoute === SaveRoutes.Stake ? vaultAddress : networkAddresses.SaveWrapper
 
     return {
       spender,
       address: inputAddress,
       amount: inputAmount,
-    };
-  }, [vaultAddress, inputAddress, inputAmount, saveAddress, saveRoute]);
+    }
+  }, [vaultAddress, inputAddress, inputAmount, saveAddress, saveRoute, networkAddresses])
 
-  const hasSlippage = withSlippage.has(saveRoute);
+  const hasSlippage = withSlippage.has(saveRoute)
 
   const exchangeRate = useMemo(
     () => ({
@@ -384,7 +327,7 @@ export const SaveDeposit: FC = () => {
       value: outputs.exchangeRate,
     }),
     [outputs.exchangeRate, saveOutput],
-  );
+  )
 
   return (
     <AssetExchange
@@ -392,7 +335,7 @@ export const SaveDeposit: FC = () => {
       handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={() => {
-        if (inputToken) setInputFormValue(inputToken.balance.string);
+        if (inputToken) setInputFormValue(inputToken.balance.string)
       }}
       inputAddress={inputAddress}
       inputFormValue={inputFormValue}
@@ -404,146 +347,118 @@ export const SaveDeposit: FC = () => {
     >
       <SendButton
         approve={approve}
-        penaltyBonusAmount={
-          !error && hasSlippage ? outputs.penaltyBonus.percentage : undefined
-        }
+        penaltyBonusAmount={!error && hasSlippage ? outputs.penaltyBonus.percentage : undefined}
         valid={!error}
         title={error ?? titles[saveRoute]}
         handleSend={() => {
           if (
-            !error &&
-            signer &&
-            inputAmount &&
-            inputAddress &&
-            saveOutput.value &&
-            vaultAddress &&
-            outputs.minOutputImasset
+            error ||
+            !(signer && inputAmount && inputAddress && networkAddresses && saveOutput.value && vaultAddress && outputs.minOutputImasset)
           ) {
-            const purpose = purposes[saveRoute];
-            switch (saveRoute) {
-              case SaveRoutes.BuyAndSave:
-              case SaveRoutes.BuyAndStake:
-                return propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
-                  new TransactionManifest(
-                    SaveWrapper__factory.connect(
-                      ADDRESSES.SAVE_WRAPPER,
-                      signer,
-                    ),
-                    'saveViaUniswapETH',
-                    [
-                      massetAddress,
-                      saveAddress,
-                      vaultAddress,
-                      ADDRESSES.UNISWAP_ROUTER02,
-                      (saveOutput.value.amountOut as BigDecimal).exact,
-                      saveOutput.value.path as string[],
-                      (outputs.minOutputMasset as BigDecimal).exact,
-                      saveRoute === SaveRoutes.BuyAndStake,
-                      { value: inputAmount.exact },
-                    ],
-                    purpose,
-                    formId,
-                  ),
-                );
+            return
+          }
 
-              case SaveRoutes.MintAndSave:
-              case SaveRoutes.MintAndStake:
-                return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
-                  new TransactionManifest(
-                    SaveWrapper__factory.connect(
-                      ADDRESSES.SAVE_WRAPPER,
-                      signer,
-                    ),
-                    'saveViaMint',
-                    [
-                      massetAddress,
-                      saveAddress,
-                      vaultAddress,
-                      inputAddress,
-                      inputAmount.exact,
-                      (outputs.minOutputMasset as BigDecimal).exact,
-                      saveRoute === SaveRoutes.MintAndStake,
-                    ],
-                    purpose,
-                    formId,
-                  ),
-                );
+          const purpose = purposes[saveRoute]
+          switch (saveRoute) {
+            case SaveRoutes.BuyAndSave:
+            case SaveRoutes.BuyAndStake:
+              return propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
+                new TransactionManifest(
+                  SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer),
+                  'saveViaUniswapETH',
+                  [
+                    massetAddress,
+                    saveAddress,
+                    vaultAddress,
+                    networkAddresses.UniswapRouter02_Like,
+                    (saveOutput.value.amountOut as BigDecimal).exact,
+                    saveOutput.value.path as string[],
+                    (outputs.minOutputMasset as BigDecimal).exact,
+                    saveRoute === SaveRoutes.BuyAndStake,
+                    { value: inputAmount.exact },
+                  ],
+                  purpose,
+                  formId,
+                ),
+              )
 
-              case SaveRoutes.SwapAndSave:
-              case SaveRoutes.SwapAndStake:
-                if (!feederPoolAddress) return;
-                return propose<Interfaces.SaveWrapper, 'saveViaSwap'>(
-                  new TransactionManifest(
-                    SaveWrapper__factory.connect(
-                      ADDRESSES.SAVE_WRAPPER,
-                      signer,
-                    ),
-                    'saveViaSwap',
-                    [
-                      massetAddress,
-                      saveAddress,
-                      vaultAddress,
-                      feederPoolAddress,
-                      inputAddress,
-                      inputAmount.exact,
-                      (outputs.minOutputMasset as BigDecimal).exact,
-                      saveRoute === SaveRoutes.SwapAndStake,
-                    ],
-                    purpose,
-                    formId,
-                  ),
-                );
+            case SaveRoutes.MintAndSave:
+            case SaveRoutes.MintAndStake:
+              return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
+                new TransactionManifest(
+                  SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer),
+                  'saveViaMint',
+                  [
+                    massetAddress,
+                    saveAddress,
+                    vaultAddress,
+                    inputAddress,
+                    inputAmount.exact,
+                    (outputs.minOutputMasset as BigDecimal).exact,
+                    saveRoute === SaveRoutes.MintAndStake,
+                  ],
+                  purpose,
+                  formId,
+                ),
+              )
 
-              case SaveRoutes.SaveAndStake:
-                return propose<Interfaces.SaveWrapper, 'saveAndStake'>(
-                  new TransactionManifest(
-                    SaveWrapper__factory.connect(
-                      ADDRESSES.SAVE_WRAPPER,
-                      signer,
-                    ),
-                    'saveAndStake',
-                    [
-                      massetAddress,
-                      saveAddress,
-                      vaultAddress,
-                      inputAmount.exact,
-                    ],
-                    purpose,
-                    formId,
-                  ),
-                );
+            case SaveRoutes.SwapAndSave:
+            case SaveRoutes.SwapAndStake:
+              if (!feederPoolAddress) return
+              return propose<Interfaces.SaveWrapper, 'saveViaSwap'>(
+                new TransactionManifest(
+                  SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer),
+                  'saveViaSwap',
+                  [
+                    massetAddress,
+                    saveAddress,
+                    vaultAddress,
+                    feederPoolAddress,
+                    inputAddress,
+                    inputAmount.exact,
+                    (outputs.minOutputMasset as BigDecimal).exact,
+                    saveRoute === SaveRoutes.SwapAndStake,
+                  ],
+                  purpose,
+                  formId,
+                ),
+              )
 
-              case SaveRoutes.Save:
-                return propose<
-                  Interfaces.SavingsContract,
-                  'depositSavings(uint256)'
-                >(
-                  new TransactionManifest(
-                    ISavingsContractV2__factory.connect(saveAddress, signer),
-                    'depositSavings(uint256)',
-                    [inputAmount.exact],
-                    purpose,
-                    formId,
-                  ),
-                );
+            case SaveRoutes.SaveAndStake:
+              return propose<Interfaces.SaveWrapper, 'saveAndStake'>(
+                new TransactionManifest(
+                  SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer),
+                  'saveAndStake',
+                  [massetAddress, saveAddress, vaultAddress, inputAmount.exact],
+                  purpose,
+                  formId,
+                ),
+              )
 
-              case SaveRoutes.Stake:
-                return propose<
-                  Interfaces.BoostedSavingsVault,
-                  'stake(uint256)'
-                >(
-                  new TransactionManifest(
-                    BoostedSavingsVault__factory.connect(vaultAddress, signer),
-                    'stake(uint256)',
-                    [inputAmount.exact],
-                    purpose,
-                    formId,
-                  ),
-                );
+            case SaveRoutes.Save:
+              return propose<Interfaces.SavingsContract, 'depositSavings(uint256)'>(
+                new TransactionManifest(
+                  ISavingsContractV2__factory.connect(saveAddress, signer),
+                  'depositSavings(uint256)',
+                  [inputAmount.exact],
+                  purpose,
+                  formId,
+                ),
+              )
 
-              default:
-                break;
-            }
+            case SaveRoutes.Stake:
+              return propose<Interfaces.BoostedSavingsVault, 'stake(uint256)'>(
+                new TransactionManifest(
+                  BoostedSavingsVault__factory.connect(vaultAddress, signer),
+                  'stake(uint256)',
+                  [inputAmount.exact],
+                  purpose,
+                  formId,
+                ),
+              )
+
+            default:
+              break
           }
         }}
       />
@@ -554,5 +469,5 @@ export const SaveDeposit: FC = () => {
         saveExchangeRate={saveExchangeRate}
       />
     </AssetExchange>
-  );
-};
+  )
+}

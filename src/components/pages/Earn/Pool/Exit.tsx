@@ -1,31 +1,31 @@
-import React, { FC, useCallback } from 'react';
-import styled from 'styled-components';
+import React, { FC, useCallback } from 'react'
+import styled from 'styled-components'
 
-import { Interfaces } from '../../../../types';
-import { TransactionForm } from '../../../forms/TransactionForm';
-import { CountUp } from '../../../core/CountUp';
-import { TransactionManifest } from '../../../../web3/TransactionManifest';
+import { Interfaces } from '../../../../types'
+import { TransactionForm } from '../../../forms/TransactionForm'
+import { CountUp } from '../../../core/CountUp'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
 import {
   useCurrentRewardsToken,
   useCurrentStakingToken,
   useCurrentStakingRewardsContractCtx,
   useRewardsEarned,
   useStakingRewardsContractState,
-} from '../StakingRewardsContractProvider';
-import { H3, P } from '../../../core/Typography';
-import { StakeAmountInput } from '../../../forms/StakeAmountInput';
-import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
+} from '../StakingRewardsContractProvider'
+import { H3, P } from '../../../core/Typography'
+import { StakeAmountInput } from '../../../forms/StakeAmountInput'
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
 
 const Row = styled.div`
   width: 100%;
   padding-bottom: 16px;
-`;
+`
 
 const Input: FC = () => {
-  const { stakingRewardsContract } = useStakingRewardsContractState();
+  const { stakingRewardsContract } = useStakingRewardsContractState()
 
   if (!stakingRewardsContract) {
-    return <ThemedSkeleton height={300} />;
+    return <ThemedSkeleton height={300} />
   }
 
   return (
@@ -33,16 +33,16 @@ const Input: FC = () => {
       <H3>Withdraw stake or exit</H3>
       <StakeAmountInput />
     </Row>
-  );
-};
+  )
+}
 
 const ExitFormConfirm: FC = () => {
-  const { rewards } = useRewardsEarned();
-  const rewardsToken = useCurrentRewardsToken();
-  const stakingToken = useCurrentStakingToken();
+  const { rewards } = useRewardsEarned()
+  const rewardsToken = useCurrentRewardsToken()
+  const stakingToken = useCurrentStakingToken()
   const {
     exit: { amount, isExiting },
-  } = useStakingRewardsContractState();
+  } = useStakingRewardsContractState()
 
   return (
     <div>
@@ -50,34 +50,19 @@ const ExitFormConfirm: FC = () => {
         amount.exact.gt(0) ? (
           <>
             <P>
-              This will return{' '}
-              <CountUp
-                end={amount.simpleRounded}
-                decimals={2}
-                suffix={` ${stakingToken.symbol}`}
-              />
+              This will return <CountUp end={amount.simpleRounded} decimals={2} suffix={` ${stakingToken.symbol}`} />
               {isExiting && rewards.exact.gt(0) ? (
                 <>
                   {' '}
-                  and claim rewards of{' '}
-                  <CountUp
-                    end={rewards.simpleRounded}
-                    decimals={6}
-                    suffix={` ${rewardsToken.symbol}`}
-                  />
+                  and claim rewards of <CountUp end={rewards.simpleRounded} decimals={6} suffix={` ${rewardsToken.symbol}`} />
                 </>
               ) : null}
               .
             </P>
             {isExiting ? (
-              <P>
-                No more rewards will be earned in this pool until another stake
-                is deposited.
-              </P>
+              <P>No more rewards will be earned in this pool until another stake is deposited.</P>
             ) : (
-              <P>
-                You will continue to earn rewards with your remaining stake.
-              </P>
+              <P>You will continue to earn rewards with your remaining stake.</P>
             )}
           </>
         ) : (
@@ -87,16 +72,16 @@ const ExitFormConfirm: FC = () => {
         <ThemedSkeleton />
       )}
     </div>
-  );
-};
+  )
+}
 
 export const Exit: FC = () => {
-  const contract = useCurrentStakingRewardsContractCtx();
+  const contract = useCurrentStakingRewardsContractCtx()
 
   const {
     stakingRewardsContract: { title } = { title: 'pool' },
     exit: { amount, valid, isExiting },
-  } = useStakingRewardsContractState();
+  } = useStakingRewardsContractState()
 
   const createTransaction = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,10 +97,10 @@ export const Exit: FC = () => {
               past: `Exited ${title}`,
             },
             formId,
-          );
+          )
         }
 
-        const body = `stake of ${amount.format()} from ${title}`;
+        const body = `stake of ${amount.format()} from ${title}`
         return new TransactionManifest<Interfaces.StakingRewards, 'withdraw'>(
           contract,
           'withdraw',
@@ -125,11 +110,11 @@ export const Exit: FC = () => {
             past: `Withdrew ${body}`,
           },
           formId,
-        );
+        )
       }
     },
     [valid, contract, amount, isExiting, title],
-  );
+  )
 
   return (
     <TransactionForm
@@ -140,5 +125,5 @@ export const Exit: FC = () => {
       input={<Input />}
       valid={valid}
     />
-  );
-};
+  )
+}

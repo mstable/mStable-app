@@ -1,27 +1,27 @@
-import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
+import React, { FC, useMemo } from 'react'
+import styled from 'styled-components'
 
-import { BigDecimal } from '../../web3/BigDecimal';
-import { Tooltip } from './ReactTooltip';
-import { CollapseBox } from '../forms/CollapseBox';
-import { SlippageInput } from '../forms/SlippageInput';
+import { BigDecimal } from '../../web3/BigDecimal'
+import { Tooltip } from './ReactTooltip'
+import { CollapseBox } from '../forms/CollapseBox'
+import { SlippageInput } from '../forms/SlippageInput'
 
 interface Props {
-  className?: string;
-  feeAmount?: BigDecimal;
-  feeLabel?: string;
-  feeTip?: string;
-  minOutputAmount?: BigDecimal;
-  maxOutputAmount?: BigDecimal;
-  slippageFormValue?: string;
-  onSetSlippage?(formValue?: string): void;
-  saveExchangeRate?: BigDecimal;
-  price?: number;
+  className?: string
+  feeAmount?: BigDecimal
+  feeLabel?: string
+  feeTip?: string
+  minOutputAmount?: BigDecimal
+  maxOutputAmount?: BigDecimal
+  slippageFormValue?: string
+  onSetSlippage?(formValue?: string): void
+  saveExchangeRate?: BigDecimal
+  price?: number
 }
 
 const DollarEstimate = styled.span`
   color: ${({ theme }) => theme.color.bodyAccent};
-`;
+`
 
 const Info = styled.div`
   display: flex;
@@ -34,16 +34,16 @@ const Info = styled.div`
     font-size: 1rem;
     ${({ theme }) => theme.mixins.numeric}
   }
-`;
+`
 
 const AdvancedBox = styled(CollapseBox)`
   margin-top: 0.5rem;
-`;
+`
 
 const AdditionalInfo = styled.div`
   background: ${({ theme }) => theme.color.backgroundAccent};
   border-radius: 0.75rem;
-`;
+`
 
 export const TransactionInfo: FC<Props> = ({
   feeAmount,
@@ -57,48 +57,41 @@ export const TransactionInfo: FC<Props> = ({
   saveExchangeRate,
   price,
 }) => {
-  const showAdditionalInfo =
-    feeAmount ||
-    minOutputAmount ||
-    maxOutputAmount ||
-    (!minOutputAmount && !maxOutputAmount);
+  const showAdditionalInfo = feeAmount || minOutputAmount || maxOutputAmount || (!minOutputAmount && !maxOutputAmount)
 
   const { min, max, fee } = useMemo<{
-    fee?: BigDecimal;
-    min?: BigDecimal;
-    max?: BigDecimal;
+    fee?: BigDecimal
+    min?: BigDecimal
+    max?: BigDecimal
   }>(() => {
-    if (!price) return {};
+    if (!price) return {}
 
-    const _fee = feeAmount && price * feeAmount?.simple;
-    const _min = minOutputAmount && price * minOutputAmount?.simple;
-    const _max = maxOutputAmount && price * maxOutputAmount?.simple;
+    const _fee = feeAmount && price * feeAmount?.simple
+    const _min = minOutputAmount && price * minOutputAmount?.simple
+    const _max = maxOutputAmount && price * maxOutputAmount?.simple
 
     const prices = {
       fee: (_fee && BigDecimal.parse(_fee.toString(), 2)) || undefined,
       min: (_min && BigDecimal.parse(_min.toString(), 2)) || undefined,
       max: (_max && BigDecimal.parse(_max.toString(), 2)) || undefined,
-    };
+    }
 
     if (saveExchangeRate) {
       return {
         fee: prices.fee?.divPrecisely(saveExchangeRate),
         min: prices.min?.divPrecisely(saveExchangeRate),
         max: prices.max?.divPrecisely(saveExchangeRate),
-      };
+      }
     }
 
-    return prices;
-  }, [price, feeAmount, saveExchangeRate, minOutputAmount, maxOutputAmount]);
+    return prices
+  }, [price, feeAmount, saveExchangeRate, minOutputAmount, maxOutputAmount])
 
   return (
     <>
       {onSetSlippage && (
         <AdvancedBox title="Advanced">
-          <SlippageInput
-            handleSetSlippage={onSetSlippage}
-            slippageFormValue={slippageFormValue}
-          />
+          <SlippageInput handleSetSlippage={onSetSlippage} slippageFormValue={slippageFormValue} />
         </AdvancedBox>
       )}
       {showAdditionalInfo && (
@@ -110,9 +103,7 @@ export const TransactionInfo: FC<Props> = ({
               </p>
               <span>
                 {feeAmount?.format(8, false)}
-                {fee && (
-                  <DollarEstimate>{` ≈ $${fee?.format(2)}`}</DollarEstimate>
-                )}
+                {fee && <DollarEstimate>{` ≈ $${fee?.format(2)}`}</DollarEstimate>}
               </span>
             </Info>
           )}
@@ -125,9 +116,7 @@ export const TransactionInfo: FC<Props> = ({
               </p>
               <span>
                 {minOutputAmount?.format(8, false)}
-                {min && (
-                  <DollarEstimate>{` ≈ $${min?.format(2)}`}</DollarEstimate>
-                )}
+                {min && <DollarEstimate>{` ≈ $${min?.format(2)}`}</DollarEstimate>}
               </span>
             </Info>
           )}
@@ -140,9 +129,7 @@ export const TransactionInfo: FC<Props> = ({
               </p>
               <span>
                 {maxOutputAmount?.format(8, false)}
-                {max && (
-                  <DollarEstimate>{` ≈ $${max?.format(2)}`}</DollarEstimate>
-                )}
+                {max && <DollarEstimate>{` ≈ $${max?.format(2)}`}</DollarEstimate>}
               </span>
             </Info>
           )}
@@ -154,5 +141,5 @@ export const TransactionInfo: FC<Props> = ({
         </AdditionalInfo>
       )}
     </>
-  );
-};
+  )
+}

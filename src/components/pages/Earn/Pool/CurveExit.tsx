@@ -1,34 +1,34 @@
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback } from 'react'
 
-import styled from 'styled-components';
-import { Interfaces } from '../../../../types';
-import { TransactionForm } from '../../../forms/TransactionForm';
-import { CountUp } from '../../../core/CountUp';
-import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
+import styled from 'styled-components'
+import { Interfaces } from '../../../../types'
+import { TransactionForm } from '../../../forms/TransactionForm'
+import { CountUp } from '../../../core/CountUp'
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
 import {
   useCurrentRewardsToken,
   useCurrentStakingToken,
   useRewardsEarned,
   useStakingRewardContractDispatch,
   useStakingRewardsContractState,
-} from '../StakingRewardsContractProvider';
-import { H3, P } from '../../../core/Typography';
-import { StakeAmountInput } from '../../../forms/StakeAmountInput';
-import { useCurveContracts } from '../../../../context/earn/CurveProvider';
-import { Button } from '../../../core/Button';
-import { Tabs } from '../types';
-import { TransactionManifest } from '../../../../web3/TransactionManifest';
+} from '../StakingRewardsContractProvider'
+import { H3, P } from '../../../core/Typography'
+import { StakeAmountInput } from '../../../forms/StakeAmountInput'
+import { useCurveContracts } from '../../../../context/earn/CurveProvider'
+import { Button } from '../../../core/Button'
+import { Tabs } from '../types'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
 
 const Row = styled.div`
   width: 100%;
   padding-bottom: 16px;
-`;
+`
 
 const Input: FC = () => {
-  const { stakingRewardsContract } = useStakingRewardsContractState();
+  const { stakingRewardsContract } = useStakingRewardsContractState()
 
   if (!stakingRewardsContract) {
-    return <ThemedSkeleton height={300} />;
+    return <ThemedSkeleton height={300} />
   }
 
   return (
@@ -36,17 +36,17 @@ const Input: FC = () => {
       <H3>Withdraw stake or exit</H3>
       <StakeAmountInput />
     </Row>
-  );
-};
+  )
+}
 
 const ExitFormConfirm: FC = () => {
-  const { rewards, platformRewards } = useRewardsEarned();
-  const rewardsToken = useCurrentRewardsToken();
-  const stakingToken = useCurrentStakingToken();
-  const { setActiveTab } = useStakingRewardContractDispatch();
+  const { rewards, platformRewards } = useRewardsEarned()
+  const rewardsToken = useCurrentRewardsToken()
+  const stakingToken = useCurrentStakingToken()
+  const { setActiveTab } = useStakingRewardContractDispatch()
   const {
     exit: { amount, isExiting },
-  } = useStakingRewardsContractState();
+  } = useStakingRewardsContractState()
 
   return (
     <div>
@@ -54,17 +54,11 @@ const ExitFormConfirm: FC = () => {
         amount.exact.gt(0) ? (
           <>
             <P>
-              This will return{' '}
-              <CountUp
-                end={amount.simple}
-                decimals={2}
-                suffix={` ${stakingToken.symbol}`}
-              />
+              This will return <CountUp end={amount.simple} decimals={2} suffix={` ${stakingToken.symbol}`} />
               {rewards.exact.gt(0) && (
                 <>
                   {' '}
-                  and claim rewards of{' '}
-                  <CountUp end={rewards.simple} decimals={6} suffix=" MTA" />
+                  and claim rewards of <CountUp end={rewards.simple} decimals={6} suffix=" MTA" />
                 </>
               )}
               .
@@ -72,16 +66,11 @@ const ExitFormConfirm: FC = () => {
             {platformRewards?.exact.gt(0) && (
               <>
                 <P>
-                  <CountUp
-                    end={platformRewards.simple}
-                    decimals={6}
-                    suffix=" CRV"
-                  />{' '}
-                  must be claimed separately.
+                  <CountUp end={platformRewards.simple} decimals={6} suffix=" CRV" /> must be claimed separately.
                 </P>
                 <Button
                   onClick={() => {
-                    setActiveTab(Tabs.Claim);
+                    setActiveTab(Tabs.Claim)
                   }}
                 >
                   Claim CRV
@@ -89,14 +78,9 @@ const ExitFormConfirm: FC = () => {
               </>
             )}
             {isExiting ? (
-              <P>
-                No more rewards will be earned in this pool until another stake
-                is deposited.
-              </P>
+              <P>No more rewards will be earned in this pool until another stake is deposited.</P>
             ) : (
-              <P>
-                You will continue to earn rewards with your remaining stake.
-              </P>
+              <P>You will continue to earn rewards with your remaining stake.</P>
             )}
           </>
         ) : (
@@ -104,26 +88,21 @@ const ExitFormConfirm: FC = () => {
         )
       ) : null}
     </div>
-  );
-};
+  )
+}
 
 export const CurveExit: FC = () => {
-  const { musdGauge } = useCurveContracts();
+  const { musdGauge } = useCurveContracts()
 
   const {
     stakingRewardsContract: { title } = { title: 'gauge' },
     exit: { amount, valid },
-  } = useStakingRewardsContractState();
+  } = useStakingRewardsContractState()
 
   const createTransaction = useCallback(
-    (
-      formId: string,
-    ): TransactionManifest<
-      Interfaces.CurveGauge,
-      'withdraw(uint256)'
-    > | void => {
+    (formId: string): TransactionManifest<Interfaces.CurveGauge, 'withdraw(uint256)'> | void => {
       if (valid && amount && musdGauge) {
-        const body = `stake of ${amount.format()} from ${title}`;
+        const body = `stake of ${amount.format()} from ${title}`
         return new TransactionManifest(
           musdGauge,
           'withdraw(uint256)',
@@ -133,11 +112,11 @@ export const CurveExit: FC = () => {
             past: `Withdrew ${body}`,
           },
           formId,
-        );
+        )
       }
     },
     [valid, amount, musdGauge, title],
-  );
+  )
 
   return (
     <TransactionForm
@@ -148,5 +127,5 @@ export const CurveExit: FC = () => {
       input={<Input />}
       valid={valid}
     />
-  );
-};
+  )
+}

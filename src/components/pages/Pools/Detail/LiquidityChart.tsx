@@ -1,34 +1,22 @@
-import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
+import React, { FC, useMemo } from 'react'
+import styled from 'styled-components'
 
-import { DocumentNode, gql, useQuery } from '@apollo/client';
-import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
-import { format, getUnixTime } from 'date-fns';
+import { DocumentNode, gql, useQuery } from '@apollo/client'
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { format, getUnixTime } from 'date-fns'
 
-import { useBlockTimesForDates } from '../../../../hooks/useBlockTimesForDates';
-import { getKeyTimestamp } from '../../../../utils/getKeyTimestamp';
-import { Color } from '../../../../theme';
-import {
-  useDateFilter,
-  useMetricsState,
-  Metrics,
-  DateRange,
-} from '../../../stats/Metrics';
-import { RechartsContainer } from '../../../stats/RechartsContainer';
-import { periodFormatMapping, toK } from '../../../stats/utils';
-import { useSelectedFeederPoolAddress } from '../FeederPoolProvider';
+import { useBlockTimesForDates } from '../../../../hooks/useBlockTimesForDates'
+import { getKeyTimestamp } from '../../../../utils/getKeyTimestamp'
+import { Color } from '../../../../theme'
+import { useDateFilter, useMetricsState, Metrics, DateRange } from '../../../stats/Metrics'
+import { RechartsContainer } from '../../../stats/RechartsContainer'
+import { periodFormatMapping, toK } from '../../../stats/utils'
+import { useSelectedFeederPoolAddress } from '../FeederPoolProvider'
 
 interface AggregateMetricsQueryResult {
   [timestamp: string]: {
-    simple: string;
-  };
+    simple: string
+  }
 }
 
 const NoData = styled.div`
@@ -39,79 +27,71 @@ const NoData = styled.div`
   padding: 1rem;
   width: 100%;
   text-align: center;
-`;
+`
 
-const nowUnix = getUnixTime(new Date());
+const nowUnix = getUnixTime(new Date())
 
 const useTotalLiquidity = (
   poolAddress: string,
 ): {
-  timestamp: number;
-  totalLiquidity: number;
+  timestamp: number
+  totalLiquidity: number
 }[] => {
-  const dateFilter = useDateFilter();
-  const blockTimes = useBlockTimesForDates(dateFilter.dates);
+  const dateFilter = useDateFilter()
+  const blockTimes = useBlockTimesForDates(dateFilter.dates)
 
   const metricsDoc = useMemo<DocumentNode>(() => {
-    const current = `t${nowUnix}: metric(id: "${poolAddress}.token.totalSupply") { simple }`;
+    const current = `t${nowUnix}: metric(id: "${poolAddress}.token.totalSupply") { simple }`
     const blockMetrics = blockTimes
       .map(
-        ({ timestamp, number }) =>
-          `t${timestamp}: metric(id: "${poolAddress}.token.totalSupply", block: { number: ${number} }) { simple }`,
+        ({ timestamp, number }) => `t${timestamp}: metric(id: "${poolAddress}.token.totalSupply", block: { number: ${number} }) { simple }`,
       )
-      .join('\n');
+      .join('\n')
 
     return gql`
       query AggregateMetrics @api(name: feeders) {
         ${current}
         ${blockMetrics}
       }
-    `;
-  }, [blockTimes, poolAddress]);
+    `
+  }, [blockTimes, poolAddress])
 
   const query = useQuery<AggregateMetricsQueryResult>(metricsDoc, {
     fetchPolicy: 'no-cache',
-  });
+  })
 
   return useMemo(() => {
     const filtered = Object.entries(query.data ?? {})
       .filter(([, value]) => !!value?.simple)
-      .map(([key, value]) => [getKeyTimestamp(key), value]) as [
-      number,
-      AggregateMetricsQueryResult[string],
-    ][];
+      .map(([key, value]) => [getKeyTimestamp(key), value]) as [number, AggregateMetricsQueryResult[string]][]
     return filtered
       .sort(([a], [b]) => (a > b ? 1 : -1))
       .map(([timestamp, { simple }]) => {
         return {
           timestamp,
           totalLiquidity: parseFloat(simple),
-        };
-      });
-  }, [query.data]);
-};
+        }
+      })
+  }, [query.data])
+}
 
 const Chart: FC<{
   aggregateMetrics: {
-    type: string;
-    enabled: boolean;
-    label: string;
-    color: string;
-  }[];
+    type: string
+    enabled: boolean
+    label: string
+    color: string
+  }[]
 }> = ({ aggregateMetrics }) => {
-  const poolAddress = useSelectedFeederPoolAddress();
-  const data = useTotalLiquidity(poolAddress);
-  const dateFilter = useDateFilter();
-  const { metrics } = useMetricsState();
+  const poolAddress = useSelectedFeederPoolAddress()
+  const data = useTotalLiquidity(poolAddress)
+  const dateFilter = useDateFilter()
+  const { metrics } = useMetricsState()
   return (
     <RechartsContainer>
       {data.length < 2 && <NoData>No data yet</NoData>}
       <ResponsiveContainer aspect={2} debounce={1} width="99%">
-        <AreaChart
-          margin={{ top: 40, right: 0, bottom: 0, left: 0 }}
-          barCategoryGap={1}
-          data={data.length > 1 ? data : []}
-        >
+        <AreaChart margin={{ top: 40, right: 0, bottom: 0, left: 0 }} barCategoryGap={1} data={data.length > 1 ? data : []}>
           <defs>
             {aggregateMetrics.map(({ type, color }) => (
               <linearGradient id={type} key={type} x1="0" y1="0" x2="0" y2="1">
@@ -126,14 +106,7 @@ const Chart: FC<{
             xAxisId={0}
             height={0}
             tick={false}
-            tickFormatter={timestamp =>
-              timestamp
-                ? format(
-                    timestamp * 1000,
-                    periodFormatMapping[dateFilter.period],
-                  )
-                : ''
-            }
+            tickFormatter={timestamp => (timestamp ? format(timestamp * 1000, periodFormatMapping[dateFilter.period]) : '')}
           />
           <YAxis
             type="number"
@@ -147,9 +120,7 @@ const Chart: FC<{
           />
           <Tooltip
             cursor
-            labelFormatter={timestamp =>
-              format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
-            }
+            labelFormatter={timestamp => format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')}
             formatter={toK as never}
             separator=""
             contentStyle={{
@@ -185,12 +156,10 @@ const Chart: FC<{
         </AreaChart>
       </ResponsiveContainer>
     </RechartsContainer>
-  );
-};
+  )
+}
 
-export const LiquidityChart: FC<{ color?: string }> = ({
-  color = Color.blue,
-}) => {
+export const LiquidityChart: FC<{ color?: string }> = ({ color = Color.blue }) => {
   const aggregateMetrics = useMemo(
     () => [
       {
@@ -201,15 +170,11 @@ export const LiquidityChart: FC<{ color?: string }> = ({
       },
     ],
     [color],
-  );
+  )
 
   return (
-    <Metrics
-      metrics={aggregateMetrics}
-      defaultDateRange={DateRange.Week}
-      hideControls
-    >
+    <Metrics metrics={aggregateMetrics} defaultDateRange={DateRange.Week} hideControls>
       <Chart aggregateMetrics={aggregateMetrics} />
     </Metrics>
-  );
-};
+  )
+}

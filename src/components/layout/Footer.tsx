@@ -1,18 +1,18 @@
-import React, { FC, useCallback } from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import GitHubButton from 'react-github-btn';
-import { isAddress } from 'web3-utils';
+import React, { FC, useCallback } from 'react'
+import styled from 'styled-components'
+import { Link } from 'react-router-dom'
+import GitHubButton from 'react-github-btn'
+import { isAddress } from 'web3-utils'
 
-import { useCloseAccount } from '../../context/AppProvider';
-import { useIsMasquerading, useMasquerade } from '../../context/UserProvider';
-import { DAPP_VERSION } from '../../constants';
-import { ViewportWidth } from '../../theme';
-import Medium from '../icons/social/medium.svg';
-import Github from '../icons/social/github.svg';
-import Discord from '../icons/social/discord.svg';
-import Twitter from '../icons/social/twitter.svg';
-import Email from '../icons/social/email.svg';
+import { useCloseAccount } from '../../context/AppProvider'
+import { useIsMasquerading, useMasquerade } from '../../context/AccountProvider'
+import { DAPP_VERSION } from '../../constants'
+import { ViewportWidth } from '../../theme'
+import Medium from '../icons/social/medium.svg'
+import Github from '../icons/social/github.svg'
+import Discord from '../icons/social/discord.svg'
+import Twitter from '../icons/social/twitter.svg'
+import Email from '../icons/social/email.svg'
 
 const Links = styled.ul`
   align-items: center;
@@ -23,7 +23,7 @@ const Links = styled.ul`
     margin-right: 0.75rem;
     margin-bottom: 0.75rem;
   }
-`;
+`
 
 const SocialIcons = styled(Links)`
   a {
@@ -37,7 +37,7 @@ const SocialIcons = styled(Links)`
     opacity: 0.8;
     filter: sepia(0%) saturate(300%) brightness(250%);
   }
-`;
+`
 
 const Version = styled.div`
   font-size: 0.6rem;
@@ -45,49 +45,39 @@ const Version = styled.div`
   span {
     font-weight: bold;
   }
-`;
+`
 
 const Gubbins = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
+`
 
 const MasqueradeContainer = styled.div<{ isMasquerading: boolean }>`
   width: 3px;
   height: 3px;
   user-select: none;
   cursor: crosshair;
-  background: ${({ isMasquerading }) =>
-    isMasquerading ? 'pink' : 'transparent'};
-`;
+  background: ${({ isMasquerading }) => (isMasquerading ? 'pink' : 'transparent')};
+`
 
 const Masquerade: FC<{}> = () => {
-  const masquerade = useMasquerade();
-  const isMasquerading = useIsMasquerading();
+  const masquerade = useMasquerade()
+  const isMasquerading = useIsMasquerading()
 
   const handleClick = useCallback(() => {
     if (isMasquerading) {
-      masquerade();
+      masquerade()
     } else {
       // eslint-disable-next-line no-alert
-      const inputAddress = window.prompt('View as account (read only)');
+      const inputAddress = window.prompt('View as account (read only)')
 
-      masquerade(
-        inputAddress && isAddress(inputAddress)
-          ? inputAddress.toLowerCase()
-          : undefined,
-      );
+      masquerade(inputAddress && isAddress(inputAddress) ? inputAddress.toLowerCase() : undefined)
     }
-  }, [isMasquerading, masquerade]);
+  }, [isMasquerading, masquerade])
 
-  return (
-    <MasqueradeContainer
-      isMasquerading={isMasquerading}
-      onClick={handleClick}
-    />
-  );
-};
+  return <MasqueradeContainer isMasquerading={isMasquerading} onClick={handleClick} />
+}
 
 const Inner = styled.div`
   padding: 1rem;
@@ -103,7 +93,7 @@ const Inner = styled.div`
       align-items: center;
     }
   }
-`;
+`
 
 const Container = styled.div`
   display: grid;
@@ -116,14 +106,14 @@ const Container = styled.div`
   > * {
     grid-column: 2;
   }
-`;
+`
 
 const links = [
   { title: 'mStable', href: 'https://mstable.org' },
   { title: 'Docs', href: 'https://docs.mstable.org' },
   { title: 'Code', href: 'https://github.com/mstable' },
   { title: 'Governance', href: 'https://governance.mstable.org' },
-];
+]
 
 const socialIcons = [
   { title: 'Github', icon: Github, href: 'https://github.com/mstable' },
@@ -131,10 +121,10 @@ const socialIcons = [
   { title: 'Twitter', icon: Twitter, href: 'https://twitter.com/mstable_' },
   { title: 'Medium', icon: Medium, href: 'https://medium.com/mstable' },
   { title: 'Email', icon: Email, href: 'mailto:info@mstable.org' },
-];
+]
 
 export const Footer: FC = () => {
-  const collapseWallet = useCloseAccount();
+  const collapseWallet = useCloseAccount()
   return (
     <Container>
       <Inner>
@@ -169,11 +159,7 @@ export const Footer: FC = () => {
             <div>
               <Version>
                 Current version{' '}
-                <a
-                  href={`https://github.com/mstable/mStable-app/releases/tag/v${DAPP_VERSION}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href={`https://github.com/mstable/mStable-app/releases/tag/v${DAPP_VERSION}`} target="_blank" rel="noopener noreferrer">
                   <span>{DAPP_VERSION}</span>
                 </a>
               </Version>
@@ -191,5 +177,5 @@ export const Footer: FC = () => {
         </div>
       </Inner>
     </Container>
-  );
-};
+  )
+}

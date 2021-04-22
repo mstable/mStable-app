@@ -1,14 +1,14 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { UnstyledButton } from '../core/Button';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { UnstyledButton } from '../core/Button'
 
 interface Props {
-  onClick(): void;
-  checked?: boolean;
-  className?: string;
-  disabled?: boolean;
-  enabledColor?: string;
-  disabledColor?: string;
+  onClick(): void
+  checked?: boolean
+  className?: string
+  disabled?: boolean
+  enabledColor?: string
+  disabledColor?: string
 }
 
 const Circle = styled.span`
@@ -22,32 +22,28 @@ const Circle = styled.span`
   transition: 0.2s;
   background: #fff;
   box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
-`;
+`
 
 const Container = styled(UnstyledButton)`
   display: flex;
   align-items: center;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   padding: 0;
-`;
+`
 
 const Toggle = styled.span<{
-  checked?: boolean;
-  disabled?: boolean;
-  enabledColor?: string;
-  disabledColor?: string;
+  checked?: boolean
+  disabled?: boolean
+  enabledColor?: string
+  disabledColor?: string
 }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 40px;
   height: 20px;
-  background: ${({
-    checked,
-    theme,
-    enabledColor = theme.color.green,
-    disabledColor = theme.color.defaultToggle,
-  }) => (checked ? enabledColor : disabledColor)};
+  background: ${({ checked, theme, enabledColor = theme.color.green, disabledColor = theme.color.defaultToggle }) =>
+    checked ? enabledColor : disabledColor};
   border-radius: 40px;
   position: relative;
   transition: background-color 0.2s;
@@ -57,32 +53,14 @@ const Toggle = styled.span<{
   }
 
   ${Circle} {
-    ${({ checked }) =>
-      checked ? `left: calc(100% - 2px); transform: translateX(-100%);` : ''}
+    ${({ checked }) => (checked ? `left: calc(100% - 2px); transform: translateX(-100%);` : '')}
   }
-`;
+`
 
-export const ToggleInput: FC<Props> = ({
-  onClick,
-  checked,
-  className,
-  disabled,
-  disabledColor,
-  enabledColor,
-}) => (
-  <Container
-    onClick={onClick}
-    type="button"
-    disabled={disabled}
-    className={className}
-  >
-    <Toggle
-      checked={checked}
-      disabled={disabled}
-      enabledColor={enabledColor}
-      disabledColor={disabledColor}
-    >
+export const ToggleInput: FC<Props> = ({ onClick, checked, className, disabled, disabledColor, enabledColor }) => (
+  <Container onClick={onClick} type="button" disabled={disabled} className={className}>
+    <Toggle checked={checked} disabled={disabled} enabledColor={enabledColor} disabledColor={disabledColor}>
       <Circle />
     </Toggle>
   </Container>
-);
+)

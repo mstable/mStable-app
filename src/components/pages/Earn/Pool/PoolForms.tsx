@@ -1,48 +1,45 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { TabsContainer, TabBtn } from '../../../core/Tabs';
-import { Tabs } from '../types';
-import {
-  useStakingRewardContractDispatch,
-  useStakingRewardsContractState,
-} from '../StakingRewardsContractProvider';
-import { Stake } from './Stake';
-import { Claim } from './Claim';
-import { Exit } from './Exit';
-import { CurveStake } from './CurveStake';
-import { CurveClaim } from './CurveClaim';
-import { CurveExit } from './CurveExit';
-import { Protip } from '../../../core/Protip';
-import { ExternalLink } from '../../../core/ExternalLink';
-import { CurveAddLiquidity } from './CurveAddLiquidity';
+import { TabsContainer, TabBtn } from '../../../core/Tabs'
+import { Tabs } from '../types'
+import { useStakingRewardContractDispatch, useStakingRewardsContractState } from '../StakingRewardsContractProvider'
+import { Stake } from './Stake'
+import { Claim } from './Claim'
+import { Exit } from './Exit'
+import { CurveStake } from './CurveStake'
+import { CurveClaim } from './CurveClaim'
+import { CurveExit } from './CurveExit'
+import { Protip } from '../../../core/Protip'
+import { ExternalLink } from '../../../core/ExternalLink'
+import { CurveAddLiquidity } from './CurveAddLiquidity'
 
 const BoostProtip = styled(Protip)`
   margin-bottom: 16px;
-`;
+`
 
 const TAB_LABELS = {
   [Tabs.AddLiquidity]: 'Add liquidity',
   [Tabs.Stake]: 'Deposit stake',
   [Tabs.Claim]: 'Claim rewards',
   [Tabs.Exit]: 'Withdraw or exit',
-};
+}
 
 const TabButton: FC<{ tab: Tabs }> = ({ tab }) => {
-  const { activeTab } = useStakingRewardsContractState();
-  const { setActiveTab } = useStakingRewardContractDispatch();
+  const { activeTab } = useStakingRewardsContractState()
+  const { setActiveTab } = useStakingRewardContractDispatch()
   return (
     <TabBtn
       type="button"
       onClick={() => {
-        setActiveTab(tab);
+        setActiveTab(tab)
       }}
       active={activeTab === tab}
     >
       {TAB_LABELS[tab]}
     </TabBtn>
-  );
-};
+  )
+}
 
 const Container = styled.div`
   border-radius: 0 0 2px 2px;
@@ -52,14 +49,11 @@ const Container = styled.div`
   > div:not(:last-child) {
     margin-bottom: 2rem;
   }
-`;
+`
 
 export const PoolForms: FC<{ address: string }> = () => {
-  const {
-    activeTab,
-    stakingRewardsContract,
-  } = useStakingRewardsContractState();
-  const isCurve = !!stakingRewardsContract?.curve;
+  const { activeTab, stakingRewardsContract } = useStakingRewardsContractState()
+  const isCurve = !!stakingRewardsContract?.curve
   return (
     <Container>
       <TabsContainer>
@@ -72,9 +66,7 @@ export const PoolForms: FC<{ address: string }> = () => {
         {isCurve && (
           <BoostProtip emoji="🚀" title="Boost your CRV">
             Want to increase your CRV rewards?{' '}
-            <ExternalLink href="https://dao.curve.fi/locker">
-              Stake your CRV and get a boost.
-            </ExternalLink>
+            <ExternalLink href="https://dao.curve.fi/locker">Stake your CRV and get a boost.</ExternalLink>
           </BoostProtip>
         )}
         {activeTab === Tabs.Stake ? (
@@ -100,5 +92,5 @@ export const PoolForms: FC<{ address: string }> = () => {
         )}
       </div>
     </Container>
-  );
-};
+  )
+}

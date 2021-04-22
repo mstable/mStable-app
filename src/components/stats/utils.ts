@@ -1,4 +1,4 @@
-import Numeral from 'numeral';
+import Numeral from 'numeral'
 import {
   eachDayOfInterval,
   eachHourOfInterval,
@@ -6,7 +6,7 @@ import {
   eachQuarterOfInterval,
   eachWeekOfInterval,
   eachYearOfInterval,
-} from 'date-fns';
+} from 'date-fns'
 
 export enum TimeMetricPeriod {
   Hour = 'HOUR',
@@ -17,17 +17,14 @@ export enum TimeMetricPeriod {
   Year = 'YEAR',
 }
 
-export const periodIntervalMapping: Record<
-  TimeMetricPeriod,
-  (interval: Interval) => Date[]
-> = {
+export const periodIntervalMapping: Record<TimeMetricPeriod, (interval: Interval) => Date[]> = {
   [TimeMetricPeriod.Hour]: eachHourOfInterval,
   [TimeMetricPeriod.Day]: eachDayOfInterval,
   [TimeMetricPeriod.Week]: eachWeekOfInterval,
   [TimeMetricPeriod.Month]: eachMonthOfInterval,
   [TimeMetricPeriod.Quarter]: eachQuarterOfInterval,
   [TimeMetricPeriod.Year]: eachYearOfInterval,
-};
+}
 
 export const periodFormatMapping: Record<TimeMetricPeriod, string> = {
   [TimeMetricPeriod.Hour]: 'HH',
@@ -36,9 +33,8 @@ export const periodFormatMapping: Record<TimeMetricPeriod, string> = {
   [TimeMetricPeriod.Month]: 'MM',
   [TimeMetricPeriod.Quarter]: 'Q',
   [TimeMetricPeriod.Year]: 'YYYY',
-};
+}
 
-export const toK = (value: number): string => Numeral(value).format('0.[00]a');
+export const toK = (value: number): string => Numeral(value).format('0.[00]a')
 
-export const percentageFormat = (value: number): string =>
-  `${value.toFixed(2)}%`;
+export const percentageFormat = (value: number): string => `${value.toFixed(2)}%`

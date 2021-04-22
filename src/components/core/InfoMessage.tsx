@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 export const InfoMessage = styled.div`
   display: flex;
@@ -13,4 +13,4 @@ export const InfoMessage = styled.div`
     text-align: center;
     color: ${({ theme }) => theme.color.bodyAccent};
   }
-`;
+`

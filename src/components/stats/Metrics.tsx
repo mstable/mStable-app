@@ -1,30 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import React, {
-  createContext,
-  PropsWithChildren,
-  ReactElement,
-  Reducer,
-  useCallback,
-  useContext,
-  useMemo,
-  useReducer,
-} from 'react';
-import styled from 'styled-components';
-import {
-  endOfDay,
-  subDays,
-  endOfHour,
-  subHours,
-  startOfDay,
-  startOfHour,
-} from 'date-fns';
+import React, { createContext, PropsWithChildren, ReactElement, Reducer, useCallback, useContext, useMemo, useReducer } from 'react'
+import styled from 'styled-components'
+import { endOfDay, subDays, endOfHour, subHours, startOfDay, startOfHour } from 'date-fns'
 
-import { periodIntervalMapping, TimeMetricPeriod } from './utils';
-import { ToggleInput } from '../forms/ToggleInput';
-import { TabsContainer, TabBtn } from '../core/Tabs';
-import { H3 } from '../core/Typography';
-import { Color, FontSize, ViewportWidth } from '../../theme';
+import { periodIntervalMapping, TimeMetricPeriod } from './utils'
+import { ToggleInput } from '../forms/ToggleInput'
+import { TabsContainer, TabBtn } from '../core/Tabs'
+import { H3 } from '../core/Typography'
+import { Color, FontSize, ViewportWidth } from '../../theme'
 
 export enum DateRange {
   Day,
@@ -34,24 +18,24 @@ export enum DateRange {
 }
 
 export interface Metric<T extends string> {
-  type: T;
-  label: string;
-  enabled?: boolean;
-  color?: string;
+  type: T
+  label: string
+  enabled?: boolean
+  color?: string
 }
 
 export interface DateFilter {
-  dateRange: DateRange;
-  from: Date;
-  end: Date;
-  period: TimeMetricPeriod;
-  label: string;
-  enabled?: boolean;
+  dateRange: DateRange
+  from: Date
+  end: Date
+  period: TimeMetricPeriod
+  label: string
+  enabled?: boolean
 }
 
 export interface State<T extends string> {
-  metrics: Metric<T>[];
-  dates: DateFilter[];
+  metrics: Metric<T>[]
+  dates: DateFilter[]
 }
 
 enum Actions {
@@ -61,24 +45,24 @@ enum Actions {
 
 type Action<T extends string> =
   | {
-      type: Actions.SetDateRange;
-      payload: DateRange;
+      type: Actions.SetDateRange
+      payload: DateRange
     }
   | {
-      type: Actions.ToggleType;
-      payload: T;
-    };
+      type: Actions.ToggleType
+      payload: T
+    }
 
 interface Dispatch<T extends string> {
-  setDateRange(dateRange: DateRange): void;
-  toggleType(type: T): void;
+  setDateRange(dateRange: DateRange): void
+  toggleType(type: T): void
 }
 
 const DateRangeBtn = styled(TabBtn)`
   white-space: nowrap;
   font-weight: normal;
   font-size: 12px;
-`;
+`
 
 const Control = styled.div`
   padding-bottom: 16px;
@@ -90,7 +74,7 @@ const Control = styled.div`
   > div {
     min-height: 70px;
   }
-`;
+`
 
 const ControlsContainer = styled.div`
   @media (min-width: ${ViewportWidth.m}) {
@@ -102,7 +86,7 @@ const ControlsContainer = styled.div`
       margin-right: 16px;
     }
   }
-`;
+`
 
 const ToggleLabel = styled.div`
   font-size: ${FontSize.xs};
@@ -110,7 +94,7 @@ const ToggleLabel = styled.div`
   @media (min-width: ${ViewportWidth.m}) {
     font-size: ${FontSize.s};
   }
-`;
+`
 
 const Toggle = styled.div`
   text-align: center;
@@ -120,7 +104,7 @@ const Toggle = styled.div`
     justify-content: center;
     padding-bottom: 8px;
   }
-`;
+`
 
 const MetricToggles = styled.div`
   display: flex;
@@ -128,45 +112,39 @@ const MetricToggles = styled.div`
   justify-content: space-evenly;
   padding: 8px;
   border: 1px ${Color.blackTransparenter} solid;
-`;
+`
 
 const ChartContainer = styled.div`
   svg {
     overflow: visible;
   }
-`;
+`
 
 const reducer: Reducer<State<any>, Action<any>> = (state, action) => {
   switch (action.type) {
     case Actions.SetDateRange: {
-      const dateRange = action.payload;
+      const dateRange = action.payload
       return {
         ...state,
-        dates: state.dates.map(d =>
-          d.dateRange === dateRange
-            ? { ...d, enabled: true }
-            : { ...d, enabled: false },
-        ),
-      };
+        dates: state.dates.map(d => (d.dateRange === dateRange ? { ...d, enabled: true } : { ...d, enabled: false })),
+      }
     }
 
     case Actions.ToggleType: {
-      const type = action.payload;
+      const type = action.payload
       return {
         ...state,
-        metrics: state.metrics?.map(t =>
-          t.type === type ? { ...t, enabled: !t.enabled } : t,
-        ),
-      };
+        metrics: state.metrics?.map(t => (t.type === type ? { ...t, enabled: !t.enabled } : t)),
+      }
     }
 
     default:
-      return state;
+      return state
   }
-};
+}
 
-const END_OF_HOUR = endOfHour(new Date());
-const END_OF_DAY = endOfDay(new Date());
+const END_OF_HOUR = endOfHour(new Date())
+const END_OF_DAY = endOfDay(new Date())
 
 const DATE_RANGES: State<never>['dates'] = [
   {
@@ -197,30 +175,28 @@ const DATE_RANGES: State<never>['dates'] = [
     from: startOfDay(subDays(new Date(), 90)),
     end: END_OF_DAY,
   },
-];
+]
 
 interface Props<T extends string> {
-  metrics?: Metric<T>[];
-  defaultDateRange?: DateRange;
-  hideControls?: boolean;
+  metrics?: Metric<T>[]
+  defaultDateRange?: DateRange
+  hideControls?: boolean
 }
 
-const stateCtx = createContext<State<any>>({} as State<any>);
+const stateCtx = createContext<State<any>>({} as State<any>)
 
-const dispatchCtx = createContext<Dispatch<any>>({} as Dispatch<any>);
+const dispatchCtx = createContext<Dispatch<any>>({} as Dispatch<any>)
 
 const initializer = <T extends string>({
   metrics,
   defaultDateRange = DateRange.Week,
 }: {
-  metrics: Metric<T>[];
-  defaultDateRange?: DateRange;
+  metrics: Metric<T>[]
+  defaultDateRange?: DateRange
 }): State<T> => ({
   metrics,
-  dates: DATE_RANGES.map(date =>
-    date.dateRange === defaultDateRange ? { ...date, enabled: true } : date,
-  ),
-});
+  dates: DATE_RANGES.map(date => (date.dateRange === defaultDateRange ? { ...date, enabled: true } : date)),
+})
 
 export const Metrics = <T extends string>({
   metrics = [],
@@ -228,34 +204,25 @@ export const Metrics = <T extends string>({
   hideControls = false,
   children,
 }: PropsWithChildren<Props<T>>): ReactElement => {
-  const [state, dispatch] = useReducer(
-    reducer,
-    { metrics, defaultDateRange },
-    initializer,
-  );
+  const [state, dispatch] = useReducer(reducer, { metrics, defaultDateRange }, initializer)
 
   const toggleType = useCallback<Dispatch<T>['toggleType']>(
     type => {
-      dispatch({ type: Actions.ToggleType, payload: type });
+      dispatch({ type: Actions.ToggleType, payload: type })
     },
     [dispatch],
-  );
+  )
 
   const setDateRange = useCallback<Dispatch<never>['setDateRange']>(
     dateRange => {
-      dispatch({ type: Actions.SetDateRange, payload: dateRange });
+      dispatch({ type: Actions.SetDateRange, payload: dateRange })
     },
     [dispatch],
-  );
+  )
 
   return (
     <stateCtx.Provider value={state}>
-      <dispatchCtx.Provider
-        value={useMemo(() => ({ toggleType, setDateRange }), [
-          toggleType,
-          setDateRange,
-        ])}
-      >
+      <dispatchCtx.Provider value={useMemo(() => ({ toggleType, setDateRange }), [toggleType, setDateRange])}>
         <div>
           {!hideControls && (
             <ControlsContainer>
@@ -266,11 +233,7 @@ export const Metrics = <T extends string>({
                     {state.metrics.map(({ type, enabled, label, color }) => (
                       <Toggle key={type}>
                         <div>
-                          <ToggleInput
-                            enabledColor={color}
-                            onClick={() => toggleType(type)}
-                            checked={!!enabled}
-                          />
+                          <ToggleInput enabledColor={color} onClick={() => toggleType(type)} checked={!!enabled} />
                         </div>
                         <ToggleLabel>{label}</ToggleLabel>
                       </Toggle>
@@ -284,12 +247,7 @@ export const Metrics = <T extends string>({
                 <H3>Range</H3>
                 <TabsContainer>
                   {state.dates.map(({ label, enabled, dateRange }) => (
-                    <DateRangeBtn
-                      key={dateRange}
-                      type="button"
-                      onClick={() => setDateRange(dateRange)}
-                      active={!!enabled}
-                    >
+                    <DateRangeBtn key={dateRange} type="button" onClick={() => setDateRange(dateRange)} active={!!enabled}>
                       {label}
                     </DateRangeBtn>
                   ))}
@@ -301,41 +259,32 @@ export const Metrics = <T extends string>({
         </div>
       </dispatchCtx.Provider>
     </stateCtx.Provider>
-  );
-};
+  )
+}
 
-export const useMetricsState = <T extends string>(): State<T> =>
-  useContext(stateCtx);
+export const useMetricsState = <T extends string>(): State<T> => useContext(stateCtx)
 
-export const useMetricsDispatch = <T extends string>(): Dispatch<T> =>
-  useContext(dispatchCtx);
+export const useMetricsDispatch = <T extends string>(): Dispatch<T> => useContext(dispatchCtx)
 
-const now = new Date();
+const now = new Date()
 
 export const useDateFilter = (): DateFilter & { dates: Date[] } => {
-  const { dates } = useMetricsState();
+  const { dates } = useMetricsState()
   return useMemo(() => {
-    const dateFilter = dates.find(d => d.enabled) as DateFilter;
+    const dateFilter = dates.find(d => d.enabled) as DateFilter
 
-    const intervalFn = periodIntervalMapping[dateFilter.period];
+    const intervalFn = periodIntervalMapping[dateFilter.period]
 
     const datesForRange = intervalFn({
       start: dateFilter.from,
       end: dateFilter.end,
-    }).concat(now);
+    }).concat(now)
 
-    return { ...dateFilter, dates: datesForRange };
-  }, [dates]);
-};
+    return { ...dateFilter, dates: datesForRange }
+  }, [dates])
+}
 
 export const useMetrics = <T extends string>(): Record<T, Metric<T>> => {
-  const { metrics } = useMetricsState<T>();
-  return useMemo(
-    () =>
-      metrics.reduce(
-        (_types, type) => ({ ..._types, [type.type]: type }),
-        {} as Record<T, Metric<T>>,
-      ),
-    [metrics],
-  );
-};
+  const { metrics } = useMetricsState<T>()
+  return useMemo(() => metrics.reduce((_types, type) => ({ ..._types, [type.type]: type }), {} as Record<T, Metric<T>>), [metrics])
+}

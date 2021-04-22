@@ -8,6 +8,7 @@ import { MassetState } from '../../../../context/DataProvider/types';
 import { useRewardStreams } from '../../../../context/RewardStreamsProvider';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
 import { FetchState } from '../../../../hooks/useFetchState';
+import { useCalculateUserBoost } from '../../../../hooks/useCalculateUserBoost';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 import { CountUp, DifferentialCountup } from '../../../core/CountUp';
@@ -23,7 +24,6 @@ import { ReactComponent as WarningBadge } from '../../../icons/badges/warning.sv
 import { SavePosition } from './SavePosition';
 import { OnboardingBanner } from './OnboardingBanner';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
-import { useCalculateUserBoost } from '../../../../hooks/useCalculateUserBoost';
 
 enum Selection {
   Balance = 'Balance',
@@ -71,16 +71,16 @@ interface PoolsAPIResponse {
     apy: string;
     apyDetails:
       | {
-          rewardsOnlyBase: string;
-          rewardsOnlyMax: string;
-          combinedBase: string;
-          combinedMax: string;
-          yieldOnly: string;
-        }
+      rewardsOnlyBase: string;
+      rewardsOnlyMax: string;
+      combinedBase: string;
+      combinedMax: string;
+      yieldOnly: string;
+    }
       | {
-          rewardsOnlyBase: string;
-          rewardsOnlyMax: string;
-        };
+      rewardsOnlyBase: string;
+      rewardsOnlyMax: string;
+    };
     pair: string[];
     pairLink: string;
     poolRewards: string[];
