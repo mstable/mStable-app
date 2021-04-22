@@ -26,7 +26,7 @@ const Title = styled.div`
 `
 
 const Header = styled.div`
-  position: sticky;
+  position: relative;
   top: 0;
   z-index: 1;
   display: flex;
@@ -34,6 +34,11 @@ const Header = styled.div`
   justify-content: space-between;
   padding: 1rem 2rem;
   border-bottom: 1px ${({ theme }) => theme.color.defaultBorder} solid;
+
+  > div:last-child {
+    position: absolute;
+    right: 1rem;
+  }
 `
 
 const CloseButton = styled(UnstyledButton)`

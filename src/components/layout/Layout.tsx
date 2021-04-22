@@ -21,6 +21,7 @@ import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 import { BigDecimal } from '../../web3/BigDecimal'
 import { SCALE } from '../../constants'
 import { MessageHandler } from './MessageHandler'
+import { Networks, useNetwork } from '../../context/NetworkProvider'
 
 const Main = styled.main<{ marginTop?: boolean }>`
   margin-top: ${({ marginTop }) => marginTop && `2rem`};
@@ -225,6 +226,7 @@ export const Layout: FC = ({ children }) => {
   const [bannerMessage, setBannerMessage] = useBannerMessage()
   const massetState = useSelectedMassetState()
   const massetName = useSelectedMassetName()
+  const { protocolName, chainId } = useNetwork()
   const { undergoingRecol } = useSelectedMassetState() ?? {}
 
   const tvlCap = useMemo(() => {
@@ -258,6 +260,10 @@ export const Layout: FC = ({ children }) => {
       message = recollatMessage
     } else if (massetName === 'mbtc') {
       message = (pathname === '/mbtc/mint' && MessageHandler.tvlCap({ tvlCap })) || undefined
+    }
+
+    if (!message) {
+      message = (protocolName === Networks.Polygon && MessageHandler.polygon()) || undefined
     }
 
     if (bannerMessage?.title !== message?.title) {
