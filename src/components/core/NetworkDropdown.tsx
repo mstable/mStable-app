@@ -32,7 +32,10 @@ export const NetworkDropdown: FC = () => {
       Object.fromEntries(
         NETWORKS.filter(
           ({ isTestnet, chainId: _chainId }) => _chainId === chainId || !isTestnet || isAltPressed,
-        ).map(({ protocolName, chainName, chainId: _chainId }) => [_chainId, { symbol: protocolName, subtext: chainName }]),
+        ).map(({ protocolName, chainName, chainId: _chainId }) => [
+          _chainId,
+          { icon: { symbol: protocolName, hideNetwork: true }, subtext: chainName, hideNetwork: true },
+        ]),
       ),
     [chainId, isAltPressed],
   )

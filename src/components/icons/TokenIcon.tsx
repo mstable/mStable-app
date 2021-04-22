@@ -33,10 +33,12 @@ import VAULT, { ReactComponent as VaultSvg } from './tokens/vault.svg'
 import IMBTCMTA, { ReactComponent as ImbtcmtaSvg } from './tokens/imbtc-mta.svg'
 import ETHEREUM, { ReactComponent as EthereumSvg } from './networks/Ethereum.svg'
 import POLYGON, { ReactComponent as PolygonSvg } from './networks/Polygon.svg'
+import { Networks, useNetwork } from '../../context/NetworkProvider'
 
 interface Props {
   className?: string
   symbol?: string
+  hideNetwork?: boolean
 }
 
 type SvgProps = Props & SVGProps<never>
@@ -159,9 +161,22 @@ const PathContainer = styled(IconContainer)`
   }
 `
 
+const NetworkIcon = styled.img`
+  position: absolute;
+  width: 1rem !important;
+  height: 1rem !important;
+  right: -0.125rem;
+  bottom: 0.25rem;
+  z-index: 1;
+`
+
 const Image = styled.img`
   width: 100%;
   height: auto;
+`
+
+const ImageContainer = styled.div`
+  position: relative;
 `
 
 const PlaceholderIcon = styled.div`
@@ -178,9 +193,15 @@ const PlaceholderIcon = styled.div`
   text-shadow: black 0 1px 1px;
 `
 
-export const TokenIcon: FC<Props> = ({ className, symbol }) => {
-  return symbol && TOKEN_ICONS[symbol.toUpperCase()] ? (
-    <Image alt={symbol} src={TOKEN_ICONS[symbol.toUpperCase()]} className={className} />
+export const TokenIcon: FC<Props> = ({ className, symbol, hideNetwork = false }) => {
+  const { protocolName } = useNetwork()
+  const showNetworkIcon = protocolName.toUpperCase() !== Networks.Ethereum.toUpperCase() && !hideNetwork
+  const icon = TOKEN_ICONS[symbol?.toUpperCase() ?? '']
+  return icon ? (
+    <ImageContainer>
+      <Image alt={symbol} src={icon} className={className} />
+      {showNetworkIcon && <NetworkIcon src={TOKEN_ICONS[protocolName.toUpperCase()]} alt="" />}
+    </ImageContainer>
   ) : (
     <PlaceholderIcon className={className} title={symbol}>
       {symbol}
