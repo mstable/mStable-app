@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { useIsIdle } from '../../context/UserProvider';
+import { useIsIdle } from '../../context/AccountProvider'
 
 const Container = styled.div<{ idle: boolean }>`
   position: relative;
@@ -20,10 +20,10 @@ const Container = styled.div<{ idle: boolean }>`
     height: 100%;
   }`
       : ''}
-`;
+`
 
 export const Idle: FC<{ className?: string }> = ({ children, className }) => (
   <Container className={className} idle={useIsIdle()}>
     {children}
   </Container>
-);
+)

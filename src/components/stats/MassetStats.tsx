@@ -1,20 +1,20 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
-import { H3, H2 } from '../core/Typography';
-import { CountUp } from '../core/CountUp';
-import { BasketStats } from './BasketStats';
-import { StatsLink } from '../pages/Stats/legacy/StatsLink';
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
+import { H3, H2 } from '../core/Typography'
+import { CountUp } from '../core/CountUp'
+import { BasketStats } from './BasketStats'
+import { StatsLink } from '../pages/Stats/legacy/StatsLink'
 
 const StatsGraphic = styled.div`
   width: 100%;
   padding-bottom: 20px;
-`;
+`
 
 const StatsContainer = styled.div`
   padding-top: 60px;
-`;
+`
 
 const StatsRow = styled.div`
   display: flex;
@@ -28,10 +28,10 @@ const StatsRow = styled.div`
       flex-basis: calc(50% - 5%);
     }
   }
-`;
+`
 
 export const MassetStats: FC = () => {
-  const masset = useSelectedMassetState();
+  const masset = useSelectedMassetState()
   return masset ? (
     <StatsContainer>
       <H2>Basket Stats</H2>
@@ -47,5 +47,5 @@ export const MassetStats: FC = () => {
       </StatsRow>
       <StatsLink />
     </StatsContainer>
-  ) : null;
-};
+  ) : null
+}

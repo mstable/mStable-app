@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { StepProps, Step } from './Step';
+import { StepProps, Step } from './Step'
 
 export interface Props {
-  steps: StepProps[];
-  pending: boolean;
+  steps: StepProps[]
+  pending: boolean
 }
 
 const Container = styled.div`
@@ -33,22 +33,16 @@ const Container = styled.div`
       width: 0.25rem;
     }
   }
-`;
+`
 
 export const Steps: FC<Props> = ({ steps }) => {
-  const activeStep =
-    steps.filter(step => !step.complete)?.[0] ?? steps[steps.length - 1];
+  const activeStep = steps.filter(step => !step.complete)?.[0] ?? steps[steps.length - 1]
 
   return (
     <Container>
       {steps.map(({ options, complete, key }) => (
-        <Step
-          key={key}
-          active={activeStep.key === key}
-          complete={complete}
-          options={options}
-        />
+        <Step key={key} active={activeStep.key === key} complete={complete} options={options} />
       ))}
     </Container>
-  );
-};
+  )
+}

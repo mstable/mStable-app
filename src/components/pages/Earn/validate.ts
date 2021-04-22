@@ -1,35 +1,32 @@
-import { StakingRewardsContract } from '../../../context/earn/types';
-import { Reasons, State, Tabs } from './types';
-import { ADDRESSES } from '../../../constants';
+import { StakingRewardsContract } from '../../../context/earn/types'
+import { Reasons, State, Tabs } from './types'
 
 const getReasonMessage = (reason: Reasons | undefined): string | undefined => {
   switch (reason) {
     case Reasons.AmountExceedsApprovedAmount:
-      return 'Amount exceeds approved amount; in order for this contract to spend your tokens, you first need to give it approval';
+      return 'Amount exceeds approved amount; in order for this contract to spend your tokens, you first need to give it approval'
 
     case Reasons.FetchingData:
-      return 'Fetching data';
+      return 'Fetching data'
 
     case Reasons.AmountMustBeSet:
-      return 'Amount must be set';
+      return 'Amount must be set'
 
     case Reasons.AmountMustBeGreaterThanZero:
-      return 'Amount must be greater than zero';
+      return 'Amount must be greater than zero'
 
     case Reasons.AmountExceedsBalance:
-      return 'Amount exceeds balance';
+      return 'Amount exceeds balance'
 
     default:
-      return undefined;
+      return undefined
   }
-};
+}
 
-type ValidationResult = [boolean] | [boolean, Reasons];
+type ValidationResult = [boolean] | [boolean, Reasons]
 
-const validateActiveTab = (
-  state: State & { stakingRewardsContract: StakingRewardsContract },
-): ValidationResult => {
-  const { activeTab } = state;
+const validateActiveTab = (state: State & { stakingRewardsContract: StakingRewardsContract }): ValidationResult => {
+  const { activeTab } = state
   switch (activeTab) {
     case Tabs.Stake: {
       const {
@@ -40,114 +37,108 @@ const validateActiveTab = (
           stakingToken: { address: stakingTokenAddress },
         },
         tokens: { [stakingTokenAddress]: stakingToken },
-      } = state;
+      } = state
 
-      const spender = curve ? ADDRESSES.CURVE.MUSD_GAUGE : address;
+      const spender = curve
+        ? // Curve mUSD Gauge
+          '0x5f626c30ec1215f4edcc9982265e8b1f411d1352'
+        : address
 
       if (!stake.amount) {
-        return [false, Reasons.AmountMustBeSet];
+        return [false, Reasons.AmountMustBeSet]
       }
 
       if (stake.amount.exact.lte(0)) {
-        return [false, Reasons.AmountMustBeGreaterThanZero];
+        return [false, Reasons.AmountMustBeGreaterThanZero]
       }
 
       if (!(stakingToken?.balance && stakingToken.allowances[spender]?.exact)) {
-        return [false, Reasons.FetchingData];
+        return [false, Reasons.FetchingData]
       }
 
       if (stake.amount.exact.gt(stakingToken.balance.exact)) {
-        return [false, Reasons.AmountExceedsBalance];
+        return [false, Reasons.AmountExceedsBalance]
       }
 
       if (stake.amount.exact.gt(stakingToken.allowances[spender].exact)) {
-        return [false, Reasons.AmountExceedsApprovedAmount];
+        return [false, Reasons.AmountExceedsApprovedAmount]
       }
 
-      return [true];
+      return [true]
     }
     case Tabs.AddLiquidity: {
       // Currently only validates for Curve
-      const { addLiquidity, tokens } = state;
+      const { addLiquidity, tokens } = state
 
-      const collateralToken = addLiquidity.token
-        ? tokens[addLiquidity.token]
-        : undefined;
+      const collateralToken = addLiquidity.token ? tokens[addLiquidity.token] : undefined
 
       if (!addLiquidity.amount) {
-        return [false, Reasons.AmountMustBeSet];
+        return [false, Reasons.AmountMustBeSet]
       }
 
       if (addLiquidity.amount.exact.lte(0)) {
-        return [false, Reasons.AmountMustBeGreaterThanZero];
+        return [false, Reasons.AmountMustBeGreaterThanZero]
       }
 
-      const spender = ADDRESSES.CURVE.MUSD_DEPOSIT;
+      // Curve mUSD deposit
+      const spender = '0x78cf256256c8089d68cde634cf7cdefb39286470'
 
-      if (
-        !(
-          collateralToken?.balance && collateralToken.allowances[spender]?.exact
-        )
-      ) {
-        return [false, Reasons.FetchingData];
+      if (!(collateralToken?.balance && collateralToken.allowances[spender]?.exact)) {
+        return [false, Reasons.FetchingData]
       }
 
       if (addLiquidity.amount.exact.gt(collateralToken.balance.exact)) {
-        return [false, Reasons.AmountExceedsBalance];
+        return [false, Reasons.AmountExceedsBalance]
       }
 
-      if (
-        addLiquidity.amount.exact.gt(collateralToken.allowances[spender].exact)
-      ) {
-        return [false, Reasons.AmountExceedsApprovedAmount];
+      if (addLiquidity.amount.exact.gt(collateralToken.allowances[spender].exact)) {
+        return [false, Reasons.AmountExceedsApprovedAmount]
       }
 
-      return [true];
+      return [true]
     }
     case Tabs.Exit: {
       const {
         exit,
         stakingRewardsContract: { stakingBalance },
-      } = state;
+      } = state
 
       if (!exit.amount) {
-        return [false, Reasons.AmountMustBeSet];
+        return [false, Reasons.AmountMustBeSet]
       }
 
       if (exit.amount.exact.lte(0)) {
-        return [false, Reasons.AmountMustBeGreaterThanZero];
+        return [false, Reasons.AmountMustBeGreaterThanZero]
       }
 
       if (!stakingBalance) {
-        return [false, Reasons.FetchingData];
+        return [false, Reasons.FetchingData]
       }
 
       if (exit.amount.exact.gt(stakingBalance.exact)) {
-        return [false, Reasons.AmountExceedsBalance];
+        return [false, Reasons.AmountExceedsBalance]
       }
 
-      return [true];
+      return [true]
     }
 
     default:
-      return [true];
+      return [true]
   }
-};
+}
 
 const getValidationResult = (state: State): ValidationResult => {
-  const activeTab = state[state.activeTab];
-  const ready = activeTab.touched && !!state.stakingRewardsContract;
+  const activeTab = state[state.activeTab]
+  const ready = activeTab.touched && !!state.stakingRewardsContract
 
-  if (!ready) return [false];
+  if (!ready) return [false]
 
-  return validateActiveTab(
-    state as State & { stakingRewardsContract: StakingRewardsContract },
-  );
-};
+  return validateActiveTab(state as State & { stakingRewardsContract: StakingRewardsContract })
+}
 
 export const validate = (state: State): State => {
-  const [valid, reason] = getValidationResult(state);
-  const error = valid ? undefined : getReasonMessage(reason);
+  const [valid, reason] = getValidationResult(state)
+  const error = valid ? undefined : getReasonMessage(reason)
 
   switch (state.activeTab) {
     case Tabs.Stake:
@@ -159,7 +150,7 @@ export const validate = (state: State): State => {
           needsUnlock: reason === Reasons.AmountExceedsApprovedAmount,
           valid,
         },
-      };
+      }
 
     case Tabs.AddLiquidity:
       return {
@@ -170,7 +161,7 @@ export const validate = (state: State): State => {
           needsUnlock: reason === Reasons.AmountExceedsApprovedAmount,
           valid,
         },
-      };
+      }
 
     case Tabs.Exit:
       return {
@@ -180,9 +171,9 @@ export const validate = (state: State): State => {
           error,
           valid,
         },
-      };
+      }
 
     default:
-      return state;
+      return state
   }
-};
+}

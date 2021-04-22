@@ -1,68 +1,12 @@
-import { BigNumber } from 'ethers';
+import { BigNumber } from 'ethers'
 
-interface Connector {
-  id: string;
-  subType?: string;
-  label: string;
-}
+export const SCALE = BigNumber.from((1e18).toString())
+export const PERCENT_SCALE = BigNumber.from((1e16).toString())
+export const RATIO_SCALE = BigNumber.from((1e8).toString())
+export const EXP_SCALE = BigNumber.from((1e18).toString())
 
-export const SCALE = BigNumber.from((1e18).toString());
-export const PERCENT_SCALE = BigNumber.from((1e16).toString());
-export const RATIO_SCALE = BigNumber.from((1e8).toString());
-export const EXP_SCALE = BigNumber.from((1e18).toString());
-
-// For now, support one chain ID per deployment; also a `use-wallet` restriction
-export const CHAIN_ID = parseInt(process.env.REACT_APP_CHAIN_ID as string, 10);
-
-export const DEAD_ADDRESS = '0x0000000000000000000000000000000000000001';
-
-interface Addresses {
-  UNISWAP_ROUTER02: string;
-  WETH: string;
-  MTA: string;
-  vMTA: string;
-  FEEDER_WRAPPER: string;
-  SAVE_WRAPPER: string;
-  BALANCER: {
-    BAL: string;
-  };
-  CURVE: {
-    CURVE_V2: string;
-    GAUGE_CONTROLLER: string;
-
-    CRV_TOKEN: string;
-    MUSD_TOKEN: string;
-    '3POOL_TOKEN': string;
-    '3POOL_COINS': string[];
-
-    MTA_STAKING_REWARDS: string;
-
-    TOKEN_MINTER: string;
-
-    MUSD_LP_TOKEN: string;
-    MUSD_DEPOSIT: string;
-    MUSD_GAUGE: string;
-    MUSD_SWAP: string;
-    '3POOL_SWAP': string;
-  };
-  SUSHI: {
-    SUSHI_TOKEN: string;
-  };
-  BADGER: {
-    BADGER_TOKEN: string;
-  };
-  CREAM: {
-    CREAM_TOKEN: string;
-  };
-  REN: {
-    renBTC: string;
-  };
-  WBTC: string;
-}
-
-type AddressesByNetwork = Record<typeof CHAIN_ID, Addresses>;
-
-export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
+// FIXME remove
+const ADDRESSES_BY_NETWORK = Object.freeze({
   1: {
     UNISWAP_ROUTER02: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
     WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -151,9 +95,7 @@ export const ADDRESSES_BY_NETWORK: AddressesByNetwork = Object.freeze({
       renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
     },
   } as never,
-});
-
-export const ADDRESSES: Addresses = ADDRESSES_BY_NETWORK[CHAIN_ID];
+})
 
 export const MASSETS = {
   musd: {
@@ -166,8 +108,11 @@ export const MASSETS = {
     symbol: 'mBTC',
     slug: 'mbtc',
   },
-};
+}
 
+/**
+ * @deprecated
+ */
 export const EMOJIS = {
   error: '❌',
   approve: '✔️',
@@ -184,45 +129,6 @@ export const EMOJIS = {
   claimWeeks: '🏆',
   claimWeek: '🏆',
   'stake(uint256)': '🔒',
-};
+}
 
-export const DAPP_VERSION =
-  process.env.REACT_APP_VERSION || process.env.npm_package_version;
-
-export const STABLECOIN_SYMBOLS = [
-  'BUSD',
-  'DAI',
-  'SUSD',
-  'TUSD',
-  'USDC',
-  'USDT',
-  'mUSD',
-];
-
-export const rpcUrl = `${process.env.REACT_APP_RPC_URL}${process.env.REACT_APP_RPC_API_KEY}`;
-
-export const CONNECTORS: Connector[] = [
-  {
-    id: 'injected',
-    subType: 'metamask',
-    label: 'MetaMask',
-  },
-  {
-    id: 'injected',
-    subType: 'brave',
-    label: 'Brave',
-  },
-  {
-    id: 'injected',
-    subType: 'meetOne',
-    label: 'MEET.ONE',
-  },
-  { id: 'fortmatic', label: 'Fortmatic' },
-  { id: 'portis', label: 'Portis' },
-  { id: 'authereum', label: 'Authereum' },
-  { id: 'squarelink', label: 'Squarelink' },
-  { id: 'torus', label: 'Torus' },
-  { id: 'walletconnect', label: 'WalletConnect' },
-  { id: 'walletlink', label: 'WalletLink' },
-  { id: 'frame', label: 'Frame' },
-];
+export const DAPP_VERSION = process.env.REACT_APP_VERSION || process.env.npm_package_version

@@ -1,9 +1,5 @@
-import {
-  emojisplosion,
-  defaultPhysics,
-  EmojisplosionSettings,
-} from 'emojisplosion';
-import { MutableRefObject, useCallback } from 'react';
+import { emojisplosion, defaultPhysics, EmojisplosionSettings } from 'emojisplosion'
+import { MutableRefObject, useCallback } from 'react'
 
 export const useEmojisplosion = (
   ref: MutableRefObject<HTMLElement | undefined>,
@@ -11,7 +7,7 @@ export const useEmojisplosion = (
 ): (() => void) => {
   return useCallback(() => {
     if (ref.current) {
-      const { x, y, width, height } = ref.current?.getBoundingClientRect();
+      const { x, y, width, height } = ref.current?.getBoundingClientRect()
 
       emojisplosion({
         physics: {
@@ -24,7 +20,7 @@ export const useEmojisplosion = (
           ...settings?.position,
         },
         ...settings,
-      });
+      })
     }
-  }, [ref, settings]);
-};
+  }, [ref, settings])
+}

@@ -1,70 +1,53 @@
-import type { FC } from 'react';
-import React, { createContext, useContext, useMemo } from 'react';
-import type {
-  BoostedSavingsVault,
-  FeederPool,
-} from '@mstable/protocol/types/generated';
-import {
-  BoostedSavingsVault__factory,
-  FeederPool__factory,
-} from '@mstable/protocol/types/generated';
-import type { FeederWrapper } from '../../../typechain';
-import { FeederWrapper__factory } from '../../../typechain';
+import type { FC } from 'react'
+import React, { createContext, useContext, useMemo } from 'react'
+import type { BoostedSavingsVault, FeederPool } from '@mstable/protocol/types/generated'
+import { BoostedSavingsVault__factory, FeederPool__factory } from '@mstable/protocol/types/generated'
+import type { FeederWrapper } from '../../../typechain'
+import { FeederWrapper__factory } from '../../../typechain'
 
-import type {
-  FeederPoolState,
-  MassetState,
-} from '../../../context/DataProvider/types';
-import {
-  useFeederPool,
-  useSelectedMassetState,
-} from '../../../context/DataProvider/DataProvider';
-import { useSigner } from '../../../context/OnboardProvider';
-import { useTokenSubscription } from '../../../context/TokensProvider';
-import { UseBigDecimalInputsArg } from '../../../hooks/useBigDecimalInputs';
-import { ADDRESSES } from '../../../constants';
-import { AddressOption } from '../../../types';
+import type { AddressOption } from '../../../types'
+import type { FeederPoolState, MassetState } from '../../../context/DataProvider/types'
+import { useFeederPool, useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
+import { useSigner } from '../../../context/AccountProvider'
+import { useNetworkAddresses } from '../../../context/NetworkProvider'
+import { useTokenSubscription } from '../../../context/TokensProvider'
+import { UseBigDecimalInputsArg } from '../../../hooks/useBigDecimalInputs'
 
 interface PoolState {
-  poolAddress: string;
-  vaultAddress: string;
+  poolAddress: string
+  vaultAddress: string
   contracts?: {
-    feederPool: FeederPool;
-    vault: BoostedSavingsVault;
-    feederWrapper: FeederWrapper;
-  };
+    feederPool: FeederPool
+    vault: BoostedSavingsVault
+    feederWrapper: FeederWrapper
+  }
 }
 
-const ctx = createContext<PoolState>(null as never);
+const ctx = createContext<PoolState>(null as never)
 
 export const useSelectedFeederPoolAddress = (): string => {
-  return useContext(ctx).poolAddress;
-};
+  return useContext(ctx).poolAddress
+}
 
 export const useSelectedFeederPoolState = (): FeederPoolState => {
-  const { poolAddress } = useContext(ctx);
+  const { poolAddress } = useContext(ctx)
   // Should be mounted below a check for this state
-  return useFeederPool(poolAddress) as FeederPoolState;
-};
+  return useFeederPool(poolAddress) as FeederPoolState
+}
 
-export const useSelectedFeederPoolContracts = (): PoolState['contracts'] =>
-  useContext(ctx).contracts;
+export const useSelectedFeederPoolContracts = (): PoolState['contracts'] => useContext(ctx).contracts
 
 export const useSelectedFeederPoolContract = (): FeederPool | undefined => {
-  return useContext(ctx).contracts?.feederPool;
-};
+  return useContext(ctx).contracts?.feederPool
+}
 
-export const useSelectedFeederPoolVaultContract = ():
-  | BoostedSavingsVault
-  | undefined => {
-  return useContext(ctx)?.contracts?.vault;
-};
+export const useSelectedFeederPoolVaultContract = (): BoostedSavingsVault | undefined => {
+  return useContext(ctx).contracts?.vault
+}
 
-export const useFPAssetAddressOptions = (
-  includeFpToken?: boolean,
-): AddressOption[] => {
-  const { bAssets } = useSelectedMassetState() as MassetState;
-  const { fasset, masset, token } = useSelectedFeederPoolState();
+export const useFPAssetAddressOptions = (includeFpToken?: boolean): AddressOption[] => {
+  const { bAssets } = useSelectedMassetState() as MassetState
+  const { fasset, masset, token } = useSelectedFeederPoolState()
   return useMemo(
     () => [
       masset.token,
@@ -82,11 +65,11 @@ export const useFPAssetAddressOptions = (
         : []),
     ],
     [bAssets, fasset.token, includeFpToken, masset.token, token],
-  );
-};
+  )
+}
 
 export const useFPVaultAddressOptions = (): AddressOption[] => {
-  const { token, vault } = useSelectedFeederPoolState();
+  const { token, vault } = useSelectedFeederPoolState()
   return useMemo(
     () => [
       {
@@ -107,56 +90,46 @@ export const useFPVaultAddressOptions = (): AddressOption[] => {
       },
     ],
     [vault, token],
-  );
-};
+  )
+}
 
 export const useSelectedFeederPoolAssets = (): UseBigDecimalInputsArg => {
-  const feederPool = useSelectedFeederPoolState();
+  const feederPool = useSelectedFeederPoolState()
   return useMemo(
-    () =>
-      Object.fromEntries(
-        [
-          feederPool.masset.token,
-          feederPool.fasset.token,
-        ].map(({ address, decimals }) => [address, { decimals }]),
-      ),
+    () => Object.fromEntries([feederPool.masset.token, feederPool.fasset.token].map(({ address, decimals }) => [address, { decimals }])),
     [feederPool],
-  );
-};
+  )
+}
 
-export const FeederPoolProvider: FC<{ poolAddress: string }> = ({
-  poolAddress,
-  children,
-}) => {
+export const FeederPoolProvider: FC<{ poolAddress: string }> = ({ poolAddress, children }) => {
   // Should be mounted below a check for this state
-  const feederPool = useFeederPool(poolAddress) as FeederPoolState;
-  const vaultAddress = feederPool.vault.address;
+  const feederPool = useFeederPool(poolAddress) as FeederPoolState
+  const vaultAddress = feederPool.vault.address
 
   // Subscribe at provider level so we can rely on the data being there
   // in child components
-  useTokenSubscription(poolAddress);
-  useTokenSubscription(feederPool.masset.address);
-  useTokenSubscription(feederPool.fasset.address);
+  useTokenSubscription(poolAddress)
+  useTokenSubscription(feederPool.masset.address)
+  useTokenSubscription(feederPool.fasset.address)
 
-  const signer = useSigner();
+  const signer = useSigner()
+  const networkAddresses = useNetworkAddresses()
 
   const poolState = useMemo<PoolState>(
     () => ({
       poolAddress,
       vaultAddress,
-      contracts: signer
-        ? {
-            feederPool: FeederPool__factory.connect(poolAddress, signer),
-            feederWrapper: FeederWrapper__factory.connect(
-              ADDRESSES.FEEDER_WRAPPER,
-              signer,
-            ),
-            vault: BoostedSavingsVault__factory.connect(vaultAddress, signer),
-          }
-        : undefined,
+      contracts:
+        signer && networkAddresses
+          ? {
+              feederPool: FeederPool__factory.connect(poolAddress, signer),
+              feederWrapper: FeederWrapper__factory.connect(networkAddresses.FeederWrapper, signer),
+              vault: BoostedSavingsVault__factory.connect(vaultAddress, signer),
+            }
+          : undefined,
     }),
-    [signer, poolAddress, vaultAddress],
-  );
+    [poolAddress, vaultAddress, signer, networkAddresses],
+  )
 
-  return <ctx.Provider value={poolState}>{children}</ctx.Provider>;
-};
+  return <ctx.Provider value={poolState}>{children}</ctx.Provider>
+}

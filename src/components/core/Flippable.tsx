@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import React, { FC, ReactNode } from 'react';
-import { ViewportWidth } from '../../theme';
+import styled from 'styled-components'
+import React, { FC, ReactNode } from 'react'
+import { ViewportWidth } from '../../theme'
 
 // TODO fix this CSS
 const FlippableContainer = styled.div<{ flipped: boolean }>`
@@ -74,13 +74,13 @@ const FlippableContainer = styled.div<{ flipped: boolean }>`
         `}
     }
   }
-`;
+`
 
 // TODO remove classNames, fix CSS
 export const Flippable: FC<{
-  flipped: boolean;
-  front: ReactNode;
-  obverse: ReactNode;
+  flipped: boolean
+  front: ReactNode
+  obverse: ReactNode
 }> = ({ flipped, front, obverse }) => {
   return (
     <FlippableContainer flipped={flipped}>
@@ -91,5 +91,5 @@ export const Flippable: FC<{
         </div>
       </div>
     </FlippableContainer>
-  );
-};
+  )
+}

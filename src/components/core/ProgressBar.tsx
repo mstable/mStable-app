@@ -1,18 +1,18 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { useThemeMode } from '../../context/AppProvider';
-import { colorTheme } from '../../theme';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { useThemeMode } from '../../context/AppProvider'
+import { colorTheme } from '../../theme'
 
 interface Props {
-  value?: number;
-  max?: number;
-  min?: number;
-  hue?: number;
-  lightness?: number;
+  value?: number
+  max?: number
+  min?: number
+  hue?: number
+  lightness?: number
 }
 
-const HEIGHT = 5;
-const WIDTH = 100;
+const HEIGHT = 5
+const WIDTH = 100
 
 const Container = styled.svg`
   g > rect {
@@ -21,35 +21,17 @@ const Container = styled.svg`
   g > g {
     transition: transform 0.5s ease-in-out;
   }
-`;
+`
 
-export const ProgressBar: FC<Props> = ({
-  max = 1,
-  min = 0,
-  value = min,
-  hue = 90,
-  lightness = 50,
-}) => {
-  const themeMode = useThemeMode();
-  const scaledValue = (value - min) / (max - min);
-  const progressWidth = Math.max(scaledValue * WIDTH, HEIGHT * 2);
+export const ProgressBar: FC<Props> = ({ max = 1, min = 0, value = min, hue = 90, lightness = 50 }) => {
+  const themeMode = useThemeMode()
+  const scaledValue = (value - min) / (max - min)
+  const progressWidth = Math.max(scaledValue * WIDTH, HEIGHT * 2)
   return (
     <Container viewBox={`0 0 ${WIDTH} ${HEIGHT}`} preserveAspectRatio="none">
       <defs>
-        <pattern
-          id="hatch"
-          patternUnits="userSpaceOnUse"
-          patternTransform="rotate(135 0 0)"
-          width="4"
-          height="4"
-        >
-          <rect
-            x={0}
-            y={0}
-            width={4}
-            height={4}
-            fill={`hsl(${hue},85%,${lightness}%)`}
-          />
+        <pattern id="hatch" patternUnits="userSpaceOnUse" patternTransform="rotate(135 0 0)" width="4" height="4">
+          <rect x={0} y={0} width={4} height={4} fill={`hsl(${hue},85%,${lightness}%)`} />
           <animateTransform
             attributeType="xml"
             attributeName="patternTransform"
@@ -74,24 +56,8 @@ export const ProgressBar: FC<Props> = ({
         </pattern>
       </defs>
       <g>
-        <rect
-          width={WIDTH}
-          height={HEIGHT}
-          x={0}
-          y={0}
-          rx={HEIGHT / 2}
-          ry={HEIGHT / 2}
-          fill={colorTheme(themeMode).backgroundAccent}
-        />
-        <rect
-          width={progressWidth}
-          height={HEIGHT}
-          x={0}
-          y={0}
-          rx={HEIGHT / 2}
-          ry={HEIGHT / 2}
-          fill="url(#hatch)"
-        />
+        <rect width={WIDTH} height={HEIGHT} x={0} y={0} rx={HEIGHT / 2} ry={HEIGHT / 2} fill={colorTheme(themeMode).backgroundAccent} />
+        <rect width={progressWidth} height={HEIGHT} x={0} y={0} rx={HEIGHT / 2} ry={HEIGHT / 2} fill="url(#hatch)" />
         <g transform={`translate(${progressWidth - 2.25}, 0)`}>
           <text
             x={0}
@@ -108,5 +74,5 @@ export const ProgressBar: FC<Props> = ({
         </g>
       </g>
     </Container>
-  );
-};
+  )
+}

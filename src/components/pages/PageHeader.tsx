@@ -1,15 +1,15 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { ReactComponent as SaveIcon } from '../icons/circle/save.svg';
-import { ReactComponent as MintIcon } from '../icons/circle/mint.svg';
-import { ReactComponent as EarnIcon } from '../icons/circle/earn.svg';
-import { ReactComponent as SwapIcon } from '../icons/circle/swap.svg';
-import { ReactComponent as RedeemIcon } from '../icons/circle/redeem.svg';
-import { ReactComponent as StatsIcon } from '../icons/circle/stats.svg';
-import { ReactComponent as AccountIcon } from '../icons/circle/account.svg';
-import { useAccountOpen, useBannerMessage } from '../../context/AppProvider';
-import { BannerMessage } from '../layout/BannerMessage';
+import { ReactComponent as SaveIcon } from '../icons/circle/save.svg'
+import { ReactComponent as MintIcon } from '../icons/circle/mint.svg'
+import { ReactComponent as EarnIcon } from '../icons/circle/earn.svg'
+import { ReactComponent as SwapIcon } from '../icons/circle/swap.svg'
+import { ReactComponent as RedeemIcon } from '../icons/circle/redeem.svg'
+import { ReactComponent as StatsIcon } from '../icons/circle/stats.svg'
+import { ReactComponent as AccountIcon } from '../icons/circle/account.svg'
+import { useAccountOpen, useBannerMessage } from '../../context/AppProvider'
+import { BannerMessage } from '../layout/BannerMessage'
 
 export enum PageAction {
   Save = 'Save',
@@ -23,8 +23,8 @@ export enum PageAction {
 }
 
 interface Props {
-  action: PageAction;
-  subtitle?: string;
+  action: PageAction
+  subtitle?: string
 }
 
 const ActionIcons: { [action: string]: JSX.Element } = {
@@ -36,7 +36,7 @@ const ActionIcons: { [action: string]: JSX.Element } = {
   Redeem: <RedeemIcon />,
   Stats: <StatsIcon />,
   Account: <AccountIcon />,
-};
+}
 
 const Icon = styled.div<{ inverted?: boolean }>`
   display: flex;
@@ -55,11 +55,11 @@ const Icon = styled.div<{ inverted?: boolean }>`
   img + div {
     display: none;
   }
-`;
+`
 
 const Container = styled.div<{
-  accountOpen?: boolean;
-  messageVisible?: boolean;
+  accountOpen?: boolean
+  messageVisible?: boolean
 }>`
   display: flex;
   flex-direction: column;
@@ -76,13 +76,13 @@ const Container = styled.div<{
     font-size: 1rem;
     color: ${({ theme }) => theme.color.bodyAccent};
   }
-`;
+`
 
 const Row = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 0.5rem;
-`;
+`
 
 const ChildrenRow = styled.div`
   display: flex;
@@ -94,12 +94,12 @@ const ChildrenRow = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
     flex-direction: row;
   }
-`;
+`
 
 export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
-  const accountOpen = useAccountOpen();
-  const [bannerMessage] = useBannerMessage();
-  const icon = ActionIcons[action];
+  const accountOpen = useAccountOpen()
+  const [bannerMessage] = useBannerMessage()
+  const icon = ActionIcons[action]
 
   return (
     <div>
@@ -113,5 +113,5 @@ export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
       </Container>
       {!!bannerMessage && <BannerMessage />}
     </div>
-  );
-};
+  )
+}

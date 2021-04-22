@@ -1,6 +1,6 @@
-import type { BigDecimal } from '../web3/BigDecimal';
+import type { BigDecimal } from '../web3/BigDecimal'
 
-const SECONDS_IN_DAY = 60 * 60 * 24;
+const SECONDS_IN_DAY = 60 * 60 * 24
 
 export const calculateApy = (
   stakingTokenPrice?: number,
@@ -8,11 +8,9 @@ export const calculateApy = (
   rewardRate?: number,
   totalSupply?: BigDecimal,
 ): number | undefined => {
-  if (!(stakingTokenPrice && rewardsTokenPrice && rewardRate && totalSupply))
-    return;
+  if (!(stakingTokenPrice && rewardsTokenPrice && rewardRate && totalSupply)) return
 
-  const rewardPerDayPerToken =
-    (rewardRate * SECONDS_IN_DAY * rewardsTokenPrice) / totalSupply.simple;
+  const rewardPerDayPerToken = (rewardRate * SECONDS_IN_DAY * rewardsTokenPrice) / totalSupply.simple
 
-  return (rewardPerDayPerToken / stakingTokenPrice) * 365 * 100;
-};
+  return (rewardPerDayPerToken / stakingTokenPrice) * 365 * 100
+}

@@ -1,16 +1,13 @@
-import type { FC } from 'react';
-import React from 'react';
-import { useToggle } from 'react-use';
-import styled from 'styled-components';
+import type { FC } from 'react'
+import React from 'react'
+import { useToggle } from 'react-use'
+import styled from 'styled-components'
 
-import { UnstyledButton } from '../../../core/Button';
-import { MultiAssetExchangeProvider } from '../../../forms/MultiAssetExchange';
-import {
-  useSelectedFeederPoolAssets,
-  useSelectedFeederPoolState,
-} from '../FeederPoolProvider';
-import { RedeemExact } from './RedeemExact';
-import { RedeemLP } from './RedeemLP';
+import { UnstyledButton } from '../../../core/Button'
+import { MultiAssetExchangeProvider } from '../../../forms/MultiAssetExchange'
+import { useSelectedFeederPoolAssets, useSelectedFeederPoolState } from '../FeederPoolProvider'
+import { RedeemExact } from './RedeemExact'
+import { RedeemLP } from './RedeemLP'
 
 const RedeemPathBox = styled.div`
   display: flex;
@@ -30,15 +27,13 @@ const RedeemPathBox = styled.div`
       color: ${({ theme }) => theme.color.gold};
     }
   }
-`;
+`
 
-export const Withdraw: FC<{ isLowLiquidity?: boolean }> = ({
-  isLowLiquidity = false,
-}) => {
-  const [isRedeemExact, setRedeemExact] = useToggle(false);
+export const Withdraw: FC<{ isLowLiquidity?: boolean }> = ({ isLowLiquidity = false }) => {
+  const [isRedeemExact, setRedeemExact] = useToggle(false)
 
-  const feederPool = useSelectedFeederPoolState();
-  const assets = useSelectedFeederPoolAssets();
+  const feederPool = useSelectedFeederPoolState()
+  const assets = useSelectedFeederPoolAssets()
 
   return (
     <MultiAssetExchangeProvider assets={assets}>
@@ -47,17 +42,11 @@ export const Withdraw: FC<{ isLowLiquidity?: boolean }> = ({
         <div>
           <UnstyledButton onClick={setRedeemExact}>
             {isLowLiquidity
-              ? `Withdraw from ${
-                  isRedeemExact
-                    ? `${feederPool.token.symbol} Vault`
-                    : feederPool.token.symbol
-                }`
-              : `Switch to ${
-                  isRedeemExact ? feederPool.token.symbol : 'exact'
-                } amount redemption`}
+              ? `Withdraw from ${isRedeemExact ? `${feederPool.token.symbol} Vault` : feederPool.token.symbol}`
+              : `Switch to ${isRedeemExact ? feederPool.token.symbol : 'exact'} amount redemption`}
           </UnstyledButton>
         </div>
       </RedeemPathBox>
     </MultiAssetExchangeProvider>
-  );
-};
+  )
+}

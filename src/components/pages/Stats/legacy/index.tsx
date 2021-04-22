@@ -1,54 +1,45 @@
-import React, { FC, useLayoutEffect } from 'react';
-import styled from 'styled-components';
+import React, { FC, useLayoutEffect } from 'react'
+import styled from 'styled-components'
 
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { BasketStats } from '../../../stats/BasketStats';
-import { H2, H3, P } from '../../../core/Typography';
-import { CountUp } from '../../../core/CountUp';
-import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
-import { VolumeChart } from '../../../stats/VolumeChart';
-import { AggregateChart } from '../../../stats/AggregateChart';
-import { PageAction, PageHeader } from '../../PageHeader';
-import { DailyApys } from '../../../stats/DailyApys';
-import { ToggleSave } from '../../Save/ToggleSave';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
+import { BasketStats } from '../../../stats/BasketStats'
+import { H2, H3, P } from '../../../core/Typography'
+import { CountUp } from '../../../core/CountUp'
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
+import { VolumeChart } from '../../../stats/VolumeChart'
+import { AggregateChart } from '../../../stats/AggregateChart'
+import { PageAction, PageHeader } from '../../PageHeader'
+import { DailyApys } from '../../../stats/DailyApys'
+import { ToggleSave } from '../../Save/ToggleSave'
 
 const Section = styled.section`
   padding-bottom: 32px;
-`;
+`
 
 const TotalSupply: FC = () => {
-  const massetState = useSelectedMassetState();
-  const totalSupply = massetState?.token.totalSupply;
+  const massetState = useSelectedMassetState()
+  const totalSupply = massetState?.token.totalSupply
   return (
     <div>
       <H3>Total supply</H3>
-      {totalSupply ? (
-        <CountUp prefix="$" end={totalSupply.simpleRounded} decimals={2} />
-      ) : (
-        <ThemedSkeleton height={50} />
-      )}
+      {totalSupply ? <CountUp prefix="$" end={totalSupply.simpleRounded} decimals={2} /> : <ThemedSkeleton height={50} />}
     </div>
-  );
-};
+  )
+}
 
 const TotalSavings: FC<{ version: 'v1' | 'v2' }> = ({ version }) => {
-  const massetState = useSelectedMassetState();
-  const savingsContract = massetState?.savingsContracts[version];
-  const exchangeRate = savingsContract?.latestExchangeRate?.rate.simple;
-  const totalSavings = savingsContract?.totalSavings?.simple;
-  const value =
-    exchangeRate && totalSavings ? exchangeRate * totalSavings : undefined;
+  const massetState = useSelectedMassetState()
+  const savingsContract = massetState?.savingsContracts[version]
+  const exchangeRate = savingsContract?.latestExchangeRate?.rate.simple
+  const totalSavings = savingsContract?.totalSavings?.simple
+  const value = exchangeRate && totalSavings ? exchangeRate * totalSavings : undefined
   return (
     <div>
       <H3>Total savings ({version})</H3>
-      {value ? (
-        <CountUp prefix="$" end={value} decimals={2} />
-      ) : (
-        <ThemedSkeleton height={50} />
-      )}
+      {value ? <CountUp prefix="$" end={value} decimals={2} /> : <ThemedSkeleton height={50} />}
     </div>
-  );
-};
+  )
+}
 
 const NiceBigNumbers = styled.div`
   display: flex;
@@ -63,20 +54,20 @@ const NiceBigNumbers = styled.div`
   > :last-child {
     margin-right: 0;
   }
-`;
+`
 
 const BasketStatsContainer = styled.div`
   > :first-child {
     max-width: 400px;
     margin: 0 auto;
   }
-`;
+`
 
 const ThirdPartySources = styled.ul`
   li {
     margin-bottom: 16px;
   }
-`;
+`
 
 const ToggleContainer = styled.div`
   display: flex;
@@ -89,19 +80,16 @@ const ToggleContainer = styled.div`
     padding-bottom: 0;
     padding-top: 0;
   }
-`;
+`
 
 export const Stats: FC = () => {
   useLayoutEffect(() => {
-    window.scrollTo({ top: 0 });
-  }, []);
+    window.scrollTo({ top: 0 })
+  }, [])
 
   return (
     <div>
-      <PageHeader
-        action={PageAction.Stats}
-        subtitle="Explore activity across mStable"
-      />
+      <PageHeader action={PageAction.Stats} subtitle="Explore activity across mStable" />
       <Section id="save">
         <ToggleContainer>
           <H2>SAVE</H2>
@@ -142,16 +130,12 @@ export const Stats: FC = () => {
             </a>
           </li>
           <li>
-            <a
-              href="https://thegraph.com/explorer/subgraph/mstable/mstable-protocol"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://thegraph.com/explorer/subgraph/mstable/mstable-protocol" target="_blank" rel="noopener noreferrer">
               mStable Subgraph explorer
             </a>
           </li>
         </ThirdPartySources>
       </Section>
     </div>
-  );
-};
+  )
+}

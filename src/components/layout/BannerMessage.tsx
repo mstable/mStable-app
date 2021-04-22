@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import { Link } from 'react-router-dom'
+import styled from 'styled-components'
 
-import { useBannerMessage } from '../../context/AppProvider';
+import { useBannerMessage } from '../../context/AppProvider'
 
 const Container = styled.div`
   display: flex;
@@ -29,11 +29,11 @@ const Container = styled.div`
     vertical-align: middle;
     margin-right: 1rem;
   }
-`;
+`
 
 // TODO: - Remove useEffect to set message - change to use provider & memoised props
 export const BannerMessage: FC = () => {
-  const [bannerMessage] = useBannerMessage();
+  const [bannerMessage] = useBannerMessage()
 
   return bannerMessage?.title ? (
     <Container>
@@ -45,11 +45,7 @@ export const BannerMessage: FC = () => {
         {bannerMessage.subtitle && ` ${bannerMessage.subtitle} `}{' '}
         {bannerMessage.url &&
           (bannerMessage.url.startsWith('http') ? (
-            <a
-              href={bannerMessage.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href={bannerMessage.url} target="_blank" rel="noopener noreferrer">
               Learn more
             </a>
           ) : (
@@ -57,5 +53,5 @@ export const BannerMessage: FC = () => {
           ))}
       </p>
     </Container>
-  ) : null;
-};
+  ) : null
+}

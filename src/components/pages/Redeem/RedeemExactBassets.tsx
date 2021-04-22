@@ -1,85 +1,66 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import React, { FC, useEffect, useMemo } from 'react'
 
-import { Masset__factory } from '@mstable/protocol/types/generated';
-import { usePropose } from '../../../context/TransactionsProvider';
-import { useSigner, useWalletAddress } from '../../../context/OnboardProvider';
-import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
-import { MassetState } from '../../../context/DataProvider/types';
-import {
-  useTokens,
-  useTokenSubscription,
-} from '../../../context/TokensProvider';
+import { Masset__factory } from '@mstable/protocol/types/generated'
+import { usePropose } from '../../../context/TransactionsProvider'
+import { useSigner, useWalletAddress } from '../../../context/AccountProvider'
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
+import { MassetState } from '../../../context/DataProvider/types'
+import { useTokens, useTokenSubscription } from '../../../context/TokensProvider'
 
-import { Interfaces } from '../../../types';
+import { Interfaces } from '../../../types'
 
-import { BigDecimal } from '../../../web3/BigDecimal';
-import { TransactionManifest } from '../../../web3/TransactionManifest';
+import { BigDecimal } from '../../../web3/BigDecimal'
+import { TransactionManifest } from '../../../web3/TransactionManifest'
 
-import { SendButton } from '../../forms/SendButton';
+import { SendButton } from '../../forms/SendButton'
 import {
   MultiAssetExchangeProvider,
   OneToManyAssetExchange,
   useMultiAssetExchangeDispatch,
   useMultiAssetExchangeState,
-} from '../../forms/MultiAssetExchange';
-import { useEstimatedRedeemOutput } from '../../../hooks/useEstimatedRedeemOutput';
-import { useMaximumOutput } from '../../../hooks/useOutput';
-import { useSelectedMassetPrice } from '../../../hooks/usePrice';
-import { useExchangeRateForMassetInputs } from '../../../hooks/useMassetExchangeRate';
+} from '../../forms/MultiAssetExchange'
+import { useEstimatedRedeemOutput } from '../../../hooks/useEstimatedRedeemOutput'
+import { useMaximumOutput } from '../../../hooks/useOutput'
+import { useSelectedMassetPrice } from '../../../hooks/usePrice'
+import { useExchangeRateForMassetInputs } from '../../../hooks/useMassetExchangeRate'
 
-const formId = 'redeem';
+const formId = 'redeem'
 
 const RedeemExactBassetsLogic: FC = () => {
-  const propose = usePropose();
-  const walletAddress = useWalletAddress();
-  const signer = useSigner();
-  const massetState = useSelectedMassetState() as MassetState;
-  const { address: massetAddress, bassetRatios } = massetState;
-  const massetToken = useTokenSubscription(massetState.address);
-  const massetBalance = massetToken?.balance;
+  const propose = usePropose()
+  const walletAddress = useWalletAddress()
+  const signer = useSigner()
+  const massetState = useSelectedMassetState() as MassetState
+  const { address: massetAddress, bassetRatios } = massetState
+  const massetToken = useTokenSubscription(massetState.address)
+  const massetBalance = massetToken?.balance
 
-  const [bassetAmounts, massetAmount, slippage] = useMultiAssetExchangeState();
-  const [, setMassetAmount] = useMultiAssetExchangeDispatch();
+  const [bassetAmounts, massetAmount, slippage] = useMultiAssetExchangeState()
+  const [, setMassetAmount] = useMultiAssetExchangeDispatch()
 
-  const outputTokens = useTokens(Object.keys(bassetAmounts));
+  const outputTokens = useTokens(Object.keys(bassetAmounts))
 
-  const masset = useMemo(
-    () => (signer ? Masset__factory.connect(massetAddress, signer) : undefined),
-    [massetAddress, signer],
-  );
+  const masset = useMemo(() => (signer ? Masset__factory.connect(massetAddress, signer) : undefined), [massetAddress, signer])
 
-  const estimatedOutputAmount = useEstimatedRedeemOutput(masset, bassetAmounts);
-  const exchangeRate = useExchangeRateForMassetInputs(
-    estimatedOutputAmount,
-    bassetAmounts,
-  );
+  const estimatedOutputAmount = useEstimatedRedeemOutput(masset, bassetAmounts)
+  const exchangeRate = useExchangeRateForMassetInputs(estimatedOutputAmount, bassetAmounts)
 
   useEffect(() => {
-    setMassetAmount(estimatedOutputAmount);
-  }, [estimatedOutputAmount, setMassetAmount]);
+    setMassetAmount(estimatedOutputAmount)
+  }, [estimatedOutputAmount, setMassetAmount])
 
-  const touched = useMemo(
-    () => Object.values(bassetAmounts).filter(v => v.touched),
-    [bassetAmounts],
-  );
+  const touched = useMemo(() => Object.values(bassetAmounts).filter(v => v.touched), [bassetAmounts])
 
   const inputAmount = useMemo(() => {
-    if (!Object.keys(bassetAmounts).length || !touched.length) return;
+    if (!Object.keys(bassetAmounts).length || !touched.length) return
 
     return Object.values(touched).reduce(
-      (prev, v) =>
-        prev.add(
-          (v.amount as BigDecimal).mulRatioTruncate(bassetRatios[v.address]),
-        ),
+      (prev, v) => prev.add((v.amount as BigDecimal).mulRatioTruncate(bassetRatios[v.address])),
       BigDecimal.ZERO,
-    );
-  }, [bassetAmounts, touched, bassetRatios]);
+    )
+  }, [bassetAmounts, touched, bassetRatios])
 
-  const { maxOutputAmount, penaltyBonus } = useMaximumOutput(
-    slippage?.simple,
-    inputAmount,
-    estimatedOutputAmount.value,
-  );
+  const { maxOutputAmount, penaltyBonus } = useMaximumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
 
   const outputLabel = useMemo(
     () =>
@@ -88,35 +69,25 @@ const RedeemExactBassetsLogic: FC = () => {
         .map(v => outputTokens.find(t => t.address === v.address)?.symbol)
         .join(', '),
     [outputTokens, bassetAmounts],
-  );
+  )
 
   const error = useMemo(() => {
     if (touched.length === 0) {
-      return 'Enter an amount';
+      return 'Enter an amount'
     }
 
-    if (
-      massetBalance &&
-      maxOutputAmount &&
-      maxOutputAmount.exact.gt(massetBalance.exact)
-    ) {
-      return 'Insufficient balance';
+    if (massetBalance && maxOutputAmount && maxOutputAmount.exact.gt(massetBalance.exact)) {
+      return 'Insufficient balance'
     }
 
-    if (massetAmount.fetching) return 'Validating…';
+    if (massetAmount.fetching) return 'Validating…'
 
-    return massetAmount.error;
-  }, [
-    massetAmount.error,
-    massetAmount.fetching,
-    massetBalance,
-    maxOutputAmount,
-    touched,
-  ]);
+    return massetAmount.error
+  }, [massetAmount.error, massetAmount.fetching, massetBalance, maxOutputAmount, touched])
 
-  const massetPrice = useSelectedMassetPrice();
+  const massetPrice = useSelectedMassetPrice()
 
-  const valid = !error && !massetAmount.fetching && touched.length > 0;
+  const valid = !error && !massetAmount.fetching && touched.length > 0
 
   return (
     <OneToManyAssetExchange
@@ -134,10 +105,10 @@ const RedeemExactBassetsLogic: FC = () => {
         title={error ?? 'Redeem'}
         handleSend={() => {
           if (masset && walletAddress && maxOutputAmount) {
-            if (!touched.length) return;
+            if (!touched.length) return
 
-            const addresses = touched.map(v => v.address);
-            const amounts = touched.map(v => (v.amount as BigDecimal).exact);
+            const addresses = touched.map(v => v.address)
+            const amounts = touched.map(v => (v.amount as BigDecimal).exact)
 
             return propose<Interfaces.Masset, 'redeemExactBassets'>(
               new TransactionManifest(
@@ -147,34 +118,27 @@ const RedeemExactBassetsLogic: FC = () => {
                 { past: 'Redeemed', present: 'Redeeming' },
                 formId,
               ),
-            );
+            )
           }
         }}
       />
     </OneToManyAssetExchange>
-  );
-};
+  )
+}
 
 export const RedeemExactBassets: FC = () => {
-  const massetState = useSelectedMassetState() as MassetState;
+  const massetState = useSelectedMassetState() as MassetState
   const inputAssets = useMemo(
     () =>
       Object.fromEntries(
-        Object.entries(massetState.bAssets).map(
-          ([
-            address,
-            {
-              token: { decimals },
-            },
-          ]) => [address, { decimals }],
-        ),
+        Object.entries(massetState.bAssets).map(([address, { token: { decimals } }]) => [address, { decimals }]),
       ),
     [massetState],
-  );
+  )
 
   return (
     <MultiAssetExchangeProvider assets={inputAssets}>
       <RedeemExactBassetsLogic />
     </MultiAssetExchangeProvider>
-  );
-};
+  )
+}

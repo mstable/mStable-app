@@ -1,17 +1,17 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import type { FetchState } from '../../hooks/useFetchState';
-import { AddressOption, SubscribedToken } from '../../types';
-import { BigDecimal } from '../../web3/BigDecimal';
-import { ThemedSkeleton } from './ThemedSkeleton';
+import type { FetchState } from '../../hooks/useFetchState'
+import { AddressOption, SubscribedToken } from '../../types'
+import { BigDecimal } from '../../web3/BigDecimal'
+import { ThemedSkeleton } from './ThemedSkeleton'
 
 interface Props {
-  inputLabel?: string;
-  outputLabel?: string;
-  inputToken?: AddressOption | SubscribedToken;
-  outputToken?: AddressOption | SubscribedToken;
-  exchangeRate: FetchState<BigDecimal>;
+  inputLabel?: string
+  outputLabel?: string
+  inputToken?: AddressOption | SubscribedToken
+  outputToken?: AddressOption | SubscribedToken
+  exchangeRate: FetchState<BigDecimal>
 }
 
 const Container = styled.div`
@@ -25,20 +25,14 @@ const Container = styled.div`
   span {
     white-space: pre;
   }
-`;
+`
 
 const Numeric = styled.span`
   ${({ theme }) => theme.mixins.numeric};
-`;
+`
 
-export const ExchangeRate: FC<Props> = ({
-  exchangeRate: { fetching, value },
-  inputToken,
-  outputToken,
-  inputLabel,
-  outputLabel,
-}) => {
-  const hasInput = inputLabel || inputToken;
+export const ExchangeRate: FC<Props> = ({ exchangeRate: { fetching, value }, inputToken, outputToken, inputLabel, outputLabel }) => {
+  const hasInput = inputLabel || inputToken
   return (
     <Container>
       {fetching ? (
@@ -54,5 +48,5 @@ export const ExchangeRate: FC<Props> = ({
         <span>&nbsp;</span>
       )}
     </Container>
-  );
-};
+  )
+}

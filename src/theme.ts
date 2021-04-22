@@ -1,4 +1,4 @@
-import { DefaultTheme, css } from 'styled-components';
+import { DefaultTheme, css } from 'styled-components'
 
 export enum Color {
   gold = 'rgb(255,179,52)',
@@ -29,8 +29,8 @@ export enum Color {
 }
 
 const ColorNew: {
-  spaceBlue: Record<string, string>;
-  white: Record<string, string>;
+  spaceBlue: Record<string, string>
+  white: Record<string, string>
 } = {
   spaceBlue: {
     0: 'rgba(5, 20, 44, 1)',
@@ -46,44 +46,38 @@ const ColorNew: {
     3: 'rgba(235, 235, 235, 1)',
     4: 'rgba(232, 232, 232, 1)',
   },
-};
-
-interface ColorTheme {
-  primary: string;
-  primaryTransparent: string;
-  body: string;
-  bodyAccent: string;
-  bodyTransparent: string;
-  bodyTransparenter: string;
-  offYellow: string;
-  disabled: string;
-  background: string;
-  backgroundAccent: string;
-  disabledInput: string;
-  disabledButton: string;
-  defaultBorder: string;
-  defaultToggle: string;
-  onboardBackground: string;
-  onboardItemHover: string;
 }
 
-export const colorTheme = (
-  theme: 'light' | 'dark',
-): ColorTheme & typeof Color => {
-  const isLight = theme === 'light';
+interface ColorTheme {
+  primary: string
+  primaryTransparent: string
+  body: string
+  bodyAccent: string
+  bodyTransparent: string
+  bodyTransparenter: string
+  offYellow: string
+  disabled: string
+  background: string
+  backgroundAccent: string
+  disabledInput: string
+  disabledButton: string
+  defaultBorder: string
+  defaultToggle: string
+  onboardBackground: string
+  onboardItemHover: string
+}
+
+export const colorTheme = (theme: 'light' | 'dark'): ColorTheme & typeof Color => {
+  const isLight = theme === 'light'
   return {
     ...Color,
     disabled: isLight ? Color.blackTransparent : Color.whiteTransparent,
     offYellow: isLight ? 'rgba(102, 88, 72, 0.8)' : 'rgba(194, 174, 152, 1)',
     primary: isLight ? Color.blue : Color.coolBlue,
-    primaryTransparent: isLight
-      ? Color.blueTransparent
-      : Color.coolBlueTransparent,
+    primaryTransparent: isLight ? Color.blueTransparent : Color.coolBlueTransparent,
     body: isLight ? Color.offBlack : Color.white,
     bodyTransparent: isLight ? Color.blackTransparent : Color.whiteTransparent,
-    bodyTransparenter: isLight
-      ? Color.blackTransparenter
-      : Color.whiteTransparenter,
+    bodyTransparenter: isLight ? Color.blackTransparenter : Color.whiteTransparenter,
     bodyAccent: isLight ? Color.grey : ColorNew.white[4],
     background: isLight ? ColorNew.white[0] : ColorNew.spaceBlue[0],
     backgroundAccent: isLight ? ColorNew.white[2] : ColorNew.spaceBlue[3],
@@ -93,8 +87,8 @@ export const colorTheme = (
     defaultToggle: isLight ? ColorNew.white[3] : ColorNew.spaceBlue[3],
     onboardBackground: isLight ? ColorNew.white[0] : ColorNew.spaceBlue[1],
     onboardItemHover: isLight ? ColorNew.white[1] : ColorNew.spaceBlue[2],
-  };
-};
+  }
+}
 
 export enum Size {
   xs,
@@ -133,63 +127,59 @@ export const mapSizeToFontSize = (size: Size): string => {
   // eslint-disable-next-line default-case
   switch (size) {
     case Size.xs:
-      return FontSize.xs;
+      return FontSize.xs
     case Size.s:
-      return FontSize.s;
+      return FontSize.s
     case Size.m:
-      return FontSize.m;
+      return FontSize.m
     case Size.l:
-      return FontSize.l;
+      return FontSize.l
     case Size.xl:
-      return FontSize.xl;
+      return FontSize.xl
   }
-};
+}
 
 // eslint-disable-next-line consistent-return
 export const mapSizeToIconSize = ({ size }: { size: Size }): string => {
   // eslint-disable-next-line default-case
   switch (size) {
     case Size.xs:
-      return '12px';
+      return '12px'
     case Size.s:
-      return '16px';
+      return '16px'
     case Size.m:
-      return '24px';
+      return '24px'
     case Size.l:
-      return '32px';
+      return '32px'
     case Size.xl:
-      return '64px';
+      return '64px'
   }
-};
+}
 
 // eslint-disable-next-line consistent-return
 export const mapSizeToSpacing = (size: Size): string => {
   // eslint-disable-next-line default-case
   switch (size) {
     case Size.xs:
-      return Spacing.xs;
+      return Spacing.xs
     case Size.s:
-      return Spacing.s;
+      return Spacing.s
     case Size.m:
-      return Spacing.m;
+      return Spacing.m
     case Size.l:
-      return Spacing.l;
+      return Spacing.l
     case Size.xl:
-      return Spacing.xl;
+      return Spacing.xl
   }
-};
+}
 
 export const mixins = {
   roundedBorder: css<{ inverted?: boolean }>`
-    border: 1px
-      ${({ inverted, theme }) =>
-        inverted ? theme.color.whiteTransparent : theme.color.blackTransparent}
-      solid;
+    border: 1px ${({ inverted, theme }) => (inverted ? theme.color.whiteTransparent : theme.color.blackTransparent)} solid;
     border-radius: 3px;
   `,
   textAlign: css<{ center?: boolean; right?: boolean }>`
-    text-align: ${({ center, right }) =>
-      center ? 'center' : right ? 'right' : 'initial'};
+    text-align: ${({ center, right }) => (center ? 'center' : right ? 'right' : 'initial')};
   `,
   numeric: css`
     font-family: 'DM Mono', monospace !important;
@@ -207,7 +197,7 @@ export const mixins = {
       padding: 1.5rem;
     }
   `,
-};
+}
 
 export const lightTheme: DefaultTheme = {
   color: colorTheme('light'),
@@ -217,13 +207,13 @@ export const lightTheme: DefaultTheme = {
   viewportWidth: ViewportWidth,
   mixins,
   isLight: true,
-};
+}
 
 export const darkTheme: DefaultTheme = {
   ...lightTheme,
   color: colorTheme('dark'),
   isLight: false,
-};
+}
 
 export const gradientShift = css`
   position: relative;
@@ -269,4 +259,4 @@ export const gradientShift = css`
       background-position: 0 50%;
     }
   }
-`;
+`

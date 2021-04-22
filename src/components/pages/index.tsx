@@ -1,25 +1,23 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { useHistory } from 'react-router-dom'
 
-import { useDataState } from '../../context/DataProvider/DataProvider';
-import { useConnected, useConnect } from '../../context/OnboardProvider';
-import { MassetName } from '../../types';
-import { MASSETS } from '../../constants';
-import { UnstyledButton } from '../core/Button';
-import { useSetSelectedMassetName } from '../../context/SelectedMassetNameProvider';
-import { TokenIcon } from '../icons/TokenIcon';
-import { ReactComponent as LogoImage } from '../icons/mstable.svg';
-import { ViewportWidth } from '../../theme';
+import { useDataState } from '../../context/DataProvider/DataProvider'
+import { useConnected, useConnect } from '../../context/AccountProvider'
+import { MassetName } from '../../types'
+import { MASSETS } from '../../constants'
+import { UnstyledButton } from '../core/Button'
+import { useSetSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { TokenIcon } from '../icons/TokenIcon'
+import { ReactComponent as LogoImage } from '../icons/mstable.svg'
+import { ViewportWidth } from '../../theme'
 
 const StyledTokenIcon = styled(TokenIcon)`
   height: 6rem;
   width: 6rem;
-  border: 4px solid
-    ${({ theme }) =>
-      !theme.isLight ? theme.color.backgroundAccent : 'transparent'};
+  border: 4px solid ${({ theme }) => (!theme.isLight ? theme.color.backgroundAccent : 'transparent')};
   border-radius: 3rem;
-`;
+`
 
 const StyledButton = styled(UnstyledButton)<{ asset: MassetName }>`
   position: relative;
@@ -55,32 +53,32 @@ const StyledButton = styled(UnstyledButton)<{ asset: MassetName }>`
   :hover:before {
     opacity: 1;
   }
-`;
+`
 
 const MassetButton: FC<{ massetName: MassetName }> = ({ massetName }) => {
-  const history = useHistory();
-  const connect = useConnect();
-  const connected = useConnected();
+  const history = useHistory()
+  const connect = useConnect()
+  const connected = useConnected()
 
-  const setSelectedMassetName = useSetSelectedMassetName();
-  const { symbol, slug } = MASSETS[massetName];
+  const setSelectedMassetName = useSetSelectedMassetName()
+  const { symbol, slug } = MASSETS[massetName]
 
   return (
     <StyledButton
       asset={massetName}
       onClick={() => {
         if (!connected) {
-          connect();
+          connect()
         }
-        setSelectedMassetName(slug as MassetName);
-        history.push(`/${slug}/save`);
+        setSelectedMassetName(slug as MassetName)
+        history.push(`/${slug}/save`)
       }}
     >
       <StyledTokenIcon symbol={symbol} />
       <div>{symbol}</div>
     </StyledButton>
-  );
-};
+  )
+}
 
 const Buttons = styled.div`
   display: flex;
@@ -102,7 +100,7 @@ const Buttons = styled.div`
       margin-right: 2rem;
     }
   }
-`;
+`
 
 const Tagline = styled.h1`
   font-size: 1.5rem;
@@ -111,7 +109,7 @@ const Tagline = styled.h1`
   color: ${({ theme }) => theme.color.bodyAccent};
   text-transform: lowercase;
   padding: 0 1rem;
-`;
+`
 
 const Logo = styled(LogoImage)`
   width: 12rem;
@@ -119,7 +117,7 @@ const Logo = styled(LogoImage)`
   path {
     fill: ${({ theme }) => theme.color.body};
   }
-`;
+`
 
 const Header = styled.div`
   display: flex;
@@ -129,7 +127,7 @@ const Header = styled.div`
   > *:not(:last-child) {
     margin-bottom: 2rem;
   }
-`;
+`
 
 const Container = styled.div`
   display: flex;
@@ -148,22 +146,20 @@ const Container = styled.div`
       margin-bottom: 4rem;
     }
   }
-`;
+`
 
 export const Home: FC = () => {
-  const dataState = useDataState();
+  const dataState = useDataState()
   return (
     <Container>
       <Header>
         <Logo />
-        <Tagline>
-          Autonomous and non-custodial stablecoin infrastructure.
-        </Tagline>
+        <Tagline>Autonomous and non-custodial stablecoin infrastructure.</Tagline>
       </Header>
       <Buttons>
         {dataState.mbtc && <MassetButton massetName="mbtc" />}
         <MassetButton massetName="musd" />
       </Buttons>
     </Container>
-  );
-};
+  )
+}

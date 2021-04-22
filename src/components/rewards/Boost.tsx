@@ -1,21 +1,17 @@
-import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
+import React, { FC, useMemo } from 'react'
+import styled from 'styled-components'
 
-import { ADDRESSES } from '../../constants';
-import { useTokenSubscription } from '../../context/TokensProvider';
-import { createToggleContext } from '../../hooks/createToggleContext';
-import { ProgressBar } from '../core/ProgressBar';
-import { Button } from '../core/Button';
-import { Widget } from '../core/Widget';
-import { ViewportWidth } from '../../theme';
+import { useTokenSubscription } from '../../context/TokensProvider'
+import { createToggleContext } from '../../hooks/createToggleContext'
+import { ProgressBar } from '../core/ProgressBar'
+import { Button } from '../core/Button'
+import { Widget } from '../core/Widget'
+import { ViewportWidth } from '../../theme'
 
-import {
-  calculateBoost,
-  calculateBoostImusd,
-  getCoeffs,
-} from '../../utils/boost';
-import { BoostCalculator } from './BoostCalculator';
-import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
+import { calculateBoost, calculateBoostImusd, getCoeffs } from '../../utils/boost'
+import { BoostCalculator } from './BoostCalculator'
+import { BoostedSavingsVaultState } from '../../context/DataProvider/types'
+import { useNetworkAddresses } from '../../context/NetworkProvider'
 
 const BoostBarLine = styled.div`
   width: 100%;
@@ -23,7 +19,7 @@ const BoostBarLine = styled.div`
   margin-left: 16px;
   margin-right: 16px;
   background: ${({ theme }) => theme.color.backgroundAccent};
-`;
+`
 
 const BoostBarRange = styled.div`
   ${({ theme }) => theme.mixins.numeric};
@@ -33,27 +29,24 @@ const BoostBarRange = styled.div`
   align-items: center;
   color: grey;
   padding: 0.5rem 0;
-`;
+`
 
-const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
-  false,
-);
+const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(false)
 
 const BoostBar: FC<{
-  vault: BoostedSavingsVaultState;
-  isImusd?: boolean;
+  vault: BoostedSavingsVaultState
+  isImusd?: boolean
 }> = ({ vault, isImusd }) => {
-  const [, toggleShowCalculator] = useShowCalculatorCtx();
-  const vMTA = useTokenSubscription(ADDRESSES.vMTA);
-  const vMTABalance = vMTA?.balance;
-  const rawBalance = vault.account?.rawBalance;
+  const networkAddresses = useNetworkAddresses()
+  const [, toggleShowCalculator] = useShowCalculatorCtx()
+  const vMTA = useTokenSubscription(networkAddresses?.vMTA)
+  const vMTABalance = vMTA?.balance
+  const rawBalance = vault.account?.rawBalance
 
   const boost = useMemo<number>(() => {
-    const coeffs = getCoeffs(vault);
-    return isImusd || !coeffs
-      ? calculateBoostImusd(rawBalance, vMTABalance)
-      : calculateBoost(...coeffs, rawBalance, vMTABalance);
-  }, [rawBalance, isImusd, vMTABalance, vault]);
+    const coeffs = getCoeffs(vault)
+    return isImusd || !coeffs ? calculateBoostImusd(rawBalance, vMTABalance) : calculateBoost(...coeffs, rawBalance, vMTABalance)
+  }, [rawBalance, isImusd, vMTABalance, vault])
 
   return (
     <Widget
@@ -74,8 +67,8 @@ const BoostBar: FC<{
         </BoostBarRange>
       </div>
     </Widget>
-  );
-};
+  )
+}
 
 const Container = styled(Widget)<{ showCalculator?: boolean }>`
   > div {
@@ -103,24 +96,19 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
       flex-basis: ${({ showCalculator }) => !showCalculator && `40%`};
     }
   }
-`;
+`
 
 const BoostContent: FC<{
-  vault: BoostedSavingsVaultState;
-  apy?: number;
-  isImusd?: boolean;
+  vault: BoostedSavingsVaultState
+  apy?: number
+  isImusd?: boolean
 }> = ({ children, apy, vault, isImusd }) => {
-  const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx();
+  const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx()
 
   return (
     <Container padding showCalculator={showCalculator}>
       {showCalculator ? (
-        <BoostCalculator
-          apy={apy}
-          vault={vault}
-          isImusd={isImusd}
-          onClick={toggleShowCalculator}
-        />
+        <BoostCalculator apy={apy} vault={vault} isImusd={isImusd} onClick={toggleShowCalculator} />
       ) : (
         <>
           <BoostBar vault={vault} isImusd={isImusd} />
@@ -128,17 +116,17 @@ const BoostContent: FC<{
         </>
       )}
     </Container>
-  );
-};
+  )
+}
 
 export const Boost: FC<{
-  vault: BoostedSavingsVaultState;
-  apy?: number;
-  isImusd?: boolean;
+  vault: BoostedSavingsVaultState
+  apy?: number
+  isImusd?: boolean
 }> = ({ apy, children, vault, isImusd }) => (
   <ShowCalculatorProvider>
     <BoostContent apy={apy} vault={vault} isImusd={isImusd}>
       {children}
     </BoostContent>
   </ShowCalculatorProvider>
-);
+)

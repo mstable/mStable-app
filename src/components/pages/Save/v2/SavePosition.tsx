@@ -1,12 +1,12 @@
-import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { MassetState } from '../../../../context/DataProvider/types';
-import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
-import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
-import { ViewportWidth } from '../../../../theme';
-import { BigDecimal } from '../../../../web3/BigDecimal';
-import { CountUp } from '../../../core/CountUp';
+import React, { FC, useMemo } from 'react'
+import styled from 'styled-components'
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
+import { MassetState } from '../../../../context/DataProvider/types'
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider'
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
+import { ViewportWidth } from '../../../../theme'
+import { BigDecimal } from '../../../../web3/BigDecimal'
+import { CountUp } from '../../../core/CountUp'
 
 const Container = styled.div`
   display: flex;
@@ -56,59 +56,41 @@ const Container = styled.div`
       }
     }
   }
-`;
+`
 
 export const SavePosition: FC = () => {
-  const massetState = useSelectedMassetState();
-  const massetPrice = useSelectedMassetPrice() ?? 1;
-  const [selectedSaveVersion] = useSelectedSaveVersion();
+  const massetState = useSelectedMassetState()
+  const massetPrice = useSelectedMassetPrice() ?? 1
+  const [selectedSaveVersion] = useSelectedSaveVersion()
 
   const {
     savingsContracts: {
-      v2: {
-        boostedSavingsVault,
-        token: saveToken,
-        latestExchangeRate: { rate: saveExchangeRate } = {},
-      },
+      v2: { boostedSavingsVault, token: saveToken, latestExchangeRate: { rate: saveExchangeRate } = {} },
     },
-  } = massetState as MassetState;
+  } = massetState as MassetState
 
-  const saveBalance = useMemo(
-    () =>
-      saveToken?.balance?.mulTruncate(
-        saveExchangeRate?.exact ?? BigDecimal.ZERO.exact,
-      ),
-    [saveExchangeRate?.exact, saveToken?.balance],
-  );
+  const saveBalance = useMemo(() => saveToken?.balance?.mulTruncate(saveExchangeRate?.exact ?? BigDecimal.ZERO.exact), [
+    saveExchangeRate?.exact,
+    saveToken?.balance,
+  ])
 
   const vaultBalance = useMemo(
-    () =>
-      boostedSavingsVault?.account?.rawBalance?.mulTruncate(
-        saveExchangeRate?.exact ?? BigDecimal.ZERO.exact,
-      ),
+    () => boostedSavingsVault?.account?.rawBalance?.mulTruncate(saveExchangeRate?.exact ?? BigDecimal.ZERO.exact),
     [boostedSavingsVault?.account?.rawBalance, saveExchangeRate?.exact],
-  );
+  )
 
   return (
     <Container>
       <div>
         <div>
           <h4>Save {selectedSaveVersion === 1 ? 'V2' : ''} Balance</h4>
-          <CountUp
-            end={(saveBalance?.simple ?? 0) * massetPrice}
-            prefix="$"
-            decimals={2}
-          />
+          <CountUp end={(saveBalance?.simple ?? 0) * massetPrice} prefix="$" decimals={2} />
         </div>
         <div>
           <h4>Vault Balance</h4>
-          <CountUp
-            end={(vaultBalance?.simple ?? 0) * massetPrice}
-            prefix="$"
-            decimals={2}
-          />
+          <CountUp end={(vaultBalance?.simple ?? 0) * massetPrice} prefix="$" decimals={2} />
         </div>
       </div>
     </Container>
-  );
-};
+  )
+}

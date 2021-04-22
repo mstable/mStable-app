@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { TokenIcon } from '../icons/TokenIcon';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { TokenIcon } from '../icons/TokenIcon'
 
 interface Props {
-  symbol: string;
-  color?: string;
-  className?: string;
+  symbol: string
+  color?: string
+  className?: string
 }
 
 const Container = styled.div<{ color?: string; transparent?: boolean }>`
@@ -21,11 +21,11 @@ const Container = styled.div<{ color?: string; transparent?: boolean }>`
     height: 36px;
   }
 }
-`;
+`
 
 export const Token: FC<Props> = ({ symbol, color, className }) => (
   <Container color={color} className={className}>
     <TokenIcon symbol={symbol} />
     <div>{symbol}</div>
   </Container>
-);
+)

@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { FontSize, mapSizeToFontSize, Size } from '../../theme';
+import styled from 'styled-components'
+import { FontSize, mapSizeToFontSize, Size } from '../../theme'
 
 /**
  * @deprecated
@@ -14,7 +14,7 @@ export const P = styled.p<{ center?: boolean; size?: Size }>`
   }
 
   ${({ theme }) => theme.mixins.textAlign}
-`;
+`
 
 /**
  * @deprecated
@@ -27,7 +27,7 @@ export const H2 = styled.h2<{ center?: boolean }>`
   padding-bottom: 12px;
 
   ${({ theme }) => theme.mixins.textAlign}
-`;
+`
 
 /**
  * @deprecated
@@ -37,7 +37,7 @@ export const H3 = styled.h3`
   line-height: 1.5rem;
   padding-bottom: 12px;
   padding-top: 4px;
-`;
+`
 
 /**
  * @deprecated
@@ -46,4 +46,4 @@ export const H4 = styled.h4`
   font-size: 12px;
   text-transform: uppercase;
   font-weight: bold;
-`;
+`

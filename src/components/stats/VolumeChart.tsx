@@ -1,23 +1,16 @@
-import React, { FC, useMemo } from 'react';
-import { DocumentNode, gql, useQuery } from '@apollo/client';
-import { format, getUnixTime } from 'date-fns';
-import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import React, { FC, useMemo } from 'react'
+import { DocumentNode, gql, useQuery } from '@apollo/client'
+import { format, getUnixTime } from 'date-fns'
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-import { Color } from '../../theme';
-import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
-import { useBlockTimesForDates } from '../../hooks/useBlockTimesForDates';
-import { getKeyTimestamp } from '../../utils/getKeyTimestamp';
-import { periodFormatMapping, toK } from './utils';
-import { RechartsContainer } from './RechartsContainer';
-import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
-import { ThemedSkeleton } from '../core/ThemedSkeleton';
+import { Color } from '../../theme'
+import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics'
+import { useBlockTimesForDates } from '../../hooks/useBlockTimesForDates'
+import { getKeyTimestamp } from '../../utils/getKeyTimestamp'
+import { periodFormatMapping, toK } from './utils'
+import { RechartsContainer } from './RechartsContainer'
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
+import { ThemedSkeleton } from '../core/ThemedSkeleton'
 
 export enum TransactionType {
   MassetMint = 'MASSET_MINT',
@@ -32,31 +25,31 @@ export enum TransactionType {
 interface MetricsQueryResult {
   [timestamp: string]: {
     cumulativeMinted: {
-      simple: string;
-    };
+      simple: string
+    }
     cumulativeSwapped: {
-      simple: string;
-    };
+      simple: string
+    }
     cumulativeRedeemed: {
-      simple: string;
-    };
+      simple: string
+    }
     cumulativeRedeemedMasset: {
-      simple: string;
-    };
+      simple: string
+    }
     cumulativeFeesPaid: {
-      simple: string;
-    };
+      simple: string
+    }
     savingsContracts: [
       {
         cumulativeDeposited: {
-          simple: string;
-        };
+          simple: string
+        }
         cumulativeWithdrawn: {
-          simple: string;
-        };
+          simple: string
+        }
       },
-    ];
-  };
+    ]
+  }
 }
 
 const labels = {
@@ -66,7 +59,7 @@ const labels = {
   [TransactionType.SavingsContractWithdraw]: 'Withdraw',
   [TransactionType.MassetSwap]: 'Swap',
   [TransactionType.MassetPaidFee]: 'Fees',
-};
+}
 
 const colors = {
   [TransactionType.MassetMint]: Color.green,
@@ -76,7 +69,7 @@ const colors = {
   [TransactionType.SavingsContractWithdraw]: Color.orange,
   [TransactionType.MassetSwap]: Color.gold,
   [TransactionType.MassetPaidFee]: Color.offBlack,
-};
+}
 
 const volumeMetrics = [
   {
@@ -111,9 +104,9 @@ const volumeMetrics = [
     label: labels[TransactionType.MassetPaidFee],
     color: colors[TransactionType.MassetPaidFee],
   },
-];
+]
 
-const nowUnix = getUnixTime(new Date());
+const nowUnix = getUnixTime(new Date())
 
 const useVolumeMetrics = (): ({ timestamp: number } & Record<
   | TransactionType.MassetMint
@@ -124,21 +117,20 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
   | TransactionType.MassetRedeem,
   number
 >)[] => {
-  const dateFilter = useDateFilter();
-  const massetState = useSelectedMassetState();
-  const massetAddress = massetState?.address ?? '';
+  const dateFilter = useDateFilter()
+  const massetState = useSelectedMassetState()
+  const massetAddress = massetState?.address ?? ''
 
-  const blockTimes = useBlockTimesForDates(dateFilter.dates);
+  const blockTimes = useBlockTimesForDates(dateFilter.dates)
 
   const metricsDoc = useMemo<DocumentNode>(() => {
-    const current = `t${nowUnix}: masset(id: "${massetAddress}") { ...VolumeMetricsFields }`;
+    const current = `t${nowUnix}: masset(id: "${massetAddress}") { ...VolumeMetricsFields }`
 
     const blockMetrics = blockTimes
       .map(
-        ({ timestamp, number }) =>
-          `t${timestamp}: masset(id: "${massetAddress}", block: { number: ${number} }) { ...VolumeMetricsFields }`,
+        ({ timestamp, number }) => `t${timestamp}: masset(id: "${massetAddress}", block: { number: ${number} }) { ...VolumeMetricsFields }`,
       )
-      .join('\n');
+      .join('\n')
 
     return gql`
       fragment VolumeMetricsFields on Masset {
@@ -170,20 +162,17 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
         ${current}
         ${blockMetrics}
       }
-    `;
-  }, [blockTimes, massetAddress]);
+    `
+  }, [blockTimes, massetAddress])
 
   const query = useQuery<MetricsQueryResult>(metricsDoc, {
     fetchPolicy: 'no-cache',
-  });
+  })
 
   return useMemo(() => {
     const filtered = Object.entries(query.data ?? {})
       .filter(([, value]) => !!value?.cumulativeMinted)
-      .map(([key, value]) => [getKeyTimestamp(key), value]) as [
-      number,
-      MetricsQueryResult[string],
-    ][];
+      .map(([key, value]) => [getKeyTimestamp(key), value]) as [number, MetricsQueryResult[string]][]
     return (
       filtered
         .sort(([a], [b]) => (a > b ? 1 : -1))
@@ -195,45 +184,37 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
             cumulativeRedeemedMasset,
             cumulativeFeesPaid,
             savingsContracts,
-          } = values;
+          } = values
 
           let collectiveDeposited = savingsContracts.reduce(
-            (_prev, { cumulativeDeposited }) =>
-              _prev + parseFloat(cumulativeDeposited.simple),
+            (_prev, { cumulativeDeposited }) => _prev + parseFloat(cumulativeDeposited.simple),
             0,
-          );
+          )
           let collectiveWithdrawn = savingsContracts.reduce(
-            (_prev, { cumulativeWithdrawn }) =>
-              _prev + parseFloat(cumulativeWithdrawn.simple),
+            (_prev, { cumulativeWithdrawn }) => _prev + parseFloat(cumulativeWithdrawn.simple),
             0,
-          );
-          let minted = parseFloat(cumulativeMinted.simple);
-          let swapped = parseFloat(cumulativeSwapped.simple);
-          let redeemed =
-            parseFloat(cumulativeRedeemed.simple) +
-            parseFloat(cumulativeRedeemedMasset.simple);
-          let fees = parseFloat(cumulativeFeesPaid.simple);
+          )
+          let minted = parseFloat(cumulativeMinted.simple)
+          let swapped = parseFloat(cumulativeSwapped.simple)
+          let redeemed = parseFloat(cumulativeRedeemed.simple) + parseFloat(cumulativeRedeemedMasset.simple)
+          let fees = parseFloat(cumulativeFeesPaid.simple)
 
-          const prev = index > 0 ? arr[index - 1]?.[1] : undefined;
+          const prev = index > 0 ? arr[index - 1]?.[1] : undefined
           if (prev) {
             // TODO too repetitive; shouldn't be doing this anyway;
             // the daily values should be on the subgraph
-            minted -= parseFloat(prev.cumulativeMinted.simple);
+            minted -= parseFloat(prev.cumulativeMinted.simple)
             collectiveDeposited -= prev.savingsContracts.reduce(
-              (_prev, { cumulativeDeposited }) =>
-                _prev + parseFloat(cumulativeDeposited.simple),
+              (_prev, { cumulativeDeposited }) => _prev + parseFloat(cumulativeDeposited.simple),
               0,
-            );
+            )
             collectiveWithdrawn -= prev.savingsContracts.reduce(
-              (_prev, { cumulativeWithdrawn }) =>
-                _prev + parseFloat(cumulativeWithdrawn.simple),
+              (_prev, { cumulativeWithdrawn }) => _prev + parseFloat(cumulativeWithdrawn.simple),
               0,
-            );
-            swapped -= parseFloat(prev.cumulativeSwapped.simple);
-            redeemed -=
-              parseFloat(prev.cumulativeRedeemed.simple) +
-              parseFloat(prev.cumulativeRedeemedMasset.simple);
-            fees -= parseFloat(prev.cumulativeFeesPaid.simple);
+            )
+            swapped -= parseFloat(prev.cumulativeSwapped.simple)
+            redeemed -= parseFloat(prev.cumulativeRedeemed.simple) + parseFloat(prev.cumulativeRedeemedMasset.simple)
+            fees -= parseFloat(prev.cumulativeFeesPaid.simple)
           }
 
           return {
@@ -244,38 +225,27 @@ const useVolumeMetrics = (): ({ timestamp: number } & Record<
             [TransactionType.MassetSwap]: swapped,
             [TransactionType.MassetRedeem]: redeemed,
             [TransactionType.MassetPaidFee]: fees,
-          };
+          }
         })
         // FIXME should not be needed
         .slice(1)
-    );
-  }, [query.data]);
-};
+    )
+  }, [query.data])
+}
 
 const Chart: FC = () => {
-  const dateFilter = useDateFilter();
-  const data = useVolumeMetrics();
-  const { metrics } = useMetricsState();
+  const dateFilter = useDateFilter()
+  const data = useVolumeMetrics()
+  const { metrics } = useMetricsState()
 
   return (
     <RechartsContainer>
       {data && data.length ? (
         <ResponsiveContainer aspect={2}>
-          <AreaChart
-            margin={{ top: 0, right: 16, bottom: 16, left: 16 }}
-            barCategoryGap={1}
-            data={data}
-          >
+          <AreaChart margin={{ top: 0, right: 16, bottom: 16, left: 16 }} barCategoryGap={1} data={data}>
             <defs>
               {volumeMetrics.map(({ type, color }) => (
-                <linearGradient
-                  id={type}
-                  key={type}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
+                <linearGradient id={type} key={type} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={color} stopOpacity={0.5} />
                   <stop offset="95%" stopColor={color} stopOpacity={0} />
                 </linearGradient>
@@ -289,14 +259,7 @@ const Chart: FC = () => {
               padding={{ left: 16 }}
               minTickGap={16}
               tickLine
-              tickFormatter={timestamp =>
-                timestamp
-                  ? format(
-                      timestamp * 1000,
-                      periodFormatMapping[dateFilter.period],
-                    )
-                  : ''
-              }
+              tickFormatter={timestamp => (timestamp ? format(timestamp * 1000, periodFormatMapping[dateFilter.period]) : '')}
             />
             <YAxis
               type="number"
@@ -312,11 +275,7 @@ const Chart: FC = () => {
             />
             <YAxis
               type="number"
-              hide={
-                !metrics.find(
-                  m => m.type === TransactionType.MassetPaidFee && m.enabled,
-                )
-              }
+              hide={!metrics.find(m => m.type === TransactionType.MassetPaidFee && m.enabled)}
               orientation="right"
               tickFormatter={toK}
               axisLine={false}
@@ -330,9 +289,7 @@ const Chart: FC = () => {
             />
             <Tooltip
               cursor
-              labelFormatter={timestamp =>
-                format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
-              }
+              labelFormatter={timestamp => format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')}
               formatter={toK as never}
               separator=""
               contentStyle={{
@@ -371,11 +328,11 @@ const Chart: FC = () => {
         <ThemedSkeleton height={270} />
       )}
     </RechartsContainer>
-  );
-};
+  )
+}
 
 export const VolumeChart: FC = () => (
   <Metrics metrics={volumeMetrics} defaultDateRange={DateRange.Month}>
     <Chart />
   </Metrics>
-);
+)

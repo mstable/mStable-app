@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { Button } from '../core/Button';
-import { AmountInputButton } from './AmountInputButton';
+import { Button } from '../core/Button'
+import { AmountInputButton } from './AmountInputButton'
 
 interface Props {
-  slippageFormValue?: string;
-  handleSetSlippage(formValue?: string): void;
+  slippageFormValue?: string
+  handleSetSlippage(formValue?: string): void
 }
 
 const Container = styled.div`
@@ -51,19 +51,16 @@ const Container = styled.div`
       }
     }
   }
-`;
+`
 
-export const SlippageInput: FC<Props> = ({
-  handleSetSlippage,
-  slippageFormValue,
-}) => (
+export const SlippageInput: FC<Props> = ({ handleSetSlippage, slippageFormValue }) => (
   <Container>
     <div>Max slippage</div>
     <div>
       <Button
         highlighted={slippageFormValue === '0.1'}
         onClick={() => {
-          handleSetSlippage('0.1');
+          handleSetSlippage('0.1')
         }}
       >
         0.1%
@@ -71,7 +68,7 @@ export const SlippageInput: FC<Props> = ({
       <Button
         highlighted={slippageFormValue === '0.5'}
         onClick={() => {
-          handleSetSlippage('0.5');
+          handleSetSlippage('0.5')
         }}
       >
         0.5%
@@ -79,17 +76,12 @@ export const SlippageInput: FC<Props> = ({
       <Button
         highlighted={slippageFormValue === '1'}
         onClick={() => {
-          handleSetSlippage('1');
+          handleSetSlippage('1')
         }}
       >
         1%
       </Button>
-      <AmountInputButton
-        onChange={handleSetSlippage}
-        value={slippageFormValue}
-        max="100"
-        min="0"
-      />
+      <AmountInputButton onChange={handleSetSlippage} value={slippageFormValue} max="100" min="0" />
     </div>
   </Container>
-);
+)

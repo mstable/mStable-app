@@ -1,46 +1,39 @@
-import React, { FC, useCallback, useMemo, useState } from 'react';
-import { BigNumber } from 'ethers';
-import styled from 'styled-components';
+import React, { FC, useCallback, useMemo, useState } from 'react'
+import { BigNumber } from 'ethers'
+import styled from 'styled-components'
 
-import { useTokenAllowance } from '../../../../context/TokensProvider';
-import { useOwnAccount } from '../../../../context/UserProvider';
-import { TransactionForm } from '../../../forms/TransactionForm';
-import { TokenAmount } from '../../../core/TokenAmount';
-import { NumberFormat } from '../../../core/Amount';
-import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
-import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider';
-import { Interfaces } from '../../../../types';
-import { RewardsDistributor__factory } from '../../../../typechain';
-import { BigDecimal } from '../../../../web3/BigDecimal';
-import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import { Button } from '../../../core/Button';
-import { useSigner } from '../../../../context/OnboardProvider';
-import { SendButton } from '../../../forms/SendButton';
+import { useTokenAllowance } from '../../../../context/TokensProvider'
+import { useOwnAccount, useSigner } from '../../../../context/AccountProvider'
+import { TransactionForm } from '../../../forms/TransactionForm'
+import { TokenAmount } from '../../../core/TokenAmount'
+import { NumberFormat } from '../../../core/Amount'
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
+import { useEarnAdminDispatch, useEarnAdminState } from './EarnAdminProvider'
+import { Interfaces } from '../../../../types'
+import { RewardsDistributor__factory } from '../../../../typechain'
+import { BigDecimal } from '../../../../web3/BigDecimal'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
+import { Button } from '../../../core/Button'
+import { SendButton } from '../../../forms/SendButton'
 
 const Row = styled.div`
   margin-bottom: 16px;
-`;
+`
 
 const Confirm: FC = () => {
   const {
     data: { rewardsToken },
     totalFunds,
     recipientAmounts,
-  } = useEarnAdminState();
+  } = useEarnAdminState()
 
-  const token = rewardsToken || { decimals: 18, symbol: 'MTA' };
+  const token = rewardsToken || { decimals: 18, symbol: 'MTA' }
 
   return (
     <>
       <Row>
         <h3>Total amount</h3>
-        <TokenAmount
-          symbol={token.symbol}
-          amount={totalFunds}
-          decimalPlaces={6}
-          format={NumberFormat.Countup}
-          countup={{ decimals: 6 }}
-        />
+        <TokenAmount symbol={token.symbol} amount={totalFunds} decimalPlaces={6} format={NumberFormat.Countup} countup={{ decimals: 6 }} />
       </Row>
       <Row>
         <h3>Breakdown</h3>
@@ -52,9 +45,7 @@ const Confirm: FC = () => {
                 <div>{key}</div>
                 <div>
                   {recipientAmounts[key].amount
-                    ? `${recipientAmounts[key].amount?.format()} (${
-                        recipientAmounts[key].amount?.exact
-                      })`
+                    ? `${recipientAmounts[key].amount?.format()} (${recipientAmounts[key].amount?.exact})`
                     : '-'}
                 </div>
                 <br />
@@ -63,20 +54,19 @@ const Confirm: FC = () => {
         </code>
       </Row>
     </>
-  );
-};
+  )
+}
 
 const Input: FC = () => {
   const {
     data: { rewardsToken, rewardsDistributor },
     totalFunds,
-  } = useEarnAdminState();
-  const spender = rewardsDistributor?.id;
+  } = useEarnAdminState()
+  const spender = rewardsDistributor?.id
 
   return rewardsToken && spender ? (
     <Row>
-      {totalFunds &&
-      rewardsToken?.allowances[spender]?.exact.lt(totalFunds.exact) ? (
+      {totalFunds && rewardsToken?.allowances[spender]?.exact.lt(totalFunds.exact) ? (
         <>
           <h3>Approve amount</h3>
           <p>
@@ -97,32 +87,25 @@ const Input: FC = () => {
     </Row>
   ) : (
     <ThemedSkeleton />
-  );
-};
+  )
+}
 
 const CustomRecipients: FC = () => {
-  const [recipientValue, setRecipientValue] = useState<string>();
-  const { recipientAmounts } = useEarnAdminState();
-  const {
-    addCustomRecipient,
-    removeCustomRecipient,
-    setRecipientAmount,
-  } = useEarnAdminDispatch();
+  const [recipientValue, setRecipientValue] = useState<string>()
+  const { recipientAmounts } = useEarnAdminState()
+  const { addCustomRecipient, removeCustomRecipient, setRecipientAmount } = useEarnAdminDispatch()
 
   return (
     <div>
       <Row>
         <h4>Recipients</h4>
         <div>
-          <input
-            placeholder="Recipient"
-            onChange={e => setRecipientValue(e.target.value)}
-          />
+          <input placeholder="Recipient" onChange={e => setRecipientValue(e.target.value)} />
           <Button
             onClick={() => {
               if (recipientValue) {
-                addCustomRecipient(recipientValue);
-                setRecipientValue(undefined);
+                addCustomRecipient(recipientValue)
+                setRecipientValue(undefined)
               }
             }}
           >
@@ -135,22 +118,20 @@ const CustomRecipients: FC = () => {
             .map(recipient => (
               <div key={recipient}>
                 <div>Address: {recipient}</div>
-                <div>
-                  Amount: {recipientAmounts[recipient].amount?.format()}
-                </div>
+                <div>Amount: {recipientAmounts[recipient].amount?.format()}</div>
                 <div>
                   Set amount:{' '}
                   <input
                     type="number"
                     onChange={e => {
-                      setRecipientAmount(recipient, e.currentTarget.value);
+                      setRecipientAmount(recipient, e.currentTarget.value)
                     }}
                   />
                 </div>
                 <div>
                   <Button
                     onClick={() => {
-                      removeCustomRecipient(recipient);
+                      removeCustomRecipient(recipient)
                     }}
                   >
                     Remove
@@ -161,12 +142,12 @@ const CustomRecipients: FC = () => {
         </code>
       </Row>
     </div>
-  );
-};
+  )
+}
 
 const Inputs: FC<{ reason?: string }> = ({ reason }) => {
-  const { useCustomRecipients } = useEarnAdminState();
-  const { toggleCustomRecipients } = useEarnAdminDispatch();
+  const { useCustomRecipients } = useEarnAdminState()
+  const { toggleCustomRecipients } = useEarnAdminDispatch()
   return (
     <div>
       {reason ? (
@@ -176,9 +157,7 @@ const Inputs: FC<{ reason?: string }> = ({ reason }) => {
         </Row>
       ) : null}
       <Row>
-        <Button onClick={toggleCustomRecipients}>
-          Toggle custom recipients
-        </Button>
+        <Button onClick={toggleCustomRecipients}>Toggle custom recipients</Button>
       </Row>
       {useCustomRecipients ? (
         <Row>
@@ -188,71 +167,52 @@ const Inputs: FC<{ reason?: string }> = ({ reason }) => {
       ) : null}
       <Input />
     </div>
-  );
-};
+  )
+}
 
 export const DistributeRewardsForm: FC = () => {
-  const account = useOwnAccount();
-  const signer = useSigner();
+  const account = useOwnAccount()
+  const signer = useSigner()
   const {
     data: { rewardsDistributor, rewardsToken },
     useCustomRecipients,
     recipientAmounts,
     totalFunds,
-  } = useEarnAdminState();
+  } = useEarnAdminState()
 
-  const rewardsDistributorAddress = rewardsDistributor?.id;
+  const rewardsDistributorAddress = rewardsDistributor?.id
 
-  const allowance = useTokenAllowance(
-    rewardsToken?.address,
-    rewardsDistributorAddress,
-  );
+  const allowance = useTokenAllowance(rewardsToken?.address, rewardsDistributorAddress)
 
   const reason = useMemo<string | undefined>(() => {
     if (!account) {
-      return 'Not connected';
+      return 'Not connected'
     }
 
     if (!(rewardsDistributorAddress && rewardsDistributor && allowance)) {
-      return 'Fetching data';
+      return 'Fetching data'
     }
 
     if (!rewardsDistributor?.fundManagers.includes(account.toLowerCase())) {
-      return 'Not a fund manager';
+      return 'Not a fund manager'
     }
 
     if (!totalFunds?.exact.gt(0)) {
-      return 'Funds not allocated';
+      return 'Funds not allocated'
     }
 
     if (allowance.exact.lt(totalFunds?.exact)) {
-      return 'Exceeds approved amount';
+      return 'Exceeds approved amount'
     }
-    return undefined;
-  }, [
-    account,
-    allowance,
-    rewardsDistributor,
-    rewardsDistributorAddress,
-    totalFunds,
-  ]);
+    return undefined
+  }, [account, allowance, rewardsDistributor, rewardsDistributorAddress, totalFunds])
 
-  const valid = !reason;
+  const valid = !reason
 
   const createTransaction = useCallback(
-    (
-      formId: string,
-    ): TransactionManifest<
-      Interfaces.RewardsDistibutor,
-      'distributeRewards'
-    > | void => {
+    (formId: string): TransactionManifest<Interfaces.RewardsDistibutor, 'distributeRewards'> | void => {
       const contract =
-        signer && rewardsDistributorAddress
-          ? RewardsDistributor__factory.connect(
-              rewardsDistributorAddress,
-              signer,
-            )
-          : undefined;
+        signer && rewardsDistributorAddress ? RewardsDistributor__factory.connect(rewardsDistributorAddress, signer) : undefined
 
       const args: [string[], BigNumber[]] = Object.entries(recipientAmounts)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -266,7 +226,7 @@ export const DistributeRewardsForm: FC = () => {
                 ]
               : [addresses, amounts],
           [[], []],
-        );
+        )
 
       if (contract && args.length > 0) {
         return new TransactionManifest(
@@ -278,11 +238,11 @@ export const DistributeRewardsForm: FC = () => {
             past: 'Distributed rewards',
           },
           formId,
-        );
+        )
       }
     },
     [signer, recipientAmounts, rewardsDistributorAddress, useCustomRecipients],
-  );
+  )
 
   return (
     <TransactionForm
@@ -293,5 +253,5 @@ export const DistributeRewardsForm: FC = () => {
       input={<Inputs reason={reason} />}
       valid={valid}
     />
-  );
-};
+  )
+}

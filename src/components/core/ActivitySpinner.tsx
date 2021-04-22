@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
 interface Props {
-  className?: string;
-  pending?: boolean;
-  size?: number;
+  className?: string
+  pending?: boolean
+  size?: number
 }
 
 const Spinner = styled.svg<Pick<Props, 'size'>>`
@@ -41,7 +41,7 @@ const Spinner = styled.svg<Pick<Props, 'size'>>`
       stroke-dashoffset: -124;
     }
   }
-`;
+`
 
 const Container = styled.div<Props>`
   display: flex;
@@ -50,7 +50,7 @@ const Container = styled.div<Props>`
     height: ${({ size }) => `${size}px`};
     width: ${({ size }) => `${size}px`};
   }
-`;
+`
 
 export const ActivitySpinner: FC<Props> = ({ pending, className, size = 20 }) =>
   pending ? (
@@ -59,4 +59,4 @@ export const ActivitySpinner: FC<Props> = ({ pending, className, size = 20 }) =>
         <circle cx={size / 2} cy={size / 2} r={(size / 2) * 0.8} />
       </Spinner>
     </Container>
-  ) : null;
+  ) : null
