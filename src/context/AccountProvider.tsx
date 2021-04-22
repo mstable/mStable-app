@@ -300,6 +300,10 @@ const OnboardConnection: FC = ({ children }) => {
   const previousInjectedChainId = usePrevious(injectedChainId)
 
   useEffect(() => {
+    LocalStorage.set('mostRecentChainId', chainId)
+  }, [chainId])
+
+  useEffect(() => {
     if (!chainId || !injectedChainId || !previousInjectedChainId) return
 
     // Change chainId when injectedChainId changes and doesn't match chainId
