@@ -20,12 +20,15 @@ import {
 } from './types'
 import { CoingeckoPrices, fetchCoingeckoPrices } from '../../utils/fetchCoingeckoPrices'
 import { useMerkleDrops } from './useMerkleDrops'
+import { AllNetworks, useNetwork } from '../NetworkProvider'
+import { CURVE_ADDRESSES } from './CurveProvider'
 
 const STABLECOIN_SYMBOLS = ['BUSD', 'DAI', 'SUSD', 'TUSD', 'USDC', 'USDT', 'mUSD']
 
 const getUniqueTokens = (
   rawStakingContractsData: RawStakingRewardsContracts,
   rawPlatformsData: RawPlatformPools,
+  network: AllNetworks,
 ): { [address: string]: number } => {
   // Get unique tokens: rewards tokens, platform tokens,
   // and pool tokens.
@@ -76,10 +79,8 @@ const getUniqueTokens = (
   )
 
   return {
-    // [ADDRESSES.MTA]: 18,
-    // [ADDRESSES.BALANCER.BAL]: 18,
-    // [ADDRESSES.CURVE.CRV_TOKEN]: 18,
-    // [ADDRESSES.REN.renBTC]: 8,
+    ...Object.fromEntries(Object.values(network.addresses.ERC20).map(address => [address, 18])),
+    [network.addresses.MTA]: 18,
     ...tokens,
     ...balancerTokens,
     ...uniswapTokens,
@@ -94,10 +95,12 @@ const useTokenPrices = (rawStakingContractsData: RawStakingRewardsContracts, raw
   const lastUpdateTime = useRef<number>(0)
   const updating = useRef<boolean>(false)
   const [coingeckoData, setCoingeckoData] = useState<CoingeckoPrices>({})
+  const network = useNetwork() as AllNetworks
 
-  const uniqueTokens = useMemo(() => getUniqueTokens(rawStakingContractsData, rawPlatformsData), [
+  const uniqueTokens = useMemo(() => getUniqueTokens(rawStakingContractsData, rawPlatformsData, network), [
     rawPlatformsData,
     rawStakingContractsData,
+    network,
   ])
 
   const addresses = Object.keys(uniqueTokens)
@@ -183,25 +186,25 @@ const normalizeSushiPool = ({ address, totalSupply, reserveUSD, reserve0, reserv
 
 const normalizeCurvePools = (): NormalizedPool[] => {
   return [
-    // {
-    //   address: ADDRESSES.CURVE.MUSD_LP_TOKEN,
-    //   platform: Platforms.Curve,
-    //   tokens: [
-    //     {
-    //       address: ADDRESSES.CURVE.MUSD_TOKEN,
-    //       symbol: 'mUSD',
-    //       decimals: 18,
-    //       totalSupply: BigDecimal.ZERO,
-    //     },
-    //     {
-    //       address: ADDRESSES.CURVE['3POOL_TOKEN'],
-    //       symbol: '3POOL',
-    //       decimals: 18,
-    //       totalSupply: BigDecimal.ZERO,
-    //     },
-    //   ],
-    //   onlyStablecoins: true,
-    // },
+    {
+      address: CURVE_ADDRESSES.MUSD_LP_TOKEN,
+      platform: Platforms.Curve,
+      tokens: [
+        {
+          address: CURVE_ADDRESSES.MUSD_TOKEN,
+          symbol: 'mUSD',
+          decimals: 18,
+          totalSupply: BigDecimal.ZERO,
+        },
+        {
+          address: CURVE_ADDRESSES['3POOL_TOKEN'],
+          symbol: '3POOL',
+          decimals: 18,
+          totalSupply: BigDecimal.ZERO,
+        },
+      ],
+      onlyStablecoins: true,
+    },
   ]
 }
 
@@ -251,20 +254,10 @@ const useRawPlatformPools = (rawStakingRewardsContracts: RawStakingRewardsContra
     fetchPolicy: 'cache-and-network',
   })
 
-  // TODO later: include when the subgraph works
-  // const curveQuery = useCurvePoolsQuery({
-  //   variables: {
-  //     basePool: ADDRESSES.CURVE['3POOL_SWAP'],
-  //     musdPool: ADDRESSES.CURVE.MUSD_SWAP,
-  //   },
-  //   fetchPolicy: 'cache-and-network',
-  // });
-
   return {
     [Platforms.Balancer]: poolsQuery.data?.pools ?? [],
     [Platforms.Uniswap]: pairsQuery.data?.pairs ?? [],
     [Platforms.Sushi]: sushiPairsQuery.data?.pairs ?? [],
-    // [Platforms.Curve]: curveQuery.data,
   }
 }
 
