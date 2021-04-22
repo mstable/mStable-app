@@ -1,34 +1,15 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
-import { ApolloProvider as ApolloReactProvider } from '@apollo/react-hooks';
-import { MultiAPILink } from '@habx/apollo-multi-endpoint-link';
-import {
-  ApolloClient,
-  InMemoryCache,
-  HttpLink,
-  NormalizedCacheObject,
-} from '@apollo/client';
-import { ApolloLink } from 'apollo-link';
-import { onError } from 'apollo-link-error';
-import { persistCache } from 'apollo-cache-persist';
-import useThrottleFn from 'react-use/lib/useThrottleFn';
+import React, { FC, useEffect, useMemo, useState } from 'react'
+import Skeleton from 'react-loading-skeleton'
+import { ApolloProvider as ApolloReactProvider } from '@apollo/react-hooks'
+import { MultiAPILink } from '@habx/apollo-multi-endpoint-link'
+import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject } from '@apollo/client'
+import { ApolloLink } from 'apollo-link'
+import { onError } from 'apollo-link-error'
+import { persistCache } from 'apollo-cache-persist'
+import { useThrottleFn } from 'react-use'
 
-import { useAddErrorNotification } from './NotificationsProvider';
-import { ThemedSkeleton } from '../components/core/ThemedSkeleton';
-
-const CHAIN_ID = process.env.REACT_APP_CHAIN_ID;
-
-const CACHE_KEY = `apollo-cache-persist.CHAIN_ID_${CHAIN_ID}.v3`;
-
-export const ENDPOINTS = {
-  protocol: process.env.REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL as string,
-  ecosystem: process.env.REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM as string,
-  feeders: process.env.REACT_APP_GRAPHQL_ENDPOINT_FEEDERS as string,
-  balancer: process.env.REACT_APP_GRAPHQL_ENDPOINT_BALANCER as string,
-  uniswap: process.env.REACT_APP_GRAPHQL_ENDPOINT_UNISWAP as string,
-  blocks: process.env.REACT_APP_GRAPHQL_ENDPOINT_BLOCKS as string,
-  sushi:
-    'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork',
-};
+import { useAddErrorNotification } from './NotificationsProvider'
+import { useNetwork } from './NetworkProvider'
 
 const cache = new InMemoryCache({
   resultCaching: true,
@@ -55,68 +36,65 @@ const cache = new InMemoryCache({
       },
     },
   },
-});
+})
 
-/**
- * Provider for accessing Apollo queries and subscriptions.
- */
-export const ApolloProvider: FC<{}> = ({ children }) => {
-  const addErrorNotification = useAddErrorNotification();
-  const [persisted, setPersisted] = useState(false);
-  const [error, setError] = useState<string>();
+export const ApolloProvider: FC = ({ children }) => {
+  const addErrorNotification = useAddErrorNotification()
+  const [persisted, setPersisted] = useState(false)
+  const [error, setError] = useState<string>()
+  const network = useNetwork()
 
   useThrottleFn(
     () => {
       if (error) {
-        addErrorNotification(error);
+        addErrorNotification(error)
       }
     },
     5000,
     [error] as never,
-  );
-
-  const errorLink = onError(({ networkError, graphQLErrors }) => {
-    if (graphQLErrors) {
-      graphQLErrors.forEach(({ message, ..._error }) => {
-        // eslint-disable-next-line no-console
-        console.error(message, _error);
-      });
-    }
-    if (networkError) {
-      setError(`TheGraph: ${networkError.message}`);
-    }
-  });
-
-  const apolloLink = ApolloLink.from([
-    errorLink,
-    new MultiAPILink({
-      endpoints: ENDPOINTS,
-      httpSuffix: '', // By default, this library adds `/graphql` as a suffix
-      createHttpLink: () => (new HttpLink() as unknown) as ApolloLink,
-    }),
-  ]);
+  )
 
   useEffect(() => {
     persistCache({
       cache: cache as never,
       storage: window.localStorage as never,
-      key: CACHE_KEY,
+      key: `apollo-cache-persist.v4.${network.chainId}`,
     })
       // eslint-disable-next-line no-console
       .catch(_error => console.warn('Cache persist error', _error))
       .finally(() => {
-        setPersisted(true);
-      });
-  }, [setPersisted]);
+        setPersisted(true)
+      })
+  }, [setPersisted, network.chainId])
 
-  const client = useMemo<
-    ApolloClient<NormalizedCacheObject> | undefined
-  >(() => {
-    if (!persisted) return undefined;
+  const client = useMemo<ApolloClient<NormalizedCacheObject> | undefined>(() => {
+    setPersisted(true)
+    if (!persisted || !network) return undefined
+
+    const errorLink = onError(({ networkError, graphQLErrors }) => {
+      if (graphQLErrors) {
+        graphQLErrors.forEach(({ message, ..._error }) => {
+          // eslint-disable-next-line no-console
+          console.error(message, _error)
+        })
+      }
+      if (networkError) {
+        setError(`TheGraph: ${networkError.message}`)
+      }
+    })
+
+    const link = ApolloLink.from([
+      errorLink,
+      new MultiAPILink({
+        endpoints: network.gqlEndpoints,
+        httpSuffix: '', // By default, this library adds `/graphql` as a suffix
+        createHttpLink: () => (new HttpLink() as unknown) as ApolloLink,
+      }),
+    ]) as never
 
     return new ApolloClient<NormalizedCacheObject>({
       cache,
-      link: apolloLink as never,
+      link,
       defaultOptions: {
         watchQuery: {
           fetchPolicy: 'network-only',
@@ -126,15 +104,8 @@ export const ApolloProvider: FC<{}> = ({ children }) => {
           fetchPolicy: 'cache-and-network' as never,
         },
       },
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [persisted]);
+    })
+  }, [persisted, network])
 
-  return client ? (
-    <ApolloReactProvider client={client as never}>
-      {children}
-    </ApolloReactProvider>
-  ) : (
-    <ThemedSkeleton />
-  );
-};
+  return client ? <ApolloReactProvider client={client as never}>{children}</ApolloReactProvider> : <Skeleton />
+}
