@@ -6,6 +6,7 @@ import type { Provider } from '@ethersproject/providers'
 
 import { composedComponent } from '../utils/reactUtils'
 import { FetchState, useFetchState } from '../hooks/useFetchState'
+import { LocalStorage } from '../localStorage'
 
 interface NetworkPrices {
   nativeToken?: number
@@ -295,7 +296,7 @@ const MATIC_MAINNET: MaticMainnet = {
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015', // Mainnet
     FeederWrapper: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5', // Mainnet
     SaveWrapper: '',
-    UniswapRouter02_Like: '0xFCB5348111665Cf95a777f0c4FCA768E05601760', // QuickSwap
+    UniswapRouter02_Like: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff', // QuickSwap
     ERC20: {
       wMATIC: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
     },
@@ -358,7 +359,9 @@ export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainI
 
 // TODO could still use an env var to define the default chain ID
 // Or even domain matching (polygon.*)
-const [useChainIdCtx, ChainIdProvider] = createStateContext<ChainIds | undefined>(ChainIds.EthereumMainnet)
+const [useChainIdCtx, ChainIdProvider] = createStateContext<ChainIds | undefined>(
+  LocalStorage.get('mostRecentChainId') ?? ChainIds.EthereumMainnet,
+)
 export { useChainIdCtx }
 
 const networkCtx = createContext<Network<unknown, unknown>>(null as never)
