@@ -1,20 +1,15 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { Button } from '../core/Button';
-import { H3 } from '../core/Typography';
-import { Address } from '../core/Address';
-import { PageAction, PageHeader } from '../pages/PageHeader';
-import { Balances } from './Balances';
-import { HistoricTransactions } from './HistoricTransactions';
-import { Transactions } from './Transactions';
-import { useCloseAccount } from '../../context/AppProvider';
-import {
-  useWalletAddress,
-  useConnected,
-  useWallet,
-  useReset,
-} from '../../context/OnboardProvider';
+import { Button } from '../core/Button'
+import { H3 } from '../core/Typography'
+import { Address } from '../core/Address'
+import { PageAction, PageHeader } from '../pages/PageHeader'
+import { Balances } from './Balances'
+import { HistoricTransactions } from './HistoricTransactions'
+import { Transactions } from './Transactions'
+import { useCloseAccount } from '../../context/AppProvider'
+import { useWalletAddress, useConnected, useWallet, useReset } from '../../context/AccountProvider'
 
 const Container = styled.div`
   flex: 1;
@@ -42,7 +37,7 @@ const Container = styled.div`
       }
     }
   }
-`;
+`
 
 const Rows = styled.div`
   width: 100%;
@@ -51,34 +46,31 @@ const Rows = styled.div`
     border-top: 1px ${({ theme }) => theme.color.whiteTransparent} solid;
     padding-top: 1rem;
   }
-`;
+`
 
 const Row = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing.xl};
-`;
+`
 
 const DisconnectButton = styled(Button)`
   color: ${({ theme }) => theme.color.white};
   background: ${({ theme }) => theme.color.red};
-`;
+`
 
 const AddressGroup = styled.div`
   display: flex;
   justify-content: space-between;
-`;
+`
 
-const Connected: FC<{ walletLabel: string; account: string }> = ({
-  walletLabel,
-  account,
-}) => {
-  const reset = useReset();
-  const closeWallet = useCloseAccount();
+const Connected: FC<{ walletLabel: string; account: string }> = ({ walletLabel, account }) => {
+  const reset = useReset()
+  const closeWallet = useCloseAccount()
   const onReset = (): void => {
     if (reset) {
-      reset();
-      closeWallet();
+      reset()
+      closeWallet()
     }
-  };
+  }
   return (
     <Rows>
       <Row>
@@ -103,13 +95,13 @@ const Connected: FC<{ walletLabel: string; account: string }> = ({
         <HistoricTransactions account={account} />
       </Row>
     </Rows>
-  );
-};
+  )
+}
 
 export const Wallet: FC = () => {
-  const address = useWalletAddress();
-  const connected = useConnected();
-  const wallet = useWallet();
+  const address = useWalletAddress()
+  const connected = useConnected()
+  const wallet = useWallet()
 
   return (
     <Container>
@@ -124,12 +116,8 @@ export const Wallet: FC = () => {
               : 'Connect wallet'
           }
         />
-        <div>
-          {connected && address && wallet && (
-            <Connected walletLabel={wallet.name as string} account={address} />
-          )}
-        </div>
+        <div>{connected && address && wallet && <Connected walletLabel={wallet.name as string} account={address} />}</div>
       </div>
     </Container>
-  );
-};
+  )
+}

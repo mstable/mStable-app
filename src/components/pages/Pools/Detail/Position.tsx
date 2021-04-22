@@ -1,10 +1,10 @@
-import React, { FC, useMemo } from 'react';
-import styled from 'styled-components';
-import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
-import { ViewportWidth } from '../../../../theme';
-import { CountUp } from '../../../core/CountUp';
-import { Tooltip } from '../../../core/ReactTooltip';
-import { useSelectedFeederPoolState } from '../FeederPoolProvider';
+import React, { FC, useMemo } from 'react'
+import styled from 'styled-components'
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
+import { ViewportWidth } from '../../../../theme'
+import { CountUp } from '../../../core/CountUp'
+import { Tooltip } from '../../../core/ReactTooltip'
+import { useSelectedFeederPoolState } from '../FeederPoolProvider'
 
 const Container = styled.div`
   display: flex;
@@ -54,7 +54,7 @@ const Container = styled.div`
       }
     }
   }
-`;
+`
 
 export const Position: FC = () => {
   const {
@@ -63,42 +63,32 @@ export const Position: FC = () => {
     token,
     account,
     price: currentPrice,
-  } = useSelectedFeederPoolState() ?? {};
-  const massetPrice = useSelectedMassetPrice() ?? 1;
+  } = useSelectedFeederPoolState() ?? {}
+  const massetPrice = useSelectedMassetPrice() ?? 1
 
-  const userAmount = token.balance?.simple ?? 0;
-  const userStakedAmount = vault.account?.rawBalance.simple ?? 0;
+  const userAmount = token.balance?.simple ?? 0
+  const userStakedAmount = vault.account?.rawBalance.simple ?? 0
 
-  const poolTotal = totalSupply.simple;
-  const poolPercentage = 100 * ((userAmount + userStakedAmount) / poolTotal);
+  const poolTotal = totalSupply.simple
+  const poolPercentage = 100 * ((userAmount + userStakedAmount) / poolTotal)
 
   const feesEarned = useMemo<[number, number]>(() => {
     if (account) {
-      const {
-        balanceVault,
-        balance,
-        cumulativeEarned,
-        cumulativeEarnedVault,
-        price,
-        priceVault,
-      } = account;
+      const { balanceVault, balance, cumulativeEarned, cumulativeEarnedVault, price, priceVault } = account
 
       const currentEarned =
-        price.simple < currentPrice.simple
-          ? balance.simple * currentPrice.simple - balance.simple * price.simple
-          : cumulativeEarned.simple;
+        price.simple < currentPrice.simple ? balance.simple * currentPrice.simple - balance.simple * price.simple : cumulativeEarned.simple
 
       const currentEarnedVault =
         priceVault.simple < currentPrice.simple
-          ? balanceVault.simple * currentPrice.simple -
-            balanceVault.simple * priceVault.simple
-          : cumulativeEarnedVault.simple;
+          ? balanceVault.simple * currentPrice.simple - balanceVault.simple * priceVault.simple
+          : cumulativeEarnedVault.simple
 
-      return [currentEarned, currentEarnedVault];
+      return [currentEarned, currentEarnedVault]
     }
 
-    return [0, 0];
-  }, [account, currentPrice]);
+    return [0, 0]
+  }, [account, currentPrice])
 
   return (
     <Container>
@@ -108,18 +98,10 @@ export const Position: FC = () => {
           <CountUp end={poolPercentage} decimals={4} suffix="%" />
         </div>
         <div>
-          <Tooltip
-            tip={`${token.symbol} ${feesEarned[0].toFixed(10)}, ${
-              token.symbol
-            } Vault ${feesEarned[1].toFixed(10)}`}
-          >
+          <Tooltip tip={`${token.symbol} ${feesEarned[0].toFixed(10)}, ${token.symbol} Vault ${feesEarned[1].toFixed(10)}`}>
             <h4>Fees earned</h4>
           </Tooltip>
-          <CountUp
-            end={(feesEarned[0] + feesEarned[1]) * massetPrice}
-            decimals={2}
-            prefix="$"
-          />
+          <CountUp end={(feesEarned[0] + feesEarned[1]) * massetPrice} decimals={2} prefix="$" />
         </div>
         <div>
           <h4>Unstaked Balance</h4>
@@ -127,5 +109,5 @@ export const Position: FC = () => {
         </div>
       </div>
     </Container>
-  );
-};
+  )
+}

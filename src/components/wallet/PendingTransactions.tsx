@@ -1,15 +1,12 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import {
-  useTransactionsDispatch,
-  useTransactionsState,
-} from '../../context/TransactionsProvider';
-import { TransactionStatus } from '../../web3/TransactionManifest';
+import { useTransactionsDispatch, useTransactionsState } from '../../context/TransactionsProvider'
+import { TransactionStatus } from '../../web3/TransactionManifest'
 
-import { Button } from '../core/Button';
-import { GasStation } from './GasStation';
-import { useGas } from './TransactionGasProvider';
+import { Button } from '../core/Button'
+import { GasStation } from './GasStation'
+import { useGas } from './TransactionGasProvider'
 
 const Buttons = styled.div`
   display: flex;
@@ -17,12 +14,12 @@ const Buttons = styled.div`
   justify-content: space-between;
   align-items: center;
   font-size: 1rem;
-`;
+`
 
 const Purpose = styled.div`
   font-size: 1.3rem;
   line-height: 1.7rem;
-`;
+`
 
 const TxError = styled.div`
   font-size: 1rem;
@@ -33,7 +30,7 @@ const TxError = styled.div`
     font-size: 0.8rem;
     font-weight: 600;
   }
-`;
+`
 
 const Container = styled.div<{ status: TransactionStatus }>`
   width: 24rem;
@@ -53,25 +50,20 @@ const Container = styled.div<{ status: TransactionStatus }>`
   border-radius: 1rem;
   color: ${({ theme }) => theme.color.body};
   background: ${({ theme }) => theme.color.background};
-`;
+`
 
 export const PendingTransaction: FC<{
-  id: string;
+  id: string
 }> = ({ id }) => {
-  const { [id]: transaction } = useTransactionsState();
-  const { cancel, send } = useTransactionsDispatch();
-  const { estimationError, gasLimit, gasPrice } = useGas();
+  const { [id]: transaction } = useTransactionsState()
+  const { cancel, send } = useTransactionsDispatch()
+  const { estimationError, gasLimit, gasPrice } = useGas()
 
   if (!transaction) {
-    return null;
+    return null
   }
 
-  const disabled = !!(
-    estimationError ||
-    !gasLimit ||
-    !gasPrice ||
-    transaction.status !== TransactionStatus.Pending
-  );
+  const disabled = !!(estimationError || !gasLimit || !gasPrice || transaction.status !== TransactionStatus.Pending)
 
   return (
     <Container status={transaction.status}>
@@ -87,7 +79,7 @@ export const PendingTransaction: FC<{
         <Button
           scale={0.7}
           onClick={() => {
-            cancel(transaction.manifest.id);
+            cancel(transaction.manifest.id)
           }}
         >
           Cancel
@@ -98,7 +90,7 @@ export const PendingTransaction: FC<{
           disabled={disabled}
           onClick={() => {
             if (gasPrice && gasLimit) {
-              send(transaction.manifest, gasLimit, gasPrice);
+              send(transaction.manifest, gasLimit, gasPrice)
             }
           }}
         >
@@ -106,5 +98,5 @@ export const PendingTransaction: FC<{
         </Button>
       </Buttons>
     </Container>
-  );
-};
+  )
+}

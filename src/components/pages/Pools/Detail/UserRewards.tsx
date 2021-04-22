@@ -1,31 +1,38 @@
-import React, { FC } from 'react';
-import { useToggle } from 'react-use';
-import Skeleton from 'react-loading-skeleton';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import { useToggle } from 'react-use'
+import Skeleton from 'react-loading-skeleton'
+import styled from 'styled-components'
+import { BoostedSavingsVault__factory, BoostedSavingsVault } from '@mstable/protocol/types/generated'
 
-import { CountUp } from '../../../core/CountUp';
-import { useSelectedFeederPoolVaultContract } from '../FeederPoolProvider';
-import { ClaimGraph } from './ClaimGraph';
-import {
-  StreamType,
-  useRewardStreams,
-} from '../../../../context/RewardStreamsProvider';
-import { Button } from '../../../core/Button';
-import { rewardsColorMapping } from '../constants';
-import { SendButton } from '../../../forms/SendButton';
-import { usePropose } from '../../../../context/TransactionsProvider';
-import { Interfaces } from '../../../../types';
-import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import { useIsMasquerading } from '../../../../context/UserProvider';
-import { useSelectedSaveVaultContract } from '../../../../context/DataProvider/DataProvider';
-import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
+import { StreamType, useRewardStreams } from '../../../../context/RewardStreamsProvider'
+import { usePropose } from '../../../../context/TransactionsProvider'
+import { useIsMasquerading, useSigner } from '../../../../context/AccountProvider'
+import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider'
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
+
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
+import { Interfaces } from '../../../../types'
+import { SendButton } from '../../../forms/SendButton'
+import { Button } from '../../../core/Button'
+import { CountUp } from '../../../core/CountUp'
+import { useSelectedFeederPoolVaultContract } from '../FeederPoolProvider'
+import { rewardsColorMapping } from '../constants'
+import { ClaimGraph } from './ClaimGraph'
+
+const useSelectedSaveVaultContract = (): BoostedSavingsVault | undefined => {
+  const signer = useSigner()
+  const masset = useSelectedMassetState()
+  const vaultAddress = masset?.savingsContracts?.v2?.boostedSavingsVault?.address
+  if (!signer || !vaultAddress) return
+  return BoostedSavingsVault__factory.connect(vaultAddress, signer)
+}
 
 const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-`;
+`
 
 const RewardValues = styled.div`
   > div {
@@ -48,7 +55,7 @@ const RewardValues = styled.div`
       }
     }
   }
-`;
+`
 
 const RewardValueContainer = styled.div<{ streamType: StreamType }>`
   display: flex;
@@ -88,17 +95,13 @@ const RewardValueContainer = styled.div<{ streamType: StreamType }>`
   background: ${rewardsColorMapping[streamType].fill2};
   
   > :first-child {
-    color: ${
-      theme.isLight
-        ? rewardsColorMapping[streamType].light
-        : rewardsColorMapping[streamType].dark
-    };
+    color: ${theme.isLight ? rewardsColorMapping[streamType].light : rewardsColorMapping[streamType].dark};
   }
   > :last-child span {
     color: ${rewardsColorMapping[streamType].point}};
   }
 `}
-`;
+`
 
 const ClaimButton = styled(SendButton)<{ visible: boolean }>`
   transition-property: opacity, height, visibility;
@@ -110,7 +113,7 @@ const ClaimButton = styled(SendButton)<{ visible: boolean }>`
   height: ${visible ? 1 : 0};
   flex-basis: ${visible ? `flex-basis: calc(50% - 0.5rem)` : '0'};
 `}
-`;
+`
 
 const ClaimContainer = styled.div<{ isClaiming?: boolean }>`
   display: flex;
@@ -143,8 +146,7 @@ const ClaimContainer = styled.div<{ isClaiming?: boolean }>`
   }
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
-    justify-content: ${({ isClaiming }) =>
-      isClaiming ? 'flex-start' : 'flex-end'};
+    justify-content: ${({ isClaiming }) => (isClaiming ? 'flex-start' : 'flex-end')};
 
     > * {
       flex-basis: calc(33% - 0.5rem);
@@ -154,7 +156,7 @@ const ClaimContainer = styled.div<{ isClaiming?: boolean }>`
       margin-left: ${({ isClaiming }) => (isClaiming ? '1rem' : '0')};
     }
   }
-`;
+`
 
 const GraphAndValues = styled.div`
   display: flex;
@@ -180,7 +182,7 @@ const GraphAndValues = styled.div`
       display: inherit;
     }
   }
-`;
+`
 
 const Card = styled.div`
   display: flex;
@@ -197,7 +199,7 @@ const Card = styled.div`
     color: ${({ theme }) => theme.color.body};
     margin-bottom: 0.5rem;
   }
-`;
+`
 
 const RewardsCard = styled(Card)`
   display: block;
@@ -219,32 +221,22 @@ const RewardsCard = styled(Card)`
       margin-bottom: 1rem;
     }
   }
-`;
+`
 const RewardValue: FC<{
-  title: string;
-  value?: number;
-  previewValue?: number;
-  previewLabel?: string;
-  showPreview?: boolean;
-  streamType: StreamType;
-  label: string;
-}> = ({
-  title,
-  value,
-  streamType,
-  label,
-  previewLabel,
-  previewValue,
-  showPreview,
-}) => (
+  title: string
+  value?: number
+  previewValue?: number
+  previewLabel?: string
+  showPreview?: boolean
+  streamType: StreamType
+  label: string
+}> = ({ title, value, streamType, label, previewLabel, previewValue, showPreview }) => (
   <RewardValueContainer streamType={streamType}>
     <div>
       <h4>{title}</h4>
       {typeof value === 'number' || typeof previewValue === 'number' ? (
         <div>
-          <CountUp
-            end={showPreview ? (previewValue as number) : (value as number)}
-          />
+          <CountUp end={showPreview ? (previewValue as number) : (value as number)} />
         </div>
       ) : (
         <Skeleton height={20} />
@@ -252,22 +244,22 @@ const RewardValue: FC<{
     </div>
     <div>{showPreview ? previewLabel : label}</div>
   </RewardValueContainer>
-);
+)
 
 export const UserRewards: FC = () => {
-  const rewardStreams = useRewardStreams();
-  const isMasquerading = useIsMasquerading();
-  const [isClaiming, toggleIsClaiming] = useToggle(false);
+  const rewardStreams = useRewardStreams()
+  const isMasquerading = useIsMasquerading()
+  const [isClaiming, toggleIsClaiming] = useToggle(false)
 
-  const feederVault = useSelectedFeederPoolVaultContract();
-  const saveVault = useSelectedSaveVaultContract();
-  const [selectedSaveVersion] = useSelectedSaveVersion();
+  const feederVault = useSelectedFeederPoolVaultContract()
+  const saveVault = useSelectedSaveVaultContract()
+  const [selectedSaveVersion] = useSelectedSaveVersion()
 
-  const propose = usePropose();
-  const contract = feederVault ?? saveVault;
+  const propose = usePropose()
+  const contract = feederVault ?? saveVault
 
-  const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
-  const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0;
+  const totalEarned = rewardStreams?.amounts.earned.total ?? 0
+  const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0
 
   return (
     <RewardsCard>
@@ -312,28 +304,16 @@ export const UserRewards: FC = () => {
                   title="Claim Rewards"
                   handleSend={() => {
                     if (contract && rewardStreams) {
-                      propose<
-                        Interfaces.BoostedSavingsVault,
-                        'claimRewards(uint256,uint256)'
-                      >(
-                        new TransactionManifest(
-                          contract,
-                          'claimRewards(uint256,uint256)',
-                          rewardStreams.claimRange,
-                          {
-                            present: 'Claiming rewards',
-                            past: 'Claimed rewards',
-                          },
-                        ),
-                      );
+                      propose<Interfaces.BoostedSavingsVault, 'claimRewards(uint256,uint256)'>(
+                        new TransactionManifest(contract, 'claimRewards(uint256,uint256)', rewardStreams.claimRange, {
+                          present: 'Claiming rewards',
+                          past: 'Claimed rewards',
+                        }),
+                      )
                     }
                   }}
                 />
-                {canClaim && (
-                  <Button onClick={toggleIsClaiming}>
-                    {isClaiming ? 'Cancel' : 'Preview Claim'}
-                  </Button>
-                )}
+                {canClaim && <Button onClick={toggleIsClaiming}>{isClaiming ? 'Cancel' : 'Preview Claim'}</Button>}
               </ClaimContainer>
             )}
           </GraphAndValues>
@@ -341,10 +321,7 @@ export const UserRewards: FC = () => {
           <EmptyState>
             <h3>No rewards to claim</h3>
             {selectedSaveVersion === 1 ? (
-              <p>
-                Migrate your balance and deposit to the Vault to earn MTA
-                rewards.
-              </p>
+              <p>Migrate your balance and deposit to the Vault to earn MTA rewards.</p>
             ) : (
               <p>Deposit to the Vault to earn MTA rewards.</p>
             )}
@@ -352,5 +329,5 @@ export const UserRewards: FC = () => {
         )}
       </div>
     </RewardsCard>
-  );
-};
+  )
+}

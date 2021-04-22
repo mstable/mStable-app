@@ -1,9 +1,8 @@
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 export const InfoBox = styled.div`
   border: 1px rgba(255, 179, 52, 0.2) solid;
-  background: ${({ theme }) =>
-    theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none'};
+  background: ${({ theme }) => (theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none')};
   border-radius: 1rem;
   padding: 1rem;
   color: ${({ theme }) => theme.color.offYellow};
@@ -31,4 +30,4 @@ export const InfoBox = styled.div`
       font-size: 0.875rem;
     }
   }
-`;
+`

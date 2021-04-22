@@ -1,4 +1,4 @@
-import { StreamType } from '../../../context/RewardStreamsProvider';
+import { StreamType } from '../../../context/RewardStreamsProvider'
 
 // Need to replace symbol mapping, probably ...
 export const assetColorMapping: Record<string, string> = {
@@ -11,7 +11,7 @@ export const assetColorMapping: Record<string, string> = {
   GUSD: '#17d4f2',
   mBTC: '#000',
   mUSD: '#000',
-};
+}
 
 const greenRewards = {
   point: 'rgb(82,204,147)',
@@ -19,7 +19,7 @@ const greenRewards = {
   fill2: 'rgba(133,231,185,0.2)',
   light: 'rgb(39,99,72)',
   dark: 'rgb(67,196,138)',
-};
+}
 
 const blueRewards = {
   point: 'rgb(38,132,255)',
@@ -27,12 +27,9 @@ const blueRewards = {
   fill2: 'rgba(88,156,241,0.2)',
   light: 'rgb(18,63,121)',
   dark: 'rgb(52, 139, 250)',
-};
+}
 
-export const rewardsColorMapping: Record<
-  StreamType,
-  { fill1: string; fill2: string; point: string; dark: string; light: string }
-> = {
+export const rewardsColorMapping: Record<StreamType, { fill1: string; fill2: string; point: string; dark: string; light: string }> = {
   [StreamType.Earned]: {
     point: 'rgb(255,192,81)',
     fill1: 'rgb(255,219,160)',
@@ -44,4 +41,4 @@ export const rewardsColorMapping: Record<
   [StreamType.Unlocked]: greenRewards,
   [StreamType.Locked]: blueRewards,
   [StreamType.LockedPreview]: blueRewards,
-};
+}

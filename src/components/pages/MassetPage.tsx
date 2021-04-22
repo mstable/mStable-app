@@ -1,11 +1,11 @@
-import React, { FC, useCallback, useState } from 'react';
-import styled from 'styled-components';
+import React, { FC, useCallback, useState } from 'react'
+import styled from 'styled-components'
 
-import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 
-import { SimpleMassetStats } from '../stats/SimpleMassetStats';
-import { TransitionCard } from '../core/TransitionCard';
-import { UnstyledButton } from '../core/Button';
+import { SimpleMassetStats } from '../stats/SimpleMassetStats'
+import { TransitionCard } from '../core/TransitionCard'
+import { UnstyledButton } from '../core/Button'
 
 export const Button = styled(UnstyledButton)`
   border-radius: 1rem;
@@ -20,7 +20,7 @@ export const Button = styled(UnstyledButton)`
   :hover {
     background: ${({ theme }) => theme.color.backgroundAccent};
   }
-`;
+`
 
 const MassetAsideContainer = styled.aside`
   padding: 0 1rem 1rem;
@@ -42,15 +42,15 @@ const MassetAsideContainer = styled.aside`
     line-height: 1.2rem;
     margin-bottom: 1rem;
   }
-`;
+`
 
 const MassetAside: FC = () => {
   return (
     <MassetAsideContainer>
       <SimpleMassetStats />
     </MassetAsideContainer>
-  );
-};
+  )
+}
 
 const Inner = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
@@ -66,7 +66,7 @@ const Inner = styled.div`
   > div:not(:last-child) {
     margin-bottom: 1.25rem;
   }
-`;
+`
 
 const MigrationOverlay = styled.div`
   * {
@@ -82,28 +82,21 @@ const MigrationOverlay = styled.div`
   top: 0;
   bottom: 0;
   right: 0;
-`;
+`
 
 const Container = styled.div`
   position: relative;
   display: flex;
   justify-content: center;
   width: 100%;
-`;
+`
 
-export const MassetPage: FC<{ asideVisible?: boolean }> = ({
-  children,
-  asideVisible,
-}) => {
-  const { undergoingRecol } = useSelectedMassetState() ?? {};
-  const [selection, setSelection] = useState<string | undefined>();
+export const MassetPage: FC<{ asideVisible?: boolean }> = ({ children, asideVisible }) => {
+  const { undergoingRecol } = useSelectedMassetState() ?? {}
+  const [selection, setSelection] = useState<string | undefined>()
 
   // enable collapse
-  const handleSelection = useCallback(
-    (newValue?: string) =>
-      setSelection(selection === newValue ? undefined : newValue),
-    [selection],
-  );
+  const handleSelection = useCallback((newValue?: string) => setSelection(selection === newValue ? undefined : newValue), [selection])
 
   return (
     <Container>
@@ -112,10 +105,7 @@ export const MassetPage: FC<{ asideVisible?: boolean }> = ({
         <Inner>
           <div>{children}</div>
           {/* // FIXME: - Replace w/ dropdown? */}
-          <TransitionCard
-            components={{ root: <MassetAside /> }}
-            selection={selection}
-          >
+          <TransitionCard components={{ root: <MassetAside /> }} selection={selection}>
             <Button onClick={() => handleSelection('root')}>
               <h3>View Basket Stats</h3>
             </Button>
@@ -125,5 +115,5 @@ export const MassetPage: FC<{ asideVisible?: boolean }> = ({
         <div>{children}</div>
       )}
     </Container>
-  );
-};
+  )
+}

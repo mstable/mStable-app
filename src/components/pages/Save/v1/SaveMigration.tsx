@@ -1,24 +1,21 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { useTransactionsState } from '../../../../context/TransactionsProvider';
-import { TransactionStatus } from '../../../../web3/TransactionManifest';
+import { useTransactionsState } from '../../../../context/TransactionsProvider'
+import { TransactionStatus } from '../../../../web3/TransactionManifest'
 
-import { ViewportWidth, gradientShift } from '../../../../theme';
-import { Steps } from '../../../core/Steps';
+import { ViewportWidth, gradientShift } from '../../../../theme'
+import { Steps } from '../../../core/Steps'
 
-import {
-  SaveMigrationProvider,
-  useMigrationSteps,
-} from './SaveMigrationProvider';
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
+import { SaveMigrationProvider, useMigrationSteps } from './SaveMigrationProvider'
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 
 const StepsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-`;
+`
 
 const ExchangeRate = styled.div`
   margin: 2rem 0 0;
@@ -35,7 +32,7 @@ const ExchangeRate = styled.div`
   span {
     ${({ theme }) => theme.mixins.numeric};
   }
-`;
+`
 
 const Inner = styled.div`
   display: flex;
@@ -46,7 +43,7 @@ const Inner = styled.div`
   width: 100%;
   height: 100%;
   text-align: center;
-`;
+`
 
 const Card = styled.div`
   padding: 1.5rem;
@@ -80,45 +77,34 @@ const Card = styled.div`
   &:before {
     border-radius: 1.5rem;
   }
-`;
+`
 
 const SaveMigrationContent: FC = () => {
-  const steps = useMigrationSteps();
-  const transactions = useTransactionsState();
-  const massetState = useSelectedMassetState();
-  const savingsContract = massetState?.savingsContracts.v2;
+  const steps = useMigrationSteps()
+  const transactions = useTransactionsState()
+  const massetState = useSelectedMassetState()
+  const savingsContract = massetState?.savingsContracts.v2
   const submitting = Object.values(transactions)
     .filter(tx => tx.manifest?.formId === 'saveMigration')
-    .some(
-      tx =>
-        tx.status === TransactionStatus.Pending ||
-        tx.status === TransactionStatus.Response ||
-        tx.status === TransactionStatus.Sent,
-    );
+    .some(tx => tx.status === TransactionStatus.Pending || tx.status === TransactionStatus.Response || tx.status === TransactionStatus.Sent)
 
-  const stepsComplete = steps.length && steps.every(step => step.complete);
+  const stepsComplete = steps.length && steps.every(step => step.complete)
 
   return (
     <Card>
       <Inner>
-        <h2>
-          {!stepsComplete ? `Migration Assistant` : `Migration Complete! 🎉`}
-        </h2>
+        <h2>{!stepsComplete ? `Migration Assistant` : `Migration Complete! 🎉`}</h2>
         {!stepsComplete && (
           <>
             <div>
               <p>
-                To continue earning interest on your <b>Save V1</b> balance,
-                please migrate your balance by following the steps below:
+                To continue earning interest on your <b>Save V1</b> balance, please migrate your balance by following the steps below:
               </p>
               <ExchangeRate>
                 <div>
                   <span>1</span>&nbsp; mUSD = &nbsp;
                   <span>
-                    {savingsContract?.latestExchangeRate?.rate &&
-                      (
-                        1 / savingsContract.latestExchangeRate?.rate.simple
-                      ).toFixed(2)}
+                    {savingsContract?.latestExchangeRate?.rate && (1 / savingsContract.latestExchangeRate?.rate.simple).toFixed(2)}
                   </span>
                   &nbsp; imUSD
                 </div>
@@ -126,16 +112,14 @@ const SaveMigrationContent: FC = () => {
             </div>
           </>
         )}
-        <StepsContainer>
-          {steps.length && <Steps steps={steps} pending={submitting} />}
-        </StepsContainer>
+        <StepsContainer>{steps.length && <Steps steps={steps} pending={submitting} />}</StepsContainer>
       </Inner>
     </Card>
-  );
-};
+  )
+}
 
 export const SaveMigration: FC = () => (
   <SaveMigrationProvider>
     <SaveMigrationContent />
   </SaveMigrationProvider>
-);
+)

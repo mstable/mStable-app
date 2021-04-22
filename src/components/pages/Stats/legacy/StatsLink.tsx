@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
-import { Color, FontSize } from '../../../../theme';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { Link } from 'react-router-dom'
+import { Color, FontSize } from '../../../../theme'
 
 const Container = styled.div`
   padding: 4px 8px;
@@ -16,9 +16,9 @@ const Container = styled.div`
     border-bottom: none;
     font-weight: bold;
   }
-`;
+`
 
-type Section = 'volumes' | 'totals' | 'basket' | 'save';
+type Section = 'volumes' | 'totals' | 'basket' | 'save'
 
 export const StatsLink: FC<{ section?: Section }> = () => (
   <Container>
@@ -29,4 +29,4 @@ export const StatsLink: FC<{ section?: Section }> = () => (
       View analytics
     </Link>
   </Container>
-);
+)

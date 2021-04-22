@@ -1,13 +1,13 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { CountUp, DifferentialCountup } from '../core/CountUp';
-import { Boost } from './Boost';
-import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
-import { FetchState } from '../../hooks/useFetchState';
-import { ThemedSkeleton } from '../core/ThemedSkeleton';
-import { Tooltip } from '../core/ReactTooltip';
-import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
+import { CountUp, DifferentialCountup } from '../core/CountUp'
+import { Boost } from './Boost'
+import { BoostedSavingsVaultState } from '../../context/DataProvider/types'
+import { FetchState } from '../../hooks/useFetchState'
+import { ThemedSkeleton } from '../core/ThemedSkeleton'
+import { Tooltip } from '../core/ReactTooltip'
+import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
 
 const Container = styled.div`
   h3 {
@@ -36,13 +36,13 @@ const Container = styled.div`
       }
     }
   }
-`;
+`
 
 export const UserBoost: FC<{
-  vault: BoostedSavingsVaultState;
-  apy: FetchState<{ base: number; maxBoost: number; userBoost?: number }>;
+  vault: BoostedSavingsVaultState
+  apy: FetchState<{ base: number; maxBoost: number; userBoost?: number }>
 }> = ({ vault, apy }) => {
-  const massetName = useSelectedMassetName();
+  const massetName = useSelectedMassetName()
   return (
     <Container>
       <Boost vault={vault} apy={apy.value?.base}>
@@ -57,35 +57,21 @@ export const UserBoost: FC<{
           <div>
             <div>
               <h4>Base APY</h4>
-              {apy.fetching ? (
-                <ThemedSkeleton height={24} width={64} />
-              ) : (
-                apy.value && <CountUp end={apy.value.base} suffix="%" />
-              )}
+              {apy.fetching ? <ThemedSkeleton height={24} width={64} /> : apy.value && <CountUp end={apy.value.base} suffix="%" />}
             </div>
             <div>
               <h4>Max APY</h4>
-              {apy.fetching ? (
-                <ThemedSkeleton height={24} width={64} />
-              ) : (
-                apy.value && <CountUp end={apy.value.maxBoost} suffix="%" />
-              )}
+              {apy.fetching ? <ThemedSkeleton height={24} width={64} /> : apy.value && <CountUp end={apy.value.maxBoost} suffix="%" />}
             </div>
             {apy.value?.userBoost && (
               <div>
                 <h4>My APY</h4>
-                {apy.value && (
-                  <DifferentialCountup
-                    prev={apy.value.base}
-                    end={apy.value.userBoost}
-                    suffix="%"
-                  />
-                )}
+                {apy.value && <DifferentialCountup prev={apy.value.base} end={apy.value.userBoost} suffix="%" />}
               </div>
             )}
           </div>
         </div>
       </Boost>
     </Container>
-  );
-};
+  )
+}

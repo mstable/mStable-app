@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo } from 'react'
 
-import { getPenaltyMessage, getPenaltyPercentage } from '../utils/ammUtils';
-import { BigDecimal } from '../web3/BigDecimal';
+import { getPenaltyMessage, getPenaltyPercentage } from '../utils/ammUtils'
+import { BigDecimal } from '../web3/BigDecimal'
 
 enum OutputType {
   Minimum,
@@ -10,17 +10,17 @@ enum OutputType {
 
 interface Output {
   penaltyBonus: {
-    percentage?: number;
-    message?: string;
-  };
+    percentage?: number
+    message?: string
+  }
 }
 
 interface MaximumOutput extends Output {
-  maxOutputAmount?: BigDecimal;
+  maxOutputAmount?: BigDecimal
 }
 
 interface MinimumOutput extends Output {
-  minOutputAmount?: BigDecimal;
+  minOutputAmount?: BigDecimal
 }
 
 const useOutput = (
@@ -30,34 +30,27 @@ const useOutput = (
   outputAmount?: BigDecimal | undefined,
 ): MaximumOutput | MinimumOutput => {
   const amount = useMemo(() => {
-    if (!outputAmount || !slippageSimple) return undefined;
+    if (!outputAmount || !slippageSimple) return undefined
 
     const simpleAmount =
-      type === OutputType.Maximum
-        ? outputAmount.simple * (1 + slippageSimple / 100)
-        : outputAmount.simple * (1 - slippageSimple / 100);
+      type === OutputType.Maximum ? outputAmount.simple * (1 + slippageSimple / 100) : outputAmount.simple * (1 - slippageSimple / 100)
 
-    return BigDecimal.parse(
-      simpleAmount.toFixed(outputAmount.decimals),
-      outputAmount.decimals,
-    );
-  }, [type, outputAmount, slippageSimple]);
+    return BigDecimal.parse(simpleAmount.toFixed(outputAmount.decimals), outputAmount.decimals)
+  }, [type, outputAmount, slippageSimple])
 
   const penaltyBonus = useMemo(() => {
-    const reverse = type === OutputType.Maximum;
-    const percentage = getPenaltyPercentage(inputAmount, outputAmount, reverse);
-    const message = getPenaltyMessage(percentage);
+    const reverse = type === OutputType.Maximum
+    const percentage = getPenaltyPercentage(inputAmount, outputAmount, reverse)
+    const message = getPenaltyMessage(percentage)
 
-    return { percentage, message };
-  }, [type, inputAmount, outputAmount]);
+    return { percentage, message }
+  }, [type, inputAmount, outputAmount])
 
   return {
-    ...(type === OutputType.Maximum
-      ? { maxOutputAmount: amount }
-      : { minOutputAmount: amount }),
+    ...(type === OutputType.Maximum ? { maxOutputAmount: amount } : { minOutputAmount: amount }),
     penaltyBonus,
-  };
-};
+  }
+}
 
 /**
  * This hook returns maxOutputAmount + penaltyBonus
@@ -71,8 +64,7 @@ export const useMaximumOutput = (
   slippageSimple?: number | undefined,
   inputAmount?: BigDecimal | undefined,
   outputAmount?: BigDecimal | undefined,
-): MaximumOutput =>
-  useOutput(OutputType.Maximum, slippageSimple, inputAmount, outputAmount);
+): MaximumOutput => useOutput(OutputType.Maximum, slippageSimple, inputAmount, outputAmount)
 
 /**
  * This hook returns minOutputAmount + penaltyBonus
@@ -86,5 +78,4 @@ export const useMinimumOutput = (
   slippageSimple?: number | undefined,
   inputAmount?: BigDecimal | undefined,
   outputAmount?: BigDecimal | undefined,
-): MinimumOutput =>
-  useOutput(OutputType.Minimum, slippageSimple, inputAmount, outputAmount);
+): MinimumOutput => useOutput(OutputType.Minimum, slippageSimple, inputAmount, outputAmount)

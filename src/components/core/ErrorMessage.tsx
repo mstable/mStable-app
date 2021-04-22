@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
 const Container = styled.div`
   display: flex;
@@ -17,12 +17,10 @@ const Container = styled.div`
     line-height: 1.75em;
     max-width: 50ch;
   }
-`;
+`
 
 export const ErrorMessage: FC<{ error: string | Error }> = ({ error }) => (
   <Container>
-    <p>
-      {typeof error === 'string' ? error : error.message ?? error.toString()}
-    </p>
+    <p>{typeof error === 'string' ? error : error.message ?? error.toString()}</p>
   </Container>
-);
+)

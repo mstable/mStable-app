@@ -1,12 +1,12 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { Button } from './Button';
-import { ThemedSkeleton } from './ThemedSkeleton';
+import { Button } from './Button'
+import { ThemedSkeleton } from './ThemedSkeleton'
 
 interface Props {
-  className?: string;
-  options: { title: string; onClick(): void; active: boolean }[];
+  className?: string
+  options: { title: string; onClick(): void; active: boolean }[]
 }
 
 const Container = styled.div`
@@ -21,10 +21,10 @@ const Container = styled.div`
   button:not(:first-child) {
     margin-left: -0.5rem;
   }
-`;
+`
 
 export const Toggle: FC<Props> = ({ className, options }) => {
-  const isLoading = options.length === 0;
+  const isLoading = options.length === 0
 
   return (
     <Container className={className}>
@@ -32,18 +32,11 @@ export const Toggle: FC<Props> = ({ className, options }) => {
         <ThemedSkeleton height={42} width={128} />
       ) : (
         options.map(({ title, active, onClick }) => (
-          <Button
-            key={title}
-            onClick={onClick}
-            type="button"
-            highlighted={active}
-            scale={0.875}
-            transparent={!active}
-          >
+          <Button key={title} onClick={onClick} type="button" highlighted={active} scale={0.875} transparent={!active}>
             {title}
           </Button>
         ))
       )}
     </Container>
-  );
-};
+  )
+}

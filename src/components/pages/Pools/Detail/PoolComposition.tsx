@@ -1,16 +1,16 @@
-import React, { FC, useMemo } from 'react';
-import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import React, { FC, useMemo } from 'react'
+import { Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
-import { RechartsContainer } from '../../../stats/RechartsContainer';
-import { assetColorMapping } from '../constants';
-import { useSelectedFeederPoolState } from '../FeederPoolProvider';
-import { toK } from '../../../stats/utils';
-import { Color } from '../../../../theme';
+import { RechartsContainer } from '../../../stats/RechartsContainer'
+import { assetColorMapping } from '../constants'
+import { useSelectedFeederPoolState } from '../FeederPoolProvider'
+import { toK } from '../../../stats/utils'
+import { Color } from '../../../../theme'
 
-const MARGIN = { top: 40, left: 16, right: 0, bottom: 0 };
+const MARGIN = { top: 40, left: 16, right: 0, bottom: 0 }
 
 export const PoolComposition: FC = () => {
-  const { masset, fasset } = useSelectedFeederPoolState();
+  const { masset, fasset } = useSelectedFeederPoolState()
 
   const data = useMemo(
     () => [
@@ -26,18 +26,13 @@ export const PoolComposition: FC = () => {
       },
     ],
     [masset, fasset],
-  );
+  )
 
   return (
     <RechartsContainer>
       <ResponsiveContainer aspect={2}>
         <PieChart margin={MARGIN}>
-          <Pie
-            dataKey="value"
-            isAnimationActive={false}
-            data={data}
-            fill="fill"
-          />
+          <Pie dataKey="value" isAnimationActive={false} data={data} fill="fill" />
           <Legend align="left" layout="vertical" verticalAlign="middle" />
           <Tooltip
             formatter={toK as never}
@@ -59,5 +54,5 @@ export const PoolComposition: FC = () => {
         </PieChart>
       </ResponsiveContainer>
     </RechartsContainer>
-  );
-};
+  )
+}

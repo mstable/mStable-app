@@ -1,5 +1,5 @@
-import { Platforms } from '../../../types';
-import { PlatformMetadata } from './types';
+import { Platforms } from '../../../types'
+import { PlatformMetadata } from './types'
 
 export const PLATFORM_METADATA: Record<Platforms, PlatformMetadata> = {
   [Platforms.Balancer]: {
@@ -10,8 +10,7 @@ export const PLATFORM_METADATA: Record<Platforms, PlatformMetadata> = {
       text: '#dbdbec',
     },
     name: 'Balancer',
-    getPlatformLink: ({ stakingToken: { address } }) =>
-      `https://pools.balancer.exchange/#/pool/${address}`,
+    getPlatformLink: ({ stakingToken: { address } }) => `https://pools.balancer.exchange/#/pool/${address}`,
     slug: 'balancer',
   },
   [Platforms.Uniswap]: {
@@ -73,4 +72,4 @@ export const PLATFORM_METADATA: Record<Platforms, PlatformMetadata> = {
     getPlatformLink: () => 'https://app.cream.finance/',
     slug: 'cream',
   },
-};
+}

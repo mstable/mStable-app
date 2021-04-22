@@ -1,84 +1,68 @@
-import React, { FC, FormEvent, useCallback } from 'react';
-import styled from 'styled-components';
-import { useIsSupportedChain } from '../../context/AppProvider';
-import { FontSize } from '../../theme';
-import { Button } from './Button';
-import { useConnected, useConnect } from '../../context/OnboardProvider';
+import React, { FC, FormEvent, useCallback } from 'react'
+import styled from 'styled-components'
+import { FontSize } from '../../theme'
+import { Button } from './Button'
+import { useConnected, useConnect } from '../../context/AccountProvider'
 
 interface Props {
-  onSubmit?(event: FormEvent<Element>): void;
-  error?: string;
-  submitting?: boolean;
+  onSubmit?(event: FormEvent<Element>): void
+  error?: string
+  submitting?: boolean
 }
 
 const StyledForm = styled.form<{ disabled?: boolean; submitting?: boolean }>`
-  cursor: ${({ disabled, submitting }) =>
-    disabled || submitting ? 'not-allowed' : 'auto'};
+  cursor: ${({ disabled, submitting }) => (disabled || submitting ? 'not-allowed' : 'auto')};
 
   input,
   select,
   textarea,
   button {
-    pointer-events: ${({ disabled, submitting }) =>
-      disabled || submitting ? 'none' : 'auto'};
+    pointer-events: ${({ disabled, submitting }) => (disabled || submitting ? 'none' : 'auto')};
   }
-`;
+`
 
 const FormError = styled.div`
   color: ${({ theme }) => theme.color.red};
-`;
+`
 
 export const Form: FC<Props> = ({ children, onSubmit, error, submitting }) => {
-  const connected = useConnected();
-  const supportedChain = useIsSupportedChain();
-  const disabled = !connected;
-  const connect = useConnect();
+  const connected = useConnected()
+  const disabled = !connected
+  const connect = useConnect()
 
   const handleClick = useCallback(() => {
-    // If not connected on a supported chain, forms should start
-    // the wallet connection
-    if (!(connected && supportedChain)) {
-      connect();
+    // If not connected, forms should start the wallet connection
+    if (!connected) {
+      connect()
     }
-  }, [connected, connect, supportedChain]);
+  }, [connected, connect])
 
   return (
-    <StyledForm
-      onClick={handleClick}
-      onSubmit={onSubmit}
-      disabled={disabled}
-      submitting={submitting}
-    >
+    <StyledForm onClick={handleClick} onSubmit={onSubmit} disabled={disabled} submitting={submitting}>
       {error ? <FormError>{error}</FormError> : null}
       <div>{children}</div>
     </StyledForm>
-  );
-};
+  )
+}
 
 export const FormRow = styled.div`
   width: 100%;
-`;
+`
 
 export const SubmitButton = styled(Button)`
-  color: ${({ theme, disabled }) =>
-    disabled ? theme.color.bodyTransparent : theme.color.white};
-  border-color: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparent : theme.color.greenTransparent};
-  background: ${({ theme, disabled }) =>
-    disabled ? theme.color.backgroundAccent : theme.color.green};
+  color: ${({ theme, disabled }) => (disabled ? theme.color.bodyTransparent : theme.color.white)};
+  border-color: ${({ theme, disabled }) => (disabled ? theme.color.blackTransparent : theme.color.greenTransparent)};
+  background: ${({ theme, disabled }) => (disabled ? theme.color.backgroundAccent : theme.color.green)};
   width: 100%;
   margin-bottom: ${({ theme }) => theme.spacing.m};
   padding-top: 16px;
   padding-bottom: 16px;
-  box-shadow: ${({ theme, disabled }) =>
-      disabled ? theme.color.blackTransparenter : theme.color.greenTransparent}
-    0 10px 20px;
+  box-shadow: ${({ theme, disabled }) => (disabled ? theme.color.blackTransparenter : theme.color.greenTransparent)} 0 10px 20px;
   border-radius: 16px;
   transition: background-color 0.4s ease;
   font-size: ${FontSize.l};
 
   &:hover {
-    ${({ theme, disabled }) =>
-      disabled ? '' : `background: ${theme.color.coolMint}`}
+    ${({ theme, disabled }) => (disabled ? '' : `background: ${theme.color.coolMint}`)}
   }
-`;
+`

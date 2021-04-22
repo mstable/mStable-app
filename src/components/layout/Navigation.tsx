@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { NavLink } from 'react-router-dom'
 
-import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
-import { useCloseAccount, useThemeMode } from '../../context/AppProvider';
-import { colorTheme, ViewportWidth } from '../../theme';
-import { NavigationDropdown, NavItem } from '../core/NavigationDropdown';
+import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { useCloseAccount, useThemeMode } from '../../context/AppProvider'
+import { colorTheme, ViewportWidth } from '../../theme'
+import { NavigationDropdown, NavItem } from '../core/NavigationDropdown'
 
 const List = styled.div`
   display: flex;
@@ -25,7 +25,7 @@ const List = styled.div`
       display: inline-block;
     }
   }
-`;
+`
 
 const navItems: NavItem[] = [
   { title: 'Pools', path: '/pools' },
@@ -34,7 +34,7 @@ const navItems: NavItem[] = [
   { title: 'Swap', path: '/swap' },
   { title: 'Redeem', path: '/redeem' },
   { title: 'Stats', path: '/stats' },
-];
+]
 
 const StyledNavLink = styled(NavLink)`
   margin: 0 0.5rem;
@@ -43,12 +43,12 @@ const StyledNavLink = styled(NavLink)`
   font-size: 1.25rem;
   color: ${({ theme }) => theme.color.body};
   white-space: nowrap;
-`;
+`
 
 export const Navigation: FC = () => {
-  const collapseWallet = useCloseAccount();
-  const massetName = useSelectedMassetName();
-  const themeMode = useThemeMode();
+  const collapseWallet = useCloseAccount()
+  const massetName = useSelectedMassetName()
+  const themeMode = useThemeMode()
 
   return (
     <nav>
@@ -66,5 +66,5 @@ export const Navigation: FC = () => {
         ))}
       </List>
     </nav>
-  );
-};
+  )
+}

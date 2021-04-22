@@ -1,13 +1,13 @@
-import React, { FC } from 'react';
-import styled, { keyframes, css } from 'styled-components';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import React, { FC } from 'react'
+import styled, { keyframes, css } from 'styled-components'
+import { TransitionGroup, CSSTransition } from 'react-transition-group'
 
-import { PendingTransaction } from '../wallet/PendingTransactions';
-import { useNotificationsState } from '../../context/NotificationsProvider';
-import { NotificationItem } from '../core/NotificationItem';
-import { useTransactionsState } from '../../context/TransactionsProvider';
-import { TransactionStatus } from '../../web3/TransactionManifest';
-import { TransactionGasProvider } from '../wallet/TransactionGasProvider';
+import { PendingTransaction } from '../wallet/PendingTransactions'
+import { useNotificationsState } from '../../context/NotificationsProvider'
+import { NotificationItem } from '../core/NotificationItem'
+import { useTransactionsState } from '../../context/TransactionsProvider'
+import { TransactionStatus } from '../../web3/TransactionManifest'
+import { TransactionGasProvider } from '../wallet/TransactionGasProvider'
 
 const slideIn = keyframes`
   0% {
@@ -22,7 +22,7 @@ const slideIn = keyframes`
     filter: blur(0);
     opacity: 1;
   }
-`;
+`
 
 const Container = styled.div`
   position: fixed;
@@ -40,7 +40,7 @@ const Container = styled.div`
       margin-bottom: 0.5rem;
     }
   }
-`;
+`
 
 const Animation = styled(CSSTransition)`
   ${({ classNames }) => `&.${classNames}-enter`} {
@@ -52,28 +52,20 @@ const Animation = styled(CSSTransition)`
     animation: ${css`
         ${slideIn}`} 0.2s cubic-bezier(0.19, 1, 0.22, 1) reverse;
   }
-`;
+`
 
 export const Toasts: FC<{}> = () => {
-  const notifications = useNotificationsState();
-  const txs = useTransactionsState();
+  const notifications = useNotificationsState()
+  const txs = useTransactionsState()
 
   return (
     <Container>
       <TransitionGroup>
         {Object.keys(txs)
-          .filter(
-            id =>
-              txs[id].status === TransactionStatus.Pending ||
-              txs[id].status === TransactionStatus.Sent,
-          )
+          .filter(id => txs[id].status === TransactionStatus.Pending || txs[id].status === TransactionStatus.Sent)
           .sort((a, b) => txs[b].manifest.createdAt - txs[a].manifest.createdAt)
           .map(id => (
-            <Animation
-              timeout={{ enter: 350, exit: 150 }}
-              classNames="item"
-              key={id}
-            >
+            <Animation timeout={{ enter: 350, exit: 150 }} classNames="item" key={id}>
               <div>
                 <TransactionGasProvider id={id}>
                   <PendingTransaction id={id} />
@@ -84,15 +76,11 @@ export const Toasts: FC<{}> = () => {
         {notifications
           .filter(n => !(n.hideToast || n.read))
           .map(notification => (
-            <Animation
-              timeout={{ enter: 350, exit: 150 }}
-              classNames="item"
-              key={notification.id}
-            >
+            <Animation timeout={{ enter: 350, exit: 150 }} classNames="item" key={notification.id}>
               <NotificationItem notification={notification} />
             </Animation>
           ))}
       </TransitionGroup>
     </Container>
-  );
-};
+  )
+}

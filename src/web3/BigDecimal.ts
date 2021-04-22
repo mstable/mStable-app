@@ -1,17 +1,17 @@
-import { BigNumber, BigNumberish, utils } from 'ethers';
-import { BigNumber as FractionalBigNumber } from 'bignumber.js';
+import { BigNumber, BigNumberish, utils } from 'ethers'
+import { BigNumber as FractionalBigNumber } from 'bignumber.js'
 
-import { toK } from '../components/stats/utils';
-import { RATIO_SCALE, SCALE } from '../constants';
+import { toK } from '../components/stats/utils'
+import { RATIO_SCALE, SCALE } from '../constants'
 
-const { commify, formatUnits, parseUnits } = utils;
+const { commify, formatUnits, parseUnits } = utils
 
-const DEFAULT_DECIMALS = 18;
+const DEFAULT_DECIMALS = 18
 
 export class BigDecimal {
-  static ZERO = new BigDecimal(0);
+  static ZERO = new BigDecimal(0)
 
-  static ONE = new BigDecimal((1e18).toString());
+  static ONE = new BigDecimal((1e18).toString())
 
   /**
    * Parse a BigDecimal from the given amount string (e.g. "12.32") and decimals
@@ -20,18 +20,18 @@ export class BigDecimal {
    */
   static parse(amountStr: string, decimals = DEFAULT_DECIMALS): BigDecimal {
     // Sanitize the input and limit it to the given decimals
-    const [int, fraction = '0'] = amountStr.split('.');
-    const sanitizedAmount = `${int}.${fraction.slice(0, decimals)}`;
+    const [int, fraction = '0'] = amountStr.split('.')
+    const sanitizedAmount = `${int}.${fraction.slice(0, decimals)}`
 
     // Create a fractional BigNumber with the sanitized amount
-    const fractionalBn = new FractionalBigNumber(sanitizedAmount);
-    const formatted = fractionalBn.decimalPlaces(decimals).toFixed(decimals);
+    const fractionalBn = new FractionalBigNumber(sanitizedAmount)
+    const formatted = fractionalBn.decimalPlaces(decimals).toFixed(decimals)
 
     // Parse a BigNumber with the given decimals
-    const parsedBn = parseUnits(formatted, decimals);
+    const parsedBn = parseUnits(formatted, decimals)
 
     // Create a BigDecimal
-    return new BigDecimal(parsedBn, decimals);
+    return new BigDecimal(parsedBn, decimals)
   }
 
   /**
@@ -41,45 +41,33 @@ export class BigDecimal {
    * @param amountStr
    * @param decimals
    */
-  static maybeParse(
-    amountStr: string | null | undefined,
-    decimals = DEFAULT_DECIMALS,
-  ): BigDecimal | undefined {
+  static maybeParse(amountStr: string | null | undefined, decimals = DEFAULT_DECIMALS): BigDecimal | undefined {
     if (!amountStr || !decimals) {
-      return undefined;
+      return undefined
     }
-    return BigDecimal.parse(amountStr, decimals);
+    return BigDecimal.parse(amountStr, decimals)
   }
 
-  static maybeFromMetric(metric?: {
-    decimals: number;
-    exact: string;
-  }): BigDecimal | undefined {
-    return metric ? BigDecimal.fromMetric(metric) : undefined;
+  static maybeFromMetric(metric?: { decimals: number; exact: string }): BigDecimal | undefined {
+    return metric ? BigDecimal.fromMetric(metric) : undefined
   }
 
-  static fromMetric({
-    decimals,
-    exact,
-  }: {
-    decimals: number;
-    exact: string;
-  }): BigDecimal {
-    return new BigDecimal(exact, decimals);
+  static fromMetric({ decimals, exact }: { decimals: number; exact: string }): BigDecimal {
+    return new BigDecimal(exact, decimals)
   }
 
   static fromJSON(json: string): BigDecimal {
-    const { decimals, exact } = JSON.parse(json);
-    return new BigDecimal(exact, decimals);
+    const { decimals, exact } = JSON.parse(json)
+    return new BigDecimal(exact, decimals)
   }
 
-  decimals: number;
+  decimals: number
 
-  exact: BigNumber;
+  exact: BigNumber
 
   constructor(num: BigNumberish, decimals = DEFAULT_DECIMALS) {
-    this.exact = BigNumber.from(num);
-    this.decimals = decimals;
+    this.exact = BigNumber.from(num)
+    this.decimals = decimals
   }
 
   /**
@@ -87,7 +75,7 @@ export class BigDecimal {
    * @return simple number value
    */
   get simple(): number {
-    return parseFloat(this.string);
+    return parseFloat(this.string)
   }
 
   /**
@@ -96,7 +84,7 @@ export class BigDecimal {
    * @return simple number value, rounded down to 2 decimals
    */
   get simpleRounded(): number {
-    return parseFloat(this.simple.toFixed(3).slice(0, -1));
+    return parseFloat(this.simple.toFixed(3).slice(0, -1))
   }
 
   /**
@@ -104,11 +92,11 @@ export class BigDecimal {
    * @return string value
    */
   get string(): string {
-    return formatUnits(this.exact, this.decimals);
+    return formatUnits(this.exact, this.decimals)
   }
 
   toJSON(): string {
-    return JSON.stringify({ decimals: this.decimals, exact: this.exact });
+    return JSON.stringify({ decimals: this.decimals, exact: this.exact })
   }
 
   /**
@@ -117,8 +105,8 @@ export class BigDecimal {
    * @return instance
    */
   setDecimals(decimals: number): BigDecimal {
-    this.decimals = decimals;
-    return this;
+    this.decimals = decimals
+    return this
   }
 
   /**
@@ -130,30 +118,27 @@ export class BigDecimal {
    * @return formatted string value
    */
   format(decimalPlaces = 2, commas = true, suffix?: string): string {
-    const [left, right = '00'] = this.simple.toFixed(20).split('.');
-    const truncatedRight =
-      right.length > decimalPlaces ? right.slice(0, decimalPlaces) : right;
-    const rounded = `${left}.${truncatedRight}`;
-    const formatted = commas ? commify(rounded) : rounded;
-    return `${formatted}${suffix ? ` ${suffix}` : ''}`;
+    const [left, right = '00'] = this.simple.toFixed(20).split('.')
+    const truncatedRight = right.length > decimalPlaces ? right.slice(0, decimalPlaces) : right
+    const rounded = `${left}.${truncatedRight}`
+    const formatted = commas ? commify(rounded) : rounded
+    return `${formatted}${suffix ? ` ${suffix}` : ''}`
   }
 
   toFixed(decimalPlaces = 2): string {
-    return this.format(decimalPlaces);
+    return this.format(decimalPlaces)
   }
 
   get usd(): string {
-    return `$${this.format(2, true)}`;
+    return `$${this.format(2, true)}`
   }
 
   get abbreviated(): string {
-    return toK(this.simple);
+    return toK(this.simple)
   }
 
   toPercent(decimalPlaces = 2): number {
-    return parseFloat(
-      (this.simple * 100).toFixed(decimalPlaces).replace(/0+$/, ''),
-    );
+    return parseFloat((this.simple * 100).toFixed(decimalPlaces).replace(/0+$/, ''))
   }
 
   /**
@@ -163,7 +148,7 @@ export class BigDecimal {
    *              the shared scale unit
    */
   mulTruncate(other: BigNumberish): BigDecimal {
-    return this.transform(this.exact.mul(other).div(SCALE));
+    return this.transform(this.exact.mul(other).div(SCALE))
   }
 
   /**
@@ -174,7 +159,7 @@ export class BigDecimal {
    *              the ratio scale
    */
   mulRatioTruncate(ratio: BigNumberish): BigDecimal {
-    return this.transform(this.exact.mul(ratio).div(RATIO_SCALE));
+    return this.transform(this.exact.mul(ratio).div(RATIO_SCALE))
   }
 
   /**
@@ -186,7 +171,7 @@ export class BigDecimal {
    *              executing the division on the right hand input.
    */
   divRatioPrecisely(ratio: BigNumberish): BigDecimal {
-    return this.transform(this.exact.mul(RATIO_SCALE).div(ratio));
+    return this.transform(this.exact.mul(RATIO_SCALE).div(ratio))
   }
 
   /**
@@ -197,18 +182,18 @@ export class BigDecimal {
    *              executing the division on the right hand input.
    */
   divPrecisely(other: BigDecimal): BigDecimal {
-    return this.transform(this.exact.mul(SCALE).div(other.exact));
+    return this.transform(this.exact.mul(SCALE).div(other.exact))
   }
 
   add(other: BigDecimal): BigDecimal {
-    return this.transform(this.exact.add(other.exact));
+    return this.transform(this.exact.add(other.exact))
   }
 
   sub(other: BigDecimal): BigDecimal {
-    return this.transform(this.exact.sub(other.exact));
+    return this.transform(this.exact.sub(other.exact))
   }
 
   private transform(newValue: BigNumber): BigDecimal {
-    return new BigDecimal(newValue, this.decimals);
+    return new BigDecimal(newValue, this.decimals)
   }
 }

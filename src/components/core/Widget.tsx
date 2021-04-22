@@ -1,23 +1,23 @@
-import React, { FC, ReactNode } from 'react';
-import styled from 'styled-components';
-import { ViewportWidth } from '../../theme';
-import { Tooltip } from './ReactTooltip';
+import React, { FC, ReactNode } from 'react'
+import styled from 'styled-components'
+import { ViewportWidth } from '../../theme'
+import { Tooltip } from './ReactTooltip'
 
 interface Props {
-  className?: string;
-  title?: string;
-  tooltip?: string;
-  border?: boolean;
-  padding?: boolean;
-  headerContent?: ReactNode;
-  boldTitle?: boolean;
+  className?: string
+  title?: string
+  tooltip?: string
+  border?: boolean
+  padding?: boolean
+  headerContent?: ReactNode
+  boldTitle?: boolean
 }
 
 const Title = styled.h3<{ bold?: boolean }>`
   font-weight: 600;
   font-size: ${({ bold }) => (bold ? `1.25rem` : `1.125rem`)};
   color: ${({ theme }) => theme.color.body};
-`;
+`
 
 const Body = styled.div`
   display: flex;
@@ -26,7 +26,7 @@ const Body = styled.div`
   > * {
     width: 100%;
   }
-`;
+`
 
 const Header = styled.div`
   display: flex;
@@ -48,7 +48,7 @@ const Header = styled.div`
       width: inherit;
     }
   }
-`;
+`
 
 const Container = styled.div<{ border?: boolean; padding?: boolean }>`
   ${({ border, padding, theme }) => ({
@@ -56,16 +56,10 @@ const Container = styled.div<{ border?: boolean; padding?: boolean }>`
     border: border ? `1px ${theme.color.defaultBorder} solid` : 0,
     borderRadius: border ? '0.75rem' : 'none',
   })}
-`;
+`
 
-const DefaultWidget: FC<Props> = ({
-  children,
-  headerContent,
-  title,
-  tooltip,
-  boldTitle,
-}) => {
-  const showHeader = !!title || !!headerContent;
+const DefaultWidget: FC<Props> = ({ children, headerContent, title, tooltip, boldTitle }) => {
+  const showHeader = !!title || !!headerContent
   return (
     <>
       {showHeader && (
@@ -82,29 +76,15 @@ const DefaultWidget: FC<Props> = ({
       )}
       <Body>{children}</Body>
     </>
-  );
-};
+  )
+}
 
-export const Widget: FC<Props> = ({
-  border,
-  padding,
-  children,
-  className,
-  headerContent,
-  title,
-  tooltip,
-  boldTitle,
-}) => {
+export const Widget: FC<Props> = ({ border, padding, children, className, headerContent, title, tooltip, boldTitle }) => {
   return (
     <Container border={border} padding={padding} className={className}>
-      <DefaultWidget
-        title={title}
-        tooltip={tooltip}
-        headerContent={headerContent}
-        boldTitle={boldTitle}
-      >
+      <DefaultWidget title={title} tooltip={tooltip} headerContent={headerContent} boldTitle={boldTitle}>
         {children}
       </DefaultWidget>
     </Container>
-  );
-};
+  )
+}

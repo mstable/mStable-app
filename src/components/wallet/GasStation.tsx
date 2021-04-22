@@ -1,10 +1,13 @@
-import React, { FC, ChangeEventHandler, useCallback, useState } from 'react';
-import styled from 'styled-components';
-import { useEffectOnce } from 'react-use';
+import type { FC, ChangeEventHandler } from 'react'
 
-import { useNetworkPrices } from '../../context/EthProvider';
-import { useGas } from './TransactionGasProvider';
-import { Button } from '../core/Button';
+import React, { useCallback, useState } from 'react'
+import styled from 'styled-components'
+import { useEffectOnce } from 'react-use'
+
+import { useNetworkPrices } from '../../context/NetworkProvider'
+
+import { useGas } from './TransactionGasProvider'
+import { Button } from '../core/Button'
 
 enum GasPriceType {
   Standard = 'standard',
@@ -14,8 +17,8 @@ enum GasPriceType {
 }
 
 const OPTIONS: {
-  type: GasPriceType;
-  label: string;
+  type: GasPriceType
+  label: string
 }[] = [
   {
     type: GasPriceType.Standard,
@@ -33,25 +36,21 @@ const OPTIONS: {
     type: GasPriceType.Custom,
     label: 'Custom',
   },
-];
+]
 
 const Price = styled.div`
   ${({ theme }) => theme.mixins.numeric}
-`;
+`
 
 const Fee = styled(Price)`
   color: grey;
-`;
+`
 
 const Input = styled.input<{ error?: string | void; disabled?: boolean }>`
   appearance: none;
-  background: ${({ theme, disabled }) =>
-    disabled ? theme.color.blackTransparenter : theme.color.background};
+  background: ${({ theme, disabled }) => (disabled ? theme.color.blackTransparenter : theme.color.background)};
 
-  border: ${({ theme, disabled }) =>
-    `1px ${
-      disabled ? theme.color.blackTransparent : 'rgba(0, 0, 0, 0.5)'
-    } solid`};
+  border: ${({ theme, disabled }) => `1px ${disabled ? theme.color.blackTransparent : 'rgba(0, 0, 0, 0.5)'} solid`};
 
   color: ${({ theme, disabled }) => (disabled ? '#404040' : theme.color.black)};
   border-radius: 0.5rem;
@@ -70,13 +69,13 @@ const Input = styled.input<{ error?: string | void; disabled?: boolean }>`
   }
 
   ${({ theme }) => theme.mixins.numeric};
-`;
+`
 
 const OptionButton = styled(Button)`
   font-size: 0.8rem;
   padding: 0 1rem;
   height: 1.75rem;
-`;
+`
 
 const Option = styled.div`
   display: flex;
@@ -87,7 +86,7 @@ const Option = styled.div`
   font-size: 0.9rem;
   border-radius: 1rem;
   min-height: 5rem;
-`;
+`
 
 const Container = styled.div`
   display: flex;
@@ -106,53 +105,48 @@ const Container = styled.div`
     border-radius: 1rem;
     z-index: 0;
   }
-`;
+`
 
 export const GasStation: FC = () => {
-  const gasPrices = useNetworkPrices();
-  const { gasLimit, gasPrice, setGasPrice } = useGas();
+  const networkPrices = useNetworkPrices()
+  const { gasLimit, gasPrice, setGasPrice } = useGas()
 
-  const [gasPriceType, setGasPriceType] = useState<GasPriceType>(
-    GasPriceType.Standard,
-  );
+  const [gasPriceType, setGasPriceType] = useState<GasPriceType>(GasPriceType.Standard)
 
   const customTransactionFee =
-    gasPriceType === GasPriceType.Custom &&
-    gasPrice &&
-    gasPrices.eth &&
-    gasLimit
-      ? (gasPrice / 1e9) * (gasPrices.eth / 1e9) * gasLimit.toNumber()
-      : undefined;
+    gasPriceType === GasPriceType.Custom && gasPrice && networkPrices.value?.nativeToken && gasLimit
+      ? (gasPrice / 1e9) * (networkPrices.value.nativeToken / 1e9) * gasLimit.toNumber()
+      : undefined
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
-      setGasPrice(parseFloat(event.target.value) * 1e9);
+      setGasPrice(parseFloat(event.target.value) * 1e9)
     },
     [setGasPrice],
-  );
+  )
 
   useEffectOnce(() => {
-    setGasPrice((gasPrices.gas?.[gasPriceType] || 0) * 1e9);
-  });
+    setGasPrice((networkPrices.value?.gas?.[gasPriceType as 'fast'] ?? 0) * 1e9)
+  })
 
   return (
     <Container>
       {OPTIONS.map(({ type, label }) => {
-        const _gasPrice = gasPrices.gas?.[type];
+        const _gasPrice = networkPrices.value?.gas?.[type as 'fast']
 
         const transactionFee =
-          _gasPrice && gasPrices.eth && gasLimit
-            ? _gasPrice * (gasPrices.eth / 1e9) * gasLimit.toNumber()
-            : undefined;
+          _gasPrice && networkPrices.value?.nativeToken && gasLimit
+            ? _gasPrice * (networkPrices.value?.nativeToken / 1e9) * gasLimit.toNumber()
+            : undefined
 
-        const selected = type === gasPriceType;
+        const selected = type === gasPriceType
         return (
           <Option key={type}>
             <OptionButton
               highlighted={selected}
               onClick={() => {
-                setGasPrice((_gasPrice as number) * 1e9);
-                setGasPriceType(type);
+                setGasPrice((_gasPrice as number) * 1e9)
+                setGasPriceType(type)
               }}
             >
               {label}
@@ -160,29 +154,19 @@ export const GasStation: FC = () => {
             <div>
               {type === GasPriceType.Custom ? (
                 <div>
-                  <Input
-                    disabled={type !== gasPriceType}
-                    placeholder="10"
-                    onChange={handleChange}
-                  />
-                  <Fee>
-                    {customTransactionFee
-                      ? `$${customTransactionFee.toFixed(2)}`
-                      : '$–'}
-                  </Fee>
+                  <Input disabled={type !== gasPriceType} placeholder="10" onChange={handleChange} />
+                  <Fee>{customTransactionFee ? `$${customTransactionFee.toFixed(2)}` : '$–'}</Fee>
                 </div>
               ) : (
                 <div>
                   <Price>{_gasPrice?.toFixed(0)}</Price>
-                  <Fee>
-                    {transactionFee ? `$${transactionFee.toFixed(2)}` : '–'}
-                  </Fee>
+                  <Fee>{transactionFee ? `$${transactionFee.toFixed(2)}` : '–'}</Fee>
                 </div>
               )}
             </div>
           </Option>
-        );
+        )
       })}
     </Container>
-  );
-};
+  )
+}

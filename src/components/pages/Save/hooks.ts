@@ -1,5 +1,5 @@
-import { createToggleContext } from '../../../hooks/createToggleContext';
+import { createToggleContext } from '../../../hooks/createToggleContext'
 
-const [useOnboarding, OnboardingProvider] = createToggleContext(false);
+const [useOnboarding, OnboardingProvider] = createToggleContext(false)
 
-export { useOnboarding, OnboardingProvider };
+export { useOnboarding, OnboardingProvider }

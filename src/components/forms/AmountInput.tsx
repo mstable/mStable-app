@@ -1,43 +1,30 @@
-import React, {
-  ChangeEventHandler,
-  FC,
-  KeyboardEventHandler,
-  useCallback,
-} from 'react';
-import styled from 'styled-components';
+import React, { ChangeEventHandler, FC, KeyboardEventHandler, useCallback } from 'react'
+import styled from 'styled-components'
 
 interface Props {
-  className?: string;
-  error?: boolean;
-  value?: string;
-  balance?: string;
-  placeholder?: string;
-  step?: string;
-  onChange?(formValue?: string): void;
-  disabled?: boolean;
-  min?: string;
-  max?: string;
+  className?: string
+  error?: boolean
+  value?: string
+  balance?: string
+  placeholder?: string
+  step?: string
+  onChange?(formValue?: string): void
+  disabled?: boolean
+  min?: string
+  max?: string
 }
 
 export const Input = styled.input<{
-  error?: boolean;
-  disabled?: boolean;
+  error?: boolean
+  disabled?: boolean
 }>`
   appearance: none;
   background: ${({ theme, error, disabled }) =>
-    error
-      ? theme.color.redTransparenter
-      : disabled
-      ? theme.color.disabledInput
-      : 'transparent'};
+    error ? theme.color.redTransparenter : disabled ? theme.color.disabledInput : 'transparent'};
 
-  border: ${({ theme, error }) =>
-    `1px ${
-      error ? theme.color.redTransparent : theme.color.defaultBorder
-    } solid`};
+  border: ${({ theme, error }) => `1px ${error ? theme.color.redTransparent : theme.color.defaultBorder} solid`};
 
-  color: ${({ error, theme, disabled }) =>
-    error ? theme.color.red : disabled ? '#404040' : theme.color.body};
+  color: ${({ error, theme, disabled }) => (error ? theme.color.red : disabled ? '#404040' : theme.color.body)};
 
   border-radius: 0.5rem;
   font-size: 1rem;
@@ -56,7 +43,7 @@ export const Input = styled.input<{
   }
 
   ${({ theme }) => theme.mixins.numeric};
-`;
+`
 
 /**
  * @deprecated
@@ -72,23 +59,20 @@ export const AmountInput: FC<Props> = ({
   max,
   step = '0.01',
 }) => {
-  const handleKeyPress = useCallback<KeyboardEventHandler<HTMLInputElement>>(
-    event => {
-      // Prevent 'minus' key
-      if ((event.which || event.keyCode) === 45) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    },
-    [],
-  );
+  const handleKeyPress = useCallback<KeyboardEventHandler<HTMLInputElement>>(event => {
+    // Prevent 'minus' key
+    if ((event.which || event.keyCode) === 45) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }, [])
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
-      onChange?.(event.target.value ?? undefined);
+      onChange?.(event.target.value ?? undefined)
     },
     [onChange],
-  );
+  )
 
   return (
     <Input
@@ -104,5 +88,5 @@ export const AmountInput: FC<Props> = ({
       onChange={handleChange}
       disabled={disabled}
     />
-  );
-};
+  )
+}

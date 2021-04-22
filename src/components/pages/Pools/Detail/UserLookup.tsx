@@ -1,15 +1,12 @@
-import React, { ChangeEventHandler, useCallback, useRef } from 'react';
-import type { FC } from 'react';
-import styled from 'styled-components';
-import { isAddress } from 'ethers/lib/utils';
+import React, { ChangeEventHandler, useCallback, useRef } from 'react'
+import type { FC } from 'react'
+import styled from 'styled-components'
+import { isAddress } from 'ethers/lib/utils'
 
-import { InputV2 as Input } from '../../../forms/AmountInputV2';
-import { Button } from '../../../core/Button';
-import {
-  useIsMasquerading,
-  useMasquerade,
-} from '../../../../context/UserProvider';
-import { ViewportWidth } from '../../../../theme';
+import { InputV2 as Input } from '../../../forms/AmountInputV2'
+import { Button } from '../../../core/Button'
+import { useIsMasquerading, useMasquerade } from '../../../../context/AccountProvider'
+import { ViewportWidth } from '../../../../theme'
 
 const Container = styled.div`
   flex: 1;
@@ -46,19 +43,16 @@ const Container = styled.div`
       font-size: 1.25rem;
     }
   }
-`;
+`
 
 export const UserLookup: FC = () => {
-  const inputText = useRef<string | undefined>();
-  const masquerade = useMasquerade();
-  const isMasquerading = useIsMasquerading();
+  const inputText = useRef<string | undefined>()
+  const masquerade = useMasquerade()
+  const isMasquerading = useIsMasquerading()
 
-  const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
-    event => {
-      inputText.current = event.target.value ?? undefined;
-    },
-    [],
-  );
+  const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(event => {
+    inputText.current = event.target.value ?? undefined
+  }, [])
 
   return (
     <Container>
@@ -67,14 +61,10 @@ export const UserLookup: FC = () => {
         <Input placeholder="0x000…" onChange={handleChange} />
         <Button
           onClick={() => {
-            if (
-              !isMasquerading &&
-              inputText.current &&
-              isAddress(inputText.current)
-            ) {
-              masquerade(inputText.current);
+            if (!isMasquerading && inputText.current && isAddress(inputText.current)) {
+              masquerade(inputText.current)
             } else {
-              masquerade();
+              masquerade()
             }
           }}
         >
@@ -82,5 +72,5 @@ export const UserLookup: FC = () => {
         </Button>
       </div>
     </Container>
-  );
-};
+  )
+}

@@ -1,21 +1,16 @@
-import React, {
-  ChangeEventHandler,
-  FC,
-  KeyboardEventHandler,
-  useCallback,
-} from 'react';
-import styled from 'styled-components';
+import React, { ChangeEventHandler, FC, KeyboardEventHandler, useCallback } from 'react'
+import styled from 'styled-components'
 
-import { Button } from '../core/Button';
+import { Button } from '../core/Button'
 
 interface Props {
-  className?: string;
-  value?: string;
-  placeholder?: string;
-  onChange?(formValue?: string): void;
-  disabled?: boolean;
-  min?: string;
-  max?: string;
+  className?: string
+  value?: string
+  placeholder?: string
+  onChange?(formValue?: string): void
+  disabled?: boolean
+  min?: string
+  max?: string
 }
 
 const StyledButton = styled(Button)`
@@ -38,34 +33,23 @@ const StyledButton = styled(Button)`
     }
     ${({ theme }) => theme.mixins.numeric};
   }
-`;
+`
 
-export const AmountInputButton: FC<Props> = ({
-  className,
-  disabled = false,
-  placeholder = '0.00',
-  onChange,
-  value,
-  min = '0',
-  max,
-}) => {
-  const handleKeyPress = useCallback<KeyboardEventHandler<HTMLInputElement>>(
-    event => {
-      // Prevent 'minus' key
-      if ((event.which || event.keyCode) === 45) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    },
-    [],
-  );
+export const AmountInputButton: FC<Props> = ({ className, disabled = false, placeholder = '0.00', onChange, value, min = '0', max }) => {
+  const handleKeyPress = useCallback<KeyboardEventHandler<HTMLInputElement>>(event => {
+    // Prevent 'minus' key
+    if ((event.which || event.keyCode) === 45) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }, [])
 
   const handleChange = useCallback<ChangeEventHandler<HTMLInputElement>>(
     event => {
-      onChange?.(event.target.value ?? undefined);
+      onChange?.(event.target.value ?? undefined)
     },
     [onChange],
-  );
+  )
 
   return (
     <StyledButton className={className}>
@@ -81,5 +65,5 @@ export const AmountInputButton: FC<Props> = ({
         disabled={disabled}
       />
     </StyledButton>
-  );
-};
+  )
+}

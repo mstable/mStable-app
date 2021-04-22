@@ -1,33 +1,32 @@
-import React, { FC, useEffect, useRef } from 'react';
-import { useCountUp, CountUpProps } from 'react-countup';
-import styled from 'styled-components';
-import { useFirstMountState } from 'react-use/lib/useFirstMountState';
+import React, { FC, useEffect, useRef } from 'react'
+import { useCountUp, CountUpProps } from 'react-countup'
+import styled from 'styled-components'
+import { useFirstMountState } from 'react-use/lib/useFirstMountState'
 
-import { useIsIdle } from '../../context/UserProvider';
-import { Color } from '../../theme';
+import { useIsIdle } from '../../context/AccountProvider'
+import { Color } from '../../theme'
 
 interface Props extends CountUpProps {
-  container?: FC;
-  highlight?: boolean;
-  highlightColor?: Color;
+  container?: FC
+  highlight?: boolean
+  highlightColor?: Color
 }
 
-const DEFAULT_DECIMALS = 2;
-const DEFAULT_DURATION = 1;
+const DEFAULT_DECIMALS = 2
+const DEFAULT_DURATION = 1
 
 const StyledSpan = styled.span<Pick<Props, 'highlight' | 'highlightColor'>>`
-  color: ${({ highlight, highlightColor }) =>
-    highlight && highlightColor ? highlightColor : 'inherit'};
+  color: ${({ highlight, highlightColor }) => (highlight && highlightColor ? highlightColor : 'inherit')};
   font-weight: ${({ highlight }) => (highlight ? 'bold' : 'normal')};
-`;
+`
 
 const PrefixOrSuffix = styled.span`
   font-family: 'Poppins', sans-serif;
-`;
+`
 
 const Number = styled.span`
   ${({ theme }) => theme.mixins.numeric}
-`;
+`
 
 export const CountUp: FC<Props> = ({
   className,
@@ -43,10 +42,10 @@ export const CountUp: FC<Props> = ({
   formattingFn,
 }) => {
   // eslint-disable-next-line no-restricted-globals
-  const isValid = typeof end === 'number' && !isNaN(end);
-  const prevEnd = useRef(isValid ? end : 0);
-  const isIdle = useIsIdle();
-  const firstMount = useFirstMountState();
+  const isValid = typeof end === 'number' && !isNaN(end)
+  const prevEnd = useRef(isValid ? end : 0)
+  const isIdle = useIsIdle()
+  const firstMount = useFirstMountState()
 
   const { countUp, update, pauseResume, start } = useCountUp({
     decimals,
@@ -57,44 +56,34 @@ export const CountUp: FC<Props> = ({
     ...(formattingFn ? { formattingFn } : null),
     // ...(prefix ? { prefix } : null),
     // ...(suffix ? { suffix } : null),
-  });
+  })
 
   useEffect(() => {
     if (isValid) {
-      prevEnd.current = end;
-      update(end);
+      prevEnd.current = end
+      update(end)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [end, isValid]);
+  }, [end, isValid])
 
   useEffect(() => {
     if (isIdle && !firstMount) {
-      pauseResume();
+      pauseResume()
     }
-  }, [firstMount, isIdle, pauseResume, start]);
+  }, [firstMount, isIdle, pauseResume, start])
 
   return (
-    <Container
-      className={className}
-      highlight={highlight}
-      highlightColor={highlightColor}
-    >
+    <Container className={className} highlight={highlight} highlightColor={highlightColor}>
       {prefix ? <PrefixOrSuffix>{prefix}</PrefixOrSuffix> : null}
-      <Number>
-        {isValid && countUp !== 'NaN'
-          ? typeof countUp === 'number'
-            ? countUp.toFixed(decimals)
-            : countUp
-          : '–'}
-      </Number>
+      <Number>{isValid && countUp !== 'NaN' ? (typeof countUp === 'number' ? countUp.toFixed(decimals) : countUp) : '–'}</Number>
       {suffix ? <PrefixOrSuffix>{suffix}</PrefixOrSuffix> : null}
     </Container>
-  );
-};
+  )
+}
 
 export const DifferentialCountup: FC<
   Props & {
-    prev?: number;
+    prev?: number
   }
 > = ({ prev, end, ...props }) => {
   return (
@@ -104,15 +93,11 @@ export const DifferentialCountup: FC<
       end={end}
       highlight
       highlightColor={
-        typeof prev !== 'number' || typeof end !== 'number' || end === prev
-          ? Color.blue
-          : end > prev
-          ? Color.green
-          : Color.red
+        typeof prev !== 'number' || typeof end !== 'number' || end === prev ? Color.blue : end > prev ? Color.green : Color.red
       }
     />
-  );
-};
+  )
+}
 
 const CountUpUSDContainer = styled.div`
   > span {
@@ -121,11 +106,9 @@ const CountUpUSDContainer = styled.div`
   span + span {
     color: ${({ theme }) => theme.color.bodyAccent};
   }
-`;
+`
 
-export const CountUpUSD: FC<
-  Props & { price?: number; priceDecimals?: number }
-> = ({
+export const CountUpUSD: FC<Props & { price?: number; priceDecimals?: number }> = ({
   className,
   end,
   decimals,
@@ -149,13 +132,8 @@ export const CountUpUSD: FC<
     />
     {price && (
       <>
-        <CountUp
-          end={end * price}
-          decimals={priceDecimals}
-          prefix="$"
-          formattingFn={formattingFn}
-        />
+        <CountUp end={end * price} decimals={priceDecimals} prefix="$" formattingFn={formattingFn} />
       </>
     )}
   </CountUpUSDContainer>
-);
+)

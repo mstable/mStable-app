@@ -1,4 +1,4 @@
-import type { BigDecimal } from '../../../../web3/BigDecimal';
+import type { BigDecimal } from '../../../../web3/BigDecimal'
 
 export enum SaveRoutes {
   Save,
@@ -18,7 +18,7 @@ export enum SaveRoutesOut {
 }
 
 export interface SaveOutput {
-  amount: BigDecimal;
-  amountOut?: BigDecimal;
-  path?: [string, string];
+  amount: BigDecimal
+  amountOut?: BigDecimal
+  path?: [string, string]
 }

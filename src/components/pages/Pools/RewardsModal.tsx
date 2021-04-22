@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { ViewportWidth } from '../../../theme';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { ViewportWidth } from '../../../theme'
 
-import { Button } from '../../core/Button';
+import { Button } from '../../core/Button'
 
 const Message = styled.div`
   padding: 1rem;
@@ -11,7 +11,7 @@ const Message = styled.div`
   color: ${({ theme }) => theme.color.bodyAccent};
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   text-align: center;
-`;
+`
 
 const Container = styled.div`
   display: flex;
@@ -30,25 +30,23 @@ const Container = styled.div`
   @media (min-width: ${ViewportWidth.m}) {
     padding: 2rem;
   }
-`;
+`
 
 export const RewardsModal: FC = () => {
   // TODO real value
   return (
     <Container>
-      <Message>
-        When you provide liquidity to pools you earn MTA rewards.
-      </Message>
+      <Message>When you provide liquidity to pools you earn MTA rewards.</Message>
       <Button
         highlighted
         onClick={() => {
           // TODO
           // eslint-disable-next-line no-alert
-          alert('TODO claim');
+          alert('TODO claim')
         }}
       >
         Claim <span>12</span> MTA
       </Button>
     </Container>
-  );
-};
+  )
+}

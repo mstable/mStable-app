@@ -1,93 +1,65 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react'
 
-import { usePropose } from '../../../../context/TransactionsProvider';
-import { useWalletAddress } from '../../../../context/OnboardProvider';
-import { TransactionManifest } from '../../../../web3/TransactionManifest';
-import { SendButton } from '../../../forms/SendButton';
-import { Interfaces, SubscribedToken } from '../../../../types';
-import {
-  ManyToOneAssetExchange,
-  useMultiAssetExchangeDispatch,
-  useMultiAssetExchangeState,
-} from '../../../forms/MultiAssetExchange';
-import { BigDecimal } from '../../../../web3/BigDecimal';
-import { useEstimatedMintOutput } from '../../../../hooks/useEstimatedMintOutput';
-import { useMinimumOutput } from '../../../../hooks/useOutput';
-import { useExchangeRateForFPInputs } from '../../../../hooks/useMassetExchangeRate';
+import { usePropose } from '../../../../context/TransactionsProvider'
+import { useWalletAddress } from '../../../../context/AccountProvider'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
+import { SendButton } from '../../../forms/SendButton'
+import { Interfaces, SubscribedToken } from '../../../../types'
+import { ManyToOneAssetExchange, useMultiAssetExchangeDispatch, useMultiAssetExchangeState } from '../../../forms/MultiAssetExchange'
+import { BigDecimal } from '../../../../web3/BigDecimal'
+import { useEstimatedMintOutput } from '../../../../hooks/useEstimatedMintOutput'
+import { useMinimumOutput } from '../../../../hooks/useOutput'
+import { useExchangeRateForFPInputs } from '../../../../hooks/useMassetExchangeRate'
 import {
   useSelectedFeederPoolContracts,
   useSelectedFeederPoolState,
   useFPVaultAddressOptions,
   useFPAssetAddressOptions,
-} from '../FeederPoolProvider';
-import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
-import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
+} from '../FeederPoolProvider'
+import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs'
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
 
-const formId = 'DepositLP';
+const formId = 'DepositLP'
 
 export const MintExact: FC = () => {
-  const feederPool = useSelectedFeederPoolState();
-  const contracts = useSelectedFeederPoolContracts();
+  const feederPool = useSelectedFeederPoolState()
+  const contracts = useSelectedFeederPoolContracts()
 
-  const propose = usePropose();
-  const walletAddress = useWalletAddress();
+  const propose = usePropose()
+  const walletAddress = useWalletAddress()
 
-  const assetAddressOptions = useFPAssetAddressOptions(true);
-  const vaultAddressOptions = useFPVaultAddressOptions();
+  const assetAddressOptions = useFPAssetAddressOptions(true)
+  const vaultAddressOptions = useFPVaultAddressOptions()
 
-  const massetPrice = useSelectedMassetPrice();
-  const isLowLiquidity =
-    feederPool?.liquidity.simple * (massetPrice ?? 0) < 100000;
+  const massetPrice = useSelectedMassetPrice()
+  const isLowLiquidity = feederPool?.liquidity.simple * (massetPrice ?? 0) < 100000
 
-  const [outputAddress, setOutputAddress] = useState<string | undefined>(
-    vaultAddressOptions[0].address,
-  );
+  const [outputAddress, setOutputAddress] = useState<string | undefined>(vaultAddressOptions[0].address)
 
-  const [inputValues, , slippage] = useMultiAssetExchangeState();
-  const [inputCallbacks, setOutputAmount] = useMultiAssetExchangeDispatch();
+  const [inputValues, , slippage] = useMultiAssetExchangeState()
+  const [inputCallbacks, setOutputAmount] = useMultiAssetExchangeDispatch()
 
-  const touched = useMemo(
-    () => Object.values(inputValues).filter(v => v.touched),
-    [inputValues],
-  );
+  const touched = useMemo(() => Object.values(inputValues).filter(v => v.touched), [inputValues])
 
-  const estimatedOutputAmount = useEstimatedMintOutput(
-    contracts?.feederPool,
-    inputValues,
-  );
+  const estimatedOutputAmount = useEstimatedMintOutput(contracts?.feederPool, inputValues)
 
-  const exchangeRate = useExchangeRateForFPInputs(
-    feederPool.address,
-    estimatedOutputAmount,
-    inputValues,
-  );
+  const exchangeRate = useExchangeRateForFPInputs(feederPool.address, estimatedOutputAmount, inputValues)
 
   const inputAmount = useMemo(() => {
-    if (!touched.length) return;
+    if (!touched.length) return
 
-    const massetAmount = touched.find(
-      ({ address }) => address === feederPool.masset.address,
-    )?.amount;
+    const massetAmount = touched.find(({ address }) => address === feederPool.masset.address)?.amount
 
-    const fassetAmount = touched.find(
-      ({ address }) => address === feederPool.fasset.address,
-    )?.amount;
+    const fassetAmount = touched.find(({ address }) => address === feederPool.fasset.address)?.amount
 
     if (fassetAmount && massetAmount) {
-      return fassetAmount
-        .mulRatioTruncate(feederPool.fasset.ratio)
-        .add(massetAmount)
-        .setDecimals(18);
+      return fassetAmount.mulRatioTruncate(feederPool.fasset.ratio).add(massetAmount).setDecimals(18)
     }
 
-    return massetAmount ?? fassetAmount;
-  }, [feederPool, touched]);
+    return massetAmount ?? fassetAmount
+  }, [feederPool, touched])
 
-  const { minOutputAmount, penaltyBonus } = useMinimumOutput(
-    slippage?.simple,
-    inputAmount,
-    estimatedOutputAmount.value,
-  );
+  const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
 
   const setMaxCallbacks = useMemo(
     () =>
@@ -95,12 +67,12 @@ export const MintExact: FC = () => {
         assetAddressOptions.map(({ address, balance }) => [
           address,
           () => {
-            inputCallbacks[address].setAmount(balance);
+            inputCallbacks[address].setAmount(balance)
           },
         ]),
       ),
     [assetAddressOptions, inputCallbacks],
-  );
+  )
 
   const inputLabel = useMemo(
     () =>
@@ -108,22 +80,20 @@ export const MintExact: FC = () => {
         .map(
           v =>
             (assetAddressOptions.find(t => t.address === v.address) as {
-              symbol: string;
+              symbol: string
             }).symbol,
         )
         .join(', '),
     [assetAddressOptions, touched],
-  );
+  )
 
-  const isMintingAndStakingLP = outputAddress === feederPool.vault.address;
+  const isMintingAndStakingLP = outputAddress === feederPool.vault.address
 
-  const contractAddress = isMintingAndStakingLP
-    ? contracts?.feederWrapper.address
-    : contracts?.feederPool.address;
+  const contractAddress = isMintingAndStakingLP ? contracts?.feederWrapper.address : contracts?.feederPool.address
 
   const error = useMemo<string | undefined>(() => {
-    if (!touched.length) return 'Enter an amount';
-    if (!outputAddress) return 'Select a token';
+    if (!touched.length) return 'Enter an amount'
+    if (!outputAddress) return 'Select a token'
 
     const touchedOptions = assetAddressOptions
       .map(opt => ({
@@ -131,62 +101,43 @@ export const MintExact: FC = () => {
         input: touched.find(t => t.address === opt.address),
       }))
       .filter(opt => opt.input) as (SubscribedToken & {
-      input: BigDecimalInputValue;
-    })[];
+      input: BigDecimalInputValue
+    })[]
 
     if (isLowLiquidity) {
-      const minAssetSimple = (inputAmount?.simple ?? 0) * 0.4;
+      const minAssetSimple = (inputAmount?.simple ?? 0) * 0.4
 
       if (touchedOptions.length !== Object.keys(inputValues).length) {
-        return 'Assets must be deposited in pairs';
+        return 'Assets must be deposited in pairs'
       }
 
       if (touched.find(v => (v.amount?.simple ?? 0) < minAssetSimple)) {
-        return 'Assets must be deposited at a minimum 40/60 ratio';
+        return 'Assets must be deposited at a minimum 40/60 ratio'
       }
     }
 
     if (!contractAddress || !touchedOptions.every(opt => opt.balance)) {
-      return 'Fetching balances…';
+      return 'Fetching balances…'
     }
 
-    const addressesBalanceTooLow = touchedOptions.filter(
-      opt => opt.input.amount && opt.balance?.exact.lt(opt.input.amount.exact),
-    );
+    const addressesBalanceTooLow = touchedOptions.filter(opt => opt.input.amount && opt.balance?.exact.lt(opt.input.amount.exact))
 
-    if (addressesBalanceTooLow.length)
-      return `Insufficient ${addressesBalanceTooLow
-        .map(t => t.symbol)
-        .join(', ')} balance`;
+    if (addressesBalanceTooLow.length) return `Insufficient ${addressesBalanceTooLow.map(t => t.symbol).join(', ')} balance`
 
     const addressesApprovalNeeded = touchedOptions.filter(
-      opt =>
-        opt.input.amount &&
-        opt.allowances[contractAddress]?.exact.lt(opt.input.amount.exact),
-    );
+      opt => opt.input.amount && opt.allowances[contractAddress]?.exact.lt(opt.input.amount.exact),
+    )
 
-    if (addressesApprovalNeeded.length)
-      return `Approval for ${addressesApprovalNeeded
-        .map(t => t.symbol)
-        .join(', ')} needed`;
+    if (addressesApprovalNeeded.length) return `Approval for ${addressesApprovalNeeded.map(t => t.symbol).join(', ')} needed`
 
-    if (estimatedOutputAmount.fetching) return 'Validating…';
+    if (estimatedOutputAmount.fetching) return 'Validating…'
 
-    return estimatedOutputAmount.error;
-  }, [
-    assetAddressOptions,
-    estimatedOutputAmount,
-    outputAddress,
-    contractAddress,
-    touched,
-    inputAmount,
-    isLowLiquidity,
-    inputValues,
-  ]);
+    return estimatedOutputAmount.error
+  }, [assetAddressOptions, estimatedOutputAmount, outputAddress, contractAddress, touched, inputAmount, isLowLiquidity, inputValues])
 
   useEffect(() => {
-    setOutputAmount(estimatedOutputAmount);
-  }, [estimatedOutputAmount, setOutputAmount]);
+    setOutputAmount(estimatedOutputAmount)
+  }, [estimatedOutputAmount, setOutputAmount])
 
   return (
     <ManyToOneAssetExchange
@@ -206,50 +157,39 @@ export const MintExact: FC = () => {
         penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         valid={!error}
         handleSend={() => {
-          if (!contracts || !walletAddress || !minOutputAmount) return;
+          if (!contracts || !walletAddress || !minOutputAmount) return
 
           if (touched.length === 1) {
-            const [{ address, amount }] = touched;
+            const [{ address, amount }] = touched
             // mint & stake via wrapper
             if (outputAddress !== feederPool.address) {
               return propose<Interfaces.FeederWrapper, 'mintAndStake'>(
                 new TransactionManifest(
                   contracts.feederWrapper,
                   'mintAndStake',
-                  [
-                    feederPool.address,
-                    feederPool.vault.address,
-                    address,
-                    (amount as BigDecimal).exact,
-                    minOutputAmount.exact,
-                  ],
+                  [feederPool.address, feederPool.vault.address, address, (amount as BigDecimal).exact, minOutputAmount.exact],
                   {
                     past: 'Deposited & Staked',
                     present: 'Depositing & Staking',
                   },
                   formId,
                 ),
-              );
+              )
             }
             // mint
             return propose<Interfaces.FeederPool, 'mint'>(
               new TransactionManifest(
                 contracts.feederPool,
                 'mint',
-                [
-                  address,
-                  (amount as BigDecimal).exact,
-                  minOutputAmount.exact,
-                  walletAddress,
-                ],
+                [address, (amount as BigDecimal).exact, minOutputAmount.exact, walletAddress],
                 { past: 'Deposited', present: 'Depositing' },
                 formId,
               ),
-            );
+            )
           }
 
-          const addresses = touched.map(v => v.address as string);
-          const amounts = touched.map(v => (v.amount as BigDecimal).exact);
+          const addresses = touched.map(v => v.address as string)
+          const amounts = touched.map(v => (v.amount as BigDecimal).exact)
 
           // mint & stake multi
           if (isMintingAndStakingLP) {
@@ -257,17 +197,11 @@ export const MintExact: FC = () => {
               new TransactionManifest(
                 contracts.feederWrapper,
                 'mintMultiAndStake',
-                [
-                  feederPool.address,
-                  feederPool.vault.address,
-                  addresses,
-                  amounts,
-                  minOutputAmount.exact,
-                ],
+                [feederPool.address, feederPool.vault.address, addresses, amounts, minOutputAmount.exact],
                 { past: 'Deposited & Staked', present: 'Depositing & Staking' },
                 formId,
               ),
-            );
+            )
           }
 
           // mint multi
@@ -279,9 +213,9 @@ export const MintExact: FC = () => {
               { past: 'Deposited', present: 'Depositing' },
               formId,
             ),
-          );
+          )
         }}
       />
     </ManyToOneAssetExchange>
-  );
-};
+  )
+}

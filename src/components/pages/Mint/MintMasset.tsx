@@ -1,34 +1,31 @@
-import React, { FC, useMemo, useState } from 'react';
-import styled from 'styled-components';
+import React, { FC, useMemo, useState } from 'react'
+import styled from 'styled-components'
 
-import {
-  FeederPool__factory,
-  Masset__factory,
-} from '@mstable/protocol/types/generated';
-import { usePropose } from '../../../context/TransactionsProvider';
-import { useSigner, useWalletAddress } from '../../../context/OnboardProvider';
-import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider';
-import { MassetState } from '../../../context/DataProvider/types';
-import { useTokenSubscription } from '../../../context/TokensProvider';
+import { FeederPool__factory, Masset__factory } from '@mstable/protocol/types/generated'
+import { usePropose } from '../../../context/TransactionsProvider'
+import { useSigner, useWalletAddress } from '../../../context/AccountProvider'
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
+import { MassetState } from '../../../context/DataProvider/types'
+import { useTokenSubscription } from '../../../context/TokensProvider'
 
-import { useBigDecimalInput } from '../../../hooks/useBigDecimalInput';
-import { useSlippage } from '../../../hooks/useSimpleInput';
-import { TransactionManifest } from '../../../web3/TransactionManifest';
+import { useBigDecimalInput } from '../../../hooks/useBigDecimalInput'
+import { useSlippage } from '../../../hooks/useSimpleInput'
+import { TransactionManifest } from '../../../web3/TransactionManifest'
 
-import { Interfaces } from '../../../types';
+import { Interfaces } from '../../../types'
 
-import { SendButton } from '../../forms/SendButton';
-import { AssetInput } from '../../forms/AssetInput';
-import { Arrow } from '../../core/Arrow';
-import { ErrorMessage } from '../../core/ErrorMessage';
-import { ExchangeRate } from '../../core/ExchangeRate';
-import { TransactionInfo } from '../../core/TransactionInfo';
-import { useMinimumOutput } from '../../../hooks/useOutput';
-import { BigDecimalInputValue } from '../../../hooks/useBigDecimalInputs';
-import { useEstimatedOutput } from '../../../hooks/useEstimatedOutput';
-import { BigDecimal } from '../../../web3/BigDecimal';
+import { SendButton } from '../../forms/SendButton'
+import { AssetInput } from '../../forms/AssetInput'
+import { Arrow } from '../../core/Arrow'
+import { ErrorMessage } from '../../core/ErrorMessage'
+import { ExchangeRate } from '../../core/ExchangeRate'
+import { TransactionInfo } from '../../core/TransactionInfo'
+import { useMinimumOutput } from '../../../hooks/useOutput'
+import { BigDecimalInputValue } from '../../../hooks/useBigDecimalInputs'
+import { useEstimatedOutput } from '../../../hooks/useEstimatedOutput'
+import { BigDecimal } from '../../../web3/BigDecimal'
 
-const formId = 'mint';
+const formId = 'mint'
 
 const Container = styled.div`
   > * {
@@ -40,117 +37,82 @@ const Container = styled.div`
       margin-bottom: 0;
     }
   }
-`;
+`
 
 export const MintMasset: FC = () => {
-  const propose = usePropose();
-  const walletAddress = useWalletAddress();
-  const signer = useSigner();
-  const massetState = useSelectedMassetState() as MassetState;
-  const { address: massetAddress, bAssets, fAssets, feederPools } = massetState;
+  const propose = usePropose()
+  const walletAddress = useWalletAddress()
+  const signer = useSigner()
+  const massetState = useSelectedMassetState() as MassetState
+  const { address: massetAddress, bAssets, fAssets, feederPools } = massetState
 
-  const [inputAddress, handleSetAddress] = useState<string | undefined>(
-    Object.keys(bAssets)[0],
-  );
-  const massetToken = useTokenSubscription(massetAddress);
-  const inputToken = useTokenSubscription(inputAddress);
-  const inputDecimals = inputToken?.decimals;
+  const [inputAddress, handleSetAddress] = useState<string | undefined>(Object.keys(bAssets)[0])
+  const massetToken = useTokenSubscription(massetAddress)
+  const inputToken = useTokenSubscription(inputAddress)
+  const inputDecimals = inputToken?.decimals
 
-  const [
-    inputAmount,
-    inputFormValue,
-    handleSetMassetFormValue,
-  ] = useBigDecimalInput('0', { decimals: inputDecimals });
+  const [inputAmount, inputFormValue, handleSetMassetFormValue] = useBigDecimalInput('0', { decimals: inputDecimals })
 
-  const [slippageSimple, slippageFormValue, handleSetSlippage] = useSlippage();
+  const [slippageSimple, slippageFormValue, handleSetSlippage] = useSlippage()
 
-  const currentFeederAddress = Object.keys(feederPools).find(
-    address => feederPools[address].fasset.address === inputAddress,
-  );
+  const currentFeederAddress = Object.keys(feederPools).find(address => feederPools[address].fasset.address === inputAddress)
 
   const feederOptions = Object.keys(feederPools).map(address => ({
     address: feederPools[address].fasset.address,
-  }));
+  }))
 
-  const masset = useMemo(
-    () => (signer ? Masset__factory.connect(massetAddress, signer) : undefined),
-    [massetAddress, signer],
-  );
+  const masset = useMemo(() => (signer ? Masset__factory.connect(massetAddress, signer) : undefined), [massetAddress, signer])
 
-  const fasset = useMemo(
-    () =>
-      signer && currentFeederAddress
-        ? FeederPool__factory.connect(currentFeederAddress, signer)
-        : undefined,
-    [currentFeederAddress, signer],
-  );
+  const fasset = useMemo(() => (signer && currentFeederAddress ? FeederPool__factory.connect(currentFeederAddress, signer) : undefined), [
+    currentFeederAddress,
+    signer,
+  ])
 
   const { estimatedOutputAmount, exchangeRate, feeRate } = useEstimatedOutput(
     { ...inputToken, amount: inputAmount } as BigDecimalInputValue,
     { ...massetToken } as BigDecimalInputValue,
-  );
+  )
 
-  const addressOptions = useMemo(
-    () => [
-      ...Object.keys(bAssets).map(address => ({ address })),
-      ...feederOptions,
-    ],
-    [bAssets, feederOptions],
-  );
+  const addressOptions = useMemo(() => [...Object.keys(bAssets).map(address => ({ address })), ...feederOptions], [bAssets, feederOptions])
 
   const error = useMemo(() => {
-    if (!inputAmount?.simple) return 'Enter an amount';
+    if (!inputAmount?.simple) return 'Enter an amount'
 
     if (inputAmount) {
-      if (
-        inputAmount.exact.gt(inputToken?.balance.exact ?? BigDecimal.ZERO.exact)
-      ) {
-        return 'Insufficient balance';
+      if (inputAmount.exact.gt(inputToken?.balance.exact ?? BigDecimal.ZERO.exact)) {
+        return 'Insufficient balance'
       }
 
       if (!inputAddress) {
-        return 'Must select an asset to receive';
+        return 'Must select an asset to receive'
       }
 
       if (inputAmount.exact.eq(0)) {
-        return 'Amount must be greater than zero';
+        return 'Amount must be greater than zero'
       }
     }
 
-    if (estimatedOutputAmount.fetching) return 'Validating…';
+    if (estimatedOutputAmount.fetching) return 'Validating…'
 
-    return estimatedOutputAmount.error;
-  }, [
-    inputAmount,
-    estimatedOutputAmount.fetching,
-    estimatedOutputAmount.error,
-    inputToken,
-    inputAddress,
-  ]);
+    return estimatedOutputAmount.error
+  }, [inputAmount, estimatedOutputAmount.fetching, estimatedOutputAmount.error, inputToken, inputAddress])
 
-  const { minOutputAmount, penaltyBonus } = useMinimumOutput(
-    slippageSimple,
-    inputAmount,
-    estimatedOutputAmount.value,
-  );
+  const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippageSimple, inputAmount, estimatedOutputAmount.value)
 
-  const isFasset = Object.values(fAssets).find(f => f.address === inputAddress);
+  const isFasset = Object.values(fAssets).find(f => f.address === inputAddress)
 
   const approve = useMemo(
     () =>
       (inputAddress && {
-        spender:
-          isFasset && currentFeederAddress
-            ? currentFeederAddress
-            : massetAddress,
+        spender: isFasset && currentFeederAddress ? currentFeederAddress : massetAddress,
         address: inputAddress,
         amount: inputAmount,
       }) ||
       undefined,
     [inputAddress, isFasset, currentFeederAddress, massetAddress, inputAmount],
-  );
+  )
 
-  const valid = !error;
+  const valid = !error
 
   return (
     <Container>
@@ -160,18 +122,12 @@ export const MintMasset: FC = () => {
         formValue={inputFormValue}
         handleSetAddress={handleSetAddress}
         handleSetAmount={handleSetMassetFormValue}
-        handleSetMax={() =>
-          handleSetMassetFormValue(inputToken?.balance.string)
-        }
+        handleSetMax={() => handleSetMassetFormValue(inputToken?.balance.string)}
         decimals={inputDecimals}
       />
       <div>
         <Arrow />
-        <ExchangeRate
-          inputToken={inputToken}
-          outputToken={massetToken}
-          exchangeRate={exchangeRate}
-        />
+        <ExchangeRate inputToken={inputToken} outputToken={massetToken} exchangeRate={exchangeRate} />
       </div>
       <AssetInput
         address={massetAddress}
@@ -188,45 +144,28 @@ export const MintMasset: FC = () => {
         approve={approve}
         penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         handleSend={() => {
-          if (
-            masset &&
-            walletAddress &&
-            inputAmount &&
-            inputAddress &&
-            minOutputAmount
-          ) {
+          if (masset && walletAddress && inputAmount && inputAddress && minOutputAmount) {
             if (isFasset && fasset) {
               return propose<Interfaces.FeederPool, 'swap'>(
                 new TransactionManifest(
                   fasset,
                   'swap',
-                  [
-                    inputAddress,
-                    massetAddress,
-                    inputAmount.exact,
-                    minOutputAmount.exact,
-                    walletAddress,
-                  ],
+                  [inputAddress, massetAddress, inputAmount.exact, minOutputAmount.exact, walletAddress],
                   { present: 'Swapping', past: 'Swapped' },
                   formId,
                 ),
-              );
+              )
             }
 
             return propose<Interfaces.Masset, 'mint'>(
               new TransactionManifest(
                 masset,
                 'mint',
-                [
-                  inputAddress,
-                  inputAmount.exact,
-                  minOutputAmount.exact,
-                  walletAddress,
-                ],
+                [inputAddress, inputAmount.exact, minOutputAmount.exact, walletAddress],
                 { past: 'Minted', present: 'Minting' },
                 formId,
               ),
-            );
+            )
           }
         }}
       />
@@ -237,5 +176,5 @@ export const MintMasset: FC = () => {
         feeAmount={feeRate?.value}
       />
     </Container>
-  );
-};
+  )
+}
