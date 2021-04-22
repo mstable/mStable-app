@@ -12,6 +12,7 @@ import { RechartsContainer } from './RechartsContainer'
 import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
 import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider'
 import { ThemedSkeleton } from '../core/ThemedSkeleton'
+import { ChainIds, useChainIdCtx } from '../../context/NetworkProvider'
 
 interface AggregateMetricsQueryResult {
   [timestamp: string]: {
@@ -198,6 +199,7 @@ const Chart: FC<{
 
 export const AggregateChart: FC = () => {
   const massetName = useSelectedMassetName()
+  const [chainId] = useChainIdCtx()
   const aggregateMetrics = useMemo(
     () => [
       {
@@ -206,7 +208,7 @@ export const AggregateChart: FC = () => {
         label: 'Total supply',
         color: colors.totalSupply,
       },
-      ...(massetName === 'musd'
+      ...(massetName === 'musd' && chainId === ChainIds.EthereumMainnet
         ? [
             {
               type: 'totalSavingsV1',
@@ -230,7 +232,7 @@ export const AggregateChart: FC = () => {
             },
           ]),
     ],
-    [massetName],
+    [chainId, massetName],
   )
 
   return (

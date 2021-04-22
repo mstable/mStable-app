@@ -32,6 +32,7 @@ export interface StorageV3 extends VersionedStorage<3, StorageV2> {
 
 export interface StorageV4 extends VersionedStorage<4, StorageV3> {
   mostRecentChainId?: number
+  polygonViewed?: boolean
 }
 
 export type AllStorage = { version: number } & Omit<StorageV0, 'version'> &

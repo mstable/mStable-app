@@ -88,6 +88,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   VAULT,
   ETHEREUM,
   POLYGON,
+  MATIC: POLYGON,
 }
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -131,6 +132,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   VAULT: VaultSvg as SvgComponent,
   ETHEREUM: EthereumSvg as SvgComponent,
   POLYGON: PolygonSvg as SvgComponent,
+  MATIC: PolygonSvg as SvgComponent,
 }
 
 const IconContainer = styled.div<{ isLarge: boolean }>`
@@ -197,12 +199,13 @@ const PlaceholderIcon = styled.div`
 
 export const TokenIcon: FC<Props> = ({ className, symbol, hideNetwork = false }) => {
   const { protocolName } = useNetwork()
-  const showNetworkIcon = protocolName.toUpperCase() !== Networks.Ethereum.toUpperCase() && !hideNetwork
+  const networkSymbol = protocolName.toUpperCase()
+  const showNetworkIcon = symbol && protocolName !== Networks.Ethereum && !hideNetwork
   const icon = TOKEN_ICONS[symbol?.toUpperCase() ?? '']
   return icon ? (
     <ImageContainer>
       <Image alt={symbol} src={icon} className={className} />
-      {showNetworkIcon && <NetworkIcon src={TOKEN_ICONS[protocolName.toUpperCase()]} alt="" />}
+      {showNetworkIcon && <NetworkIcon src={TOKEN_ICONS[networkSymbol]} alt="" />}
     </ImageContainer>
   ) : (
     <PlaceholderIcon className={className} title={symbol}>
