@@ -63,7 +63,9 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
     if (!loading && !selectedSaveVersion && !setRef.current) {
       // Select v2 if is current, and the user has no v1 balance
       setSelectedSaveVersion(
-        v2Current && hasNoV1Balance ? SaveVersion.V2 : SaveVersion.V1,
+        (v2Current && hasNoV1Balance) || massetName === 'mbtc'
+          ? SaveVersion.V2
+          : SaveVersion.V1,
       );
       setRef.current = true;
     }
@@ -73,6 +75,7 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
     selectedSaveVersion,
     setSelectedSaveVersion,
     v2Current,
+    massetName,
   ]);
 
   // Remount the provider when the massetName or wallet changes

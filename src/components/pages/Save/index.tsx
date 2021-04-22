@@ -81,6 +81,7 @@ export const Save: FC = () => {
   const formattedName = formatMassetName(massetName);
   const [selectedSaveVersion] = useSelectedSaveVersion();
   const vault = massetState?.savingsContracts.v2.boostedSavingsVault;
+  const showMigrationView = selectedSaveVersion === 1 && massetName === 'musd';
 
   return massetState ? (
     <RewardStreamsProvider vault={vault}>
@@ -92,7 +93,7 @@ export const Save: FC = () => {
         <Container>
           <SaveOverview />
           <Content>
-            {selectedSaveVersion === 1 ? <SaveMigration /> : <SaveV2 />}
+            {showMigrationView ? <SaveMigration /> : <SaveV2 />}
             <Sidebar>
               {massetName === 'musd' && (
                 <ButtonPanel>
