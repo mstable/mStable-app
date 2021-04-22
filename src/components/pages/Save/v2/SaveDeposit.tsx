@@ -5,7 +5,7 @@ import { BoostedSavingsVault__factory, ISavingsContractV2__factory } from '@msta
 import { useSigner } from '../../../../context/AccountProvider'
 import { usePropose } from '../../../../context/TransactionsProvider'
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
-import { useNetworkPrices, useNetworkAddresses } from '../../../../context/NetworkProvider'
+import { useNetworkAddresses, useNetworkPrices } from '../../../../context/NetworkProvider'
 import { MassetState } from '../../../../context/DataProvider/types'
 import { useNativeToken, useTokenSubscription } from '../../../../context/TokensProvider'
 
@@ -24,6 +24,7 @@ import { SendButton } from '../../../forms/SendButton'
 import { useSaveOutput } from './useSaveOutput'
 import { SaveRoutes } from './types'
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
+import { DEAD_ADDRESS } from '../../../../constants'
 
 const formId = 'SaveDeposit'
 
@@ -88,6 +89,8 @@ const withSlippage = new Set([
 ])
 
 const withNativeToken = new Set([SaveRoutes.BuyAndSave, SaveRoutes.BuyAndStake])
+
+const withStake = new Set([SaveRoutes.MintAndStake, SaveRoutes.BuyAndStake, SaveRoutes.SwapAndStake])
 
 export const SaveDeposit: FC = () => {
   const signer = useSigner()
@@ -305,12 +308,18 @@ export const SaveDeposit: FC = () => {
   ])
 
   const approve = useMemo(() => {
-    if (!inputAddress || !saveAddress || !networkAddresses || !vaultAddress || withNativeToken.has(saveRoute)) {
+    if (
+      !inputAddress ||
+      !saveAddress ||
+      !networkAddresses ||
+      (withStake.has(saveRoute) && !vaultAddress) ||
+      withNativeToken.has(saveRoute)
+    ) {
       return
     }
 
     const spender =
-      saveRoute === SaveRoutes.Save ? saveAddress : saveRoute === SaveRoutes.Stake ? vaultAddress : networkAddresses.SaveWrapper
+      saveRoute === SaveRoutes.Save ? saveAddress : saveRoute === SaveRoutes.Stake ? (vaultAddress as string) : networkAddresses.SaveWrapper
 
     return {
       spender,
@@ -353,15 +362,17 @@ export const SaveDeposit: FC = () => {
         handleSend={() => {
           if (
             error ||
-            !(signer && inputAmount && inputAddress && networkAddresses && saveOutput.value && vaultAddress && outputs.minOutputImasset)
-          ) {
+            !(signer && inputAmount && inputAddress && networkAddresses && saveOutput.value && outputs.minOutputImasset) ||
+            (withStake.has(saveRoute) && !vaultAddress)
+          )
             return
-          }
 
           const purpose = purposes[saveRoute]
           switch (saveRoute) {
             case SaveRoutes.BuyAndSave:
             case SaveRoutes.BuyAndStake:
+              if (!vaultAddress && saveRoute === SaveRoutes.BuyAndStake) return
+
               return propose<Interfaces.SaveWrapper, 'saveViaUniswapETH'>(
                 new TransactionManifest(
                   SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer),
@@ -369,7 +380,7 @@ export const SaveDeposit: FC = () => {
                   [
                     massetAddress,
                     saveAddress,
-                    vaultAddress,
+                    vaultAddress ?? DEAD_ADDRESS,
                     networkAddresses.UniswapRouter02_Like,
                     (saveOutput.value.amountOut as BigDecimal).exact,
                     saveOutput.value.path as string[],
@@ -384,6 +395,8 @@ export const SaveDeposit: FC = () => {
 
             case SaveRoutes.MintAndSave:
             case SaveRoutes.MintAndStake:
+              if (!vaultAddress && saveRoute === SaveRoutes.MintAndStake) return
+
               return propose<Interfaces.SaveWrapper, 'saveViaMint'>(
                 new TransactionManifest(
                   SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer),
@@ -391,7 +404,7 @@ export const SaveDeposit: FC = () => {
                   [
                     massetAddress,
                     saveAddress,
-                    vaultAddress,
+                    vaultAddress ?? DEAD_ADDRESS,
                     inputAddress,
                     inputAmount.exact,
                     (outputs.minOutputMasset as BigDecimal).exact,
@@ -404,7 +417,8 @@ export const SaveDeposit: FC = () => {
 
             case SaveRoutes.SwapAndSave:
             case SaveRoutes.SwapAndStake:
-              if (!feederPoolAddress) return
+              if (!feederPoolAddress || (!vaultAddress && saveRoute === SaveRoutes.SwapAndStake)) return
+
               return propose<Interfaces.SaveWrapper, 'saveViaSwap'>(
                 new TransactionManifest(
                   SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer),
@@ -412,7 +426,7 @@ export const SaveDeposit: FC = () => {
                   [
                     massetAddress,
                     saveAddress,
-                    vaultAddress,
+                    vaultAddress ?? DEAD_ADDRESS,
                     feederPoolAddress,
                     inputAddress,
                     inputAmount.exact,
@@ -425,6 +439,8 @@ export const SaveDeposit: FC = () => {
               )
 
             case SaveRoutes.SaveAndStake:
+              if (!vaultAddress) return
+
               return propose<Interfaces.SaveWrapper, 'saveAndStake'>(
                 new TransactionManifest(
                   SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer),
@@ -447,6 +463,8 @@ export const SaveDeposit: FC = () => {
               )
 
             case SaveRoutes.Stake:
+              if (!vaultAddress) return
+
               return propose<Interfaces.BoostedSavingsVault, 'stake(uint256)'>(
                 new TransactionManifest(
                   BoostedSavingsVault__factory.connect(vaultAddress, signer),
