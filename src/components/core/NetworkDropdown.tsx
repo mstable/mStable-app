@@ -1,11 +1,10 @@
-import React, { FC, useState } from 'react';
-import styled from 'styled-components';
-import { Dropdown } from './Dropdown';
+import React, { FC, useCallback, useMemo } from 'react'
+import { useKeyPress } from 'react-use'
+import styled from 'styled-components'
 
-enum Network {
-  Ethereum = 'Ethereum',
-  Polygon = 'Polygon',
-}
+import { ChainIds, useChainIdCtx, NETWORKS } from '../../context/NetworkProvider'
+
+import { Dropdown } from './Dropdown'
 
 const StyledDropdown = styled(Dropdown)`
   * {
@@ -14,41 +13,29 @@ const StyledDropdown = styled(Dropdown)`
   p {
     font-size: 0.875rem;
   }
-`;
-
-const options = {
-  [Network.Ethereum]: {
-    symbol: 'Ethereum',
-  },
-  [Network.Polygon]: {
-    symbol: 'Polygon',
-    subtext: <p>Mainnet</p>, // option
-  },
-};
+`
 
 export const NetworkDropdown: FC = () => {
-  const [selected, setSelected] = useState<string | undefined>(
-    Network.Ethereum,
-  );
+  const [chainId, setChainId] = useChainIdCtx()
+  const [isAltPressed] = useKeyPress('Alt')
 
-  const handleSelect = (selectedTitle?: string): void => {
-    if (!selectedTitle) return;
-    setSelected(selectedTitle);
+  const handleSelect = useCallback(
+    (_chainId: string) => {
+      const parsed = parseInt(_chainId)
+      setChainId(parsed > 0 ? (parsed as ChainIds) : 1)
+    },
+    [setChainId],
+  )
 
-    switch (selectedTitle as Network) {
-      case Network.Polygon:
-        // polygon
-        break;
-      default:
-      // eth
-    }
-  };
+  const options = useMemo(
+    () =>
+      Object.fromEntries(
+        NETWORKS.filter(
+          ({ isTestnet, chainId: _chainId }) => _chainId === chainId || !isTestnet || isAltPressed,
+        ).map(({ protocolName, chainName, chainId: _chainId }) => [_chainId, { symbol: protocolName, subtext: chainName }]),
+      ),
+    [chainId, isAltPressed],
+  )
 
-  return (
-    <StyledDropdown
-      onChange={handleSelect}
-      options={options}
-      defaultOption={selected}
-    />
-  );
-};
+  return <StyledDropdown onChange={handleSelect} options={options} defaultOption={chainId?.toString()} />
+}

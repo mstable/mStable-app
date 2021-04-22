@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
-import { TransactionsUpdater } from './transactionsUpdater';
-import { TokenSubscriptionsUpdater } from './tokenSubscriptionsUpdater';
-import { TokenFetcher } from './tokenFetcher';
-import { ContractsUpdater } from './contractsUpdater';
+import React, { FC } from 'react'
+import { TransactionsUpdater } from './transactionsUpdater'
+import { TokenSubscriptionsUpdater } from './tokenSubscriptionsUpdater'
+import { TokenFetcher } from './tokenFetcher'
+import { ContractsUpdater } from './contractsUpdater'
 
 export const Updaters: FC<{}> = () => (
   <>
@@ -11,4 +11,4 @@ export const Updaters: FC<{}> = () => (
     <TransactionsUpdater />
     <ContractsUpdater />
   </>
-);
+)

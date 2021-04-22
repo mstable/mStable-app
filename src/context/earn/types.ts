@@ -1,139 +1,132 @@
-import { BigNumber } from 'ethers';
+import { BigNumber } from 'ethers'
 
-import { Platforms, Token } from '../../types';
-import { BigDecimal } from '../../web3/BigDecimal';
-import {
-  StakingRewardsContractsQueryResult,
-  StakingRewardsContractType,
-} from '../../graphql/ecosystem';
-import { PoolsQueryResult as BalancerPoolsQueryResult } from '../../graphql/balancer';
-import { PairsQueryResult } from '../../graphql/uniswap';
-import { CurveBalances } from './CurveProvider';
+import { Platforms, Token } from '../../types'
+import { BigDecimal } from '../../web3/BigDecimal'
+import { StakingRewardsContractsQueryResult, StakingRewardsContractType } from '../../graphql/ecosystem'
+import { PoolsQueryResult as BalancerPoolsQueryResult } from '../../graphql/balancer'
+import { PairsQueryResult } from '../../graphql/uniswap'
+import { CurveBalances } from './CurveProvider'
 
-export type RawPoolData = NonNullable<
-  BalancerPoolsQueryResult['data']
->['pools'][number];
+export type RawPoolData = NonNullable<BalancerPoolsQueryResult['data']>['pools'][number]
 
-export type RawPairData = NonNullable<
-  PairsQueryResult['data']
->['pairs'][number];
+export type RawPairData = NonNullable<PairsQueryResult['data']>['pairs'][number]
 
 export interface RawPlatformPools {
-  [Platforms.Balancer]: RawPoolData[];
-  [Platforms.Uniswap]: RawPairData[];
-  [Platforms.Sushi]: RawPairData[];
+  [Platforms.Balancer]: RawPoolData[]
+  [Platforms.Uniswap]: RawPairData[]
+  [Platforms.Sushi]: RawPairData[]
 }
 
 export interface TokenPricesMap {
-  [address: string]: BigDecimal;
+  [address: string]: BigDecimal
 }
 
 export interface NormalizedPoolsMap {
-  [address: string]: NormalizedPool;
+  [address: string]: NormalizedPool
 }
 
-export type RawStakingRewardsContracts = StakingRewardsContractsQueryResult['data'];
+export type RawStakingRewardsContracts = StakingRewardsContractsQueryResult['data']
 
 export interface RawSyncedEarnData {
-  tokenPrices: TokenPricesMap;
-  rawPlatformPools: RawPlatformPools;
-  merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
+  tokenPrices: TokenPricesMap
+  rawPlatformPools: RawPlatformPools
+  merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void }
 }
 
 export interface SyncedEarnData {
-  pools: NormalizedPoolsMap;
-  tokenPrices: TokenPricesMap;
-  merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
+  pools: NormalizedPoolsMap
+  tokenPrices: TokenPricesMap
+  merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void }
 }
 
 export interface RawEarnData {
-  curveBalances: CurveBalances;
-  rawStakingRewardsContracts: RawStakingRewardsContracts;
+  curveBalances: CurveBalances
+  rawStakingRewardsContracts: RawStakingRewardsContracts
 }
 
 export type NormalizedPool = {
-  address: string;
-  platform: Platforms;
-  onlyStablecoins: boolean;
+  address: string
+  platform: Platforms
+  onlyStablecoins: boolean
   tokens: (Token & {
-    liquidity?: BigDecimal;
-    price?: BigDecimal;
-    ratio?: number;
-  })[];
-  totalSupply?: BigDecimal;
+    liquidity?: BigDecimal
+    price?: BigDecimal
+    ratio?: number
+  })[]
+  totalSupply?: BigDecimal
 } & (
   | {
       // Uniswap
-      reserveUSD: BigDecimal;
+      reserveUSD: BigDecimal
     }
   | {
       // Balancer
-      totalSwapVolume: BigDecimal;
-      swapFee: BigDecimal;
+      totalSwapVolume: BigDecimal
+      swapFee: BigDecimal
     }
   | {}
-);
+)
 
 export interface StakingRewardsContract {
-  address: string;
-  earnUrl: string;
-  title: string;
+  address: string
+  earnUrl: string
+  title: string
   curve?: {
-    rewardsEarned?: BigDecimal;
-    platformRewardsEarned?: BigDecimal;
-  };
-  pool: NormalizedPool;
-  duration: number;
-  lastUpdateTime: number;
-  periodFinish: number;
-  expired: boolean;
-  rewardRate: BigNumber;
-  rewardPerTokenStoredNow: BigNumber;
-  rewardsToken: Token & { price?: BigDecimal };
-  stakingBalance: BigDecimal;
-  stakingBalancePercentage: BigDecimal;
-  stakingReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal };
-  stakingToken: Token & { totalSupply: BigDecimal; price?: BigDecimal };
-  totalSupply: BigDecimal;
-  totalStakingRewards: BigDecimal;
-  totalRemainingRewards: BigDecimal;
-  type: StakingRewardsContractType;
+    rewardsEarned?: BigDecimal
+    platformRewardsEarned?: BigDecimal
+  }
+  pool: NormalizedPool
+  duration: number
+  lastUpdateTime: number
+  periodFinish: number
+  expired: boolean
+  rewardRate: BigNumber
+  rewardPerTokenStoredNow: BigNumber
+  rewardsToken: Token & { price?: BigDecimal }
+  stakingBalance: BigDecimal
+  stakingBalancePercentage: BigDecimal
+  stakingReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal }
+  stakingToken: Token & { totalSupply: BigDecimal; price?: BigDecimal }
+  totalSupply: BigDecimal
+  totalStakingRewards: BigDecimal
+  totalRemainingRewards: BigDecimal
+  type: StakingRewardsContractType
   apy: {
-    value?: BigDecimal;
-    yieldApy?: BigDecimal;
-    waitingForData: boolean;
-  };
+    value?: BigDecimal
+    yieldApy?: BigDecimal
+    waitingForData: boolean
+  }
   platformRewards?: {
-    platformRewardPerTokenStoredNow: BigNumber;
-    platformRewardRate: BigNumber;
-    platformReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal };
-    platformToken: Token & { price?: BigDecimal };
-    totalPlatformRewards: BigDecimal;
-    totalRemainingPlatformRewards: BigDecimal;
-  };
+    platformRewardPerTokenStoredNow: BigNumber
+    platformRewardRate: BigNumber
+    platformReward: { amount: BigDecimal; amountPerTokenPaid: BigDecimal }
+    platformToken: Token & { price?: BigDecimal }
+    totalPlatformRewards: BigDecimal
+    totalRemainingPlatformRewards: BigDecimal
+  }
 }
 
 export interface StakingRewardsContractsMap {
-  [address: string]: StakingRewardsContract;
+  [address: string]: StakingRewardsContract
 }
 
 export interface MerkleDrop {
-  address: string;
-  token: Token;
-  totalUnclaimed: BigDecimal;
+  address: string
+  token: Token
+  totalUnclaimed: BigDecimal
   unclaimedTranches: {
-    trancheNumber: number;
-    allocation: string;
-    proof: string[];
-  }[];
+    trancheNumber: number
+    allocation: string
+    proof: string[]
+  }[]
 }
 
 export interface MerkleDropsMap {
-  [address: string]: MerkleDrop;
+  [address: string]: MerkleDrop
 }
 
 export interface EarnData {
-  stakingRewardsContractsMap: StakingRewardsContractsMap;
-  tokenPricesMap: TokenPricesMap;
-  merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void };
+  stakingRewardsContractsMap: StakingRewardsContractsMap
+  tokenPricesMap: TokenPricesMap
+  merkleDrops: { merkleDrops: MerkleDropsMap; refresh(): void }
 }

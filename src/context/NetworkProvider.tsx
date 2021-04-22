@@ -1,0 +1,410 @@
+import type { FC } from 'react'
+import React, { createContext, useCallback, useContext, useMemo } from 'react'
+import { createStateContext, useEffectOnce, useInterval } from 'react-use'
+import { providers } from 'ethers'
+import type { Provider } from '@ethersproject/providers'
+
+import { composedComponent } from '../utils/reactUtils'
+import { FetchState, useFetchState } from '../hooks/useFetchState'
+
+interface NetworkPrices {
+  nativeToken?: number
+  gas?: {
+    slow: number
+    standard: number
+    fast: number
+    instant: number
+  }
+}
+
+interface CoreAddresses {
+  MTA: string
+  vMTA: string
+  FeederWrapper: string
+  SaveWrapper: string
+  UniswapRouter02_Like: string
+}
+
+interface MstableGqlEndpoints extends Record<string, string> {
+  protocol: string
+  feeders: string
+}
+
+interface CoreGqlEndpoints extends MstableGqlEndpoints {
+  blocks: string
+}
+
+export enum ChainIds {
+  EthereumMainnet = 1,
+  EthereumRopsten = 3,
+  EthereumGoerli = 5,
+  MaticMainnet = 137,
+  MaticMumbai = 80001,
+}
+
+interface Network<TAddresses, TGqlEndpoints> {
+  protocolName: string
+
+  chainName: string
+
+  isMetaMaskDefault: boolean
+
+  isTestnet: boolean
+
+  nativeToken: {
+    decimals: number
+    symbol: string
+    parentChainAddress?: string
+  }
+
+  chainId: ChainIds
+
+  parentChainId?: ChainIds
+
+  coingeckoId: string
+
+  rpcEndpoint: string
+
+  gqlEndpoints: CoreGqlEndpoints & TGqlEndpoints
+
+  addresses: CoreAddresses & TAddresses
+
+  gasStationEndpoint: string
+
+  getExplorerUrl(entity?: string, type?: 'address' | 'transaction' | 'token' | 'account'): string
+}
+
+interface EthereumMainnet extends Network<{ curve: { CurveV2: string }; WETH: string; WBTC: string }, { ecosystem: string }> {
+  chainId: ChainIds.EthereumMainnet
+}
+
+interface EthereumRopsten extends Network<{ WETH: string }, {}> {
+  chainId: ChainIds.EthereumRopsten
+}
+
+interface EthereumGoerli extends Network<{ WETH: string }, {}> {
+  chainId: ChainIds.EthereumGoerli
+}
+
+interface MaticMainnet extends Network<{}, {}> {
+  chainId: ChainIds.MaticMainnet
+  parentChainId: ChainIds.EthereumMainnet
+  nativeToken: {
+    symbol: string
+    decimals: number
+    parentChainAddress: string
+  }
+}
+
+interface MaticMumbai extends Network<{}, {}> {
+  chainId: ChainIds.MaticMumbai
+  parentChainId: ChainIds.EthereumGoerli
+  nativeToken: {
+    symbol: string
+    decimals: number
+    parentChainAddress: string
+  }
+}
+
+export type AllNetworks = EthereumMainnet | EthereumRopsten | EthereumGoerli | MaticMainnet | MaticMumbai
+
+const etherscanUrl = (network?: string) => (data?: string, type?: 'account' | 'transaction' | 'address' | 'token'): string => {
+  const prefix = `https://${network ? `${network}.` : ''}etherscan.io`
+
+  if (!data) return prefix
+
+  switch (type) {
+    case 'transaction':
+      return `${prefix}/tx/${data}`
+    case 'token':
+      return `${prefix}/token/${data}`
+    case 'address':
+    default:
+      return `${prefix}/address/${data}`
+  }
+}
+
+const maticExplorerUrl = (network?: 'mainnet' | 'mumbai') => (
+  data?: string,
+  type?: 'account' | 'transaction' | 'address' | 'token',
+): string => {
+  const prefix = `https://explorer-${network}.maticvigil.com`
+
+  if (!data) return prefix
+
+  switch (type) {
+    case 'transaction':
+      return `${prefix}/tx/${data}`
+    case 'token':
+      return `${prefix}/tokens/${data}`
+    case 'address':
+    default:
+      return `${prefix}/address/${data}`
+  }
+}
+
+const ETH_MAINNET: EthereumMainnet = {
+  chainId: ChainIds.EthereumMainnet,
+  protocolName: 'Ethereum',
+  chainName: 'Mainnet',
+  nativeToken: {
+    symbol: 'ETH',
+    decimals: 18,
+  },
+  isMetaMaskDefault: true,
+  isTestnet: false,
+  coingeckoId: 'ethereum',
+  rpcEndpoint: 'https://mainnet.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe',
+  gasStationEndpoint: 'https://gasprice.poa.network/',
+  gqlEndpoints: {
+    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging',
+    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools',
+    blocks: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
+    ecosystem: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem',
+  },
+  addresses: {
+    MTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
+    vMTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
+    FeederWrapper: '0x7C1fD068CE739A4687BEe9F69e5FD2275C7372d4',
+    SaveWrapper: '0x0CA7A25181FC991e3cC62BaC511E62973991f325',
+    UniswapRouter02_Like: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+    WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    WBTC: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+    curve: {
+      CurveV2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',
+    },
+  },
+  getExplorerUrl: etherscanUrl(),
+}
+
+const ETH_ROPSTEN: EthereumRopsten = {
+  ...ETH_MAINNET,
+  isTestnet: true,
+  parentChainId: ChainIds.EthereumMainnet,
+  chainId: ChainIds.EthereumRopsten,
+  chainName: 'Ropsten',
+  rpcEndpoint: 'https://ropsten.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe',
+  gasStationEndpoint: 'https://gasprice.poa.network/',
+  gqlEndpoints: {
+    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-ropsten',
+    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeders-ropsten',
+    blocks: 'https://api.thegraph.com/subgraphs/name/blocklytics/ropsten-blocks',
+    ecosystem: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem',
+  },
+  addresses: {
+    MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
+    vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
+    WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
+    FeederWrapper: '',
+    SaveWrapper: '',
+    UniswapRouter02_Like: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+  },
+  getExplorerUrl: etherscanUrl('ropsten'),
+}
+
+const ETH_GOERLI: EthereumGoerli = {
+  ...ETH_MAINNET,
+  isTestnet: true,
+  parentChainId: ChainIds.EthereumMainnet,
+  chainId: ChainIds.EthereumGoerli,
+  chainName: 'Görli',
+  rpcEndpoint: 'https://goerli.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe',
+  gasStationEndpoint: 'https://gasprice.poa.network/',
+  gqlEndpoints: {
+    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-goerli',
+    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeders-goerli',
+    blocks: 'https://api.thegraph.com/subgraphs/name/blocklytics/goerli-blocks',
+  },
+  addresses: {
+    MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
+    vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
+    WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
+    FeederWrapper: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5',
+    SaveWrapper: '0x5047Ee646E3425264416bf7d2a651985E513Ff32',
+    UniswapRouter02_Like: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+  },
+  getExplorerUrl: etherscanUrl('goerli'),
+}
+
+const MATIC_MAINNET: MaticMainnet = {
+  chainId: ChainIds.MaticMainnet,
+  parentChainId: ChainIds.EthereumMainnet,
+  protocolName: 'Polygon',
+  chainName: 'Mainnet',
+  nativeToken: {
+    symbol: 'MATIC',
+    decimals: 18,
+    parentChainAddress: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+  },
+  isMetaMaskDefault: false,
+  isTestnet: false,
+  coingeckoId: 'matic-network',
+  rpcEndpoint: 'https://rpc-mainnet.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
+  gasStationEndpoint: 'https://gasstation-mainnet.matic.network',
+  gqlEndpoints: {
+    // TODO deploy
+    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-matic',
+    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools-matic',
+    blocks: 'https://api.thegraph.com/subgraphs/name/elkfinance/matic-blocks',
+  },
+  addresses: {
+    // TODO deploy
+    MTA: '',
+    vMTA: '',
+    FeederWrapper: '',
+    SaveWrapper: '',
+    UniswapRouter02_Like: '',
+  },
+  getExplorerUrl: maticExplorerUrl('mainnet'),
+}
+
+const MATIC_MUMBAI: MaticMumbai = {
+  ...MATIC_MAINNET,
+  isTestnet: true,
+  chainId: ChainIds.MaticMumbai,
+  parentChainId: ChainIds.EthereumGoerli,
+  chainName: 'Mumbai',
+  rpcEndpoint: 'https://rpc-mumbai.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
+  gasStationEndpoint: 'https://gasstation-mumbai.matic.today',
+  gqlEndpoints: {
+    // TODO deploy
+    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-matic-mumbai',
+    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools-matic-mumbai',
+    // This is for mainnet, no subgraph available for Mumbai
+    blocks: 'https://api.thegraph.com/subgraphs/name/elkfinance/matic-blocks',
+  },
+  addresses: {
+    // TODO deploy
+    MTA: '',
+    vMTA: '',
+    FeederWrapper: '',
+    SaveWrapper: '',
+    UniswapRouter02_Like: '',
+  },
+  getExplorerUrl: maticExplorerUrl('mumbai'),
+}
+
+export const NETWORKS = [ETH_MAINNET, ETH_GOERLI, ETH_ROPSTEN, MATIC_MAINNET, MATIC_MUMBAI]
+
+export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainId: typeof chainId }> => {
+  switch (chainId) {
+    case 0:
+    case ChainIds.EthereumMainnet:
+      return ETH_MAINNET
+
+    case ChainIds.EthereumRopsten:
+      return ETH_ROPSTEN
+
+    case ChainIds.EthereumGoerli:
+      return ETH_GOERLI
+
+    case ChainIds.MaticMainnet:
+      return MATIC_MAINNET
+
+    case ChainIds.MaticMumbai:
+      return MATIC_MUMBAI
+
+    default:
+      throw new Error('Unsupported chain ID')
+  }
+}
+
+const [useChainIdCtx, ChainIdProvider] = createStateContext<ChainIds | undefined>(ChainIds.EthereumMainnet)
+export { useChainIdCtx }
+
+const networkCtx = createContext<Network<unknown, unknown>>(null as never)
+
+const networkPricesCtx = createContext<FetchState<NetworkPrices>>(null as never)
+
+const jsonRpcCtx = createContext<{ provider: Provider; parentChainProvider?: Provider } | undefined>(undefined)
+
+const NetworkConfigProvider: FC = ({ children }) => {
+  const [chainId] = useChainIdCtx()
+
+  const network = useMemo(() => getNetwork(chainId ?? ChainIds.EthereumMainnet), [chainId])
+
+  return <networkCtx.Provider value={network}>{children}</networkCtx.Provider>
+}
+
+const NetworkPricesProvider: FC = ({ children }) => {
+  const network = useContext(networkCtx)
+
+  const [networkPrices, setNetworkPrices] = useFetchState<NetworkPrices>({})
+
+  const fetchPrices = useCallback(async () => {
+    if (!network) return
+
+    setNetworkPrices.fetching()
+    const gasStationResponse = await fetch(network.gasStationEndpoint)
+    const priceResponse = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${network.coingeckoId}&vs_currencies=usd`)
+
+    const [{ standard, instant, fast, fastest, safeLow, slow }, priceResult] = (await Promise.all([
+      gasStationResponse.json(),
+      priceResponse.json(),
+    ])) as [
+      {
+        fast: number
+        standard: number
+        // Interface differences across endpoints
+        fastest?: number
+        instant?: number
+        safeLow?: number
+        slow?: number
+      },
+      Record<typeof network['coingeckoId'], { usd: number }>,
+    ]
+
+    const nativeToken = priceResult[network.coingeckoId].usd
+    const gas = {
+      standard,
+      fast,
+      slow: slow ?? (safeLow as number),
+      instant: instant ?? (fastest as number),
+    }
+
+    setNetworkPrices.value({ nativeToken, gas })
+  }, [network, setNetworkPrices])
+
+  useEffectOnce(() => {
+    fetchPrices().catch(setNetworkPrices.error)
+  })
+
+  useInterval(() => {
+    fetchPrices().catch(setNetworkPrices.error)
+  }, 5 * 60 * 1000)
+
+  return <networkPricesCtx.Provider value={networkPrices}>{children}</networkPricesCtx.Provider>
+}
+
+const JsonRpcProvider: FC = ({ children }) => {
+  const network = useContext(networkCtx)
+
+  const value = useMemo(() => {
+    if (!network) return undefined
+
+    const { rpcEndpoint, parentChainId } = network
+    const provider = new providers.JsonRpcProvider(rpcEndpoint)
+
+    let parentChainProvider
+    if (parentChainId) {
+      const { rpcEndpoint: parentRpcEndpoint } = getNetwork(parentChainId)
+      parentChainProvider = new providers.JsonRpcProvider(parentRpcEndpoint)
+    }
+
+    return { provider, parentChainProvider }
+  }, [network])
+
+  return <jsonRpcCtx.Provider value={value}>{children}</jsonRpcCtx.Provider>
+}
+
+export const useJsonRpcProviders = (): { provider: Provider; parentChainProvider?: Provider } | undefined => useContext(jsonRpcCtx)
+
+export const useNetwork = (): Network<unknown, unknown> => useContext(networkCtx)
+
+export const useNetworkPrices = (): FetchState<NetworkPrices> => useContext(networkPricesCtx)
+
+export const useNetworkAddresses = (): AllNetworks['addresses'] => useContext(networkCtx).addresses
+
+export const useGetExplorerUrl = (): Network<unknown, unknown>['getExplorerUrl'] => useNetwork().getExplorerUrl
+
+export const NetworkProvider = composedComponent(ChainIdProvider, NetworkConfigProvider, NetworkPricesProvider, JsonRpcProvider)
