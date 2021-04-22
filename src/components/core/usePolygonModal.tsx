@@ -42,6 +42,10 @@ const Container = styled.div`
   position: relative;
   padding: 1rem;
 
+  b {
+    font-weight: 600;
+  }
+
   > div {
     h4 {
       font-weight: 600;
@@ -128,6 +132,10 @@ export const usePolygonModal = (): (() => void) => {
                 Zapper
               </a>{' '}
               to migrate your assets
+            </p>
+            &nbsp;
+            <p>
+              <b>Do not migrate your mUSD, this will not work</b>
             </p>
             <div>
               {inputAssets.map(symbol => (
