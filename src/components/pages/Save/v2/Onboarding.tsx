@@ -10,6 +10,7 @@ import { ExternalLink } from '../../../core/ExternalLink'
 import { UnstyledButton } from '../../../core/Button'
 import { useOnboarding } from '../hooks'
 import { ViewportWidth } from '../../../../theme'
+import { Networks, useNetwork } from '../../../../context/NetworkProvider'
 
 const StyledTokenIcon = styled(TokenIcon)`
   width: 3rem;
@@ -32,6 +33,21 @@ const CloseButton = styled(UnstyledButton)`
 
   :hover {
     background: rgba(255, 179, 52, 0.45);
+  }
+`
+
+const TokenContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  > *:not(:last-child) {
+    margin-bottom: 0.25rem;
+  }
+
+  > *:first-child {
+    margin-bottom: 0.75rem;
   }
 `
 
@@ -98,14 +114,19 @@ export const OnboardingCard: FC = () => {
   } = useSelectedMassetState() as MassetState
   const massetName = useSelectedMassetName()
   const [, toggleOnboarding] = useOnboarding()
+  const { protocolName } = useNetwork()
 
-  const inputAssets = useMemo<string[]>(
+  const inputAssetsExclEth = useMemo<string[]>(
     () =>
-      [massetToken, ...Object.values(bAssets).map(b => b.token), ...Object.values(fAssets).map(b => b.token), { symbol: 'ETH' }].map(
-        t => t.symbol,
+      [massetToken, ...Object.values(bAssets).map(b => b.token), ...Object.values(fAssets).map(b => b.token)].map(t =>
+        t.symbol.replace(/POS-/gi, ''),
       ),
     [bAssets, fAssets, massetToken],
   )
+  const saveTokenSymbol = saveToken?.symbol?.replace(/POS-/gi, '')
+  const isEthereum = protocolName == Networks.Ethereum
+  const inputAssetsInclEth = [...inputAssetsExclEth, 'ETH']
+  const inputAssets = isEthereum ? inputAssetsInclEth : inputAssetsExclEth
 
   return (
     <Container>
@@ -129,21 +150,23 @@ export const OnboardingCard: FC = () => {
           <span>2</span> Receive {saveToken?.symbol} directly, or deposit it in the Vault
         </h4>
         <div>
-          <div>
-            <StyledTokenIcon symbol={saveToken?.symbol} />
-            <div>{saveToken?.symbol}</div>
+          <TokenContainer>
+            <StyledTokenIcon symbol={saveTokenSymbol} />
+            <div>{saveTokenSymbol}</div>
             <p>Transferable token, earns interest</p>
-          </div>
-          <div>
-            <StyledTokenIcon symbol={`v-${saveToken?.symbol}`} />
-            <div>{saveToken?.symbol} Vault</div>
-            <p>Earns interest and MTA rewards</p>
-            {massetName === 'mbtc' && (
-              <p>
-                <span>Recommended for BTC</span>
-              </p>
-            )}
-          </div>
+          </TokenContainer>
+          {isEthereum && (
+            <TokenContainer>
+              <StyledTokenIcon symbol={`v-${saveTokenSymbol}`} />
+              <div>{saveTokenSymbol} Vault</div>
+              <p>Earns interest and MTA rewards</p>
+              {massetName === 'mbtc' && (
+                <p>
+                  <span>Recommended for BTC</span>
+                </p>
+              )}
+            </TokenContainer>
+          )}
         </div>
       </div>
       <Arrow />

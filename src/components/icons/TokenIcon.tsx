@@ -177,6 +177,8 @@ const Image = styled.img`
 
 const ImageContainer = styled.div`
   position: relative;
+  display: flex;
+  align-items: center;
 `
 
 const PlaceholderIcon = styled.div`
