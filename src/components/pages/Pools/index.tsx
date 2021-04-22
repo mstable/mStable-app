@@ -14,6 +14,7 @@ import { useSelectedMassetState } from '../../../context/DataProvider/DataProvid
 import { PoolType } from './types'
 import { formatMassetName, useSelectedMassetName } from '../../../context/SelectedMassetNameProvider'
 import { MassetName } from '../../../types'
+import { useNetwork } from '../../../context/NetworkProvider'
 
 interface CustomAssetCardProps {
   isCustomAssetCard: boolean
@@ -144,8 +145,22 @@ const customPoolCard = (massetName: MassetName): CustomAssetCardProps => {
   }
 }
 
+const customNoPoolsCard = (massetName: MassetName, protocolName: string): CustomAssetCardProps => ({
+  isCustomAssetCard: true,
+  key: 'noPools',
+  title: 'No Pools Available',
+  color: '#eee',
+  url: '/',
+  component: (
+    <CustomContent>
+      There are no pools available for {formatMassetName(massetName)} on {protocolName} at this time
+    </CustomContent>
+  ),
+})
+
 const PoolsContent: FC = () => {
-  const { feederPools } = useSelectedMassetState() as MassetState
+  const { feederPools, hasFeederPools } = useSelectedMassetState() as MassetState
+  const network = useNetwork()
   const massetName = useSelectedMassetName()
   const pools = useMemo(
     () =>
@@ -163,11 +178,13 @@ const PoolsContent: FC = () => {
         },
         {
           user: [],
-          active: [customEarnCard(massetName), customPoolCard(massetName)],
+          active: hasFeederPools
+            ? [customEarnCard(massetName), customPoolCard(massetName)]
+            : [customNoPoolsCard(massetName, network.protocolName)],
           deprecated: [],
         },
       ),
-    [feederPools, massetName],
+    [feederPools, massetName, hasFeederPools, network.protocolName],
   )
 
   const [numPoolsVisible, setNumPoolsVisible] = useState({
