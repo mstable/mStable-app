@@ -48,7 +48,7 @@ export const useSavePrices = (): number[] | undefined => {
   const network = useNetwork()
   const addresses =
     network && network.chainId === ChainIds.EthereumMainnet
-      ? [network.addresses?.MTA, (network as Extract<AllNetworks, { chainId: ChainIds.EthereumMainnet }>)?.addresses.WBTC]
+      ? [network.addresses?.MTA, (network as Extract<AllNetworks, { chainId: ChainIds.EthereumMainnet }>)?.addresses.ERC20.WBTC]
       : []
   return usePrices(addresses)
 }
@@ -57,7 +57,7 @@ export const useWBTCPrice = (): number | undefined => {
   const network = useNetwork()
   const addresses =
     network && network.chainId === ChainIds.EthereumMainnet
-      ? [(network as Extract<AllNetworks, { chainId: ChainIds.EthereumMainnet }>)?.addresses.WBTC]
+      ? [(network as Extract<AllNetworks, { chainId: ChainIds.EthereumMainnet }>)?.addresses.ERC20.WBTC]
       : []
   return usePrices(addresses)?.[0]
 }
