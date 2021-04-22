@@ -6,7 +6,6 @@ import { createStateContext, useEffectOnce, useIdle, usePrevious } from 'react-u
 import Onboard from 'bnc-onboard'
 import { ethers, Signer, utils } from 'ethers'
 
-import { BigDecimal } from '../web3/BigDecimal'
 import { composedComponent } from '../utils/reactUtils'
 import { LocalStorage } from '../localStorage'
 import { useAddErrorNotification, useAddInfoNotification } from './NotificationsProvider'
@@ -51,8 +50,6 @@ export const userAccountCtx = createContext<UserAccountCtx>({
   masqueradedAccount: undefined,
 })
 
-export const nativeTokenBalanceCtx = createContext<BigDecimal | undefined>(undefined)
-
 export const useWallet = (): OnboardCtx['wallet'] => useContext(onboardCtx).wallet
 
 export const useProvider = (): Provider | undefined => useSignerCtx()[0]?.provider
@@ -71,8 +68,6 @@ export const useSignerOrProvider = (): Signer | Provider | undefined => {
   const [signerProvider] = useSignerCtx()
   return signerProvider?.signer ?? signerProvider?.provider
 }
-
-export const useNativeTokenBalance = (): BigDecimal | undefined => useContext(nativeTokenBalanceCtx)
 
 export const useMasquerade = (): Masquerade => useContext(masqueradeCtx)
 

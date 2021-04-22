@@ -7,7 +7,7 @@ import { usePropose } from '../../../../context/TransactionsProvider'
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 import { useNetworkPrices, useNetworkAddresses } from '../../../../context/NetworkProvider'
 import { MassetState } from '../../../../context/DataProvider/types'
-import { useETH, useTokenSubscription } from '../../../../context/TokensProvider'
+import { useNativeToken, useTokenSubscription } from '../../../../context/TokensProvider'
 
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
 import { useSlippage } from '../../../../hooks/useSimpleInput'
@@ -87,7 +87,7 @@ const withSlippage = new Set([
   SaveRoutes.SwapAndStake,
 ])
 
-const withEth = new Set([SaveRoutes.BuyAndSave, SaveRoutes.BuyAndStake])
+const withNativeToken = new Set([SaveRoutes.BuyAndSave, SaveRoutes.BuyAndStake])
 
 export const SaveDeposit: FC = () => {
   const signer = useSigner()
@@ -95,7 +95,7 @@ export const SaveDeposit: FC = () => {
   const networkAddresses = useNetworkAddresses()
 
   const massetState = useSelectedMassetState() as MassetState
-  const ETH = useETH() // FIXME
+  const nativeToken = useNativeToken()
 
   const {
     address: massetAddress,
@@ -132,14 +132,14 @@ export const SaveDeposit: FC = () => {
       ...(saveToken ? [saveToken] : []),
       ...Object.values(bAssets).map(b => b.token),
       ...Object.values(fAssets).map(b => b.token),
-      ETH,
+      nativeToken,
     ]
 
     if (outputAddress === saveAddress) {
       return inputs.filter(v => v.address !== saveAddress)
     }
     return inputs
-  }, [massetToken, saveToken, saveAddress, bAssets, fAssets, ETH, outputAddress])
+  }, [massetToken, saveToken, saveAddress, bAssets, fAssets, nativeToken, outputAddress])
 
   const outputAddressOptions = useMemo(() => {
     if (!saveToken) return []
@@ -264,7 +264,7 @@ export const SaveDeposit: FC = () => {
     // If coming from ETH, convert to mAsset value
     const nativeTokenPriceExact = BigDecimal.parse(nativeTokenPrice.toFixed(10)).exact
     const inputMassetValue =
-      withEth.has(saveRoute) && massetPrice
+      withNativeToken.has(saveRoute) && massetPrice
         ? inputAmount.mulTruncate(nativeTokenPriceExact).divPrecisely(BigDecimal.parse(massetPrice.toFixed(10)))
         : inputMasset
 
@@ -305,7 +305,7 @@ export const SaveDeposit: FC = () => {
   ])
 
   const approve = useMemo(() => {
-    if (!inputAddress || !saveAddress || !networkAddresses || !vaultAddress || withEth.has(saveRoute)) {
+    if (!inputAddress || !saveAddress || !networkAddresses || !vaultAddress || withNativeToken.has(saveRoute)) {
       return
     }
 

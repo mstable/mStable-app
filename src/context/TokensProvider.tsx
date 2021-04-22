@@ -466,7 +466,7 @@ export const useMetaToken = (): SubscribedToken | undefined => {
   return useTokenSubscription(networkAddresses.vMTA)
 }
 
-export const useETH = (): SubscribedToken => useTokensState().tokens[constants.AddressZero] as SubscribedToken
+export const useNativeToken = (): SubscribedToken => useTokensState().tokens[constants.AddressZero] as SubscribedToken
 
 export const useTokenAllowance = (address: string | undefined | null, spender: string | undefined | null): BigDecimal | undefined => {
   const id = useRef(Math.random().toString())
