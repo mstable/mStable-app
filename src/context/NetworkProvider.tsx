@@ -248,12 +248,11 @@ const MATIC_MAINNET: MaticMainnet = {
     blocks: 'https://api.thegraph.com/subgraphs/name/elkfinance/matic-blocks',
   },
   addresses: {
-    // TODO deploy
-    MTA: '',
-    vMTA: '',
-    FeederWrapper: '',
+    MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0', // Mainnet
+    vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015', // Mainnet
+    FeederWrapper: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5', // Mainnet
     SaveWrapper: '',
-    UniswapRouter02_Like: '',
+    UniswapRouter02_Like: '0xFCB5348111665Cf95a777f0c4FCA768E05601760', // QuickSwap
   },
   getExplorerUrl: maticExplorerUrl('mainnet'),
 }
@@ -267,19 +266,18 @@ const MATIC_MUMBAI: MaticMumbai = {
   rpcEndpoint: 'https://rpc-mumbai.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
   gasStationEndpoint: 'https://gasstation-mumbai.matic.today',
   gqlEndpoints: {
-    // TODO deploy
-    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-matic-mumbai',
-    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools-matic-mumbai',
+    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-polygon-mumbai',
+    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools-mumbai',
     // This is for mainnet, no subgraph available for Mumbai
     blocks: 'https://api.thegraph.com/subgraphs/name/elkfinance/matic-blocks',
+    ecosystem: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem', // fixme remove
   },
   addresses: {
-    // TODO deploy
-    MTA: '',
-    vMTA: '',
-    FeederWrapper: '',
-    SaveWrapper: '',
-    UniswapRouter02_Like: '',
+    MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0', // Mainnet
+    vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015', // Mainnet
+    FeederWrapper: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5', // Mainnet
+    SaveWrapper: '0xFd257a60881678cF0E37179F1ECF317a6f29482B',
+    UniswapRouter02_Like: '0xFCB5348111665Cf95a777f0c4FCA768E05601760', // QuickSwap
   },
   getExplorerUrl: maticExplorerUrl('mumbai'),
 }
@@ -309,6 +307,8 @@ export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainI
   }
 }
 
+// TODO could still use an env var to define the default chain ID
+// Or even domain matching (polygon.*)
 const [useChainIdCtx, ChainIdProvider] = createStateContext<ChainIds | undefined>(ChainIds.EthereumMainnet)
 export { useChainIdCtx }
 
