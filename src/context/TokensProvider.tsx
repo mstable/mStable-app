@@ -4,7 +4,7 @@ import { constants } from 'ethers'
 import { AllTokensQueryResult } from '../graphql/protocol'
 import { Allowances, SubscribedToken } from '../types'
 import { BigDecimal } from '../web3/BigDecimal'
-import { useNetworkAddresses } from './NetworkProvider'
+import { AllNetworks, useNetwork, useNetworkAddresses } from './NetworkProvider'
 
 interface State {
   tokens: {
@@ -77,34 +77,8 @@ type Action =
     }
   | { type: Actions.Reset }
 
-// FIXME: use a function to create initial state based on network
-const initialState: State = {
-  tokens: Object.fromEntries(
-    ([
-      // FIXME
-      // [constants.AddressZero, 'ETH'],
-      // [ADDRESSES.CURVE.CRV_TOKEN, 'CRV'],
-      // [ADDRESSES.SUSHI.SUSHI_TOKEN, 'SUSHI'],
-      // [ADDRESSES.BADGER.BADGER_TOKEN, 'BADGER'],
-      // [ADDRESSES.CREAM.CREAM_TOKEN, 'CREAM'],
-    ] as ([string, string] | [string, string, string])[]).map(([address, symbol, name]): [string, SubscribedToken] => [
-      address,
-      {
-        address,
-        decimals: 18,
-        symbol,
-        name,
-        allowances: {},
-        balance: new BigDecimal(0, 18),
-        totalSupply: new BigDecimal(0, 18),
-      },
-    ]),
-  ),
-  subscriptions: {},
-}
-
-const stateCtx = createContext<State>(initialState)
-const dispatchCtx = createContext<Dispatch>({} as Dispatch)
+const stateCtx = createContext<State>(null as never)
+const dispatchCtx = createContext<Dispatch>(null as never)
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
@@ -288,12 +262,36 @@ const reducer: Reducer<State, Action> = (state, action) => {
   }
 }
 
+const getInitialState = ({ addresses, nativeToken }: AllNetworks): State => {
+  return {
+    tokens: Object.fromEntries(
+      ([[constants.AddressZero, nativeToken.symbol], ...Object.entries(addresses.ERC20)] as (
+        | [string, string]
+        | [string, string, string]
+      )[]).map(([address, symbol, name]): [string, SubscribedToken] => [
+        address,
+        {
+          address,
+          decimals: 18,
+          symbol,
+          name,
+          allowances: {},
+          balance: new BigDecimal(0, 18),
+          totalSupply: new BigDecimal(0, 18),
+        },
+      ]),
+    ),
+    subscriptions: {},
+  }
+}
+
 /**
  * Provider for tracking balances for tokens for the current user.
  * Balances are re-fetched on each block with separate queries.
  */
-export const TokensProvider: FC<{}> = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState)
+export const TokensProvider: FC = ({ children }) => {
+  const network = useNetwork() as AllNetworks
+  const [state, dispatch] = useReducer(reducer, network, getInitialState)
 
   const setFetched = useCallback<Dispatch['setFetched']>(
     fetched => {
@@ -465,7 +463,7 @@ export const useTokenSubscription = (address: string | null | undefined): Subscr
 
 export const useMetaToken = (): SubscribedToken | undefined => {
   const networkAddresses = useNetworkAddresses()
-  return useTokenSubscription(networkAddresses?.vMTA)
+  return useTokenSubscription(networkAddresses.vMTA)
 }
 
 export const useETH = (): SubscribedToken => useTokensState().tokens[constants.AddressZero] as SubscribedToken
