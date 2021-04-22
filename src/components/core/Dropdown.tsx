@@ -138,7 +138,7 @@ const Option: FC<{
 
   return (
     <OptionContainer onClick={onClick} active={active} selected={selected} disabled={disabled}>
-      {symbol && (symbols?.length ?? 0) <= 1 ? <TokenIcon symbol={symbol} hideNetwork={hideNetwork} /> : <TokenPair symbols={symbols} />}
+      {symbol && (symbols?.length ?? 0) < 2 ? <TokenIcon symbol={symbol} hideNetwork={hideNetwork} /> : <TokenPair symbols={symbols} />}
       <TokenDetails>
         {asset ? (
           <Asset asset={asset} />
