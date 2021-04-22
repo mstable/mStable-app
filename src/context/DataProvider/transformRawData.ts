@@ -332,7 +332,7 @@ const transformMassetData = (
     invariantStartingCap: invariantStartingCap ? BigNumber.from(invariantStartingCap) : undefined,
     invariantCapFactor: invariantCapFactor ? BigNumber.from(invariantCapFactor) : undefined,
     undergoingRecol,
-    token: transformTokenData(token, tokens),
+    token: transformTokenData({ ...token, symbol: token.symbol.replace('POS-', '') }, tokens),
     bAssets,
     removedBassets: Object.fromEntries(removedBassets.map(b => [b.token.address, transformTokenData(b.token, tokens)])),
     collateralisationRatio: collateralisationRatio ? BigNumber.from(collateralisationRatio) : undefined,
@@ -361,7 +361,7 @@ export const transformRawData = ([massetsData, feedersData, tokens]: [
 ]): DataState => {
   return Object.fromEntries(
     massetsData.massets.map(masset => {
-      const massetName = masset.token.symbol.toLowerCase() as MassetName
+      const massetName = masset.token.symbol.toLowerCase().replace('pos-', '') as MassetName
       return [massetName, transformMassetData(masset, feedersData, tokens)]
     }),
   )
