@@ -30,12 +30,15 @@ export const NetworkDropdown: FC = () => {
   const options = useMemo(
     () =>
       Object.fromEntries(
-        NETWORKS.filter(
-          ({ isTestnet, chainId: _chainId }) => _chainId === chainId || !isTestnet || isAltPressed,
-        ).map(({ protocolName, chainName, chainId: _chainId }) => [
-          _chainId,
-          { icon: { symbol: protocolName, hideNetwork: true }, subtext: chainName, hideNetwork: true },
-        ]),
+        NETWORKS.filter(({ isTestnet, chainId: _chainId }) => _chainId === chainId || !isTestnet || isAltPressed).map(
+          ({ protocolName, chainName, chainId: _chainId }) => [
+            _chainId,
+            {
+              icon: { symbol: protocolName, hideNetwork: true },
+              subtext: chainName !== 'Mainnet' ? chainName : undefined,
+            },
+          ],
+        ),
       ),
     [chainId, isAltPressed],
   )

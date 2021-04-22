@@ -166,7 +166,7 @@ const NetworkIcon = styled.img`
   width: 1rem !important;
   height: 1rem !important;
   right: -0.125rem;
-  bottom: 0.25rem;
+  bottom: 0;
   z-index: 1;
 `
 
@@ -177,6 +177,8 @@ const Image = styled.img`
 
 const ImageContainer = styled.div`
   position: relative;
+  display: flex;
+  align-items: center;
 `
 
 const PlaceholderIcon = styled.div`
