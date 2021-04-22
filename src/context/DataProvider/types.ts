@@ -68,6 +68,7 @@ export interface MassetState {
   removedBassets: { [address: string]: SubscribedToken }
   blacklistedBassets: string[]
   collateralisationRatio?: BigNumber
+  hasFeederPools: boolean
   failed: boolean
   feeRate: BigNumber
   forgeValidator: string
