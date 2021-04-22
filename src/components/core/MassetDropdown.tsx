@@ -40,7 +40,10 @@ export const MassetDropdown: FC = () => {
         ...Object.values(dataState).map(massetState => [
           massetState.token.symbol,
           {
-            symbol: massetState.token.symbol,
+            icon: {
+              symbol: massetState.token.symbol,
+              hideNetwork: true,
+            },
           },
         ]),
       ]),
