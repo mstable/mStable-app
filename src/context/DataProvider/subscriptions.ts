@@ -3,6 +3,7 @@ import { QueryResult } from '@apollo/react-common'
 import { useEffect } from 'react'
 
 import { useBlockNow } from '../BlockProvider'
+import { useChainIdCtx } from '../NetworkProvider'
 
 export const useBlockPollingSubscription = <TData, TVariables>(
   lazyQuery: (
@@ -13,6 +14,7 @@ export const useBlockPollingSubscription = <TData, TVariables>(
   baseOptions?: LazyQueryHookOptions<TData, TVariables>,
   skip?: boolean,
 ): QueryResult<TData, TVariables> => {
+  const [chainId] = useChainIdCtx()
   const blockNumber = useBlockNow()
   const hasBlock = !!blockNumber
 
@@ -38,14 +40,14 @@ export const useBlockPollingSubscription = <TData, TVariables>(
     return () => {
       clearInterval(interval)
     }
-  }, [skip, hasBlock, run])
+  }, [skip, hasBlock, run, chainId])
 
   // Run the query on every block when the block number is available.
   useEffect(() => {
     if (!skip && blockNumber) {
       run()
     }
-  }, [skip, blockNumber, run])
+  }, [skip, blockNumber, run, chainId])
 
   return query as never
 }
