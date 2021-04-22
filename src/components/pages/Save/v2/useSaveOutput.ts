@@ -21,12 +21,11 @@ const getOptimalBasset = async (
   networkAddresses: AllNetworks['addresses'],
   massetAddress: string,
   bAssets: MassetState['bAssets'],
-
   inputAmount: BigNumber,
 ): Promise<SaveOutput> => {
-  if (!(networkAddresses as Extract<AllNetworks, { addresses: { WETH?: string } }>['addresses']).WETH) {
-    throw new Error('No WETH address')
-  }
+  const wrappedNativeToken =
+    (networkAddresses.ERC20 as Extract<AllNetworks['addresses'], { ERC20: { WETH: string } }>['ERC20']).WETH ??
+    (networkAddresses.ERC20 as Extract<AllNetworks['addresses'], { ERC20: { wMATIC: string } }>['ERC20']).wMATIC
 
   const uniswap = UniswapRouter02__factory.connect(networkAddresses.UniswapRouter02_Like, signer)
 
@@ -35,7 +34,7 @@ const getOptimalBasset = async (
   const bassetAmountsOut = [
     ...(await Promise.all(
       Object.keys(bAssets).map(async address => {
-        const path = [(networkAddresses as Extract<AllNetworks, { addresses: { WETH: string } }>['addresses']).WETH, address]
+        const path = [wrappedNativeToken, address]
         try {
           const [, amountOut] = await uniswap.getAmountsOut(inputAmount, path)
           const estimatedOutput = await saveWrapper.estimate_saveViaUniswapETH(
