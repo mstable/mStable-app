@@ -38,5 +38,7 @@ export const SubscribedTokenInput: FC<Props> = ({ value, options: _options = [],
     [_options, token, tokens],
   )
 
-  return <AssetDropdown onChange={onChange} addressOptions={options} defaultAddress={value} disabled={disabled} />
+  const networkRemovedOptions = options.map(option => ({ ...option, symbol: option.symbol?.replace(/POS-/gi, '') }))
+
+  return <AssetDropdown onChange={onChange} addressOptions={networkRemovedOptions} defaultAddress={value} disabled={disabled} />
 }

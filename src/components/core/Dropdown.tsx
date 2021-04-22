@@ -11,7 +11,10 @@ import { Tooltip } from './ReactTooltip'
 import { AddressOption } from '../../types'
 
 export interface DropdownOption {
-  symbol?: string // for TokenIcon use
+  icon?: {
+    symbol?: string
+    hideNetwork?: boolean
+  } // for TokenIcon use
   subtext?: ReactNode
   asset?: AddressOption
 }
@@ -129,12 +132,13 @@ const Option: FC<{
       </OptionContainer>
     )
 
-  const { symbol, subtext, asset } = options?.[option] ?? {}
+  const { icon, subtext, asset } = options?.[option] ?? {}
+  const { symbol, hideNetwork } = icon ?? {}
   const symbols = symbol?.split('/')
 
   return (
     <OptionContainer onClick={onClick} active={active} selected={selected} disabled={disabled}>
-      {symbol && (symbols?.length ?? 0) <= 1 ? <TokenIcon symbol={symbol} /> : <TokenPair symbols={symbols} />}
+      {symbol && (symbols?.length ?? 0) <= 1 ? <TokenIcon symbol={symbol} hideNetwork={hideNetwork} /> : <TokenPair symbols={symbols} />}
       <TokenDetails>
         {asset ? (
           <Asset asset={asset} />
