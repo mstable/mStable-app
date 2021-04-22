@@ -5,6 +5,7 @@ import { useFirstMountState } from 'react-use/lib/useFirstMountState';
 
 import { useIsIdle } from '../../context/UserProvider';
 import { Color } from '../../theme';
+import { useThemeMode } from '../../context/AppProvider';
 
 interface Props extends CountUpProps {
   container?: FC;
@@ -18,7 +19,7 @@ const DEFAULT_DURATION = 1;
 const StyledSpan = styled.span<Pick<Props, 'highlight' | 'highlightColor'>>`
   color: ${({ highlight, highlightColor }) =>
     highlight && highlightColor ? highlightColor : 'inherit'};
-  font-weight: ${({ highlight }) => (highlight ? 'bold' : 'normal')};
+  font-weight: normal;
 `;
 
 const PrefixOrSuffix = styled.span`
@@ -97,6 +98,8 @@ export const DifferentialCountup: FC<
     prev?: number;
   }
 > = ({ prev, end, ...props }) => {
+  const themeMode = useThemeMode();
+  const blue = themeMode === 'light' ? Color.blue : Color.coolBlue;
   return (
     <CountUp
       // eslint-disable-next-line react/jsx-props-no-spreading
@@ -105,7 +108,7 @@ export const DifferentialCountup: FC<
       highlight
       highlightColor={
         typeof prev !== 'number' || typeof end !== 'number' || end === prev
-          ? Color.blue
+          ? blue
           : end > prev
           ? Color.green
           : Color.red
