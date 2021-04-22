@@ -50,16 +50,18 @@ const getOptimalBasset = async (
             amount: new BigDecimal(estimatedOutput),
           }
         } catch (error) {
-          console.error(`Error estimating Uniswap output for path ${path.join(',')}`, error)
+          console.error(`Error estimating output for path ${path.join(',')}`, error)
         }
       }),
     )),
   ].filter(Boolean) as SaveOutput[]
 
-  const optimal = bassetAmountsOut.reduce((prev, current) => (current.amount.exact.gt(prev.amount.exact) ? current : prev))
+  const optimal = bassetAmountsOut.reduce((prev, current) => (current.amount.exact.gt(prev.amount.exact) ? current : prev), {
+    amount: BigDecimal.ZERO,
+  })
 
-  if (!optimal) {
-    throw new Error('No Uniswap path found')
+  if (!optimal || optimal.amount.exact.eq(0)) {
+    throw new Error('No path found')
   }
 
   return optimal
