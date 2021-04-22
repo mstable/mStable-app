@@ -74,26 +74,46 @@ interface Network<TAddresses, TGqlEndpoints> {
 
   gqlEndpoints: CoreGqlEndpoints & TGqlEndpoints
 
-  addresses: CoreAddresses & TAddresses
+  addresses: CoreAddresses & { ERC20: { wMATIC?: string; WETH?: string } } & TAddresses
 
   gasStationEndpoint: string
 
   getExplorerUrl(entity?: string, type?: 'address' | 'transaction' | 'token' | 'account'): string
 }
 
-interface EthereumMainnet extends Network<{ curve: { CurveV2: string }; WETH: string; WBTC: string }, { ecosystem: string }> {
+export interface EthereumMainnet
+  extends Network<
+    {
+      Curve: { CurveV2: string }
+      ERC20: {
+        SUSHI: string
+        BADGER: string
+        CREAM: string
+        renBTC: string
+        WETH: string
+        WBTC: string
+      }
+    },
+    {
+      ecosystem: string
+      curve: string
+      sushi: string
+      balancer: string
+      uniswap: string
+    }
+  > {
   chainId: ChainIds.EthereumMainnet
 }
 
-interface EthereumRopsten extends Network<{ WETH: string }, {}> {
+export interface EthereumRopsten extends Network<{ ERC20: { WETH: string } }, {}> {
   chainId: ChainIds.EthereumRopsten
 }
 
-interface EthereumGoerli extends Network<{ WETH: string }, {}> {
+export interface EthereumGoerli extends Network<{ ERC20: { WETH: string } }, {}> {
   chainId: ChainIds.EthereumGoerli
 }
 
-interface MaticMainnet extends Network<{}, {}> {
+export interface MaticMainnet extends Network<{ ERC20: { wMATIC: string } }, {}> {
   chainId: ChainIds.MaticMainnet
   parentChainId: ChainIds.EthereumMainnet
   nativeToken: {
@@ -103,7 +123,7 @@ interface MaticMainnet extends Network<{}, {}> {
   }
 }
 
-interface MaticMumbai extends Network<{}, {}> {
+export interface MaticMumbai extends Network<{ ERC20: { wMATIC: string } }, {}> {
   chainId: ChainIds.MaticMumbai
   parentChainId: ChainIds.EthereumGoerli
   nativeToken: {
@@ -169,6 +189,10 @@ const ETH_MAINNET: EthereumMainnet = {
     feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools',
     blocks: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
     ecosystem: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem',
+    curve: 'https://api.thegraph.com/subgraphs/name/protofire/curve',
+    sushi: 'https://api.thegraph.com/subgraphs/name/jiro-ono/sushiswap-v1-exchange',
+    balancer: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer',
+    uniswap: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
   },
   addresses: {
     MTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
@@ -176,10 +200,16 @@ const ETH_MAINNET: EthereumMainnet = {
     FeederWrapper: '0x7C1fD068CE739A4687BEe9F69e5FD2275C7372d4',
     SaveWrapper: '0x0CA7A25181FC991e3cC62BaC511E62973991f325',
     UniswapRouter02_Like: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
-    WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    WBTC: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-    curve: {
+    Curve: {
       CurveV2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',
+    },
+    ERC20: {
+      WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+      WBTC: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+      SUSHI: '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
+      BADGER: '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
+      CREAM: '0x2ba592F78dB6436527729929AAf6c908497cB200',
+      renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
     },
   },
   getExplorerUrl: etherscanUrl(),
@@ -202,10 +232,12 @@ const ETH_ROPSTEN: EthereumRopsten = {
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
-    WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
     FeederWrapper: '',
     SaveWrapper: '',
     UniswapRouter02_Like: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+    ERC20: {
+      WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
+    },
   },
   getExplorerUrl: etherscanUrl('ropsten'),
 }
@@ -226,10 +258,12 @@ const ETH_GOERLI: EthereumGoerli = {
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
-    WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
     FeederWrapper: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5',
     SaveWrapper: '0x5047Ee646E3425264416bf7d2a651985E513Ff32',
     UniswapRouter02_Like: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+    ERC20: {
+      WETH: '0xc778417e063141139fce010982780140aa0cd5ab',
+    },
   },
   getExplorerUrl: etherscanUrl('goerli'),
 }
@@ -262,6 +296,9 @@ const MATIC_MAINNET: MaticMainnet = {
     FeederWrapper: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5', // Mainnet
     SaveWrapper: '',
     UniswapRouter02_Like: '0xFCB5348111665Cf95a777f0c4FCA768E05601760', // QuickSwap
+    ERC20: {
+      wMATIC: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+    },
   },
   getExplorerUrl: maticExplorerUrl('mainnet'),
 }
@@ -287,6 +324,9 @@ const MATIC_MUMBAI: MaticMumbai = {
     FeederWrapper: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5', // Mainnet
     SaveWrapper: '0xFd257a60881678cF0E37179F1ECF317a6f29482B',
     UniswapRouter02_Like: '0xFCB5348111665Cf95a777f0c4FCA768E05601760', // QuickSwap
+    ERC20: {
+      wMATIC: '0x5B67676a984807a212b1c59eBFc9B3568a474F0a',
+    },
   },
   getExplorerUrl: maticExplorerUrl('mumbai'),
 }
@@ -318,7 +358,7 @@ export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainI
 
 // TODO could still use an env var to define the default chain ID
 // Or even domain matching (polygon.*)
-const [useChainIdCtx, ChainIdProvider] = createStateContext<ChainIds | undefined>(ChainIds.MaticMumbai)
+const [useChainIdCtx, ChainIdProvider] = createStateContext<ChainIds | undefined>(ChainIds.EthereumMainnet)
 export { useChainIdCtx }
 
 const networkCtx = createContext<Network<unknown, unknown>>(null as never)
@@ -412,7 +452,7 @@ export const useNetwork = (): Network<unknown, unknown> => useContext(networkCtx
 
 export const useNetworkPrices = (): FetchState<NetworkPrices> => useContext(networkPricesCtx)
 
-export const useNetworkAddresses = (): AllNetworks['addresses'] => useContext(networkCtx).addresses
+export const useNetworkAddresses = (): AllNetworks['addresses'] => useContext(networkCtx).addresses as AllNetworks['addresses']
 
 export const useGetExplorerUrl = (): Network<unknown, unknown>['getExplorerUrl'] => useNetwork().getExplorerUrl
 
