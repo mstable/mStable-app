@@ -209,7 +209,9 @@ const OnboardProvider: FC<{
       try {
         const selected = await onboard.walletSelect(walletName)
         if (selected) {
-          await onboard.walletCheck()
+          const checked = await onboard.walletCheck()
+          if (!checked) return
+
           addInfoNotification(
             `Connected${typeof walletName === 'string' ? ` with ${walletName}` : ''}`,
             `${network.protocolName} (${network.chainName})`,
