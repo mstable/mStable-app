@@ -1,22 +1,15 @@
-import { BigNumber } from 'ethers';
-import {
-  EarnData,
-  NormalizedPool,
-  RawEarnData,
-  StakingRewardsContract,
-  StakingRewardsContractsMap,
-  SyncedEarnData,
-} from './types';
-import { ADDRESSES } from '../../constants';
-import { BigDecimal } from '../../web3/BigDecimal';
-import { CURVE_MUSD_EARN_URL } from './CurveProvider';
-import { StakingRewardsContractType } from '../../graphql/ecosystem';
-import { Platforms } from '../../types';
+import { BigNumber } from 'ethers'
 
-const BAL_ADDRESS = '0xba100000625a3754423978a60c9317c58a424e3d';
+import type { EarnData, NormalizedPool, RawEarnData, StakingRewardsContract, StakingRewardsContractsMap, SyncedEarnData } from './types'
+import { BigDecimal } from '../../web3/BigDecimal'
+import { CURVE_MUSD_EARN_URL, CURVE_ADDRESSES } from './CurveProvider'
+import { StakingRewardsContractType } from '../../graphql/ecosystem'
+import { Platforms } from '../../types'
+
+const BAL_ADDRESS = '0xba100000625a3754423978a60c9317c58a424e3d'
 const BAL_REWARDS_EXCEPTIONS: Set<String> = new Set([
   '0x0d4cd2c24a4c9cd31fcf0d3c4682d234d9f94be4', // MTA/mUSD 95/5
-]);
+])
 
 const EXPIRED_POOLS: Set<string> = new Set([
   '0x25970282aac735cd4c76f30bfb0bf2bc8dad4e70', // MTA/mUSD 80/20
@@ -26,47 +19,26 @@ const EXPIRED_POOLS: Set<string> = new Set([
   '0xe6e6e25efda5f69687aa9914f8d750c523a1d261', // Curve 3pool/mUSD
   '0xf7575d4d4db78f6ba43c734616c51e9fd4baa7fb', // Balancer WETH/mUSD
   '0x6de3a957b0344e6adeeab4648b02108f35651fb5', // Sushi mBTC/WETH
-]);
+])
 
-const currentTime = BigNumber.from(Math.floor(Date.now() / 1e3));
+const currentTime = BigNumber.from(Math.floor(Date.now() / 1e3))
 
 const getStakingRewardsContractsMap = (
   { pools, tokenPrices }: SyncedEarnData,
   { rawStakingRewardsContracts, curveBalances }: RawEarnData,
 ): StakingRewardsContractsMap => {
-  const curvePool = Object.values(pools).find(
-    p => p.platform === Platforms.Curve,
-  );
+  const curvePool = Object.values(pools).find(p => p.platform === Platforms.Curve)
 
   return Object.fromEntries(
     (rawStakingRewardsContracts?.stakingRewardsContracts ?? [])
-      .filter(
-        item =>
-          pools[item.stakingToken.address] ||
-          (item.address === ADDRESSES.CURVE.MTA_STAKING_REWARDS && curvePool),
-      )
+      .filter(item => pools[item.stakingToken.address] || (item.address === CURVE_ADDRESSES.MTA_STAKING_REWARDS && curvePool))
       .map(data => {
-        const {
-          duration,
-          address,
-          lastUpdateTime,
-          periodFinish,
-          rewardPerTokenStored,
-          rewardRate,
-        } = data;
-        let {
-          platformRewardPerTokenStored,
-          platformRewardRate,
-          platformToken,
-          type,
-          totalPlatformRewards,
-        } = data;
-        const isCurve = address === ADDRESSES.CURVE.MTA_STAKING_REWARDS;
-        const receivesBAL = BAL_REWARDS_EXCEPTIONS.has(address);
+        const { duration, address, lastUpdateTime, periodFinish, rewardPerTokenStored, rewardRate } = data
+        let { platformRewardPerTokenStored, platformRewardRate, platformToken, type, totalPlatformRewards } = data
+        const isCurve = address === CURVE_ADDRESSES.MTA_STAKING_REWARDS
+        const receivesBAL = BAL_REWARDS_EXCEPTIONS.has(address)
 
-        const pool: NormalizedPool = isCurve
-          ? (curvePool as NormalizedPool)
-          : pools[data.stakingToken.address];
+        const pool: NormalizedPool = isCurve ? (curvePool as NormalizedPool) : pools[data.stakingToken.address]
 
         // These pools receive BAL rewards, but are not
         // StakingRewardsWithPlatformToken contracts; however, they should be
@@ -77,104 +49,77 @@ const getStakingRewardsContractsMap = (
             symbol: 'BAL',
             address: BAL_ADDRESS,
             decimals: 18,
-          } as typeof platformToken;
+          } as typeof platformToken
         } else if (isCurve) {
           platformToken = {
             symbol: 'CRV',
-            address: ADDRESSES.CURVE.CRV_TOKEN,
+            address: CURVE_ADDRESSES.CRV_TOKEN,
             decimals: 18,
-          } as typeof platformToken;
+          } as typeof platformToken
         }
 
         if (receivesBAL || isCurve) {
-          type = StakingRewardsContractType.StakingRewardsWithPlatformToken;
-          platformRewardPerTokenStored = '0';
-          platformRewardRate = '0';
-          totalPlatformRewards = '0';
+          type = StakingRewardsContractType.StakingRewardsWithPlatformToken
+          platformRewardPerTokenStored = '0'
+          platformRewardRate = '0'
+          totalPlatformRewards = '0'
         }
 
         const stakingToken = {
           ...data.stakingToken,
           totalSupply: BigDecimal.fromMetric(data.stakingToken.totalSupply),
           price: tokenPrices[data.stakingToken.address],
-        };
+        }
 
         const rewardsToken = {
           ...data.rewardsToken,
           totalSupply: BigDecimal.fromMetric(data.rewardsToken.totalSupply),
           price: tokenPrices[data.rewardsToken.address],
-        };
+        }
 
         const stakingReward = {
-          amount: new BigDecimal(
-            data.stakingRewards[0]?.amount || 0,
-            rewardsToken.decimals,
-          ),
-          amountPerTokenPaid: new BigDecimal(
-            data.stakingRewards[0]?.amountPerTokenPaid || 0,
-            rewardsToken.decimals,
-          ),
-        };
+          amount: new BigDecimal(data.stakingRewards[0]?.amount || 0, rewardsToken.decimals),
+          amountPerTokenPaid: new BigDecimal(data.stakingRewards[0]?.amountPerTokenPaid || 0, rewardsToken.decimals),
+        }
 
         const stakingBalance =
           isCurve && curveBalances.stakingBalance
             ? curveBalances.stakingBalance
-            : new BigDecimal(
-                data.stakingBalances[0]?.amount || 0,
-                stakingToken.decimals,
-              );
+            : new BigDecimal(data.stakingBalances[0]?.amount || 0, stakingToken.decimals)
 
-        const totalSupply = new BigDecimal(
-          data.totalSupply,
-          stakingToken.decimals,
-        );
+        const totalSupply = new BigDecimal(data.totalSupply, stakingToken.decimals)
 
-        const totalStakingRewards = new BigDecimal(
-          data.totalStakingRewards,
-          rewardsToken.decimals,
-        );
+        const totalStakingRewards = new BigDecimal(data.totalStakingRewards, rewardsToken.decimals)
         const totalRemainingRewards = new BigDecimal(
-          currentTime.gt(periodFinish)
-            ? 0
-            : BigNumber.from(periodFinish).sub(currentTime).mul(rewardRate),
+          currentTime.gt(periodFinish) ? 0 : BigNumber.from(periodFinish).sub(currentTime).mul(rewardRate),
           rewardsToken.decimals,
-        );
+        )
 
         const stakingBalancePercentage = BigDecimal.parse(
-          (stakingBalance.exact.gt(0) && totalSupply.exact.gt(0)
-            ? stakingBalance.simple / totalSupply.simple
-            : 0
-          ).toFixed(20),
+          (stakingBalance.exact.gt(0) && totalSupply.exact.gt(0) ? stakingBalance.simple / totalSupply.simple : 0).toFixed(20),
           stakingToken.decimals,
-        );
+        )
 
         const earnUrl = isCurve
           ? CURVE_MUSD_EARN_URL
           : `/earn/${pool.platform.toLowerCase()}-${pool.tokens
-              .map(
-                token =>
-                  `${token.symbol.toLowerCase()}${
-                    token.ratio ? `-${token.ratio}` : ''
-                  }`,
-              )
+              .map(token => `${token.symbol.toLowerCase()}${token.ratio ? `-${token.ratio}` : ''}`)
               .sort()
-              .join('-')}`;
+              .join('-')}`
 
-        const title = `${pool.platform} ${pool.tokens
-          .map(token => token.symbol)
-          .join('/')}${pool.tokens
+        const title = `${pool.platform} ${pool.tokens.map(token => token.symbol).join('/')}${pool.tokens
           .filter(t => t.ratio)
           .map(token => token.ratio)
-          .join('/')}`;
+          .join('/')}`
 
-        const expired = EXPIRED_POOLS.has(address);
+        const expired = EXPIRED_POOLS.has(address)
 
         const curve = isCurve
           ? {
               rewardsEarned: curveBalances.claimableMTA,
               platformRewardsEarned: curveBalances.claimableCRV,
             }
-          : undefined;
+          : undefined
 
         const result: StakingRewardsContract = {
           address,
@@ -200,71 +145,46 @@ const getStakingRewardsContractsMap = (
           apy: {
             waitingForData: true,
           },
-          ...(platformToken &&
-          platformRewardRate &&
-          platformRewardPerTokenStored &&
-          totalPlatformRewards
+          ...(platformToken && platformRewardRate && platformRewardPerTokenStored && totalPlatformRewards
             ? {
                 platformRewards: {
                   platformToken: {
                     ...platformToken,
-                    totalSupply: BigDecimal.maybeFromMetric(
-                      platformToken.totalSupply,
-                    ) as BigDecimal,
+                    totalSupply: BigDecimal.maybeFromMetric(platformToken.totalSupply) as BigDecimal,
                     price: tokenPrices[platformToken.address],
                   },
-                  platformRewardPerTokenStoredNow: BigNumber.from(
-                    platformRewardPerTokenStored,
-                  ),
+                  platformRewardPerTokenStoredNow: BigNumber.from(platformRewardPerTokenStored),
                   platformRewardRate: BigNumber.from(platformRewardRate),
                   platformReward: {
-                    amount: new BigDecimal(
-                      data.platformRewards[0]?.amount || 0,
-                      platformToken.decimals,
-                    ),
-                    amountPerTokenPaid: new BigDecimal(
-                      data.platformRewards[0]?.amountPerTokenPaid || 0,
-                      platformToken.decimals,
-                    ),
+                    amount: new BigDecimal(data.platformRewards[0]?.amount || 0, platformToken.decimals),
+                    amountPerTokenPaid: new BigDecimal(data.platformRewards[0]?.amountPerTokenPaid || 0, platformToken.decimals),
                   },
-                  totalPlatformRewards: new BigDecimal(
-                    totalPlatformRewards,
-                    platformToken.decimals,
-                  ),
+                  totalPlatformRewards: new BigDecimal(totalPlatformRewards, platformToken.decimals),
                   totalRemainingPlatformRewards: new BigDecimal(
-                    currentTime.gt(periodFinish)
-                      ? 0
-                      : BigNumber.from(periodFinish)
-                          .sub(currentTime)
-                          .mul(platformRewardRate),
+                    currentTime.gt(periodFinish) ? 0 : BigNumber.from(periodFinish).sub(currentTime).mul(platformRewardRate),
                     platformToken.decimals,
                   ),
                 },
               }
             : undefined),
-        };
+        }
 
         const apyValue: number | undefined = (() => {
-          const stakingTokenPrice = stakingToken?.price?.simple;
-          const rewardsTokenPrice = rewardsToken?.price?.simple;
+          const stakingTokenPrice = stakingToken?.price?.simple
+          const rewardsTokenPrice = rewardsToken?.price?.simple
 
           // Prerequisites
-          const hasPrerequisites = !!(stakingTokenPrice && rewardsTokenPrice);
+          const hasPrerequisites = !!(stakingTokenPrice && rewardsTokenPrice)
 
           if (!hasPrerequisites || expired) {
-            return undefined;
+            return undefined
           }
 
-          const rewardPerDayPerToken =
-            (parseInt(rewardRate) * 60 * 60 * 24 * rewardsTokenPrice) /
-            totalSupply.simple;
-          return (rewardPerDayPerToken / stakingTokenPrice) * 365;
-        })();
+          const rewardPerDayPerToken = (parseInt(rewardRate) * 60 * 60 * 24 * rewardsTokenPrice) / totalSupply.simple
+          return (rewardPerDayPerToken / stakingTokenPrice) * 365
+        })()
 
-        const value =
-          typeof apyValue === 'number'
-            ? new BigDecimal(apyValue.toString().split('.')[0], 18)
-            : undefined;
+        const value = typeof apyValue === 'number' ? new BigDecimal(apyValue.toString().split('.')[0], 18) : undefined
 
         const withApy = {
           ...result,
@@ -272,21 +192,15 @@ const getStakingRewardsContractsMap = (
             value,
             waitingForData: !rewardPerTokenStored,
           },
-        };
+        }
 
-        return [address, withApy];
+        return [address, withApy]
       }),
-  );
-};
+  )
+}
 
-export const transformEarnData = (
-  syncedEarnData: SyncedEarnData,
-  rawEarnData: RawEarnData,
-): EarnData => ({
-  stakingRewardsContractsMap: getStakingRewardsContractsMap(
-    syncedEarnData,
-    rawEarnData,
-  ),
+export const transformEarnData = (syncedEarnData: SyncedEarnData, rawEarnData: RawEarnData): EarnData => ({
+  stakingRewardsContractsMap: getStakingRewardsContractsMap(syncedEarnData, rawEarnData),
   tokenPricesMap: syncedEarnData.tokenPrices,
   merkleDrops: syncedEarnData.merkleDrops,
-});
+})
