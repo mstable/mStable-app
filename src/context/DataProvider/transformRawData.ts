@@ -339,6 +339,7 @@ const transformMassetData = (
     feeRate: BigNumber.from(feeRate),
     redemptionFeeRate: BigNumber.from(redemptionFeeRate),
     feederPools,
+    hasFeederPools: Object.keys(feederPools).length > 0,
     savingsContracts: {
       v1: savingsContractV1 ? transformSavingsContractV1(savingsContractV1, tokens, address, false) : undefined,
       v2: transformSavingsContractV2({ ...savingsContractV2, boostedSavingsVaults: saveVaults }, tokens, address, true),
