@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 
 import { FeederPool__factory, Masset__factory } from '@mstable/protocol/types/generated'
@@ -24,6 +24,7 @@ import { useMinimumOutput } from '../../../hooks/useOutput'
 import { BigDecimalInputValue } from '../../../hooks/useBigDecimalInputs'
 import { useEstimatedOutput } from '../../../hooks/useEstimatedOutput'
 import { BigDecimal } from '../../../web3/BigDecimal'
+import { useChainIdCtx } from '../../../context/NetworkProvider'
 
 const formId = 'mint'
 
@@ -111,6 +112,12 @@ export const MintMasset: FC = () => {
       undefined,
     [inputAddress, isFasset, currentFeederAddress, massetAddress, inputAmount],
   )
+
+  // Reset input on chain change
+  const [chainId] = useChainIdCtx()
+  useEffect(() => {
+    handleSetAddress(undefined)
+  }, [chainId])
 
   const valid = !error
 
