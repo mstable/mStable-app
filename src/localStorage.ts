@@ -27,6 +27,7 @@ export interface StorageV3 extends VersionedStorage<3, StorageV2> {
     active?: boolean
   }
   tcsViewed?: boolean
+  polygonViewed?: boolean
 }
 
 export interface StorageV4 extends VersionedStorage<4, StorageV3> {

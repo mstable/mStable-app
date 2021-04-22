@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useLayoutEffect } from 'react'
 import styled from 'styled-components'
 
 import { ReactComponent as SaveIcon } from '../icons/circle/save.svg'
@@ -10,6 +10,9 @@ import { ReactComponent as StatsIcon } from '../icons/circle/stats.svg'
 import { ReactComponent as AccountIcon } from '../icons/circle/account.svg'
 import { useAccountOpen, useBannerMessage } from '../../context/AppProvider'
 import { BannerMessage } from '../layout/BannerMessage'
+import { usePolygonModal } from '../core/usePolygonModal'
+import { ChainIds, useNetwork } from '../../context/NetworkProvider'
+import { LocalStorage } from '../../localStorage'
 
 export enum PageAction {
   Save = 'Save',
@@ -100,10 +103,20 @@ export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
   const accountOpen = useAccountOpen()
   const [bannerMessage] = useBannerMessage()
   const icon = ActionIcons[action]
+  const showPolygonModal = usePolygonModal()
+  const { chainId } = useNetwork()
+  const polygonViewed = LocalStorage.get('polygonViewed')
+
+  useLayoutEffect(() => {
+    if (!polygonViewed && chainId && [ChainIds.MaticMainnet, ChainIds.MaticMumbai].find(id => id === chainId)) {
+      LocalStorage.set('polygonViewed', true)
+      showPolygonModal()
+    }
+  }, [chainId])
 
   return (
     <div>
-      <Container accountOpen={accountOpen} messageVisible={!!bannerMessage}>
+      <Container accountOpen={accountOpen}>
         <Row>
           <Icon inverted>{icon}</Icon>
           <h2>{action}</h2>
