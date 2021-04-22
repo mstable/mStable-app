@@ -124,7 +124,7 @@ export const OnboardingCard: FC = () => {
     [bAssets, fAssets, massetToken],
   )
   const saveTokenSymbol = saveToken?.symbol?.replace(/POS-/gi, '')
-  const isEthereum = protocolName == Networks.Ethereum
+  const isEthereum = protocolName === Networks.Ethereum
   const inputAssetsInclEth = [...inputAssetsExclEth, 'ETH']
   const inputAssets = isEthereum ? inputAssetsInclEth : inputAssetsExclEth
 
