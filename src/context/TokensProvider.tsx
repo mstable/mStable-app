@@ -77,6 +77,7 @@ type Action =
     }
   | { type: Actions.Reset }
 
+// FIXME: use a function to create initial state based on network
 const initialState: State = {
   tokens: Object.fromEntries(
     ([
