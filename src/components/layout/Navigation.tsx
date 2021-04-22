@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 import { NavLink } from 'react-router-dom'
 
@@ -6,6 +6,7 @@ import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
 import { useCloseAccount, useThemeMode } from '../../context/AppProvider'
 import { colorTheme, ViewportWidth } from '../../theme'
 import { NavigationDropdown, NavItem } from '../core/NavigationDropdown'
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 
 const List = styled.div`
   display: flex;
@@ -27,15 +28,6 @@ const List = styled.div`
   }
 `
 
-const navItems: NavItem[] = [
-  { title: 'Save', path: '/save' },
-  { title: 'Pools', path: '/pools' },
-  { title: 'Mint', path: '/mint' },
-  { title: 'Swap', path: '/swap' },
-  { title: 'Redeem', path: '/redeem' },
-  { title: 'Stats', path: '/stats' },
-]
-
 const StyledNavLink = styled(NavLink)`
   margin: 0 0.5rem;
   position: relative;
@@ -49,6 +41,19 @@ export const Navigation: FC = () => {
   const collapseWallet = useCloseAccount()
   const massetName = useSelectedMassetName()
   const themeMode = useThemeMode()
+  const massetState = useSelectedMassetState()
+  const hasFeederPools = massetState?.hasFeederPools
+
+  const navItems = useMemo<NavItem[]>(() => {
+    return [
+      { title: 'Save', path: '/save' },
+      ...(hasFeederPools ? [{ title: 'Pools', path: '/pools' }] : []),
+      { title: 'Mint', path: '/mint' },
+      { title: 'Swap', path: '/swap' },
+      { title: 'Redeem', path: '/redeem' },
+      { title: 'Stats', path: '/stats' },
+    ]
+  }, [hasFeederPools])
 
   return (
     <nav>
