@@ -31,11 +31,11 @@ export const NetworkDropdown: FC = () => {
     () =>
       Object.fromEntries(
         NETWORKS.filter(({ isTestnet, chainId: _chainId }) => _chainId === chainId || !isTestnet || isAltPressed).map(
-          ({ protocolName, chainName, chainId: _chainId }) => [
+          ({ protocolName, chainName, chainId: _chainId, isTestnet }) => [
             _chainId,
             {
               icon: { symbol: protocolName, hideNetwork: true },
-              subtext: chainName !== 'Mainnet' ? chainName : undefined,
+              subtext: isTestnet ? chainName : undefined,
             },
           ],
         ),

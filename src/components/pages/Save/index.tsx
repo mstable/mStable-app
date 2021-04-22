@@ -3,15 +3,17 @@ import styled from 'styled-components'
 import Skeleton from 'react-loading-skeleton'
 
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
-import { PageAction, PageHeader } from '../PageHeader'
-import { Save as SaveV2 } from './v2'
+import { useChainIdCtx, ChainIds } from '../../../context/NetworkProvider'
 import { RewardStreamsProvider } from '../../../context/RewardStreamsProvider'
 import { formatMassetName, useSelectedMassetName } from '../../../context/SelectedMassetNameProvider'
+import { useSelectedSaveVersion } from '../../../context/SelectedSaveVersionProvider'
+
+import { PageAction, PageHeader } from '../PageHeader'
+import { Save as SaveV2 } from './v2'
 import { ViewportWidth } from '../../../theme'
 import { SaveOverview } from './v2/SaveOverview'
 import { InfoBox } from '../../core/InfoBox'
 import { ToggleSave } from './ToggleSave'
-import { useSelectedSaveVersion } from '../../../context/SelectedSaveVersionProvider'
 import { SaveMigration } from './v1/SaveMigration'
 import { OnboardingProvider } from './hooks'
 
@@ -78,6 +80,7 @@ export const Save: FC = () => {
   const formattedName = formatMassetName(massetName)
   const [selectedSaveVersion] = useSelectedSaveVersion()
   const vault = massetState?.savingsContracts.v2.boostedSavingsVault
+  const [chainId] = useChainIdCtx()
 
   return massetState ? (
     <RewardStreamsProvider vault={vault}>
@@ -88,14 +91,16 @@ export const Save: FC = () => {
           <Content>
             {selectedSaveVersion === 1 ? <SaveMigration /> : <SaveV2 />}
             <Sidebar>
-              {massetName === 'musd' && <ButtonPanel>{massetName === 'musd' ? <ToggleSave /> : <div />}</ButtonPanel>}
+              {massetName === 'musd' && chainId === ChainIds.EthereumMainnet && (
+                <ButtonPanel>{massetName === 'musd' ? <ToggleSave /> : <div />}</ButtonPanel>
+              )}
               <InfoBox>
                 <h4>
                   <span>Using mStable Save</span>
                 </h4>
                 <p>
-                  By depositing to {`i${formattedName}`} you will begin earning interest on your underlying {formattedName}. Deposits to the
-                  Vault will earn interest in addition to MTA rewards.
+                  By depositing to {`i${formattedName}`} you will begin earning interest on your underlying {formattedName}.{' '}
+                  {vault ? 'Deposits to the Vault will earn interest in addition to MTA rewards.' : ''}
                 </p>
                 <p>
                   Deposits from assets other than {formattedName} will first mint {formattedName} before being deposited.

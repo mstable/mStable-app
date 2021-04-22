@@ -18,6 +18,9 @@ const Label = styled.div`
     height: 2rem;
     width: auto;
     margin-right: 0.5rem;
+    img {
+      width: 2rem;
+    }
   }
 `
 
@@ -85,20 +88,22 @@ export const SimpleMassetStats: FC = () => {
           </Percentage>
         </AssetRow>
       ))}
-      <FeederRow>
-        <Label>Feeder Pools</Label>
-        <div>
-          {Object.values(masset.feederPools).map(fp => (
-            <AssetRow key={fp.address}>
-              <Label>
-                <TokenPair symbols={[fp.masset.token.symbol, fp.fasset.token.symbol]} />
-                {fp.token.symbol}
-              </Label>
-              <CountUpUSD end={fp.liquidity.simple} price={massetPrice ? massetPrice * fp.price.simple : undefined} formattingFn={toK} />
-            </AssetRow>
-          ))}
-        </div>
-      </FeederRow>
+      {masset.hasFeederPools && (
+        <FeederRow>
+          <Label>Feeder Pools</Label>
+          <div>
+            {Object.values(masset.feederPools).map(fp => (
+              <AssetRow key={fp.address}>
+                <Label>
+                  <TokenPair symbols={[fp.masset.token.symbol, fp.fasset.token.symbol]} />
+                  {fp.token.symbol}
+                </Label>
+                <CountUpUSD end={fp.liquidity.simple} price={massetPrice ? massetPrice * fp.price.simple : undefined} formattingFn={toK} />
+              </AssetRow>
+            ))}
+          </div>
+        </FeederRow>
+      )}
     </Container>
   )
 }

@@ -11,7 +11,7 @@ import { ReactComponent as AccountIcon } from '../icons/circle/account.svg'
 import { useAccountOpen, useBannerMessage } from '../../context/AppProvider'
 import { BannerMessage } from '../layout/BannerMessage'
 import { usePolygonModal } from '../core/usePolygonModal'
-import { ChainIds, useNetwork } from '../../context/NetworkProvider'
+import { Networks, useNetwork } from '../../context/NetworkProvider'
 import { LocalStorage } from '../../localStorage'
 
 export enum PageAction {
@@ -104,15 +104,14 @@ export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
   const [bannerMessage] = useBannerMessage()
   const icon = ActionIcons[action]
   const showPolygonModal = usePolygonModal()
-  const { chainId } = useNetwork()
-  const polygonViewed = LocalStorage.get('polygonViewed')
+  const { protocolName } = useNetwork()
 
   useLayoutEffect(() => {
-    if (!polygonViewed && chainId && [ChainIds.MaticMainnet, ChainIds.MaticMumbai].find(id => id === chainId)) {
+    if (protocolName === Networks.Polygon && !LocalStorage.get('polygonViewed')) {
       LocalStorage.set('polygonViewed', true)
       showPolygonModal()
     }
-  }, [chainId])
+  }, [protocolName, showPolygonModal])
 
   return (
     <div>
