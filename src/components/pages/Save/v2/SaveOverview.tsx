@@ -162,7 +162,7 @@ export const SaveOverview: FC = () => {
       <OnboardingBanner />
       <TransitionCard components={components} selection={selection}>
         <TransitionContainer>
-          <Button active={selection === Balance} onClick={() => handleSelection(Balance)}>
+          <Button active={selection === Balance} onClick={() => handleSelection(Balance)} disabled={!boostedSavingsVault}>
             <BalanceHeading>
               <div>
                 <h3>Balance</h3>
@@ -171,7 +171,7 @@ export const SaveOverview: FC = () => {
             </BalanceHeading>
             <CountUp end={(userBalance?.simple ?? 0) * (massetPrice ?? 0)} prefix="$" />
           </Button>
-          {!isSaveV1 && (
+          {!isSaveV1 && !!boostedSavingsVault && (
             <Button active={selection === VaultAPY} onClick={() => handleSelection(VaultAPY)}>
               <h3>Rewards APY</h3>
               {apy?.fetching ? (
@@ -191,10 +191,12 @@ export const SaveOverview: FC = () => {
               )}
             </Button>
           )}
-          <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>
-            <h3>Rewards</h3>
-            <CountUp end={totalEarned} /> MTA
-          </Button>
+          {!!boostedSavingsVault && (
+            <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>
+              <h3>Rewards</h3>
+              <CountUp end={totalEarned} /> MTA
+            </Button>
+          )}
         </TransitionContainer>
       </TransitionCard>
     </Container>
