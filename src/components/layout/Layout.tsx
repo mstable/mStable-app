@@ -14,7 +14,6 @@ import { BannerMessage, useAccountOpen, useBannerMessage } from '../../context/A
 import { Background } from './Background'
 import { AppBar } from './AppBar'
 import { Toasts } from './Toasts'
-import { containerBackground } from './css'
 import { Color, ViewportWidth } from '../../theme'
 import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
@@ -32,7 +31,7 @@ const Main = styled.main<{ marginTop?: boolean }>`
 `
 
 const BackgroundContainer = styled.div`
-  ${containerBackground}
+  padding: 0 1rem;
   min-height: 50vh;
 `
 
@@ -226,7 +225,7 @@ export const Layout: FC = ({ children }) => {
   const [bannerMessage, setBannerMessage] = useBannerMessage()
   const massetState = useSelectedMassetState()
   const massetName = useSelectedMassetName()
-  const { protocolName, chainId } = useNetwork()
+  const { protocolName } = useNetwork()
   const { undergoingRecol } = useSelectedMassetState() ?? {}
 
   const tvlCap = useMemo(() => {
@@ -269,7 +268,7 @@ export const Layout: FC = ({ children }) => {
     if (bannerMessage?.title !== message?.title) {
       setBannerMessage(message)
     }
-  }, [bannerMessage, massetName, pathname, setBannerMessage, tvlCap, undergoingRecol])
+  }, [bannerMessage, massetName, pathname, protocolName, setBannerMessage, tvlCap, undergoingRecol])
 
   return (
     <ModalProvider rootComponent={TransitionGroup}>

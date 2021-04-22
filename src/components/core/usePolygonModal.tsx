@@ -1,14 +1,16 @@
 import styled from 'styled-components'
 import React, { useMemo } from 'react'
+import { useModal } from 'react-modal-hook'
+
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
-import { MassetState } from '../../context/DataProvider/types'
+import { LocalStorage } from '../../localStorage'
 import { ViewportWidth } from '../../theme'
 import { TokenIcon } from '../icons/TokenIcon'
 import { Arrow } from './Arrow'
 import { Tooltip } from './ReactTooltip'
 import { Modal } from './Modal'
-import { useModal } from 'react-modal-hook'
 import { Button } from './Button'
+import { ExternalLink } from './ExternalLink'
 
 const StyledTokenIcon = styled(TokenIcon)`
   width: 3rem;
@@ -91,28 +93,12 @@ const Container = styled.div`
   }
 `
 export const usePolygonModal = (): (() => void) => {
-  const {
-    token: massetToken,
-    savingsContracts: {
-      v2: { token: saveToken },
-    },
-    bAssets,
-    fAssets,
-  } = useSelectedMassetState() as MassetState
+  const massetState = useSelectedMassetState()
 
-  const inputAssets = useMemo<string[]>(
-    () =>
-      Object.values(bAssets)
-        .map(b => b.token)
-        .map(t => t.symbol.replace(/POS-/gi, '')),
-    [bAssets, fAssets, massetToken],
-  )
-  const saveTokenSymbol = saveToken?.symbol?.replace(/POS-/gi, '')
-
-  const handleComplete = () => {
-    // TODO: mark complete in localStorage
-    hideModal()
-  }
+  const inputAssets = useMemo<string[]>(() => Object.values(massetState?.bAssets ?? {}).map(b => b.token.symbol.replace(/^POS-/i, '')), [
+    massetState,
+  ])
+  const saveTokenSymbol = massetState?.savingsContracts.v2.token?.symbol?.replace(/^POS-/i, '')
 
   const [showModal, hideModal] = useModal(({ onExited, in: open }) => {
     return (
@@ -124,14 +110,8 @@ export const usePolygonModal = (): (() => void) => {
             </h4>
             <p>
               Use either&nbsp;
-              <a href="https://wallet.matic.network/bridge" target="_blank" rel="noopener noreferrer">
-                Matic
-              </a>{' '}
-              or{' '}
-              <a href="https://zapper.fi/bridge" target="_blank" rel="noopener noreferrer">
-                Zapper
-              </a>{' '}
-              to migrate your assets
+              <ExternalLink href="https://wallet.matic.network/bridge">Matic</ExternalLink> or{' '}
+              <ExternalLink href="https://zapper.fi/bridge">Zapper</ExternalLink> to migrate your assets
             </p>
             &nbsp;
             <p>
@@ -165,10 +145,16 @@ export const usePolygonModal = (): (() => void) => {
               <span>3</span> Earn interest on your deposit
             </h4>
             <p>
-              Over time, your {saveTokenSymbol} can be exchanged for more {massetToken.symbol}.
+              Over time, your {saveTokenSymbol} can be exchanged for more {massetState?.token.symbol}.
             </p>
           </div>
-          <CompleteButton highlighted onClick={handleComplete}>
+          <CompleteButton
+            highlighted
+            onClick={() => {
+              LocalStorage.set('polygonViewed', true)
+              hideModal()
+            }}
+          >
             Got it
           </CompleteButton>
         </Container>

@@ -48,7 +48,7 @@ const transformBasset = (basset: NonNullableMasset['basket']['bassets'][0], toke
       totalSupply: BigDecimal.fromMetric(totalSupply),
       address,
       decimals,
-      symbol,
+      symbol: symbol.replace(/^PoS-/, ''),
     },
 
     // Initial values
