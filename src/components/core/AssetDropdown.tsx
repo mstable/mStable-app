@@ -21,7 +21,7 @@ export const AssetDropdown: FC<Props> = ({ defaultAddress, addressOptions, onCha
     ...addressOptions.map(v => [
       v?.address,
       {
-        symbol: v?.symbol,
+        icon: { symbol: v?.symbol },
         asset: v,
       },
     ]),
