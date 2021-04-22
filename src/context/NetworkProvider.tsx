@@ -51,6 +51,8 @@ interface Network<TAddresses, TGqlEndpoints> {
 
   isTestnet: boolean
 
+  blockTime: number
+
   nativeToken: {
     decimals: number
     symbol: string
@@ -153,6 +155,7 @@ const ETH_MAINNET: EthereumMainnet = {
   },
   isMetaMaskDefault: true,
   isTestnet: false,
+  blockTime: 15e3,
   coingeckoId: 'ethereum',
   rpcEndpoint: 'https://mainnet.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe',
   gasStationEndpoint: 'https://gasprice.poa.network/',
@@ -238,6 +241,7 @@ const MATIC_MAINNET: MaticMainnet = {
   },
   isMetaMaskDefault: false,
   isTestnet: false,
+  blockTime: 2e3,
   coingeckoId: 'matic-network',
   rpcEndpoint: 'https://rpc-mainnet.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
   gasStationEndpoint: 'https://gasstation-mainnet.matic.network',
@@ -309,7 +313,7 @@ export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainI
 
 // TODO could still use an env var to define the default chain ID
 // Or even domain matching (polygon.*)
-const [useChainIdCtx, ChainIdProvider] = createStateContext<ChainIds | undefined>(ChainIds.EthereumMainnet)
+const [useChainIdCtx, ChainIdProvider] = createStateContext<ChainIds | undefined>(ChainIds.MaticMumbai)
 export { useChainIdCtx }
 
 const networkCtx = createContext<Network<unknown, unknown>>(null as never)
