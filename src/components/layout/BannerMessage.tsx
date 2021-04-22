@@ -6,8 +6,8 @@ import { useBannerMessage } from '../../context/AppProvider'
 
 const Container = styled.div`
   display: flex;
-  margin-bottom: 2rem;
-  border-radius: 2rem;
+  margin-bottom: 1.25rem;
+  border-radius: 1rem;
   align-items: center;
   padding: 1rem 1.5rem;
   line-height: 1.5rem;
@@ -31,7 +31,6 @@ const Container = styled.div`
   }
 `
 
-// TODO: - Remove useEffect to set message - change to use provider & memoised props
 export const BannerMessage: FC = () => {
   const [bannerMessage] = useBannerMessage()
 

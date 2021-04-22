@@ -166,7 +166,7 @@ const NetworkIcon = styled.img`
   width: 1rem !important;
   height: 1rem !important;
   right: -0.125rem;
-  bottom: 0.25rem;
+  bottom: 0;
   z-index: 1;
 `
 

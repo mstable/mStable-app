@@ -7,6 +7,7 @@ interface Props {
   saveV2: ({ hasV1Balance, pathname }: { hasV1Balance: boolean; pathname: string }) => BannerMessage | undefined
   recollat: ({ massetName }: { massetName: MassetName }) => BannerMessage | undefined
   tvlCap: ({ tvlCap }: { tvlCap?: BigDecimal }) => BannerMessage | undefined
+  polygon: () => BannerMessage | undefined
 }
 
 export const MessageHandler: Props = {
@@ -32,4 +33,9 @@ export const MessageHandler: Props = {
       emoji: '⚠️',
       url: 'https://medium.com/mstable/mstable-launches-mbtc-e26a246dc0bb',
     },
+  polygon: () => ({
+    title: 'Warning!',
+    subtitle: 'Do not migrate mUSD. To use mStable please migrate USDC, DAI or USDT',
+    emoji: '⚠️',
+  }),
 }

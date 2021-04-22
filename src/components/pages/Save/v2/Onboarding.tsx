@@ -1,5 +1,5 @@
-import styled from 'styled-components'
 import React, { FC, useMemo } from 'react'
+import styled from 'styled-components'
 import { TokenIcon } from '../../../icons/TokenIcon'
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 import { MassetState } from '../../../../context/DataProvider/types'
@@ -147,7 +147,7 @@ export const OnboardingCard: FC = () => {
       <Arrow />
       <div>
         <h4>
-          <span>2</span> Receive {saveToken?.symbol} directly, or deposit it in the Vault
+          <span>2</span> Receive {saveTokenSymbol} directly{isEthereum ? `, or deposit it in the Vault` : ''}
         </h4>
         <div>
           <TokenContainer>
@@ -175,10 +175,10 @@ export const OnboardingCard: FC = () => {
           <span>3</span> Earn interest on your deposit
         </h4>
         <p>
-          Over time, your {saveToken?.symbol} can be exchanged for more {massetToken.symbol}.
+          Over time, your {saveTokenSymbol} can be exchanged for more {massetToken.symbol}.
         </p>
       </div>
-      {massetName === 'musd' && (
+      {massetName === 'musd' && isEthereum && (
         <>
           <Arrow />
           <div>
