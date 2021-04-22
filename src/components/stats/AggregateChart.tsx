@@ -1,70 +1,63 @@
-import React, { FC, useMemo } from 'react';
-import { DocumentNode, gql, useQuery } from '@apollo/client';
-import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
-import { format, getUnixTime } from 'date-fns';
+import React, { FC, useMemo } from 'react'
+import { DocumentNode, gql, useQuery } from '@apollo/client'
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { format, getUnixTime } from 'date-fns'
 
-import { useBlockTimesForDates } from '../../hooks/useBlockTimesForDates';
-import { getKeyTimestamp } from '../../utils/getKeyTimestamp';
-import { Color } from '../../theme';
-import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics';
-import { periodFormatMapping, toK } from './utils';
-import { RechartsContainer } from './RechartsContainer';
-import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider';
-import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider';
-import { ThemedSkeleton } from '../core/ThemedSkeleton';
+import { useBlockTimesForDates } from '../../hooks/useBlockTimesForDates'
+import { getKeyTimestamp } from '../../utils/getKeyTimestamp'
+import { Color } from '../../theme'
+import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics'
+import { periodFormatMapping, toK } from './utils'
+import { RechartsContainer } from './RechartsContainer'
+import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider'
+import { ThemedSkeleton } from '../core/ThemedSkeleton'
 
 interface AggregateMetricsQueryResult {
   [timestamp: string]: {
     totalSupply: {
-      simple: string;
-    };
+      simple: string
+    }
     savingsContracts: {
-      version: number;
+      version: number
       latestExchangeRate: {
-        rate: number;
-      };
+        rate: number
+      }
       totalSavings: {
-        simple: string;
-      };
-    }[];
-  };
+        simple: string
+      }
+    }[]
+  }
 }
 
 const colors = {
   totalSupply: Color.green,
   totalSavingsV1: Color.grey,
   totalSavingsV2: Color.blue,
-};
+}
 
-const nowUnix = getUnixTime(new Date());
+const nowUnix = getUnixTime(new Date())
 
 const useAggregateMetrics = (): {
-  timestamp: number;
-  totalSupply: number;
-  totalSavingsV1: number;
-  totalSavingsV2: number;
+  timestamp: number
+  totalSupply: number
+  totalSavingsV1: number
+  totalSavingsV2: number
 }[] => {
-  const dateFilter = useDateFilter();
-  const savingsContractState = useSelectedSavingsContractState();
-  const massetAddress = savingsContractState?.massetAddress;
+  const dateFilter = useDateFilter()
+  const savingsContractState = useSelectedSavingsContractState()
+  const massetAddress = savingsContractState?.massetAddress
 
-  const blockTimes = useBlockTimesForDates(dateFilter.dates);
+  const blockTimes = useBlockTimesForDates(dateFilter.dates)
 
   const metricsDoc = useMemo<DocumentNode>(() => {
-    const current = `t${nowUnix}: masset(id: "${massetAddress}") { ...AggregateMetricsFields }`;
+    const current = `t${nowUnix}: masset(id: "${massetAddress}") { ...AggregateMetricsFields }`
     const blockMetrics = blockTimes
       .map(
         ({ timestamp, number }) =>
           `t${timestamp}: masset(id: "${massetAddress}", block: { number: ${number} }) { ...AggregateMetricsFields }`,
       )
-      .join('\n');
+      .join('\n')
 
     return gql`
       fragment AggregateMetricsFields on Masset {
@@ -85,69 +78,53 @@ const useAggregateMetrics = (): {
         ${current}
         ${blockMetrics}
       }
-    `;
-  }, [blockTimes, massetAddress]);
+    `
+  }, [blockTimes, massetAddress])
 
   const query = useQuery<AggregateMetricsQueryResult>(metricsDoc, {
     fetchPolicy: 'no-cache',
-  });
+  })
 
   return useMemo(() => {
     const filtered = Object.entries(query.data ?? {})
       .filter(([, value]) => !!value?.totalSupply)
-      .map(([key, value]) => [getKeyTimestamp(key), value]) as [
-      number,
-      AggregateMetricsQueryResult[string],
-    ][];
+      .map(([key, value]) => [getKeyTimestamp(key), value]) as [number, AggregateMetricsQueryResult[string]][]
     return filtered
       .sort(([a], [b]) => (a > b ? 1 : -1))
       .map(([timestamp, { totalSupply, savingsContracts }]) => {
-        const v1 = savingsContracts.find(sc => sc.version === 1);
-        const v2 = savingsContracts.find(sc => sc.version === 2);
-        const totalSavingsV1 = parseFloat(v1 ? v1.totalSavings.simple : '0');
-        const totalSavingsV2 =
-          parseFloat(v2 ? v2.totalSavings.simple : '0') *
-          (v2?.latestExchangeRate?.rate ?? 0.1);
+        const v1 = savingsContracts.find(sc => sc.version === 1)
+        const v2 = savingsContracts.find(sc => sc.version === 2)
+        const totalSavingsV1 = parseFloat(v1 ? v1.totalSavings.simple : '0')
+        const totalSavingsV2 = parseFloat(v2 ? v2.totalSavings.simple : '0') * (v2?.latestExchangeRate?.rate ?? 0.1)
         return {
           timestamp,
           totalSupply: parseFloat(totalSupply.simple),
           totalSavingsV1,
           totalSavingsV2,
-        };
-      });
-  }, [query.data]);
-};
+        }
+      })
+  }, [query.data])
+}
 
 const Chart: FC<{
   aggregateMetrics: {
-    type: string;
-    enabled: boolean;
-    label: string;
-    color: string;
-  }[];
+    type: string
+    enabled: boolean
+    label: string
+    color: string
+  }[]
 }> = ({ aggregateMetrics }) => {
-  const data = useAggregateMetrics();
-  const dateFilter = useDateFilter();
-  const { metrics } = useMetricsState();
+  const data = useAggregateMetrics()
+  const dateFilter = useDateFilter()
+  const { metrics } = useMetricsState()
   return (
     <RechartsContainer>
       {data && data.length ? (
         <ResponsiveContainer aspect={2}>
-          <AreaChart
-            margin={{ top: 0, right: 16, bottom: 16, left: 16 }}
-            barCategoryGap={1}
-            data={data}
-          >
+          <AreaChart margin={{ top: 0, right: 16, bottom: 16, left: 16 }} barCategoryGap={1} data={data}>
             <defs>
               {aggregateMetrics.map(({ type, color }) => (
-                <linearGradient
-                  id={type}
-                  key={type}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
+                <linearGradient id={type} key={type} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={color} stopOpacity={0.5} />
                   <stop offset="95%" stopColor={color} stopOpacity={0} />
                 </linearGradient>
@@ -161,14 +138,7 @@ const Chart: FC<{
               padding={{ left: 16 }}
               minTickGap={16}
               tickLine
-              tickFormatter={timestamp =>
-                timestamp
-                  ? format(
-                      timestamp * 1000,
-                      periodFormatMapping[dateFilter.period],
-                    )
-                  : ''
-              }
+              tickFormatter={timestamp => (timestamp ? format(timestamp * 1000, periodFormatMapping[dateFilter.period]) : '')}
             />
             <YAxis
               type="number"
@@ -184,9 +154,7 @@ const Chart: FC<{
             />
             <Tooltip
               cursor
-              labelFormatter={timestamp =>
-                format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
-              }
+              labelFormatter={timestamp => format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')}
               formatter={toK as never}
               separator=""
               contentStyle={{
@@ -225,11 +193,11 @@ const Chart: FC<{
         <ThemedSkeleton height={270} />
       )}
     </RechartsContainer>
-  );
-};
+  )
+}
 
 export const AggregateChart: FC = () => {
-  const massetName = useSelectedMassetName();
+  const massetName = useSelectedMassetName()
   const aggregateMetrics = useMemo(
     () => [
       {
@@ -263,11 +231,11 @@ export const AggregateChart: FC = () => {
           ]),
     ],
     [massetName],
-  );
+  )
 
   return (
     <Metrics metrics={aggregateMetrics} defaultDateRange={DateRange.Month}>
       <Chart aggregateMetrics={aggregateMetrics} />
     </Metrics>
-  );
-};
+  )
+}

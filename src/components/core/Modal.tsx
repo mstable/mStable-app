@@ -1,24 +1,18 @@
-import React, {
-  FC,
-  ReactElement,
-  RefObject,
-  useLayoutEffect,
-  useRef,
-} from 'react';
-import styled, { css, keyframes } from 'styled-components';
-import useOnClickOutside from 'use-onclickoutside';
-import { CSSTransition } from 'react-transition-group';
+import React, { FC, ReactElement, RefObject, useLayoutEffect, useRef } from 'react'
+import styled, { css, keyframes } from 'styled-components'
+import useOnClickOutside from 'use-onclickoutside'
+import { CSSTransition } from 'react-transition-group'
 
-import { ViewportWidth } from '../../theme';
+import { ViewportWidth } from '../../theme'
 
-import { UnstyledButton } from './Button';
+import { UnstyledButton } from './Button'
 
 interface Props {
-  className?: string;
-  title: ReactElement | string;
-  hideModal?(): void;
-  open: boolean;
-  onExited(): void;
+  className?: string
+  title: ReactElement | string
+  hideModal?(): void
+  open: boolean
+  onExited(): void
 }
 
 const Title = styled.div`
@@ -29,7 +23,7 @@ const Title = styled.div`
   justify-content: center;
   align-items: center;
   gap: 1rem;
-`;
+`
 
 const Header = styled.div`
   position: sticky;
@@ -40,7 +34,7 @@ const Header = styled.div`
   justify-content: space-between;
   padding: 1rem 2rem;
   border-bottom: 1px ${({ theme }) => theme.color.defaultBorder} solid;
-`;
+`
 
 const CloseButton = styled(UnstyledButton)`
   width: 2rem;
@@ -50,9 +44,9 @@ const CloseButton = styled(UnstyledButton)`
   :hover {
     background: ${({ theme }) => theme.color.backgroundAccent};
   }
-`;
+`
 
-const Body = styled.div``;
+const Body = styled.div``
 
 const Container = styled.div`
   /* position: relative; */
@@ -85,7 +79,7 @@ const Container = styled.div`
     border-radius: 1rem;
     padding-bottom: 0;
   }
-`;
+`
 
 const FixedContainer = styled.div`
   position: fixed;
@@ -97,15 +91,14 @@ const FixedContainer = styled.div`
   right: 0;
   bottom: 0;
   z-index: 1;
-  background: ${({ theme }) =>
-    theme.isLight ? `rgba(0, 0, 0, 0.5)` : `rgba(0, 0, 0, 0.9)`};
+  background: ${({ theme }) => (theme.isLight ? `rgba(0, 0, 0, 0.5)` : `rgba(0, 0, 0, 0.9)`)};
   
   @supports (backdrop-filter: blur(0.25em)) {
     background: rgba(0, 0, 0, 0.25);
     backdrop-filter: blur(0.25em);
   }
 }
-`;
+`
 
 const scale = keyframes`
   0% {
@@ -116,7 +109,7 @@ const scale = keyframes`
     transform: scale(1);
     opacity: 1;
   }
-`;
+`
 
 const Animation = styled(CSSTransition)<{ classNames: string }>`
   transform-origin: 50% 50%;
@@ -129,46 +122,33 @@ const Animation = styled(CSSTransition)<{ classNames: string }>`
     animation: ${css`
         ${scale}`} 0.4s cubic-bezier(0.19, 1, 0.22, 1) reverse;
   }
-`;
+`
 
-export const Modal: FC<Props> = ({
-  children,
-  title,
-  className,
-  hideModal,
-  open,
-  onExited,
-}) => {
-  const fixedRef = useRef<HTMLDivElement>(null as never);
-  const modalRef = useRef<HTMLDivElement>(null as never);
+export const Modal: FC<Props> = ({ children, title, className, hideModal, open, onExited }) => {
+  const fixedRef = useRef<HTMLDivElement>(null as never)
+  const modalRef = useRef<HTMLDivElement>(null as never)
 
   useOnClickOutside(modalRef as RefObject<HTMLDivElement>, event => {
     if (event.target === fixedRef.current) {
-      hideModal?.();
+      hideModal?.()
     }
-  });
+  })
 
   useLayoutEffect(() => {
     const handleKeyPress = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
-        hideModal?.();
+        hideModal?.()
       }
-    };
-    window.addEventListener('keydown', handleKeyPress);
+    }
+    window.addEventListener('keydown', handleKeyPress)
     return () => {
-      window.removeEventListener('keypress', handleKeyPress);
-    };
-  }, [hideModal]);
+      window.removeEventListener('keypress', handleKeyPress)
+    }
+  }, [hideModal])
 
   return (
     <FixedContainer ref={fixedRef}>
-      <Animation
-        classNames="item"
-        timeout={400}
-        unmountOnExit
-        in={open}
-        onExited={onExited}
-      >
+      <Animation classNames="item" timeout={400} unmountOnExit in={open} onExited={onExited}>
         <Container className={className} ref={modalRef}>
           <Header>
             <Title>{title}</Title>
@@ -182,5 +162,5 @@ export const Modal: FC<Props> = ({
         </Container>
       </Animation>
     </FixedContainer>
-  );
-};
+  )
+}

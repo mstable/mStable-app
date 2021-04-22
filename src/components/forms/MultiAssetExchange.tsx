@@ -1,73 +1,67 @@
-import React, { createContext, FC, useContext, useMemo, useState } from 'react';
-import styled from 'styled-components';
+import React, { createContext, FC, useContext, useMemo, useState } from 'react'
+import styled from 'styled-components'
 
 import {
   useBigDecimalInputs,
   UseBigDecimalInputsArg,
   BigDecimalInputCallbacks,
   BigDecimalInputValues,
-} from '../../hooks/useBigDecimalInputs';
+} from '../../hooks/useBigDecimalInputs'
 
-import { BigDecimal } from '../../web3/BigDecimal';
-import { useSlippage } from '../../hooks/useSimpleInput';
-import type { FetchState } from '../../hooks/useFetchState';
+import { BigDecimal } from '../../web3/BigDecimal'
+import { useSlippage } from '../../hooks/useSimpleInput'
+import type { FetchState } from '../../hooks/useFetchState'
 
-import { ExchangeRate } from '../core/ExchangeRate';
+import { ExchangeRate } from '../core/ExchangeRate'
 
-import { AssetInput } from './AssetInput';
-import { Arrow } from '../core/Arrow';
-import { TransactionInfo } from '../core/TransactionInfo';
-import { ErrorMessage } from '../core/ErrorMessage';
-import { AddressOption } from '../../types';
+import { AssetInput } from './AssetInput'
+import { Arrow } from '../core/Arrow'
+import { TransactionInfo } from '../core/TransactionInfo'
+import { ErrorMessage } from '../core/ErrorMessage'
+import { AddressOption } from '../../types'
 
 type Dispatch = [
   BigDecimalInputCallbacks, // input callbacks
   (outputAmount: FetchState<BigDecimal>) => void, // set output amount
   (slippage?: string) => void, // set slippage
-];
+]
 
 type State = [
   BigDecimalInputValues, // input values
   FetchState<BigDecimal>, // output amount
   { simple?: number; formValue?: string }, // slippage
-];
+]
 
-const dispatchCtx = createContext<Dispatch>(null as never);
-const stateCtx = createContext<State>(null as never);
+const dispatchCtx = createContext<Dispatch>(null as never)
+const stateCtx = createContext<State>(null as never)
 
-export const useMultiAssetExchangeDispatch = (): Dispatch =>
-  useContext(dispatchCtx);
+export const useMultiAssetExchangeDispatch = (): Dispatch => useContext(dispatchCtx)
 
-export const useMultiAssetExchangeState = (): State => useContext(stateCtx);
+export const useMultiAssetExchangeState = (): State => useContext(stateCtx)
 
 export const MultiAssetExchangeProvider: FC<{
-  assets: UseBigDecimalInputsArg;
+  assets: UseBigDecimalInputsArg
 }> = ({ children, assets }) => {
-  const [values, callbacks] = useBigDecimalInputs(assets);
-  const [amount, setAmount] = useState<State[1]>({});
+  const [values, callbacks] = useBigDecimalInputs(assets)
+  const [amount, setAmount] = useState<State[1]>({})
 
-  const [slippageSimple, slippageFormValue, setSlippage] = useSlippage();
+  const [slippageSimple, slippageFormValue, setSlippage] = useSlippage()
 
-  const dispatch = useMemo<Dispatch>(
-    () => [callbacks, setAmount, setSlippage],
-    [callbacks, setAmount, setSlippage],
-  );
+  const dispatch = useMemo<Dispatch>(() => [callbacks, setAmount, setSlippage], [callbacks, setAmount, setSlippage])
 
-  const state = useMemo<State>(
-    () => [
-      values,
-      amount,
-      { simple: slippageSimple, formValue: slippageFormValue },
-    ],
-    [values, amount, slippageFormValue, slippageSimple],
-  );
+  const state = useMemo<State>(() => [values, amount, { simple: slippageSimple, formValue: slippageFormValue }], [
+    values,
+    amount,
+    slippageFormValue,
+    slippageSimple,
+  ])
 
   return (
     <dispatchCtx.Provider value={dispatch}>
       <stateCtx.Provider value={state}>{children}</stateCtx.Provider>
     </dispatchCtx.Provider>
-  );
-};
+  )
+}
 
 const Container = styled.div`
   > * {
@@ -79,17 +73,17 @@ const Container = styled.div`
       margin-bottom: 0;
     }
   }
-`;
+`
 
 interface Props {
-  inputLabel?: string;
-  outputLabel?: string;
-  spender?: string;
-  setMaxCallbacks?: { [address: string]: () => void };
-  exchangeRate: { value?: BigDecimal; fetching?: boolean };
-  error?: string;
-  price?: number;
-  className?: string;
+  inputLabel?: string
+  outputLabel?: string
+  spender?: string
+  setMaxCallbacks?: { [address: string]: () => void }
+  exchangeRate: { value?: BigDecimal; fetching?: boolean }
+  error?: string
+  price?: number
+  className?: string
 }
 
 // TODO: I think the provider logic of MultiAssetExchange could be dropped.
@@ -97,10 +91,10 @@ interface Props {
 
 export const ManyToOneAssetExchange: FC<
   Props & {
-    outputAddress?: string;
-    outputAddressOptions?: AddressOption[];
-    setOutputAddress?(address?: string): void;
-    minOutputAmount?: BigDecimal;
+    outputAddress?: string
+    outputAddressOptions?: AddressOption[]
+    setOutputAddress?(address?: string): void
+    minOutputAmount?: BigDecimal
   }
 > = ({
   children,
@@ -117,8 +111,8 @@ export const ManyToOneAssetExchange: FC<
   price,
   className,
 }) => {
-  const [inputValues, outputAmount, slippage] = useContext(stateCtx);
-  const [inputCallbacks, , setSlippage] = useContext(dispatchCtx);
+  const [inputValues, outputAmount, slippage] = useContext(stateCtx)
+  const [inputCallbacks, , setSlippage] = useContext(dispatchCtx)
   return (
     <Container className={className}>
       {Object.keys(inputValues).map(
@@ -138,11 +132,7 @@ export const ManyToOneAssetExchange: FC<
           ),
       )}
       <Arrow />
-      <ExchangeRate
-        inputLabel={inputLabel}
-        outputLabel={outputLabel}
-        exchangeRate={exchangeRate}
-      />
+      <ExchangeRate inputLabel={inputLabel} outputLabel={outputLabel} exchangeRate={exchangeRate} />
       <AssetInput
         amountDisabled
         address={outputAddress}
@@ -153,22 +143,17 @@ export const ManyToOneAssetExchange: FC<
       />
       {error && <ErrorMessage error={error} />}
       {children}
-      <TransactionInfo
-        price={price}
-        onSetSlippage={setSlippage}
-        slippageFormValue={slippage.formValue}
-        minOutputAmount={minOutputAmount}
-      />
+      <TransactionInfo price={price} onSetSlippage={setSlippage} slippageFormValue={slippage.formValue} minOutputAmount={minOutputAmount} />
     </Container>
-  );
-};
+  )
+}
 
 export const OneToManyAssetExchange: FC<
   Props & {
-    inputAddress?: string;
-    inputAddressOptions?: AddressOption[];
-    setInputAddress?(address?: string): void;
-    maxOutputAmount?: BigDecimal;
+    inputAddress?: string
+    inputAddressOptions?: AddressOption[]
+    setInputAddress?(address?: string): void
+    maxOutputAmount?: BigDecimal
   }
 > = ({
   children,
@@ -184,8 +169,8 @@ export const OneToManyAssetExchange: FC<
   error,
   price,
 }) => {
-  const [outputValues, inputAmount, slippage] = useContext(stateCtx);
-  const [outputCallbacks, , setSlippage] = useContext(dispatchCtx);
+  const [outputValues, inputAmount, slippage] = useContext(stateCtx)
+  const [outputCallbacks, , setSlippage] = useContext(dispatchCtx)
 
   return (
     <Container>
@@ -199,11 +184,7 @@ export const OneToManyAssetExchange: FC<
       />
       <div>
         <Arrow />
-        <ExchangeRate
-          inputLabel={inputLabel}
-          outputLabel={outputLabel}
-          exchangeRate={exchangeRate}
-        />
+        <ExchangeRate inputLabel={inputLabel} outputLabel={outputLabel} exchangeRate={exchangeRate} />
       </div>
       {Object.keys(outputValues).map(address => (
         <AssetInput
@@ -219,12 +200,7 @@ export const OneToManyAssetExchange: FC<
       ))}
       {error && <ErrorMessage error={error} />}
       {children}
-      <TransactionInfo
-        price={price}
-        onSetSlippage={setSlippage}
-        slippageFormValue={slippage.formValue}
-        maxOutputAmount={maxOutputAmount}
-      />
+      <TransactionInfo price={price} onSetSlippage={setSlippage} slippageFormValue={slippage.formValue} maxOutputAmount={maxOutputAmount} />
     </Container>
-  );
-};
+  )
+}

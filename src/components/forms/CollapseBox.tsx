@@ -1,9 +1,9 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { useToggle } from 'react-use';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { useToggle } from 'react-use'
 
-import { UnstyledButton } from '../core/Button';
-import { Chevron } from '../core/Chevron';
+import { UnstyledButton } from '../core/Button'
+import { Chevron } from '../core/Chevron'
 
 const Content = styled.div<{ collapsed: boolean }>`
   overflow: hidden;
@@ -13,11 +13,11 @@ const Content = styled.div<{ collapsed: boolean }>`
     max-height: ${collapsed ? 0 : `auto`};
     opacity: ${collapsed ? 0 : 1};
   `};
-`;
+`
 
 const Button = styled(UnstyledButton)`
   padding: 0.75rem 1.25rem;
-`;
+`
 
 const Container = styled.div`
   display: flex;
@@ -33,14 +33,10 @@ const Container = styled.div`
     font-size: 1rem;
     font-weight: 600;
   }
-`;
+`
 
-export const CollapseBox: FC<{ title: string; className?: string }> = ({
-  children,
-  title,
-  className,
-}) => {
-  const [collapsed, toggleCollapsed] = useToggle(true);
+export const CollapseBox: FC<{ title: string; className?: string }> = ({ children, title, className }) => {
+  const [collapsed, toggleCollapsed] = useToggle(true)
   return (
     <Container className={className}>
       <Button onClick={toggleCollapsed}>
@@ -49,5 +45,5 @@ export const CollapseBox: FC<{ title: string; className?: string }> = ({
       </Button>
       <Content collapsed={collapsed}>{children}</Content>
     </Container>
-  );
-};
+  )
+}

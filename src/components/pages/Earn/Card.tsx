@@ -1,50 +1,45 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 
-import { Amount, NumberFormat } from '../../core/Amount';
-import { TokenAmount } from '../../core/TokenAmount';
-import { ExternalLink } from '../../core/ExternalLink';
-import { EtherscanLink } from '../../core/EtherscanLink';
-import { Tooltip } from '../../core/ReactTooltip';
-import { TokenIcon, TOKEN_ICONS } from '../../icons/TokenIcon';
-import { StakingRewardsContract } from '../../../context/earn/types';
-import {
-  usePlatformToken,
-  useRewardsToken,
-  useStakingRewardsContract,
-  useStakingToken,
-} from '../../../context/earn/EarnDataProvider';
-import { Color } from '../../../theme';
-import { PlatformMetadata } from './types';
-import { PLATFORM_METADATA } from './constants';
-import { ThemedSkeleton } from '../../core/ThemedSkeleton';
+import { Amount, NumberFormat } from '../../core/Amount'
+import { TokenAmount } from '../../core/TokenAmount'
+import { ExternalLink } from '../../core/ExternalLink'
+import { ExplorerLink } from '../../core/ExplorerLink'
+import { Tooltip } from '../../core/ReactTooltip'
+import { TokenIcon, TOKEN_ICONS } from '../../icons/TokenIcon'
+import { StakingRewardsContract } from '../../../context/earn/types'
+import { usePlatformToken, useRewardsToken, useStakingRewardsContract, useStakingToken } from '../../../context/earn/EarnDataProvider'
+import { Color } from '../../../theme'
+import { PlatformMetadata } from './types'
+import { PLATFORM_METADATA } from './constants'
+import { ThemedSkeleton } from '../../core/ThemedSkeleton'
 
 interface Props {
-  address: string;
-  className?: string;
-  linkToPool?: boolean;
+  address: string
+  className?: string
+  linkToPool?: boolean
 }
 
 const Heading = styled.h4`
   text-transform: uppercase;
   font-weight: bold;
   font-size: 12px;
-`;
+`
 
 const StyledTokenAmount = styled(TokenAmount)`
   span {
     font-weight: bold;
   }
-`;
+`
 
 const StyledAmount = styled(Amount)`
   span {
     font-weight: bold;
   }
-`;
+`
 
-const TokenAmounts = styled.div``;
+const TokenAmounts = styled.div``
 
 const Row = styled.div`
   flex: 1;
@@ -70,23 +65,23 @@ const Row = styled.div`
       }
     }
   }
-`;
+`
 
 const Content = styled.div`
   width: 100%;
-`;
+`
 
 const PlatformIcon = styled(TokenIcon)`
   width: 24px;
   height: 24px;
   margin-right: 8px;
-`;
+`
 
 const PlatformContainer = styled.div`
   display: flex;
   align-items: center;
   font-size: 14px;
-`;
+`
 
 const Title = styled.div`
   font-size: 16px;
@@ -97,22 +92,18 @@ const Title = styled.div`
   a {
     border-bottom: 0;
   }
-`;
+`
 
 const Container = styled.div<{
-  colors: PlatformMetadata['colors'];
-  stakingToken?: keyof typeof TOKEN_ICONS;
-  linkToPool?: boolean;
+  colors: PlatformMetadata['colors']
+  stakingToken?: keyof typeof TOKEN_ICONS
+  linkToPool?: boolean
 }>`
   padding: 8px 16px;
   min-width: 344px;
   min-height: 225px;
   background-image: ${({ colors: { base, accent }, stakingToken }) =>
-    stakingToken
-      ? `url(${
-          TOKEN_ICONS[stakingToken.toUpperCase()]
-        }), linear-gradient(to top right, ${base}, ${accent})`
-      : 'none'};
+    stakingToken ? `url(${TOKEN_ICONS[stakingToken.toUpperCase()]}), linear-gradient(to top right, ${base}, ${accent})` : 'none'};
   background-size: contain;
   background-position: center center;
   background-blend-mode: soft-light;
@@ -134,35 +125,24 @@ const Container = styled.div<{
       }
     }
   }
-  
-`;
+`
 
 export const Card: FC<Props> = ({ address, linkToPool, className }) => {
-  const stakingRewardsContract = useStakingRewardsContract(
-    address,
-  ) as StakingRewardsContract;
+  const stakingRewardsContract = useStakingRewardsContract(address) as StakingRewardsContract
 
-  const { colors, getPlatformLink, name } = PLATFORM_METADATA[
-    stakingRewardsContract.pool.platform
-  ];
+  const { colors, getPlatformLink, name } = PLATFORM_METADATA[stakingRewardsContract.pool.platform]
 
-  const rewardsToken = useRewardsToken(address);
-  const stakingToken = useStakingToken(address);
-  const platformToken = usePlatformToken(address);
-  const platformLink = getPlatformLink(stakingRewardsContract);
+  const rewardsToken = useRewardsToken(address)
+  const stakingToken = useStakingToken(address)
+  const platformToken = usePlatformToken(address)
+  const platformLink = getPlatformLink(stakingRewardsContract)
 
   return (
-    <Container
-      colors={colors}
-      stakingToken={stakingToken?.symbol}
-      className={className}
-    >
+    <Container colors={colors} stakingToken={stakingToken?.symbol} className={className}>
       <>
         {linkToPool ? (
           <Title>
-            <Link to={stakingRewardsContract.earnUrl}>
-              {stakingRewardsContract.title}
-            </Link>
+            <Link to={stakingRewardsContract.earnUrl}>{stakingRewardsContract.title}</Link>
           </Title>
         ) : (
           <Title>{stakingRewardsContract.title}</Title>
@@ -180,12 +160,7 @@ export const Card: FC<Props> = ({ address, linkToPool, className }) => {
                     <div>
                       <ExternalLink href={platformLink}>{name}</ExternalLink>
                     </div>
-                    <EtherscanLink
-                      data={stakingToken.address}
-                      type="token"
-                      showData
-                      truncate
-                    />
+                    <ExplorerLink data={stakingToken.address} type="token" showData truncate />
                   </div>
                 </PlatformContainer>
               </div>
@@ -197,24 +172,16 @@ export const Card: FC<Props> = ({ address, linkToPool, className }) => {
                     </Tooltip>
                     <div>
                       {stakingRewardsContract.apy.waitingForData ? (
-                        <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">
-                          No data yet
-                        </Tooltip>
+                        <Tooltip tip="Calculating APY requires data from 24h ago, which is not available yet.">No data yet</Tooltip>
                       ) : (
-                        <StyledAmount
-                          format={NumberFormat.CountupPercentage}
-                          amount={stakingRewardsContract.apy.value}
-                        />
+                        <StyledAmount format={NumberFormat.CountupPercentage} amount={stakingRewardsContract.apy.value} />
                       )}
                     </div>
                     {stakingRewardsContract.apy.yieldApy && (
                       <>
                         <Heading>Yield APY</Heading>
                         <div>
-                          <StyledAmount
-                            format={NumberFormat.CountupPercentage}
-                            amount={stakingRewardsContract.apy.yieldApy}
-                          />
+                          <StyledAmount format={NumberFormat.CountupPercentage} amount={stakingRewardsContract.apy.yieldApy} />
                         </div>
                       </>
                     )}
@@ -230,17 +197,9 @@ export const Card: FC<Props> = ({ address, linkToPool, className }) => {
                   </Tooltip>
                 </div>
                 <TokenAmounts>
-                  {stakingRewardsContract.pool.tokens.map(
-                    ({ price, liquidity, symbol }) => (
-                      <StyledTokenAmount
-                        key={symbol}
-                        symbol={symbol}
-                        format={NumberFormat.Abbreviated}
-                        amount={liquidity}
-                        price={price}
-                      />
-                    ),
-                  )}
+                  {stakingRewardsContract.pool.tokens.map(({ price, liquidity, symbol }) => (
+                    <StyledTokenAmount key={symbol} symbol={symbol} format={NumberFormat.Abbreviated} amount={liquidity} price={price} />
+                  ))}
                 </TokenAmounts>
               </div>
               <div>
@@ -285,5 +244,5 @@ export const Card: FC<Props> = ({ address, linkToPool, className }) => {
         )}
       </>
     </Container>
-  );
-};
+  )
+}

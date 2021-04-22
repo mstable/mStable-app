@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC } from 'react'
 
-import { AssetExchange, Props } from './AssetExchange';
+import { AssetExchange, Props } from './AssetExchange'
 
 export const AssetSwap: FC<Props> = ({
   inputAddressOptions,
@@ -31,9 +31,9 @@ export const AssetSwap: FC<Props> = ({
       inputFormValue={inputFormValue}
       exchangeRate={exchangeRate}
       handleSetInputAddress={address => {
-        handleSetInputAddress?.(address);
+        handleSetInputAddress?.(address)
         if (address === outputAddress) {
-          handleSetOutputAddress?.(inputAddress);
+          handleSetOutputAddress?.(inputAddress)
         }
       }}
       handleSetInputAmount={handleSetInputAmount}
@@ -41,9 +41,9 @@ export const AssetSwap: FC<Props> = ({
       handleSetOutputAmount={handleSetOutputAmount}
       handleSetOutputMax={handleSetOutputMax}
       handleSetOutputAddress={address => {
-        handleSetOutputAddress?.(address);
+        handleSetOutputAddress?.(address)
         if (address === inputAddress) {
-          handleSetInputAddress?.(outputAddress);
+          handleSetInputAddress?.(outputAddress)
         }
       }}
       outputAddress={outputAddress}
@@ -54,5 +54,5 @@ export const AssetSwap: FC<Props> = ({
     >
       {children}
     </AssetExchange>
-  );
-};
+  )
+}

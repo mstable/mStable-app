@@ -1,71 +1,75 @@
-import { useEffectOnce } from 'react-use';
+import { useMemo, useState } from 'react'
+import { useEffectOnce } from 'react-use'
 
-import { useMemo, useState } from 'react';
-import { fetchCoingeckoPrices } from '../utils/fetchCoingeckoPrices';
-import { ADDRESSES_BY_NETWORK } from '../constants';
-import { useSelectedMassetName } from '../context/SelectedMassetNameProvider';
-
-const { MTA, WBTC } = ADDRESSES_BY_NETWORK[1];
+import { AllNetworks, ChainIds, useNetwork } from '../context/NetworkProvider'
+import { useSelectedMassetName } from '../context/SelectedMassetNameProvider'
+import { fetchCoingeckoPrices } from '../utils/fetchCoingeckoPrices'
 
 interface PricesMap {
-  [address: string]: number;
+  [address: string]: number
 }
 
 // Quick and dirty, not a good pattern
-let priceCache: PricesMap = {};
+let priceCache: PricesMap = {}
 
 const usePrices = (tokens: string[]): number[] | undefined => {
-  const [priceMap, setPriceMap] = useState<PricesMap>(priceCache);
+  const [priceMap, setPriceMap] = useState<PricesMap>(priceCache)
 
   useEffectOnce(() => {
-    if (!tokens.length) return;
+    if (!tokens.length) return
 
-    const missing = tokens.filter(token => !priceMap[token]);
+    const missing = tokens.filter(token => !priceMap[token])
 
     if (missing.length) {
       fetchCoingeckoPrices(missing)
         .then(result => {
-          const fetchedPrices = missing
-            .map(token => [token, result?.[token]?.usd])
-            .filter(([, price]) => price) as [string, number][];
+          const fetchedPrices = missing.map(token => [token, result?.[token]?.usd]).filter(([, price]) => price) as [string, number][]
 
-          const updatedPrices = fetchedPrices.reduce(
-            (prev, [token, price]) => ({ ...prev, [token]: price }),
-            priceMap,
-          );
+          const updatedPrices = fetchedPrices.reduce((prev, [token, price]) => ({ ...prev, [token]: price }), priceMap)
 
-          priceCache = { ...priceCache, ...updatedPrices };
+          priceCache = { ...priceCache, ...updatedPrices }
 
-          setPriceMap(updatedPrices);
+          setPriceMap(updatedPrices)
         })
         .catch(error => {
-          console.warn('Error fetching CoinGecko prices', error);
-        });
+          console.warn('Error fetching CoinGecko prices', error)
+        })
     }
-  });
+  })
 
   return useMemo(() => {
-    const prices = tokens.map(token => priceMap[token] ?? priceCache[token]);
+    const prices = tokens.map(token => priceMap[token] ?? priceCache[token])
     // All or nothing
-    return prices.length === tokens.length ? prices : undefined;
-  }, [tokens, priceMap]);
-};
+    return prices.length === tokens.length ? prices : undefined
+  }, [tokens, priceMap])
+}
 
 export const useSavePrices = (): number[] | undefined => {
-  return usePrices([MTA, WBTC]);
-};
+  const network = useNetwork()
+  const addresses =
+    network && network.chainId === ChainIds.EthereumMainnet
+      ? [network.addresses?.MTA, (network as Extract<AllNetworks, { chainId: ChainIds.EthereumMainnet }>)?.addresses.WBTC]
+      : []
+  return usePrices(addresses)
+}
 
 export const useWBTCPrice = (): number | undefined => {
-  return usePrices([WBTC])?.[0];
-};
+  const network = useNetwork()
+  const addresses =
+    network && network.chainId === ChainIds.EthereumMainnet
+      ? [(network as Extract<AllNetworks, { chainId: ChainIds.EthereumMainnet }>)?.addresses.WBTC]
+      : []
+  return usePrices(addresses)?.[0]
+}
 
 export const useMtaPrice = (): number | undefined => {
-  return usePrices([MTA])?.[0];
-};
+  const network = useNetwork()
+  return usePrices(network?.addresses.MTA ? [network.addresses.MTA] : [])?.[0]
+}
 
 export const useSelectedMassetPrice = (): number | undefined => {
-  const massetName = useSelectedMassetName();
-  const wbtcPrice = useWBTCPrice();
+  const massetName = useSelectedMassetName()
+  const wbtcPrice = useWBTCPrice()
   // TODO support more mAssets, use mUSD price feed
-  return massetName === 'mbtc' ? wbtcPrice : 1;
-};
+  return massetName === 'mbtc' ? wbtcPrice : 1
+}

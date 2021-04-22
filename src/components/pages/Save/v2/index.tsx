@@ -1,12 +1,12 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState } from 'react'
 
-import { TabCard } from '../../../core/Tabs';
-import { Flippable } from '../../../core/Flippable';
+import { TabCard } from '../../../core/Tabs'
+import { Flippable } from '../../../core/Flippable'
 
-import { useOnboarding } from '../hooks';
-import { SaveDeposit } from './SaveDeposit';
-import { SaveRedeem } from './SaveRedeem';
-import { OnboardingCard } from './Onboarding';
+import { useOnboarding } from '../hooks'
+import { SaveDeposit } from './SaveDeposit'
+import { SaveRedeem } from './SaveRedeem'
+import { OnboardingCard } from './Onboarding'
 
 enum Tabs {
   Deposit = 'Deposit',
@@ -22,11 +22,11 @@ const tabs = {
     title: `Redeem`,
     component: <SaveRedeem />,
   },
-};
+}
 
 export const Save: FC = () => {
-  const [activeTab, setActiveTab] = useState<string>(Tabs.Deposit as string);
-  const [onboarding] = useOnboarding();
+  const [activeTab, setActiveTab] = useState<string>(Tabs.Deposit as string)
+  const [onboarding] = useOnboarding()
 
   return (
     <Flippable
@@ -34,5 +34,5 @@ export const Save: FC = () => {
       front={<TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />}
       obverse={<OnboardingCard />}
     />
-  );
-};
+  )
+}

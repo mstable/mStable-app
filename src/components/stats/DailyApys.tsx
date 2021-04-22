@@ -1,22 +1,15 @@
-import React, { FC } from 'react';
-import {
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  AreaChart,
-  ResponsiveContainer,
-} from 'recharts';
-import styled from 'styled-components';
-import { format } from 'date-fns';
-import { Color } from '../../theme';
-import { percentageFormat, periodFormatMapping } from './utils';
-import { DateRange, Metrics, useDateFilter, useMetrics } from './Metrics';
-import { RechartsContainer } from './RechartsContainer';
-import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider';
-import { ThemedSkeleton } from '../core/ThemedSkeleton';
-import { useBlockTimesForDates } from '../../hooks/useBlockTimesForDates';
-import { useDailyApysForBlockTimes } from '../../hooks/useDailyApysForBlockTimes';
+import React, { FC } from 'react'
+import { Area, XAxis, YAxis, Tooltip, AreaChart, ResponsiveContainer } from 'recharts'
+import styled from 'styled-components'
+import { format } from 'date-fns'
+import { Color } from '../../theme'
+import { percentageFormat, periodFormatMapping } from './utils'
+import { DateRange, Metrics, useDateFilter, useMetrics } from './Metrics'
+import { RechartsContainer } from './RechartsContainer'
+import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider'
+import { ThemedSkeleton } from '../core/ThemedSkeleton'
+import { useBlockTimesForDates } from '../../hooks/useBlockTimesForDates'
+import { useDailyApysForBlockTimes } from '../../hooks/useDailyApysForBlockTimes'
 
 const NoData = styled.div`
   display: flex;
@@ -24,7 +17,7 @@ const NoData = styled.div`
   align-items: center;
   min-height: 10rem;
   color: ${({ theme }) => theme.color.bodyAccent};
-`;
+`
 
 enum MetricTypes {
   DailyApy = 'DailyApy',
@@ -43,40 +36,28 @@ const dailyApyMetrics = [
     label: 'SAVE Utilisation',
     color: Color.black,
   },
-];
+]
 
 const formatApy = (percentage: number): string =>
-  percentage > 100
-    ? `${percentageFormat(percentage as number)} 🔥`
-    : percentageFormat(percentage as number);
+  percentage > 100 ? `${percentageFormat(percentage as number)} 🔥` : percentageFormat(percentage as number)
 
 const DailyApysChart: FC<{
-  shimmerHeight?: number;
-  tick?: boolean;
-  marginTop?: number;
-  aspect?: number;
-  className?: string;
-  color?: string;
-}> = ({
-  shimmerHeight = 270,
-  tick,
-  className,
-  marginTop,
-  color,
-  aspect = 2,
-}) => {
-  const dateFilter = useDateFilter();
-  const { DailyApy, UtilisationRate } = useMetrics<MetricTypes>();
-  const blockTimes = useBlockTimesForDates(dateFilter.dates);
+  shimmerHeight?: number
+  tick?: boolean
+  marginTop?: number
+  aspect?: number
+  className?: string
+  color?: string
+}> = ({ shimmerHeight = 270, tick, className, marginTop, color, aspect = 2 }) => {
+  const dateFilter = useDateFilter()
+  const { DailyApy, UtilisationRate } = useMetrics<MetricTypes>()
+  const blockTimes = useBlockTimesForDates(dateFilter.dates)
 
-  const savingsContractState = useSelectedSavingsContractState();
-  const dailyApys = useDailyApysForBlockTimes(
-    savingsContractState?.address,
-    blockTimes,
-  );
+  const savingsContractState = useSelectedSavingsContractState()
+  const dailyApys = useDailyApysForBlockTimes(savingsContractState?.address, blockTimes)
 
   if (dailyApys.some(value => value.dailyAPY === 0 || value.dailyAPY > 1000)) {
-    return <NoData className={className}>No data available yet</NoData>;
+    return <NoData className={className}>No data available yet</NoData>
   }
 
   return (
@@ -84,38 +65,18 @@ const DailyApysChart: FC<{
       {dailyApys && dailyApys.length ? (
         <ResponsiveContainer aspect={aspect} debounce={1} width="99%">
           <AreaChart
-            margin={
-              tick
-                ? { top: marginTop, right: 16, bottom: 16, left: 16 }
-                : { top: marginTop, right: 0, bottom: 0, left: 0 }
-            }
+            margin={tick ? { top: marginTop, right: 16, bottom: 16, left: 16 } : { top: marginTop, right: 0, bottom: 0, left: 0 }}
             barCategoryGap={1}
             data={dailyApys}
           >
             <defs>
               <linearGradient id="utilisationRate" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor={Color.blackTransparent}
-                  stopOpacity={0.5}
-                />
-                <stop
-                  offset="95%"
-                  stopColor={Color.blackTransparent}
-                  stopOpacity={0}
-                />
+                <stop offset="5%" stopColor={Color.blackTransparent} stopOpacity={0.5} />
+                <stop offset="95%" stopColor={Color.blackTransparent} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="dailyAPY" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor={color ?? Color.gold}
-                  stopOpacity={0.5}
-                />
-                <stop
-                  offset="95%"
-                  stopColor={color ?? Color.gold}
-                  stopOpacity={0}
-                />
+                <stop offset="5%" stopColor={color ?? Color.gold} stopOpacity={0.5} />
+                <stop offset="95%" stopColor={color ?? Color.gold} stopOpacity={0} />
               </linearGradient>
             </defs>
             <XAxis
@@ -128,14 +89,7 @@ const DailyApysChart: FC<{
               minTickGap={16}
               tickLine
               height={!tick ? 0 : undefined}
-              tickFormatter={(timestamp: number) =>
-                timestamp
-                  ? format(
-                      timestamp * 1000,
-                      periodFormatMapping[dateFilter.period],
-                    )
-                  : ''
-              }
+              tickFormatter={(timestamp: number) => (timestamp ? format(timestamp * 1000, periodFormatMapping[dateFilter.period]) : '')}
             />
             <YAxis
               type="number"
@@ -153,9 +107,7 @@ const DailyApysChart: FC<{
             />
             <Tooltip
               cursor
-              labelFormatter={timestamp =>
-                format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')
-              }
+              labelFormatter={timestamp => format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')}
               formatter={formatApy as never}
               separator=""
               contentStyle={{
@@ -200,39 +152,20 @@ const DailyApysChart: FC<{
         <ThemedSkeleton height={shimmerHeight} />
       )}
     </RechartsContainer>
-  );
-};
+  )
+}
 
 // TODO: - Probably pull out to another component to stop all the prop passing
 export const DailyApys: FC<{
-  hideControls?: boolean;
-  shimmerHeight?: number;
-  tick?: boolean;
-  marginTop?: number;
-  className?: string;
-  color?: string;
-  aspect?: number;
-}> = ({
-  hideControls = false,
-  shimmerHeight,
-  tick = true,
-  className,
-  marginTop,
-  color,
-  aspect,
-}) => (
-  <Metrics
-    defaultDateRange={DateRange.Month}
-    metrics={dailyApyMetrics}
-    hideControls={hideControls}
-  >
-    <DailyApysChart
-      shimmerHeight={shimmerHeight}
-      tick={tick}
-      marginTop={marginTop}
-      className={className}
-      color={color}
-      aspect={aspect}
-    />
+  hideControls?: boolean
+  shimmerHeight?: number
+  tick?: boolean
+  marginTop?: number
+  className?: string
+  color?: string
+  aspect?: number
+}> = ({ hideControls = false, shimmerHeight, tick = true, className, marginTop, color, aspect }) => (
+  <Metrics defaultDateRange={DateRange.Month} metrics={dailyApyMetrics} hideControls={hideControls}>
+    <DailyApysChart shimmerHeight={shimmerHeight} tick={tick} marginTop={marginTop} className={className} color={color} aspect={aspect} />
   </Metrics>
-);
+)

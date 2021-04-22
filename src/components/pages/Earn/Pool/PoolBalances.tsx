@@ -1,24 +1,24 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 
-import { Amount, NumberFormat } from '../../../core/Amount';
-import { ViewportWidth } from '../../../../theme';
+import { Amount, NumberFormat } from '../../../core/Amount'
+import { ViewportWidth } from '../../../../theme'
 import {
   useCurrentStakingRewardsContract,
   useCurrentStakingToken,
   useCurrentPlatformToken,
   useCurrentRewardsToken,
   useRewardsEarned,
-} from '../StakingRewardsContractProvider';
-import { ViewAs } from './ViewAs';
-import { P } from '../../../core/Typography';
-import { Protip } from '../../../core/Protip';
-import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
-import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider';
+} from '../StakingRewardsContractProvider'
+import { ViewAs } from './ViewAs'
+import { P } from '../../../core/Typography'
+import { Protip } from '../../../core/Protip'
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider'
 
 interface Props {
-  className?: string;
+  className?: string
 }
 
 const Heading = styled.div`
@@ -26,18 +26,18 @@ const Heading = styled.div`
   font-size: 14px;
   font-weight: bold;
   padding-bottom: 8px;
-`;
+`
 
-const StyledAmount = styled(Amount)``;
+const StyledAmount = styled(Amount)``
 
 const LargeAmount = styled(StyledAmount)`
   font-size: 24px;
-`;
+`
 
 const ProtipContainer = styled.div`
   display: flex;
   justify-content: center;
-`;
+`
 
 const StyledProtip = styled(Protip)`
   max-width: 300px;
@@ -52,14 +52,14 @@ const StyledProtip = styled(Protip)`
   a {
     font-weight: bold;
   }
-`;
+`
 
 const AmountContainer = styled.div`
   text-align: center;
   ${StyledAmount} {
     display: block;
   }
-`;
+`
 
 const Balances = styled.div`
   width: 100%;
@@ -73,21 +73,16 @@ const Balances = styled.div`
     display: flex;
     justify-content: space-around;
   }
-`;
+`
 
 export const PoolBalances: FC<Props> = () => {
-  const stakingRewardsContract = useCurrentStakingRewardsContract();
+  const stakingRewardsContract = useCurrentStakingRewardsContract()
 
-  const {
-    rewards,
-    rewardsUsd,
-    platformRewards,
-    platformRewardsUsd,
-  } = useRewardsEarned();
-  const rewardsToken = useCurrentRewardsToken();
-  const stakingToken = useCurrentStakingToken();
-  const platformToken = useCurrentPlatformToken();
-  const massetName = useSelectedMassetName();
+  const { rewards, rewardsUsd, platformRewards, platformRewardsUsd } = useRewardsEarned()
+  const rewardsToken = useCurrentRewardsToken()
+  const stakingToken = useCurrentStakingToken()
+  const platformToken = useCurrentPlatformToken()
+  const massetName = useSelectedMassetName()
 
   return (
     <div>
@@ -97,53 +92,33 @@ export const PoolBalances: FC<Props> = () => {
           <div>
             <AmountContainer>
               <Heading>Earned {rewardsToken.symbol}</Heading>
-              <LargeAmount
-                format={NumberFormat.Countup}
-                amount={rewards}
-                countup={{ decimals: 6 }}
-              />
+              <LargeAmount format={NumberFormat.Countup} amount={rewards} countup={{ decimals: 6 }} />
             </AmountContainer>
             <AmountContainer>
               <span>$</span>
-              <Amount
-                format={NumberFormat.Countup}
-                amount={rewardsUsd}
-                countup={{ decimals: 6 }}
-              />
+              <Amount format={NumberFormat.Countup} amount={rewardsUsd} countup={{ decimals: 6 }} />
             </AmountContainer>
-            {stakingRewardsContract.platformRewards &&
-              !stakingRewardsContract.curve &&
-              platformRewards &&
-              platformToken && (
-                <>
-                  <ProtipContainer>
-                    <StyledProtip emoji="💰" title="Claim BAL">
-                      <P>
-                        You can now claim any BAL earned directly from the{' '}
-                        <Link to={`/${massetName}/earn`}>EARN dashboard.</Link>
-                      </P>
-                    </StyledProtip>
-                  </ProtipContainer>
-                </>
-              )}
+            {stakingRewardsContract.platformRewards && !stakingRewardsContract.curve && platformRewards && platformToken && (
+              <>
+                <ProtipContainer>
+                  <StyledProtip emoji="💰" title="Claim BAL">
+                    <P>
+                      You can now claim any BAL earned directly from the <Link to={`/${massetName}/earn`}>EARN dashboard.</Link>
+                    </P>
+                  </StyledProtip>
+                </ProtipContainer>
+              </>
+            )}
           </div>
           {stakingRewardsContract.curve && (
             <div>
               <AmountContainer>
                 <Heading>Earned CRV</Heading>
-                <LargeAmount
-                  format={NumberFormat.Countup}
-                  amount={platformRewards}
-                  countup={{ decimals: 6 }}
-                />
+                <LargeAmount format={NumberFormat.Countup} amount={platformRewards} countup={{ decimals: 6 }} />
               </AmountContainer>
               <AmountContainer>
                 <span>$</span>
-                <Amount
-                  format={NumberFormat.Countup}
-                  amount={platformRewardsUsd}
-                  countup={{ decimals: 6 }}
-                />
+                <Amount format={NumberFormat.Countup} amount={platformRewardsUsd} countup={{ decimals: 6 }} />
               </AmountContainer>
             </div>
           )}
@@ -172,5 +147,5 @@ export const PoolBalances: FC<Props> = () => {
         <ThemedSkeleton height={200} />
       )}
     </div>
-  );
-};
+  )
+}

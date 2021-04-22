@@ -1,90 +1,78 @@
-import type { BigNumber } from 'ethers';
-import { Signer } from 'ethers';
-import { useEffect } from 'react';
-import { useDebounce } from 'react-use';
-import {
-  FeederPool__factory,
-  Masset__factory,
-} from '@mstable/protocol/types/generated';
+import type { BigNumber } from 'ethers'
+import { Signer } from 'ethers'
+import { useEffect } from 'react'
+import { useDebounce } from 'react-use'
+import { FeederPool__factory, Masset__factory } from '@mstable/protocol/types/generated'
 
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
-import { MassetState } from '../../../../context/DataProvider/types';
-import { useSigner } from '../../../../context/OnboardProvider';
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
+import { MassetState } from '../../../../context/DataProvider/types'
+import { useSigner } from '../../../../context/AccountProvider'
+import { AllNetworks, useNetworkAddresses } from '../../../../context/NetworkProvider'
 
-import { FetchState, useFetchState } from '../../../../hooks/useFetchState';
-import { sanitizeMassetError } from '../../../../utils/strings';
-import { BigDecimal } from '../../../../web3/BigDecimal';
-import {
-  SaveWrapper,
-  SaveWrapper__factory,
-  UniswapRouter02__factory,
-} from '../../../../typechain';
-import { ADDRESSES } from '../../../../constants';
+import { FetchState, useFetchState } from '../../../../hooks/useFetchState'
+import { sanitizeMassetError } from '../../../../utils/strings'
+import { BigDecimal } from '../../../../web3/BigDecimal'
+import { SaveWrapper__factory, UniswapRouter02__factory } from '../../../../typechain'
 
-import { SaveOutput, SaveRoutes } from './types';
+import { SaveOutput, SaveRoutes } from './types'
 
 const getOptimalBasset = async (
-  saveWrapper: SaveWrapper,
+  signer: Signer,
+  networkAddresses: AllNetworks['addresses'],
   massetAddress: string,
   bAssets: MassetState['bAssets'],
+
   inputAmount: BigNumber,
 ): Promise<SaveOutput> => {
-  const uniswap = UniswapRouter02__factory.connect(
-    ADDRESSES.UNISWAP_ROUTER02,
-    saveWrapper.signer,
-  );
+  if (!(networkAddresses as Extract<AllNetworks, { addresses: { WETH?: string } }>['addresses']).WETH) {
+    throw new Error('No WETH address')
+  }
+
+  const uniswap = UniswapRouter02__factory.connect(networkAddresses.UniswapRouter02_Like, signer)
+
+  const saveWrapper = SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer)
+
   const bassetAmountsOut = [
     ...(await Promise.all(
       Object.keys(bAssets).map(async address => {
-        const path = [ADDRESSES.WETH, address];
+        const path = [(networkAddresses as Extract<AllNetworks, { addresses: { WETH: string } }>['addresses']).WETH, address]
         try {
-          const [, amountOut] = await uniswap.getAmountsOut(inputAmount, path);
+          const [, amountOut] = await uniswap.getAmountsOut(inputAmount, path)
           const estimatedOutput = await saveWrapper.estimate_saveViaUniswapETH(
             massetAddress,
-            ADDRESSES.UNISWAP_ROUTER02,
+            networkAddresses.UniswapRouter02_Like,
             inputAmount,
             path,
-          );
+          )
 
           return {
             path,
-            amountOut: new BigDecimal(
-              amountOut,
-              bAssets[address].token.decimals,
-            ),
+            amountOut: new BigDecimal(amountOut, bAssets[address].token.decimals),
             amount: new BigDecimal(estimatedOutput),
-          };
+          }
         } catch (error) {
-          console.error(
-            `Error estimating Uniswap output for path ${path.join(',')}`,
-            error,
-          );
+          console.error(`Error estimating Uniswap output for path ${path.join(',')}`, error)
         }
       }),
     )),
-  ].filter(Boolean) as SaveOutput[];
+  ].filter(Boolean) as SaveOutput[]
 
-  const optimal = bassetAmountsOut.reduce((prev, current) =>
-    current.amount.exact.gt(prev.amount.exact) ? current : prev,
-  );
+  const optimal = bassetAmountsOut.reduce((prev, current) => (current.amount.exact.gt(prev.amount.exact) ? current : prev))
 
   if (!optimal) {
-    throw new Error('No Uniswap path found');
+    throw new Error('No Uniswap path found')
   }
 
-  return optimal;
-};
+  return optimal
+}
 
-export const useSaveOutput = (
-  route?: SaveRoutes,
-  inputAddress?: string,
-  inputAmount?: BigDecimal,
-): FetchState<SaveOutput> => {
-  const [saveOutput, setSaveOutput] = useFetchState<SaveOutput>();
+export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAmount?: BigDecimal): FetchState<SaveOutput> => {
+  const [saveOutput, setSaveOutput] = useFetchState<SaveOutput>()
+  const networkAddresses = useNetworkAddresses()
 
-  const signer = useSigner() as Signer;
+  const signer = useSigner() as Signer
 
-  const massetState = useSelectedMassetState() as MassetState;
+  const massetState = useSelectedMassetState() as MassetState
   const {
     address: massetAddress,
     bAssets,
@@ -92,101 +80,90 @@ export const useSaveOutput = (
     savingsContracts: {
       v2: { latestExchangeRate: { rate: latestExchangeRate } = {} },
     },
-  } = massetState;
+  } = massetState
 
-  const inputAmountSerialized = inputAmount?.toJSON();
-  const feederPoolAddress =
-    inputAddress &&
-    Object.values(feederPools).find(fp => fp.fasset.address === inputAddress)
-      ?.address;
+  const inputAmountSerialized = inputAmount?.toJSON()
+  const feederPoolAddress = inputAddress && Object.values(feederPools).find(fp => fp.fasset.address === inputAddress)?.address
 
   const [update] = useDebounce(
     () => {
-      if (!inputAmountSerialized || !inputAddress) return setSaveOutput.value();
+      if (!inputAmountSerialized || !inputAddress) return setSaveOutput.value()
 
-      const _inputAmount = BigDecimal.fromJSON(inputAmountSerialized);
+      const _inputAmount = BigDecimal.fromJSON(inputAmountSerialized)
 
       if (
         !latestExchangeRate ||
-        ((route === SaveRoutes.SwapAndSave ||
-          route === SaveRoutes.SwapAndStake) &&
-          !feederPoolAddress)
+        !networkAddresses ||
+        ((route === SaveRoutes.SwapAndSave || route === SaveRoutes.SwapAndStake) && !feederPoolAddress)
       ) {
-        return setSaveOutput.fetching();
+        return setSaveOutput.fetching()
       }
 
-      let promise: Promise<SaveOutput>;
+      let promise: Promise<SaveOutput>
       switch (route) {
         case SaveRoutes.Save:
         case SaveRoutes.Stake:
         case SaveRoutes.SaveAndStake:
           promise = Promise.resolve({
             amount: _inputAmount,
-          });
-          break;
+          })
+          break
 
         case SaveRoutes.BuyAndSave:
         case SaveRoutes.BuyAndStake:
-          promise = getOptimalBasset(
-            SaveWrapper__factory.connect(ADDRESSES.SAVE_WRAPPER, signer),
-            massetAddress,
-            bAssets,
-            _inputAmount.exact,
-          );
-          break;
+          promise = getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, _inputAmount.exact)
+          break
 
         case SaveRoutes.MintAndSave:
         case SaveRoutes.MintAndStake:
           promise = (async () => {
-            const mintOutput = await Masset__factory.connect(
-              massetAddress,
-              signer,
-            ).getMintOutput(inputAddress, _inputAmount.exact);
+            const mintOutput = await Masset__factory.connect(massetAddress, signer).getMintOutput(inputAddress, _inputAmount.exact)
             return {
               amount: new BigDecimal(mintOutput),
-            };
-          })();
-          break;
+            }
+          })()
+          break
 
         case SaveRoutes.SwapAndSave:
         case SaveRoutes.SwapAndStake:
           promise = (async () => {
-            const swapOutput = await FeederPool__factory.connect(
-              feederPoolAddress as string,
-              signer,
-            ).getSwapOutput(inputAddress, massetAddress, _inputAmount.exact);
+            const swapOutput = await FeederPool__factory.connect(feederPoolAddress as string, signer).getSwapOutput(
+              inputAddress,
+              massetAddress,
+              _inputAmount.exact,
+            )
             return {
               amount: new BigDecimal(swapOutput),
-            };
-          })();
-          break;
+            }
+          })()
+          break
 
         default:
-          return setSaveOutput.value();
+          return setSaveOutput.value()
       }
 
-      setSaveOutput.fetching();
+      setSaveOutput.fetching()
 
       return promise
         .then((output): void => {
-          setSaveOutput.value(output);
+          setSaveOutput.value(output)
         })
         .catch((_error: Error): void => {
-          setSaveOutput.error(sanitizeMassetError(_error));
-        });
+          setSaveOutput.error(sanitizeMassetError(_error))
+        })
     },
     1000,
     [inputAmountSerialized, inputAddress, massetAddress, feederPoolAddress],
-  );
+  )
 
   useEffect(() => {
     if (inputAmount?.exact.gt(0) && inputAddress) {
-      setSaveOutput.fetching();
-      update();
+      setSaveOutput.fetching()
+      update()
     } else {
-      setSaveOutput.value();
+      setSaveOutput.value()
     }
-  }, [inputAddress, inputAmount, setSaveOutput, update]);
+  }, [inputAddress, inputAmount, setSaveOutput, update])
 
-  return saveOutput;
-};
+  return saveOutput
+}

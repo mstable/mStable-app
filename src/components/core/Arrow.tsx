@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
 export const Container = styled.div`
   align-items: center;
@@ -9,16 +9,14 @@ export const Container = styled.div`
   padding: 1rem 0 0;
   text-align: center;
   user-select: none;
-`;
+`
 
-export const Arrow: FC<{ direction?: 'up' | 'down' }> = ({
-  direction = 'down',
-}) => {
-  const arrowIcon = direction === 'up' ? '↑' : '↓';
-  return <Container>{arrowIcon}</Container>;
-};
+export const Arrow: FC<{ direction?: 'up' | 'down' }> = ({ direction = 'down' }) => {
+  const arrowIcon = direction === 'up' ? '↑' : '↓'
+  return <Container>{arrowIcon}</Container>
+}
 
 export const Plus: FC = () => {
-  const plusIcon = '+';
-  return <Container>{plusIcon}</Container>;
-};
+  const plusIcon = '+'
+  return <Container>{plusIcon}</Container>
+}

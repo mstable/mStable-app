@@ -1,40 +1,31 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo } from 'react'
 
-import { useTokens, useTokenSubscription } from '../../context/TokensProvider';
-import { AssetDropdown } from '../core/AssetDropdown';
-import { AddressOption } from '../../types';
+import { useTokens, useTokenSubscription } from '../../context/TokensProvider'
+import { AssetDropdown } from '../core/AssetDropdown'
+import { AddressOption } from '../../types'
 
 interface Props {
-  value?: string;
-  options?: (AddressOption | string)[];
-  onChange?(tokenAddress?: string): void;
-  error?: string;
-  disabled?: boolean;
-  className?: string;
+  value?: string
+  options?: (AddressOption | string)[]
+  onChange?(tokenAddress?: string): void
+  error?: string
+  disabled?: boolean
+  className?: string
 }
 
-export const SubscribedTokenInput: FC<Props> = ({
-  value,
-  options: _options = [],
-  onChange,
-  disabled = false,
-}) => {
+export const SubscribedTokenInput: FC<Props> = ({ value, options: _options = [], onChange, disabled = false }) => {
   // Subscribe to the selected token or use custom
-  const subscribedToken = useTokenSubscription(value);
+  const subscribedToken = useTokenSubscription(value)
   const token =
-    (_options.filter(
-      option => typeof option !== 'string' && option?.custom,
-    ) as AddressOption[])?.find(v => v?.address === value) ?? subscribedToken;
+    (_options.filter(option => typeof option !== 'string' && option?.custom) as AddressOption[])?.find(v => v?.address === value) ??
+    subscribedToken
 
   // Subscribe the other options
   const tokens = useTokens(
     _options
-      .filter(
-        (option: AddressOption | string) =>
-          typeof option === 'string' || !option?.custom,
-      )
+      .filter((option: AddressOption | string) => typeof option === 'string' || !option?.custom)
       .map(option => (typeof option === 'string' ? option : option?.address)),
-  );
+  )
 
   const options = useMemo<AddressOption[]>(
     () =>
@@ -42,22 +33,10 @@ export const SubscribedTokenInput: FC<Props> = ({
       [
         token,
         ...tokens.filter(t => t?.address !== token?.address),
-        ..._options.filter(
-          option =>
-            typeof option !== 'string' &&
-            option?.custom &&
-            option?.label !== (token as AddressOption)?.label,
-        ),
+        ..._options.filter(option => typeof option !== 'string' && option?.custom && option?.label !== (token as AddressOption)?.label),
       ].filter(Boolean) as AddressOption[],
     [_options, token, tokens],
-  );
+  )
 
-  return (
-    <AssetDropdown
-      onChange={onChange}
-      addressOptions={options}
-      defaultAddress={value}
-      disabled={disabled}
-    />
-  );
-};
+  return <AssetDropdown onChange={onChange} addressOptions={options} defaultAddress={value} disabled={disabled} />
+}

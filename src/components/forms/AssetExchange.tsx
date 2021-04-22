@@ -1,40 +1,40 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { useTokenSubscription } from '../../context/TokensProvider';
-import { BigDecimal } from '../../web3/BigDecimal';
-import { AssetInput } from './AssetInput';
-import { ExchangeRate } from '../core/ExchangeRate';
-import { Arrow } from '../core/Arrow';
-import type { AddressOption } from '../../types';
-import { ErrorMessage } from '../core/ErrorMessage';
+import { useTokenSubscription } from '../../context/TokensProvider'
+import { BigDecimal } from '../../web3/BigDecimal'
+import { AssetInput } from './AssetInput'
+import { ExchangeRate } from '../core/ExchangeRate'
+import { Arrow } from '../core/Arrow'
+import type { AddressOption } from '../../types'
+import { ErrorMessage } from '../core/ErrorMessage'
 
 export interface Props {
-  inputAddress?: string;
-  inputAddressDisabled?: boolean;
-  inputAddressOptions: AddressOption[];
-  inputFormValue?: string;
-  handleSetInputAddress?(address?: string): void;
-  handleSetInputAmount?(formValue?: string): void;
-  handleSetInputMax?(): void;
+  inputAddress?: string
+  inputAddressDisabled?: boolean
+  inputAddressOptions: AddressOption[]
+  inputFormValue?: string
+  handleSetInputAddress?(address?: string): void
+  handleSetInputAmount?(formValue?: string): void
+  handleSetInputMax?(): void
 
-  outputAddress?: string;
-  outputAddressDisabled?: boolean;
-  outputAddressOptions: AddressOption[];
-  outputFormValue?: string;
-  handleSetOutputAddress?(address?: string): void;
-  handleSetOutputAmount?(formValue?: string): void;
-  handleSetOutputMax?(): void;
+  outputAddress?: string
+  outputAddressDisabled?: boolean
+  outputAddressOptions: AddressOption[]
+  outputFormValue?: string
+  handleSetOutputAddress?(address?: string): void
+  handleSetOutputAmount?(formValue?: string): void
+  handleSetOutputMax?(): void
 
-  exchangeRate: { value?: BigDecimal; fetching?: boolean }; // e.g. for mUSD->imUSD
-  error?: string;
-  className?: string;
+  exchangeRate: { value?: BigDecimal; fetching?: boolean } // e.g. for mUSD->imUSD
+  error?: string
+  className?: string
   // TODO: Combine this with outputFormValue, same with decimals
-  isFetching?: boolean;
-  inputDecimals?: number;
-  outputDecimals?: number;
-  inputLabel?: string;
-  outputLabel?: string;
+  isFetching?: boolean
+  inputDecimals?: number
+  outputDecimals?: number
+  inputLabel?: string
+  outputLabel?: string
 }
 
 const Container = styled.div`
@@ -47,7 +47,7 @@ const Container = styled.div`
       margin-bottom: 0;
     }
   }
-`;
+`
 
 export const AssetExchange: FC<Props> = ({
   inputAddressOptions,
@@ -74,19 +74,13 @@ export const AssetExchange: FC<Props> = ({
   inputLabel,
   outputLabel,
 }) => {
-  const inputToken =
-    useTokenSubscription(inputAddress) ??
-    inputAddressOptions.find(v => v.address === inputAddress);
-  const outputToken =
-    useTokenSubscription(outputAddress) ??
-    outputAddressOptions.find(v => v.address === outputAddress);
+  const inputToken = useTokenSubscription(inputAddress) ?? inputAddressOptions.find(v => v.address === inputAddress)
+  const outputToken = useTokenSubscription(outputAddress) ?? outputAddressOptions.find(v => v.address === outputAddress)
 
   const conversionFormValue =
     inputFormValue && exchangeRate?.value && !outputFormValue
-      ? BigDecimal.parse(inputFormValue ?? '0').mulTruncate(
-          exchangeRate.value.exact,
-        ).string
-      : undefined;
+      ? BigDecimal.parse(inputFormValue ?? '0').mulTruncate(exchangeRate.value.exact).string
+      : undefined
 
   return (
     <Container className={className}>
@@ -125,5 +119,5 @@ export const AssetExchange: FC<Props> = ({
       {error && <ErrorMessage error={error} />}
       {children}
     </Container>
-  );
-};
+  )
+}

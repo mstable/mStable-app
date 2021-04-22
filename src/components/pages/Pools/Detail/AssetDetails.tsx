@@ -1,11 +1,11 @@
-import React from 'react';
-import type { FC } from 'react';
-import styled from 'styled-components';
+import React from 'react'
+import type { FC } from 'react'
+import styled from 'styled-components'
 
-import { useSelectedFeederPoolState } from '../FeederPoolProvider';
-import { ViewportWidth } from '../../../../theme';
-import { EtherscanLink } from '../../../core/EtherscanLink';
-import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
+import { useSelectedFeederPoolState } from '../FeederPoolProvider'
+import { ViewportWidth } from '../../../../theme'
+import { ExplorerLink } from '../../../core/ExplorerLink'
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
 
 const Container = styled.div`
   padding: 1rem;
@@ -53,31 +53,27 @@ const Container = styled.div`
       margin-right: 2rem;
     }
   }
-`;
+`
 
 export const AssetDetails: FC = () => {
-  const { address, title, masset, fasset } = useSelectedFeederPoolState();
+  const { address, title, masset, fasset } = useSelectedFeederPoolState()
   return (
     <Container>
       <h3>Asset Details</h3>
       <div>
-        <EtherscanLink data={address} type="address">
+        <ExplorerLink data={address} type="address">
           <h3>{title}</h3>
-        </EtherscanLink>
+        </ExplorerLink>
         {[masset.token, fasset.token].map(token =>
           token.address ? (
-            <EtherscanLink
-              data={token.address}
-              type="address"
-              key={token.address}
-            >
+            <ExplorerLink data={token.address} type="address" key={token.address}>
               <p>{token.symbol}</p>
-            </EtherscanLink>
+            </ExplorerLink>
           ) : (
             <ThemedSkeleton width={48} height={32} key={token.address} />
           ),
         )}
       </div>
     </Container>
-  );
-};
+  )
+}

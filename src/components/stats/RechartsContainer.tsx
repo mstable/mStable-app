@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 export const RechartsContainer = styled.div`
   width: 100%;
@@ -15,4 +15,4 @@ export const RechartsContainer = styled.div`
       font-family: 'DM Mono', monospace;
     }
   }
-`;
+`

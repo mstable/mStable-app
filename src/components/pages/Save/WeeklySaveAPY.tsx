@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import CountUp from 'react-countup';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import CountUp from 'react-countup'
 
-import { useAvailableSaveApy } from '../../../hooks/useAvailableSaveApy';
-import { ThemedSkeleton } from '../../core/ThemedSkeleton';
-import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider';
+import { useAvailableSaveApy } from '../../../hooks/useAvailableSaveApy'
+import { ThemedSkeleton } from '../../core/ThemedSkeleton'
+import { useSelectedMassetName } from '../../../context/SelectedMassetNameProvider'
 
 const InfoAPY = styled.div`
   font-size: 0.875rem;
@@ -30,7 +30,7 @@ const InfoAPY = styled.div`
       color: ${({ theme }) => theme.color.gold};
     }
   }
-`;
+`
 
 const InfoMsg = styled.div`
   font-size: 1.125rem;
@@ -44,7 +44,7 @@ const InfoMsg = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     max-width: inherit;
   }
-`;
+`
 
 const Container = styled.div`
   display: flex;
@@ -55,11 +55,11 @@ const Container = styled.div`
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
     margin: 0;
   }
-`;
+`
 
 export const WeeklySaveAPY: FC = () => {
-  const apy = useAvailableSaveApy();
-  const massetName = useSelectedMassetName();
+  const apy = useAvailableSaveApy()
+  const massetName = useSelectedMassetName()
   return (
     <Container>
       {apy.type === 'fetching' ? (
@@ -78,11 +78,7 @@ export const WeeklySaveAPY: FC = () => {
           <InfoAPY>
             {' '}
             <div>
-              <p>
-                {apy.type === 'average'
-                  ? '7-day MA (Moving Average) APY'
-                  : 'Live APY (unstable)'}
-              </p>
+              <p>{apy.type === 'average' ? '7-day MA (Moving Average) APY' : 'Live APY (unstable)'}</p>
               <p>
                 {massetName === 'mbtc'
                   ? 'This APY is purely derived from internal swap fees, and thus does not expose mBTC holders to external protocol risk.'
@@ -100,5 +96,5 @@ export const WeeklySaveAPY: FC = () => {
         </>
       )}
     </Container>
-  );
-};
+  )
+}

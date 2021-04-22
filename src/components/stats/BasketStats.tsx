@@ -1,45 +1,29 @@
-import React, { FC, ReactComponentElement, useMemo } from 'react';
+import React, { FC, ReactComponentElement, useMemo } from 'react'
 
-import styled from 'styled-components';
-import {
-  Bar,
-  BarChart,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import styled from 'styled-components'
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 // import { Props as DefaultTooltipContentProps } from 'recharts/types/component/DefaultTooltipContent.d';
 // eslint-disable-next-line
 // @ts-ignore
-import DefaultTooltipContent from 'recharts/lib/component/DefaultTooltipContent';
+import DefaultTooltipContent from 'recharts/lib/component/DefaultTooltipContent'
 
-import { useSelectedMassetState } from '../../context/DataProvider/DataProvider';
-import { TokenIconSvg } from '../icons/TokenIcon';
-import { MassetState } from '../../context/DataProvider/types';
-import { BigDecimal } from '../../web3/BigDecimal';
-import { Color } from '../../theme';
-import { toK } from './utils';
-import { RechartsContainer } from './RechartsContainer';
-import { ThemedSkeleton } from '../core/ThemedSkeleton';
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
+import { TokenIconSvg } from '../icons/TokenIcon'
+import { MassetState } from '../../context/DataProvider/types'
+import { BigDecimal } from '../../web3/BigDecimal'
+import { Color } from '../../theme'
+import { toK } from './utils'
+import { RechartsContainer } from './RechartsContainer'
+import { ThemedSkeleton } from '../core/ThemedSkeleton'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TooltipProps = any;
+type TooltipProps = any
 // type TooltipProps = DefaultTooltipContentProps<any, any>;
 
-type TokenSymbol =
-  | 'mUSD'
-  | 'sUSD'
-  | 'SUSD'
-  | 'DAI'
-  | 'USDT'
-  | 'TUSD'
-  | 'USDC'
-  | 'BUSD';
+type TokenSymbol = 'mUSD' | 'sUSD' | 'SUSD' | 'DAI' | 'USDT' | 'TUSD' | 'USDC' | 'BUSD'
 
-type TokenColours = Record<TokenSymbol, string>;
+type TokenColours = Record<TokenSymbol, string>
 
 const TOKEN_COLOURS: TokenColours = {
   mUSD: '#000',
@@ -50,7 +34,7 @@ const TOKEN_COLOURS: TokenColours = {
   USDT: '#26A17B',
   TUSD: '#002868',
   USDC: '#2775CA',
-};
+}
 
 const OVERWEIGHT_TOKEN_COLOURS: TokenColours = {
   mUSD: '#000',
@@ -61,7 +45,7 @@ const OVERWEIGHT_TOKEN_COLOURS: TokenColours = {
   USDT: '#155844',
   TUSD: '#001331',
   USDC: '#12365e',
-};
+}
 
 const TOKEN_HATCH_COLOURS: TokenColours = {
   mUSD: '#000',
@@ -72,26 +56,16 @@ const TOKEN_HATCH_COLOURS: TokenColours = {
   USDT: '#7dc6af',
   TUSD: '#96a0d7',
   USDC: '#a7c0de',
-};
-
-interface Datum {
-  symbol: string;
-  basketShareAsPercentage: number;
-  maxWeightAsPercentage: number;
 }
 
-const Hatch = ({
-  symbol,
-}: {
-  symbol: keyof typeof TOKEN_HATCH_COLOURS;
-}): ReactComponentElement<'pattern'> => (
-  <pattern
-    id={`hatch-${symbol}`}
-    patternUnits="userSpaceOnUse"
-    patternTransform="rotate(45 0 0)"
-    width="4"
-    height="4"
-  >
+interface Datum {
+  symbol: string
+  basketShareAsPercentage: number
+  maxWeightAsPercentage: number
+}
+
+const Hatch = ({ symbol }: { symbol: keyof typeof TOKEN_HATCH_COLOURS }): ReactComponentElement<'pattern'> => (
+  <pattern id={`hatch-${symbol}`} patternUnits="userSpaceOnUse" patternTransform="rotate(45 0 0)" width="4" height="4">
     <line
       x1="0"
       y1="0"
@@ -103,7 +77,7 @@ const Hatch = ({
       }}
     />
   </pattern>
-);
+)
 
 // Horrific typing here because recharts types are inaccurate
 const CustomTooltip: FC<TooltipProps> = ((({
@@ -112,7 +86,7 @@ const CustomTooltip: FC<TooltipProps> = ((({
   ...props
 }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
 TooltipProps & { active: boolean }) => {
-  if (!active) return null;
+  if (!active) return null
   return (
     <DefaultTooltipContent
       // eslint-disable-next-line react/jsx-props-no-spreading
@@ -122,24 +96,22 @@ TooltipProps & { active: boolean }) => {
           dataKey: 'vaultBalance',
           name: 'Vault balance',
           value: ((payload as NonNullable<typeof payload>)[0] as {
-            payload: { vaultBalance: string };
+            payload: { vaultBalance: string }
           }).payload.vaultBalance,
         },
         {
           dataKey: 'maxWeightAsPercentage',
           name: 'Max weight',
           value: ((payload as NonNullable<typeof payload>)[0] as {
-            payload: { maxWeightAsPercentage: string };
+            payload: { maxWeightAsPercentage: string }
           }).payload.maxWeightAsPercentage,
           unit: '%',
         },
-        ...(payload as NonNullable<typeof payload>).filter(
-          (p: { dataKey: string }) => p.dataKey !== 'remainderMaxWeight',
-        ),
+        ...(payload as NonNullable<typeof payload>).filter((p: { dataKey: string }) => p.dataKey !== 'remainderMaxWeight'),
       ]}
     />
-  );
-}) as unknown) as FC<TooltipProps>;
+  )
+}) as unknown) as FC<TooltipProps>
 
 const Container = styled(RechartsContainer)`
   .recharts-default-tooltip > .recharts-tooltip-label {
@@ -148,72 +120,45 @@ const Container = styled(RechartsContainer)`
   }
 
   padding: 16px 0;
-`;
+`
 
-export const BasketStats: FC<{ simulation?: MassetState }> = ({
-  simulation,
-}) => {
-  const masset = useSelectedMassetState();
+export const BasketStats: FC<{ simulation?: MassetState }> = ({ simulation }) => {
+  const masset = useSelectedMassetState()
   // eslint-disable-next-line
-  const bAssets: MassetState['bAssets'] =
-    simulation?.bAssets ?? masset?.bAssets ?? {};
+  const bAssets: MassetState['bAssets'] = simulation?.bAssets ?? masset?.bAssets ?? {}
 
   const data: Datum[] = useMemo(
     () =>
-      Object.values(bAssets).map(
-        ({
-          basketShare,
-          maxWeight,
-          token: { symbol },
+      Object.values(bAssets).map(({ basketShare, maxWeight, token: { symbol }, overweight, totalVault }) => {
+        const basketShareAsPercentage = basketShare.toPercent()
+        const maxWeightAsPercentage = new BigDecimal(maxWeight ?? '0', 18).toPercent()
+
+        // Get the remainder so that it can be stacked after the basket share
+        const remainderMaxWeight = parseFloat(
+          (basketShareAsPercentage > maxWeightAsPercentage ? 0 : maxWeightAsPercentage - basketShareAsPercentage).toFixed(2),
+        )
+
+        return {
+          symbol,
+          basketShareAsPercentage,
+          maxWeightAsPercentage,
+          remainderMaxWeight,
           overweight,
-          totalVault,
-        }) => {
-          const basketShareAsPercentage = basketShare.toPercent();
-          const maxWeightAsPercentage = new BigDecimal(
-            maxWeight ?? '0',
-            18,
-          ).toPercent();
-
-          // Get the remainder so that it can be stacked after the basket share
-          const remainderMaxWeight = parseFloat(
-            (basketShareAsPercentage > maxWeightAsPercentage
-              ? 0
-              : maxWeightAsPercentage - basketShareAsPercentage
-            ).toFixed(2),
-          );
-
-          return {
-            symbol,
-            basketShareAsPercentage,
-            maxWeightAsPercentage,
-            remainderMaxWeight,
-            overweight,
-            vaultBalance: toK(totalVault.simple),
-            fill: overweight
-              ? OVERWEIGHT_TOKEN_COLOURS[symbol as TokenSymbol]
-              : TOKEN_COLOURS[symbol as TokenSymbol],
-          };
-        },
-      ),
+          vaultBalance: toK(totalVault.simple),
+          fill: overweight ? OVERWEIGHT_TOKEN_COLOURS[symbol as TokenSymbol] : TOKEN_COLOURS[symbol as TokenSymbol],
+        }
+      }),
     [bAssets],
-  );
+  )
 
   return (
     <Container>
       {data && data.length ? (
         <ResponsiveContainer aspect={1.5} width={250}>
-          <BarChart
-            layout="vertical"
-            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-            barCategoryGap={1}
-            data={data}
-          >
+          <BarChart layout="vertical" margin={{ top: 0, right: 0, bottom: 0, left: 0 }} barCategoryGap={1} data={data}>
             <defs>
-              {Object.values(bAssets).map((b) => (
-                <Hatch
-                  key={b.token.symbol}
-                  symbol={b.token.symbol as TokenSymbol}
-                />
+              {Object.values(bAssets).map(b => (
+                <Hatch key={b.token.symbol} symbol={b.token.symbol as TokenSymbol} />
               ))}
             </defs>
             <Tooltip
@@ -234,12 +179,7 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
                 left: 0,
               }}
             />
-            <XAxis
-              type="number"
-              unit="%"
-              padding={{ left: 24 }}
-              axisLine={false}
-            />
+            <XAxis type="number" unit="%" padding={{ left: 24 }} axisLine={false} />
             <YAxis
               type="category"
               dataKey="symbol"
@@ -253,37 +193,20 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
                 height,
               }: {
                 payload: {
-                  value: TokenSymbol;
-                };
-                x: number;
-                y: number;
-                height: number;
+                  value: TokenSymbol
+                }
+                x: number
+                y: number
+                height: number
               }) => {
-                const diameter = (height - data.length * 6) / data.length;
+                const diameter = (height - data.length * 6) / data.length
                 return ((
-                  <TokenIconSvg
-                    x={x - diameter / 2}
-                    y={y - diameter / 2}
-                    height={diameter}
-                    width={diameter}
-                    symbol={value}
-                    key={value}
-                  />
-                ) as unknown) as SVGElement;
+                  <TokenIconSvg x={x - diameter / 2} y={y - diameter / 2} height={diameter} width={diameter} symbol={value} key={value} />
+                ) as unknown) as SVGElement
               }}
             />
-            <Bar
-              dataKey="basketShareAsPercentage"
-              name="Basket share"
-              unit="%"
-              stackId="a"
-            />
-            <Bar
-              dataKey="remainderMaxWeight"
-              name="Max weight"
-              unit="%"
-              stackId="a"
-            >
+            <Bar dataKey="basketShareAsPercentage" name="Basket share" unit="%" stackId="a" />
+            <Bar dataKey="remainderMaxWeight" name="Max weight" unit="%" stackId="a">
               {data.map(({ symbol }) => (
                 <Cell key={symbol} fill={`url(#hatch-${symbol})`} />
               ))}
@@ -295,5 +218,5 @@ export const BasketStats: FC<{ simulation?: MassetState }> = ({
         <ThemedSkeleton height={132} />
       )}
     </Container>
-  );
-};
+  )
+}

@@ -1,16 +1,16 @@
-import React, { FC, ReactElement } from 'react';
-import styled, { css } from 'styled-components';
+import React, { FC, ReactElement } from 'react'
+import styled, { css } from 'styled-components'
 
-import { ReactComponent as CheckmarkIcon } from '../../../icons/checkmark.svg';
-import { ReactComponent as ChevronIcon } from '../../../icons/chevron-down.svg';
-import { UnstyledButton } from '../../../core/Button';
+import { ReactComponent as CheckmarkIcon } from '../../../icons/checkmark.svg'
+import { ReactComponent as ChevronIcon } from '../../../icons/chevron-down.svg'
+import { UnstyledButton } from '../../../core/Button'
 
 interface Props {
-  className?: string;
-  title?: ReactElement | string;
-  iconType?: 'checkmark' | 'chevron';
-  onClick?: () => void;
-  gradientColor?: string;
+  className?: string
+  title?: ReactElement | string
+  iconType?: 'checkmark' | 'chevron'
+  onClick?: () => void
+  gradientColor?: string
 }
 
 const Icon = styled.div<{ isChevron?: boolean }>`
@@ -29,7 +29,7 @@ const Icon = styled.div<{ isChevron?: boolean }>`
       fill: ${({ theme }) => theme.color.body};
     }
   }
-`;
+`
 
 const Background = styled.div<{ gradientColor?: string }>`
   position: absolute;
@@ -38,12 +38,10 @@ const Background = styled.div<{ gradientColor?: string }>`
   bottom: 0;
   left: 0;
   background: ${({ gradientColor, theme }) =>
-    gradientColor
-      ? `linear-gradient(180deg, ${gradientColor} 0%, ${theme.color.background} 100%);`
-      : `none`};
+    gradientColor ? `linear-gradient(180deg, ${gradientColor} 0%, ${theme.color.background} 100%);` : `none`};
   border-radius: 1rem;
   opacity: 0.33;
-`;
+`
 
 const ContainerStyle = css`
   display: flex;
@@ -77,7 +75,7 @@ const ContainerStyle = css`
     text-align: left;
     color: ${({ theme }) => theme.color.body};
   }
-`;
+`
 
 const ContainerButton = styled(UnstyledButton)`
   ${ContainerStyle};
@@ -100,14 +98,14 @@ const ContainerButton = styled(UnstyledButton)`
   :hover:before {
     opacity: 1;
   }
-`;
+`
 
 const Container = styled.div`
   ${ContainerStyle};
-`;
+`
 
 const CardContent: FC<Props> = props => {
-  const { title, children, iconType } = props;
+  const { title, children, iconType } = props
   return (
     <>
       {(title || iconType) && (
@@ -122,17 +120,10 @@ const CardContent: FC<Props> = props => {
       )}
       {children && <div>{children}</div>}
     </>
-  );
-};
+  )
+}
 
-export const Card: FC<Props> = ({
-  className,
-  onClick,
-  children,
-  title,
-  iconType,
-  gradientColor,
-}) => {
+export const Card: FC<Props> = ({ className, onClick, children, title, iconType, gradientColor }) => {
   return onClick ? (
     <ContainerButton className={className} onClick={onClick}>
       {gradientColor && <Background gradientColor={gradientColor} />}
@@ -147,5 +138,5 @@ export const Card: FC<Props> = ({
         {children}
       </CardContent>
     </Container>
-  );
-};
+  )
+}

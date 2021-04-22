@@ -1,10 +1,10 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
-import { createToggleContext } from '../../../../hooks/createToggleContext';
+import React, { FC } from 'react'
+import styled from 'styled-components'
+import { createToggleContext } from '../../../../hooks/createToggleContext'
 
-import { ViewportWidth } from '../../../../theme';
-import { Button } from '../../../core/Button';
-import { useSelectedFeederPoolState } from '../FeederPoolProvider';
+import { ViewportWidth } from '../../../../theme'
+import { Button } from '../../../core/Button'
+import { useSelectedFeederPoolState } from '../FeederPoolProvider'
 
 const Card = styled.div`
   display: flex;
@@ -22,13 +22,13 @@ const Card = styled.div`
     color: ${({ theme }) => theme.color.body};
     margin-bottom: 0.75rem;
   }
-`;
+`
 
 const Container = styled(Card)`
   background: ${({ theme }) => theme.color.backgroundAccent};
   flex-direction: column;
   align-items: center;
-  padding: 1rem ;
+  padding: 1rem;
 
   > div:last-child {
     display: flex;
@@ -53,23 +53,18 @@ const Container = styled(Card)`
       margin-top: 0;
     }
   }
-`;
+`
 
-export const [useShowEarningPower, ShowEarningPower] = createToggleContext(
-  false,
-);
+export const [useShowEarningPower, ShowEarningPower] = createToggleContext(false)
 
 export const ProvideLiquidityMessage: FC = () => {
-  const feederPool = useSelectedFeederPoolState();
-  const [, setShowEarningPower] = useShowEarningPower();
+  const feederPool = useSelectedFeederPoolState()
+  const [, setShowEarningPower] = useShowEarningPower()
   return (
     <Container>
       <div>
         <h3>Need {feederPool.token.symbol} tokens to stake?</h3>
-        <p>
-          Provide liquidity by depositing below, and stake to earn rewards and
-          trade fees
-        </p>
+        <p>Provide liquidity by depositing below, and stake to earn rewards and trade fees</p>
       </div>
       <div>
         <Button highlighted onClick={setShowEarningPower}>
@@ -77,5 +72,5 @@ export const ProvideLiquidityMessage: FC = () => {
         </Button>
       </div>
     </Container>
-  );
-};
+  )
+}
