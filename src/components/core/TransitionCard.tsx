@@ -27,7 +27,7 @@ export const CardButton = styled(UnstyledButton)<{
   }
 
   :hover {
-    background: ${({ theme }) => theme.color.backgroundAccent};
+    background: ${({ theme, disabled }) => !disabled && theme.color.backgroundAccent};
   }
 
   > div {
@@ -35,6 +35,8 @@ export const CardButton = styled(UnstyledButton)<{
     align-items: center;
     justify-content: center;
   }
+
+  cursor: ${({ disabled }) => (disabled ? 'inherit' : 'pointer')};
 `
 
 export const CardContainer = styled.div`

@@ -42,6 +42,11 @@ export enum ChainIds {
   MaticMumbai = 80001,
 }
 
+export enum Networks {
+  Ethereum = 'Ethereum',
+  Polygon = 'Polygon',
+}
+
 interface Network<TAddresses, TGqlEndpoints> {
   protocolName: string
 
@@ -147,7 +152,7 @@ const maticExplorerUrl = (network?: 'mainnet' | 'mumbai') => (
 
 const ETH_MAINNET: EthereumMainnet = {
   chainId: ChainIds.EthereumMainnet,
-  protocolName: 'Ethereum',
+  protocolName: Networks.Ethereum,
   chainName: 'Mainnet',
   nativeToken: {
     symbol: 'ETH',
@@ -232,7 +237,7 @@ const ETH_GOERLI: EthereumGoerli = {
 const MATIC_MAINNET: MaticMainnet = {
   chainId: ChainIds.MaticMainnet,
   parentChainId: ChainIds.EthereumMainnet,
-  protocolName: 'Polygon',
+  protocolName: Networks.Polygon,
   chainName: 'Mainnet',
   nativeToken: {
     symbol: 'MATIC',
