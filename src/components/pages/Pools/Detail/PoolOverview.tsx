@@ -1,4 +1,5 @@
 import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
+import styled from 'styled-components';
 
 import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
@@ -21,6 +22,13 @@ import {
   CardContainer as Container,
   CardButton as Button,
 } from '../../../core/TransitionCard';
+import { useMinimumOutput } from '../../../../hooks/useOutput';
+import { BigDecimal } from '../../../../web3/BigDecimal';
+import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
+import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
+import { UnstyledButton } from '../../../core/Button';
+import { useToggle } from 'react-use';
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 
 enum Selection {
   Stake = 'stake',
@@ -29,6 +37,30 @@ enum Selection {
 }
 
 const { Stake, Boost, Rewards } = Selection;
+
+const SwitchButton = styled(UnstyledButton)`
+  position: absolute;
+  display: block;
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
+  color: ${({ theme }) => theme.color.body};
+  border-radius: 1rem;
+  right: -2.5rem;
+  height: 1.75rem;
+  width: 1.75rem;
+  transition: 0.25s;
+
+  :hover {
+    background: ${({ theme }) => theme.color.gold};
+    color: ${({ theme }) => theme.color.white};
+  }
+`;
+
+const BalanceContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const UserVaultBoost: FC = () => {
   const feederPool = useSelectedFeederPoolState();
@@ -68,8 +100,13 @@ export const PoolOverview: FC = () => {
   const feederPool = useSelectedFeederPoolState();
   const apy = useFeederPoolApy(feederPool.address);
   const massetPrice = useSelectedMassetPrice() ?? 1;
+  const [showMassetBalance, toggleMassetBalance] = useToggle(false);
 
-  const { vault, token } = feederPool;
+  const {
+    vault,
+    token,
+    masset: { token: massetToken },
+  } = feederPool;
   const userAmount = token.balance?.simple ?? 0;
   const userStakedAmount = vault.account?.rawBalance.simple ?? 0;
 
@@ -84,9 +121,28 @@ export const PoolOverview: FC = () => {
   );
 
   const totalUserBalance = useMemo(
-    () => (userStakedAmount + userAmount) * massetPrice,
-    [massetPrice, userAmount, userStakedAmount],
+    () =>
+      token.balance?.add(vault?.account?.rawBalance ?? BigDecimal.ZERO) ??
+      BigDecimal.ZERO,
+    [userAmount, userStakedAmount],
   );
+
+  const { estimatedOutputAmount } = useEstimatedOutput(
+    {
+      ...token,
+      amount: totalUserBalance,
+    } as BigDecimalInputValue,
+    {
+      ...massetToken,
+    } as BigDecimalInputValue,
+    false,
+  );
+
+  const handleBalanceSwitch = (e: any) => {
+    e?.stopPropagation();
+    e?.preventDefault();
+    toggleMassetBalance();
+  };
 
   return showLiquidityMessage ? (
     <ShowEarningPower>
@@ -99,8 +155,33 @@ export const PoolOverview: FC = () => {
           active={selection === Stake}
           onClick={() => handleSelection(Stake)}
         >
-          <h3>Balance</h3>
-          <CountUp end={totalUserBalance} prefix="$" />
+          <h3>
+            {showMassetBalance ? `${massetToken?.symbol} Balance` : `Balance`}
+          </h3>
+          <div>
+            <BalanceContainer>
+              <SwitchButton onClick={handleBalanceSwitch}>⇄</SwitchButton>
+              {showMassetBalance ? (
+                estimatedOutputAmount?.fetching ? (
+                  <ThemedSkeleton height={20} width={100} />
+                ) : estimatedOutputAmount?.value?.simple === 0 ? (
+                  '–'
+                ) : (
+                  <CountUp
+                    end={estimatedOutputAmount?.value?.simple ?? 0}
+                    prefix={'≈'}
+                    decimals={massetToken?.decimals > 2 ? 4 : 2}
+                  />
+                )
+              ) : (
+                <CountUp
+                  end={totalUserBalance?.simple * massetPrice}
+                  prefix="$"
+                  decimals={2}
+                />
+              )}
+            </BalanceContainer>
+          </div>
         </Button>
         <Button
           active={selection === Boost}

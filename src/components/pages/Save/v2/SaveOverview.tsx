@@ -29,6 +29,11 @@ import { ReactComponent as WarningBadge } from '../../../icons/badges/warning.sv
 import { SavePosition } from './SavePosition';
 import { OnboardingBanner } from './OnboardingBanner';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
+import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput';
+import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs';
+import { UnstyledButton } from '../../../core/Button';
+import { useToggle } from 'react-use';
+import { useSaveOutput } from './useSaveOutput';
 
 enum Selection {
   Balance = 'Balance',
@@ -45,6 +50,30 @@ const StyledWarningBadge = styled(WarningBadge)`
   width: 1.25rem;
   height: 1.25rem;
   right: -1.5rem;
+`;
+
+const SwitchButton = styled(UnstyledButton)`
+  position: absolute;
+  display: block;
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
+  color: ${({ theme }) => theme.color.body};
+  border-radius: 1rem;
+  right: -2.5rem;
+  height: 1.75rem;
+  width: 1.75rem;
+  transition: 0.25s;
+
+  :hover {
+    background: ${({ theme }) => theme.color.gold};
+    color: ${({ theme }) => theme.color.white};
+  }
+`;
+
+const BalanceContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const BalanceHeading = styled.div`
@@ -142,11 +171,13 @@ const components: Record<string, ReactElement> = {
 export const SaveOverview: FC = () => {
   const [selection, setSelection] = useState<Selection | undefined>();
   const massetState = useSelectedMassetState();
-  const massetPrice = useSelectedMassetPrice();
+  const massetPrice = useSelectedMassetPrice() ?? 1;
   const rewardStreams = useRewardStreams();
   const [selectedSaveVersion] = useSelectedSaveVersion();
+  const [showMassetBalance, toggleMassetBalance] = useToggle(false);
 
   const {
+    token: massetToken,
     savingsContracts: {
       v1: { savingsBalance: saveV1Balance } = {},
       v2: {
@@ -160,8 +191,9 @@ export const SaveOverview: FC = () => {
   const apy = useSaveVaultAPY(saveToken?.symbol);
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
 
-  const userBalance = useMemo(() => {
-    if (selectedSaveVersion === 1) return saveV1Balance?.balance;
+  const totalUserBalance = useMemo(() => {
+    if (selectedSaveVersion === 1)
+      return saveV1Balance?.balance ?? BigDecimal.ZERO;
 
     return (
       boostedSavingsVault?.account?.rawBalance
@@ -185,6 +217,14 @@ export const SaveOverview: FC = () => {
     [selection],
   );
 
+  console.log(totalUserBalance?.simple);
+
+  const handleBalanceSwitch = (e: any) => {
+    e?.stopPropagation();
+    e?.preventDefault();
+    toggleMassetBalance();
+  };
+
   return (
     <Container>
       <OnboardingBanner />
@@ -196,14 +236,31 @@ export const SaveOverview: FC = () => {
           >
             <BalanceHeading>
               <div>
-                <h3>Balance</h3>
+                <h3>
+                  {showMassetBalance
+                    ? `${massetToken?.symbol} Balance`
+                    : `Balance`}
+                </h3>
                 {isSaveV1 && <StyledWarningBadge />}
               </div>
             </BalanceHeading>
-            <CountUp
-              end={(userBalance?.simple ?? 0) * (massetPrice ?? 0)}
-              prefix="$"
-            />
+            <div>
+              <BalanceContainer>
+                <SwitchButton onClick={handleBalanceSwitch}>⇄</SwitchButton>
+                {showMassetBalance ? (
+                  <CountUp
+                    end={totalUserBalance?.simple ?? 1}
+                    decimals={8}
+                    prefix={'≈'}
+                  />
+                ) : (
+                  <CountUp
+                    end={totalUserBalance?.simple * massetPrice}
+                    prefix="$"
+                  />
+                )}
+              </BalanceContainer>
+            </div>
           </Button>
           {!isSaveV1 && (
             <Button
