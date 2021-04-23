@@ -85,6 +85,7 @@ export const useFPVaultAddressOptions = (): AddressOption[] => {
         label: `Pool`,
         custom: true,
         symbol: token.symbol,
+        balance: token?.balance,
         tip: `${token.symbol} Pool`,
       },
     ],
