@@ -332,7 +332,13 @@ const MATIC_MUMBAI: MaticMumbai = {
   getExplorerUrl: maticExplorerUrl('mumbai'),
 }
 
-export const NETWORKS = [ETH_MAINNET, ETH_GOERLI, ETH_ROPSTEN, MATIC_MAINNET, MATIC_MUMBAI]
+export const NETWORKS = [
+  ETH_MAINNET,
+  // ETH_GOERLI,
+  // ETH_ROPSTEN,
+  // MATIC_MAINNET,
+  MATIC_MUMBAI,
+]
 
 export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainId: typeof chainId }> => {
   switch (chainId) {
@@ -360,7 +366,7 @@ export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainI
 // TODO could still use an env var to define the default chain ID
 // Or even domain matching (polygon.*)
 const [useChainIdCtx, ChainIdProvider] = createStateContext<ChainIds | undefined>(
-  LocalStorage.get('mostRecentChainId') ?? ChainIds.EthereumMainnet,
+  LocalStorage.get('mostRecentChainId') ?? ChainIds.MaticMumbai,
 )
 export { useChainIdCtx }
 
