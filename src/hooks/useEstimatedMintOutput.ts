@@ -19,8 +19,7 @@ export const useEstimatedMintOutput = (contract?: MintableContract, inputValues?
 
   const [update] = useDebounce(
     () => {
-      if (!inputValues) return
-      if (!contract) return setEstimatedOutputAmount.fetching()
+      if (!inputValues || !contract) return
 
       const touched = Object.values(inputValues).filter(v => v.touched)
 

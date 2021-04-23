@@ -146,10 +146,7 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
 
   const [update] = useDebounce(
     () => {
-      if (!inputValue || !outputValue) return
-      if (shouldSkip) return {}
-
-      if (!contract) return setEstimatedOutputAmount.fetching()
+      if (!inputValue || !outputValue || shouldSkip || !contract) return
 
       const { address: inputAddress, amount: inputAmount } = inputValue
       const { address: outputAddress, decimals: outputDecimals } = outputValue
