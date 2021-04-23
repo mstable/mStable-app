@@ -84,15 +84,20 @@ export const useOwnAccount = (): UserAccountCtx['address'] => useUserState().add
 
 export const useIsMasquerading = (): boolean => Boolean(useUserState().masqueradedAccount)
 
+const [useInjectedChainIdCtx, InjectedChainIdProvider] = createStateContext<number | undefined>(undefined)
+const [useInjectedProviderCtx, InjectedProviderProvider] = createStateContext<EthersWeb3Provider | undefined>(undefined)
+export { useInjectedChainIdCtx, useInjectedProviderCtx }
+
 const OnboardProvider: FC<{
   chainId: ChainIds
-  setInjectedChainId(chainId?: number): void
-  setInjectedProvider(provider?: EthersWeb3Provider): void
-}> = ({ children, chainId, setInjectedChainId, setInjectedProvider }) => {
+}> = ({ children, chainId }) => {
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [balance, setBalance] = useState<string | undefined>(undefined)
   const [connected, setConnected] = useState<boolean>(false)
   const [wallet, setWallet] = useState<Wallet | undefined>(undefined)
+
+  const [, setInjectedChainId] = useInjectedChainIdCtx()
+  const [, setInjectedProvider] = useInjectedProviderCtx()
 
   const addInfoNotification = useAddInfoNotification()
   const addErrorNotification = useAddErrorNotification()
@@ -248,6 +253,17 @@ const OnboardProvider: FC<{
     }
   })
 
+  // useEffect(() => {
+  //   console.log(injectedChainId, chainId)
+  //   if (injectedChainId && injectedChainId !== chainId) {
+  //     onboard.walletReset()
+  //     console.log('disconnecting')
+  //     setWallet(undefined)
+  //     setConnected(false)
+  //     setInjectedProvider(undefined)
+  //   }
+  // }, [chainId, injectedChainId, setInjectedProvider, onboard])
+
   return (
     <onboardCtx.Provider
       value={useMemo(
@@ -290,24 +306,27 @@ const AccountState: FC = ({ children }) => {
 }
 
 const OnboardConnection: FC = ({ children }) => {
-  const [chainId, setChainId] = useChainIdCtx()
   const network = useNetwork()
-  const jsonRpcProviders = useJsonRpcProviders()
-  const [, setSigners] = useSignerCtx()
 
-  const [injectedChainId, setInjectedChainId] = useState<number | undefined>()
-  const [injectedProvider, setInjectedProvider] = useState<EthersWeb3Provider | undefined>(undefined)
+  const [chainId, setChainId] = useChainIdCtx()
+  const [injectedChainId] = useInjectedChainIdCtx()
   const previousInjectedChainId = usePrevious(injectedChainId)
+
+  const jsonRpcProviders = useJsonRpcProviders()
+  const [injectedProvider] = useInjectedProviderCtx()
+  const [, setSigners] = useSignerCtx()
 
   useEffect(() => {
     LocalStorage.set('mostRecentChainId', chainId)
   }, [chainId])
 
+  const injectedMismatching = injectedChainId !== chainId
+
   useEffect(() => {
     if (!chainId || !injectedChainId || !previousInjectedChainId) return
 
     // Change chainId when injectedChainId changes and doesn't match chainId
-    if (injectedChainId !== chainId && previousInjectedChainId !== injectedChainId) {
+    if (injectedMismatching && previousInjectedChainId !== injectedChainId) {
       try {
         getNetwork(injectedChainId)
         setChainId(injectedChainId)
@@ -316,7 +335,7 @@ const OnboardConnection: FC = ({ children }) => {
         console.warn(error)
       }
     }
-  }, [chainId, injectedChainId, previousInjectedChainId, setChainId])
+  }, [chainId, injectedChainId, injectedMismatching, previousInjectedChainId, setChainId])
 
   useEffect(() => {
     if (!injectedProvider || network.isMetaMaskDefault) return
@@ -340,25 +359,33 @@ const OnboardConnection: FC = ({ children }) => {
   useEffect(() => {
     if (!jsonRpcProviders) return setSigners(undefined)
 
+    if (injectedMismatching) {
+      return setSigners({
+        provider: jsonRpcProviders.provider,
+        parentChainProvider: jsonRpcProviders.parentChainProvider,
+      })
+    }
+
     setSigners({
       provider: injectedProvider ?? jsonRpcProviders.provider,
       parentChainProvider: jsonRpcProviders.parentChainProvider,
       signer: injectedProvider?.getSigner(),
     })
-  }, [injectedProvider, jsonRpcProviders, setSigners])
+  }, [injectedMismatching, injectedProvider, jsonRpcProviders, setSigners])
 
   // Remount Onboard when the chainId changes
   // Necessitated by Onboard's design and internal state
   return (
-    <OnboardProvider
-      key={chainId}
-      chainId={chainId ?? ChainIds.EthereumMainnet}
-      setInjectedChainId={setInjectedChainId}
-      setInjectedProvider={setInjectedProvider}
-    >
+    <OnboardProvider key={chainId} chainId={chainId ?? ChainIds.EthereumMainnet}>
       {children}
     </OnboardProvider>
   )
 }
 
-export const AccountProvider = composedComponent(SignerProvider, OnboardConnection, AccountState)
+export const AccountProvider = composedComponent(
+  SignerProvider,
+  InjectedChainIdProvider,
+  InjectedProviderProvider,
+  OnboardConnection,
+  AccountState,
+)
