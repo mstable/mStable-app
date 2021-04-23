@@ -294,16 +294,16 @@ const MATIC_MAINNET: MaticMainnet = {
   ],
   gasStationEndpoint: 'https://gasstation-mainnet.matic.network',
   gqlEndpoints: {
-    // TODO deploy
-    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-matic',
-    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools-matic',
+    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-polygon',
+    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools-polygon',
     blocks: 'https://api.thegraph.com/subgraphs/name/elkfinance/matic-blocks',
+    ecosystem: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem', // Mainnet
   },
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0', // Mainnet
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015', // Mainnet
     FeederWrapper: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5', // Mainnet
-    SaveWrapper: '',
+    SaveWrapper: '0x299081f52738A4204C3D58264ff44f6F333C6c88',
     UniswapRouter02_Like: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff', // QuickSwap
     ERC20: {
       wMATIC: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
