@@ -92,7 +92,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
             [address]: {
               address,
               decimals,
-              symbol: symbol.replace('(PoS) mStable USD', 'mUSD').replace(/^PoS-/, ''),
+              symbol: symbol.replace(/(\(pos\) mstable usd)|(mstable usd \(polygon pos\))/i, 'mUSD').replace(/^PoS-/, ''),
               balance: new BigDecimal(0, decimals),
               allowances: {},
               totalSupply: BigDecimal.fromMetric(totalSupply),
