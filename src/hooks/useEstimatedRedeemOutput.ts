@@ -19,8 +19,7 @@ export const useEstimatedRedeemOutput = (contract?: RedeemableContract, inputVal
   // Get the swap output with a throttle so it's not called too often
   const [update] = useDebounce(
     () => {
-      if (!inputValues) return
-      if (!contract) return setEstimatedOutputAmount.fetching()
+      if (!inputValues || !contract) return
 
       const touched = Object.values(inputValues).filter(v => v.touched)
 
