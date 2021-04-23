@@ -103,7 +103,7 @@ const OnboardProvider: FC<{
   const addErrorNotification = useAddErrorNotification()
 
   const network = useNetwork()
-  const rpcUrl = network.rpcEndpoint
+  const rpcUrl = network.rpcEndpoints[0]
 
   const onboard = useMemo(
     () =>
@@ -347,7 +347,7 @@ const OnboardConnection: FC = ({ children }) => {
           chainId: utils.hexStripZeros(utils.hexlify(network.chainId)),
           chainName: `${network.protocolName} (${network.chainName})`,
           nativeCurrency: network.nativeToken,
-          rpcUrls: [network.rpcEndpoint],
+          rpcUrls: network.rpcEndpoints,
           blockExplorerUrls: [network.getExplorerUrl()],
         },
       ])

@@ -72,7 +72,7 @@ interface Network<TAddresses, TGqlEndpoints> {
 
   coingeckoId: string
 
-  rpcEndpoint: string
+  rpcEndpoints: string[]
 
   gqlEndpoints: CoreGqlEndpoints & TGqlEndpoints
 
@@ -184,7 +184,7 @@ const ETH_MAINNET: EthereumMainnet = {
   isTestnet: false,
   blockTime: 15e3,
   coingeckoId: 'ethereum',
-  rpcEndpoint: 'https://mainnet.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe',
+  rpcEndpoints: ['https://mainnet.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe'],
   gasStationEndpoint: 'https://gasprice.poa.network/',
   gqlEndpoints: {
     protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging',
@@ -223,7 +223,7 @@ const ETH_ROPSTEN: EthereumRopsten = {
   parentChainId: ChainIds.EthereumMainnet,
   chainId: ChainIds.EthereumRopsten,
   chainName: 'Ropsten',
-  rpcEndpoint: 'https://ropsten.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe',
+  rpcEndpoints: ['https://ropsten.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe'],
   gasStationEndpoint: 'https://gasprice.poa.network/',
   gqlEndpoints: {
     protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-ropsten',
@@ -250,7 +250,7 @@ const ETH_GOERLI: EthereumGoerli = {
   parentChainId: ChainIds.EthereumMainnet,
   chainId: ChainIds.EthereumGoerli,
   chainName: 'Görli',
-  rpcEndpoint: 'https://goerli.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe',
+  rpcEndpoints: ['https://goerli.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe'],
   gasStationEndpoint: 'https://gasprice.poa.network/',
   gqlEndpoints: {
     protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-goerli',
@@ -284,7 +284,10 @@ const MATIC_MAINNET: MaticMainnet = {
   isTestnet: false,
   blockTime: 2e3,
   coingeckoId: 'matic-network',
-  rpcEndpoint: 'https://rpc-mainnet.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
+  rpcEndpoints: [
+    'https://purple-proud-voice.matic.quiknode.pro/52ca845f5559822f43aa6818a6e6c1e423b5ab83',
+    'https://rpc-mainnet.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
+  ],
   gasStationEndpoint: 'https://gasstation-mainnet.matic.network',
   gqlEndpoints: {
     // TODO deploy
@@ -311,7 +314,7 @@ const MATIC_MUMBAI: MaticMumbai = {
   chainId: ChainIds.MaticMumbai,
   parentChainId: ChainIds.EthereumGoerli,
   chainName: 'Mumbai',
-  rpcEndpoint: 'https://rpc-mumbai.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
+  rpcEndpoints: ['https://rpc-mumbai.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7'],
   gasStationEndpoint: 'https://gasstation-mumbai.matic.today',
   gqlEndpoints: {
     protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-polygon-mumbai',
@@ -434,13 +437,13 @@ const JsonRpcProvider: FC = ({ children }) => {
   const value = useMemo(() => {
     if (!network) return undefined
 
-    const { rpcEndpoint, parentChainId } = network
-    const provider = new providers.JsonRpcProvider(rpcEndpoint)
+    const { rpcEndpoints, parentChainId } = network
+    const provider = new providers.FallbackProvider(rpcEndpoints.map(e => new providers.JsonRpcProvider(e)))
 
     let parentChainProvider
     if (parentChainId) {
-      const { rpcEndpoint: parentRpcEndpoint } = getNetwork(parentChainId)
-      parentChainProvider = new providers.JsonRpcProvider(parentRpcEndpoint)
+      const { rpcEndpoints: parentRpcEndpoints } = getNetwork(parentChainId)
+      parentChainProvider = new providers.FallbackProvider(parentRpcEndpoints.map(e => new providers.JsonRpcProvider(e)))
     }
 
     return { provider, parentChainProvider }
