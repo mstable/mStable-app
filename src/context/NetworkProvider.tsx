@@ -289,6 +289,7 @@ const MATIC_MAINNET: MaticMainnet = {
   blockTime: 2e3,
   coingeckoId: 'matic-network',
   rpcEndpoints: [
+    'https://rpc-mainnet.maticvigil.com',
     'https://purple-proud-voice.matic.quiknode.pro/52ca845f5559822f43aa6818a6e6c1e423b5ab83',
     'https://rpc-mainnet.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
   ],
