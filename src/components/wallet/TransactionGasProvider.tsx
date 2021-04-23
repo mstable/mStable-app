@@ -3,6 +3,7 @@ import { useThrottleFn } from 'react-use'
 import { BigNumber } from 'ethers'
 
 import { Transaction, useTransactionsState } from '../../context/TransactionsProvider'
+import { useNetwork, Networks } from '../../context/NetworkProvider'
 
 interface GasCtx {
   estimationError?: string
@@ -17,9 +18,12 @@ export const useGas = (): GasCtx => useContext(ctx)
 
 export const TransactionGasProvider: FC<{ id: string }> = ({ children, id }) => {
   const { [id]: transaction } = useTransactionsState()
+  const { protocolName } = useNetwork()
   const [estimationError, setEstimationError] = useState<string | undefined>()
   const [gasLimit, setGasLimit] = useState<BigNumber | undefined>()
   const [gasPrice, setGasPrice] = useState<number | undefined>()
+
+  const isPolygon = protocolName === Networks.Polygon
 
   useThrottleFn<Promise<void>, [Transaction | undefined]>(
     async _transaction => {
@@ -34,7 +38,8 @@ export const TransactionGasProvider: FC<{ id: string }> = ({ children, id }) => 
           console.error(error)
         }
       }
-      setGasLimit(estimate)
+      const hardLimit = (isPolygon && BigNumber.from(2e6)) || undefined
+      setGasLimit(hardLimit ?? estimate)
     },
     5000,
     [transaction],
