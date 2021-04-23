@@ -7,6 +7,7 @@ import type { Provider } from '@ethersproject/providers'
 import { composedComponent } from '../utils/reactUtils'
 import { FetchState, useFetchState } from '../hooks/useFetchState'
 import { LocalStorage } from '../localStorage'
+import { DEAD_ADDRESS } from '../constants'
 
 interface NetworkPrices {
   nativeToken?: number
@@ -233,7 +234,7 @@ const ETH_ROPSTEN: EthereumRopsten = {
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015',
-    FeederWrapper: '',
+    FeederWrapper: DEAD_ADDRESS,
     SaveWrapper: '',
     UniswapRouter02_Like: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
     ERC20: {
