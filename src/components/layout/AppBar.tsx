@@ -3,7 +3,8 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 
 import { useAccountOpen, useCloseAccount, useThemeMode, useToggleThemeMode, useToggleWallet } from '../../context/AppProvider'
-import { useConnect, useWallet, useWalletAddress, useConnected } from '../../context/AccountProvider'
+import { getNetwork, useChainIdCtx } from '../../context/NetworkProvider'
+import { useConnect, useWallet, useWalletAddress, useConnected, useInjectedChainIdCtx } from '../../context/AccountProvider'
 import { useTransactionsState } from '../../context/TransactionsProvider'
 
 import { Color, ViewportWidth } from '../../theme'
@@ -54,12 +55,11 @@ const AccountButton = styled(UnstyledButton)<{ active: boolean }>`
   border-radius: 1rem;
   cursor: pointer;
   display: flex;
-  font-weight: bold;
+  font-weight: 600;
   height: 2rem;
   justify-content: space-between;
   line-height: 100%;
   padding: 0.25rem 0.8rem;
-  text-transform: uppercase;
   transition: all 0.3s ease;
 
   > * {
@@ -193,11 +193,24 @@ const CloseAccount: FC = () => {
   )
 }
 
+const WrongNetwork = styled.div`
+  color: red;
+  > :first-child {
+    margin-bottom: 0.25rem;
+  }
+  > :last-child {
+    font-weight: normal;
+  }
+`
+
 const WalletButton: FC = () => {
   const accountOpen = useAccountOpen()
   const toggleWallet = useToggleWallet()
   const connected = useConnected()
   const account = useWalletAddress()
+  const [injectedChainId] = useInjectedChainIdCtx()
+  const [chainId] = useChainIdCtx()
+  const injectedNetwork = useMemo(() => (injectedChainId ? getNetwork(injectedChainId) : undefined), [injectedChainId])
 
   const connect = useConnect()
   const showTCModal = useTCModal()
@@ -216,7 +229,20 @@ const WalletButton: FC = () => {
 
   return (
     <WalletButtonBtn title="Account" onClick={handleClick} active={accountOpen}>
-      {connected ? (
+      {injectedChainId && chainId !== injectedChainId ? (
+        <>
+          <div>
+            <WalletIcon />
+          </div>
+          <WrongNetwork>
+            <div>
+              {/* eslint-disable-next-line jsx-a11y/accessible-emoji */}
+              <span>⚠️</span> Wrong network
+            </div>
+            <div>{injectedNetwork ? `${injectedNetwork.protocolName} (${injectedNetwork.chainName})` : `Chain ID ${injectedChainId}`}</div>
+          </WrongNetwork>
+        </>
+      ) : connected ? (
         <>
           <Idle>
             <WalletIcon />
