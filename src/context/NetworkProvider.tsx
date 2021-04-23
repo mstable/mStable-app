@@ -317,7 +317,6 @@ const MATIC_MUMBAI: MaticMumbai = {
     feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools-mumbai',
     // This is for mainnet, no subgraph available for Mumbai
     blocks: 'https://api.thegraph.com/subgraphs/name/elkfinance/matic-blocks',
-    ecosystem: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem', // fixme remove
   },
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0', // Mainnet
