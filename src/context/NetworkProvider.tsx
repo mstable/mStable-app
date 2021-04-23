@@ -8,6 +8,7 @@ import { composedComponent } from '../utils/reactUtils'
 import { FetchState, useFetchState } from '../hooks/useFetchState'
 import { LocalStorage } from '../localStorage'
 import { DEAD_ADDRESS } from '../constants'
+import { MassetName } from '../types'
 
 interface NetworkPrices {
   nativeToken?: number
@@ -81,6 +82,8 @@ interface Network<TAddresses, TGqlEndpoints> {
   gasStationEndpoint: string
 
   getExplorerUrl(entity?: string, type?: 'address' | 'transaction' | 'token' | 'account'): string
+
+  supportedMassets: MassetName[]
 }
 
 export interface EthereumMainnet
@@ -215,6 +218,7 @@ const ETH_MAINNET: EthereumMainnet = {
     },
   },
   getExplorerUrl: etherscanUrl(),
+  supportedMassets: ['mbtc', 'musd'],
 }
 
 const ETH_ROPSTEN: EthereumRopsten = {
@@ -303,6 +307,7 @@ const MATIC_MAINNET: MaticMainnet = {
     },
   },
   getExplorerUrl: maticExplorerUrl('mainnet'),
+  supportedMassets: ['musd'],
 }
 
 const MATIC_MUMBAI: MaticMumbai = {
