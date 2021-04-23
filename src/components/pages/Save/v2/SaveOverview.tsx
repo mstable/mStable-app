@@ -144,13 +144,11 @@ export const SaveOverview: FC = () => {
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0
 
   const userBalance = useMemo(() => {
-    if (selectedSaveVersion === 1) return saveV1Balance?.balance
+    if (selectedSaveVersion === 1) return saveV1Balance?.balance ?? BigDecimal.ZERO
 
-    return (
-      boostedSavingsVault?.account?.rawBalance
-        .add(saveToken?.balance ?? BigDecimal.ZERO)
-        .mulTruncate(saveExchangeRate?.exact ?? BigDecimal.ONE.exact) ?? BigDecimal.ZERO
-    )
+    return (boostedSavingsVault?.account?.rawBalance ?? BigDecimal.ZERO)
+      .add(saveToken?.balance ?? BigDecimal.ZERO)
+      .mulTruncate(saveExchangeRate?.exact ?? BigDecimal.ONE.exact)
   }, [boostedSavingsVault, saveToken, saveExchangeRate, selectedSaveVersion, saveV1Balance])
 
   const isSaveV1 = selectedSaveVersion === 1
@@ -169,7 +167,7 @@ export const SaveOverview: FC = () => {
                 {isSaveV1 && <StyledWarningBadge />}
               </div>
             </BalanceHeading>
-            <CountUp end={(userBalance?.simple ?? 0) * (massetPrice ?? 0)} prefix="$" />
+            <CountUp end={(userBalance.simple ?? 0) * (massetPrice ?? 0)} prefix="$" />
           </Button>
           {!isSaveV1 && !!boostedSavingsVault && (
             <Button active={selection === VaultAPY} onClick={() => handleSelection(VaultAPY)}>
