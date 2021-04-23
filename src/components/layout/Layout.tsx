@@ -4,9 +4,14 @@ import reset from 'styled-reset'
 import { useLocation } from 'react-router-dom'
 import { TransitionGroup } from 'react-transition-group'
 import { ModalProvider } from 'react-modal-hook'
-
+import { usePrevious } from 'react-use'
 import { getUnixTime } from 'date-fns'
 import { BigNumber } from 'ethers'
+
+import { Networks, useChainIdCtx, useNetwork } from '../../context/NetworkProvider'
+import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
+
 import { ReactTooltip, Tooltip } from '../core/ReactTooltip'
 import { Footer } from './Footer'
 import { Account } from './Account'
@@ -15,24 +20,18 @@ import { Background } from './Background'
 import { AppBar } from './AppBar'
 import { Toasts } from './Toasts'
 import { Color, ViewportWidth } from '../../theme'
-import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
-import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 import { BigDecimal } from '../../web3/BigDecimal'
 import { SCALE } from '../../constants'
 import { MessageHandler } from './MessageHandler'
-import { Networks, useNetwork } from '../../context/NetworkProvider'
 
 const Main = styled.main<{ marginTop?: boolean }>`
   margin-top: ${({ marginTop }) => marginTop && `2rem`};
+  padding: 0 1rem;
+  min-height: 50vh;
 
   @media (min-width: ${ViewportWidth.s}) {
     padding: 1rem;
   }
-`
-
-const BackgroundContainer = styled.div`
-  padding: 0 1rem;
-  min-height: 50vh;
 `
 
 const GlobalStyle = createGlobalStyle`
@@ -220,6 +219,8 @@ export const Layout: FC = ({ children }) => {
   const accountOpen = useAccountOpen()
   const { pathname } = useLocation()
   const home = pathname === '/'
+  const [chainId] = useChainIdCtx()
+  const prevChainId = usePrevious(chainId)
 
   // Message
   const [bannerMessage, setBannerMessage] = useBannerMessage()
@@ -274,15 +275,7 @@ export const Layout: FC = ({ children }) => {
     <ModalProvider rootComponent={TransitionGroup}>
       <Background home={home} accountOpen={accountOpen} />
       <HeaderGroup home={home} />
-      <Container>
-        {accountOpen ? (
-          <Account />
-        ) : (
-          <Main marginTop={home}>
-            <BackgroundContainer>{children}</BackgroundContainer>
-          </Main>
-        )}
-      </Container>
+      <Container>{accountOpen ? <Account /> : <Main marginTop={home}>{prevChainId === chainId ? children : null}</Main>}</Container>
       <Footer />
       <Toasts />
       <Tooltip tip="" hideIcon />
