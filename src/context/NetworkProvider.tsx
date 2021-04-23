@@ -1,6 +1,5 @@
-import type { FC } from 'react'
-import React, { createContext, useCallback, useContext, useMemo } from 'react'
-import { createStateContext, useEffectOnce, useInterval } from 'react-use'
+import React, { FC, useEffect, createContext, useCallback, useContext, useMemo } from 'react'
+import { createStateContext, useInterval } from 'react-use'
 import { providers } from 'ethers'
 import type { Provider } from '@ethersproject/providers'
 
@@ -188,7 +187,7 @@ const ETH_MAINNET: EthereumMainnet = {
   blockTime: 15e3,
   coingeckoId: 'ethereum',
   rpcEndpoints: ['https://mainnet.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe'],
-  gasStationEndpoint: 'https://gasprice.poa.network/',
+  gasStationEndpoint: 'https://www.gasnow.org/api/v3/gas/price?utm_source=:mstable',
   gqlEndpoints: {
     protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging',
     feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools',
@@ -399,7 +398,7 @@ const NetworkPricesProvider: FC = ({ children }) => {
     const gasStationResponse = await fetch(network.gasStationEndpoint)
     const priceResponse = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${network.coingeckoId}&vs_currencies=usd`)
 
-    const [{ standard, instant, fast, fastest, safeLow, slow }, priceResult] = (await Promise.all([
+    const [{ data, standard, instant, fast, fastest, safeLow, slow }, priceResult] = (await Promise.all([
       gasStationResponse.json(),
       priceResponse.json(),
     ])) as [
@@ -411,24 +410,36 @@ const NetworkPricesProvider: FC = ({ children }) => {
         instant?: number
         safeLow?: number
         slow?: number
+        data?: {
+          slow: number
+          fast: number
+          standard: number
+          rapid: number
+        }
       },
       Record<typeof network['coingeckoId'], { usd: number }>,
     ]
 
+    const gasNow = Object.fromEntries(
+      Object.entries(data ?? {})
+        .filter(([k]) => ['rapid', 'slow', 'standard', 'fast'].find(v => v === k))
+        .map(([k, v]) => [k, v / 1e9]),
+    )
+
     const nativeToken = priceResult[network.coingeckoId].usd
     const gas = {
-      standard,
-      fast,
-      slow: slow ?? (safeLow as number),
-      instant: instant ?? (fastest as number),
+      standard: standard ?? gasNow?.standard,
+      fast: fast ?? gasNow?.fast,
+      slow: slow ?? (safeLow as number) ?? gasNow?.slow,
+      instant: instant ?? (fastest as number) ?? gasNow?.rapid,
     }
 
     setNetworkPrices.value({ nativeToken, gas })
   }, [network, setNetworkPrices])
 
-  useEffectOnce(() => {
+  useEffect(() => {
     fetchPrices().catch(setNetworkPrices.error)
-  })
+  }, [network])
 
   useInterval(() => {
     fetchPrices().catch(setNetworkPrices.error)
