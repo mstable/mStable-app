@@ -38,11 +38,11 @@ export const useSelectedFeederPoolState = (): FeederPoolState => {
 export const useSelectedFeederPoolContracts = (): PoolState['contracts'] => useContext(ctx).contracts
 
 export const useSelectedFeederPoolContract = (): FeederPool | undefined => {
-  return useContext(ctx).contracts?.feederPool
+  return useContext(ctx)?.contracts?.feederPool
 }
 
 export const useSelectedFeederPoolVaultContract = (): BoostedSavingsVault | undefined => {
-  return useContext(ctx).contracts?.vault
+  return useContext(ctx)?.contracts?.vault
 }
 
 export const useFPAssetAddressOptions = (includeFpToken?: boolean): AddressOption[] => {

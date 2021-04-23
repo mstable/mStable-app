@@ -178,7 +178,7 @@ export const SaveOverview: FC = () => {
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
 
   const userBalance = useMemo(() => {
-    if (selectedSaveVersion === 1) return saveV1Balance?.balance;
+    if (selectedSaveVersion === 1) return saveV1Balance?.balance
 
     return (
       boostedSavingsVault?.account?.rawBalance
