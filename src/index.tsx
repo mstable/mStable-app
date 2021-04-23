@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { render } from 'react-dom'
-import { HashRouter, Route, Switch, Redirect } from 'react-router-dom'
+import { HashRouter, Route, Switch, Redirect, useHistory } from 'react-router-dom'
 import { useEffectOnce } from 'react-use'
 
 import * as serviceWorker from './serviceWorker'
@@ -19,14 +19,26 @@ import { EarnPage } from './components/pages/Earn/Pool'
 import { AdminPage } from './components/pages/Earn/Admin'
 import { Pools } from './components/pages/Pools'
 import { PoolDetail } from './components/pages/Pools/Detail'
+import { useNetwork } from './context/NetworkProvider'
+import { useSelectedMasset } from './context/SelectedMassetNameProvider'
 
 const Routes: FC = () => {
+  const { supportedMassets } = useNetwork()
+  const [massetName] = useSelectedMasset()
+  const history = useHistory()
+
   useEffectOnce(() => {
     // Redirect for legacy links (without hash)
     if (window.location.pathname !== '/' && !window.location.pathname.startsWith('/ipfs/')) {
       window.location.hash = window.location.pathname
       window.location.pathname = ''
     }
+
+    if (supportedMassets.includes(massetName)) return
+
+    // Redirect if not supported masset
+    const tab = window.location.hash.split('/')?.[2]
+    if (tab) history.push(`/musd/${tab}`)
   })
 
   return (
