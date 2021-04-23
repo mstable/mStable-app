@@ -285,7 +285,7 @@ const MATIC_MAINNET: MaticMainnet = {
   },
   isMetaMaskDefault: false,
   isTestnet: false,
-  blockTime: 2e3,
+  blockTime: 5e3, // Actually 2 seconds, but that means a lot of request volume
   coingeckoId: 'matic-network',
   rpcEndpoints: [
     'https://rpc-mainnet.maticvigil.com',
