@@ -1,21 +1,15 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import styled from 'styled-components';
 
-import { ADDRESSES } from '../../constants';
-import { useTokenSubscription } from '../../context/TokensProvider';
 import { createToggleContext } from '../../hooks/createToggleContext';
 import { ProgressBar } from '../core/ProgressBar';
 import { Button } from '../core/Button';
 import { Widget } from '../core/Widget';
 import { ViewportWidth } from '../../theme';
 
-import {
-  calculateBoost,
-  calculateBoostImusd,
-  getCoeffs,
-} from '../../utils/boost';
 import { BoostCalculator } from './BoostCalculator';
 import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
+import { useCalculateUserBoost } from '../../hooks/useCalculateUserBoost';
 
 const BoostBarLine = styled.div`
   width: 100%;
@@ -41,19 +35,9 @@ const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(
 
 const BoostBar: FC<{
   vault: BoostedSavingsVaultState;
-  isImusd?: boolean;
-}> = ({ vault, isImusd }) => {
+}> = ({ vault }) => {
   const [, toggleShowCalculator] = useShowCalculatorCtx();
-  const vMTA = useTokenSubscription(ADDRESSES.vMTA);
-  const vMTABalance = vMTA?.balance;
-  const rawBalance = vault.account?.rawBalance;
-
-  const boost = useMemo<number>(() => {
-    const coeffs = getCoeffs(vault);
-    return isImusd || !coeffs
-      ? calculateBoostImusd(rawBalance, vMTABalance)
-      : calculateBoost(...coeffs, rawBalance, vMTABalance);
-  }, [rawBalance, isImusd, vMTABalance, vault]);
+  const boost = useCalculateUserBoost(vault);
 
   return (
     <Widget
@@ -108,8 +92,7 @@ const Container = styled(Widget)<{ showCalculator?: boolean }>`
 const BoostContent: FC<{
   vault: BoostedSavingsVaultState;
   apy?: number;
-  isImusd?: boolean;
-}> = ({ children, apy, vault, isImusd }) => {
+}> = ({ children, apy, vault }) => {
   const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx();
 
   return (
@@ -118,12 +101,11 @@ const BoostContent: FC<{
         <BoostCalculator
           apy={apy}
           vault={vault}
-          isImusd={isImusd}
           onClick={toggleShowCalculator}
         />
       ) : (
         <>
-          <BoostBar vault={vault} isImusd={isImusd} />
+          <BoostBar vault={vault} />
           {children}
         </>
       )}
@@ -134,10 +116,9 @@ const BoostContent: FC<{
 export const Boost: FC<{
   vault: BoostedSavingsVaultState;
   apy?: number;
-  isImusd?: boolean;
-}> = ({ apy, children, vault, isImusd }) => (
+}> = ({ apy, children, vault }) => (
   <ShowCalculatorProvider>
-    <BoostContent apy={apy} vault={vault} isImusd={isImusd}>
+    <BoostContent apy={apy} vault={vault}>
       {children}
     </BoostContent>
   </ShowCalculatorProvider>

@@ -122,6 +122,7 @@ export interface BoostedSavingsVaultState {
   totalStakingRewards: BigDecimal;
   totalSupply: BigDecimal;
   unlockPercentage: BigNumber;
+  isImusd: boolean;
 }
 
 export type SavingsContractState = {
