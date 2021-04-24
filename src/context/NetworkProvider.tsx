@@ -289,7 +289,8 @@ const MATIC_MAINNET: MaticMainnet = {
   coingeckoId: 'matic-network',
   rpcEndpoints: [
     'https://rpc-mainnet.maticvigil.com',
-    'https://purple-proud-voice.matic.quiknode.pro/52ca845f5559822f43aa6818a6e6c1e423b5ab83',
+    'https://rpc-mainnet.matic.quiknode.pro',
+    // 'https://purple-proud-voice.matic.quiknode.pro/52ca845f5559822f43aa6818a6e6c1e423b5ab83',
     'https://rpc-mainnet.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
   ],
   gasStationEndpoint: 'https://gasstation-mainnet.matic.network',
@@ -439,7 +440,7 @@ const NetworkPricesProvider: FC = ({ children }) => {
 
   useEffect(() => {
     fetchPrices().catch(setNetworkPrices.error)
-  }, [network])
+  }, [fetchPrices, network, setNetworkPrices.error])
 
   useInterval(() => {
     fetchPrices().catch(setNetworkPrices.error)
