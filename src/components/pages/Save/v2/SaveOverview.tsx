@@ -24,7 +24,6 @@ import { SavePosition } from './SavePosition';
 import { OnboardingBanner } from './OnboardingBanner';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
 import { useCalculateUserBoost } from '../../../../hooks/useCalculateUserBoost';
-import { UserLookup } from '../../Pools/Detail/UserLookup';
 
 enum Selection {
   Balance = 'Balance',
@@ -206,7 +205,6 @@ export const SaveOverview: FC = () => {
   return (
     <Container>
       <OnboardingBanner />
-      <UserLookup />
       <TransitionCard components={components} selection={selection}>
         <TransitionContainer>
           <Button
