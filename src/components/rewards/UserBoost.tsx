@@ -44,53 +44,47 @@ const Container = styled.div`
 export const UserBoost: FC<{
   vault: BoostedSavingsVaultState;
   apy: FetchState<{ base: number; maxBoost: number; userBoost?: number }>;
-}> = ({ vault, apy }) => {
-  // TODO: think of a better way to handle this
-  const isImusd =
-    vault?.address === '0x78befca7de27d07dc6e71da295cc2946681a6c7b'; // imUSD vault address
-  return (
-    <Container>
-      <Boost vault={vault} apy={apy.value?.base} isImusd={isImusd}>
+}> = ({ vault, vault: { isImusd }, apy }) => (
+  <Container>
+    <Boost vault={vault} apy={apy.value?.base}>
+      <div>
         <div>
           <div>
-            <div>
-              <h4>Base APY</h4>
-              {apy.fetching ? (
-                <ThemedSkeleton height={20} width={64} />
-              ) : (
-                apy.value && <CountUp end={apy.value.base} suffix="%" />
-              )}
-            </div>
-            <div>
-              <h4>Max APY</h4>
-              {apy.fetching ? (
-                <ThemedSkeleton height={20} width={64} />
-              ) : (
-                apy.value && <CountUp end={apy.value.maxBoost} suffix="%" />
-              )}
-            </div>
-            <div>
-              <h4>My APY</h4>
-              {apy.fetching ? (
-                <ThemedSkeleton height={20} width={64} />
-              ) : (
-                apy.value && (
-                  <DifferentialCountup
-                    prev={apy.value.base}
-                    end={apy.value?.userBoost ?? apy.value.base}
-                    suffix="%"
-                  />
-                )
-              )}
-            </div>
+            <h4>Base APY</h4>
+            {apy.fetching ? (
+              <ThemedSkeleton height={20} width={64} />
+            ) : (
+              apy.value && <CountUp end={apy.value.base} suffix="%" />
+            )}
           </div>
-          <p>
-            {isImusd ? 20 : 33}% of earned MTA rewards are claimable
-            immediately. The remaining rewards are streamed linearly after 26
-            weeks
-          </p>
+          <div>
+            <h4>Max APY</h4>
+            {apy.fetching ? (
+              <ThemedSkeleton height={20} width={64} />
+            ) : (
+              apy.value && <CountUp end={apy.value.maxBoost} suffix="%" />
+            )}
+          </div>
+          <div>
+            <h4>My APY</h4>
+            {apy.fetching ? (
+              <ThemedSkeleton height={20} width={64} />
+            ) : (
+              apy.value && (
+                <DifferentialCountup
+                  prev={apy.value.base}
+                  end={apy.value?.userBoost ?? apy.value.base}
+                  suffix="%"
+                />
+              )
+            )}
+          </div>
         </div>
-      </Boost>
-    </Container>
-  );
-};
+        <p>
+          {isImusd ? 20 : 33}% of earned MTA rewards are claimable immediately.
+          The remaining rewards are streamed linearly after 26 weeks
+        </p>
+      </div>
+    </Boost>
+  </Container>
+);

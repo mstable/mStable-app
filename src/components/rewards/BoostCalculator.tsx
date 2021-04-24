@@ -198,9 +198,8 @@ export const BoostCalculator: FC<{
   apy?: number;
   onClick?: () => void;
   noBackButton?: boolean;
-  isImusd?: boolean;
-}> = ({ apy, noBackButton, onClick, vault, isImusd }) => {
-  const inputAddress = vault.stakingToken;
+}> = ({ apy, noBackButton, onClick, vault }) => {
+  const { stakingToken: inputAddress, isImusd } = vault;
 
   const inputToken = useTokenSubscription(inputAddress);
   const inputBalance = inputToken?.balance;

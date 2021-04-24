@@ -144,6 +144,9 @@ const transformBoostedSavingsVault = ({
 >): BoostedSavingsVaultState => {
   let account: BoostedSavingsVaultState['account'];
 
+  // FIXME: - Replace this with something better
+  const isImusd = address === '0x78befca7de27d07dc6e71da295cc2946681a6c7b'; // imUSD vault address
+
   if (accounts?.[0]) {
     const [
       {
@@ -196,6 +199,7 @@ const transformBoostedSavingsVault = ({
     unlockPercentage: BigNumber.from(unlockPercentage),
     boostCoeff: boostCoeff ? parseFloat(boostCoeff) : undefined,
     priceCoeff: priceCoeff ? parseFloat(priceCoeff) : undefined,
+    isImusd,
   };
 };
 

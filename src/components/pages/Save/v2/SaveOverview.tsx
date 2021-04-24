@@ -1,19 +1,13 @@
-import React, {
-  FC,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
+import { useEffectOnce } from 'react-use';
 import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider';
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider';
 import { MassetState } from '../../../../context/DataProvider/types';
 import { useRewardStreams } from '../../../../context/RewardStreamsProvider';
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice';
-import { FetchState, useFetchState } from '../../../../hooks/useFetchState';
+import { FetchState } from '../../../../hooks/useFetchState';
 import { BigDecimal } from '../../../../web3/BigDecimal';
 
 import { CountUp, DifferentialCountup } from '../../../core/CountUp';
@@ -29,6 +23,8 @@ import { ReactComponent as WarningBadge } from '../../../icons/badges/warning.sv
 import { SavePosition } from './SavePosition';
 import { OnboardingBanner } from './OnboardingBanner';
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton';
+import { useCalculateUserBoost } from '../../../../hooks/useCalculateUserBoost';
+import { UserLookup } from '../../Pools/Detail/UserLookup';
 
 enum Selection {
   Balance = 'Balance',
@@ -94,28 +90,48 @@ interface PoolsAPIResponse {
   }[];
 }
 
-// TODO this can be done without API
-const useSaveVaultAPY = (symbol?: string): FetchState<BoostedApy> => {
-  const [apy, setApy] = useFetchState<BoostedApy>();
+// FIXME sir - change pattern
+let cachedAPY: FetchState<BoostedApy> = { fetching: true };
 
-  useEffect(() => {
+// TODO this can be done without API
+const useSaveVaultAPY = (
+  symbol?: string,
+  userBoost?: number,
+): FetchState<BoostedApy> => {
+  useEffectOnce(() => {
     if (!symbol) return;
 
-    setApy.fetching();
     fetch('https://api-dot-mstable.appspot.com/pools')
       .then(res =>
         res.json().then(({ pools }: PoolsAPIResponse) => {
           const pool = pools.find(p => p.pair[0] === symbol);
-          if (pool) {
-            setApy.value({
-              base: parseFloat(pool.apyDetails.rewardsOnlyBase),
-              maxBoost: parseFloat(pool.apyDetails.rewardsOnlyMax),
-            });
-          }
+          if (!pool) return;
+          const base = parseFloat(pool?.apyDetails.rewardsOnlyBase);
+          const maxBoost = parseFloat(pool?.apyDetails.rewardsOnlyMax);
+          cachedAPY = {
+            value: {
+              base,
+              maxBoost,
+            },
+          };
         }),
       )
-      .catch(error => setApy.error(error.message));
-  }, [setApy, symbol]);
+      .catch(error => {
+        cachedAPY = { error: error.message };
+      });
+  });
+
+  const apy = useMemo(() => {
+    if (!cachedAPY?.value) return cachedAPY;
+    return {
+      value: {
+        base: cachedAPY.value.base,
+        maxBoost: cachedAPY.value.maxBoost,
+        userBoost: (userBoost ?? 1) * cachedAPY.value.base,
+      },
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userBoost, symbol, cachedAPY.value]);
 
   return apy;
 };
@@ -127,7 +143,8 @@ const UserSaveBoost: FC = () => {
     },
   } = useSelectedMassetState() as MassetState;
 
-  const apy = useSaveVaultAPY(token?.symbol);
+  const userBoost = useCalculateUserBoost(boostedSavingsVault);
+  const apy = useSaveVaultAPY(token?.symbol, userBoost);
   return boostedSavingsVault ? (
     <UserBoost vault={boostedSavingsVault} apy={apy} />
   ) : null;
@@ -157,7 +174,8 @@ export const SaveOverview: FC = () => {
     },
   } = massetState as MassetState;
 
-  const apy = useSaveVaultAPY(saveToken?.symbol);
+  const userBoost = useCalculateUserBoost(boostedSavingsVault);
+  const apy = useSaveVaultAPY(saveToken?.symbol, userBoost);
   const totalEarned = rewardStreams?.amounts.earned.total ?? 0;
 
   const userBalance = useMemo(() => {
@@ -188,6 +206,7 @@ export const SaveOverview: FC = () => {
   return (
     <Container>
       <OnboardingBanner />
+      <UserLookup />
       <TransitionCard components={components} selection={selection}>
         <TransitionContainer>
           <Button
@@ -215,10 +234,10 @@ export const SaveOverview: FC = () => {
                 <ThemedSkeleton height={20} width={64} />
               ) : (
                 <div>
-                  {apy?.value?.userBoost ? (
+                  {userBoost > 1 && apy?.value?.userBoost ? (
                     <DifferentialCountup
-                      prev={apy?.value?.base}
-                      end={apy?.value?.userBoost}
+                      prev={apy.value?.base}
+                      end={apy.value.userBoost}
                       suffix="%"
                     />
                   ) : (

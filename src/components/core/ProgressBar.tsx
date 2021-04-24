@@ -103,7 +103,7 @@ export const ProgressBar: FC<Props> = ({
             fill="white"
             textAnchor="end"
           >
-            {value.toFixed(1)}
+            {value.toFixed(2)}
           </text>
         </g>
       </g>
