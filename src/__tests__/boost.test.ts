@@ -8,7 +8,10 @@ import {
 } from '../utils/boost';
 import { BigDecimal } from '../web3/BigDecimal';
 
-const mockVault = (address: string): BoostedSavingsVaultState => ({
+const mockVault = (
+  address: string,
+  isImusd = false,
+): BoostedSavingsVaultState => ({
   address,
   account: {
     boostedBalance: BigDecimal.ZERO,
@@ -39,11 +42,15 @@ const mockVault = (address: string): BoostedSavingsVaultState => ({
   totalStakingRewards: BigDecimal.ZERO,
   totalSupply: BigDecimal.ZERO,
   unlockPercentage: BigDecimal.ZERO.exact,
+  isImusd,
 });
 
 describe('test boost calculations', () => {
   test('it correctly calculates imusd boost', () => {
-    const imUSDVault = mockVault('0x78BefCa7de27d07DC6e71da295Cc2946681A6c7B');
+    const imUSDVault = mockVault(
+      '0x78BefCa7de27d07DC6e71da295Cc2946681A6c7B',
+      true,
+    );
     const coeffs = getCoeffs(imUSDVault);
     expect(coeffs).toBe(undefined);
 
