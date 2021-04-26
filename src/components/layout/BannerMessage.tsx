@@ -39,7 +39,7 @@ export const BannerMessage: FC = () => {
       <span role="img" aria-label="emoji">
         {bannerMessage.emoji}
       </span>
-      <p>
+      <div>
         <b>{`${bannerMessage.title} `}</b>
         {bannerMessage.subtitle && bannerMessage.subtitle}
         {bannerMessage.url &&
@@ -50,7 +50,7 @@ export const BannerMessage: FC = () => {
           ) : (
             <Link to={bannerMessage.url}>Learn more</Link>
           ))}
-      </p>
+      </div>
     </Container>
   ) : null
 }
