@@ -2,11 +2,16 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 
 import { useTransactionsDispatch, useTransactionsState } from '../../context/TransactionsProvider'
+import { useNetworkPrices } from '../../context/NetworkProvider'
 import { TransactionStatus } from '../../web3/TransactionManifest'
+import { BigDecimal } from '../../web3/BigDecimal'
 
 import { Button } from '../core/Button'
 import { GasStation } from './GasStation'
 import { useGas } from './TransactionGasProvider'
+import { useNativeToken } from '../../context/TokensProvider'
+import { TokenIcon } from '../icons/TokenIcon'
+import { Amount } from '../core/Amount'
 
 const Buttons = styled.div`
   display: flex;
@@ -17,8 +22,14 @@ const Buttons = styled.div`
 `
 
 const Purpose = styled.div`
-  font-size: 1.3rem;
-  line-height: 1.7rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  > :first-child {
+    font-size: 1.3rem;
+    line-height: 1.7rem;
+  }
 `
 
 const TxError = styled.div`
@@ -52,22 +63,52 @@ const Container = styled.div<{ status: TransactionStatus }>`
   background: ${({ theme }) => theme.color.background};
 `
 
+const NativeTokenBalanceContainer = styled.div<{ insufficientBalance: boolean }>`
+  > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    img {
+      width: 1.5rem;
+    }
+    color: ${({ insufficientBalance, theme }) => (insufficientBalance ? theme.color.red : 'inherit')};
+  }
+`
+
+const NativeTokenBalance: FC = () => {
+  const { insufficientBalance } = useGas()
+  const nativeToken = useNativeToken()
+  const networkPrices = useNetworkPrices()
+
+  return (
+    <NativeTokenBalanceContainer insufficientBalance={insufficientBalance}>
+      <div>
+        <TokenIcon symbol={nativeToken.symbol} hideNetwork />
+        <Amount amount={nativeToken.balance} price={BigDecimal.maybeParse(networkPrices.value?.nativeToken?.toFixed(4))} />
+      </div>
+    </NativeTokenBalanceContainer>
+  )
+}
+
 export const PendingTransaction: FC<{
   id: string
 }> = ({ id }) => {
   const { [id]: transaction } = useTransactionsState()
   const { cancel, send } = useTransactionsDispatch()
-  const { estimationError, gasLimit, gasPrice } = useGas()
+  const { estimationError, gasLimit, gasPrice, insufficientBalance } = useGas()
 
   if (!transaction) {
     return null
   }
 
-  const disabled = !!(estimationError || !gasLimit || !gasPrice || transaction.status !== TransactionStatus.Pending)
+  const disabled = !!(estimationError || !gasLimit || !gasPrice || insufficientBalance || transaction.status !== TransactionStatus.Pending)
 
   return (
     <Container status={transaction.status}>
-      <Purpose>{transaction.manifest.purpose.present}</Purpose>
+      <Purpose>
+        <div>{transaction.manifest.purpose.present}</div>
+        <NativeTokenBalance />
+      </Purpose>
       {transaction.status === TransactionStatus.Pending && <GasStation />}
       {estimationError && (
         <TxError>
