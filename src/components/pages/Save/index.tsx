@@ -92,7 +92,7 @@ export const Save: FC = () => {
           <Content>
             {showMigrationView ? <SaveMigration /> : <SaveV2 />}
             <Sidebar>
-              {massetName === 'musd' && (
+              {chainId === ChainIds.EthereumMainnet && massetName === 'musd' && (
                 <ButtonPanel>{massetName === 'musd' ? <ToggleSave /> : <div />}</ButtonPanel>
               )}
               <InfoBox>
