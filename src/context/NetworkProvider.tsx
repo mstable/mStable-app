@@ -288,10 +288,10 @@ const MATIC_MAINNET: MaticMainnet = {
   blockTime: 7e3, // Actually 2 seconds, but that means a lot of request volume
   coingeckoId: 'matic-network',
   rpcEndpoints: [
+    'https://purple-proud-voice.matic.quiknode.pro/52ca845f5559822f43aa6818a6e6c1e423b5ab83',
+    'https://rpc-mainnet.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
     'https://rpc-mainnet.maticvigil.com',
     'https://rpc-mainnet.matic.quiknode.pro',
-    // 'https://purple-proud-voice.matic.quiknode.pro/52ca845f5559822f43aa6818a6e6c1e423b5ab83',
-    'https://rpc-mainnet.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7',
   ],
   gasStationEndpoint: 'https://gasstation-mainnet.matic.network',
   gqlEndpoints: {
