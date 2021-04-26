@@ -23,14 +23,15 @@ export const TransactionGasProvider: FC<{ id: string }> = ({ children, id }) => 
   const [gasLimit, setGasLimit] = useState<BigNumber | undefined>()
   const [gasPrice, setGasPrice] = useState<number | undefined>()
 
-  const isPolygon = protocolName === Networks.Polygon
+  // +100% for Polygon, +10% otherwise
+  const gasMargin = protocolName === Networks.Polygon ? 10000 : 1000
 
   useThrottleFn<Promise<void>, [Transaction | undefined]>(
     async _transaction => {
       let estimate: BigNumber | undefined
       if (_transaction) {
         try {
-          estimate = await _transaction.manifest.estimate()
+          estimate = await _transaction.manifest.estimate(gasMargin)
         } catch (error) {
           // MetaMask error messages are in a `data` property
           const txMessage = error.data?.message || error.message
@@ -38,8 +39,7 @@ export const TransactionGasProvider: FC<{ id: string }> = ({ children, id }) => 
           console.error(error)
         }
       }
-      const hardLimit = (isPolygon && BigNumber.from(2e6)) || undefined
-      setGasLimit(hardLimit ?? estimate)
+      setGasLimit(estimate)
     },
     5000,
     [transaction],
