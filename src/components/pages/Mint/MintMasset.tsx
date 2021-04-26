@@ -50,7 +50,7 @@ export const MintMasset: FC = () => {
   const defaultInputAddress = useMemo(() => Object.keys(bAssets)[0], [bAssets])
   const [inputAddress, handleSetAddress] = useState<string | undefined>(defaultInputAddress)
   const massetToken = useTokenSubscription(massetAddress)
-  const inputToken = useTokenSubscription(inputAddress ?? defaultInputAddress)
+  const inputToken = useTokenSubscription(inputAddress)
   const inputDecimals = inputToken?.decimals
 
   const [inputAmount, inputFormValue, handleSetMassetFormValue] = useBigDecimalInput('0', { decimals: inputDecimals })
@@ -117,15 +117,15 @@ export const MintMasset: FC = () => {
   // Reset input on chain change
   const [chainId] = useChainIdCtx()
   useEffect(() => {
-    handleSetAddress(undefined)
-  }, [chainId])
+    handleSetAddress(defaultInputAddress)
+  }, [chainId, defaultInputAddress])
 
   const valid = !error
 
   return (
     <Container>
       <AssetInput
-        address={inputAddress ?? defaultInputAddress}
+        address={inputAddress}
         addressOptions={addressOptions}
         formValue={inputFormValue}
         handleSetAddress={handleSetAddress}
@@ -152,13 +152,13 @@ export const MintMasset: FC = () => {
         approve={approve}
         penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         handleSend={() => {
-          if (masset && walletAddress && inputAmount && minOutputAmount) {
+          if (masset && walletAddress && inputAddress && inputAmount && minOutputAmount) {
             if (isFasset && fasset) {
               return propose<Interfaces.FeederPool, 'swap'>(
                 new TransactionManifest(
                   fasset,
                   'swap',
-                  [inputAddress ?? defaultInputAddress, massetAddress, inputAmount.exact, minOutputAmount.exact, walletAddress],
+                  [inputAddress, massetAddress, inputAmount.exact, minOutputAmount.exact, walletAddress],
                   { present: 'Swapping', past: 'Swapped' },
                   formId,
                 ),
@@ -169,7 +169,7 @@ export const MintMasset: FC = () => {
               new TransactionManifest(
                 masset,
                 'mint',
-                [inputAddress ?? defaultInputAddress, inputAmount.exact, minOutputAmount.exact, walletAddress],
+                [inputAddress, inputAmount.exact, minOutputAmount.exact, walletAddress],
                 { past: 'Minted', present: 'Minting' },
                 formId,
               ),
