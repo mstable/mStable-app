@@ -9,6 +9,10 @@ const Anchor = styled.a`
     margin-left: 4px;
     width: 14px;
     height: auto;
+
+    path {
+      fill: ${({ theme }) => theme.color.body};
+    }
   }
 `
 

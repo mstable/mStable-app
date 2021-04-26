@@ -203,8 +203,8 @@ export const TokenIcon: FC<Props> = ({ className, symbol, hideNetwork = false })
   const showNetworkIcon = symbol && protocolName !== Networks.Ethereum && !hideNetwork
   const icon = TOKEN_ICONS[symbol?.toUpperCase() ?? '']
   return icon ? (
-    <ImageContainer>
-      <Image alt={symbol} src={icon} className={className} />
+    <ImageContainer className={className}>
+      <Image alt={symbol} src={icon} />
       {showNetworkIcon && <NetworkIcon src={TOKEN_ICONS[networkSymbol]} alt="" />}
     </ImageContainer>
   ) : (

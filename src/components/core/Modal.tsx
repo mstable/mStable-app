@@ -76,6 +76,8 @@ const Container = styled.div`
   border-bottom-right-radius: 0;
   transition: all ease-in;
   background: ${({ theme }) => theme.color.background};
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
+  overflow: hidden;
 
   @media (min-width: ${ViewportWidth.m}) {
     margin: 0 2rem;
@@ -96,7 +98,7 @@ const FixedContainer = styled.div`
   right: 0;
   bottom: 0;
   z-index: 1;
-  background: ${({ theme }) => (theme.isLight ? `rgba(0, 0, 0, 0.5)` : `rgba(0, 0, 0, 0.9)`)};
+  background: ${({ theme }) => (theme.isLight ? `rgba(0, 0, 0, 0.5)` : `rgba(0, 0, 0, 0.75)`)};
   
   @supports (backdrop-filter: blur(0.25em)) {
     background: rgba(0, 0, 0, 0.25);

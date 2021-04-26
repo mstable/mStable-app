@@ -1,8 +1,7 @@
+import React from 'react'
 import styled from 'styled-components'
-import React, { useMemo } from 'react'
 import { useModal } from 'react-modal-hook'
 
-import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 import { LocalStorage } from '../../localStorage'
 import { ViewportWidth } from '../../theme'
 import { TokenIcon } from '../icons/TokenIcon'
@@ -12,34 +11,68 @@ import { Modal } from './Modal'
 import { Button } from './Button'
 import { ExternalLink } from './ExternalLink'
 
-const StyledTokenIcon = styled(TokenIcon)`
+const LargeTokenIcon = styled(TokenIcon)`
+  img:first-child {
+    width: 5rem !important;
+  }
+  img:last-child {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+`
+
+const RegularTokenIcon = styled(TokenIcon)`
   width: 3rem;
 `
 
 const CompleteButton = styled(Button)`
+  margin-top: 1rem;
   width: 100%;
-  margin-top: 2rem;
-  height: 3rem;
+  height: 3.5rem;
 `
 
-const TokenContainer = styled.div`
+const MassetContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 
-  > *:not(:last-child) {
-    margin-bottom: 0.25rem;
+  > div {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+
+    &::before {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: radial-gradient(50% 50% at 50% 50%, rgba(64, 129, 255, 0.5) 0%, rgba(196, 196, 196, 0) 100%);
+      filter: blur(30px);
+      content: '';
+      position: absolute;
+    }
   }
+`
 
-  > *:first-child {
-    margin-bottom: 0.75rem;
+const AssetContainer = styled.div`
+  > div {
+    padding: 1rem;
+    background: ${({ theme }) => theme.color.backgroundAccent};
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: flex-start;
+    font-weight: 600;
+    border-radius: 1rem;
   }
 `
 
 const Container = styled.div`
-  background: ${({ theme }) => (theme.isLight ? 'rgba(255, 253, 245, 0.3)' : 'none')};
-  color: ${({ theme }) => theme.color.offYellow};
+  background: ${({ theme }) => theme.color.background};
+  color: ${({ theme }) => theme.color.body};
   text-align: center;
   position: relative;
   padding: 1rem;
@@ -48,43 +81,35 @@ const Container = styled.div`
     font-weight: 600;
   }
 
-  > div {
-    h4 {
+  p {
+    font-weight: normal;
+    font-size: 0.875rem;
+    color: ${({ theme }) => theme.color.bodyAccent};
+
+    span {
       font-weight: 600;
-      margin: 0.5rem 0;
-      span {
-        font-weight: normal;
-        margin-right: 0.25rem;
-        font-size: 0.9rem;
-      }
-    }
-
-    > div {
-      margin-top: 1rem;
-      padding: 1rem;
-      background: rgba(255, 179, 52, 0.1);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      align-items: flex-start;
-      font-weight: 600;
-      border-radius: 1rem;
-
-      p {
-        font-weight: normal;
-        font-size: 0.9rem;
-        span {
-          font-weight: 600;
-        }
-      }
-
-      > *:not(:last-child) {
-        margin-bottom: 1rem;
-      }
     }
   }
 
+  h4 {
+    margin: 0.5rem 0 0.75rem;
+    font-size: 1.125rem;
+    span {
+      font-weight: normal;
+      margin-right: 0.25rem;
+      font-size: 0.9rem;
+    }
+    b {
+      font-weight: 600;
+    }
+  }
+
+  > *:not(:last-child):not(:first-child) {
+    margin-bottom: 1rem;
+  }
+
   @media (min-width: ${ViewportWidth.m}) {
+    width: 34rem;
     padding: 1rem 2rem;
     > div > div > *:not(:last-child) {
       margin-right: 1rem;
@@ -93,61 +118,43 @@ const Container = styled.div`
   }
 `
 export const usePolygonModal = (): (() => void) => {
-  const massetState = useSelectedMassetState()
-
-  const inputAssets = useMemo<string[]>(() => Object.values(massetState?.bAssets ?? {}).map(b => b.token.symbol.replace(/^POS-/i, '')), [
-    massetState,
-  ])
-  const saveTokenSymbol = massetState?.savingsContracts.v2.token?.symbol?.replace(/^POS-/i, '')
+  const inputAssets = ['USDT', 'DAI', 'USDC']
 
   const [showModal, hideModal] = useModal(({ onExited, in: open }) => {
     return (
       <Modal title="Getting Started on Polygon" onExited={onExited} open={open} hideModal={hideModal}>
         <Container>
-          <div>
+          <AssetContainer>
             <h4>
-              <span>1</span> Migrate USDC, DAI or USDT from Ethereum
+              Deposit to mStable using <b>USDC</b>, <b>DAI</b> or <b>USDT</b>
             </h4>
             <p>
-              Use either&nbsp;
+              Use&nbsp;
               <ExternalLink href="https://wallet.matic.network/bridge">Matic</ExternalLink> or{' '}
-              <ExternalLink href="https://zapper.fi/bridge">Zapper</ExternalLink> to migrate your assets
+              <ExternalLink href="https://zapper.fi/bridge">Zapper</ExternalLink> to migrate the above assets
             </p>
             &nbsp;
-            <p>
-              <b>Do not migrate your mUSD, this will not work</b>
-            </p>
             <div>
               {inputAssets.map(symbol => (
                 <Tooltip tip={symbol} key={symbol} hideIcon>
-                  <StyledTokenIcon symbol={symbol} />
+                  <RegularTokenIcon symbol={symbol} />
                 </Tooltip>
               ))}
             </div>
-          </div>
+          </AssetContainer>
           <Arrow />
-          <div>
+          <MassetContainer>
             <h4>
-              <span>2</span> Deposit your asset and receive {saveTokenSymbol}
+              Receive <b>mUSD</b> and use across Polygon
             </h4>
-            <p>This is swapped for {saveTokenSymbol}. You can swap back at any time.</p>
+            <p>mUSD is redeemable for USDC, DAI or USDT at any time</p>
+            &nbsp;
             <div>
-              <TokenContainer>
-                <StyledTokenIcon symbol={saveTokenSymbol} />
-                <div>{saveTokenSymbol}</div>
-                <p>Transferable token, earns interest</p>
-              </TokenContainer>
+              <Tooltip tip="mUSD" hideIcon>
+                <LargeTokenIcon symbol="mUSD" />
+              </Tooltip>
             </div>
-          </div>
-          <Arrow />
-          <div>
-            <h4>
-              <span>3</span> Earn interest on your deposit
-            </h4>
-            <p>
-              Over time, your {saveTokenSymbol} can be exchanged for more {massetState?.token.symbol}.
-            </p>
-          </div>
+          </MassetContainer>
           <CompleteButton
             highlighted
             onClick={() => {
