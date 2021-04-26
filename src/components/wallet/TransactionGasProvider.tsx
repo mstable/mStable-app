@@ -4,12 +4,14 @@ import { BigNumber } from 'ethers'
 
 import { Transaction, useTransactionsState } from '../../context/TransactionsProvider'
 import { useNetwork, Networks } from '../../context/NetworkProvider'
+import { useNativeToken } from '../../context/TokensProvider'
 
 interface GasCtx {
   estimationError?: string
   gasLimit?: BigNumber
   gasPrice?: number
   setGasPrice: Dispatch<SetStateAction<number | undefined>>
+  insufficientBalance: boolean
 }
 
 const ctx = createContext<GasCtx>(null as never)
@@ -22,6 +24,7 @@ export const TransactionGasProvider: FC<{ id: string }> = ({ children, id }) => 
   const [estimationError, setEstimationError] = useState<string | undefined>()
   const [gasLimit, setGasLimit] = useState<BigNumber | undefined>()
   const [gasPrice, setGasPrice] = useState<number | undefined>()
+  const nativeToken = useNativeToken()
 
   // +100% for Polygon, +10% otherwise
   const gasMargin = protocolName === Networks.Polygon ? 10000 : 1000
@@ -45,9 +48,17 @@ export const TransactionGasProvider: FC<{ id: string }> = ({ children, id }) => 
     [transaction],
   )
 
+  const insufficientBalance = gasLimit && gasPrice && nativeToken?.balance ? nativeToken.balance.exact.lt(gasLimit.mul(gasPrice)) : false
+
   return (
     <ctx.Provider
-      value={useMemo(() => ({ estimationError, gasLimit, gasPrice, setGasPrice }), [estimationError, gasLimit, gasPrice, setGasPrice])}
+      value={useMemo(() => ({ estimationError, gasLimit, gasPrice, setGasPrice, insufficientBalance }), [
+        estimationError,
+        gasLimit,
+        gasPrice,
+        setGasPrice,
+        insufficientBalance,
+      ])}
     >
       {children}
     </ctx.Provider>
