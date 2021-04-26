@@ -1,10 +1,10 @@
-import React, { FC, createContext, useContext, useCallback, useMemo, useReducer, Reducer, useEffect } from 'react'
+import React, { FC, createContext, useContext, useCallback, useMemo, useReducer, Reducer, useEffect, ReactNode } from 'react'
 
 import { LocalStorage } from '../localStorage'
 
 export interface BannerMessage {
   title: string
-  subtitle?: string
+  subtitle?: ReactNode
   emoji: string
   url?: string
 }
