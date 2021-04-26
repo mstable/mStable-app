@@ -4,9 +4,9 @@ import { ErrorCode } from '@ethersproject/logger'
 
 import { Instances, Interfaces, Purpose } from '../types'
 
-const calculateGasMargin = (value: BigNumber): BigNumber => {
-  const GAS_MARGIN = BigNumber.from(1000)
-  const offset = value.mul(GAS_MARGIN).div(BigNumber.from(10000))
+const calculateGasMargin = (value: BigNumber, margin = 1000): BigNumber => {
+  const gasMargin = BigNumber.from(margin)
+  const offset = value.mul(gasMargin).div(BigNumber.from(10000))
   return value.add(offset)
 }
 
@@ -82,10 +82,10 @@ export class TransactionManifest<TIface extends Interfaces, TFn extends keyof In
     return response
   }
 
-  async estimate(): Promise<BigNumber> {
+  async estimate(margin?: number): Promise<BigNumber> {
     try {
       const gasLimit = (await this.contract.estimateGas[this.fn](...this.args)) as BigNumber
-      return calculateGasMargin(gasLimit)
+      return calculateGasMargin(gasLimit, margin)
     } catch (error) {
       // Ethers v5 error handling:
       // - Error revert reasons can be nested
