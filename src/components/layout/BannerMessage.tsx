@@ -40,8 +40,8 @@ export const BannerMessage: FC = () => {
         {bannerMessage.emoji}
       </span>
       <p>
-        <b>{bannerMessage.title}</b>
-        {bannerMessage.subtitle && ` ${bannerMessage.subtitle} `}{' '}
+        <b>{`${bannerMessage.title} `}</b>
+        {bannerMessage.subtitle && bannerMessage.subtitle}
         {bannerMessage.url &&
           (bannerMessage.url.startsWith('http') ? (
             <a href={bannerMessage.url} target="_blank" rel="noopener noreferrer">
