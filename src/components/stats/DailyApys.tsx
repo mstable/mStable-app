@@ -56,7 +56,7 @@ const DailyApysChart: FC<{
   const savingsContractState = useSelectedSavingsContractState()
   const dailyApys = useDailyApysForBlockTimes(savingsContractState?.address, blockTimes)
 
-  if (dailyApys.some(value => value.dailyAPY === 0 || value.dailyAPY > 1000)) {
+  if (dailyApys.some(value => value.dailyAPY > 1000) || dailyApys.every(value => value.dailyAPY === 0)) {
     return <NoData className={className}>No data available yet</NoData>
   }
 
