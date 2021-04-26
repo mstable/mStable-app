@@ -47,7 +47,8 @@ export const MintMasset: FC = () => {
   const massetState = useSelectedMassetState() as MassetState
   const { address: massetAddress, bAssets, fAssets, feederPools } = massetState
 
-  const [inputAddress, handleSetAddress] = useState<string | undefined>(Object.keys(bAssets)[0])
+  const defaultInputAddress = useMemo(() => Object.keys(bAssets)[0], [bAssets])
+  const [inputAddress, handleSetAddress] = useState<string | undefined>(defaultInputAddress)
   const massetToken = useTokenSubscription(massetAddress)
   const inputToken = useTokenSubscription(inputAddress)
   const inputDecimals = inputToken?.decimals
@@ -116,15 +117,15 @@ export const MintMasset: FC = () => {
   // Reset input on chain change
   const [chainId] = useChainIdCtx()
   useEffect(() => {
-    handleSetAddress(undefined)
-  }, [chainId])
+    handleSetAddress(defaultInputAddress)
+  }, [chainId, defaultInputAddress])
 
   const valid = !error
 
   return (
     <Container>
       <AssetInput
-        address={inputAddress ?? addressOptions[0].address}
+        address={inputAddress}
         addressOptions={addressOptions}
         formValue={inputFormValue}
         handleSetAddress={handleSetAddress}
@@ -151,7 +152,7 @@ export const MintMasset: FC = () => {
         approve={approve}
         penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
         handleSend={() => {
-          if (masset && walletAddress && inputAmount && inputAddress && minOutputAmount) {
+          if (masset && walletAddress && inputAddress && inputAmount && minOutputAmount) {
             if (isFasset && fasset) {
               return propose<Interfaces.FeederPool, 'swap'>(
                 new TransactionManifest(
