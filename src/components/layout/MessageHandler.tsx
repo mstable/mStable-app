@@ -36,11 +36,15 @@ export const MessageHandler: Props = {
       url: 'https://medium.com/mstable/mstable-launches-mbtc-e26a246dc0bb',
     },
   polygon: () => ({
-    title: 'Using mStable:',
+    title: 'mStable on Polygon',
     subtitle: (
       <>
-        Bridge bAssets USDC, DAI or USDT via the <ExternalLink href="https://wallet.matic.network/bridge/">Matic Bridge</ExternalLink>.
-        <p> Note - the ability to bridge mUSD cross chain is coming soon, until then, please only use bridged bAssets.</p>
+        <div>Rates may be abnormally high during the launch period. Expect rates to normalise soon.</div>
+        <div>&nbsp;</div>
+        <div>
+          Bridge bAssets USDC, DAI or USDT via the <ExternalLink href="https://wallet.matic.network/bridge/">Matic Bridge</ExternalLink>.
+          <p> Note - the ability to bridge mUSD cross chain is coming soon, until then, please only use bridged bAssets.</p>
+        </div>
       </>
     ),
     emoji: '⚠️',
