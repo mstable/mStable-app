@@ -5,25 +5,39 @@ import { useLocation } from 'react-use'
 
 import { useDataState } from '../../context/DataProvider/DataProvider'
 import { useSelectedMasset, useSelectedMassetName, useSetSelectedMassetName } from '../../context/SelectedMassetNameProvider'
-import { ViewportWidth } from '../../theme'
 import { MassetName } from '../../types'
 import { Dropdown, DropdownOption } from './Dropdown'
+import { ViewportWidth } from '../../theme'
 
 const StyledDropdown = styled(Dropdown)`
   * {
     font-size: 1rem;
   }
 
-  @media (max-width: ${ViewportWidth.m}) {
-    min-width: 5.5rem;
-
-    > button > div {
+  > button > div {
+    > div {
       display: none;
     }
+    margin-right: 0.125rem;
+  }
+  > div {
+    min-width: 3.5rem;
+    > button > div > div {
+      display: none;
+    }
+  }
+
+  @media (min-width: ${ViewportWidth.l}) {
+    > button > div {
+      > div {
+        display: inline-block;
+      }
+      margin-right: 0.5rem;
+    }
     > div {
-      min-width: 5.5rem;
-      > button > div {
-        display: none;
+      min-width: 3.5rem;
+      > button > div > div {
+        display: inline-block;
       }
     }
   }

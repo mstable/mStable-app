@@ -145,7 +145,7 @@ const Option: FC<{
         ) : (
           <>
             <div>
-              <span>{symbol}</span>
+              <span>{symbol ?? option}</span>
             </div>
             {!!subtext && subtext}
           </>

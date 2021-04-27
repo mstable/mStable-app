@@ -125,10 +125,14 @@ const MassetContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: 2rem;
+  margin-left: 1rem;
 
   > *:not(:last-child) {
     margin-right: 1rem;
+  }
+
+  @media (min-width: ${ViewportWidth.m}) {
+    margin-left: 2rem;
   }
 `
 
