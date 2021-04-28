@@ -8,7 +8,7 @@ import { ApproveProvider, Mode, useApprove } from './ApproveProvider'
 import { Button, UnstyledButton } from '../core/Button'
 import { Tooltip } from '../core/ReactTooltip'
 
-const SLIPPAGE_WARNING = 'This transaction has a price impact of at least 0.4%. Please confirm you would like to continue'
+const SLIPPAGE_WARNING = 'This transaction has a price impact of at least 0.1%. Please confirm you would like to continue'
 
 enum Step {
   ACTION,
@@ -25,14 +25,14 @@ interface Props {
     address: string
     amount?: BigDecimal
   }
-  penaltyBonusAmount?: number
+  warning?: boolean
 }
 
-const StyledButton = styled(Button)<{ isPenalty?: boolean; isBonus?: boolean }>`
+const StyledButton = styled(Button)<{ warning?: boolean }>`
   width: 100%;
   height: 3.75rem;
   border-radius: 2rem;
-  background: ${({ isBonus, isPenalty, theme }) => (isPenalty ? theme.color.red : isBonus && theme.color.orange)};
+  background: ${({ warning, theme }) => warning && theme.color.red};
 `
 
 const CloseButton = styled(UnstyledButton)`
@@ -63,32 +63,28 @@ const Container = styled.div`
   align-items: center;
 `
 
-const SendButtonContent: FC<Omit<Props, 'approve'>> = ({ className, valid, title, handleSend, penaltyBonusAmount }) => {
-  const isBonus = (penaltyBonusAmount ?? 0) > 0
-  return (
-    <Container className={className}>
-      <StyledButton
-        isBonus={isBonus && !!penaltyBonusAmount}
-        isPenalty={!isBonus && !!penaltyBonusAmount}
-        highlighted={valid}
-        disabled={!valid}
-        onClick={async () => {
-          if (!valid) return
+const SendButtonContent: FC<Omit<Props, 'approve'>> = ({ className, valid, title, handleSend, warning = false }) => (
+  <Container className={className}>
+    <StyledButton
+      warning={warning}
+      highlighted={valid}
+      disabled={!valid}
+      onClick={async () => {
+        if (!valid) return
 
-          if (penaltyBonusAmount) {
-            if (!confirm(SLIPPAGE_WARNING)) {
-              return
-            }
+        if (warning) {
+          if (!confirm(SLIPPAGE_WARNING)) {
+            return
           }
+        }
 
-          handleSend()
-        }}
-      >
-        {`${title} ${!!penaltyBonusAmount && valid ? 'anyway' : ''}`}
-      </StyledButton>
-    </Container>
-  )
-}
+        handleSend()
+      }}
+    >
+      {`${title} ${warning && valid ? 'anyway' : ''}`}
+    </StyledButton>
+  </Container>
+)
 
 export const ApproveContent: FC<{
   onApproveClick: (mode: Mode) => void
@@ -150,12 +146,9 @@ export const ApproveContent: FC<{
   </ApproveContainer>
 )
 
-const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({ className, valid, title, handleSend, penaltyBonusAmount }) => {
+const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({ className, valid, title, handleSend, warning = false }) => {
   const [sendError, setSendError] = useState<string | undefined>()
-  const isBonus = (penaltyBonusAmount ?? 0) > 0
-
   const [{ needsApprove, hasPendingApproval, isApproveEdgeCase, mode }, handleApprove] = useApprove()
-
   const [step, setStep] = useState<Step>(Step.ACTION)
 
   useEffect(() => {
@@ -167,8 +160,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({ className, valid, 
     <Container className={className}>
       {step === Step.ACTION ? (
         <StyledButton
-          isBonus={isBonus && !!penaltyBonusAmount}
-          isPenalty={!isBonus && !!penaltyBonusAmount}
+          warning={warning}
           highlighted={valid}
           disabled={!valid}
           onClick={async () => {
@@ -182,7 +174,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({ className, valid, 
               return setStep(Step.APPROVE)
             }
 
-            if (penaltyBonusAmount) {
+            if (warning) {
               if (!confirm(SLIPPAGE_WARNING)) {
                 return
               }
@@ -195,7 +187,7 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({ className, valid, 
             }
           }}
         >
-          {`${title} ${!!penaltyBonusAmount && valid ? 'anyway' : ''}`}
+          {`${title} ${warning && valid ? 'anyway' : ''}`}
         </StyledButton>
       ) : (
         <ApproveContent
@@ -210,17 +202,11 @@ const SendWithApproveContent: FC<Omit<Props, 'approve'>> = ({ className, valid, 
   )
 }
 
-export const SendButton: FC<Props> = ({ approve, className, handleSend, title, valid, penaltyBonusAmount }) =>
+export const SendButton: FC<Props> = ({ approve, className, handleSend, title, valid, warning }) =>
   approve ? (
     <ApproveProvider address={approve.address} spender={approve.spender} amount={approve.amount}>
-      <SendWithApproveContent
-        className={className}
-        valid={valid}
-        title={title}
-        handleSend={handleSend}
-        penaltyBonusAmount={penaltyBonusAmount}
-      />
+      <SendWithApproveContent className={className} valid={valid} title={title} handleSend={handleSend} warning={warning} />
     </ApproveProvider>
   ) : (
-    <SendButtonContent className={className} valid={valid} title={title} handleSend={handleSend} penaltyBonusAmount={penaltyBonusAmount} />
+    <SendButtonContent className={className} valid={valid} title={title} handleSend={handleSend} warning={warning} />
   )

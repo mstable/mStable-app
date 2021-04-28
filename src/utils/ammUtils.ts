@@ -21,7 +21,7 @@ export const getPenaltyMessage = (amount: number | undefined): string | undefine
   if (!amount) return undefined
 
   const abs = Math.abs(amount).toFixed(4)
-  return amount > 0 ? `There is a price bonus of +${abs}%` : `WARNING: There is a price penalty of -${abs}%`
+  return amount > 0 ? `There is a price bonus of +${abs}%` : `There is a price penalty of -${abs}%`
 }
 
 export const getPenaltyPercentage = (
@@ -37,10 +37,10 @@ export const getPenaltyPercentage = (
   const output = outputAmount.simple
   const penalty = output / inputAmount.simple
 
-  if (output < min || output > max) {
-    if (reverse) {
-      return penalty > 1 ? (penalty - 1) * -100 : (1 - penalty) * 100
-    }
-    return penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100
+  // if (output < min || output > max) {
+  if (reverse) {
+    return penalty > 1 ? (penalty - 1) * -100 : (1 - penalty) * 100
   }
+  return penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100
+  // }
 }

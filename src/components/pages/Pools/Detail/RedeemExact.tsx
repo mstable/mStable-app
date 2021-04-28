@@ -103,7 +103,7 @@ export const RedeemExact: FC = () => {
     >
       <SendButton
         title={error ?? 'Redeem'}
-        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
+        warning={(!error && !!penaltyBonus?.percentage) || undefined}
         valid={!error}
         handleSend={() => {
           if (!contract || !walletAddress || !maxOutputAmount) return

@@ -101,7 +101,7 @@ const RedeemExactBassetsLogic: FC = () => {
     >
       <SendButton
         valid={valid}
-        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
+        warning={(!error && !!penaltyBonus?.percentage) || undefined}
         title={error ?? 'Redeem'}
         handleSend={() => {
           if (masset && walletAddress && maxOutputAmount) {

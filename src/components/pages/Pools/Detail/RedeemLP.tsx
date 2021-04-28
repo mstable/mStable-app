@@ -139,7 +139,7 @@ export const RedeemLP: FC = () => {
     >
       <SendButton
         title={error ?? 'Redeem'}
-        penaltyBonusAmount={(!isUnstakingFromVault && penaltyBonus?.percentage) || undefined}
+        warning={(!isUnstakingFromVault && !!penaltyBonus?.percentage) || undefined}
         valid={!error}
         handleSend={() => {
           if (!contracts || !walletAddress || !feederPool) return

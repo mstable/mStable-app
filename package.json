@@ -59,6 +59,7 @@
     "react-modal-hook": "^3.0.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-string-replace": "^0.4.4",
     "react-tooltip": "^4.2.7",
     "react-transition-group": "^4.4.1",
     "react-use": "^15.3.2",

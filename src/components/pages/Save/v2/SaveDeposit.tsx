@@ -356,7 +356,7 @@ export const SaveDeposit: FC = () => {
     >
       <SendButton
         approve={approve}
-        penaltyBonusAmount={!error && hasSlippage ? outputs.penaltyBonus.percentage : undefined}
+        warning={!error && hasSlippage ? !!outputs.penaltyBonus.percentage : undefined}
         valid={!error}
         title={error ?? titles[saveRoute]}
         handleSend={() => {

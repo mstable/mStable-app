@@ -176,7 +176,7 @@ const SwapLogic: FC = () => {
         valid={valid}
         title={error ?? 'Swap'}
         approve={approve}
-        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
+        warning={(!error && !!penaltyBonus?.percentage) || undefined}
         handleSend={() => {
           if (massetContract && walletAddress && inputAmount && minOutputAmount && inputAddress && outputAddress) {
             const isMassetMint = bAssets[inputAddress]?.address && outputAddress === massetAddress
