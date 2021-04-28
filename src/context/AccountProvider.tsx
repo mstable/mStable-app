@@ -3,7 +3,7 @@ import type { FC } from 'react'
 import type { Provider, Web3Provider as EthersWeb3Provider } from '@ethersproject/providers'
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { createStateContext, useEffectOnce, useIdle, usePrevious } from 'react-use'
-import Onboard from 'bnc-onboard'
+import Onboard from '@gnosis.pm/safe-apps-onboard'
 import { ethers, Signer, utils } from 'ethers'
 
 import { composedComponent } from '../utils/reactUtils'
