@@ -44,7 +44,7 @@ const useDailyApysDocument = (savingsContractAddress: string | undefined, blockT
 export const useDailyApysForBlockTimes = (
   savingsContractAddress: string | undefined,
   blockTimes: BlockTime[],
-): { timestamp: number; dailyAPY: number; utilisationRate: number }[] => {
+): { timestamp: number; dailyAPY: number; utilisationRate: number; capped: boolean }[] => {
   const apysDoc = useDailyApysDocument(savingsContractAddress, blockTimes)
 
   const apysQuery = useQuery<{
@@ -55,7 +55,9 @@ export const useDailyApysForBlockTimes = (
         latestExchangeRate?: { rate: string }
       },
     ]
-  }>(apysDoc, { fetchPolicy: 'network-only' })
+  }>(apysDoc, { fetchPolicy: 'cache-and-network' })
+
+  const isPolygon = savingsContractAddress === '0x5290ad3d83476ca6a2b178cd9727ee1ef72432af'
 
   return Object.entries(apysQuery.data || {})
     .filter(([, value]) => !!value?.[0]?.dailyAPY)
@@ -68,11 +70,13 @@ export const useDailyApysForBlockTimes = (
 
       const utilisationRate = parseFloat((baseUtilisationRate * multiplier).toFixed(2))
 
-      const dailyAPY = parseFloat(parseFloat(_dailyAPY).toFixed(2))
+      const uncapped = parseFloat(parseFloat(_dailyAPY).toFixed(2))
+      const dailyAPY = isPolygon ? Math.min(uncapped, 100) : uncapped
 
       return {
         timestamp: getKeyTimestamp(key),
         dailyAPY,
+        capped: isPolygon && uncapped > dailyAPY,
         utilisationRate,
       }
     })

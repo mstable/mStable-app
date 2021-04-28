@@ -7,8 +7,8 @@ import { useBlockTimesForDates } from './useBlockTimesForDates'
 import { useDailyApysForBlockTimes } from './useDailyApysForBlockTimes'
 
 const now = new Date()
-const timestampsForWeek = eachDayOfInterval({
-  start: subDays(now, 6),
+const timestampsForMonth = eachDayOfInterval({
+  start: subDays(now, 29),
   end: subDays(now, 1),
 })
   .map(endOfDay)
@@ -17,13 +17,14 @@ const timestampsForWeek = eachDayOfInterval({
 export const useAvailableSaveApy = (): {
   value: number
   v1Apy: number
+  days?: number
   type: 'live' | 'average' | 'inactive' | 'fetching' | 'bootstrapping'
 } => {
   const v1Apy = 0
   const savingsContract = useSelectedSavingsContractState()
   const liveAPY = savingsContract?.dailyAPY
 
-  const blockTimes = useBlockTimesForDates(timestampsForWeek)
+  const blockTimes = useBlockTimesForDates(timestampsForMonth)
   const dailyApys = useDailyApysForBlockTimes(savingsContract?.address, blockTimes)
   const current = savingsContract?.current
   const fetching = !savingsContract
@@ -41,8 +42,8 @@ export const useAvailableSaveApy = (): {
 
     const nonZeroApys = dailyApys.filter(v => v.dailyAPY > 0)
 
-    // Not enough data to sample an average
-    const useLive = nonZeroApys.length < 2
+    // Not enough data to sample an average, or too many outliers
+    const useLive = dailyApys.filter(v => v.dailyAPY === 0).length > 0 || dailyApys.filter(v => v.dailyAPY > 200).length > 1
 
     if (useLive) {
       value = liveAPY ?? value
@@ -55,6 +56,6 @@ export const useAvailableSaveApy = (): {
       return { value: 0, v1Apy, type: 'bootstrapping' }
     }
 
-    return { value, v1Apy, type: useLive ? 'live' : 'average' }
+    return { value, v1Apy, type: useLive ? 'live' : 'average', days: dailyApys.length }
   }, [fetching, current, dailyApys, v1Apy, liveAPY])
 }

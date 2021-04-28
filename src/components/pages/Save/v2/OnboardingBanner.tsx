@@ -20,6 +20,7 @@ const APYChart = styled(DailyApys)`
 const ApyTip = styled(Tooltip)`
   font-weight: 600;
   font-size: 1.25rem;
+  pointer-events: all;
 
   > span > span {
     font-weight: normal;
@@ -27,16 +28,20 @@ const ApyTip = styled(Tooltip)`
   }
 `
 
+const ApyTitle = styled.div`
+  font-weight: normal;
+  font-size: 0.8rem;
+`
+
 const APYText = styled.div`
-  display: flex;
-  justify-content: space-between;
+  user-select: none;
+  pointer-events: none;
   width: 100%;
   position: absolute;
   top: 0;
   left: 0;
   padding: 1rem 1rem 0;
   font-size: 1.25rem;
-  align-items: flex-start;
 `
 
 const InfoLink = styled.div`
@@ -176,8 +181,11 @@ export const OnboardingBanner: FC = () => {
         <APYChart hideControls shimmerHeight={150} tick={false} marginTop={48} aspect={2.07} color="#d2aceb" />
         <APYText>
           <ApyTip tip={tip}>
-            <CountUp end={saveApy.value ?? 0} suffix="% APY" />
+            <CountUp end={saveApy.value ?? 0} suffix="%" />
           </ApyTip>
+          <ApyTitle>
+            {saveApy.type === 'average' ? `APY${saveApy.days ? ` (${saveApy.days}-day MA)` : ''}` : 'APY (live/unstable)'}
+          </ApyTitle>
           <Tooltip tip="Learn about how this is calculated" hideIcon>
             <InfoLink>
               <a
