@@ -20,8 +20,6 @@ interface Props {
   saveExchangeRate?: BigDecimal
   price?: number
   priceImpact?: PriceImpact
-  impactWarning?: boolean
-  distancePercentage?: number
 }
 
 const Impact = styled.span<{ warning: boolean }>`
