@@ -1,5 +1,6 @@
 import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
+import reactStringReplace from 'react-string-replace'
 
 import { BigDecimal } from '../../web3/BigDecimal'
 import { Tooltip } from './ReactTooltip'
@@ -17,7 +18,18 @@ interface Props {
   onSetSlippage?(formValue?: string): void
   saveExchangeRate?: BigDecimal
   price?: number
+  impactPercentage?: number
+  impactWarning?: boolean
+  distancePercentage?: number
 }
+
+const Impact = styled.span<{ warning: boolean }>`
+  color: ${({ warning }) => warning && 'red'};
+`
+
+const Percentage = styled.span<{ isBonus: boolean }>`
+  color: ${({ isBonus }) => isBonus && 'green'};
+`
 
 const DollarEstimate = styled.span`
   color: ${({ theme }) => theme.color.bodyAccent};
@@ -27,7 +39,7 @@ const Info = styled.div`
   display: flex;
   justify-content: space-between;
   height: fit-content;
-  padding: 0.75rem 1.25rem;
+  padding: 0.375rem 0;
   font-size: 0.875rem;
 
   > span:last-child {
@@ -41,8 +53,10 @@ const AdvancedBox = styled(CollapseBox)`
 `
 
 const AdditionalInfo = styled.div`
-  background: ${({ theme }) => theme.color.backgroundAccent};
+  /* background: ${({ theme }) => theme.color.backgroundAccent}; */
   border-radius: 0.75rem;
+  border: 1px solid ${({ theme }) => theme.color.defaultBorder};
+  padding: 0.5rem 1.25rem;
 `
 
 export const TransactionInfo: FC<Props> = ({
@@ -56,8 +70,15 @@ export const TransactionInfo: FC<Props> = ({
   slippageFormValue,
   saveExchangeRate,
   price,
+  impactPercentage,
+  impactWarning = false,
+  distancePercentage,
 }) => {
-  const showAdditionalInfo = feeAmount || minOutputAmount || maxOutputAmount || (!minOutputAmount && !maxOutputAmount)
+  const showAdditionalInfo = feeAmount || minOutputAmount || maxOutputAmount || impactPercentage || distancePercentage
+
+  const formattedDistancePercentage =
+    (distancePercentage && (distancePercentage > 0 ? `+${distancePercentage.toFixed(2)}%` : `${distancePercentage.toFixed(2)}%`)) ||
+    undefined
 
   const { min, max, fee } = useMemo<{
     fee?: BigDecimal
@@ -107,6 +128,7 @@ export const TransactionInfo: FC<Props> = ({
               </span>
             </Info>
           )}
+
           {minOutputAmount && (
             <Info>
               <p>
@@ -131,6 +153,28 @@ export const TransactionInfo: FC<Props> = ({
                 {maxOutputAmount?.format(8, false)}
                 {max && <DollarEstimate>{` ≈ $${max?.format(2)}`}</DollarEstimate>}
               </span>
+            </Info>
+          )}
+          {impactPercentage && (
+            <Info>
+              <p>
+                <Tooltip tip="The difference between the current rate and estimated rate due to trade size">Price impact</Tooltip>
+              </p>
+              <Impact warning={impactWarning}>{impactPercentage < 0.01 ? `<0.01%` : `${impactPercentage?.toFixed(2)}%`}</Impact>
+            </Info>
+          )}
+          {formattedDistancePercentage && (
+            <Info>
+              <p>
+                <Tooltip tip="A bonus or penalty is determined from the current basket weights">
+                  {formattedDistancePercentage.includes('+') ? 'Bonus pricing' : 'Penalty pricing'}
+                </Tooltip>
+              </p>
+              {reactStringReplace(formattedDistancePercentage, /([+-][0-9]*.[0-9]*%)/g, (match, i) => (
+                <Percentage isBonus={match.includes('+')} key={i}>
+                  {match}
+                </Percentage>
+              ))}
             </Info>
           )}
           {!minOutputAmount && !maxOutputAmount && (

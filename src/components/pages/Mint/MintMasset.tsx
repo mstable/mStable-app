@@ -17,7 +17,6 @@ import { Interfaces } from '../../../types'
 import { SendButton } from '../../forms/SendButton'
 import { AssetInput } from '../../forms/AssetInput'
 import { Arrow } from '../../core/Arrow'
-import { ErrorMessage } from '../../core/ErrorMessage'
 import { ExchangeRate } from '../../core/ExchangeRate'
 import { TransactionInfo } from '../../core/TransactionInfo'
 import { useMinimumOutput } from '../../../hooks/useOutput'
@@ -70,10 +69,12 @@ export const MintMasset: FC = () => {
     signer,
   ])
 
-  const { estimatedOutputAmount, exchangeRate, feeRate } = useEstimatedOutput(
+  const { estimatedOutputAmount, exchangeRate, feeRate, priceImpact } = useEstimatedOutput(
     { ...inputToken, amount: inputAmount } as BigDecimalInputValue,
     { ...massetToken } as BigDecimalInputValue,
   )
+
+  const { distancePercentage, impactPercentage, impactWarning } = priceImpact?.value ?? {}
 
   const addressOptions = useMemo(() => [...Object.keys(bAssets).map(address => ({ address })), ...feederOptions], [bAssets, feederOptions])
 
@@ -99,7 +100,7 @@ export const MintMasset: FC = () => {
     return estimatedOutputAmount.error
   }, [inputAmount, estimatedOutputAmount.fetching, estimatedOutputAmount.error, inputToken, inputAddress])
 
-  const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippageSimple, inputAmount, estimatedOutputAmount.value)
+  const { minOutputAmount } = useMinimumOutput(slippageSimple, inputAmount, estimatedOutputAmount.value)
 
   const isFasset = Object.values(fAssets).find(f => f.address === inputAddress)
 
@@ -145,12 +146,11 @@ export const MintMasset: FC = () => {
         addressDisabled
         isFetching={estimatedOutputAmount.fetching}
       />
-      {penaltyBonus?.message && <ErrorMessage error={penaltyBonus?.message} />}
       <SendButton
         valid={valid}
         title={error ?? 'Mint'}
         approve={approve}
-        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
+        warning={!error && impactWarning}
         handleSend={() => {
           if (masset && walletAddress && inputAddress && inputAmount && minOutputAmount) {
             if (isFasset && fasset) {
@@ -182,6 +182,9 @@ export const MintMasset: FC = () => {
         onSetSlippage={handleSetSlippage}
         slippageFormValue={slippageFormValue}
         feeAmount={feeRate?.value}
+        impactPercentage={impactPercentage}
+        impactWarning={impactWarning}
+        distancePercentage={distancePercentage}
       />
     </Container>
   )

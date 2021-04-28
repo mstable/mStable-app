@@ -154,7 +154,7 @@ export const MintExact: FC = () => {
     >
       <SendButton
         title={error ?? 'Deposit'}
-        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
+        warning={(!error && !!penaltyBonus?.percentage) || undefined}
         valid={!error}
         handleSend={() => {
           if (!contracts || !walletAddress || !minOutputAmount) return

@@ -158,7 +158,7 @@ export const MintLP: FC = () => {
       <SendButton
         title={error ?? title}
         approve={approve}
-        penaltyBonusAmount={(!isStakingInVault && !error && penaltyBonus?.percentage) || undefined}
+        warning={(!isStakingInVault && !error && !!penaltyBonus?.percentage) || undefined}
         valid={!error}
         handleSend={() => {
           if (!contracts || !walletAddress || !feederPool) return

@@ -126,7 +126,7 @@ export const RedeemMasset: FC = () => {
       <SendButton
         valid={!error}
         title={error ?? 'Redeem'}
-        penaltyBonusAmount={(!error && penaltyBonus?.percentage) || undefined}
+        warning={(!error && !!penaltyBonus?.percentage) || undefined}
         handleSend={() => {
           if (masset && walletAddress && massetAmount && outputAddress && minOutputAmount) {
             if (Object.values(fAssets).find(f => f.address === outputAddress) && fasset) {
