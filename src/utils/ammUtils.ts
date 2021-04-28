@@ -3,6 +3,12 @@ import type { BigDecimal } from '../web3/BigDecimal'
 const MIN_FACTOR = 0.996
 const MAX_FACTOR = 1.004
 
+export type PriceImpact = {
+  distancePercentage?: number
+  impactPercentage: number
+  impactWarning: boolean
+}
+
 export const getBounds = (amount: number): { min: number; max: number } => {
   const min = amount * MIN_FACTOR
   const max = amount * MAX_FACTOR

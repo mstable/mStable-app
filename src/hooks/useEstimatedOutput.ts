@@ -12,14 +12,9 @@ import type { BigDecimalInputValue } from './useBigDecimalInputs'
 import { FetchState, useFetchState } from './useFetchState'
 import { MassetName } from '../types'
 import { useSelectedMassetName } from '../context/SelectedMassetNameProvider'
-import { getPenaltyPercentage } from '../utils/ammUtils'
+import { getPenaltyPercentage, PriceImpact } from '../utils/ammUtils'
 
 type Contract = Masset | FeederPool
-type PriceImpact = {
-  distancePercentage?: number
-  impactPercentage: number
-  impactWarning: boolean
-}
 
 interface Output {
   estimatedOutputAmount: FetchState<BigDecimal>
