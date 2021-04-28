@@ -82,7 +82,7 @@ export const RedeemLP: FC = () => {
 
   const shouldSkipEstimation = isUnstakingFromVault
 
-  const { estimatedOutputAmount, exchangeRate, feeRate } = useEstimatedOutput(
+  const { estimatedOutputAmount, exchangeRate, feeRate, priceImpact } = useEstimatedOutput(
     {
       ...inputToken,
       amount: inputAmount,
@@ -93,7 +93,9 @@ export const RedeemLP: FC = () => {
     shouldSkipEstimation,
   )
 
-  const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippageSimple, inputAmount, estimatedOutputAmount.value)
+  const { impactWarning } = priceImpact?.value ?? {}
+
+  const { minOutputAmount } = useMinimumOutput(slippageSimple, inputAmount, estimatedOutputAmount.value)
 
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount'
@@ -123,7 +125,6 @@ export const RedeemLP: FC = () => {
     <AssetExchange
       inputAddressOptions={inputOptions}
       outputAddressOptions={outputOptions}
-      error={(!isUnstakingFromVault && penaltyBonus?.message) || undefined}
       exchangeRate={exchangeRate}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={(): void => {
@@ -139,7 +140,7 @@ export const RedeemLP: FC = () => {
     >
       <SendButton
         title={error ?? 'Redeem'}
-        warning={(!isUnstakingFromVault && !!penaltyBonus?.percentage) || undefined}
+        warning={!isUnstakingFromVault && impactWarning}
         valid={!error}
         handleSend={() => {
           if (!contracts || !walletAddress || !feederPool) return
@@ -177,6 +178,7 @@ export const RedeemLP: FC = () => {
         minOutputAmount={minOutputAmount}
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}
+        priceImpact={priceImpact?.value}
       />
     </AssetExchange>
   )
