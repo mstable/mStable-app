@@ -74,7 +74,7 @@ export const MintMasset: FC = () => {
     { ...massetToken } as BigDecimalInputValue,
   )
 
-  const { distancePercentage, impactPercentage, impactWarning } = priceImpact?.value ?? {}
+  const { impactWarning } = priceImpact?.value ?? {}
 
   const addressOptions = useMemo(() => [...Object.keys(bAssets).map(address => ({ address })), ...feederOptions], [bAssets, feederOptions])
 
@@ -182,9 +182,7 @@ export const MintMasset: FC = () => {
         onSetSlippage={handleSetSlippage}
         slippageFormValue={slippageFormValue}
         feeAmount={feeRate?.value}
-        impactPercentage={impactPercentage}
-        impactWarning={impactWarning}
-        distancePercentage={distancePercentage}
+        priceImpact={priceImpact?.value}
       />
     </Container>
   )

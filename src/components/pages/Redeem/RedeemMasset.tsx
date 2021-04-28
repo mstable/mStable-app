@@ -17,7 +17,6 @@ import { Interfaces } from '../../../types'
 import { SendButton } from '../../forms/SendButton'
 import { AssetInput } from '../../forms/AssetInput'
 import { Arrow } from '../../core/Arrow'
-import { ErrorMessage } from '../../core/ErrorMessage'
 import { ExchangeRate } from '../../core/ExchangeRate'
 import { TransactionInfo } from '../../core/TransactionInfo'
 import { useMinimumOutput } from '../../../hooks/useOutput'
@@ -66,10 +65,12 @@ export const RedeemMasset: FC = () => {
     signer,
   ])
 
-  const { estimatedOutputAmount, exchangeRate, feeRate } = useEstimatedOutput(
+  const { estimatedOutputAmount, exchangeRate, feeRate, priceImpact } = useEstimatedOutput(
     { ...massetToken, amount: massetAmount } as BigDecimalInputValue,
     outputToken as BigDecimalInputValue,
   )
+
+  const { impactWarning } = priceImpact?.value ?? {}
 
   const addressOptions = useMemo(() => [...Object.keys(bAssets).map(address => ({ address })), ...feederOptions], [bAssets, feederOptions])
 
@@ -96,7 +97,7 @@ export const RedeemMasset: FC = () => {
     return estimatedOutputAmount.error
   }, [estimatedOutputAmount.error, estimatedOutputAmount.fetching, massetAmount, massetBalance, outputAddress])
 
-  const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippageSimple, massetAmount, estimatedOutputAmount.value)
+  const { minOutputAmount } = useMinimumOutput(slippageSimple, massetAmount, estimatedOutputAmount.value)
 
   return (
     <Container>
@@ -122,11 +123,10 @@ export const RedeemMasset: FC = () => {
         formValue={estimatedOutputAmount.value?.string}
         handleSetAddress={handleSetAddress}
       />
-      {penaltyBonus?.message && <ErrorMessage error={penaltyBonus?.message} />}
       <SendButton
         valid={!error}
         title={error ?? 'Redeem'}
-        warning={(!error && !!penaltyBonus?.percentage) || undefined}
+        warning={!error && impactWarning}
         handleSend={() => {
           if (masset && walletAddress && massetAmount && outputAddress && minOutputAmount) {
             if (Object.values(fAssets).find(f => f.address === outputAddress) && fasset) {
@@ -160,6 +160,7 @@ export const RedeemMasset: FC = () => {
         minOutputAmount={minOutputAmount}
         onSetSlippage={handleSetSlippage}
         slippageFormValue={slippageFormValue}
+        priceImpact={priceImpact?.value}
       />
     </Container>
   )

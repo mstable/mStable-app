@@ -91,10 +91,12 @@ const SwapLogic: FC = () => {
     [fAssets, inputAddress, massetAddress, outputAddress],
   )
 
-  const { estimatedOutputAmount: swapOutput, exchangeRate, feeRate } = useEstimatedOutput(
+  const { estimatedOutputAmount: swapOutput, exchangeRate, feeRate, priceImpact } = useEstimatedOutput(
     { ...inputToken, amount: inputAmount } as BigDecimalInputValue,
     { ...outputToken } as BigDecimalInputValue,
   )
+
+  const { impactWarning } = priceImpact?.value ?? {}
 
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount'
@@ -118,7 +120,7 @@ const SwapLogic: FC = () => {
     return swapOutput.error
   }, [inputAmount, swapOutput.fetching, swapOutput.error, inputToken, outputToken])
 
-  const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippageSimple, inputAmount, swapOutput?.value)
+  const { minOutputAmount } = useMinimumOutput(slippageSimple, inputAmount, swapOutput?.value)
 
   const approve = useMemo(
     () =>
@@ -157,7 +159,6 @@ const SwapLogic: FC = () => {
     <Container
       inputAddressOptions={combinedAddressOptions.input}
       outputAddressOptions={combinedAddressOptions.output}
-      error={penaltyBonus?.message}
       exchangeRate={exchangeRate}
       handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputAmount}
@@ -176,7 +177,7 @@ const SwapLogic: FC = () => {
         valid={valid}
         title={error ?? 'Swap'}
         approve={approve}
-        warning={(!error && !!penaltyBonus?.percentage) || undefined}
+        warning={!error && !!impactWarning}
         handleSend={() => {
           if (massetContract && walletAddress && inputAmount && minOutputAmount && inputAddress && outputAddress) {
             const isMassetMint = bAssets[inputAddress]?.address && outputAddress === massetAddress
@@ -237,6 +238,7 @@ const SwapLogic: FC = () => {
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}
         price={massetPrice}
+        priceImpact={priceImpact?.value}
       />
     </Container>
   )

@@ -100,7 +100,7 @@ export const MintLP: FC = () => {
 
   const shouldSkipEstimation = isStakingInVault
 
-  const { estimatedOutputAmount, exchangeRate } = useEstimatedOutput(
+  const { estimatedOutputAmount, exchangeRate, priceImpact } = useEstimatedOutput(
     {
       ...inputOptions.find(t => t.address === inputAddress),
       amount: inputAmount,
@@ -109,7 +109,9 @@ export const MintLP: FC = () => {
     shouldSkipEstimation,
   )
 
-  const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippageSimple, inputAmount, estimatedOutputAmount.value)
+  const { impactWarning } = priceImpact?.value ?? {}
+
+  const { minOutputAmount } = useMinimumOutput(slippageSimple, inputAmount, estimatedOutputAmount.value)
 
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount'
@@ -137,7 +139,6 @@ export const MintLP: FC = () => {
 
   return (
     <AssetExchange
-      error={(!isStakingInVault && penaltyBonus?.message) || undefined}
       exchangeRate={exchangeRate}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={(): void => {
@@ -158,7 +159,7 @@ export const MintLP: FC = () => {
       <SendButton
         title={error ?? title}
         approve={approve}
-        warning={(!isStakingInVault && !error && !!penaltyBonus?.percentage) || undefined}
+        warning={!isStakingInVault && !error && impactWarning}
         valid={!error}
         handleSend={() => {
           if (!contracts || !walletAddress || !feederPool) return
@@ -201,7 +202,12 @@ export const MintLP: FC = () => {
           )
         }}
       />
-      <TransactionInfo minOutputAmount={minOutputAmount} slippageFormValue={slippageFormValue} onSetSlippage={setSlippage} />
+      <TransactionInfo
+        minOutputAmount={minOutputAmount}
+        slippageFormValue={slippageFormValue}
+        onSetSlippage={setSlippage}
+        priceImpact={priceImpact?.value}
+      />
     </AssetExchange>
   )
 }

@@ -6,6 +6,7 @@ import { BigDecimal } from '../../web3/BigDecimal'
 import { Tooltip } from './ReactTooltip'
 import { CollapseBox } from '../forms/CollapseBox'
 import { SlippageInput } from '../forms/SlippageInput'
+import { PriceImpact } from '../../utils/ammUtils'
 
 interface Props {
   className?: string
@@ -18,7 +19,7 @@ interface Props {
   onSetSlippage?(formValue?: string): void
   saveExchangeRate?: BigDecimal
   price?: number
-  impactPercentage?: number
+  priceImpact?: PriceImpact
   impactWarning?: boolean
   distancePercentage?: number
 }
@@ -53,7 +54,6 @@ const AdvancedBox = styled(CollapseBox)`
 `
 
 const AdditionalInfo = styled.div`
-  /* background: ${({ theme }) => theme.color.backgroundAccent}; */
   border-radius: 0.75rem;
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   padding: 0.5rem 1.25rem;
@@ -70,9 +70,7 @@ export const TransactionInfo: FC<Props> = ({
   slippageFormValue,
   saveExchangeRate,
   price,
-  impactPercentage,
-  impactWarning = false,
-  distancePercentage,
+  priceImpact: { impactPercentage, impactWarning = false, distancePercentage } = {},
 }) => {
   const showAdditionalInfo = feeAmount || minOutputAmount || maxOutputAmount || impactPercentage || distancePercentage
 
@@ -155,7 +153,7 @@ export const TransactionInfo: FC<Props> = ({
               </span>
             </Info>
           )}
-          {impactPercentage && (
+          {!!impactPercentage && (
             <Info>
               <p>
                 <Tooltip tip="The difference between the current rate and estimated rate due to trade size">Price impact</Tooltip>
