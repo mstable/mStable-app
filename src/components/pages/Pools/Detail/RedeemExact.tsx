@@ -8,7 +8,7 @@ import { SendButton } from '../../../forms/SendButton'
 import { AddressOption, Interfaces } from '../../../../types'
 import { OneToManyAssetExchange, useMultiAssetExchangeState } from '../../../forms/MultiAssetExchange'
 import { BigDecimal } from '../../../../web3/BigDecimal'
-import { useEstimatedRedeemOutput } from '../../../../hooks/useEstimatedRedeemOutput'
+import { Route, useEstimatedOutputMulti } from '../../../../hooks/useEstimatedOutputMulti'
 import { useMaximumOutput } from '../../../../hooks/useOutput'
 import { useExchangeRateForFPInputs } from '../../../../hooks/useMassetExchangeRate'
 import { useSelectedFeederPoolContract, useSelectedFeederPoolState } from '../FeederPoolProvider'
@@ -27,7 +27,11 @@ export const RedeemExact: FC = () => {
   const isLowLiquidity = feederPool?.liquidity.simple * (massetPrice ?? 0) < 100000
 
   const [inputValues, slippage] = useMultiAssetExchangeState()
-  const estimatedOutputAmount = useEstimatedRedeemOutput(contract, inputValues)
+
+  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(contract, inputValues, Route.Redeem)
+
+  const { impactWarning } = priceImpact?.value ?? {}
+
   const exchangeRate = useExchangeRateForFPInputs(feederPool.address, estimatedOutputAmount, inputValues)
 
   const touched = useMemo(() => Object.values(inputValues).filter(v => v.touched), [inputValues])
@@ -46,7 +50,7 @@ export const RedeemExact: FC = () => {
     return massetAmount ?? fassetAmount
   }, [feederPool, touched])
 
-  const { maxOutputAmount, penaltyBonus } = useMaximumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
+  const { maxOutputAmount } = useMaximumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
 
   const outputOption = feederPool.token as AddressOption
 
@@ -95,11 +99,11 @@ export const RedeemExact: FC = () => {
       inputAmount={estimatedOutputAmount}
       outputLabel={outputLabel}
       maxOutputAmount={maxOutputAmount}
-      error={penaltyBonus?.message}
+      priceImpact={priceImpact?.value}
     >
       <SendButton
         title={error ?? 'Redeem'}
-        warning={(!error && !!penaltyBonus?.percentage) || undefined}
+        warning={!error && impactWarning}
         valid={!error}
         handleSend={() => {
           if (!contract || !walletAddress || !maxOutputAmount) return

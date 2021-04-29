@@ -17,7 +17,7 @@ import {
 } from '../../forms/MultiAssetExchange'
 import { SendButton } from '../../forms/SendButton'
 import { MassetState } from '../../../context/DataProvider/types'
-import { useEstimatedMintOutput } from '../../../hooks/useEstimatedMintOutput'
+import { Route, useEstimatedOutputMulti } from '../../../hooks/useEstimatedOutputMulti'
 import { useMinimumOutput } from '../../../hooks/useOutput'
 import { useSelectedMassetPrice } from '../../../hooks/usePrice'
 import { useExchangeRateForMassetInputs } from '../../../hooks/useMassetExchangeRate'
@@ -57,7 +57,7 @@ const MintExactLogic: FC = () => {
 
   const touched = useMemo(() => Object.values(inputValues).filter(v => v.touched), [inputValues])
 
-  const { estimatedOutputAmount, priceImpact } = useEstimatedMintOutput(masset, inputValues)
+  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(masset, inputValues, Route.Mint)
 
   const { impactWarning } = priceImpact?.value ?? {}
 
