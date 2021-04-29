@@ -1,16 +1,21 @@
 import type { FeederPool, Masset } from '@mstable/protocol/types/generated'
 import { useEffect, useMemo } from 'react'
 import { useDebounce } from 'react-use'
+import { BigNumber } from 'ethers'
+
 import { useSelectedMassetName } from '../context/SelectedMassetNameProvider'
 import { getPenaltyPercentage, inputValueLow, PriceImpact, useScaleAsset } from '../utils/ammUtils'
-
 import { sanitizeMassetError } from '../utils/strings'
 import { BigDecimal } from '../web3/BigDecimal'
-
 import type { BigDecimalInputValues } from './useBigDecimalInputs'
 import { FetchState, useFetchState } from './useFetchState'
 
 type MintableContract = Masset | FeederPool
+
+export enum Route {
+  Mint = 'mint',
+  Redeem = 'redeem',
+}
 
 interface Output {
   estimatedOutputAmount: FetchState<BigDecimal>
@@ -29,9 +34,9 @@ interface Output {
  */
 
 /**
- * This hook is designed for use with contracts that support mint & mintMulti
+ * This hook is designed for use with contracts that support mint & mintMulti, redeemExact
  */
-export const useEstimatedMintOutput = (contract?: MintableContract, inputValues?: BigDecimalInputValues): Output => {
+export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues?: BigDecimalInputValues, route?: Route): Output => {
   const [estimatedOutputRange, setEstimatedOutputRange] = useFetchState<{ low: BigDecimal; high: BigDecimal }>()
   const massetName = useSelectedMassetName()
   const scaleAsset = useScaleAsset()
@@ -50,7 +55,7 @@ export const useEstimatedMintOutput = (contract?: MintableContract, inputValues?
     const startRate = estimatedOutputRange?.value?.low.divPrecisely(totalInputLow)?.simple
     const endRate = estimatedOutputRange?.value?.high.divPrecisely(scaledInputHigh)?.simple
 
-    const impactPercentage = (startRate - endRate) * 100
+    const impactPercentage = Math.abs(startRate - endRate) * 100
     const impactWarning = (impactPercentage ?? 0) > 0.1
 
     const distancePercentage = getPenaltyPercentage(scaledInputHigh, estimatedOutputRange.value.high, false)
@@ -69,48 +74,43 @@ export const useEstimatedMintOutput = (contract?: MintableContract, inputValues?
       if (!inputValues || !contract) return
 
       const touched = Object.values(inputValues).filter(v => v.touched)
+      if (!touched.length) return {}
 
-      if (touched.length) {
-        setEstimatedOutputRange.fetching()
+      setEstimatedOutputRange.fetching()
+      if (!route) return setEstimatedOutputRange.value()
 
-        const outputs = (() => {
-          if (touched.length === 1) {
-            const [{ address, amount, decimals }] = touched
+      const addresses = touched.map(v => v.address)
+      const scaledInputsLow = touched.map(({ address, decimals }) => scaleAsset(address, inputValueLow[massetName], decimals).exact)
+      const amounts = touched.map(v => (v.amount as BigDecimal).exact)
 
-            const scaledInputLow = scaleAsset(address, inputValueLow[massetName], decimals)
-            const outputLow = contract.getMintOutput(address, scaledInputLow.exact)
-            const outputHigh = contract.getMintOutput(address, (amount as BigDecimal).exact)
-
+      const paths = ((): Promise<BigNumber>[] => {
+        switch (route) {
+          case Route.Mint: {
+            const outputLow = contract.getMintMultiOutput(addresses, scaledInputsLow)
+            const outputHigh = contract.getMintMultiOutput(addresses, amounts)
             return [outputLow, outputHigh]
           }
+          case Route.Redeem: {
+            const outputLow = contract.getRedeemExactBassetsOutput(addresses, scaledInputsLow)
+            const outputHigh = contract.getRedeemExactBassetsOutput(addresses, amounts)
+            return [outputLow, outputHigh]
+          }
+          default:
+            return []
+        }
+      })()
 
-          const addresses = touched.map(v => v.address)
+      Promise.all(paths)
+        .then(data => {
+          const [_low, _high] = data
+          const low = new BigDecimal(_low)
+          const high = new BigDecimal(_high)
 
-          const scaledInputsLow = touched.map(({ address, decimals }) => scaleAsset(address, inputValueLow[massetName], decimals).exact)
-          const amounts = touched.map(v => (v.amount as BigDecimal).exact)
-
-          const outputLow = contract.getMintMultiOutput(addresses, scaledInputsLow)
-          const outputHigh = contract.getMintMultiOutput(addresses, amounts)
-
-          return [outputLow, outputHigh]
-        })()
-
-        Promise.all(outputs)
-          .then(data => {
-            const [_low, _high] = data
-            const low = new BigDecimal(_low)
-            const high = new BigDecimal(_high)
-
-            setEstimatedOutputRange.value({
-              low,
-              high,
-            })
-          })
-          .catch((_error: Error): void => {
-            setEstimatedOutputRange.error(sanitizeMassetError(_error))
-          })
-      }
-      setEstimatedOutputRange.value()
+          setEstimatedOutputRange.value({ low, high })
+        })
+        .catch((_error: Error): void => {
+          setEstimatedOutputRange.error(sanitizeMassetError(_error))
+        })
     },
     2500,
     [contract, inputValues],

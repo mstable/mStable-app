@@ -174,6 +174,7 @@ export const OneToManyAssetExchange: FC<
   inputAmount,
   error,
   price,
+  priceImpact,
 }) => {
   const [outputValues, slippage] = useContext(stateCtx)
   const [outputCallbacks, setSlippage] = useContext(dispatchCtx)
@@ -206,7 +207,13 @@ export const OneToManyAssetExchange: FC<
       ))}
       {error && <ErrorMessage error={error} />}
       {children}
-      <TransactionInfo price={price} onSetSlippage={setSlippage} slippageFormValue={slippage.formValue} maxOutputAmount={maxOutputAmount} />
+      <TransactionInfo
+        price={price}
+        onSetSlippage={setSlippage}
+        slippageFormValue={slippage.formValue}
+        maxOutputAmount={maxOutputAmount}
+        priceImpact={priceImpact}
+      />
     </Container>
   )
 }

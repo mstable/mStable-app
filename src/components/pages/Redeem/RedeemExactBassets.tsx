@@ -14,10 +14,10 @@ import { TransactionManifest } from '../../../web3/TransactionManifest'
 
 import { SendButton } from '../../forms/SendButton'
 import { MultiAssetExchangeProvider, OneToManyAssetExchange, useMultiAssetExchangeState } from '../../forms/MultiAssetExchange'
-import { useEstimatedRedeemOutput } from '../../../hooks/useEstimatedRedeemOutput'
 import { useMaximumOutput } from '../../../hooks/useOutput'
 import { useSelectedMassetPrice } from '../../../hooks/usePrice'
 import { useExchangeRateForMassetInputs } from '../../../hooks/useMassetExchangeRate'
+import { Route, useEstimatedOutputMulti } from '../../../hooks/useEstimatedOutputMulti'
 
 const formId = 'redeem'
 
@@ -36,7 +36,10 @@ const RedeemExactBassetsLogic: FC = () => {
 
   const masset = useMemo(() => (signer ? Masset__factory.connect(massetAddress, signer) : undefined), [massetAddress, signer])
 
-  const estimatedOutputAmount = useEstimatedRedeemOutput(masset, bassetAmounts)
+  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(masset, bassetAmounts, Route.Redeem)
+
+  const { impactWarning } = priceImpact?.value ?? {}
+
   const exchangeRate = useExchangeRateForMassetInputs(estimatedOutputAmount, bassetAmounts)
 
   const touched = useMemo(() => Object.values(bassetAmounts).filter(v => v.touched), [bassetAmounts])
@@ -50,7 +53,7 @@ const RedeemExactBassetsLogic: FC = () => {
     )
   }, [bassetAmounts, touched, bassetRatios])
 
-  const { maxOutputAmount, penaltyBonus } = useMaximumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
+  const { maxOutputAmount } = useMaximumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
 
   const outputLabel = useMemo(
     () =>
@@ -82,17 +85,17 @@ const RedeemExactBassetsLogic: FC = () => {
   return (
     <OneToManyAssetExchange
       exchangeRate={exchangeRate}
-      inputAddress={massetState?.address as string}
+      inputAddress={massetAddress}
       inputLabel={massetState?.token.symbol}
       outputLabel={outputLabel}
       maxOutputAmount={maxOutputAmount}
-      error={penaltyBonus?.message}
       price={massetPrice}
       inputAmount={estimatedOutputAmount}
+      priceImpact={priceImpact?.value}
     >
       <SendButton
         valid={valid}
-        warning={(!error && !!penaltyBonus?.percentage) || undefined}
+        warning={!error && impactWarning}
         title={error ?? 'Redeem'}
         handleSend={() => {
           if (masset && walletAddress && maxOutputAmount) {

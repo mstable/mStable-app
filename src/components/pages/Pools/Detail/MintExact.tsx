@@ -7,7 +7,7 @@ import { SendButton } from '../../../forms/SendButton'
 import { Interfaces, SubscribedToken } from '../../../../types'
 import { ManyToOneAssetExchange, useMultiAssetExchangeDispatch, useMultiAssetExchangeState } from '../../../forms/MultiAssetExchange'
 import { BigDecimal } from '../../../../web3/BigDecimal'
-import { useEstimatedMintOutput } from '../../../../hooks/useEstimatedMintOutput'
+import { Route, useEstimatedOutputMulti } from '../../../../hooks/useEstimatedOutputMulti'
 import { useMinimumOutput } from '../../../../hooks/useOutput'
 import { useExchangeRateForFPInputs } from '../../../../hooks/useMassetExchangeRate'
 import {
@@ -41,7 +41,7 @@ export const MintExact: FC = () => {
 
   const touched = useMemo(() => Object.values(inputValues).filter(v => v.touched), [inputValues])
 
-  const { estimatedOutputAmount, priceImpact } = useEstimatedMintOutput(contracts?.feederPool, inputValues) ?? {}
+  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(contracts?.feederPool, inputValues, Route.Mint) ?? {}
 
   const { impactWarning } = priceImpact?.value ?? {}
 
