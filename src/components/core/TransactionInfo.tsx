@@ -1,6 +1,5 @@
 import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
-import reactStringReplace from 'react-string-replace'
 
 import { BigDecimal } from '../../web3/BigDecimal'
 import { Tooltip } from './ReactTooltip'
@@ -166,11 +165,7 @@ export const TransactionInfo: FC<Props> = ({
                   {formattedDistancePercentage.includes('+') ? 'Bonus pricing' : 'Penalty pricing'}
                 </Tooltip>
               </p>
-              {reactStringReplace(formattedDistancePercentage, /([+-][0-9]*.[0-9]*%)/g, (match, i) => (
-                <Percentage isBonus={match.includes('+')} key={i}>
-                  {match}
-                </Percentage>
-              ))}
+              <Percentage isBonus={formattedDistancePercentage.includes('+')}>{formattedDistancePercentage}</Percentage>
             </Info>
           )}
           {!minOutputAmount && !maxOutputAmount && (
