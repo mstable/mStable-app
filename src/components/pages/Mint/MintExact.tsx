@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react'
+import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 
 import { Masset__factory } from '@mstable/protocol/types/generated'
@@ -45,8 +45,8 @@ const MintExactLogic: FC = () => {
   const massetState = useSelectedMassetState() as MassetState
   const { address: massetAddress, bassetRatios } = massetState
 
-  const [inputValues, outputAmount, slippage] = useMultiAssetExchangeState()
-  const [inputCallbacks, setOutputAmount] = useMultiAssetExchangeDispatch()
+  const [inputValues, slippage] = useMultiAssetExchangeState()
+  const [inputCallbacks] = useMultiAssetExchangeDispatch()
 
   const inputTokens = useTokens(Object.keys(inputValues))
 
@@ -57,7 +57,10 @@ const MintExactLogic: FC = () => {
 
   const touched = useMemo(() => Object.values(inputValues).filter(v => v.touched), [inputValues])
 
-  const estimatedOutputAmount = useEstimatedMintOutput(masset, inputValues)
+  const { estimatedOutputAmount, priceImpact } = useEstimatedMintOutput(masset, inputValues)
+
+  const { impactWarning } = priceImpact?.value ?? {}
+
   const exchangeRate = useExchangeRateForMassetInputs(estimatedOutputAmount, inputValues)
 
   const inputAmount = useMemo(() => {
@@ -71,9 +74,13 @@ const MintExactLogic: FC = () => {
 
   const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
 
-  useEffect(() => {
-    setOutputAmount(estimatedOutputAmount)
-  }, [estimatedOutputAmount, setOutputAmount])
+  // useEffect(() => {
+  //   if (estimatedOutputAmount?.fetching) return
+  //   if (!outputAmount?.value) {
+  //     console.log('AA')
+  //     setOutputAmount(estimatedOutputAmount)
+  //   }
+  // }, [estimatedOutputAmount, setOutputAmount])
 
   const setMaxCallbacks = useMemo(
     () =>
@@ -114,14 +121,14 @@ const MintExactLogic: FC = () => {
     if (addressesApprovalNeeded.length)
       return `Approval for ${addressesApprovalNeeded.map(t => tokenState.tokens[t]?.symbol).join(', ')} needed`
 
-    if (outputAmount.fetching) return 'Validating…'
+    if (estimatedOutputAmount.fetching) return 'Validating…'
 
-    return outputAmount.error
-  }, [inputValues, massetState, outputAmount, tokenState, touched])
+    return estimatedOutputAmount.error
+  }, [inputValues, massetState, estimatedOutputAmount, tokenState, touched])
 
   const massetPrice = useSelectedMassetPrice()
 
-  const valid = !!(!error && !outputAmount.fetching && outputAmount.value?.exact.gt(0) && touched.length > 0)
+  const valid = !!(!error && !estimatedOutputAmount.fetching && estimatedOutputAmount.value?.exact.gt(0) && touched.length > 0)
 
   return (
     <Container
@@ -129,15 +136,17 @@ const MintExactLogic: FC = () => {
       inputLabel={inputLabel}
       outputLabel={massetState.token.symbol}
       outputAddress={massetState.address}
+      outputAmount={estimatedOutputAmount}
       setMaxCallbacks={setMaxCallbacks}
       spender={massetState.address}
       minOutputAmount={minOutputAmount}
       error={penaltyBonus?.message}
       price={massetPrice}
+      priceImpact={priceImpact?.value}
     >
       <SendButton
         valid={valid}
-        warning={(!error && !!penaltyBonus?.percentage) || undefined}
+        warning={!error && impactWarning}
         title={error ?? 'Mint'}
         handleSend={() => {
           if (masset && walletAddress && minOutputAmount) {

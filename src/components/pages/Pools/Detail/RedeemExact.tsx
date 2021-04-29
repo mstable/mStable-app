@@ -1,12 +1,12 @@
 import type { FC } from 'react'
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 
 import { usePropose } from '../../../../context/TransactionsProvider'
 import { useWalletAddress } from '../../../../context/AccountProvider'
 import { TransactionManifest } from '../../../../web3/TransactionManifest'
 import { SendButton } from '../../../forms/SendButton'
 import { AddressOption, Interfaces } from '../../../../types'
-import { OneToManyAssetExchange, useMultiAssetExchangeDispatch, useMultiAssetExchangeState } from '../../../forms/MultiAssetExchange'
+import { OneToManyAssetExchange, useMultiAssetExchangeState } from '../../../forms/MultiAssetExchange'
 import { BigDecimal } from '../../../../web3/BigDecimal'
 import { useEstimatedRedeemOutput } from '../../../../hooks/useEstimatedRedeemOutput'
 import { useMaximumOutput } from '../../../../hooks/useOutput'
@@ -26,8 +26,7 @@ export const RedeemExact: FC = () => {
   const massetPrice = useSelectedMassetPrice()
   const isLowLiquidity = feederPool?.liquidity.simple * (massetPrice ?? 0) < 100000
 
-  const [inputValues, , slippage] = useMultiAssetExchangeState()
-  const [, setOutputAmount] = useMultiAssetExchangeDispatch()
+  const [inputValues, slippage] = useMultiAssetExchangeState()
   const estimatedOutputAmount = useEstimatedRedeemOutput(contract, inputValues)
   const exchangeRate = useExchangeRateForFPInputs(feederPool.address, estimatedOutputAmount, inputValues)
 
@@ -88,15 +87,12 @@ export const RedeemExact: FC = () => {
     return estimatedOutputAmount.error
   }, [estimatedOutputAmount, feederPool, touched, isLowLiquidity, inputValues, inputAmount])
 
-  useEffect(() => {
-    setOutputAmount(estimatedOutputAmount)
-  }, [estimatedOutputAmount, setOutputAmount])
-
   return (
     <OneToManyAssetExchange
       exchangeRate={exchangeRate}
       inputAddress={outputOption?.address as string}
       inputLabel={outputOption?.symbol}
+      inputAmount={estimatedOutputAmount}
       outputLabel={outputLabel}
       maxOutputAmount={maxOutputAmount}
       error={penaltyBonus?.message}

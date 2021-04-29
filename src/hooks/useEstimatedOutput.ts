@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FeederPool, FeederPool__factory, Masset, Masset__factory } from '@mstable/protocol/types/generated'
 import { usePrevious, useDebounce } from 'react-use'
 
@@ -10,9 +10,8 @@ import { sanitizeMassetError } from '../utils/strings'
 
 import type { BigDecimalInputValue } from './useBigDecimalInputs'
 import { FetchState, useFetchState } from './useFetchState'
-import { MassetName } from '../types'
 import { useSelectedMassetName } from '../context/SelectedMassetNameProvider'
-import { getPenaltyPercentage, PriceImpact } from '../utils/ammUtils'
+import { getPenaltyPercentage, inputValueLow, PriceImpact, useScaleAsset } from '../utils/ammUtils'
 
 type Contract = Masset | FeederPool
 
@@ -27,12 +26,6 @@ enum Action {
   SWAP,
   REDEEM,
   MINT,
-}
-
-// ~ $1
-export const inputValueLow: Record<MassetName, BigDecimal> = {
-  musd: new BigDecimal((1e18).toString()),
-  mbtc: new BigDecimal((1e18).toString()).divPrecisely(BigDecimal.parse('58000')), // rough approximation
 }
 
 const inputValuesAreEqual = (a?: BigDecimalInputValue, b?: BigDecimalInputValue): boolean =>
@@ -64,6 +57,8 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
         address === outputValue?.address,
     )
 
+  const scaleAsset = useScaleAsset()
+
   const contract: Contract | undefined = useMemo(() => {
     if (!signer) return
 
@@ -75,29 +70,6 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
   }, [poolAddress, massetAddress, signer])
 
   const isFeederPool = contract?.address === poolAddress
-
-  // Scale asset via ratio
-  const scaleAsset = useCallback(
-    (address: string, amount: BigDecimal, decimals?: number): BigDecimal => {
-      if (!amount?.simple) return BigDecimal.ZERO
-
-      // Only bAsset/fAsset amounts are scaled
-      if (address === massetAddress || address === poolAddress) return amount
-
-      // Scale w/ ratio
-      const ratio = bAssets[address]?.ratio ?? (poolAddress && fAssets[poolAddress].ratio)
-
-      // shouldn't hit but better to have this can crash
-      if (!ratio) return amount
-
-      // scale from 18 down to user input
-      if (decimals) return amount.divRatioPrecisely(ratio).setDecimals(decimals)
-
-      // scale from input to 18
-      return amount.mulRatioTruncate(ratio).setDecimals(18)
-    },
-    [bAssets, fAssets, massetAddress, poolAddress],
-  )
 
   const exchangeRate = useMemo<FetchState<BigDecimal>>(() => {
     if (shouldSkip) return {}
