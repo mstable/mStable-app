@@ -58,7 +58,7 @@ export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues
     const impactPercentage = Math.abs(startRate - endRate) * 100
     const impactWarning = (impactPercentage ?? 0) > 0.1
 
-    const distancePercentage = getPenaltyPercentage(scaledInputHigh, estimatedOutputRange.value.high, false)
+    const distancePercentage = getPenaltyPercentage(scaledInputHigh, estimatedOutputRange.value.high, route === Route.Redeem)
 
     return {
       value: {
@@ -67,7 +67,7 @@ export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues
         impactWarning,
       },
     }
-  }, [estimatedOutputRange, inputValues, scaleAsset, massetName])
+  }, [estimatedOutputRange, inputValues, scaleAsset, massetName, route])
 
   const [update] = useDebounce(
     () => {
