@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react'
+import React, { FC, useMemo } from 'react'
 
 import { Masset__factory } from '@mstable/protocol/types/generated'
 import { usePropose } from '../../../context/TransactionsProvider'
@@ -13,12 +13,7 @@ import { BigDecimal } from '../../../web3/BigDecimal'
 import { TransactionManifest } from '../../../web3/TransactionManifest'
 
 import { SendButton } from '../../forms/SendButton'
-import {
-  MultiAssetExchangeProvider,
-  OneToManyAssetExchange,
-  useMultiAssetExchangeDispatch,
-  useMultiAssetExchangeState,
-} from '../../forms/MultiAssetExchange'
+import { MultiAssetExchangeProvider, OneToManyAssetExchange, useMultiAssetExchangeState } from '../../forms/MultiAssetExchange'
 import { useEstimatedRedeemOutput } from '../../../hooks/useEstimatedRedeemOutput'
 import { useMaximumOutput } from '../../../hooks/useOutput'
 import { useSelectedMassetPrice } from '../../../hooks/usePrice'
@@ -35,8 +30,7 @@ const RedeemExactBassetsLogic: FC = () => {
   const massetToken = useTokenSubscription(massetState.address)
   const massetBalance = massetToken?.balance
 
-  const [bassetAmounts, massetAmount, slippage] = useMultiAssetExchangeState()
-  const [, setMassetAmount] = useMultiAssetExchangeDispatch()
+  const [bassetAmounts, slippage] = useMultiAssetExchangeState()
 
   const outputTokens = useTokens(Object.keys(bassetAmounts))
 
@@ -44,10 +38,6 @@ const RedeemExactBassetsLogic: FC = () => {
 
   const estimatedOutputAmount = useEstimatedRedeemOutput(masset, bassetAmounts)
   const exchangeRate = useExchangeRateForMassetInputs(estimatedOutputAmount, bassetAmounts)
-
-  useEffect(() => {
-    setMassetAmount(estimatedOutputAmount)
-  }, [estimatedOutputAmount, setMassetAmount])
 
   const touched = useMemo(() => Object.values(bassetAmounts).filter(v => v.touched), [bassetAmounts])
 
@@ -80,14 +70,14 @@ const RedeemExactBassetsLogic: FC = () => {
       return 'Insufficient balance'
     }
 
-    if (massetAmount.fetching) return 'Validating…'
+    if (estimatedOutputAmount.fetching) return 'Validating…'
 
-    return massetAmount.error
-  }, [massetAmount.error, massetAmount.fetching, massetBalance, maxOutputAmount, touched])
+    return estimatedOutputAmount.error
+  }, [estimatedOutputAmount, massetBalance, maxOutputAmount, touched])
 
   const massetPrice = useSelectedMassetPrice()
 
-  const valid = !error && !massetAmount.fetching && touched.length > 0
+  const valid = !error && !estimatedOutputAmount.fetching && touched.length > 0
 
   return (
     <OneToManyAssetExchange
@@ -98,6 +88,7 @@ const RedeemExactBassetsLogic: FC = () => {
       maxOutputAmount={maxOutputAmount}
       error={penaltyBonus?.message}
       price={massetPrice}
+      inputAmount={estimatedOutputAmount}
     >
       <SendButton
         valid={valid}

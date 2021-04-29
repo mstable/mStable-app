@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react'
+import React, { FC, useMemo, useState } from 'react'
 
 import { usePropose } from '../../../../context/TransactionsProvider'
 import { useWalletAddress } from '../../../../context/AccountProvider'
@@ -36,12 +36,14 @@ export const MintExact: FC = () => {
 
   const [outputAddress, setOutputAddress] = useState<string | undefined>(vaultAddressOptions[0].address)
 
-  const [inputValues, , slippage] = useMultiAssetExchangeState()
-  const [inputCallbacks, setOutputAmount] = useMultiAssetExchangeDispatch()
+  const [inputValues, slippage] = useMultiAssetExchangeState()
+  const [inputCallbacks] = useMultiAssetExchangeDispatch()
 
   const touched = useMemo(() => Object.values(inputValues).filter(v => v.touched), [inputValues])
 
-  const estimatedOutputAmount = useEstimatedMintOutput(contracts?.feederPool, inputValues)
+  const { estimatedOutputAmount, priceImpact } = useEstimatedMintOutput(contracts?.feederPool, inputValues) ?? {}
+
+  const { impactWarning } = priceImpact?.value ?? {}
 
   const exchangeRate = useExchangeRateForFPInputs(feederPool.address, estimatedOutputAmount, inputValues)
 
@@ -59,7 +61,7 @@ export const MintExact: FC = () => {
     return massetAmount ?? fassetAmount
   }, [feederPool, touched])
 
-  const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
+  const { minOutputAmount } = useMinimumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
 
   const setMaxCallbacks = useMemo(
     () =>
@@ -135,14 +137,11 @@ export const MintExact: FC = () => {
     return estimatedOutputAmount.error
   }, [assetAddressOptions, estimatedOutputAmount, outputAddress, contractAddress, touched, inputAmount, isLowLiquidity, inputValues])
 
-  useEffect(() => {
-    setOutputAmount(estimatedOutputAmount)
-  }, [estimatedOutputAmount, setOutputAmount])
-
   return (
     <ManyToOneAssetExchange
       exchangeRate={exchangeRate}
       inputLabel={inputLabel}
+      outputAmount={estimatedOutputAmount}
       outputAddressOptions={vaultAddressOptions}
       outputLabel={feederPool.token.symbol}
       setOutputAddress={setOutputAddress}
@@ -150,11 +149,11 @@ export const MintExact: FC = () => {
       setMaxCallbacks={setMaxCallbacks}
       spender={contractAddress}
       minOutputAmount={minOutputAmount}
-      error={penaltyBonus?.message}
+      priceImpact={priceImpact?.value}
     >
       <SendButton
         title={error ?? 'Deposit'}
-        warning={(!error && !!penaltyBonus?.percentage) || undefined}
+        warning={!error && impactWarning}
         valid={!error}
         handleSend={() => {
           if (!contracts || !walletAddress || !minOutputAmount) return
