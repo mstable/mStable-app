@@ -40,38 +40,27 @@ export const useEstimatedMintOutput = (contract?: MintableContract, inputValues?
     if (estimatedOutputRange.fetching || !estimatedOutputRange?.value || !inputValues) return { fetching: true }
 
     const touched = Object.values(inputValues).filter(v => v.touched)
+    if (!touched.length) return {}
 
-    if (touched.length) {
-      // 1
-      if (touched.length === 1) {
-        const [{ address, amount }] = touched
-        const scaledInputValue = scaleAsset(address, amount ?? BigDecimal.ZERO)
+    const totalInputLow = touched.map(() => inputValueLow[massetName]).reduce((a, b) => a.add(b))
+    const scaledInputHigh = touched.map(({ address, amount }) => scaleAsset(address, amount ?? BigDecimal.ZERO)).reduce((a, b) => a.add(b))
 
-        if (!scaledInputValue.exact.gt(0)) return { fetching: true }
+    if (!scaledInputHigh.exact.gt(0)) return { fetching: true }
 
-        const startRate = estimatedOutputRange?.value?.low.divPrecisely(inputValueLow[massetName])?.simple
-        const endRate = estimatedOutputRange?.value?.high.divPrecisely(scaledInputValue)?.simple
+    const startRate = estimatedOutputRange?.value?.low.divPrecisely(totalInputLow)?.simple
+    const endRate = estimatedOutputRange?.value?.high.divPrecisely(scaledInputHigh)?.simple
 
-        const impactPercentage = (startRate - endRate) * 100
-        const impactWarning = (impactPercentage ?? 0) > 0.1
+    const impactPercentage = (startRate - endRate) * 100
+    const impactWarning = (impactPercentage ?? 0) > 0.1
 
-        const distancePercentage = getPenaltyPercentage(amount, estimatedOutputRange.value.high, false)
-
-        return {
-          value: {
-            distancePercentage,
-            impactPercentage,
-            impactWarning,
-          },
-        }
-      }
-      // many
-    }
-
-    // none
+    const distancePercentage = getPenaltyPercentage(scaledInputHigh, estimatedOutputRange.value.high, false)
 
     return {
-      error: 'err',
+      value: {
+        distancePercentage,
+        impactPercentage,
+        impactWarning,
+      },
     }
   }, [estimatedOutputRange, inputValues, scaleAsset, massetName])
 
@@ -95,9 +84,15 @@ export const useEstimatedMintOutput = (contract?: MintableContract, inputValues?
             return [outputLow, outputHigh]
           }
 
-          const inputs = touched.map(v => v.address)
+          const addresses = touched.map(v => v.address)
+
+          const scaledInputsLow = touched.map(({ address, decimals }) => scaleAsset(address, inputValueLow[massetName], decimals).exact)
           const amounts = touched.map(v => (v.amount as BigDecimal).exact)
-          return [contract.getMintMultiOutput(inputs, amounts), contract.getMintMultiOutput(inputs, amounts)]
+
+          const outputLow = contract.getMintMultiOutput(addresses, scaledInputsLow)
+          const outputHigh = contract.getMintMultiOutput(addresses, amounts)
+
+          return [outputLow, outputHigh]
         })()
 
         Promise.all(outputs)
