@@ -16,7 +16,7 @@ export type PriceImpact = {
 // ~ $1
 export const inputValueLow: Record<MassetName, BigDecimal> = {
   musd: new BigDecimal((1e18).toString()),
-  mbtc: new BigDecimal((1e18).toString()).divPrecisely(BigDecimal.parse('58000')), // rough approximation
+  mbtc: new BigDecimal((1e18).toString()).divPrecisely(BigDecimal.parse('58000')), // rough approximation, just needs to be small
 }
 
 export const getBounds = (amount: number): { min: number; max: number } => {
