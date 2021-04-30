@@ -9,13 +9,6 @@ executors:
     docker:
       - image: alsco77/node-gcp-dockerfile:njs12
     resource_class: large
-  sentry:
-    docker:
-      - image: getsentry/sentry-cli:1.55.0
-        auth:
-          username: mstableorg
-          password: $DOCKERHUB_PASSWORD
-    resource_class: small
 
 jobs:
   Build:
@@ -75,22 +68,6 @@ jobs:
             - project/package.json
             - project/*
 
-  Sentry:
-    executor: sentry
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: 'Sentry release'
-          command: |
-            PACKAGE_VERSION=$(sed 's/.*"version": "\(.*\)".*/\1/;t;d' ./package.json)
-            export SENTRY_RELEASE="$PACKAGE_VERSION-$(sentry-cli releases propose-version)"
-            sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
-            sentry-cli releases set-commits --auto $SENTRY_RELEASE
-            sentry-cli releases files $PACKAGE_VERSION upload-sourcemaps './build/static/js' --rewrite --url-prefix './build/static/js'
-            sentry-cli releases finalize $SENTRY_RELEASE
-            exit 0
-
 workflows:
   version: 2.1
 
@@ -114,6 +91,3 @@ workflows:
           requires:
             - Build
             - Approve deploy
-      - Sentry:
-          requires:
-            - Deploy
