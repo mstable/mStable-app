@@ -57,7 +57,7 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
         address === outputValue?.address,
     )
 
-  const scaleAsset = useScaleAsset()
+  const { scaleAsset } = useScaleAsset()
 
   const contract: Contract | undefined = useMemo(() => {
     if (!signer) return
@@ -168,8 +168,18 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
       const isLPMint = contract.address === outputAddress
       const isMassetMint = bAssets[inputAddress]?.address && outputAddress === massetAddress
       const isBassetSwap = [inputAddress, outputAddress].filter(address => bAssets[address]?.address).length === 2
+      const isInvalid = inputAddress === massetAddress && outputAddress === massetAddress
 
       if (!inputAmount?.exact.gt(0)) return
+
+      // masset -> masset; fallback to input value 1:1
+      if (isInvalid) {
+        setEstimatedOutputRange.value({
+          low: inputValueLow[massetName],
+          high: inputAmount,
+        })
+        return
+      }
 
       if (isMassetMint || isLPMint) {
         setAction(Action.MINT)

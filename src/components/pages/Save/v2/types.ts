@@ -1,3 +1,4 @@
+import { PriceImpact } from '../../../../utils/ammUtils'
 import type { BigDecimal } from '../../../../web3/BigDecimal'
 
 export enum SaveRoutes {
@@ -21,4 +22,5 @@ export interface SaveOutput {
   amount: BigDecimal
   amountOut?: BigDecimal
   path?: [string, string]
+  priceImpact?: PriceImpact
 }

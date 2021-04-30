@@ -15,6 +15,8 @@ import { BigDecimal } from '../../../../web3/BigDecimal'
 import { SaveWrapper__factory, UniswapRouter02__factory } from '../../../../typechain'
 
 import { SaveOutput, SaveRoutes } from './types'
+import { getPriceImpact, inputValueLow, useScaleAsset } from '../../../../utils/ammUtils'
+import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider'
 
 const getOptimalBasset = async (
   signer: Signer,
@@ -83,8 +85,11 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
     },
   } = massetState
 
+  const { scaleNetworkAsset, scaleAsset } = useScaleAsset()
+  const massetName = useSelectedMassetName()
   const inputAmountSerialized = inputAmount?.toJSON()
   const feederPoolAddress = inputAddress && Object.values(feederPools).find(fp => fp.fasset.address === inputAddress)?.address
+  const inputLow = inputValueLow[massetName]
 
   const [update] = useDebounce(
     () => {
@@ -112,15 +117,49 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
 
         case SaveRoutes.BuyAndSave:
         case SaveRoutes.BuyAndStake:
-          promise = getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, _inputAmount.exact)
+          promise = (async () => {
+            // turn into promise all
+            const { amount: low } = await getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, inputLow.exact)
+            const { amount: high } = await getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, _inputAmount.exact)
+
+            const priceImpact = getPriceImpact(
+              {
+                low: scaleNetworkAsset(inputLow),
+                high: scaleNetworkAsset(_inputAmount),
+              },
+              { low, high },
+            )
+
+            return {
+              amount: high,
+              priceImpact,
+            }
+          })()
           break
 
         case SaveRoutes.MintAndSave:
         case SaveRoutes.MintAndStake:
           promise = (async () => {
-            const mintOutput = await Masset__factory.connect(massetAddress, signer).getMintOutput(inputAddress, _inputAmount.exact)
+            const contract = Masset__factory.connect(massetAddress, signer)
+
+            const scaledInputLow = scaleAsset(inputAddress, inputLow, _inputAmount.decimals)
+            const _low = await contract.getMintOutput(inputAddress, scaledInputLow.exact)
+            const _high = await contract.getMintOutput(inputAddress, _inputAmount.exact)
+
+            const low = new BigDecimal(_low)
+            const high = new BigDecimal(_high)
+
+            const priceImpact = getPriceImpact(
+              {
+                low: scaleAsset(inputAddress, scaledInputLow),
+                high: scaleAsset(inputAddress, _inputAmount),
+              },
+              { low, high },
+            )
+
             return {
-              amount: new BigDecimal(mintOutput),
+              amount: high,
+              priceImpact,
             }
           })()
           break
@@ -128,13 +167,26 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
         case SaveRoutes.SwapAndSave:
         case SaveRoutes.SwapAndStake:
           promise = (async () => {
-            const swapOutput = await FeederPool__factory.connect(feederPoolAddress as string, signer).getSwapOutput(
-              inputAddress,
-              massetAddress,
-              _inputAmount.exact,
+            const contract = FeederPool__factory.connect(feederPoolAddress as string, signer)
+
+            const scaledInputLow = scaleAsset(inputAddress, inputLow, _inputAmount.decimals)
+            const _low = await contract.getSwapOutput(inputAddress, massetAddress, scaledInputLow.exact)
+            const _high = await contract.getSwapOutput(inputAddress, massetAddress, _inputAmount.exact)
+
+            const low = new BigDecimal(_low)
+            const high = new BigDecimal(_high)
+
+            const priceImpact = getPriceImpact(
+              {
+                low: scaleAsset(inputAddress, scaledInputLow),
+                high: scaleAsset(inputAddress, _inputAmount),
+              },
+              { low, high },
             )
+
             return {
-              amount: new BigDecimal(swapOutput),
+              amount: high,
+              priceImpact,
             }
           })()
           break

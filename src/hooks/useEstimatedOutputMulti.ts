@@ -39,7 +39,7 @@ interface Output {
 export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues?: BigDecimalInputValues, route?: Route): Output => {
   const [estimatedOutputRange, setEstimatedOutputRange] = useFetchState<{ low: BigDecimal; high: BigDecimal }>()
   const massetName = useSelectedMassetName()
-  const scaleAsset = useScaleAsset()
+  const { scaleAsset } = useScaleAsset()
 
   const priceImpact = useMemo<FetchState<PriceImpact>>(() => {
     if (estimatedOutputRange.fetching || !estimatedOutputRange?.value || !inputValues) return { fetching: true }

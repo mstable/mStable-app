@@ -17,7 +17,6 @@ import { ExchangeRate } from '../core/ExchangeRate'
 import { AssetInput } from './AssetInput'
 import { Arrow } from '../core/Arrow'
 import { TransactionInfo } from '../core/TransactionInfo'
-import { ErrorMessage } from '../core/ErrorMessage'
 import { AddressOption } from '../../types'
 import { PriceImpact } from '../../utils/ammUtils'
 
@@ -78,7 +77,6 @@ interface Props {
   spender?: string
   setMaxCallbacks?: { [address: string]: () => void }
   exchangeRate: { value?: BigDecimal; fetching?: boolean }
-  error?: string
   price?: number
   priceImpact?: PriceImpact
 }
@@ -172,7 +170,6 @@ export const OneToManyAssetExchange: FC<
   outputLabel = 'Output',
   maxOutputAmount,
   inputAmount,
-  error,
   price,
   priceImpact,
 }) => {
@@ -205,7 +202,6 @@ export const OneToManyAssetExchange: FC<
           decimals={outputValues[address].decimals}
         />
       ))}
-      {error && <ErrorMessage error={error} />}
       {children}
       <TransactionInfo
         price={price}
