@@ -14,9 +14,7 @@ import { Save } from './components/pages/Save'
 import { Redeem } from './components/pages/Redeem'
 import { NotFound } from './components/pages/NotFound'
 import { Stats } from './components/pages/Stats'
-import { Earn } from './components/pages/Earn'
-import { EarnPage } from './components/pages/Earn/Pool'
-import { AdminPage } from './components/pages/Earn/Admin'
+import { EarnRedirect } from './components/pages/EarnRedirect'
 import { Pools } from './components/pages/Pools'
 import { PoolDetail } from './components/pages/Pools/Detail'
 import { useNetwork } from './context/NetworkProvider'
@@ -44,10 +42,10 @@ const Routes: FC = () => {
   return (
     <Switch>
       <Route exact path="/" component={Home} />
-      <Route exact path="/:massetName/earn" component={Earn} />
-      <Route exact path="/:massetName/earn/admin" component={AdminPage} />
-      <Route exact path="/:massetName/earn/:slugOrAddress" component={EarnPage} />
-      <Route exact path="/:massetName/earn/:slugOrAddress/:userAddress" component={EarnPage} />
+      <Route exact path="/:massetName/earn" component={EarnRedirect} />
+      <Route exact path="/:massetName/earn/admin" component={EarnRedirect} />
+      <Route exact path="/:massetName/earn/:slugOrAddress" component={EarnRedirect} />
+      <Route exact path="/:massetName/earn/:slugOrAddress/:userAddress" component={EarnRedirect} />
       <Route exact path="/:massetName/stats" component={Stats} />
       <Route exact path="/:massetName/mint" component={Mint} />
       <Route exact path="/:massetName/redeem" component={Redeem} />

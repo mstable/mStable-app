@@ -32,7 +32,6 @@ export const InputV2 = styled.input<{
   font-weight: normal;
   border-radius: 0.5rem;
   outline: none;
-  padding: ${({ theme }) => `${theme.spacing.xs} ${theme.spacing.s}`};
   height: 3rem;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};
 `

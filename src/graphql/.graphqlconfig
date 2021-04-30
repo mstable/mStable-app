@@ -13,18 +13,6 @@
         }
       }
     },
-    "ecosystem": {
-      "includes": ["./shared/*", "./ecosystem/*"],
-      "schemaPath": "remote-schema.graphql",
-      "extensions": {
-        "endpoints": {
-          "kovan-staging": {
-            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem-kovan",
-            "introspect": false
-          }
-        }
-      }
-    },
     "feeders": {
       "includes": ["./shared/*", "./feeders/*"],
       "schemaPath": "remote-schema.graphql",
@@ -32,28 +20,6 @@
         "endpoints": {
           "ropsten": {
             "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-feeders-ropsten",
-            "introspect": false
-          }
-        }
-      }
-    },
-    "balancer": {
-      "includes": ["./shared/*", "./balancer/*"],
-      "extensions": {
-        "endpoints": {
-          "mainnet": {
-            "url": "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
-            "introspect": false
-          }
-        }
-      }
-    },
-    "uniswap": {
-      "includes": ["./shared/*", "./uniswap/*"],
-      "extensions": {
-        "endpoints": {
-          "mainnet": {
-            "url": "https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2",
             "introspect": false
           }
         }

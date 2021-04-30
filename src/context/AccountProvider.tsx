@@ -169,20 +169,20 @@ const OnboardProvider: FC<{
             },
             {
               walletName: 'fortmatic',
-              apiKey: process.env.REACT_APP_FORTMATIC_API_KEY,
+              apiKey: 'pk_live_262AEBF77922D028',
             },
             {
               walletName: 'portis',
-              apiKey: process.env.REACT_APP_PORTIS_DAPP_ID,
+              apiKey: 'bd88165a-43d7-481f-91bb-7e2f21e95ce6',
             },
             {
               walletName: 'squarelink',
-              apiKey: process.env.REACT_APP_SQUARELINK_CLIENT_ID,
+              apiKey: '3d4c0a80271deecce6da',
             },
             { walletName: 'authereum' },
             {
               walletName: 'walletConnect',
-              infuraKey: process.env.REACT_APP_RPC_API_KEY,
+              infuraKey: 'a6daf77ef0ae4b60af39259e435a40fe',
               preferred: true,
             },
             { walletName: 'opera' },

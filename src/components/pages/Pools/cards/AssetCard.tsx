@@ -21,6 +21,7 @@ import { Card } from './Card'
 import { CountUp, CountUpUSD } from '../../../core/CountUp'
 import { Tooltip } from '../../../core/ReactTooltip'
 import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy'
+import { ExternalLink } from '../../../core/ExternalLink'
 
 interface Props {
   className?: string
@@ -188,6 +189,10 @@ const Container = styled(Card)`
     width: 100%;
     z-index: 1;
   }
+
+  > :last-child > a * {
+    display: inline;
+  }
 `
 
 const AssetCardContent: FC<Props> = ({ className, poolAddress, deprecated = false, isLarge = false, color }) => {
@@ -240,9 +245,14 @@ export const CustomAssetCard: FC<Omit<Props, 'poolAddress'> & { title: string; u
   color,
 }) => {
   const history = useHistory()
-  return (
+
+  return url.startsWith('/') ? (
     <Container className={className} title={title} iconType="chevron" onClick={() => history.push(url)} gradientColor={color}>
       {children}
+    </Container>
+  ) : (
+    <Container className={className} title={title} gradientColor={color}>
+      <ExternalLink href={url}>{children}</ExternalLink>
     </Container>
   )
 }

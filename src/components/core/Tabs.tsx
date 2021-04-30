@@ -68,13 +68,6 @@ export const TabCard = styled(TabSwitch)`
   }
 `
 
-export const MoreInfo = styled.div`
-  font-size: 0.875rem;
-  color: ${({ theme }) => theme.color.bodyAccent};
-  text-align: center;
-  align-self: center;
-`
-
 export const Message = styled(InfoMessage)`
   margin: 0 2rem;
 `

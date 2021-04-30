@@ -1,17 +1,6 @@
 import type { ERC20, BoostedSavingsVault, ISavingsContractV2, Masset, FeederPool } from '@mstable/protocol/types/generated'
 
-import type {
-  CurveDeposit,
-  MerkleDrop,
-  MusdGauge,
-  RewardsDistributor,
-  StakingRewards,
-  StakingRewardsWithPlatformToken,
-  UniswapRouter02,
-  SaveWrapper,
-  TokenMinter,
-  FeederWrapper,
-} from './typechain'
+import type { UniswapRouter02, SaveWrapper, FeederWrapper } from './typechain'
 
 import type { BigDecimal } from './web3/BigDecimal'
 
@@ -27,13 +16,6 @@ export enum Interfaces {
   Masset,
   ERC20,
   SavingsContract,
-  StakingRewards,
-  StakingRewardsWithPlatformToken,
-  RewardsDistibutor,
-  MerkleDrop,
-  CurveGauge,
-  CurveTokenMinter,
-  CurveDeposit,
   SaveWrapper,
   BoostedSavingsVault,
   UniswapRouter02,
@@ -46,13 +28,6 @@ export interface Instances {
   [Interfaces.Masset]: Masset
   [Interfaces.ERC20]: ERC20
   [Interfaces.SavingsContract]: ISavingsContractV2
-  [Interfaces.StakingRewards]: StakingRewards
-  [Interfaces.StakingRewardsWithPlatformToken]: StakingRewardsWithPlatformToken
-  [Interfaces.RewardsDistibutor]: RewardsDistributor
-  [Interfaces.MerkleDrop]: MerkleDrop
-  [Interfaces.CurveGauge]: MusdGauge
-  [Interfaces.CurveTokenMinter]: TokenMinter
-  [Interfaces.CurveDeposit]: CurveDeposit
   [Interfaces.SaveWrapper]: SaveWrapper
   [Interfaces.BoostedSavingsVault]: BoostedSavingsVault
   [Interfaces.UniswapRouter02]: UniswapRouter02
@@ -76,27 +51,6 @@ export interface Allowances {
 export interface SubscribedToken extends Token {
   balance: BigDecimal
   allowances: Allowances
-}
-
-export enum Platforms {
-  Balancer = 'Balancer',
-  Uniswap = 'Uniswap',
-  Curve = 'Curve',
-  Cream = 'Cream',
-  Sushi = 'Sushi',
-  Badger = 'Badger',
-}
-
-export interface AccentColors {
-  light: string
-  accent: string
-  base: string
-  text: string
-}
-
-export enum Fields {
-  Input = 'input',
-  Output = 'output',
 }
 
 export interface AddressOption {

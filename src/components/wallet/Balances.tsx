@@ -5,7 +5,6 @@ import { useDataState } from '../../context/DataProvider/DataProvider'
 import { useTokenSubscription } from '../../context/TokensProvider'
 import { ExplorerLink } from '../core/ExplorerLink'
 import { CountUp } from '../core/CountUp'
-import { mapSizeToFontSize, Size } from '../../theme'
 import { TokenIcon as TokenIconBase } from '../icons/TokenIcon'
 import { List, ListItem } from '../core/List'
 import { MassetState } from '../../context/DataProvider/types'
@@ -16,23 +15,26 @@ const Symbol = styled.div`
   align-items: center;
 
   img {
-    width: 36px;
-    margin-right: 8px;
+    width: 100%;
+    height: auto;
   }
 `
 
-const Balance = styled(CountUp)<{ size?: Size }>`
+const Balance = styled(CountUp)`
   font-weight: bold;
-  font-size: ${({ size = Size.m }) => mapSizeToFontSize(size)};
+  font-size: 1rem;
 `
 
 const TokenIcon = styled(TokenIconBase)<{ outline?: boolean }>`
+  width: 2rem;
+  height: 2rem;
+  margin-right: 0.5rem;
   ${({ outline }) => (outline ? `border: 1px white solid; border-radius: 100%` : '')}
 `
 
-const TokenBalance: FC<{ address: string; size?: Size }> = ({ address, size = Size.m }) => {
+const TokenBalance: FC<{ address: string }> = ({ address }) => {
   const token = useTokenSubscription(address)
-  return token ? <Balance size={size} end={token.balance.simple} /> : <ThemedSkeleton />
+  return token ? <Balance end={token.balance.simple} /> : <ThemedSkeleton />
 }
 
 /**
@@ -64,13 +66,13 @@ export const Balances: FC = () => {
     <List inverted>
       {massetTokens.map(({ masset, bassets, savingsContractV1, savingsContractV2 }) => (
         <Fragment key={masset.address}>
-          <ListItem size={Size.l} key={masset.address}>
+          <ListItem key={masset.address}>
             <Symbol>
               <TokenIcon symbol={masset.symbol} outline />
               <span>{masset.symbol}</span>
               <ExplorerLink data={masset.address} />
             </Symbol>
-            <TokenBalance address={masset.address} size={Size.l} />
+            <TokenBalance address={masset.address} />
           </ListItem>
           {savingsContractV1 && (
             <ListItem key={savingsContractV1.address}>
@@ -79,7 +81,7 @@ export const Balances: FC = () => {
                 <span>{savingsContractV1.name}</span>
               </Symbol>
               {savingsContractV1.savingsBalance.balance ? (
-                <Balance size={Size.l} end={savingsContractV1.savingsBalance.balance.simple} />
+                <Balance end={savingsContractV1.savingsBalance.balance.simple} />
               ) : (
                 <ThemedSkeleton />
               )}
@@ -91,7 +93,7 @@ export const Balances: FC = () => {
                 <TokenIcon symbol={savingsContractV2.symbol} outline />
                 <span>{savingsContractV2.symbol}</span>
               </Symbol>
-              {savingsContractV2.balance ? <Balance size={Size.l} end={savingsContractV2.balance.simple} /> : <ThemedSkeleton />}
+              {savingsContractV2.balance ? <Balance end={savingsContractV2.balance.simple} /> : <ThemedSkeleton />}
             </ListItem>
           )}
           {bassets.map(({ address, symbol }) => (

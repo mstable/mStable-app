@@ -19,41 +19,9 @@ generates:
     config:
       includeDirectives: true
 
-  ./src/graphql/ecosystem/schema.graphql:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM}
-    plugins:
-      - 'schema-ast'
-    config:
-      includeDirectives: true
-
   ./src/graphql/feeders/schema.graphql:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_FEEDERS}
-    plugins:
-      - 'schema-ast'
-    config:
-      includeDirectives: true
-
-  ./src/graphql/uniswap/schema.graphql:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_UNISWAP}
-    plugins:
-      - 'schema-ast'
-    config:
-      includeDirectives: true
-
-  ./src/graphql/sushi/schema.graphql:
-    overwrite: true
-    schema: https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork
-    plugins:
-      - 'schema-ast'
-    config:
-      includeDirectives: true
-
-  ./src/graphql/balancer/schema.graphql:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_BALANCER}
     plugins:
       - 'schema-ast'
     config:
@@ -77,50 +45,10 @@ generates:
       - 'typescript-operations'
       - 'typescript-react-apollo'
 
-  ./src/graphql/ecosystem.tsx:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_ECOSYSTEM}
-    documents: 'src/graphql/ecosystem/*.graphql'
-    plugins:
-      - 'fragment-matcher'
-      - 'typescript'
-      - 'typescript-operations'
-      - 'typescript-react-apollo'
-
   ./src/graphql/feeders.tsx:
     overwrite: true
     schema: ${REACT_APP_GRAPHQL_ENDPOINT_FEEDERS}
     documents: 'src/graphql/feeders/*.graphql'
-    plugins:
-      - 'fragment-matcher'
-      - 'typescript'
-      - 'typescript-operations'
-      - 'typescript-react-apollo'
-
-  ./src/graphql/uniswap.tsx:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_UNISWAP}
-    documents: 'src/graphql/uniswap/*.graphql'
-    plugins:
-      - 'fragment-matcher'
-      - 'typescript'
-      - 'typescript-operations'
-      - 'typescript-react-apollo'
-
-  ./src/graphql/sushi.tsx:
-    overwrite: true
-    schema: https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork
-    documents: 'src/graphql/sushi/*.graphql'
-    plugins:
-      - 'fragment-matcher'
-      - 'typescript'
-      - 'typescript-operations'
-      - 'typescript-react-apollo'
-
-  ./src/graphql/balancer.tsx:
-    overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_BALANCER}
-    documents: 'src/graphql/balancer/*.graphql'
     plugins:
       - 'fragment-matcher'
       - 'typescript'

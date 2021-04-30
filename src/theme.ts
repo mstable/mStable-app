@@ -139,40 +139,6 @@ export const mapSizeToFontSize = (size: Size): string => {
   }
 }
 
-// eslint-disable-next-line consistent-return
-export const mapSizeToIconSize = ({ size }: { size: Size }): string => {
-  // eslint-disable-next-line default-case
-  switch (size) {
-    case Size.xs:
-      return '12px'
-    case Size.s:
-      return '16px'
-    case Size.m:
-      return '24px'
-    case Size.l:
-      return '32px'
-    case Size.xl:
-      return '64px'
-  }
-}
-
-// eslint-disable-next-line consistent-return
-export const mapSizeToSpacing = (size: Size): string => {
-  // eslint-disable-next-line default-case
-  switch (size) {
-    case Size.xs:
-      return Spacing.xs
-    case Size.s:
-      return Spacing.s
-    case Size.m:
-      return Spacing.m
-    case Size.l:
-      return Spacing.l
-    case Size.xl:
-      return Spacing.xl
-  }
-}
-
 export const mixins = {
   roundedBorder: css<{ inverted?: boolean }>`
     border: 1px ${({ inverted, theme }) => (inverted ? theme.color.whiteTransparent : theme.color.blackTransparent)} solid;
