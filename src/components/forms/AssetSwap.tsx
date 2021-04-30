@@ -5,7 +5,6 @@ import { AssetExchange, Props } from './AssetExchange'
 export const AssetSwap: FC<Props> = ({
   inputAddressOptions,
   outputAddressOptions,
-  error,
   exchangeRate,
   handleSetInputAddress,
   handleSetInputAmount,
@@ -48,7 +47,6 @@ export const AssetSwap: FC<Props> = ({
       }}
       outputAddress={outputAddress}
       outputFormValue={outputFormValue}
-      error={error}
       isFetching={isFetching}
       inputDecimals={inputDecimals}
     >

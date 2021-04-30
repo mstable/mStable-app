@@ -72,15 +72,7 @@ const MintExactLogic: FC = () => {
     )
   }, [inputValues, touched, bassetRatios])
 
-  const { minOutputAmount, penaltyBonus } = useMinimumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
-
-  // useEffect(() => {
-  //   if (estimatedOutputAmount?.fetching) return
-  //   if (!outputAmount?.value) {
-  //     console.log('AA')
-  //     setOutputAmount(estimatedOutputAmount)
-  //   }
-  // }, [estimatedOutputAmount, setOutputAmount])
+  const { minOutputAmount } = useMinimumOutput(slippage?.simple, inputAmount, estimatedOutputAmount.value)
 
   const setMaxCallbacks = useMemo(
     () =>
@@ -140,7 +132,6 @@ const MintExactLogic: FC = () => {
       setMaxCallbacks={setMaxCallbacks}
       spender={massetState.address}
       minOutputAmount={minOutputAmount}
-      error={penaltyBonus?.message}
       price={massetPrice}
       priceImpact={priceImpact?.value}
     >
