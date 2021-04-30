@@ -1,9 +1,7 @@
 import { BigNumber } from 'ethers'
 
 export const SCALE = BigNumber.from((1e18).toString())
-export const PERCENT_SCALE = BigNumber.from((1e16).toString())
 export const RATIO_SCALE = BigNumber.from((1e8).toString())
-export const EXP_SCALE = BigNumber.from((1e18).toString())
 
 export const DEAD_ADDRESS = '0x0000000000000000000000000000000000000001'
 

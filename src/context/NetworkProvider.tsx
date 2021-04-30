@@ -88,23 +88,12 @@ interface Network<TAddresses, TGqlEndpoints> {
 export interface EthereumMainnet
   extends Network<
     {
-      Curve: { CurveV2: string }
       ERC20: {
-        SUSHI: string
-        BADGER: string
-        CREAM: string
-        renBTC: string
         WETH: string
         WBTC: string
       }
     },
-    {
-      ecosystem: string
-      curve: string
-      sushi: string
-      balancer: string
-      uniswap: string
-    }
+    {}
   > {
   chainId: ChainIds.EthereumMainnet
 }
@@ -192,11 +181,6 @@ const ETH_MAINNET: EthereumMainnet = {
     protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging',
     feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools',
     blocks: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
-    ecosystem: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem',
-    curve: 'https://api.thegraph.com/subgraphs/name/protofire/curve',
-    sushi: 'https://api.thegraph.com/subgraphs/name/jiro-ono/sushiswap-v1-exchange',
-    balancer: 'https://api.thegraph.com/subgraphs/name/balancer-labs/balancer',
-    uniswap: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
   },
   addresses: {
     MTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
@@ -204,16 +188,9 @@ const ETH_MAINNET: EthereumMainnet = {
     FeederWrapper: '0x7C1fD068CE739A4687BEe9F69e5FD2275C7372d4',
     SaveWrapper: '0x0CA7A25181FC991e3cC62BaC511E62973991f325',
     UniswapRouter02_Like: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
-    Curve: {
-      CurveV2: '0x1aef73d49dedc4b1778d0706583995958dc862e6',
-    },
     ERC20: {
       WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
       WBTC: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-      SUSHI: '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
-      BADGER: '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
-      CREAM: '0x2ba592F78dB6436527729929AAf6c908497cB200',
-      renBTC: '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',
     },
   },
   getExplorerUrl: etherscanUrl(),

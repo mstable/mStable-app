@@ -2,7 +2,7 @@ import React, { FC, useCallback } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import GitHubButton from 'react-github-btn'
-import { isAddress } from 'web3-utils'
+import { utils } from 'ethers'
 
 import { useCloseAccount } from '../../context/AppProvider'
 import { useIsMasquerading, useMasquerade } from '../../context/AccountProvider'
@@ -72,7 +72,7 @@ const Masquerade: FC<{}> = () => {
       // eslint-disable-next-line no-alert
       const inputAddress = window.prompt('View as account (read only)')
 
-      masquerade(inputAddress && isAddress(inputAddress) ? inputAddress.toLowerCase() : undefined)
+      masquerade(inputAddress && utils.isAddress(inputAddress) ? inputAddress.toLowerCase() : undefined)
     }
   }, [isMasquerading, masquerade])
 

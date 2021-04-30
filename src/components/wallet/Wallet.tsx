@@ -49,7 +49,7 @@ const Rows = styled.div`
 `
 
 const Row = styled.div`
-  padding-bottom: ${({ theme }) => theme.spacing.xl};
+  padding-bottom: 2rem;
 `
 
 const DisconnectButton = styled(Button)`

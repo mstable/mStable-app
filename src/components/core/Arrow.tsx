@@ -15,8 +15,3 @@ export const Arrow: FC<{ direction?: 'up' | 'down' }> = ({ direction = 'down' })
   const arrowIcon = direction === 'up' ? '↑' : '↓'
   return <Container>{arrowIcon}</Container>
 }
-
-export const Plus: FC = () => {
-  const plusIcon = '+'
-  return <Container>{plusIcon}</Container>
-}

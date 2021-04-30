@@ -20,9 +20,6 @@ const cache = new InMemoryCache({
     Pool: {
       keyFields: false,
     },
-    StakingRewardsContract: {
-      keyFields: false,
-    },
     // Sometimes tokens of the same ID are loaded across separate
     // subgraphs; avoid merging them in the cache
     Token: {

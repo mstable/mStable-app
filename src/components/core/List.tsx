@@ -1,8 +1,7 @@
 import styled from 'styled-components'
-import { mapSizeToFontSize, Size } from '../../theme'
 
-export const ListItem = styled.li<{ size?: Size; inverted?: boolean }>`
-  font-size: ${({ theme, size = theme.size.m }) => mapSizeToFontSize(size)};
+export const ListItem = styled.li<{ inverted?: boolean }>`
+  font-size: 1rem;
 `
 
 export const List = styled.ul<{ inverted?: boolean }>`
@@ -10,6 +9,6 @@ export const List = styled.ul<{ inverted?: boolean }>`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: ${({ theme }) => `${theme.spacing.xs} 0`};
+    padding: 0.25rem 0;
   }
 `

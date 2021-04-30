@@ -12,7 +12,7 @@ interface Props {
 }
 
 const Copy = styled(Button)`
-  margin-left: ${({ theme }) => theme.spacing.xs};
+  margin-left: 0.25rem;
   min-width: 60px;
 `
 

@@ -4,7 +4,7 @@ import { constants } from 'ethers'
 import { AllTokensQueryResult } from '../graphql/protocol'
 import { Allowances, SubscribedToken } from '../types'
 import { BigDecimal } from '../web3/BigDecimal'
-import { AllNetworks, useNetwork, useNetworkAddresses } from './NetworkProvider'
+import { AllNetworks, useNetwork } from './NetworkProvider'
 
 interface State {
   tokens: {
@@ -459,11 +459,6 @@ export const useTokenSubscription = (address: string | null | undefined): Subscr
   }, [address, subscribeBalance, unsubscribeBalance, id])
 
   return address ? state.tokens[address] : undefined
-}
-
-export const useMetaToken = (): SubscribedToken | undefined => {
-  const networkAddresses = useNetworkAddresses()
-  return useTokenSubscription(networkAddresses.vMTA)
 }
 
 export const useNativeToken = (): SubscribedToken => useTokensState().tokens[constants.AddressZero] as SubscribedToken
