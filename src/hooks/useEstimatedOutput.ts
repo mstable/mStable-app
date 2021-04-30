@@ -11,7 +11,7 @@ import { sanitizeMassetError } from '../utils/strings'
 import type { BigDecimalInputValue } from './useBigDecimalInputs'
 import { FetchState, useFetchState } from './useFetchState'
 import { useSelectedMassetName } from '../context/SelectedMassetNameProvider'
-import { getPenaltyPercentage, inputValueLow, PriceImpact, useScaleAsset } from '../utils/ammUtils'
+import { getPriceImpact, inputValueLow, PriceImpact, useScaleAsset } from '../utils/ammUtils'
 
 type Contract = Masset | FeederPool
 
@@ -122,21 +122,9 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
     const scaledInputValue = scaleAsset(inputValue.address, inputValue.amount ?? BigDecimal.ZERO)
     if (!scaledInputValue.exact.gt(0)) return { fetching: true }
 
-    const startRate = estimatedOutputRange?.value?.low.divPrecisely(inputValueLow[massetName])?.simple
-    const endRate = estimatedOutputRange?.value?.high.divPrecisely(scaledInputValue)?.simple
+    const value = getPriceImpact({ low: inputValueLow[massetName], high: scaledInputValue }, estimatedOutputRange?.value)
 
-    const impactPercentage = (startRate - endRate) * 100
-    const impactWarning = (impactPercentage ?? 0) > 0.1
-
-    const distancePercentage = getPenaltyPercentage(inputValue?.amount, estimatedOutputRange.value.high, false)
-
-    return {
-      value: {
-        distancePercentage,
-        impactPercentage,
-        impactWarning,
-      },
-    }
+    return { value }
   }, [estimatedOutputRange, massetName, scaleAsset, inputValue])
 
   /*

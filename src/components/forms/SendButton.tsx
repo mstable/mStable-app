@@ -71,12 +71,7 @@ const SendButtonContent: FC<Omit<Props, 'approve'>> = ({ className, valid, title
       disabled={!valid}
       onClick={async () => {
         if (!valid) return
-
-        if (warning) {
-          if (!confirm(SLIPPAGE_WARNING)) {
-            return
-          }
-        }
+        if (warning && !confirm(SLIPPAGE_WARNING)) return
 
         handleSend()
       }}

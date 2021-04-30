@@ -9,7 +9,7 @@ import { BigDecimal } from '../web3/BigDecimal'
 const MIN_FACTOR = 0.996
 const MAX_FACTOR = 1.004
 
-export type PriceImpact = {
+export interface PriceImpact {
   distancePercentage?: number
   impactPercentage: number
   impactWarning: boolean
@@ -55,12 +55,10 @@ export const getPenaltyPercentage = (
   const output = outputAmount.simple
   const penalty = output / inputAmount.simple
 
-  // if (output < min || output > max) {
   if (reverse) {
     return penalty > 1 ? (penalty - 1) * -100 : (1 - penalty) * 100
   }
   return penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100
-  // }
 }
 
 // Scale asset via ratio
@@ -119,13 +117,14 @@ export const useScaleAsset = (): {
 export const getPriceImpact = (
   inputValueRange: { low: BigDecimal; high: BigDecimal },
   estimatedOutputRange: { low: BigDecimal; high: BigDecimal },
+  reverse = false,
 ): PriceImpact | undefined => {
   const startRate = estimatedOutputRange?.low.divPrecisely(inputValueRange.low)?.simple
   const endRate = estimatedOutputRange?.high.divPrecisely(inputValueRange.high)?.simple
 
-  const impactPercentage = (startRate - endRate) * 100
+  const impactPercentage = Math.abs(startRate - endRate) * 100
   const impactWarning = (impactPercentage ?? 0) > 0.1
-  const distancePercentage = getPenaltyPercentage(inputValueRange.high, estimatedOutputRange.high, false)
+  const distancePercentage = getPenaltyPercentage(inputValueRange.high, estimatedOutputRange.high, reverse)
 
   return {
     distancePercentage,
