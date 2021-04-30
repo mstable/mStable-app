@@ -191,6 +191,8 @@ export const SaveDeposit: FC = () => {
 
   const saveOutput = useSaveOutput(saveRoute, inputAddress, inputAmount)
 
+  const { priceImpact, priceImpact: { impactWarning = false } = {} } = saveOutput?.value ?? {}
+
   const [slippageSimple, slippageFormValue, handleSetSlippage] = useSlippage()
 
   const error = useMemo(() => {
@@ -340,7 +342,6 @@ export const SaveDeposit: FC = () => {
 
   return (
     <AssetExchange
-      error={error ?? hasSlippage ? outputs.penaltyBonus.message : undefined}
       handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputFormValue}
       handleSetInputMax={() => {
@@ -356,7 +357,7 @@ export const SaveDeposit: FC = () => {
     >
       <SendButton
         approve={approve}
-        warning={!error && hasSlippage ? !!outputs.penaltyBonus.percentage : undefined}
+        warning={!error && hasSlippage && impactWarning}
         valid={!error}
         title={error ?? titles[saveRoute]}
         handleSend={() => {
@@ -485,6 +486,7 @@ export const SaveDeposit: FC = () => {
         slippageFormValue={hasSlippage ? slippageFormValue : undefined}
         onSetSlippage={hasSlippage ? handleSetSlippage : undefined}
         saveExchangeRate={saveExchangeRate}
+        priceImpact={priceImpact}
       />
     </AssetExchange>
   )

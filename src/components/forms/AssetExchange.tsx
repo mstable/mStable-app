@@ -7,7 +7,6 @@ import { AssetInput } from './AssetInput'
 import { ExchangeRate } from '../core/ExchangeRate'
 import { Arrow } from '../core/Arrow'
 import type { AddressOption } from '../../types'
-import { ErrorMessage } from '../core/ErrorMessage'
 
 export interface Props {
   inputAddress?: string
@@ -27,7 +26,6 @@ export interface Props {
   handleSetOutputMax?(): void
 
   exchangeRate: { value?: BigDecimal; fetching?: boolean } // e.g. for mUSD->imUSD
-  error?: string
   className?: string
   // TODO: Combine this with outputFormValue, same with decimals
   isFetching?: boolean
@@ -52,7 +50,6 @@ const Container = styled.div`
 export const AssetExchange: FC<Props> = ({
   inputAddressOptions,
   outputAddressOptions,
-  error,
   exchangeRate,
   handleSetInputAddress,
   handleSetInputAmount,
@@ -116,7 +113,6 @@ export const AssetExchange: FC<Props> = ({
         isFetching={isFetching}
         decimals={outputDecimals}
       />
-      {error && <ErrorMessage error={error} />}
       {children}
     </Container>
   )

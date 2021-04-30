@@ -1,6 +1,8 @@
 import { useCallback } from 'react'
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider'
 import { MassetState } from '../context/DataProvider/types'
+import { useNetworkPrices } from '../context/NetworkProvider'
+import { useSelectedMassetPrice } from '../hooks/usePrice'
 import { MassetName } from '../types'
 import { BigDecimal } from '../web3/BigDecimal'
 
@@ -62,8 +64,15 @@ export const getPenaltyPercentage = (
 }
 
 // Scale asset via ratio
-export const useScaleAsset = (): ((address: string, amount: BigDecimal, decimals?: number) => BigDecimal) => {
+export const useScaleAsset = (): {
+  scaleAsset: (address: string, amount: BigDecimal, decimals?: number) => BigDecimal
+  scaleNetworkAsset: (amount: BigDecimal) => BigDecimal
+} => {
   const massetState = useSelectedMassetState() as MassetState
+  const networkPrices = useNetworkPrices()
+  const nativeTokenPrice = networkPrices.value?.nativeToken
+  const massetPrice = useSelectedMassetPrice()
+
   const { address: massetAddress, fAssets, bAssets } = massetState
 
   const scaleAsset = useCallback(
@@ -93,5 +102,34 @@ export const useScaleAsset = (): ((address: string, amount: BigDecimal, decimals
     [bAssets, fAssets, massetAddress],
   )
 
-  return scaleAsset
+  const scaleNetworkAsset = useCallback(
+    (amount: BigDecimal): BigDecimal => {
+      const nativeTokenPriceDecimal = BigDecimal.parse(nativeTokenPrice?.toFixed(10) ?? '')
+      return amount.mulTruncate(nativeTokenPriceDecimal.exact).divPrecisely(BigDecimal.parse(massetPrice?.toFixed(10) ?? ''))
+    },
+    [massetPrice, nativeTokenPrice],
+  )
+
+  return {
+    scaleAsset,
+    scaleNetworkAsset,
+  }
+}
+
+export const getPriceImpact = (
+  inputValueRange: { low: BigDecimal; high: BigDecimal },
+  estimatedOutputRange: { low: BigDecimal; high: BigDecimal },
+): PriceImpact | undefined => {
+  const startRate = estimatedOutputRange?.low.divPrecisely(inputValueRange.low)?.simple
+  const endRate = estimatedOutputRange?.high.divPrecisely(inputValueRange.high)?.simple
+
+  const impactPercentage = (startRate - endRate) * 100
+  const impactWarning = (impactPercentage ?? 0) > 0.1
+  const distancePercentage = getPenaltyPercentage(inputValueRange.high, estimatedOutputRange.high, false)
+
+  return {
+    distancePercentage,
+    impactPercentage,
+    impactWarning,
+  }
 }
