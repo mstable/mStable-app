@@ -111,7 +111,6 @@ export const SaveRedeem: FC = () => {
       inputAddress={inputAddress}
       inputFormValue={inputFormValue}
       outputAddress={outputAddressOptions?.[0].address}
-      error={error}
       exchangeRate={exchangeRate}
       handleSetInputAddress={setInputAddress}
       handleSetInputAmount={setInputFormValue}
