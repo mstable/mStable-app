@@ -4,7 +4,7 @@ import { useDebounce } from 'react-use'
 import { BigNumber } from 'ethers'
 
 import { useSelectedMassetName } from '../context/SelectedMassetNameProvider'
-import { getPenaltyPercentage, inputValueLow, PriceImpact, useScaleAsset } from '../utils/ammUtils'
+import { getPriceImpact, inputValueLow, PriceImpact, useScaleAsset } from '../utils/ammUtils'
 import { sanitizeMassetError } from '../utils/strings'
 import { BigDecimal } from '../web3/BigDecimal'
 import type { BigDecimalInputValues } from './useBigDecimalInputs'
@@ -52,21 +52,9 @@ export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues
 
     if (!scaledInputHigh.exact.gt(0)) return { fetching: true }
 
-    const startRate = estimatedOutputRange?.value?.low.divPrecisely(totalInputLow)?.simple
-    const endRate = estimatedOutputRange?.value?.high.divPrecisely(scaledInputHigh)?.simple
+    const value = getPriceImpact({ low: totalInputLow, high: scaledInputHigh }, estimatedOutputRange?.value, route === Route.Redeem)
 
-    const impactPercentage = Math.abs(startRate - endRate) * 100
-    const impactWarning = (impactPercentage ?? 0) > 0.1
-
-    const distancePercentage = getPenaltyPercentage(scaledInputHigh, estimatedOutputRange.value.high, route === Route.Redeem)
-
-    return {
-      value: {
-        distancePercentage,
-        impactPercentage,
-        impactWarning,
-      },
-    }
+    return { value }
   }, [estimatedOutputRange, inputValues, scaleAsset, massetName, route])
 
   const [update] = useDebounce(
