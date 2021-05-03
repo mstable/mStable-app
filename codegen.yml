@@ -13,7 +13,7 @@ config:
 generates:
   ./src/graphql/protocol/schema.graphql:
     overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL}
+    schema: https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging
     plugins:
       - 'schema-ast'
     config:
@@ -21,7 +21,7 @@ generates:
 
   ./src/graphql/feeders/schema.graphql:
     overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_FEEDERS}
+    schema: https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools
     plugins:
       - 'schema-ast'
     config:
@@ -29,7 +29,7 @@ generates:
 
   ./src/graphql/blocks/schema.graphql:
     overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_BLOCKS}
+    schema: https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks
     plugins:
       - 'schema-ast'
     config:
@@ -37,7 +37,7 @@ generates:
 
   ./src/graphql/protocol.tsx:
     overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_PROTOCOL}
+    schema: https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging
     documents: 'src/graphql/protocol/*.graphql'
     plugins:
       - 'fragment-matcher'
@@ -47,7 +47,7 @@ generates:
 
   ./src/graphql/feeders.tsx:
     overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_FEEDERS}
+    schema: https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools
     documents: 'src/graphql/feeders/*.graphql'
     plugins:
       - 'fragment-matcher'
@@ -57,7 +57,7 @@ generates:
 
   ./src/graphql/blocks.tsx:
     overwrite: true
-    schema: ${REACT_APP_GRAPHQL_ENDPOINT_BLOCKS}
+    schema: https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks
     documents: 'src/graphql/blocks/*.graphql'
     plugins:
       - 'fragment-matcher'
