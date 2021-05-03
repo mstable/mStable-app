@@ -4,6 +4,7 @@ import styled from 'styled-components'
 
 import { useTokenAllowance } from '../../../../context/TokensProvider'
 import { useOwnAccount, useSigner } from '../../../../context/AccountProvider'
+import { useNetworkAddresses } from '../../../../context/NetworkProvider'
 import { TransactionForm } from '../../../forms/TransactionForm'
 import { TokenAmount } from '../../../core/TokenAmount'
 import { NumberFormat } from '../../../core/Amount'
@@ -174,15 +175,16 @@ export const DistributeRewardsForm: FC = () => {
   const account = useOwnAccount()
   const signer = useSigner()
   const {
-    data: { rewardsDistributor, rewardsToken },
+    data: { rewardsDistributor },
     useCustomRecipients,
     recipientAmounts,
     totalFunds,
   } = useEarnAdminState()
+  const networkAddresses = useNetworkAddresses()
 
   const rewardsDistributorAddress = rewardsDistributor?.id
 
-  const allowance = useTokenAllowance(rewardsToken?.address, rewardsDistributorAddress)
+  const allowance = useTokenAllowance(networkAddresses.MTA, rewardsDistributorAddress)
 
   const reason = useMemo<string | undefined>(() => {
     if (!account) {
