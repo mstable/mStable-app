@@ -76,7 +76,7 @@ export const AssetExchange: FC<Props> = ({
 
   const conversionFormValue =
     inputFormValue && exchangeRate?.value && !outputFormValue
-      ? BigDecimal.parse(inputFormValue ?? '0').mulTruncate(exchangeRate.value.exact).string
+      ? BigDecimal.maybeParse(inputFormValue)?.mulTruncate(exchangeRate.value.exact).string
       : undefined
 
   return (

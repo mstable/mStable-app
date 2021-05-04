@@ -201,7 +201,7 @@ const transformSavingsContractV2 = (
           timestamp: latestExchangeRate.timestamp,
         }
       : {
-          rate: BigDecimal.parse('0.10'),
+          rate: BigDecimal.fromSimple(0.1),
           timestamp: Date.now(),
         },
     massetAddress,
