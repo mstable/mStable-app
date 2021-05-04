@@ -202,7 +202,7 @@ export const BoostCalculator: FC<{
   const vMTA = useTokenSubscription(networkAddresses?.vMTA)
   const vMTABalance = vMTA?.balance
 
-  const defaultInputValue = isImusd ? BigDecimal.parse('100') : BigDecimal.parse('1')
+  const defaultInputValue = isImusd ? BigDecimal.fromSimple(100) : BigDecimal.ONE
 
   const [vMTAValue, vMTAFormValue, setVmta] = useBigDecimalInput(vMTABalance)
   const [inputValue, inputFormValue, setInput] = useBigDecimalInput(inputBalance?.simpleRounded !== 0 ? inputBalance : defaultInputValue)

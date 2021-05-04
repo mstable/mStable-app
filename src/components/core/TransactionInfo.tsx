@@ -82,14 +82,14 @@ export const TransactionInfo: FC<Props> = ({
   }>(() => {
     if (!price) return {}
 
-    const _fee = feeAmount && price * feeAmount?.simple
-    const _min = minOutputAmount && price * minOutputAmount?.simple
-    const _max = maxOutputAmount && price * maxOutputAmount?.simple
+    const _fee = feeAmount && price * feeAmount.simple
+    const _min = minOutputAmount && price * minOutputAmount.simple
+    const _max = maxOutputAmount && price * maxOutputAmount.simple
 
     const prices = {
-      fee: (_fee && BigDecimal.parse(_fee.toString(), 2)) || undefined,
-      min: (_min && BigDecimal.parse(_min.toString(), 2)) || undefined,
-      max: (_max && BigDecimal.parse(_max.toString(), 2)) || undefined,
+      fee: _fee ? BigDecimal.fromSimple(_fee, 2) : undefined,
+      min: _min ? BigDecimal.fromSimple(_min, 2) : undefined,
+      max: _max ? BigDecimal.fromSimple(_max, 2) : undefined,
     }
 
     if (saveExchangeRate) {

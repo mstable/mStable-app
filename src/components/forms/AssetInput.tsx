@@ -250,7 +250,7 @@ export const AssetInput: FC<Props> = ({
   isFetching,
   decimals,
 }) => {
-  const amount = BigDecimal.parse(formValue ?? '0')
+  const amount = BigDecimal.maybeParse(formValue)
   return spender && address ? (
     <ApproveProvider address={address} spender={spender} amount={amount}>
       <AssetInputApproveContent
