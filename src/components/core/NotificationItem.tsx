@@ -27,11 +27,7 @@ const Link = styled.a<{ nType: NotificationType }>`
 
 const Container = styled.div<Pick<Notification, 'type'> & { className?: string }>`
   background: ${({ theme, type }) =>
-    type === NotificationType.Success
-      ? theme.color.green
-      : type === NotificationType.Info || type === NotificationType.Update
-      ? theme.color.primary
-      : theme.color.red};
+    type === NotificationType.Success ? theme.color.green : type === NotificationType.Info ? theme.color.primary : theme.color.red};
   color: ${({ theme, type }) => (type === NotificationType.Success ? theme.color.black : theme.color.white)};
   border-radius: 0.25rem;
   padding: 0.25rem 0.5rem;

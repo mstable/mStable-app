@@ -3,7 +3,6 @@ import React, { FC, createContext, useContext, useCallback, useMemo, useReducer,
 enum Actions {
   Add,
   MarkAsRead,
-  MarkAllAsRead,
   HideToast,
 }
 
@@ -11,7 +10,6 @@ export enum NotificationType {
   Success,
   Error,
   Info,
-  Update,
 }
 
 export interface Notification {
@@ -35,7 +33,6 @@ type Action =
       payload: Notification
     }
   | { type: Actions.MarkAsRead; payload: string }
-  | { type: Actions.MarkAllAsRead }
   | { type: Actions.HideToast; payload: string }
 
 type AddNotificationCallback = (title: Notification['title'], body?: Notification['body'], link?: Notification['link']) => void
@@ -43,10 +40,8 @@ type AddNotificationCallback = (title: Notification['title'], body?: Notificatio
 interface Dispatch {
   addErrorNotification: AddNotificationCallback
   addInfoNotification: AddNotificationCallback
-  addUpdateNotification: AddNotificationCallback
   addSuccessNotification: AddNotificationCallback
   markNotificationAsRead(id: string): void
-  markAllNotificationsAsRead(): void
 }
 
 const reducer: Reducer<State, Action> = (state, action) => {
@@ -66,9 +61,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
       const id = action.payload
       return state.map(n => (n.id === id ? { ...n, hideToast: true } : n))
     }
-
-    case Actions.MarkAllAsRead:
-      return state.map(n => (n.read ? n : { ...n, read: true }))
 
     default:
       return state
@@ -92,12 +84,9 @@ export const NotificationsProvider: FC = ({ children }) => {
       })
 
       // Hide the notification toast after a delay
-      // (exception: update notifications)
-      if (notification.type !== NotificationType.Update) {
-        setTimeout(() => {
-          dispatch({ type: Actions.HideToast, payload: id })
-        }, 8000)
-      }
+      setTimeout(() => {
+        dispatch({ type: Actions.HideToast, payload: id })
+      }, 8000)
     },
     [dispatch],
   )
@@ -116,13 +105,6 @@ export const NotificationsProvider: FC = ({ children }) => {
     [addNotification],
   )
 
-  const addUpdateNotification = useCallback<Dispatch['addUpdateNotification']>(
-    (title, body) => {
-      addNotification({ title, body, type: NotificationType.Update })
-    },
-    [addNotification],
-  )
-
   const addSuccessNotification = useCallback<Dispatch['addSuccessNotification']>(
     (title, body, link) => {
       addNotification({ title, body, link, type: NotificationType.Success })
@@ -137,10 +119,6 @@ export const NotificationsProvider: FC = ({ children }) => {
     [dispatch],
   )
 
-  const markAllNotificationsAsRead = useCallback<Dispatch['markAllNotificationsAsRead']>(() => {
-    dispatch({ type: Actions.MarkAllAsRead })
-  }, [dispatch])
-
   return (
     <context.Provider
       value={useMemo(
@@ -149,22 +127,11 @@ export const NotificationsProvider: FC = ({ children }) => {
           {
             addErrorNotification,
             addInfoNotification,
-            addUpdateNotification,
             addSuccessNotification,
             markNotificationAsRead,
-            markAllNotificationsAsRead,
           },
         ],
-
-        [
-          state,
-          addErrorNotification,
-          addInfoNotification,
-          addUpdateNotification,
-          addSuccessNotification,
-          markNotificationAsRead,
-          markAllNotificationsAsRead,
-        ],
+        [state, addErrorNotification, addInfoNotification, addSuccessNotification, markNotificationAsRead],
       )}
     >
       {children}
@@ -186,9 +153,4 @@ export const useAddInfoNotification = (): Dispatch['addInfoNotification'] => use
 
 export const useAddSuccessNotification = (): Dispatch['addSuccessNotification'] => useNotificationsDispatch().addSuccessNotification
 
-export const useAddUpdateNotification = (): Dispatch['addUpdateNotification'] => useNotificationsDispatch().addUpdateNotification
-
 export const useMarkNotificationAsRead = (): Dispatch['markNotificationAsRead'] => useNotificationsDispatch().markNotificationAsRead
-
-export const useMarkAllNotificationsAsRead = (): Dispatch['markAllNotificationsAsRead'] =>
-  useNotificationsDispatch().markAllNotificationsAsRead
