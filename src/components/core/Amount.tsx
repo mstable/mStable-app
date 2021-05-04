@@ -32,11 +32,14 @@ const Container = styled.span`
   font-family: 'DM Mono', monospace !important;
 `
 
+/**
+ * @deprecated
+ */
 export const Amount: FC<Props> = ({ amount, className, commas, countup, decimalPlaces, format = NumberFormat.Countup, price, suffix }) => {
   const tooltip = useMemo(
     () =>
       price && price.exact.gt(0) && amount && amount.exact.gt(0)
-        ? `$${BigDecimal.parse((price.simple * amount.simple).toString(), amount.decimals).format()} @ $${price.format(2)}`
+        ? `$${BigDecimal.fromSimple(price.simple * amount.simple, amount.decimals).format()} @ $${price.format(2)}`
         : undefined,
     [price, amount],
   )
