@@ -48,8 +48,8 @@ export class BigDecimal {
     return BigDecimal.parse(amountStr, decimals)
   }
 
-  static maybeFromMetric(metric?: { decimals: number; exact: string }): BigDecimal | undefined {
-    return metric ? BigDecimal.fromMetric(metric) : undefined
+  static fromSimple(simpleNumber: number, decimals: number = DEFAULT_DECIMALS): BigDecimal {
+    return BigDecimal.parse(simpleNumber.toFixed(decimals), decimals)
   }
 
   static fromMetric({ decimals, exact }: { decimals: number; exact: string }): BigDecimal {
@@ -175,6 +175,30 @@ export class BigDecimal {
   }
 
   /**
+   * Scales this BigDecimal to given `decimals` precision; scales up or down.
+   * @param decimals
+   */
+  scale(decimals: number = DEFAULT_DECIMALS): BigDecimal {
+    if (this.decimals === decimals) return this
+
+    let scaled: BigNumber
+
+    if (this.exact.eq(0)) {
+      scaled = this.exact
+    } else if (this.decimals === 0) {
+      scaled = this.exact.mul(BigNumber.from(10).pow(decimals))
+    } else if (decimals === 0) {
+      scaled = this.exact.div(BigNumber.from(10).pow(this.decimals))
+    } else {
+      const thisScale = BigNumber.from(10).pow(this.decimals - 1)
+      const otherScale = BigNumber.from(10).pow(decimals - 1)
+      scaled = this.decimals > decimals ? this.exact.mul(otherScale).div(thisScale) : this.exact.mul(otherScale.div(thisScale))
+    }
+
+    return new BigDecimal(scaled, decimals)
+  }
+
+  /**
    * Precisely divides two units, by first scaling the left hand operand. Useful
    *      for finding percentage weightings, i.e. 8e18/10e18 = 80% (or 8e17)
    * @param other Right hand input to division
@@ -185,12 +209,12 @@ export class BigDecimal {
     return this.transform(this.exact.mul(SCALE).div(other.exact))
   }
 
-  add(other: BigDecimal): BigDecimal {
-    return this.transform(this.exact.add(other.exact))
+  add(other: BigDecimal | BigNumber): BigDecimal {
+    return this.transform(this.exact.add(other instanceof BigNumber ? other : other.exact))
   }
 
-  sub(other: BigDecimal): BigDecimal {
-    return this.transform(this.exact.sub(other.exact))
+  sub(other: BigDecimal | BigNumber): BigDecimal {
+    return this.transform(this.exact.sub(other instanceof BigNumber ? other : other.exact))
   }
 
   private transform(newValue: BigNumber): BigDecimal {
