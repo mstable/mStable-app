@@ -199,16 +199,18 @@ export const SaveDeposit: FC = () => {
     if (!inputAmount?.simple) return 'Enter an amount'
 
     if (inputAmount && inputToken?.balance) {
-      if (inputAmount.simple > inputToken.balance.simple) {
-        return 'Insufficient balance'
-      }
-
       if (!inputAddress) {
         return 'Must select an asset'
       }
 
       if (inputAmount.exact.eq(0)) {
         return 'Amount must be greater than zero'
+      }
+
+      if (saveOutput.error) return saveOutput.error
+
+      if (inputAmount.exact.gt(inputToken.balance.exact)) {
+        return 'Insufficient balance'
       }
     }
 
@@ -247,7 +249,7 @@ export const SaveDeposit: FC = () => {
       // 1:1 for this
       return {
         minOutputImasset: inputAmount,
-        exchangeRate: BigDecimal.parse('1'),
+        exchangeRate: BigDecimal.ONE,
         penaltyBonus: {},
       }
     }
@@ -255,10 +257,7 @@ export const SaveDeposit: FC = () => {
     const { amount: outputMasset } = saveOutput.value
 
     // Apply slippage
-    const minOutputMasset = BigDecimal.parse(
-      (outputMasset.simple * (1 - slippageSimple / 100)).toFixed(outputMasset.decimals),
-      outputMasset.decimals,
-    )
+    const minOutputMasset = BigDecimal.fromSimple(outputMasset.simple * (1 - slippageSimple / 100), outputMasset.decimals)
 
     // Scale input to mAsset units, if necessary
     const inputBasset = bAssets[inputAddress]
@@ -267,10 +266,10 @@ export const SaveDeposit: FC = () => {
       inputBasset || inputFasset ? inputAmount.mulRatioTruncate((inputBasset || inputFasset).ratio).setDecimals(18) : inputAmount
 
     // If coming from ETH, convert to mAsset value
-    const nativeTokenPriceExact = BigDecimal.parse(nativeTokenPrice.toFixed(10)).exact
+    const nativeTokenPriceExact = BigDecimal.fromSimple(nativeTokenPrice).exact
     const inputMassetValue =
       withNativeToken.has(saveRoute) && massetPrice
-        ? inputAmount.mulTruncate(nativeTokenPriceExact).divPrecisely(BigDecimal.parse(massetPrice.toFixed(10)))
+        ? inputAmount.mulTruncate(nativeTokenPriceExact).divPrecisely(BigDecimal.fromSimple(massetPrice))
         : inputMasset
 
     // Scale amounts to imAsset value

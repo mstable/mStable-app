@@ -14,7 +14,7 @@ import { useExchangeRateForFPInputs } from '../../../../hooks/useMassetExchangeR
 import { useSelectedFeederPoolContract, useSelectedFeederPoolState } from '../FeederPoolProvider'
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
 
-const formId = 'RedeemExactLP'
+const formId = 'RedeemExact'
 
 export const RedeemExact: FC = () => {
   const feederPool = useSelectedFeederPoolState()
@@ -82,7 +82,9 @@ export const RedeemExact: FC = () => {
       }
     }
 
-    if (estimatedOutputAmount.value?.exact.gt(feederPool.token.balance.exact ?? 0)) {
+    if (estimatedOutputAmount.error) return estimatedOutputAmount.error
+
+    if (feederPool.token.balance.exact && estimatedOutputAmount.value?.exact.gt(feederPool.token.balance.exact)) {
       return 'Insufficient balance'
     }
 

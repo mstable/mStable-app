@@ -62,8 +62,6 @@ export const SaveRedeem: FC = () => {
     if (inputAmount && inputToken && inputToken.balance.exact.lt(inputAmount.exact)) {
       return 'Insufficient balance'
     }
-
-    return undefined
   }, [inputToken, inputAmount])
 
   const inputAddressOptions = useMemo<AddressOption[]>(() => {
@@ -86,14 +84,11 @@ export const SaveRedeem: FC = () => {
     return [{ address: massetAddress as string }]
   }, [inputAddress, vaultAddress, saveAddress, massetAddress])
 
-  const saveRoute = useMemo<SaveRoutesOut>(() => {
-    if (inputAddress === vaultAddress) return SaveRoutesOut.VaultWithdraw
-    return SaveRoutesOut.Withdraw
-  }, [vaultAddress, inputAddress])
+  const saveRoute = inputAddress === vaultAddress ? SaveRoutesOut.VaultWithdraw : SaveRoutesOut.Withdraw
 
   const exchangeRate = useMemo(() => {
     if (saveRoute === SaveRoutesOut.VaultWithdraw) {
-      return { value: BigDecimal.parse('1') }
+      return { value: BigDecimal.ONE }
     }
     const value = saveExchangeRate ? saveExchangeRate.divPrecisely(BigDecimal.ONE) : undefined
     return {

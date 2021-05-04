@@ -35,7 +35,7 @@ const useOutput = (
     const simpleAmount =
       type === OutputType.Maximum ? outputAmount.simple * (1 + slippageSimple / 100) : outputAmount.simple * (1 - slippageSimple / 100)
 
-    return BigDecimal.parse(simpleAmount.toFixed(outputAmount.decimals), outputAmount.decimals)
+    return BigDecimal.fromSimple(simpleAmount, outputAmount.decimals)
   }, [type, outputAmount, slippageSimple])
 
   const penaltyBonus = useMemo(() => {

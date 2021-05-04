@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import Skeleton from 'react-loading-skeleton'
 
 import { useFeederPoolMetricsQuery } from '../../../../graphql/feeders'
-import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider'
+import { useSelectedMassetName } from '../../../../context/MassetProvider'
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
 import { useFeederPool } from '../../../../context/DataProvider/DataProvider'
 import { useTokenSubscription } from '../../../../context/TokensProvider'

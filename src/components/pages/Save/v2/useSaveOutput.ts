@@ -73,10 +73,14 @@ const getOptimalBasset = async (
 export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAmount?: BigDecimal): FetchState<SaveOutput> => {
   const [saveOutput, setSaveOutput] = useFetchState<SaveOutput>()
   const networkAddresses = useNetworkAddresses()
+  const networkPrices = useNetworkPrices()
+  const nativeTokenPriceSimple = networkPrices.value?.nativeToken
+  const massetPriceSimple = useSelectedMassetPrice()
 
   const signer = useSigner() as Signer
 
   const massetState = useSelectedMassetState() as MassetState
+  const massetConfig = useSelectedMassetConfig()
   const {
     address: massetAddress,
     bAssets,
@@ -86,11 +90,8 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
     },
   } = massetState
 
-  const { scaleNetworkAsset, scaleAsset } = useScaleAsset()
-  const massetName = useSelectedMassetName()
   const inputAmountSerialized = inputAmount?.toJSON()
   const feederPoolAddress = inputAddress && Object.values(feederPools).find(fp => fp.fasset.address === inputAddress)?.address
-  const inputLow = inputValueLow[massetName]
 
   const [update] = useDebounce(
     () => {
@@ -101,6 +102,8 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
       if (
         !latestExchangeRate ||
         !networkAddresses ||
+        !nativeTokenPriceSimple ||
+        !massetPriceSimple ||
         ((route === SaveRoutes.SwapAndSave || route === SaveRoutes.SwapAndStake) && !feederPoolAddress)
       ) {
         return setSaveOutput.fetching()
@@ -119,17 +122,18 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
         case SaveRoutes.BuyAndSave:
         case SaveRoutes.BuyAndStake:
           promise = (async () => {
-            // turn into promise all
-            const { amount: low } = await getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, inputLow.exact)
-            const { amount: high } = await getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, _inputAmount.exact)
+            const [{ amount: low }, { amount: high }] = await Promise.all([
+              getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, massetConfig.lowInputValue.exact),
+              getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, _inputAmount.exact),
+            ])
 
-            const priceImpact = getPriceImpact(
-              {
-                low: scaleNetworkAsset(inputLow),
-                high: scaleNetworkAsset(_inputAmount),
-              },
-              { low, high },
-            )
+            const nativeTokenPrice = BigDecimal.fromSimple(nativeTokenPriceSimple).exact
+            const massetPrice = BigDecimal.fromSimple(massetPriceSimple)
+
+            const buyLow = massetConfig.lowInputValue.mulTruncate(nativeTokenPrice).divPrecisely(massetPrice)
+            const buyHigh = _inputAmount.scale().mulTruncate(nativeTokenPrice).divPrecisely(massetPrice)
+
+            const priceImpact = getPriceImpact([buyLow, buyHigh], [low, high])
 
             return {
               amount: high,
@@ -143,20 +147,17 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
           promise = (async () => {
             const contract = Masset__factory.connect(massetAddress, signer)
 
-            const scaledInputLow = scaleAsset(inputAddress, inputLow, _inputAmount.decimals)
-            const _low = await contract.getMintOutput(inputAddress, scaledInputLow.exact)
-            const _high = await contract.getMintOutput(inputAddress, _inputAmount.exact)
+            const scaledInputLow = massetConfig.lowInputValue.scale(_inputAmount.decimals)
+
+            const [_low, _high] = await Promise.all([
+              contract.getMintOutput(inputAddress, scaledInputLow.exact),
+              contract.getMintOutput(inputAddress, _inputAmount.exact),
+            ])
 
             const low = new BigDecimal(_low)
             const high = new BigDecimal(_high)
 
-            const priceImpact = getPriceImpact(
-              {
-                low: scaleAsset(inputAddress, scaledInputLow),
-                high: scaleAsset(inputAddress, _inputAmount),
-              },
-              { low, high },
-            )
+            const priceImpact = getPriceImpact([massetConfig.lowInputValue, _inputAmount.scale()], [low, high])
 
             return {
               amount: high,
@@ -170,20 +171,17 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
           promise = (async () => {
             const contract = FeederPool__factory.connect(feederPoolAddress as string, signer)
 
-            const scaledInputLow = scaleAsset(inputAddress, inputLow, _inputAmount.decimals)
-            const _low = await contract.getSwapOutput(inputAddress, massetAddress, scaledInputLow.exact)
-            const _high = await contract.getSwapOutput(inputAddress, massetAddress, _inputAmount.exact)
+            const scaledInputLow = massetConfig.lowInputValue.scale(_inputAmount.decimals)
+
+            const [_low, _high] = await Promise.all([
+              contract.getSwapOutput(inputAddress, massetAddress, scaledInputLow.exact),
+              contract.getSwapOutput(inputAddress, massetAddress, _inputAmount.exact),
+            ])
 
             const low = new BigDecimal(_low)
             const high = new BigDecimal(_high)
 
-            const priceImpact = getPriceImpact(
-              {
-                low: scaleAsset(inputAddress, scaledInputLow),
-                high: scaleAsset(inputAddress, _inputAmount),
-              },
-              { low, high },
-            )
+            const priceImpact = getPriceImpact([massetConfig.lowInputValue, _inputAmount.scale()], [low, high])
 
             return {
               amount: high,

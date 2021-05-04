@@ -3,8 +3,8 @@ import { useEffect, useMemo } from 'react'
 import { useDebounce } from 'react-use'
 import { BigNumber } from 'ethers'
 
-import { useSelectedMassetName } from '../context/SelectedMassetNameProvider'
-import { getPriceImpact, inputValueLow, PriceImpact, useScaleAsset } from '../utils/ammUtils'
+import { useSelectedMassetConfig } from '../context/MassetProvider'
+import { getPriceImpact, PriceImpact } from '../utils/ammUtils'
 import { sanitizeMassetError } from '../utils/strings'
 import { BigDecimal } from '../web3/BigDecimal'
 import type { BigDecimalInputValues } from './useBigDecimalInputs'
@@ -37,38 +37,35 @@ interface Output {
  * This hook is designed for use with contracts that support mint & mintMulti, redeemExact
  */
 export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues?: BigDecimalInputValues, route?: Route): Output => {
-  const [estimatedOutputRange, setEstimatedOutputRange] = useFetchState<{ low: BigDecimal; high: BigDecimal }>()
-  const massetName = useSelectedMassetName()
-  const { scaleAsset } = useScaleAsset()
+  const [estimatedOutputRange, setEstimatedOutputRange] = useFetchState<[BigDecimal, BigDecimal]>()
+  const massetConfig = useSelectedMassetConfig()
+
+  const touched = Object.values(inputValues ?? {}).filter(v => v.touched)
 
   const priceImpact = useMemo<FetchState<PriceImpact>>(() => {
-    if (estimatedOutputRange.fetching || !estimatedOutputRange?.value || !inputValues) return { fetching: true }
+    if (estimatedOutputRange.fetching || !estimatedOutputRange.value) return { fetching: true }
 
-    const touched = Object.values(inputValues).filter(v => v.touched)
     if (!touched.length) return {}
 
-    const totalInputLow = touched.map(() => inputValueLow[massetName]).reduce((a, b) => a.add(b))
-    const scaledInputHigh = touched.map(({ address, amount }) => scaleAsset(address, amount ?? BigDecimal.ZERO)).reduce((a, b) => a.add(b))
+    const totalInputLow = touched.reduce(prev => prev.add(massetConfig.lowInputValue), BigDecimal.ZERO)
+    const scaledInputHigh = touched.reduce((prev, v) => (v.amount ? prev.add(v.amount.scale()) : prev), BigDecimal.ZERO)
 
     if (!scaledInputHigh.exact.gt(0)) return { fetching: true }
 
-    const value = getPriceImpact({ low: totalInputLow, high: scaledInputHigh }, estimatedOutputRange?.value, route === Route.Redeem)
+    const value = getPriceImpact([totalInputLow, scaledInputHigh], estimatedOutputRange.value, route === Route.Redeem)
 
     return { value }
-  }, [estimatedOutputRange, inputValues, scaleAsset, massetName, route])
+  }, [estimatedOutputRange.fetching, estimatedOutputRange.value, touched, route, massetConfig.lowInputValue])
 
   const [update] = useDebounce(
     () => {
-      if (!inputValues || !contract) return
-
-      const touched = Object.values(inputValues).filter(v => v.touched)
-      if (!touched.length) return {}
+      if (!contract || !touched.length) return {}
 
       setEstimatedOutputRange.fetching()
       if (!route) return setEstimatedOutputRange.value()
 
       const addresses = touched.map(v => v.address)
-      const scaledInputsLow = touched.map(({ address, decimals }) => scaleAsset(address, inputValueLow[massetName], decimals).exact)
+      const scaledInputsLow = touched.map(({ decimals }) => massetConfig.lowInputValue.scale(decimals).exact)
       const amounts = touched.map(v => (v.amount as BigDecimal).exact)
 
       const paths = ((): Promise<BigNumber>[] => {
@@ -93,8 +90,7 @@ export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues
           const [_low, _high] = data
           const low = new BigDecimal(_low)
           const high = new BigDecimal(_high)
-
-          setEstimatedOutputRange.value({ low, high })
+          setEstimatedOutputRange.value([low, high])
         })
         .catch((_error: Error): void => {
           setEstimatedOutputRange.error(sanitizeMassetError(_error))
@@ -105,8 +101,7 @@ export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues
   )
 
   useEffect(() => {
-    if (contract && inputValues) {
-      const touched = Object.values(inputValues).filter(v => v.touched)
+    if (contract) {
       if (touched.length) {
         setEstimatedOutputRange.fetching()
         update()
@@ -114,14 +109,17 @@ export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues
         setEstimatedOutputRange.value()
       }
     }
-  }, [contract, inputValues, setEstimatedOutputRange, update])
+  }, [contract, setEstimatedOutputRange, touched.length, update])
 
-  return {
-    estimatedOutputAmount: {
-      fetching: estimatedOutputRange?.fetching,
-      error: estimatedOutputRange?.error,
-      value: estimatedOutputRange?.value?.high,
-    },
-    priceImpact,
-  }
+  return useMemo(
+    () => ({
+      estimatedOutputAmount: {
+        fetching: estimatedOutputRange.fetching,
+        error: estimatedOutputRange.error,
+        value: estimatedOutputRange.value?.[1],
+      },
+      priceImpact,
+    }),
+    [estimatedOutputRange, priceImpact],
+  )
 }

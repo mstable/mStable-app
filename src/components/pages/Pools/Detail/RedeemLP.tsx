@@ -100,10 +100,6 @@ export const RedeemLP: FC = () => {
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount'
 
-    if (inputToken?.balance?.exact && inputAmount.exact.gt(inputToken?.balance?.exact)) {
-      return 'Insufficient balance'
-    }
-
     if (!outputToken) {
       return 'Must select an asset to receive'
     }
@@ -115,6 +111,12 @@ export const RedeemLP: FC = () => {
     if (isUnstakingFromVault) return
 
     if (!estimatedOutputAmount.value?.simple && !estimatedOutputAmount.fetching) return `Not enough ${outputToken?.symbol} in basket`
+
+    if (estimatedOutputAmount.error) return estimatedOutputAmount.error
+
+    if (inputToken?.balance?.exact && inputAmount.exact.gt(inputToken.balance.exact)) {
+      return 'Insufficient balance'
+    }
 
     if (estimatedOutputAmount.fetching) return 'Validating…'
 
