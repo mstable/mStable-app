@@ -5,7 +5,7 @@ import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 import { H3, H2 } from '../core/Typography'
 import { CountUp } from '../core/CountUp'
 import { BasketStats } from './BasketStats'
-import { StatsLink } from '../pages/Stats/legacy/StatsLink'
+import { StatsLink } from '../pages/Stats/StatsLink'
 
 const StatsGraphic = styled.div`
   width: 100%;
