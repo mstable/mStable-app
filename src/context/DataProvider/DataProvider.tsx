@@ -10,7 +10,7 @@ import { useAccount } from '../AccountProvider'
 import { useBlockNow } from '../BlockProvider'
 import { MassetsQueryResult, useMassetsLazyQuery } from '../../graphql/protocol'
 import { FeederPoolsQueryResult, useFeederPoolsLazyQuery } from '../../graphql/feeders'
-import { useSelectedMassetName } from '../SelectedMassetNameProvider'
+import { useSelectedMassetName } from '../MassetProvider'
 
 type NonNullableRawData = [NonNullable<MassetsQueryResult['data']>, NonNullable<FeederPoolsQueryResult['data']>, Tokens]
 

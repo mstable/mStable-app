@@ -119,7 +119,7 @@ const transformBoostedSavingsVault = ({
   let account: BoostedSavingsVaultState['account']
 
   // FIXME: - Replace this with something better
-  const isImusd = address === '0x78befca7de27d07dc6e71da295cc2946681a6c7b'; // imUSD vault address
+  const isImusd = address === '0x78befca7de27d07dc6e71da295cc2946681a6c7b' // imUSD vault address
 
   if (accounts?.[0]) {
     const [
@@ -180,15 +180,7 @@ const transformSavingsContractV2 = (
   massetAddress: string,
   current: boolean,
 ): Extract<SavingsContractState, { version: 2 }> => {
-  const {
-    // active,
-    dailyAPY,
-    id,
-    latestExchangeRate,
-    totalSavings,
-    version,
-    boostedSavingsVaults,
-  } = savingsContract
+  const { dailyAPY, id, latestExchangeRate, totalSavings, version, boostedSavingsVaults } = savingsContract
 
   return {
     active: true,
@@ -267,8 +259,8 @@ const transformFeederPoolsData = (feederPools: NonNullableFeederPools, tokens: T
           address,
           {
             address,
-            masset: transformBasset(masset, tokens),
-            fasset: transformBasset(fasset, tokens),
+            masset: { ...transformBasset(masset, tokens), feederPoolAddress: address },
+            fasset: { ...transformBasset(fasset, tokens), feederPoolAddress: address },
             token: { ...token, ...tokens[address] } as SubscribedToken,
             totalSupply: BigDecimal.fromMetric(fassetToken.totalSupply),
             governanceFeeRate: BigNumber.from(governanceFeeRate),
@@ -295,9 +287,7 @@ const transformFeederPoolsData = (feederPools: NonNullableFeederPools, tokens: T
 
 const transformMassetData = (
   {
-    // currentSavingsContract,
     feeRate,
-    forgeValidator,
     redemptionFeeRate,
     invariantStartTime,
     invariantStartingCap,
@@ -327,7 +317,6 @@ const transformMassetData = (
   return {
     address,
     failed,
-    forgeValidator,
     invariantStartTime: invariantStartTime || undefined,
     invariantStartingCap: invariantStartingCap ? BigNumber.from(invariantStartingCap) : undefined,
     invariantCapFactor: invariantCapFactor ? BigNumber.from(invariantCapFactor) : undefined,
@@ -351,10 +340,6 @@ const transformMassetData = (
 
     // Initial values, set in recalculateState
     fAssets: {},
-    blacklistedBassets: [],
-    overweightBassets: [],
-    allBassetsNormal: true,
-    isLegacy: !!collateralisationRatio,
   }
 }
 
