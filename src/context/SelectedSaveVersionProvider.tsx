@@ -2,13 +2,12 @@ import React, { createContext, Dispatch, FC, SetStateAction, useContext, useEffe
 
 import { useSelectedMassetState } from './DataProvider/DataProvider'
 import { SavingsContractState } from './DataProvider/types'
-import { useSelectedMassetName } from './SelectedMassetNameProvider'
+import { useSelectedMassetName } from './MassetProvider'
 import { useWalletAddress } from './AccountProvider'
 import { useV1SavingsBalanceQuery } from '../graphql/protocol'
 
 export enum SaveVersion {
   V1 = 1,
-
   V2 = 2,
 }
 
@@ -50,19 +49,10 @@ export const SelectedSaveVersionProvider: FC = ({ children }) => {
   useEffect(() => {
     if (!loading && !selectedSaveVersion && !setRef.current) {
       // Select v2 if is current, and the user has no v1 balance
-      setSelectedSaveVersion((v2Current && hasNoV1Balance) || massetName === 'mbtc'
-          ? SaveVersion.V2
-          : SaveVersion.V1)
+      setSelectedSaveVersion((v2Current && hasNoV1Balance) || massetName === 'mbtc' ? SaveVersion.V2 : SaveVersion.V1)
       setRef.current = true
     }
-  }, [
-    loading,
-    hasNoV1Balance,
-    selectedSaveVersion,
-    setSelectedSaveVersion,
-    v2Current,
-    massetName,
-  ]);
+  }, [loading, hasNoV1Balance, selectedSaveVersion, setSelectedSaveVersion, v2Current, massetName])
 
   // Remount the provider when the massetName or wallet changes
   // so that the state can be cleanly reset

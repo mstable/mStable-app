@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 import { NavLink } from 'react-router-dom'
 
-import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { useSelectedMassetName } from '../../context/MassetProvider'
 import { useCloseAccount, useThemeMode } from '../../context/AppProvider'
 import { colorTheme, ViewportWidth } from '../../theme'
 import { NavigationDropdown, NavItem } from '../core/NavigationDropdown'

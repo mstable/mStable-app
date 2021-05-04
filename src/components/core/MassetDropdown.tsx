@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { useLocation } from 'react-use'
 
 import { useDataState } from '../../context/DataProvider/DataProvider'
-import { useSelectedMasset, useSelectedMassetName, useSetSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { useSelectedMasset, useSelectedMassetName, useSetSelectedMassetName } from '../../context/MassetProvider'
 import { MassetName } from '../../types'
 import { Dropdown, DropdownOption } from './Dropdown'
 import { ViewportWidth } from '../../theme'

@@ -7,7 +7,7 @@ import { Tooltip } from '../../../core/ReactTooltip'
 import { DailyApys } from '../../../stats/DailyApys'
 import { useOnboarding } from '../hooks'
 import { Button } from '../../../core/Button'
-import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider'
+import { useSelectedMassetName } from '../../../../context/MassetProvider'
 import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider'
 
 const APYChart = styled(DailyApys)`

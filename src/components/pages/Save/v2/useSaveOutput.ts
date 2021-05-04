@@ -7,16 +7,17 @@ import { FeederPool__factory, Masset__factory } from '@mstable/protocol/types/ge
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 import { MassetState } from '../../../../context/DataProvider/types'
 import { useSigner } from '../../../../context/AccountProvider'
-import { AllNetworks, useNetworkAddresses } from '../../../../context/NetworkProvider'
+import { AllNetworks, useNetworkAddresses, useNetworkPrices } from '../../../../context/NetworkProvider'
+import { useSelectedMassetConfig } from '../../../../context/MassetProvider'
 
 import { FetchState, useFetchState } from '../../../../hooks/useFetchState'
 import { sanitizeMassetError } from '../../../../utils/strings'
 import { BigDecimal } from '../../../../web3/BigDecimal'
 import { SaveWrapper__factory, UniswapRouter02__factory } from '../../../../typechain'
+import { getPriceImpact } from '../../../../utils/ammUtils'
 
 import { SaveOutput, SaveRoutes } from './types'
-import { getPriceImpact, inputValueLow, useScaleAsset } from '../../../../utils/ammUtils'
-import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider'
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
 
 const getOptimalBasset = async (
   signer: Signer,

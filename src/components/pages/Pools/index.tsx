@@ -4,17 +4,16 @@ import styled from 'styled-components'
 import Skeleton from 'react-loading-skeleton'
 
 import type { FeederPoolState, MassetState } from '../../../context/DataProvider/types'
+import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
+import { useSelectedMassetConfig, MassetConfig, MASSET_CONFIG } from '../../../context/MassetProvider'
+import { useNetwork } from '../../../context/NetworkProvider'
 
 import { PageAction, PageHeader } from '../PageHeader'
 import { Card } from './cards/Card'
 import { OnboardingCard } from './cards/OnboardingCard'
 import { AssetCard, CustomAssetCard } from './cards/AssetCard'
 import { ViewportWidth } from '../../../theme'
-import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
 import { PoolType } from './types'
-import { formatMassetName, useSelectedMassetName } from '../../../context/SelectedMassetNameProvider'
-import { MassetName } from '../../../types'
-import { useNetwork } from '../../../context/NetworkProvider'
 
 interface CustomAssetCardProps {
   isCustomAssetCard: boolean
@@ -123,29 +122,29 @@ const CustomContent = styled.div`
   line-height: 1.5rem;
 `
 
-const customEarnCard = (massetName: MassetName): CustomAssetCardProps => ({
+const customEarnCard = (massetConfig: MassetConfig): CustomAssetCardProps => ({
   isCustomAssetCard: true,
   key: 'earn',
   title: 'Earn Pools',
-  url: `https://earn.mstable.org/#/${massetName}/earn`,
+  url: `https://earn.mstable.org/#/${massetConfig.massetName}/earn`,
   color: '#eba062',
   component: <CustomContent>Earn pools have moved and are now available here</CustomContent>,
 })
 
-const customPoolCard = (massetName: MassetName): CustomAssetCardProps => {
-  const reversedMasset = massetName === 'musd' ? 'mbtc' : 'musd'
-  const formattedReverse = formatMassetName(reversedMasset)
+const customPoolCard = (massetConfig: MassetConfig): CustomAssetCardProps => {
+  const reversedMasset = massetConfig.massetName === 'musd' ? 'mbtc' : 'musd'
+  const formattedReverse = MASSET_CONFIG[reversedMasset].formattedName
   return {
     isCustomAssetCard: true,
     key: 'mpool',
     title: `${formattedReverse} Pools`,
-    url: `/${massetName === 'musd' ? 'mbtc' : 'musd'}/pools`,
+    url: `/${massetConfig.massetName === 'musd' ? 'mbtc' : 'musd'}/pools`,
     color: '#eee',
     component: <CustomContent>More pools available for {formattedReverse}</CustomContent>,
   }
 }
 
-const customNoPoolsCard = (massetName: MassetName, protocolName: string): CustomAssetCardProps => ({
+const customNoPoolsCard = (massetConfig: MassetConfig, protocolName: string): CustomAssetCardProps => ({
   isCustomAssetCard: true,
   key: 'noPools',
   title: 'No Pools Available',
@@ -153,7 +152,7 @@ const customNoPoolsCard = (massetName: MassetName, protocolName: string): Custom
   url: '/',
   component: (
     <CustomContent>
-      There are no pools available for {formatMassetName(massetName)} on {protocolName} at this time
+      There are no pools available for {massetConfig.formattedName} on {protocolName} at this time
     </CustomContent>
   ),
 })
@@ -161,7 +160,7 @@ const customNoPoolsCard = (massetName: MassetName, protocolName: string): Custom
 const PoolsContent: FC = () => {
   const { feederPools, hasFeederPools } = useSelectedMassetState() as MassetState
   const network = useNetwork()
-  const massetName = useSelectedMassetName()
+  const massetConfig = useSelectedMassetConfig()
   const pools = useMemo(
     () =>
       Object.values(feederPools).reduce<{
@@ -179,12 +178,12 @@ const PoolsContent: FC = () => {
         {
           user: [],
           active: hasFeederPools
-            ? [customEarnCard(massetName), customPoolCard(massetName)]
-            : [customNoPoolsCard(massetName, network.protocolName)],
+            ? [customEarnCard(massetConfig), customPoolCard(massetConfig)]
+            : [customNoPoolsCard(massetConfig, network.protocolName)],
           deprecated: [],
         },
       ),
-    [feederPools, massetName, hasFeederPools, network.protocolName],
+    [feederPools, massetConfig, hasFeederPools, network.protocolName],
   )
 
   const [numPoolsVisible, setNumPoolsVisible] = useState({

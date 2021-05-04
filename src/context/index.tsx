@@ -1,7 +1,7 @@
 import { composedComponent } from '../utils/reactUtils'
 
 import { AppProvider } from './AppProvider'
-import { SelectedMassetNameProvider } from './SelectedMassetNameProvider'
+import { MassetProvider } from './MassetProvider'
 import { NotificationsProvider } from './NotificationsProvider'
 import { TransactionsProvider } from './TransactionsProvider'
 import { ThemeProvider } from './ThemeProvider'
@@ -15,12 +15,12 @@ import { AccountProvider } from './AccountProvider'
 
 export const Providers = composedComponent(
   NetworkProvider,
+  MassetProvider,
   NotificationsProvider,
   ApolloProvider,
   AccountProvider,
   BlockProvider,
   TransactionsProvider,
-  SelectedMassetNameProvider,
   TokensProvider,
   DataProvider,
   AppProvider,
