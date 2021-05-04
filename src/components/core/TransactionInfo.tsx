@@ -118,8 +118,8 @@ export const TransactionInfo: FC<Props> = ({
                 <Tooltip tip={feeTip}>{feeLabel}</Tooltip>
               </p>
               <span>
-                {feeAmount?.format(8, false)}
-                {fee && <DollarEstimate>{` ≈ $${fee?.format(2)}`}</DollarEstimate>}
+                {feeAmount.format(8, false)}
+                {fee && <DollarEstimate>{` ≈ $${fee.format(2)}`}</DollarEstimate>}
               </span>
             </Info>
           )}
@@ -132,8 +132,8 @@ export const TransactionInfo: FC<Props> = ({
                 </Tooltip>
               </p>
               <span>
-                {minOutputAmount?.format(8, false)}
-                {min && <DollarEstimate>{` ≈ $${min?.format(2)}`}</DollarEstimate>}
+                {minOutputAmount.format(8, false)}
+                {min && <DollarEstimate>{` ≈ $${min.format(2)}`}</DollarEstimate>}
               </span>
             </Info>
           )}
@@ -145,8 +145,8 @@ export const TransactionInfo: FC<Props> = ({
                 </Tooltip>
               </p>
               <span>
-                {maxOutputAmount?.format(8, false)}
-                {max && <DollarEstimate>{` ≈ $${max?.format(2)}`}</DollarEstimate>}
+                {maxOutputAmount.format(8, false)}
+                {max && <DollarEstimate>{` ≈ $${max.format(2)}`}</DollarEstimate>}
               </span>
             </Info>
           )}
