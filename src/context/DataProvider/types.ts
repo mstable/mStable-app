@@ -29,6 +29,10 @@ export interface BassetState {
   token: SubscribedToken
 }
 
+export interface FassetState extends BassetState {
+  feederPoolAddress: string
+}
+
 export interface FeederPoolAccountState {
   cumulativeEarned: BigDecimal
   cumulativeEarnedVault: BigDecimal
@@ -42,8 +46,8 @@ export interface FeederPoolAccountState {
 
 export interface FeederPoolState {
   address: string
-  fasset: BassetState
-  masset: BassetState
+  fasset: FassetState
+  masset: FassetState
   token: SubscribedToken
   totalSupply: BigDecimal
   vault: BoostedSavingsVaultState
@@ -62,20 +66,16 @@ export interface FeederPoolState {
 
 export interface MassetState {
   address: string
-  allBassetsNormal: boolean
-  bAssets: { [address: string]: BassetState }
-  fAssets: { [address: string]: BassetState }
+  bAssets: { [bassetAddress: string]: BassetState }
+  fAssets: { [feederPoolAddress: string]: FassetState }
   removedBassets: { [address: string]: SubscribedToken }
-  blacklistedBassets: string[]
   collateralisationRatio?: BigNumber
   hasFeederPools: boolean
   failed: boolean
   feeRate: BigNumber
-  forgeValidator: string
   invariantStartTime?: number
   invariantStartingCap?: BigNumber
   invariantCapFactor?: BigNumber
-  overweightBassets: string[]
   redemptionFeeRate: BigNumber
   token: SubscribedToken
   undergoingRecol: boolean
@@ -83,7 +83,6 @@ export interface MassetState {
     v1?: Extract<SavingsContractState, { version: 1 }>
     v2: Extract<SavingsContractState, { version: 2 }>
   }
-  isLegacy: boolean
   feederPools: {
     [address: string]: FeederPoolState
   }

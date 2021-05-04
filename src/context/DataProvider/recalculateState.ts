@@ -1,5 +1,5 @@
 import { BigDecimal } from '../../web3/BigDecimal'
-import { BassetState, BassetStatus, DataState, MassetState, SavingsContractState } from './types'
+import { BassetState, DataState, MassetState, SavingsContractState } from './types'
 
 const recalculateSavingsContractV1 = (
   v1: Extract<SavingsContractState, { version: 1 }>,
@@ -71,23 +71,21 @@ const recalculateBassets = (masset: MassetState): MassetState['bAssets'] =>
 export const recalculateMasset = (masset: MassetState): MassetState => {
   const bAssets = recalculateBassets(masset)
 
-  const bAssetsArr = Object.values(bAssets)
-
-  const allBassetsNormal = bAssetsArr.every(({ status }) => status === BassetStatus.Normal)
-
-  const overweightBassets = bAssetsArr.filter(({ overweight }) => overweight).map(b => b.address)
-
-  const blacklistedBassets = bAssetsArr.filter(({ status }) => status === BassetStatus.Blacklisted).map(b => b.address)
-
   const savingsContracts = recalculateSavingsContracts(masset)
 
   const feederPools = Object.fromEntries(
-    Object.entries(masset.feederPools).map(([address, feederPool]) => [
-      address,
+    Object.entries(masset.feederPools).map(([feederPoolAddress, feederPool]) => [
+      feederPoolAddress,
       {
         ...feederPool,
-        fasset: recalculateBasset(feederPool.token.decimals, feederPool.liquidity, feederPool.fasset),
-        masset: recalculateBasset(feederPool.token.decimals, feederPool.liquidity, feederPool.masset),
+        fasset: {
+          ...recalculateBasset(feederPool.token.decimals, feederPool.liquidity, feederPool.fasset),
+          feederPoolAddress,
+        },
+        masset: {
+          ...recalculateBasset(feederPool.token.decimals, feederPool.liquidity, feederPool.masset),
+          feederPoolAddress,
+        },
       },
     ]),
   )
@@ -99,9 +97,6 @@ export const recalculateMasset = (masset: MassetState): MassetState => {
     feederPools,
     fAssets,
     bAssets,
-    allBassetsNormal,
-    blacklistedBassets,
-    overweightBassets,
     savingsContracts,
   }
 }
