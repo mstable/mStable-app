@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 
 import { AllNetworks, ChainIds, useNetwork } from '../context/NetworkProvider'
-import { useSelectedMassetName } from '../context/SelectedMassetNameProvider'
+import { useSelectedMassetName } from '../context/MassetProvider'
 import { fetchCoingeckoPrices } from '../utils/fetchCoingeckoPrices'
 
 interface PricesMap {

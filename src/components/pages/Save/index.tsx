@@ -5,7 +5,7 @@ import Skeleton from 'react-loading-skeleton'
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
 import { useChainIdCtx, ChainIds } from '../../../context/NetworkProvider'
 import { RewardStreamsProvider } from '../../../context/RewardStreamsProvider'
-import { formatMassetName, useSelectedMassetName } from '../../../context/SelectedMassetNameProvider'
+import { useSelectedMassetConfig } from '../../../context/MassetProvider'
 import { useSelectedSaveVersion } from '../../../context/SelectedSaveVersionProvider'
 
 import { PageAction, PageHeader } from '../PageHeader'
@@ -76,35 +76,37 @@ const Container = styled.div`
 
 export const Save: FC = () => {
   const massetState = useSelectedMassetState()
-  const massetName = useSelectedMassetName()
-  const formattedName = formatMassetName(massetName)
+  const massetConfig = useSelectedMassetConfig()
   const [selectedSaveVersion] = useSelectedSaveVersion()
   const vault = massetState?.savingsContracts.v2.boostedSavingsVault
   const [chainId] = useChainIdCtx()
-  const showMigrationView = chainId === ChainIds.EthereumMainnet && selectedSaveVersion === 1 && massetName === 'musd'
+  const showMigrationView = chainId === ChainIds.EthereumMainnet && selectedSaveVersion === 1 && massetConfig.hasV1Save
 
   return massetState ? (
     <RewardStreamsProvider vault={vault}>
       <OnboardingProvider>
-        <PageHeader action={PageAction.Save} subtitle={`Native interest on ${formatMassetName(massetName)}`} />
+        <PageHeader action={PageAction.Save} subtitle={`Native interest on ${massetConfig.formattedName}`} />
         <Container>
           <SaveOverview />
           <Content>
             {showMigrationView ? <SaveMigration /> : <SaveV2 />}
             <Sidebar>
-              {chainId === ChainIds.EthereumMainnet && massetName === 'musd' && (
-                <ButtonPanel>{massetName === 'musd' ? <ToggleSave /> : <div />}</ButtonPanel>
+              {chainId === ChainIds.EthereumMainnet && massetConfig.hasV1Save && (
+                <ButtonPanel>
+                  <ToggleSave />
+                </ButtonPanel>
               )}
               <InfoBox>
                 <h4>
                   <span>Using mStable Save</span>
                 </h4>
                 <p>
-                  By depositing to {`i${formattedName}`} you will begin earning interest on your underlying {formattedName}.{' '}
-                  {vault ? 'Deposits to the Vault will earn interest in addition to MTA rewards.' : ''}
+                  By depositing to {`i${massetConfig.formattedName}`} you will begin earning interest on your underlying{' '}
+                  {massetConfig.formattedName}. {vault ? 'Deposits to the Vault will earn interest in addition to MTA rewards.' : ''}
                 </p>
                 <p>
-                  Deposits from assets other than {formattedName} will first mint {formattedName} before being deposited.
+                  Deposits from assets other than {massetConfig.formattedName} will first mint {massetConfig.formattedName} before being
+                  deposited.
                 </p>
               </InfoBox>
             </Sidebar>

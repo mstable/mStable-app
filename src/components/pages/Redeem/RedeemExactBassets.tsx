@@ -19,7 +19,7 @@ import { useSelectedMassetPrice } from '../../../hooks/usePrice'
 import { useExchangeRateForMassetInputs } from '../../../hooks/useMassetExchangeRate'
 import { Route, useEstimatedOutputMulti } from '../../../hooks/useEstimatedOutputMulti'
 
-const formId = 'redeem'
+const formId = 'RedeemExactBassets'
 
 const RedeemExactBassetsLogic: FC = () => {
   const propose = usePropose()
@@ -68,6 +68,8 @@ const RedeemExactBassetsLogic: FC = () => {
     if (touched.length === 0) {
       return 'Enter an amount'
     }
+
+    if (estimatedOutputAmount.error) return estimatedOutputAmount.error
 
     if (massetBalance && maxOutputAmount && maxOutputAmount.exact.gt(massetBalance.exact)) {
       return 'Insufficient balance'

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { FeederPool, FeederPool__factory, Masset, Masset__factory } from '@mstable/protocol/types/generated'
 import { usePrevious, useDebounce } from 'react-use'
+import type { BigNumber } from 'ethers'
 
 import { BigDecimal } from '../web3/BigDecimal'
 import { useSelectedMassetState } from '../context/DataProvider/DataProvider'
@@ -10,8 +11,8 @@ import { sanitizeMassetError } from '../utils/strings'
 
 import type { BigDecimalInputValue } from './useBigDecimalInputs'
 import { FetchState, useFetchState } from './useFetchState'
-import { useSelectedMassetName } from '../context/SelectedMassetNameProvider'
-import { getPriceImpact, inputValueLow, PriceImpact, useScaleAsset } from '../utils/ammUtils'
+import { useSelectedMassetConfig } from '../context/MassetProvider'
+import { getPriceImpact, PriceImpact } from '../utils/ammUtils'
 
 type Contract = Masset | FeederPool
 
@@ -28,6 +29,8 @@ enum Action {
   MINT,
 }
 
+const withFee = new Set<Action | undefined>([Action.SWAP, Action.REDEEM])
+
 const inputValuesAreEqual = (a?: BigDecimalInputValue, b?: BigDecimalInputValue): boolean =>
   !!((!a && !b) || (a && b && a.amount?.exact.toString() === b.amount?.exact.toString() && a.address === b.address))
 
@@ -38,32 +41,28 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
   const inputValuePrev = usePrevious(inputValue)
   const outputValuePrev = usePrevious(outputValue)
 
-  const [estimatedOutputRange, setEstimatedOutputRange] = useFetchState<{ low: BigDecimal; high: BigDecimal }>()
+  const [estimatedOutputRange, setEstimatedOutputRange] = useFetchState<[BigDecimal, BigDecimal]>()
 
   const [action, setAction] = useState<Action | undefined>()
 
   const signer = useSigner()
   const massetState = useSelectedMassetState() as MassetState
-  const massetName = useSelectedMassetName()
+  const massetConfig = useSelectedMassetConfig()
   const { address: massetAddress, fAssets, bAssets, feeRate: swapFeeRate, redemptionFeeRate } = massetState
 
-  const poolAddress = Object.keys(fAssets)
-    .filter(address => fAssets[address].address !== massetAddress)
-    .find(
-      address =>
-        fAssets[address].address === inputValue?.address ||
-        fAssets[address].address === outputValue?.address ||
-        address === inputValue?.address ||
-        address === outputValue?.address,
-    )
-
-  const { scaleAsset } = useScaleAsset()
+  const poolAddress = Object.values(fAssets).find(
+    f =>
+      f.feederPoolAddress === inputValue?.address ||
+      f.feederPoolAddress === outputValue?.address ||
+      f.address === inputValue?.address ||
+      f.address === outputValue?.address,
+  )?.feederPoolAddress
 
   const contract: Contract | undefined = useMemo(() => {
     if (!signer) return
 
     // use feeder pool to do swap
-    if (poolAddress && poolAddress !== massetAddress) {
+    if (poolAddress) {
       return FeederPool__factory.connect(poolAddress, signer)
     }
     return Masset__factory.connect(massetAddress, signer)
@@ -77,55 +76,46 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
     if (estimatedOutputRange.fetching) return { fetching: true }
     if (!inputValue?.amount || !outputValue) return {}
 
-    const { amount: inputAmount, address: inputAddress } = inputValue
-    const { address: outputAddress } = outputValue
+    const { amount: inputAmount } = inputValue
 
-    if (!estimatedOutputRange.value) return {}
+    if (!estimatedOutputRange.value || !inputAmount) return {}
 
-    if (!estimatedOutputRange.value.high.exact.gt(0) || !inputAmount.exact.gt(0)) {
+    const [, high] = estimatedOutputRange.value
+
+    if (!high.exact.gt(0) || !inputAmount.exact.gt(0)) {
       return { error: 'Amount must be greater than zero' }
     }
 
-    const scaledInput = scaleAsset(inputAddress, inputAmount)
-    const scaledOutput = scaleAsset(outputAddress, estimatedOutputRange.value.high)
-
-    const value = scaledOutput.divPrecisely(scaledInput)
+    const value = high.scale().divPrecisely(inputAmount.scale())
     return { value }
-  }, [estimatedOutputRange, inputValue, outputValue, shouldSkip, scaleAsset])
+  }, [estimatedOutputRange, inputValue, outputValue, shouldSkip])
 
   const feeRate = useMemo<FetchState<BigDecimal>>(() => {
-    if (shouldSkip) return {}
-
-    // if not swap or redeem, return
-    if (action === Action.MINT) return {}
+    if (shouldSkip || !withFee.has(action) || !estimatedOutputRange.value?.[1]) return {}
 
     if (estimatedOutputRange.fetching) return { fetching: true }
 
-    const feeRateBN = action === Action.SWAP ? swapFeeRate : redemptionFeeRate
-    const feeRateSimple = feeRateBN ? parseInt(feeRateBN.toString(), 10) / 1e18 : undefined
+    const _feeRate = action === Action.SWAP ? swapFeeRate : redemptionFeeRate
 
-    const outputSimple = estimatedOutputRange.value?.high.simple
+    const swapFee = estimatedOutputRange.value[1]
+      .scale()
+      .divPrecisely(BigDecimal.ONE.sub(_feeRate))
+      .sub(estimatedOutputRange.value[1].scale())
 
-    const swapFee = outputSimple && feeRateSimple ? outputSimple / (1 - feeRateSimple) - outputSimple : undefined
-
-    const value = BigDecimal.maybeParse(swapFee?.toFixed(18))
-
-    if (value) {
-      return { value }
-    }
-    return {}
+    return { value: swapFee }
   }, [action, estimatedOutputRange, swapFeeRate, redemptionFeeRate, shouldSkip])
 
   const priceImpact = useMemo<FetchState<PriceImpact>>(() => {
-    if (estimatedOutputRange.fetching || !estimatedOutputRange?.value || !inputValue) return { fetching: true }
+    if (estimatedOutputRange.fetching || !estimatedOutputRange.value || !inputValue) return { fetching: true }
 
-    const scaledInputValue = scaleAsset(inputValue.address, inputValue.amount ?? BigDecimal.ZERO)
-    if (!scaledInputValue.exact.gt(0)) return { fetching: true }
+    if (!inputValue.amount) return {}
 
-    const value = getPriceImpact({ low: inputValueLow[massetName], high: scaledInputValue }, estimatedOutputRange?.value)
+    if (!inputValue.amount.exact.gt(0)) return { fetching: true }
+
+    const value = getPriceImpact([massetConfig.lowInputValue, inputValue.amount.scale()], estimatedOutputRange.value)
 
     return { value }
-  }, [estimatedOutputRange, massetName, scaleAsset, inputValue])
+  }, [estimatedOutputRange.fetching, estimatedOutputRange.value, inputValue, massetConfig.lowInputValue])
 
   /*
    * |------------------------------------------------------|
@@ -156,91 +146,48 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
       const isLPMint = contract.address === outputAddress
       const isMassetMint = bAssets[inputAddress]?.address && outputAddress === massetAddress
       const isBassetSwap = [inputAddress, outputAddress].filter(address => bAssets[address]?.address).length === 2
-      const isInvalid = inputAddress === massetAddress && outputAddress === massetAddress
+      const isInvalid = inputAddress === outputAddress
 
       if (!inputAmount?.exact.gt(0)) return
 
-      // masset -> masset; fallback to input value 1:1
+      // same -> same; fallback to input value 1:1
       if (isInvalid) {
-        setEstimatedOutputRange.value({
-          low: inputValueLow[massetName],
-          high: inputAmount,
-        })
+        setEstimatedOutputRange.value([massetConfig.lowInputValue, inputAmount])
         return
       }
+
+      const scaledInputLow = massetConfig.lowInputValue.scale(inputDecimals)
+
+      let outputLowPromise: Promise<BigNumber> | undefined
+      let outputHighPromise: Promise<BigNumber> | undefined
 
       if (isMassetMint || isLPMint) {
         setAction(Action.MINT)
-        setEstimatedOutputRange.fetching()
-
-        const scaledInputLow = scaleAsset(inputAddress, inputValueLow[massetName], inputDecimals)
-        const outputLow = contract.getMintOutput(inputAddress, scaledInputLow.exact)
-        const outputHigh = contract.getMintOutput(inputAddress, (inputAmount as BigDecimal).exact)
-
-        Promise.all([outputLow, outputHigh])
-          .then(data => {
-            const [_low, _high] = data
-            const low = new BigDecimal(_low)
-            const high = new BigDecimal(_high)
-            setEstimatedOutputRange.value({
-              low,
-              high,
-            })
-          })
-          .catch(_error => {
-            setEstimatedOutputRange.error(sanitizeMassetError(_error))
-          })
-
-        return
-      }
-
-      if ((isFeederPool || isBassetSwap) && !isLPRedeem) {
+        outputLowPromise = contract.getMintOutput(inputAddress, scaledInputLow.exact)
+        outputHighPromise = contract.getMintOutput(inputAddress, (inputAmount as BigDecimal).exact)
+      } else if ((isFeederPool || isBassetSwap) && !isLPRedeem) {
         setAction(Action.SWAP)
-        setEstimatedOutputRange.fetching()
-
-        const scaledInputLow = scaleAsset(inputAddress, inputValueLow[massetName], inputDecimals)
-        const outputLow = contract.getSwapOutput(inputAddress, outputAddress, scaledInputLow.exact)
-        const outputHigh = contract.getSwapOutput(inputAddress, outputAddress, inputAmount.exact)
-
-        Promise.all([outputLow, outputHigh])
-          .then(data => {
-            const [_low, _high] = data
-            const low = new BigDecimal(_low, outputDecimals)
-            const high = new BigDecimal(_high, outputDecimals)
-            setEstimatedOutputRange.value({
-              low,
-              high,
-            })
-          })
-          .catch(_error => {
-            setEstimatedOutputRange.error(sanitizeMassetError(_error))
-          })
-
-        return
+        outputLowPromise = contract.getSwapOutput(inputAddress, outputAddress, scaledInputLow.exact)
+        outputHighPromise = contract.getSwapOutput(inputAddress, outputAddress, inputAmount.exact)
+      } else if (!isFeederPool || isLPRedeem) {
+        setAction(Action.REDEEM)
+        outputLowPromise = contract.getRedeemOutput(outputAddress, scaledInputLow.exact)
+        outputHighPromise = contract.getRedeemOutput(outputAddress, inputAmount.exact)
       }
 
-      if (!isFeederPool || isLPRedeem) {
-        setAction(Action.REDEEM)
+      if (outputLowPromise && outputHighPromise) {
         setEstimatedOutputRange.fetching()
 
-        const scaledInputLow = scaleAsset(inputAddress, inputValueLow[massetName], inputDecimals)
-        const outputLow = contract.getRedeemOutput(outputAddress, scaledInputLow.exact)
-        const outputHigh = contract.getRedeemOutput(outputAddress, inputAmount.exact)
-
-        Promise.all([outputLow, outputHigh])
+        Promise.all([outputLowPromise, outputHighPromise])
           .then(data => {
             const [_low, _high] = data
             const low = new BigDecimal(_low, outputDecimals)
             const high = new BigDecimal(_high, outputDecimals)
-            setEstimatedOutputRange.value({
-              low,
-              high,
-            })
+            setEstimatedOutputRange.value([low, high])
           })
           .catch(_error => {
             setEstimatedOutputRange.error(sanitizeMassetError(_error))
           })
-
         return
       }
 
@@ -263,14 +210,17 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
     }
   }, [eq, contract, setEstimatedOutputRange, update, inputValue, outputValue, shouldSkip])
 
-  return {
-    estimatedOutputAmount: {
-      fetching: estimatedOutputRange?.fetching,
-      error: estimatedOutputRange?.error,
-      value: estimatedOutputRange?.value?.high,
-    },
-    priceImpact,
-    exchangeRate,
-    feeRate,
-  }
+  return useMemo(
+    () => ({
+      estimatedOutputAmount: {
+        fetching: estimatedOutputRange.fetching,
+        error: estimatedOutputRange.error,
+        value: estimatedOutputRange.value?.[1],
+      },
+      priceImpact,
+      exchangeRate,
+      feeRate,
+    }),
+    [estimatedOutputRange, priceImpact, exchangeRate, feeRate],
+  )
 }

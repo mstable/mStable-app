@@ -1,12 +1,10 @@
-import React, { FC, useLayoutEffect, useMemo } from 'react'
+import React, { FC, useLayoutEffect } from 'react'
 import styled, { createGlobalStyle } from 'styled-components'
 import reset from 'styled-reset'
 import { useLocation } from 'react-router-dom'
 import { TransitionGroup } from 'react-transition-group'
 import { ModalProvider } from 'react-modal-hook'
 import { usePrevious } from 'react-use'
-import { getUnixTime } from 'date-fns'
-import { BigNumber } from 'ethers'
 
 import { Networks, useChainIdCtx, useNetwork } from '../../context/NetworkProvider'
 import { useSelectedMassetConfig } from '../../context/MassetProvider'
@@ -20,8 +18,6 @@ import { Background } from './Background'
 import { AppBar } from './AppBar'
 import { Toasts } from './Toasts'
 import { Color, ViewportWidth } from '../../theme'
-import { BigDecimal } from '../../web3/BigDecimal'
-import { SCALE } from '../../constants'
 import { MessageHandler } from './MessageHandler'
 
 const Main = styled.main<{ marginTop?: boolean }>`
@@ -224,26 +220,9 @@ export const Layout: FC = ({ children }) => {
 
   // Message
   const [bannerMessage, setBannerMessage] = useBannerMessage()
-  const massetState = useSelectedMassetState()
-  const massetName = useSelectedMassetName()
+  const massetConfig = useSelectedMassetConfig()
   const { protocolName } = useNetwork()
   const { undergoingRecol } = useSelectedMassetState() ?? {}
-
-  const tvlCap = useMemo(() => {
-    if (massetName !== 'mbtc') return
-
-    const { invariantStartingCap, invariantStartTime, invariantCapFactor } = massetState ?? {}
-    if (!invariantStartingCap || !invariantStartTime || !invariantCapFactor) return
-
-    const currentTime = getUnixTime(Date.now())
-    const weeksSinceLaunch = BigNumber.from(currentTime).sub(invariantStartTime).mul(SCALE).div(604800)
-
-    if (weeksSinceLaunch.gt(SCALE.mul(7))) return
-
-    const maxK = invariantStartingCap.add(invariantCapFactor.mul(weeksSinceLaunch.pow(2)).div(SCALE.pow(2)))
-
-    return new BigDecimal(maxK)
-  }, [massetName, massetState])
 
   // Scroll to the top when the account view is toggled
   useLayoutEffect(() => {
@@ -254,12 +233,8 @@ export const Layout: FC = ({ children }) => {
   useLayoutEffect(() => {
     let message: BannerMessage | undefined
 
-    if (massetName === 'musd' && pathname.includes('save')) {
-      const recollatMessage = (undergoingRecol && MessageHandler.recollat({ massetName })) || undefined
-
-      message = recollatMessage
-    } else if (massetName === 'mbtc') {
-      message = (pathname === '/mbtc/mint' && MessageHandler.tvlCap({ tvlCap })) || undefined
+    if (undergoingRecol) {
+      message = (undergoingRecol && MessageHandler.recollat(massetConfig)) || undefined
     }
 
     if (!message) {
@@ -269,7 +244,7 @@ export const Layout: FC = ({ children }) => {
     if (bannerMessage?.title !== message?.title) {
       setBannerMessage(message)
     }
-  }, [bannerMessage, massetName, pathname, protocolName, setBannerMessage, tvlCap, undergoingRecol])
+  }, [bannerMessage, massetConfig, pathname, protocolName, setBannerMessage, undergoingRecol])
 
   return (
     <ModalProvider rootComponent={TransitionGroup}>

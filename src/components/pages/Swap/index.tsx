@@ -110,6 +110,8 @@ const SwapLogic: FC = () => {
         return 'Select asset to receive'
       }
 
+      if (swapOutput.error) return swapOutput.error
+
       if (inputToken?.balance && inputAmount.exact.gt(inputToken.balance.exact)) {
         return 'Insufficient balance'
       }

@@ -2,11 +2,13 @@ import React, { FC, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 
 import { FeederPool__factory, Masset__factory } from '@mstable/protocol/types/generated'
+
+import type { MassetState } from '../../../context/DataProvider/types'
 import { usePropose } from '../../../context/TransactionsProvider'
 import { useSigner, useWalletAddress } from '../../../context/AccountProvider'
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
-import { MassetState } from '../../../context/DataProvider/types'
 import { useTokenSubscription } from '../../../context/TokensProvider'
+import { useChainIdCtx } from '../../../context/NetworkProvider'
 
 import { useBigDecimalInput } from '../../../hooks/useBigDecimalInput'
 import { useSlippage } from '../../../hooks/useSimpleInput'
@@ -22,10 +24,8 @@ import { TransactionInfo } from '../../core/TransactionInfo'
 import { useMinimumOutput } from '../../../hooks/useOutput'
 import { BigDecimalInputValue } from '../../../hooks/useBigDecimalInputs'
 import { useEstimatedOutput } from '../../../hooks/useEstimatedOutput'
-import { BigDecimal } from '../../../web3/BigDecimal'
-import { useChainIdCtx } from '../../../context/NetworkProvider'
 
-const formId = 'mint'
+const formId = 'MintMasset'
 
 const Container = styled.div`
   > * {
@@ -82,16 +82,18 @@ export const MintMasset: FC = () => {
     if (!inputAmount?.simple) return 'Enter an amount'
 
     if (inputAmount) {
-      if (inputAmount.exact.gt(inputToken?.balance.exact ?? BigDecimal.ZERO.exact)) {
-        return 'Insufficient balance'
-      }
-
       if (!inputAddress) {
         return 'Must select an asset to receive'
       }
 
       if (inputAmount.exact.eq(0)) {
         return 'Amount must be greater than zero'
+      }
+
+      if (estimatedOutputAmount.error) return estimatedOutputAmount.error
+
+      if (inputToken?.balance.exact && inputAmount.exact.gt(inputToken.balance.exact)) {
+        return 'Insufficient balance'
       }
     }
 

@@ -79,16 +79,18 @@ export const RedeemMasset: FC = () => {
     if (!massetAmount?.simple) return 'Enter an amount'
 
     if (massetAmount) {
-      if (massetBalance && massetAmount.exact.gt(massetBalance.exact)) {
-        return 'Insufficient balance'
-      }
-
       if (!outputAddress) {
         return 'Must select an asset to receive'
       }
 
       if (massetAmount.exact.eq(0)) {
         return 'Amount must be greater than zero'
+      }
+
+      if (estimatedOutputAmount.error) return estimatedOutputAmount.error
+
+      if (massetBalance && massetAmount.exact.gt(massetBalance.exact)) {
+        return 'Insufficient balance'
       }
     }
 

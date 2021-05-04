@@ -21,7 +21,7 @@ import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput'
 import { useTokenSubscription } from '../../../../context/TokensProvider'
 import { useNetwork } from '../../../../context/NetworkProvider'
 
-const formId = 'RedeemLP'
+const formId = 'MintLP'
 
 export const MintLP: FC = () => {
   const network = useNetwork()
@@ -98,15 +98,13 @@ export const MintLP: FC = () => {
 
   const isStakingInVault = inputAddress === feederPool.address && outputAddress === feederPool.vault.address
 
-  const shouldSkipEstimation = isStakingInVault
-
   const { estimatedOutputAmount, exchangeRate, priceImpact } = useEstimatedOutput(
     {
       ...inputOptions.find(t => t.address === inputAddress),
       amount: inputAmount,
     } as BigDecimalInputValue,
     { ...outputToken, address: feederPool.address } as BigDecimalInputValue,
-    shouldSkipEstimation,
+    isStakingInVault,
   )
 
   const { impactWarning } = priceImpact?.value ?? {}
@@ -116,16 +114,18 @@ export const MintLP: FC = () => {
   const error = useMemo<string | undefined>(() => {
     if (!inputAmount?.simple) return 'Enter an amount'
 
-    if (inputToken?.balance?.exact && inputAmount.exact.gt(inputToken.balance.exact)) {
-      return 'Insufficient balance'
-    }
-
     if (!outputToken) {
       return 'Must select an asset to receive'
     }
 
     if (inputAmount.exact.eq(0)) {
       return 'Amount must be greater than zero'
+    }
+
+    if (estimatedOutputAmount.error) return estimatedOutputAmount.error
+
+    if (inputToken?.balance?.exact && inputAmount.exact.gt(inputToken.balance.exact)) {
+      return 'Insufficient balance'
     }
 
     if (isStakingInVault) return
