@@ -18,7 +18,7 @@ import { EarnRedirect } from './components/pages/EarnRedirect'
 import { Pools } from './components/pages/Pools'
 import { PoolDetail } from './components/pages/Pools/Detail'
 import { useNetwork } from './context/NetworkProvider'
-import { useSelectedMasset } from './context/SelectedMassetNameProvider'
+import { useSelectedMasset } from './context/MassetProvider'
 
 const Routes: FC = () => {
   const { supportedMassets } = useNetwork()

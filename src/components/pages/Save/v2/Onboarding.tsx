@@ -5,7 +5,7 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { MassetState } from '../../../../context/DataProvider/types'
 import { Tooltip } from '../../../core/ReactTooltip'
 import { Arrow } from '../../../core/Arrow'
-import { useSelectedMassetName } from '../../../../context/SelectedMassetNameProvider'
+import { useSelectedMassetName } from '../../../../context/MassetProvider'
 import { ExternalLink } from '../../../core/ExternalLink'
 import { UnstyledButton } from '../../../core/Button'
 import { useOnboarding } from '../hooks'

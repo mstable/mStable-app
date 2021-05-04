@@ -9,7 +9,7 @@ import { getUnixTime } from 'date-fns'
 import { BigNumber } from 'ethers'
 
 import { Networks, useChainIdCtx, useNetwork } from '../../context/NetworkProvider'
-import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { useSelectedMassetConfig } from '../../context/MassetProvider'
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 
 import { ReactTooltip, Tooltip } from '../core/ReactTooltip'

@@ -9,7 +9,7 @@ import { Color } from '../../theme'
 import { DateRange, Metrics, useDateFilter, useMetricsState } from './Metrics'
 import { periodFormatMapping, toK } from './utils'
 import { RechartsContainer } from './RechartsContainer'
-import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { useSelectedMassetConfig } from '../../context/MassetProvider'
 import { useSelectedSavingsContractState } from '../../context/SelectedSaveVersionProvider'
 import { ThemedSkeleton } from '../core/ThemedSkeleton'
 import { ChainIds, useChainIdCtx } from '../../context/NetworkProvider'
@@ -198,7 +198,7 @@ const Chart: FC<{
 }
 
 export const AggregateChart: FC = () => {
-  const massetName = useSelectedMassetName()
+  const massetConfig = useSelectedMassetConfig()
   const [chainId] = useChainIdCtx()
   const aggregateMetrics = useMemo(
     () => [
@@ -208,7 +208,7 @@ export const AggregateChart: FC = () => {
         label: 'Total supply',
         color: colors.totalSupply,
       },
-      ...(massetName === 'musd' && chainId === ChainIds.EthereumMainnet
+      ...(chainId === ChainIds.EthereumMainnet && massetConfig.hasV1Save
         ? [
             {
               type: 'totalSavingsV1',
@@ -232,7 +232,7 @@ export const AggregateChart: FC = () => {
             },
           ]),
     ],
-    [chainId, massetName],
+    [chainId, massetConfig],
   )
 
   return (

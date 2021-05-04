@@ -2,7 +2,7 @@ import type { FC } from 'react'
 import React from 'react'
 import styled from 'styled-components'
 
-import { useSelectedMassetName } from '../../context/SelectedMassetNameProvider'
+import { useSelectedMassetName } from '../../context/MassetProvider'
 import { ExternalLink } from '../core/ExternalLink'
 import { PageAction, PageHeader } from './PageHeader'
 
