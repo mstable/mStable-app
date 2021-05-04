@@ -145,7 +145,7 @@ const IconContainer = styled.div<{ isLarge: boolean }>`
     background: ${({ theme }) => theme.color.white};
   }
 
-  > img:last-child {
+  > div:last-child {
     margin-left: -0.7rem;
   }
 `
