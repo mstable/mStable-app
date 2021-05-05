@@ -117,7 +117,6 @@ const OnboardProvider: FC<{
               setWallet(undefined)
               setInjectedProvider(undefined)
               setConnected(false)
-              onboard.walletReset()
               return
             }
             setAddress(account.toLowerCase())
@@ -252,17 +251,6 @@ const OnboardProvider: FC<{
       })
     }
   })
-
-  // useEffect(() => {
-  //   console.log(injectedChainId, chainId)
-  //   if (injectedChainId && injectedChainId !== chainId) {
-  //     onboard.walletReset()
-  //     console.log('disconnecting')
-  //     setWallet(undefined)
-  //     setConnected(false)
-  //     setInjectedProvider(undefined)
-  //   }
-  // }, [chainId, injectedChainId, setInjectedProvider, onboard])
 
   return (
     <onboardCtx.Provider

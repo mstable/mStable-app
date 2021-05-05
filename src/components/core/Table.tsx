@@ -39,7 +39,7 @@ const Row = styled.tr<{ isSelectable: boolean }>`
   }
 `
 
-const Content = styled.table`
+const Content = styled.tbody`
   display: flex;
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
@@ -102,7 +102,7 @@ const Header = styled.thead<{ isSelectable: boolean }>`
   }
 `
 
-const Container = styled.div`
+const Container = styled.table`
   display: flex;
   flex-direction: column;
   width: 100%;

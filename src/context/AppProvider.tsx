@@ -13,30 +13,23 @@ export type ThemeMode = 'light' | 'dark'
 
 enum Actions {
   SetOnline,
-  ToggleAccount,
-  CloseAccount,
   SetBannerMessage,
   SetThemeMode,
 }
 
 interface State {
   error: string | null
-  accountOpen: boolean
   online: boolean
   bannerMessage?: BannerMessage
   themeMode: ThemeMode
 }
 
 type Action =
-  | { type: Actions.ToggleAccount }
-  | { type: Actions.CloseAccount }
   | { type: Actions.SetOnline; payload: boolean }
   | { type: Actions.SetThemeMode; payload: ThemeMode | null }
   | { type: Actions.SetBannerMessage; payload?: BannerMessage }
 
 interface Dispatch {
-  closeAccount(): void
-  toggleWallet(): void
   setBannerMessage(message?: BannerMessage): void
   setThemeMode(mode: ThemeMode): void
   toggleThemeMode(): void
@@ -44,16 +37,6 @@ interface Dispatch {
 
 const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
-    case Actions.ToggleAccount:
-      return {
-        ...state,
-        accountOpen: !state.accountOpen,
-      }
-    case Actions.CloseAccount:
-      return {
-        ...state,
-        accountOpen: false,
-      }
     case Actions.SetOnline:
       return { ...state, online: action.payload }
     case Actions.SetBannerMessage:
@@ -74,7 +57,6 @@ const reducer: Reducer<State, Action> = (state, action) => {
 
 const initialState: State = {
   error: null,
-  accountOpen: false,
   online: true,
   themeMode: 'light',
 }
@@ -116,28 +98,18 @@ export const AppProvider: FC = ({ children }) => {
     })
   }, [dispatch])
 
-  const closeAccount = useCallback<Dispatch['closeAccount']>(() => {
-    dispatch({ type: Actions.CloseAccount })
-  }, [dispatch])
-
-  const toggleWallet = useCallback<Dispatch['toggleWallet']>(() => {
-    dispatch({ type: Actions.ToggleAccount })
-  }, [dispatch])
-
   return (
     <context.Provider
       value={useMemo(
         () => [
           state,
           {
-            closeAccount,
             setBannerMessage,
-            toggleWallet,
             setThemeMode,
             toggleThemeMode,
           },
         ],
-        [state, closeAccount, setBannerMessage, toggleWallet, setThemeMode, toggleThemeMode],
+        [state, setBannerMessage, setThemeMode, toggleThemeMode],
       )}
     >
       {children}
@@ -149,13 +121,7 @@ export const useAppContext = (): [State, Dispatch] => useContext(context)
 
 export const useAppState = (): State => useAppContext()[0]
 
-export const useAccountOpen = (): boolean => useAppState().accountOpen
-
 export const useAppDispatch = (): Dispatch => useAppContext()[1]
-
-export const useCloseAccount = (): Dispatch['closeAccount'] => useAppDispatch().closeAccount
-
-export const useToggleWallet = (): Dispatch['toggleWallet'] => useAppDispatch().toggleWallet
 
 export const useBannerMessage = (): [State['bannerMessage'], Dispatch['setBannerMessage']] => [
   useAppState().bannerMessage,

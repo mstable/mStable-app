@@ -2,12 +2,12 @@ import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 
-import { useAccountOpen, useCloseAccount, useThemeMode, useToggleThemeMode, useToggleWallet } from '../../context/AppProvider'
+import { useThemeMode, useToggleThemeMode } from '../../context/AppProvider'
 import { getNetwork, useChainIdCtx } from '../../context/NetworkProvider'
 import { useConnect, useWallet, useWalletAddress, useConnected, useInjectedChainIdCtx } from '../../context/AccountProvider'
 import { useTransactionsState } from '../../context/TransactionsProvider'
 
-import { Color, ViewportWidth } from '../../theme'
+import { ViewportWidth } from '../../theme'
 import { ReactComponent as LogoSvg } from '../icons/mstable-small.svg'
 import { UnstyledButton } from '../core/Button'
 import { ActivitySpinner } from '../core/ActivitySpinner'
@@ -27,6 +27,7 @@ import { LocalStorage } from '../../localStorage'
 import { Navigation } from './Navigation'
 import { useTCModal } from '../../hooks/useTCModal'
 import { NetworkDropdown } from '../core/NetworkDropdown'
+import { useAccountModal } from '../core/useAccountModal'
 
 const Logo = styled(LogoSvg)`
   width: 20px;
@@ -50,7 +51,7 @@ const LogoAndMasset = styled.div<{ inverted?: boolean }>`
   }
 `
 
-const AccountButton = styled(UnstyledButton)<{ active: boolean }>`
+const AccountButton = styled(UnstyledButton)`
   align-items: center;
   border-radius: 1rem;
   cursor: pointer;
@@ -69,10 +70,8 @@ const AccountButton = styled(UnstyledButton)<{ active: boolean }>`
     }
   }
 
-  background: ${({ active }) => (active ? Color.whiteTransparent : 'transparent')};
-
   &:hover {
-    background: ${({ active, theme }) => (active ? Color.whiteTransparent : theme.color.bodyTransparent)};
+    background: ${({ theme }) => theme.color.bodyTransparent};
   }
 `
 
@@ -136,8 +135,8 @@ const MassetContainer = styled.div`
   }
 `
 
-const Container = styled.div<{ inverted: boolean }>`
-  background: ${({ inverted, theme }) => (inverted ? Color.black : theme.color.background)};
+const Container = styled.div`
+  background: ${({ theme }) => theme.color.background};
   height: 56px;
   display: flex;
   justify-content: center;
@@ -146,7 +145,7 @@ const Container = styled.div<{ inverted: boolean }>`
   border-bottom: 1px solid ${({ theme }) => theme.color.defaultBorder};
 
   ${AccountButton} {
-    color: ${({ inverted, theme }) => (inverted ? Color.white : theme.color.body)};
+    color: ${({ theme }) => theme.color.body};
   }
 `
 
@@ -181,22 +180,6 @@ const WalletAndSpinner = styled.div`
   align-items: center;
 `
 
-const CloseAccountBtn = styled(UnstyledButton)`
-  font-weight: 600;
-  color: white;
-  cursor: pointer;
-  font-size: 1.25rem;
-`
-
-const CloseAccount: FC = () => {
-  const closeAccount = useCloseAccount()
-  return (
-    <CloseAccountBtn type="button" onClick={closeAccount}>
-      Back to App
-    </CloseAccountBtn>
-  )
-}
-
 const WrongNetwork = styled.div`
   color: red;
   > :first-child {
@@ -208,13 +191,12 @@ const WrongNetwork = styled.div`
 `
 
 const WalletButton: FC = () => {
-  const accountOpen = useAccountOpen()
-  const toggleWallet = useToggleWallet()
   const connected = useConnected()
   const account = useWalletAddress()
   const [injectedChainId] = useInjectedChainIdCtx()
   const [chainId] = useChainIdCtx()
   const injectedNetwork = useMemo(() => (injectedChainId ? getNetwork(injectedChainId) : undefined), [injectedChainId])
+  const [showAccountModal] = useAccountModal()
 
   const connect = useConnect()
   const showTCModal = useTCModal()
@@ -223,7 +205,7 @@ const WalletButton: FC = () => {
 
   const handleClick = (): void => {
     if (connected && account) {
-      return toggleWallet()
+      return showAccountModal()
     }
     if (!viewedTerms) {
       return showTCModal()
@@ -232,7 +214,7 @@ const WalletButton: FC = () => {
   }
 
   return (
-    <WalletButtonBtn title="Account" onClick={handleClick} active={accountOpen}>
+    <WalletButtonBtn title="Account" onClick={handleClick}>
       {injectedChainId && chainId !== injectedChainId ? (
         <>
           <div>
@@ -272,8 +254,6 @@ const TransactionsSpinner: FC = () => {
 }
 
 export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
-  const accountOpen = useAccountOpen()
-  const closeAccount = useCloseAccount()
   const toggleThemeMode = useToggleThemeMode()
   const themeMode = useThemeMode()
 
@@ -283,10 +263,10 @@ export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
   }
 
   return (
-    <Container inverted={accountOpen}>
+    <Container>
       <Inner>
-        <LogoAndMasset inverted={accountOpen}>
-          <Link to="/" title="Home" onClick={closeAccount}>
+        <LogoAndMasset>
+          <Link to="/" title="Home">
             <Logo />
           </Link>
           <MassetContainer>
@@ -294,7 +274,7 @@ export const AppBar: FC<{ home?: boolean }> = ({ home }) => {
             <NetworkDropdown />
           </MassetContainer>
         </LogoAndMasset>
-        {home ? accountOpen && <CloseAccount /> : accountOpen ? <CloseAccount /> : <Navigation />}
+        <Navigation />
         <WalletAndSpinner>
           <ToggleButton onClick={handleThemeToggle}>{themeMode === 'light' ? '☀️' : '🌙'}</ToggleButton>
           <TransactionsSpinner />
