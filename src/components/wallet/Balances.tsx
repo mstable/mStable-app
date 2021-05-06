@@ -10,19 +10,31 @@ import { MassetState } from '../../context/DataProvider/types'
 import { ThemedSkeleton } from '../core/ThemedSkeleton'
 import { Table, TableCell, TableRow } from '../core/Table'
 
-const Symbol = styled.div`
-  display: flex;
-  align-items: center;
+const AssetCell = styled(TableCell)`
+  > div {
+    display: flex;
+    align-items: center;
 
-  img {
-    width: 100%;
-    height: auto;
+    img {
+      width: 100%;
+      height: auto;
+    }
+
+    span {
+      color: ${({ theme }) => theme.color.body};
+    }
+
+    span:nth-child(2) {
+      font-weight: 600;
+    }
   }
 `
 
 const Balance = styled(CountUp)`
-  font-weight: bold;
-  font-size: 1rem;
+  > * {
+    font-weight: normal !important;
+    font-size: 1rem;
+  }
 `
 
 const TokenIcon = styled(TokenIconBase)<{ outline?: boolean }>`
@@ -75,25 +87,21 @@ export const Balances: FC = () => {
       {massetTokens.map(({ masset, bassets, savingsContractV1, savingsContractV2 }) => (
         <Fragment key={masset.address}>
           <TableRow key={masset.address}>
-            <TableCell>
-              <Symbol>
-                <TokenIcon symbol={masset.symbol} outline />
-                <span>{masset.symbol}</span>
-                <ExplorerLink data={masset.address} />
-              </Symbol>
-            </TableCell>
+            <AssetCell>
+              <TokenIcon symbol={masset.symbol} outline />
+              <span>{masset.symbol}</span>
+              <ExplorerLink data={masset.address} />
+            </AssetCell>
             <TableCell>
               <TokenBalance address={masset.address} />
             </TableCell>
           </TableRow>
           {savingsContractV1 && (
             <TableRow key={savingsContractV1.address}>
-              <TableCell>
-                <Symbol>
-                  <TokenIcon symbol={savingsContractV1.symbol} outline />
-                  <span>{savingsContractV1.name}</span>
-                </Symbol>
-              </TableCell>
+              <AssetCell>
+                <TokenIcon symbol={savingsContractV1.symbol} outline />
+                <span>{savingsContractV1.name}</span>
+              </AssetCell>
               <TableCell>
                 {savingsContractV1.savingsBalance.balance ? (
                   <Balance end={savingsContractV1.savingsBalance.balance.simple} />
@@ -105,24 +113,20 @@ export const Balances: FC = () => {
           )}
           {savingsContractV2 && (
             <TableRow key={savingsContractV2.address}>
-              <TableCell>
-                <Symbol>
-                  <TokenIcon symbol={savingsContractV2.symbol} outline />
-                  <span>{savingsContractV2.symbol}</span>
-                </Symbol>
-              </TableCell>
+              <AssetCell>
+                <TokenIcon symbol={savingsContractV2.symbol} outline />
+                <span>{savingsContractV2.symbol}</span>
+              </AssetCell>
               <TableCell>{savingsContractV2.balance ? <Balance end={savingsContractV2.balance.simple} /> : <ThemedSkeleton />}</TableCell>
             </TableRow>
           )}
           {bassets.map(({ address, symbol }) => (
             <TableRow key={address}>
-              <TableCell>
-                <Symbol>
-                  <TokenIcon symbol={symbol} />
-                  <span>{symbol}</span>
-                  <ExplorerLink data={address} />
-                </Symbol>
-              </TableCell>
+              <AssetCell>
+                <TokenIcon symbol={symbol} />
+                <span>{symbol}</span>
+                <ExplorerLink data={address} />
+              </AssetCell>
               <TableCell>
                 <TokenBalance address={address} />
               </TableCell>

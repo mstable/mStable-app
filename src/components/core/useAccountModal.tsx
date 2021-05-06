@@ -9,17 +9,6 @@ import { useConnected, useReset, useWallet, useWalletAddress } from '../../conte
 import { Address } from './Address'
 import { Button } from './Button'
 
-const Rows = styled.div`
-  width: 100%;
-  padding: 1rem 0;
-
-  > div:first-child {
-    border-bottom: 1px ${({ theme }) => theme.color.defaultBorder} solid;
-    padding: 0 1rem 2rem 1rem;
-    margin-bottom: 1rem;
-  }
-`
-
 const Row = styled.div`
   h3 {
     font-size: 1rem;
@@ -56,10 +45,16 @@ const Container = styled.div`
   color: ${({ theme }) => theme.color.body};
   padding: 0 1rem;
 
+  > div:first-child {
+    border-bottom: 1px ${({ theme }) => theme.color.defaultBorder} solid;
+    padding: 1rem 1rem 2rem 1rem;
+    margin-bottom: 1rem;
+  }
+
   @media (min-width: ${ViewportWidth.m}) {
     width: 34rem;
-    padding: 1rem;
-    > div > div > *:not(:last-child) {
+    padding: 1rem 1rem 1.5rem;
+    > *:not(:last-child) {
       margin-right: 1rem;
       margin-bottom: 0;
     }
@@ -84,28 +79,22 @@ export const useAccountModal = (): [() => void, () => void] => {
 
     return (
       <Modal title="Account" onExited={onExited} open={open} hideModal={hideModal}>
-        <Container>
-          <div>
-            <div>
-              {connected && address && wallet && (
-                <Rows>
-                  <Row>
-                    <h3>Connected with {wallet.name as string}</h3>
-                    <AddressGroup>
-                      <Address address={address} type="account" copyable />
-                      <DisconnectButton type="button" onClick={handleClick}>
-                        Disconnect
-                      </DisconnectButton>
-                    </AddressGroup>
-                  </Row>
-                  <Row>
-                    <Balances />
-                  </Row>
-                </Rows>
-              )}
-            </div>
-          </div>
-        </Container>
+        {connected && address && wallet && (
+          <Container>
+            <Row>
+              <h3>Connected with {wallet.name as string}</h3>
+              <AddressGroup>
+                <Address address={address} type="account" copyable />
+                <DisconnectButton type="button" onClick={handleClick}>
+                  Disconnect
+                </DisconnectButton>
+              </AddressGroup>
+            </Row>
+            <Row>
+              <Balances />
+            </Row>
+          </Container>
+        )}
       </Modal>
     )
   })
