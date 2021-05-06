@@ -122,7 +122,7 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
         case SaveRoutes.BuyAndSave:
         case SaveRoutes.BuyAndStake:
           promise = (async () => {
-            const [{ amount: low }, { amount: high }] = await Promise.all([
+            const [{ amount: low }, { amount: high, path, amountOut }] = await Promise.all([
               getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, massetConfig.lowInputValue.exact),
               getOptimalBasset(signer, networkAddresses, massetAddress, bAssets, _inputAmount.exact),
             ])
@@ -137,6 +137,8 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
 
             return {
               amount: high,
+              amountOut,
+              path,
               priceImpact,
             }
           })()
