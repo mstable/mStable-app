@@ -8,8 +8,11 @@ interface Props {
   onHeaderClick?: (i: number) => void
 }
 
-const Cell = styled.td`
-  padding: 1rem;
+const Cell = styled.td<{ width?: number }>`
+  padding: 0 1rem;
+  display: flex;
+
+  flex-basis: ${({ width }) => width && `${width}%`};
 
   > div *:first-child {
     font-weight: 600;
@@ -20,6 +23,7 @@ const Cell = styled.td`
   }
   span {
     color: ${({ theme }) => theme.color.bodyAccent};
+    font-size: 0.875rem;
   }
 `
 
@@ -44,6 +48,7 @@ const Content = styled.tbody`
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   border-radius: 1rem;
+  overflow: hidden;
 
   td {
     display: flex;
@@ -58,10 +63,6 @@ const Content = styled.tbody`
   > * {
     display: flex;
     justify-content: space-between;
-
-    > td {
-      flex: 1;
-    }
 
     > td:not(:first-child) {
       text-align: right;
@@ -108,9 +109,9 @@ const Container = styled.table`
   width: 100%;
 `
 
-export const TableCell: FC<{ className?: string }> = ({ children, className }) => {
+export const TableCell: FC<{ className?: string; width?: number }> = ({ children, className, width }) => {
   return (
-    <Cell role="cell" className={className}>
+    <Cell role="cell" className={className} width={width}>
       <div>{children}</div>
     </Cell>
   )

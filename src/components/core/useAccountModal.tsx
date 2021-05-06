@@ -8,13 +8,7 @@ import { Balances } from '../wallet/Balances'
 import { useConnected, useReset, useWallet, useWalletAddress } from '../../context/AccountProvider'
 import { Address } from './Address'
 import { Button } from './Button'
-
-const Row = styled.div`
-  h3 {
-    font-size: 1rem;
-    font-weight: 600;
-  }
-`
+import { useExploreAssetModal } from './useExploreAssetModal'
 
 const DisconnectButton = styled(Button)`
   color: ${({ theme }) => theme.color.white};
@@ -49,6 +43,11 @@ const Container = styled.div`
     border-bottom: 1px ${({ theme }) => theme.color.defaultBorder} solid;
     padding: 1rem 1rem 2rem 1rem;
     margin-bottom: 1rem;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
   }
 
   @media (min-width: ${ViewportWidth.m}) {
@@ -65,6 +64,8 @@ export const useAccountModal = (): [() => void, () => void] => {
   const connected = useConnected()
   const wallet = useWallet()
 
+  const [showExploreModal] = useExploreAssetModal()
+
   const [showModal, hideModal] = useModal(({ onExited, in: open }) => {
     // "Modals are also functional components and can use react hooks themselves"
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -77,11 +78,17 @@ export const useAccountModal = (): [() => void, () => void] => {
       }
     }
 
+    // Handled here to allow reuse of Balance w/o conflating modal & balance logic
+    const handleRowClick = (symbol: string): void => {
+      hideModal()
+      showExploreModal(symbol)
+    }
+
     return (
       <Modal title="Account" onExited={onExited} open={open} hideModal={hideModal}>
         {connected && address && wallet && (
           <Container>
-            <Row>
+            <div>
               <h3>Connected with {wallet.name as string}</h3>
               <AddressGroup>
                 <Address address={address} type="account" copyable />
@@ -89,10 +96,10 @@ export const useAccountModal = (): [() => void, () => void] => {
                   Disconnect
                 </DisconnectButton>
               </AddressGroup>
-            </Row>
-            <Row>
-              <Balances />
-            </Row>
+            </div>
+            <div>
+              <Balances onRowClick={handleRowClick} />
+            </div>
           </Container>
         )}
       </Modal>
