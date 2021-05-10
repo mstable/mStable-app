@@ -149,6 +149,7 @@ const getAssetUse = (symbol: string): { title: string; subtitle: string; href?: 
 export const ExploreAsset: FC<{ symbol?: string; onRowClick?: () => void }> = ({ symbol, onRowClick }) => {
   const assetUses = getAssetUse(symbol ?? '')
   const history = useHistory()
+  const showSendAsset = ['mUSD', 'imUSD', 'mBTC', 'imBTC'].find(x => x === symbol)
 
   const handleOnClick = (href?: string): void => {
     if (!href) return
@@ -162,10 +163,14 @@ export const ExploreAsset: FC<{ symbol?: string; onRowClick?: () => void }> = ({
 
   return (
     <Container>
-      <Header>
-        <h3>Send</h3>
-      </Header>
-      {symbol && <SendAsset symbol={symbol} />}
+      {showSendAsset && (
+        <>
+          <Header>
+            <h3>Send</h3>
+          </Header>
+          {symbol && <SendAsset symbol={symbol} />}
+        </>
+      )}
       <Header>
         <h3>Explore</h3>
         <p>Explore options to deposit your idle {symbol}</p>
