@@ -95,7 +95,7 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
 
   const [update] = useDebounce(
     () => {
-      if (!inputAmountSerialized || !inputAddress) return setSaveOutput.value()
+      if (!inputAmountSerialized || !inputAddress || !signer) return setSaveOutput.value()
 
       const _inputAmount = BigDecimal.fromJSON(inputAmountSerialized)
 
