@@ -57,8 +57,7 @@ interface ColorTheme {
   bodyTransparenter: string
   offYellow: string
   disabled: string
-  background: string
-  backgroundAccent: string
+  background: Record<string, string>
   disabledInput: string
   disabledButton: string
   defaultBorder: string
@@ -79,14 +78,23 @@ export const colorTheme = (theme: 'light' | 'dark'): ColorTheme & typeof Color =
     bodyTransparent: isLight ? Color.blackTransparent : Color.whiteTransparent,
     bodyTransparenter: isLight ? Color.blackTransparenter : Color.whiteTransparenter,
     bodyAccent: isLight ? Color.grey : ColorNew.white[4],
-    background: isLight ? ColorNew.white[0] : ColorNew.spaceBlue[0],
-    backgroundAccent: isLight ? ColorNew.white[2] : ColorNew.spaceBlue[3],
     disabledInput: isLight ? ColorNew.white[2] : ColorNew.spaceBlue[3],
     disabledButton: isLight ? ColorNew.white[2] : ColorNew.spaceBlue[2],
     defaultBorder: isLight ? ColorNew.white[3] : ColorNew.spaceBlue[4],
     defaultToggle: isLight ? ColorNew.white[3] : ColorNew.spaceBlue[3],
     onboardBackground: isLight ? ColorNew.white[0] : ColorNew.spaceBlue[1],
     onboardItemHover: isLight ? ColorNew.white[1] : ColorNew.spaceBlue[2],
+    background: isLight
+      ? {
+          0: ColorNew.white[0],
+          1: ColorNew.white[1],
+          2: ColorNew.white[2],
+        }
+      : {
+          0: ColorNew.spaceBlue[0],
+          1: ColorNew.spaceBlue[2],
+          2: ColorNew.spaceBlue[3],
+        },
   }
 }
 
@@ -183,7 +191,7 @@ export const darkTheme: DefaultTheme = {
 
 export const gradientShift = css`
   position: relative;
-  background: ${({ theme }) => theme.color.background};
+  background: ${({ theme }) => theme.color.background[0]};
 
   &:before {
     position: absolute;

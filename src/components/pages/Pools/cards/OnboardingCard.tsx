@@ -22,7 +22,7 @@ const Content: Record<OnboardingType, string> = {
 }
 
 const Container = styled(Card)`
-  background: ${({ theme }) => theme.color.backgroundAccent};
+  background: ${({ theme }) => theme.color.background[2]};
   border: none;
 `
 

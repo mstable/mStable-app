@@ -27,7 +27,7 @@ export const CardButton = styled(UnstyledButton)<{
   }
 
   :hover {
-    background: ${({ theme, disabled }) => !disabled && theme.color.backgroundAccent};
+    background: ${({ theme, disabled }) => !disabled && theme.color.background[2]};
   }
 
   > div {

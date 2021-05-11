@@ -3,7 +3,7 @@ import styled from 'styled-components'
 export const InfoMessage = styled.div`
   display: flex;
   justify-content: center;
-  border: 1px solid ${({ theme }) => theme.color.backgroundAccent};
+  border: 1px solid ${({ theme }) => theme.color.background[2]};
   padding: 1rem;
   border-radius: 0.5rem;
 

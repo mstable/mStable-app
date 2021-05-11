@@ -47,7 +47,7 @@ const CloseButton = styled(UnstyledButton)`
   border-radius: 1rem;
 
   :hover {
-    background: ${({ theme }) => theme.color.backgroundAccent};
+    background: ${({ theme }) => theme.color.background[2]};
   }
 `
 
@@ -58,9 +58,9 @@ const Container = styled.div`
   /* overflow-y: scroll; */
   /* width: 100%; */
   /* max-height: calc(90vh - 50px); */
-  /* background: ${({ theme }) => theme.color.background}; */
+  /* background: ${({ theme }) => theme.color.background[0]}; */
   /* border-radius: 1rem; */
-  /* border: 1px ${({ theme }) => theme.color.backgroundAccent} solid; */
+  /* border: 1px ${({ theme }) => theme.color.background[2]} solid; */
 
   position: absolute;
   left: 0;
@@ -75,7 +75,7 @@ const Container = styled.div`
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   transition: all ease-in;
-  background: ${({ theme }) => theme.color.background};
+  background: ${({ theme }) => theme.color.background[0]};
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   overflow: hidden;
 

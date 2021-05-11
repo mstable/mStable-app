@@ -60,7 +60,7 @@ const MassetContainer = styled.div`
 const AssetContainer = styled.div`
   > div {
     padding: 1rem;
-    background: ${({ theme }) => theme.color.backgroundAccent};
+    background: ${({ theme }) => theme.color.background[2]};
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
@@ -71,7 +71,7 @@ const AssetContainer = styled.div`
 `
 
 const Container = styled.div`
-  background: ${({ theme }) => theme.color.background};
+  background: ${({ theme }) => theme.color.background[0]};
   color: ${({ theme }) => theme.color.body};
   text-align: center;
   position: relative;

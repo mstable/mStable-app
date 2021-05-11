@@ -60,7 +60,7 @@ const Container = styled.div<{ status: TransactionStatus }>`
     solid;
   border-radius: 1rem;
   color: ${({ theme }) => theme.color.body};
-  background: ${({ theme }) => theme.color.background};
+  background: ${({ theme }) => theme.color.background[0]};
 `
 
 const NativeTokenBalanceContainer = styled.div<{ insufficientBalance: boolean }>`

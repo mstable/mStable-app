@@ -18,7 +18,7 @@ export const Button = styled(UnstyledButton)`
   }
 
   :hover {
-    background: ${({ theme }) => theme.color.backgroundAccent};
+    background: ${({ theme }) => theme.color.background[2]};
   }
 `
 
@@ -29,7 +29,7 @@ const MassetAsideContainer = styled.aside`
   height: auto;
 
   ${({ theme }) => `
-    background: ${theme.color.backgroundAccent};
+    background: ${theme.color.background[2]};
   `}
 
   > h3 {
@@ -75,7 +75,7 @@ const MigrationOverlay = styled.div`
   }
 
   opacity: 0.75;
-  background: ${({ theme }) => theme.color.background};
+  background: ${({ theme }) => theme.color.background[0]};
   z-index: 4;
   position: absolute;
   left: 0;

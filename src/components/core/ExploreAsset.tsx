@@ -25,7 +25,7 @@ const Header = styled.div`
 `
 
 const Container = styled.div`
-  background: ${({ theme }) => theme.color.background};
+  background: ${({ theme }) => theme.color.background[0]};
   color: ${({ theme }) => theme.color.body};
   padding: 0 1rem;
 

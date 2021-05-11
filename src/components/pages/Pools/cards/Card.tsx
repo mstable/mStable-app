@@ -38,7 +38,7 @@ const Background = styled.div<{ gradientColor?: string }>`
   bottom: 0;
   left: 0;
   background: ${({ gradientColor, theme }) =>
-    gradientColor ? `linear-gradient(180deg, ${gradientColor} 0%, ${theme.color.background} 100%);` : `none`};
+    gradientColor ? `linear-gradient(180deg, ${gradientColor} 0%, ${theme.color.background[0]} 100%);` : `none`};
   border-radius: 1rem;
   opacity: 0.33;
 `

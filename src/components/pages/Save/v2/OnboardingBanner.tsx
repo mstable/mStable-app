@@ -51,7 +51,7 @@ const InfoLink = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.color.backgroundAccent};
+  background: ${({ theme }) => theme.color.background[2]};
   border-radius: 1rem;
   height: 2rem;
   width: 2rem;
@@ -79,7 +79,7 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    background: ${({ theme }) => `linear-gradient(180deg, rgba(210,172,235,0.3) 0%, ${theme.color.background} 100%)`};
+    background: ${({ theme }) => `linear-gradient(180deg, rgba(210,172,235,0.3) 0%, ${theme.color.background[0]} 100%)`};
     border-radius: 1rem;
     padding: 1.5rem;
     border: 1px solid ${({ theme }) => theme.color.defaultBorder};

@@ -10,13 +10,13 @@ interface Props {
 }
 
 const Container = styled(UnstyledButton)`
-  background: ${({ theme }) => theme.color.onboardItemHover};
+  background: ${({ theme }) => theme.color.background[1]};
   padding: 1rem;
   border-radius: 1rem;
   transition: 0.25s;
 
   :hover {
-    opacity: 0.75;
+    background: ${({ theme }) => theme.color.background[2]};
   }
 
   > div:first-child {
