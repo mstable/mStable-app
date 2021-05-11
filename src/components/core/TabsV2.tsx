@@ -4,8 +4,6 @@ import { UnstyledButton } from './Button'
 import { Color, ViewportWidth } from '../../theme'
 
 export const TabsContainer = styled.div`
-  /* display: flex; */
-  justify-content: flex-start;
   margin: 0 0 1.25rem;
   box-shadow: ${({ theme }) => `0 2px 0 ${theme.color.defaultBorder}`};
 `
