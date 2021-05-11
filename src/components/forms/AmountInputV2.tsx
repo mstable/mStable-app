@@ -30,7 +30,7 @@ export const InputV2 = styled.input<{
   background: ${({ theme, disabled }) => (disabled ? theme.color.disabledInput : 'none')};
   opacity: ${({ disabled }) => (disabled ? 0.85 : 1)};
   font-weight: normal;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   outline: none;
   height: 3rem;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'auto')};

@@ -8,10 +8,7 @@ import { Providers } from './context'
 import { Updaters } from './updaters'
 import { Layout } from './components/layout/Layout'
 import { Home } from './components/pages'
-import { Swap } from './components/pages/Swap'
-import { Mint } from './components/pages/Mint'
 import { Save } from './components/pages/Save'
-import { Redeem } from './components/pages/Redeem'
 import { NotFound } from './components/pages/NotFound'
 import { Stats } from './components/pages/Stats'
 import { EarnRedirect } from './components/pages/EarnRedirect'
@@ -19,6 +16,7 @@ import { Pools } from './components/pages/Pools'
 import { PoolDetail } from './components/pages/Pools/Detail'
 import { useNetwork } from './context/NetworkProvider'
 import { useSelectedMasset } from './context/MassetProvider'
+import { Forge } from './components/pages/Forge'
 
 const Routes: FC = () => {
   const { supportedMassets } = useNetwork()
@@ -47,20 +45,18 @@ const Routes: FC = () => {
       <Route exact path="/:massetName/earn/:slugOrAddress" component={EarnRedirect} />
       <Route exact path="/:massetName/earn/:slugOrAddress/:userAddress" component={EarnRedirect} />
       <Route exact path="/:massetName/stats" component={Stats} />
-      <Route exact path="/:massetName/mint" component={Mint} />
-      <Route exact path="/:massetName/redeem" component={Redeem} />
       <Route exact path="/:massetName/save" component={Save} />
-      <Route exact path="/:massetName/swap" component={Swap} />
       <Route exact path="/:massetName/pools" component={Pools} />
+      <Route exact path="/:massetName/forge" component={Forge} />
       <Route exact path="/:massetName/pools/:poolAddress" component={PoolDetail} />
       <Redirect exact path="/analytics" to="/musd/stats" />
-      <Redirect exact path="/mint" to="/musd/mint" />
-      <Redirect exact path="/redeem" to="/musd/redeem" />
       <Redirect exact path="/save" to="/musd/save" />
-      <Redirect exact path="/swap" to="/musd/swap" />
+      <Redirect exact path="/mint" to="/musd/forge" />
+      <Redirect exact path="/redeem" to="/musd/forge" />
+      <Redirect exact path="/swap" to="/musd/forge" />
       <Redirect exact path="/earn" to="/musd/earn" />
-      <Redirect exact path="/musd" to="/musd/mint" />
-      <Redirect exact path="/mbtc" to="/mbtc/mint" />
+      <Redirect exact path="/musd" to="/musd/forge" />
+      <Redirect exact path="/mbtc" to="/mbtc/forge" />
       <Redirect exact path="/musd/analytics" to="/musd/stats" />
       <Redirect exact path="/mbtc/analytics" to="/mbtc/stats" />
       <Route component={NotFound} />

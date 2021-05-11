@@ -166,10 +166,6 @@ export const mixins = {
     padding: 1rem;
     border-radius: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-
-    @media (min-width: ${ViewportWidth.m}) {
-      padding: 1.5rem;
-    }
   `,
 }
 

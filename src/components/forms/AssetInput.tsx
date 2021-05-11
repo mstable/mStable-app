@@ -38,7 +38,7 @@ const Input = styled.div`
 
   button {
     align-self: center;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     text-transform: uppercase;
     color: ${({ theme }) => theme.color.body};
     border: 1px solid ${({ theme }) => theme.color.defaultBorder};
@@ -46,7 +46,7 @@ const Input = styled.div`
 `
 
 const LockButton = styled(Button)`
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
 
   svg {
     width: 1rem;
@@ -70,6 +70,7 @@ const TokenContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  border-radius: 0.75rem;
 `
 
 const InputContainer = styled.div`
@@ -100,7 +101,7 @@ const Container = styled.div<{
   justify-content: space-between;
   border: 1px solid
     ${({ theme, error }) => (error === 'warning' ? '#F4C886' : error === 'error' ? theme.color.red : theme.color.defaultBorder)};
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   padding: 0.5rem;
   background: ${({ theme, disabled }) => disabled && theme.color.disabledInput};
   height: 4.25rem;
@@ -118,7 +119,7 @@ const StyledSkeleton = styled(ThemedSkeleton)`
   display: flex;
   flex: 1;
   height: 100%;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   width: 100%;
 
   > * {

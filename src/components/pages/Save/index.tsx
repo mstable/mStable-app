@@ -90,7 +90,7 @@ export const Save: FC = () => {
   return massetState ? (
     <RewardStreamsProvider vault={vault}>
       <OnboardingProvider>
-        <PageHeader action={PageAction.Save} subtitle={`Native interest on ${massetConfig.formattedName}`} />
+        <PageHeader action={PageAction.Save} />
         <Container>
           <SaveOverview />
           <Content>

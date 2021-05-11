@@ -78,12 +78,15 @@ const Container = styled.div<{
     font-size: 1rem;
     color: ${({ theme }) => theme.color.bodyAccent};
   }
+
+  > *:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
 `
 
 const Row = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
 `
 
 const ChildrenRow = styled.div`

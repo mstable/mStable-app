@@ -47,9 +47,7 @@ export const Navigation: FC = () => {
     return [
       { title: 'Save', path: '/save' },
       ...(hasFeederPools ? [{ title: 'Pools', path: '/pools' }] : []),
-      { title: 'Mint', path: '/mint' },
-      { title: 'Swap', path: '/swap' },
-      { title: 'Redeem', path: '/redeem' },
+      { title: 'Forge', path: '/forge' },
       { title: 'Stats', path: '/stats' },
     ]
   }, [hasFeederPools])

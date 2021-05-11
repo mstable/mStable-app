@@ -3,12 +3,13 @@ import styled, { css } from 'styled-components'
 
 import { ReactComponent as CheckmarkIcon } from '../../../icons/checkmark.svg'
 import { ReactComponent as ChevronIcon } from '../../../icons/chevron-down.svg'
+import { ReactComponent as ExternalIcon } from '../../../core/external-link-arrow.svg'
 import { UnstyledButton } from '../../../core/Button'
 
 interface Props {
   className?: string
   title?: ReactElement | string
-  iconType?: 'checkmark' | 'chevron'
+  iconType?: 'checkmark' | 'chevron' | 'external'
   onClick?: () => void
   gradientColor?: string
 }
@@ -113,7 +114,7 @@ const CardContent: FC<Props> = props => {
           <h2>{title}</h2>
           {iconType && (
             <Icon className="icon" isChevron={iconType === 'chevron'}>
-              {iconType === 'checkmark' ? <CheckmarkIcon /> : <ChevronIcon />}
+              {iconType === 'checkmark' ? <CheckmarkIcon /> : iconType === 'external' ? <ExternalIcon /> : <ChevronIcon />}
             </Icon>
           )}
         </div>
