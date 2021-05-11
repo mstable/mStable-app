@@ -9,7 +9,7 @@ import { TokenIcon as TokenIconBase } from '../icons/TokenIcon'
 import { MassetState } from '../../context/DataProvider/types'
 import { ThemedSkeleton } from '../core/ThemedSkeleton'
 import { Table, TableCell, TableRow } from '../core/Table'
-import { useNetworkAddresses } from '../../context/NetworkProvider'
+import { ChainIds, useChainIdCtx, useNetworkAddresses } from '../../context/NetworkProvider'
 
 const AssetCell = styled(TableCell)`
   height: 4rem;
@@ -66,8 +66,9 @@ const StyledTable = styled(Table)`
 export const Balances: FC<{ onRowClick?: (symbol: string) => void }> = ({ onRowClick }) => {
   const dataState = useDataState()
   const networkAddresses = useNetworkAddresses()
+  const [chainId] = useChainIdCtx()
 
-  const MTA = {
+  const MTA = chainId === ChainIds.EthereumMainnet && {
     name: `MTA (mStable Governance)`,
     symbol: `MTA`,
     address: networkAddresses.MTA,
@@ -97,16 +98,18 @@ export const Balances: FC<{ onRowClick?: (symbol: string) => void }> = ({ onRowC
 
   return (
     <StyledTable headerTitles={['Asset', 'Balance']}>
-      <TableRow key={MTA.address} buttonTitle="Explore" onClick={() => onRowClick?.(MTA.symbol)}>
-        <AssetCell>
-          <TokenIcon symbol={MTA.symbol} outline />
-          <span>{MTA.symbol}</span>
-          <ExplorerLink data={MTA.address} />
-        </AssetCell>
-        <TableCell>
-          <TokenBalance address={MTA.address} />
-        </TableCell>
-      </TableRow>
+      {MTA && (
+        <TableRow key={MTA.address} buttonTitle="Explore" onClick={() => onRowClick?.(MTA.symbol)}>
+          <AssetCell>
+            <TokenIcon symbol={MTA.symbol} outline />
+            <span>{MTA.symbol}</span>
+            <ExplorerLink data={MTA.address} />
+          </AssetCell>
+          <TableCell>
+            <TokenBalance address={MTA.address} />
+          </TableCell>
+        </TableRow>
+      )}
       {massetTokens.map(({ masset, savingsContractV1, savingsContractV2 }) => {
         return (
           <Fragment key={masset.address}>

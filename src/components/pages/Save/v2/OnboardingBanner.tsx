@@ -30,7 +30,7 @@ const ApyTip = styled(Tooltip)`
 
 const ApyTitle = styled.div`
   font-weight: normal;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 `
 
 const APYText = styled.div`
@@ -178,7 +178,7 @@ export const OnboardingBanner: FC = () => {
         )}
       </div>
       <div>
-        <APYChart hideControls shimmerHeight={150} tick={false} marginTop={48} aspect={2.07} color="#d2aceb" />
+        <APYChart hideControls shimmerHeight={150} tick={false} marginTop={56} aspect={2.07} color="#d2aceb" />
         <APYText>
           <ApyTip tip={tip}>
             <CountUp end={saveApy.value ?? 0} suffix="%" />

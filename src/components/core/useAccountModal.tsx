@@ -54,7 +54,6 @@ const Container = styled.div`
     width: 34rem;
     padding: 1rem 1rem 1.5rem;
     > *:not(:last-child) {
-      margin-right: 1rem;
       margin-bottom: 0;
     }
   }
