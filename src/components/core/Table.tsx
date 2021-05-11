@@ -143,7 +143,7 @@ export const Table: FC<Props> = ({ children, className, headerTitles, onHeaderCl
       {!!headerTitles?.length && (
         <Header isSelectable={!!onHeaderClick}>
           <tr>
-            {headerTitles?.map((title, i) => (
+            {headerTitles.map((title, i) => (
               <th role="columnheader" key={title} title="Sort by" onClick={() => onHeaderClick?.(i)}>
                 <span>{title}</span>
               </th>

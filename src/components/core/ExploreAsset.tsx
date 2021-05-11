@@ -46,7 +46,7 @@ const Container = styled.div`
   }
 `
 
-const getAssetUse = (symbol: string, isEthereum: boolean): ({ title: string; subtitle: string; href?: string } | undefined)[] => {
+const getAssetUse = (symbol: string, isEthereum: boolean): { title: string; subtitle: string; href?: string }[] => {
   switch (symbol) {
     case 'mUSD Save v1':
       return [
@@ -76,18 +76,24 @@ const getAssetUse = (symbol: string, isEthereum: boolean): ({ title: string; sub
           subtitle: 'Earn a native interest rate',
           href: `/musd/save`,
         },
-        (isEthereum && {
-          title: 'Pools',
-          subtitle: 'Earn MTA rewards',
-          href: `/musd/pools`,
-        }) ||
-          undefined,
-        (isEthereum && {
-          title: 'Rari Capital',
-          subtitle: 'Earn interest on your mUSD',
-          href: 'https://app.rari.capital/',
-        }) ||
-          undefined,
+        ...(isEthereum
+          ? [
+              {
+                title: 'Pools',
+                subtitle: 'Earn MTA rewards',
+                href: `/musd/pools`,
+              },
+            ]
+          : []),
+        ...(isEthereum
+          ? [
+              {
+                title: 'Rari Capital',
+                subtitle: 'Earn interest on your mUSD',
+                href: 'https://app.rari.capital/',
+              },
+            ]
+          : []),
       ]
     case 'imUSD':
       return [
@@ -153,7 +159,7 @@ export const ExploreAsset: FC<{ symbol?: string; onRowClick?: () => void }> = ({
   const [chainId] = useChainIdCtx()
   const assetUses = getAssetUse(symbol ?? '', chainId === ChainIds.EthereumMainnet)
   const history = useHistory()
-  const showSendAsset = ['mUSD', 'imUSD', 'mBTC', 'imBTC'].find(x => x === symbol)
+  const showSendAsset = symbol && ['mUSD', 'imUSD', 'mBTC', 'imBTC'].includes(symbol)
 
   const handleOnClick = (href?: string): void => {
     if (!href) return
@@ -181,11 +187,11 @@ export const ExploreAsset: FC<{ symbol?: string; onRowClick?: () => void }> = ({
       </Header>
       {!!assetUses?.length && (
         <Table>
-          {assetUses?.map(val => {
+          {assetUses.map(val => {
             if (!val) return
             const { title, subtitle, href } = val
             return (
-              <TableRow key={title} buttonTitle="View" onClick={(href && (() => handleOnClick(href))) || undefined}>
+              <TableRow key={title} buttonTitle="View" onClick={() => handleOnClick(href)}>
                 <TableCell width={75}>
                   <h3>{title}</h3>
                   <span>{subtitle}</span>
