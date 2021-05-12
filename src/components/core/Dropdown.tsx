@@ -58,7 +58,7 @@ const OptionContainer = styled(UnstyledButton)<{
 }>`
   display: flex;
   width: 100%;
-  background: ${({ theme, selected, active }) => (selected && active ? `${theme.color.backgroundAccent}` : `none`)};
+  background: ${({ theme, selected, active }) => (selected && active ? `${theme.color.background[2]}` : `none`)};
   text-align: left;
   padding: 0.5rem 0.5rem;
   align-items: center;
@@ -72,7 +72,7 @@ const OptionContainer = styled(UnstyledButton)<{
 
   &:hover {
     color: ${({ theme }) => theme.color.body};
-    background: ${({ theme }) => theme.color.backgroundAccent};
+    background: ${({ theme }) => theme.color.background[2]};
   }
 
   > * {
@@ -90,7 +90,7 @@ const OptionList = styled.div`
   border-radius: 0.75rem;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  background: ${({ theme }) => theme.color.background};
+  background: ${({ theme }) => theme.color.background[0]};
   padding: 0.5rem 0;
   margin-top: -1px;
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};

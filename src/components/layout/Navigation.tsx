@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { NavLink } from 'react-router-dom'
 
 import { useSelectedMassetName } from '../../context/MassetProvider'
-import { useCloseAccount, useThemeMode } from '../../context/AppProvider'
+import { useThemeMode } from '../../context/AppProvider'
 import { colorTheme, ViewportWidth } from '../../theme'
 import { NavigationDropdown, NavItem } from '../core/NavigationDropdown'
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
@@ -38,7 +38,6 @@ const StyledNavLink = styled(NavLink)`
 `
 
 export const Navigation: FC = () => {
-  const collapseWallet = useCloseAccount()
   const massetName = useSelectedMassetName()
   const themeMode = useThemeMode()
   const massetState = useSelectedMassetState()
@@ -48,9 +47,7 @@ export const Navigation: FC = () => {
     return [
       { title: 'Save', path: '/save' },
       ...(hasFeederPools ? [{ title: 'Pools', path: '/pools' }] : []),
-      { title: 'Mint', path: '/mint' },
-      { title: 'Swap', path: '/swap' },
-      { title: 'Redeem', path: '/redeem' },
+      { title: 'Forge', path: '/forge/mint' },
       { title: 'Stats', path: '/stats' },
     ]
   }, [hasFeederPools])
@@ -60,12 +57,7 @@ export const Navigation: FC = () => {
       <List>
         <NavigationDropdown massetName={massetName} items={navItems} />
         {navItems.map(({ title, path }) => (
-          <StyledNavLink
-            activeStyle={{ color: colorTheme(themeMode).primary }}
-            key={title}
-            onClick={collapseWallet}
-            to={`/${massetName}${path}`}
-          >
+          <StyledNavLink activeStyle={{ color: colorTheme(themeMode).primary }} key={title} to={`/${massetName}${path}`}>
             {title}
           </StyledNavLink>
         ))}

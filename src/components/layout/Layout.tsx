@@ -12,8 +12,7 @@ import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 
 import { ReactTooltip, Tooltip } from '../core/ReactTooltip'
 import { Footer } from './Footer'
-import { Account } from './Account'
-import { BannerMessage, useAccountOpen, useBannerMessage } from '../../context/AppProvider'
+import { BannerMessage, useBannerMessage } from '../../context/AppProvider'
 import { Background } from './Background'
 import { AppBar } from './AppBar'
 import { Toasts } from './Toasts'
@@ -190,16 +189,13 @@ const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
   </>
 )
 
-const Container = styled.div<{ accountOpen?: boolean }>`
+const Container = styled.div`
   display: grid;
   overflow-x: hidden;
-
   min-height: calc(100vh - 182px);
 
   // Space for the footer
   padding-bottom: 4rem;
-
-  background: ${({ accountOpen }) => (accountOpen ? Color.black : 'transparent')};
 
   grid-template-columns:
     1fr
@@ -212,7 +208,6 @@ const Container = styled.div<{ accountOpen?: boolean }>`
 `
 
 export const Layout: FC = ({ children }) => {
-  const accountOpen = useAccountOpen()
   const { pathname } = useLocation()
   const home = pathname === '/'
   const [chainId] = useChainIdCtx()
@@ -223,11 +218,6 @@ export const Layout: FC = ({ children }) => {
   const massetConfig = useSelectedMassetConfig()
   const { protocolName } = useNetwork()
   const { undergoingRecol } = useSelectedMassetState() ?? {}
-
-  // Scroll to the top when the account view is toggled
-  useLayoutEffect(() => {
-    window.scrollTo({ top: 0 })
-  }, [accountOpen])
 
   // Handle message prioritisation:
   useLayoutEffect(() => {
@@ -248,9 +238,11 @@ export const Layout: FC = ({ children }) => {
 
   return (
     <ModalProvider rootComponent={TransitionGroup}>
-      <Background home={home} accountOpen={accountOpen} />
+      <Background home={home} />
       <HeaderGroup home={home} />
-      <Container>{accountOpen ? <Account /> : <Main marginTop={home}>{prevChainId === chainId ? children : null}</Main>}</Container>
+      <Container>
+        <Main marginTop={home}>{prevChainId === chainId ? children : null}</Main>
+      </Container>
       <Footer />
       <Toasts />
       <Tooltip tip="" hideIcon />

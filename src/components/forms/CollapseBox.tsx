@@ -22,7 +22,7 @@ const Button = styled(UnstyledButton)`
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   border: 1px ${({ theme }) => theme.color.defaultBorder} solid;
 
   > :first-child {

@@ -15,6 +15,10 @@ const Container = styled.div`
   justify-content: space-between;
   width: 100%;
 
+  * {
+    font-weight: normal;
+  }
+
   > :first-child {
     font-size: 0.875rem;
     margin-bottom: 1rem;
@@ -31,6 +35,8 @@ const Container = styled.div`
   }
 
   > :last-child {
+    display: flex;
+
     > *:not(:last-child) {
       margin-right: 0.5rem;
     }
@@ -46,7 +52,7 @@ const Container = styled.div`
       }
 
       @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
-        min-width: 4rem;
+        width: 4.5rem;
         margin-bottom: 0;
       }
     }

@@ -101,7 +101,7 @@ const Container = styled.div`
     top: 0;
     width: 100%;
     height: 1.75rem;
-    background: ${({ theme }) => theme.color.backgroundAccent};
+    background: ${({ theme }) => theme.color.background[2]};
     border-radius: 1rem;
     z-index: 0;
   }

@@ -1,27 +1,25 @@
 import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import Skeleton from 'react-loading-skeleton'
 import { FeederPool__factory, Masset__factory } from '@mstable/protocol/types/generated'
 
-import { useSigner, useWalletAddress } from '../../../context/AccountProvider'
-import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
-import { useTokenSubscription } from '../../../context/TokensProvider'
-import { usePropose } from '../../../context/TransactionsProvider'
-import { useBigDecimalInput } from '../../../hooks/useBigDecimalInput'
-import { AddressOption, Interfaces } from '../../../types'
-import { TransactionManifest } from '../../../web3/TransactionManifest'
-import { useSlippage } from '../../../hooks/useSimpleInput'
+import { useSigner, useWalletAddress } from '../../../../context/AccountProvider'
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
+import { useTokenSubscription } from '../../../../context/TokensProvider'
+import { usePropose } from '../../../../context/TransactionsProvider'
+import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
+import { AddressOption, Interfaces } from '../../../../types'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
+import { useSlippage } from '../../../../hooks/useSimpleInput'
 
-import { AssetSwap } from '../../forms/AssetSwap'
-import { SendButton } from '../../forms/SendButton'
-import { PageAction, PageHeader } from '../PageHeader'
-import { MassetState } from '../../../context/DataProvider/types'
-import { TransactionInfo } from '../../core/TransactionInfo'
-import { MassetPage } from '../MassetPage'
-import { useMinimumOutput } from '../../../hooks/useOutput'
-import { useSelectedMassetPrice } from '../../../hooks/usePrice'
-import { useEstimatedOutput } from '../../../hooks/useEstimatedOutput'
-import { BigDecimalInputValue } from '../../../hooks/useBigDecimalInputs'
+import { AssetSwap } from '../../../forms/AssetSwap'
+import { SendButton } from '../../../forms/SendButton'
+import { MassetState } from '../../../../context/DataProvider/types'
+import { TransactionInfo } from '../../../core/TransactionInfo'
+import { useMinimumOutput } from '../../../../hooks/useOutput'
+import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
+import { useEstimatedOutput } from '../../../../hooks/useEstimatedOutput'
+import { BigDecimalInputValue } from '../../../../hooks/useBigDecimalInputs'
+import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
 
 const formId = 'swap'
 
@@ -248,17 +246,5 @@ const SwapLogic: FC = () => {
 
 export const Swap: FC = () => {
   const massetState = useSelectedMassetState()
-  const massetSymbol = massetState?.token.symbol
-  return (
-    <div>
-      <PageHeader action={PageAction.Swap} subtitle={`Swap the underlying collateral of ${massetSymbol ?? 'mAsset'}`} />
-      {massetState ? (
-        <MassetPage asideVisible>
-          <SwapLogic />
-        </MassetPage>
-      ) : (
-        <Skeleton height={480} />
-      )}
-    </div>
-  )
+  return massetState ? <SwapLogic /> : <ThemedSkeleton height={420} />
 }

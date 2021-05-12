@@ -10,7 +10,7 @@ export const ThemedSkeleton: FC<ComponentProps<typeof Skeleton> & { className?: 
   const { className } = props
   return (
     <div className={className}>
-      <SkeletonTheme color={theme.backgroundAccent} highlightColor={theme.background}>
+      <SkeletonTheme color={theme.background[2]} highlightColor={theme.background[0]}>
         <Skeleton {...props} />
       </SkeletonTheme>
     </div>

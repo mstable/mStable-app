@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import GitHubButton from 'react-github-btn'
 import { utils } from 'ethers'
 
-import { useCloseAccount } from '../../context/AppProvider'
 import { useIsMasquerading, useMasquerade } from '../../context/AccountProvider'
 import { DAPP_VERSION } from '../../constants'
 import { ViewportWidth } from '../../theme'
@@ -124,7 +123,6 @@ const socialIcons = [
 ]
 
 export const Footer: FC = () => {
-  const collapseWallet = useCloseAccount()
   return (
     <Container>
       <Inner>
@@ -134,9 +132,7 @@ export const Footer: FC = () => {
               {links.map(({ title, href }) => (
                 <li key={href}>
                   {href.startsWith('/') ? (
-                    <Link to={href} onClick={collapseWallet}>
-                      {title}
-                    </Link>
+                    <Link to={href}>{title}</Link>
                   ) : (
                     <a href={href} target="_blank" rel="noopener noreferrer">
                       {title}

@@ -14,7 +14,7 @@ const ButtonCss = css<Props>`
   padding: ${({ scale }) => (scale ? `${scale * 0.75}em ${scale * 1.5}em` : `0.5rem 1.25rem`)};
   border-radius: 1.5em;
   background: ${({ theme, highlighted, transparent, disabled }) =>
-    highlighted ? theme.color.primary : transparent ? 'transparent' : disabled ? theme.color.disabledButton : theme.color.backgroundAccent};
+    highlighted ? theme.color.primary : transparent ? 'transparent' : disabled ? theme.color.disabledButton : theme.color.background[2]};
   color: ${({ theme, highlighted, disabled }) => (highlighted ? theme.color.white : disabled ? theme.color.disabled : theme.color.body)};
   z-index: ${({ highlighted }) => (highlighted ? 1 : 0)};
   font-weight: 600;

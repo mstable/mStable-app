@@ -6,23 +6,38 @@ import { useTokenSubscription } from '../../context/TokensProvider'
 import { ExplorerLink } from '../core/ExplorerLink'
 import { CountUp } from '../core/CountUp'
 import { TokenIcon as TokenIconBase } from '../icons/TokenIcon'
-import { List, ListItem } from '../core/List'
 import { MassetState } from '../../context/DataProvider/types'
 import { ThemedSkeleton } from '../core/ThemedSkeleton'
+import { Table, TableCell, TableRow } from '../core/Table'
+import { ChainIds, useChainIdCtx, useNetworkAddresses } from '../../context/NetworkProvider'
 
-const Symbol = styled.div`
-  display: flex;
-  align-items: center;
+const AssetCell = styled(TableCell)`
+  height: 4rem;
 
-  img {
-    width: 100%;
-    height: auto;
+  > div {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 100%;
+      height: auto;
+    }
+
+    span {
+      color: ${({ theme }) => theme.color.body};
+    }
+
+    span:nth-child(2) {
+      font-weight: 600;
+    }
   }
 `
 
 const Balance = styled(CountUp)`
-  font-weight: bold;
-  font-size: 1rem;
+  > * {
+    font-weight: normal !important;
+    font-size: 1rem;
+  }
 `
 
 const TokenIcon = styled(TokenIconBase)<{ outline?: boolean }>`
@@ -37,12 +52,28 @@ const TokenBalance: FC<{ address: string }> = ({ address }) => {
   return token ? <Balance end={token.balance.simple} /> : <ThemedSkeleton />
 }
 
+const StyledTable = styled(Table)`
+  > tbody {
+    height: 16rem;
+    overflow-y: scroll;
+  }
+`
+
 /**
  * Component to track and display the balances of tokens for the currently
  * selected mAsset, the mAsset itself, and MTA.
  */
-export const Balances: FC = () => {
+export const Balances: FC<{ onRowClick?: (symbol: string) => void }> = ({ onRowClick }) => {
   const dataState = useDataState()
+  const networkAddresses = useNetworkAddresses()
+  const [chainId] = useChainIdCtx()
+
+  const MTA = chainId === ChainIds.EthereumMainnet && {
+    name: `MTA (mStable Governance)`,
+    symbol: `MTA`,
+    address: networkAddresses.MTA,
+    decimals: 18,
+  }
 
   const massetTokens = useMemo(
     () =>
@@ -62,52 +93,75 @@ export const Balances: FC = () => {
       })),
     [dataState],
   )
+
+  const bassetTokens = massetTokens.map(({ bassets }) => bassets).reduce((a, b) => [...a, ...b])
+
   return (
-    <List inverted>
-      {massetTokens.map(({ masset, bassets, savingsContractV1, savingsContractV2 }) => (
-        <Fragment key={masset.address}>
-          <ListItem key={masset.address}>
-            <Symbol>
-              <TokenIcon symbol={masset.symbol} outline />
-              <span>{masset.symbol}</span>
-              <ExplorerLink data={masset.address} />
-            </Symbol>
-            <TokenBalance address={masset.address} />
-          </ListItem>
-          {savingsContractV1 && (
-            <ListItem key={savingsContractV1.address}>
-              <Symbol>
-                <TokenIcon symbol={savingsContractV1.symbol} outline />
-                <span>{savingsContractV1.name}</span>
-              </Symbol>
-              {savingsContractV1.savingsBalance.balance ? (
-                <Balance end={savingsContractV1.savingsBalance.balance.simple} />
-              ) : (
-                <ThemedSkeleton />
-              )}
-            </ListItem>
-          )}
-          {savingsContractV2 && (
-            <ListItem key={savingsContractV2.address}>
-              <Symbol>
-                <TokenIcon symbol={savingsContractV2.symbol} outline />
-                <span>{savingsContractV2.symbol}</span>
-              </Symbol>
-              {savingsContractV2.balance ? <Balance end={savingsContractV2.balance.simple} /> : <ThemedSkeleton />}
-            </ListItem>
-          )}
-          {bassets.map(({ address, symbol }) => (
-            <ListItem key={address}>
-              <Symbol>
-                <TokenIcon symbol={symbol} />
-                <span>{symbol}</span>
-                <ExplorerLink data={address} />
-              </Symbol>
-              <TokenBalance address={address} />
-            </ListItem>
-          ))}
-        </Fragment>
+    <StyledTable headerTitles={['Asset', 'Balance']}>
+      {MTA && (
+        <TableRow key={MTA.address} buttonTitle="Explore" onClick={() => onRowClick?.(MTA.symbol)}>
+          <AssetCell>
+            <TokenIcon symbol={MTA.symbol} outline />
+            <span>{MTA.symbol}</span>
+            <ExplorerLink data={MTA.address} />
+          </AssetCell>
+          <TableCell>
+            <TokenBalance address={MTA.address} />
+          </TableCell>
+        </TableRow>
+      )}
+      {massetTokens.map(({ masset, savingsContractV1, savingsContractV2 }) => {
+        return (
+          <Fragment key={masset.address}>
+            <TableRow key={masset.address} buttonTitle="Explore" onClick={() => onRowClick?.(masset.symbol)}>
+              <AssetCell>
+                <TokenIcon symbol={masset.symbol} outline />
+                <span>{masset.symbol}</span>
+                <ExplorerLink data={masset.address} />
+              </AssetCell>
+              <TableCell>
+                <TokenBalance address={masset.address} />
+              </TableCell>
+            </TableRow>
+            {savingsContractV1 && (
+              <TableRow key={savingsContractV1.address} buttonTitle="Explore" onClick={() => onRowClick?.(savingsContractV1.name)}>
+                <AssetCell>
+                  <TokenIcon symbol={savingsContractV1.symbol} outline />
+                  <span>{savingsContractV1.name}</span>
+                </AssetCell>
+                <TableCell>
+                  {savingsContractV1.savingsBalance.balance ? (
+                    <Balance end={savingsContractV1.savingsBalance.balance.simple} />
+                  ) : (
+                    <ThemedSkeleton />
+                  )}
+                </TableCell>
+              </TableRow>
+            )}
+            {savingsContractV2 && (
+              <TableRow key={savingsContractV2.address} buttonTitle="Explore" onClick={() => onRowClick?.(savingsContractV2.symbol)}>
+                <AssetCell>
+                  <TokenIcon symbol={savingsContractV2.symbol} outline />
+                  <span>{savingsContractV2.symbol}</span>
+                </AssetCell>
+                <TableCell>{savingsContractV2.balance ? <Balance end={savingsContractV2.balance.simple} /> : <ThemedSkeleton />}</TableCell>
+              </TableRow>
+            )}
+          </Fragment>
+        )
+      })}
+      {bassetTokens.map(({ address, symbol }) => (
+        <TableRow key={address} buttonTitle="Explore" onClick={() => onRowClick?.(symbol)}>
+          <AssetCell>
+            <TokenIcon symbol={symbol} />
+            <span>{symbol}</span>
+            <ExplorerLink data={address} />
+          </AssetCell>
+          <TableCell>
+            <TokenBalance address={address} />
+          </TableCell>
+        </TableRow>
       ))}
-    </List>
+    </StyledTable>
   )
 }

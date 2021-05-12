@@ -30,7 +30,7 @@ const ApyTip = styled(Tooltip)`
 
 const ApyTitle = styled.div`
   font-weight: normal;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
 `
 
 const APYText = styled.div`
@@ -51,7 +51,7 @@ const InfoLink = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.color.backgroundAccent};
+  background: ${({ theme }) => theme.color.background[2]};
   border-radius: 1rem;
   height: 2rem;
   width: 2rem;
@@ -79,7 +79,7 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    background: ${({ theme }) => `linear-gradient(180deg, rgba(210,172,235,0.3) 0%, ${theme.color.background} 100%)`};
+    background: ${({ theme }) => `linear-gradient(180deg, rgba(210,172,235,0.3) 0%, ${theme.color.background[0]} 100%)`};
     border-radius: 1rem;
     padding: 1.5rem;
     border: 1px solid ${({ theme }) => theme.color.defaultBorder};
@@ -178,7 +178,7 @@ export const OnboardingBanner: FC = () => {
         )}
       </div>
       <div>
-        <APYChart hideControls shimmerHeight={150} tick={false} marginTop={48} aspect={2.07} color="#d2aceb" />
+        <APYChart hideControls shimmerHeight={150} tick={false} marginTop={56} aspect={2.07} color="#d2aceb" />
         <APYText>
           <ApyTip tip={tip}>
             <CountUp end={saveApy.value ?? 0} suffix="%" />

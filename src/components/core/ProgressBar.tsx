@@ -56,7 +56,7 @@ export const ProgressBar: FC<Props> = ({ max = 1, min = 0, value = min, hue = 90
         </pattern>
       </defs>
       <g>
-        <rect width={WIDTH} height={HEIGHT} x={0} y={0} rx={HEIGHT / 2} ry={HEIGHT / 2} fill={colorTheme(themeMode).backgroundAccent} />
+        <rect width={WIDTH} height={HEIGHT} x={0} y={0} rx={HEIGHT / 2} ry={HEIGHT / 2} fill={colorTheme(themeMode).background[2]} />
         <rect width={progressWidth} height={HEIGHT} x={0} y={0} rx={HEIGHT / 2} ry={HEIGHT / 2} fill="url(#hatch)" />
         <g transform={`translate(${progressWidth - 2.25}, 0)`}>
           <text

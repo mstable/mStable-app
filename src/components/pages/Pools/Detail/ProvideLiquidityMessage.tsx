@@ -25,7 +25,7 @@ const Card = styled.div`
 `
 
 const Container = styled(Card)`
-  background: ${({ theme }) => theme.color.backgroundAccent};
+  background: ${({ theme }) => theme.color.background[2]};
   flex-direction: column;
   align-items: center;
   padding: 1rem;

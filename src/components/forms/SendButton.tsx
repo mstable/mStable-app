@@ -31,12 +31,12 @@ interface Props {
 const StyledButton = styled(Button)<{ warning?: boolean }>`
   width: 100%;
   height: 3.75rem;
-  border-radius: 2rem;
+  border-radius: 1rem;
   background: ${({ warning, theme }) => warning && theme.color.red};
 `
 
 const CloseButton = styled(UnstyledButton)`
-  background: ${({ theme }) => theme.color.backgroundAccent};
+  background: ${({ theme }) => theme.color.background[2]};
   width: 2.25rem;
   height: 2.25rem;
   text-align: center;
@@ -53,7 +53,7 @@ const ApproveContainer = styled.div`
   align-items: center;
 
   > button:not(:last-child) {
-    margin-right: 0.75rem;
+    margin-right: 0.5rem;
   }
 `
 

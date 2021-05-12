@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 
 import { BoostedSavingsVaultState } from '../../context/DataProvider/types'
-import { useCalculateUserBoost } from '../../hooks/useCalculateUserBoost';
+import { useCalculateUserBoost } from '../../hooks/useCalculateUserBoost'
 import { createToggleContext } from '../../hooks/createToggleContext'
 
 import { ProgressBar } from '../core/ProgressBar'
@@ -17,7 +17,7 @@ const BoostBarLine = styled.div`
   height: 2px;
   margin-left: 16px;
   margin-right: 16px;
-  background: ${({ theme }) => theme.color.backgroundAccent};
+  background: ${({ theme }) => theme.color.background[2]};
 `
 
 const BoostBarRange = styled.div`
@@ -35,8 +35,8 @@ const [useShowCalculatorCtx, ShowCalculatorProvider] = createToggleContext(false
 const BoostBar: FC<{
   vault: BoostedSavingsVaultState
 }> = ({ vault }) => {
-  const [, toggleShowCalculator] = useShowCalculatorCtx();
-  const boost = useCalculateUserBoost(vault);
+  const [, toggleShowCalculator] = useShowCalculatorCtx()
+  const boost = useCalculateUserBoost(vault)
 
   return (
     <Widget
@@ -92,16 +92,12 @@ const BoostContent: FC<{
   vault: BoostedSavingsVaultState
   apy?: number
 }> = ({ children, apy, vault }) => {
-  const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx();
+  const [showCalculator, toggleShowCalculator] = useShowCalculatorCtx()
 
   return (
     <Container padding showCalculator={showCalculator}>
       {showCalculator ? (
-        <BoostCalculator
-          apy={apy}
-          vault={vault}
-          onClick={toggleShowCalculator}
-        />
+        <BoostCalculator apy={apy} vault={vault} onClick={toggleShowCalculator} />
       ) : (
         <>
           <BoostBar vault={vault} />

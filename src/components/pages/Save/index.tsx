@@ -16,6 +16,7 @@ import { InfoBox } from '../../core/InfoBox'
 import { ToggleSave } from './ToggleSave'
 import { SaveMigration } from './v1/SaveMigration'
 import { OnboardingProvider } from './hooks'
+import { InfoButton } from '../../core/InfoButton'
 
 const ButtonPanel = styled.div`
   display: flex;
@@ -82,10 +83,14 @@ export const Save: FC = () => {
   const [chainId] = useChainIdCtx()
   const showMigrationView = chainId === ChainIds.EthereumMainnet && selectedSaveVersion === 1 && massetConfig.hasV1Save
 
+  const handleGovernanceClick = (): void => {
+    window.open('https://governance.mstable.org', '_blank')
+  }
+
   return massetState ? (
     <RewardStreamsProvider vault={vault}>
       <OnboardingProvider>
-        <PageHeader action={PageAction.Save} subtitle={`Native interest on ${massetConfig.formattedName}`} />
+        <PageHeader action={PageAction.Save} />
         <Container>
           <SaveOverview />
           <Content>
@@ -95,6 +100,13 @@ export const Save: FC = () => {
                 <ButtonPanel>
                   <ToggleSave />
                 </ButtonPanel>
+              )}
+              {chainId === ChainIds.EthereumMainnet && (
+                <InfoButton
+                  title="Stake MTA"
+                  content="Lockup MTA to participate in governance and earn platform rewards."
+                  onClick={handleGovernanceClick}
+                />
               )}
               <InfoBox>
                 <h4>

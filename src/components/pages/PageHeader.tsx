@@ -8,7 +8,7 @@ import { ReactComponent as SwapIcon } from '../icons/circle/swap.svg'
 import { ReactComponent as RedeemIcon } from '../icons/circle/redeem.svg'
 import { ReactComponent as StatsIcon } from '../icons/circle/stats.svg'
 import { ReactComponent as AccountIcon } from '../icons/circle/account.svg'
-import { useAccountOpen, useBannerMessage } from '../../context/AppProvider'
+import { useBannerMessage } from '../../context/AppProvider'
 import { BannerMessage } from '../layout/BannerMessage'
 import { usePolygonModal } from '../core/usePolygonModal'
 import { Networks, useNetwork } from '../../context/NetworkProvider'
@@ -61,7 +61,6 @@ const Icon = styled.div<{ inverted?: boolean }>`
 `
 
 const Container = styled.div<{
-  accountOpen?: boolean
   messageVisible?: boolean
 }>`
   display: flex;
@@ -79,12 +78,15 @@ const Container = styled.div<{
     font-size: 1rem;
     color: ${({ theme }) => theme.color.bodyAccent};
   }
+
+  > *:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
 `
 
 const Row = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
 `
 
 const ChildrenRow = styled.div`
@@ -100,7 +102,6 @@ const ChildrenRow = styled.div`
 `
 
 export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
-  const accountOpen = useAccountOpen()
   const [bannerMessage] = useBannerMessage()
   const icon = ActionIcons[action]
   const showPolygonModal = usePolygonModal()
@@ -115,7 +116,7 @@ export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
 
   return (
     <div>
-      <Container accountOpen={accountOpen}>
+      <Container>
         <Row>
           <Icon inverted>{icon}</Icon>
           <h2>{action}</h2>

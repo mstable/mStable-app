@@ -31,7 +31,7 @@ const StyledButton = styled(UnstyledButton)<{ asset: MassetName }>`
   border-radius: 2rem;
   padding: 2rem 0;
   font-weight: bold;
-  background: ${({ theme }) => theme.color.backgroundAccent};
+  background: ${({ theme }) => theme.color.background[2]};
 
   > *:not(:last-child) {
     margin-bottom: 2rem;
