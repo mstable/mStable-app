@@ -22,6 +22,6 @@ export const Mint: FC = () => {
       <SwitchButton onClick={setMintExact}>Switch to mint via {`${isMintExact ? 'single asset' : 'multiple assets'}`}</SwitchButton>
     </Container>
   ) : (
-    <ThemedSkeleton height={480} />
+    <ThemedSkeleton height={420} />
   )
 }

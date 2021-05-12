@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
 import { TabsV2 } from '../../core/TabsV2'
@@ -69,13 +70,19 @@ const Container = styled.div`
   }
 `
 
+const capitaliseStr = (str: string): string => str[0].toUpperCase() + str.substring(1)
+
 export const Forge: FC = () => {
-  const [activeTab, setActiveTab] = useState<string>(PageAction.Mint as string)
+  const history = useHistory()
+  const { action } = useParams<{ action: string }>()
+  const activeTab = PageAction[capitaliseStr(action) as PageAction] ?? PageAction.Mint
   const { undergoingRecol } = useSelectedMassetState() ?? {}
+
+  const handleTabClick = (key: string): void => history.push(key.toLowerCase())
 
   return (
     <Container>
-      <PageHeader action={PageAction[activeTab as PageAction.Swap | PageAction.Mint | PageAction.Redeem]} />
+      <PageHeader action={PageAction[activeTab]} />
       <div>
         {undergoingRecol && (
           <>
@@ -83,7 +90,7 @@ export const Forge: FC = () => {
             <RecolMessage>Currently undergoing recollateralisation</RecolMessage>
           </>
         )}
-        <Tabs tabs={tabs} active={activeTab} onClick={setActiveTab} />
+        <Tabs tabs={tabs} active={activeTab} onClick={handleTabClick} />
       </div>
     </Container>
   )

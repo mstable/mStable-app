@@ -246,5 +246,5 @@ const SwapLogic: FC = () => {
 
 export const Swap: FC = () => {
   const massetState = useSelectedMassetState()
-  return massetState ? <SwapLogic /> : <ThemedSkeleton height={480} />
+  return massetState ? <SwapLogic /> : <ThemedSkeleton height={420} />
 }

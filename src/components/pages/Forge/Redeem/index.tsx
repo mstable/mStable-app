@@ -22,6 +22,6 @@ export const Redeem: FC = () => {
       <SwitchButton onClick={setRedeemExact}>Switch to {`${isRedeemExact ? 'single-asset' : 'multi-asset'} redemption`}</SwitchButton>
     </Container>
   ) : (
-    <ThemedSkeleton height={480} />
+    <ThemedSkeleton height={420} />
   )
 }
