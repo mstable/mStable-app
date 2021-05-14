@@ -13,7 +13,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 100%;
 
   * {
     font-weight: normal;
@@ -22,6 +21,7 @@ const Container = styled.div`
   > :first-child {
     font-size: 0.875rem;
     margin-bottom: 1rem;
+    flex-basis: 20%;
   }
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
@@ -35,8 +35,6 @@ const Container = styled.div`
   }
 
   > :last-child {
-    display: flex;
-
     > *:not(:last-child) {
       margin-right: 0.5rem;
     }
@@ -46,13 +44,13 @@ const Container = styled.div`
       font-size: 0.875rem;
       margin-bottom: 0.5rem;
       padding: 0.25rem;
+      width: 4.5rem;
 
       > * {
         font-size: 0.875rem;
       }
 
       @media (min-width: ${({ theme }) => theme.viewportWidth.s}) {
-        width: 4.5rem;
         margin-bottom: 0;
       }
     }

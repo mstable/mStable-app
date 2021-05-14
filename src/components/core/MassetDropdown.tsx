@@ -10,40 +10,45 @@ import { Dropdown, DropdownOption } from './Dropdown'
 import { ViewportWidth } from '../../theme'
 
 const StyledDropdown = styled(Dropdown)`
-  * {
-    font-size: 1rem;
+  > *:first-child {
+    background: ${({ theme }) => theme.color.background[1]};
   }
 
-  > button > div {
-    > div {
-      display: none;
-    }
-    margin-right: 0.125rem;
+  > *:first-child:hover {
+    background: ${({ theme }) => theme.color.background[2]};
   }
-  > div {
-    min-width: 3.5rem;
-    > button > div > div {
-      display: none;
-    }
+
+  img {
+    box-shadow: 0 0 8px ${({ theme }) => theme.color.background[3]};
+    border-radius: 1rem;
+  }
+
+  * {
+    margin-right: 0 !important;
+  }
+
+  > button > div:nth-child(2),
+  > div > button > div:nth-child(2) {
+    display: none;
   }
 
   @media (min-width: ${ViewportWidth.l}) {
     > button > div {
       > div {
-        display: inline-block;
+        display: flex;
       }
       margin-right: 0.5rem;
     }
     > div {
       min-width: 3.5rem;
       > button > div > div {
-        display: inline-block;
+        display: flex;
       }
     }
   }
 `
 
-export const MassetDropdown: FC = () => {
+export const MassetDropdown: FC<{ className?: string }> = ({ className }) => {
   const dataState = useDataState()
   const history = useHistory()
   const [selected, setMassetName] = useSelectedMasset()
@@ -77,6 +82,7 @@ export const MassetDropdown: FC = () => {
 
   return (
     <StyledDropdown
+      className={className}
       onChange={(selectedAddress?: string): void => {
         if (!selectedAddress) return
 

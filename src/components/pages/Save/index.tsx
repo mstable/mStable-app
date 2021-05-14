@@ -1,6 +1,5 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
-import Skeleton from 'react-loading-skeleton'
 
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
 import { useChainIdCtx, ChainIds } from '../../../context/NetworkProvider'
@@ -17,6 +16,7 @@ import { ToggleSave } from './ToggleSave'
 import { SaveMigration } from './v1/SaveMigration'
 import { OnboardingProvider } from './hooks'
 import { InfoButton } from '../../core/InfoButton'
+import { ThemedSkeleton } from '../../core/ThemedSkeleton'
 
 const ButtonPanel = styled.div`
   display: flex;
@@ -87,46 +87,48 @@ export const Save: FC = () => {
     window.open('https://governance.mstable.org', '_blank')
   }
 
-  return massetState ? (
+  return (
     <RewardStreamsProvider vault={vault}>
       <OnboardingProvider>
         <PageHeader action={PageAction.Save} />
-        <Container>
-          <SaveOverview />
-          <Content>
-            {showMigrationView ? <SaveMigration /> : <SaveV2 />}
-            <Sidebar>
-              {chainId === ChainIds.EthereumMainnet && massetConfig.hasV1Save && (
-                <ButtonPanel>
-                  <ToggleSave />
-                </ButtonPanel>
-              )}
-              {chainId === ChainIds.EthereumMainnet && (
-                <InfoButton
-                  title="Stake MTA"
-                  content="Lockup MTA to participate in governance and earn platform rewards."
-                  onClick={handleGovernanceClick}
-                />
-              )}
-              <InfoBox>
-                <h4>
-                  <span>Using mStable Save</span>
-                </h4>
-                <p>
-                  By depositing to {`i${massetConfig.formattedName}`} you will begin earning interest on your underlying{' '}
-                  {massetConfig.formattedName}. {vault ? 'Deposits to the Vault will earn interest in addition to MTA rewards.' : ''}
-                </p>
-                <p>
-                  Deposits from assets other than {massetConfig.formattedName} will first mint {massetConfig.formattedName} before being
-                  deposited.
-                </p>
-              </InfoBox>
-            </Sidebar>
-          </Content>
-        </Container>
+        {massetState ? (
+          <Container>
+            <SaveOverview />
+            <Content>
+              {showMigrationView ? <SaveMigration /> : <SaveV2 />}
+              <Sidebar>
+                {chainId === ChainIds.EthereumMainnet && massetConfig.hasV1Save && (
+                  <ButtonPanel>
+                    <ToggleSave />
+                  </ButtonPanel>
+                )}
+                {chainId === ChainIds.EthereumMainnet && (
+                  <InfoButton
+                    title="Stake MTA"
+                    content="Lockup MTA to participate in governance and earn platform rewards."
+                    onClick={handleGovernanceClick}
+                  />
+                )}
+                <InfoBox>
+                  <h4>
+                    <span>Using mStable Save</span>
+                  </h4>
+                  <p>
+                    By depositing to {`i${massetConfig.formattedName}`} you will begin earning interest on your underlying{' '}
+                    {massetConfig.formattedName}. {vault ? 'Deposits to the Vault will earn interest in addition to MTA rewards.' : ''}
+                  </p>
+                  <p>
+                    Deposits from assets other than {massetConfig.formattedName} will first mint {massetConfig.formattedName} before being
+                    deposited.
+                  </p>
+                </InfoBox>
+              </Sidebar>
+            </Content>
+          </Container>
+        ) : (
+          <ThemedSkeleton height={400} />
+        )}
       </OnboardingProvider>
     </RewardStreamsProvider>
-  ) : (
-    <Skeleton height={400} />
   )
 }

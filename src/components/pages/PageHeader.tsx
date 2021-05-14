@@ -13,6 +13,7 @@ import { BannerMessage } from '../layout/BannerMessage'
 import { usePolygonModal } from '../core/usePolygonModal'
 import { Networks, useNetwork } from '../../context/NetworkProvider'
 import { LocalStorage } from '../../localStorage'
+import { MassetDropdown } from '../core/MassetDropdown'
 
 export enum PageAction {
   Save = 'Save',
@@ -40,6 +41,10 @@ const ActionIcons: { [action: string]: JSX.Element } = {
   Stats: <StatsIcon />,
   Account: <AccountIcon />,
 }
+
+const StyledMasset = styled(MassetDropdown)`
+  margin-left: 0.75rem;
+`
 
 const Icon = styled.div<{ inverted?: boolean }>`
   display: flex;
@@ -120,6 +125,7 @@ export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
         <Row>
           <Icon inverted>{icon}</Icon>
           <h2>{action}</h2>
+          <StyledMasset />
         </Row>
         {subtitle && <p>{subtitle}</p>}
         {children && <ChildrenRow>{children}</ChildrenRow>}

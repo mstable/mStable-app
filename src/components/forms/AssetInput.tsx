@@ -121,6 +121,7 @@ const StyledSkeleton = styled(ThemedSkeleton)`
   height: 100%;
   border-radius: 0.75rem;
   width: 100%;
+  overflow: hidden;
 
   > * {
     width: 100%;
