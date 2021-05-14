@@ -17,10 +17,13 @@ const DisconnectButton = styled(Button)`
 
 const AddressGroup = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   margin-top: 1rem;
 
   > div {
+    margin-bottom: 0.5rem;
+
     > a {
       ${({ theme }) => theme.mixins.numeric}
       padding: 0.5rem 1rem;
@@ -30,6 +33,14 @@ const AddressGroup = styled.div`
     }
     a:hover {
       color: ${({ theme }) => theme.color.bodyAccent};
+    }
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    flex-direction: row;
+
+    > div {
+      margin-bottom: 0;
     }
   }
 `

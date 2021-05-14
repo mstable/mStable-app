@@ -27,6 +27,10 @@ interface Props {
   disabled?: boolean
 }
 
+const Icon = styled.div`
+  margin-right: 0.5rem !important;
+`
+
 const Balance = styled.span`
   ${({ theme }) => theme.mixins.numeric};
   font-size: 0.75rem;
@@ -58,9 +62,9 @@ const OptionContainer = styled(UnstyledButton)<{
 }>`
   display: flex;
   width: 100%;
-  background: ${({ theme, selected, active }) => (selected && active ? `${theme.color.background[2]}` : `none`)};
+  background: ${({ theme, selected, active }) => (selected && active ? `${theme.color.background[1]}` : `none`)};
   text-align: left;
-  padding: 0.5rem 0.5rem;
+  padding: 0.375rem 0.75rem;
   align-items: center;
   font-size: 1.125rem;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
@@ -72,11 +76,11 @@ const OptionContainer = styled(UnstyledButton)<{
 
   &:hover {
     color: ${({ theme }) => theme.color.body};
-    background: ${({ theme }) => theme.color.background[2]};
+    background: ${({ theme }) => theme.color.background[1]};
   }
 
-  > * {
-    margin-right: 0.5rem;
+  > *:not(:last-child) {
+    margin-right: 0.25rem;
   }
 
   img {
@@ -138,7 +142,11 @@ const Option: FC<{
 
   return (
     <OptionContainer onClick={onClick} active={active} selected={selected} disabled={disabled}>
-      {symbol && (symbols?.length ?? 0) < 2 ? <TokenIcon symbol={symbol} hideNetwork={hideNetwork} /> : <TokenPair symbols={symbols} />}
+      {symbol && (
+        <Icon>
+          {(symbols?.length ?? 0) < 2 ? <TokenIcon symbol={symbol} hideNetwork={hideNetwork} /> : <TokenPair symbols={symbols} />}
+        </Icon>
+      )}
       <TokenDetails>
         {asset ? (
           <Asset asset={asset} />

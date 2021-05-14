@@ -181,10 +181,10 @@ const StickyHeader = styled.div`
   z-index: 3;
 `
 
-const HeaderGroup: FC<{ home: boolean }> = ({ home }) => (
+const HeaderGroup: FC = () => (
   <>
     <StickyHeader>
-      <AppBar home={home} />
+      <AppBar />
     </StickyHeader>
   </>
 )
@@ -239,7 +239,7 @@ export const Layout: FC = ({ children }) => {
   return (
     <ModalProvider rootComponent={TransitionGroup}>
       <Background home={home} />
-      <HeaderGroup home={home} />
+      <HeaderGroup />
       <Container>
         <Main marginTop={home}>{prevChainId === chainId ? children : null}</Main>
       </Container>

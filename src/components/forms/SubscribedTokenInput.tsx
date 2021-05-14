@@ -1,4 +1,5 @@
 import React, { FC, useMemo } from 'react'
+import styled from 'styled-components'
 
 import { useTokens, useTokenSubscription } from '../../context/TokensProvider'
 import { AssetDropdown } from '../core/AssetDropdown'
@@ -12,6 +13,14 @@ interface Props {
   disabled?: boolean
   className?: string
 }
+
+const StyledDropdown = styled(AssetDropdown)`
+  height: 100%;
+
+  > button {
+    height: 100%;
+  }
+`
 
 export const SubscribedTokenInput: FC<Props> = ({ value, options: _options = [], onChange, disabled = false }) => {
   // Subscribe to the selected token or use custom
@@ -40,5 +49,5 @@ export const SubscribedTokenInput: FC<Props> = ({ value, options: _options = [],
 
   const prefixRemovedOptions = options.map(option => ({ ...option, symbol: option.symbol?.replace(/POS-/gi, '') }))
 
-  return <AssetDropdown onChange={onChange} addressOptions={prefixRemovedOptions} defaultAddress={value} disabled={disabled} />
+  return <StyledDropdown onChange={onChange} addressOptions={prefixRemovedOptions} defaultAddress={value} disabled={disabled} />
 }
