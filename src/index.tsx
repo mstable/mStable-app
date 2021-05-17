@@ -7,7 +7,6 @@ import * as serviceWorker from './serviceWorker'
 import { Providers } from './context'
 import { Updaters } from './updaters'
 import { Layout } from './components/layout/Layout'
-import { Home } from './components/pages'
 import { Save } from './components/pages/Save'
 import { NotFound } from './components/pages/NotFound'
 import { Stats } from './components/pages/Stats'
@@ -39,7 +38,6 @@ const Routes: FC = () => {
 
   return (
     <Switch>
-      <Route exact path="/" component={Home} />
       <Route exact path="/:massetName/earn" component={EarnRedirect} />
       <Route exact path="/:massetName/earn/admin" component={EarnRedirect} />
       <Route exact path="/:massetName/earn/:slugOrAddress" component={EarnRedirect} />
@@ -49,6 +47,7 @@ const Routes: FC = () => {
       <Route exact path="/:massetName/pools" component={Pools} />
       <Route exact path="/:massetName/forge/:action" component={Forge} />
       <Route exact path="/:massetName/pools/:poolAddress" component={PoolDetail} />
+      <Redirect exact path="/" to="/musd/save" />
       <Redirect exact path="/analytics" to="/musd/stats" />
       <Redirect exact path="/save" to="/musd/save" />
       <Redirect exact path="/earn" to="/musd/earn" />

@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react'
+import React, { FC, ReactElement, useCallback, useState } from 'react'
 
 import { useFeederPoolApy } from '../../../../hooks/useFeederPoolApy'
 import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
@@ -61,7 +61,8 @@ export const PoolOverview: FC = () => {
   const apy = useFeederPoolApy(feederPool.address)
   const massetPrice = useSelectedMassetPrice() ?? 1
 
-  const { vault, token } = feederPool
+  const { vault, token, price } = feederPool
+  const fpTokenPrice = price.simple * massetPrice
   const userAmount = token.balance?.simple ?? 0
   const userStakedAmount = vault.account?.rawBalance.simple ?? 0
 
@@ -71,7 +72,7 @@ export const PoolOverview: FC = () => {
 
   const handleSelection = useCallback((newValue?: Selection) => setSelection(selection === newValue ? undefined : newValue), [selection])
 
-  const totalUserBalance = useMemo(() => (userStakedAmount + userAmount) * massetPrice, [massetPrice, userAmount, userStakedAmount])
+  const totalUserBalance = (userStakedAmount + userAmount) * fpTokenPrice
 
   return showLiquidityMessage ? (
     <ShowEarningPower>
