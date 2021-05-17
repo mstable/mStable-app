@@ -20,6 +20,7 @@ import { ReactComponent as WarningBadge } from '../../../icons/badges/warning.sv
 import { SavePosition } from './SavePosition'
 import { OnboardingBanner } from './OnboardingBanner'
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
+import { PokeBoost } from '../../../core/PokeBoost'
 
 enum Selection {
   Balance = 'Balance',
@@ -220,6 +221,7 @@ export const SaveOverview: FC = () => {
           )}
         </TransitionContainer>
       </TransitionCard>
+      <PokeBoost />
     </Container>
   )
 }
