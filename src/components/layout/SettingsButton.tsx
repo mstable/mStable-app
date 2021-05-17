@@ -22,8 +22,8 @@ const Button = styled(UnstyledButton)`
   > * {
     position: absolute;
     left: 0.25rem;
+    right:0.25rem;
     top: 0.25rem;
-    right: 0.25rem;
     bottom: 0.25rem;
   }
 
@@ -46,8 +46,7 @@ const List = styled.div`
   background: ${({ theme }) => theme.color.background[0]};
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   min-width: 5.5rem;
-  z-index: 2;
-  overflow: hidden;
+  z-index: 1;
 
   > div {
     display: flex;
@@ -55,7 +54,6 @@ const List = styled.div`
     justify-content: space-between;
     height: 4rem;
     padding: 0 1rem;
-    background: ${({ theme }) => theme.color.background[0]};
     border-bottom: 1px solid ${({ theme }) => theme.color.defaultBorder};
   }
 `
@@ -79,7 +77,7 @@ export const SettingsButton: FC<{ className?: string }> = ({ children, className
 
   return (
     <Container ref={container} className={className}>
-      <Button onClick={toggleShow}>{children || <SettingsSvg />}</Button>
+      <Button onClick={toggleShow}>{children || <div><SettingsSvg /></div>}</Button>
       <List hidden={!show}>
         <div>
           <p>Network</p>
