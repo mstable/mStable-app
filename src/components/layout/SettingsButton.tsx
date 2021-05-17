@@ -35,15 +35,12 @@ const List = styled.div`
   right: 0;
   top: 2rem;
   width: 20rem;
-  background: ${({ theme }) => theme.color.background[1]};
-  padding: 0.5rem 0;
+  background: ${({ theme }) => theme.color.background[0]};
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
   min-width: 5.5rem;
   z-index: 2;
-
-  > div:first-child {
-    border-top: 1px solid ${({ theme }) => theme.color.defaultBorder};
-  }
+  overflow: hidden;
+  
 
   > div {
     display: flex;
