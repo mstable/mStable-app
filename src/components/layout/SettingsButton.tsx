@@ -19,6 +19,14 @@ const Button = styled(UnstyledButton)`
   justify-content: center;
   transition: all 0.3s ease;
 
+  > * {
+    position: absolute;
+    left: 0.25rem;
+    top: 0.25rem;
+    right: 0.25rem;
+    bottom: 0.25rem;
+  }
+
   :hover {
     background: ${({ theme }) => theme.color.background[2]};
   }
@@ -40,7 +48,6 @@ const List = styled.div`
   min-width: 5.5rem;
   z-index: 2;
   overflow: hidden;
-  
 
   > div {
     display: flex;
@@ -57,7 +64,7 @@ const Container = styled.div`
   position: relative;
 `
 
-export const SettingsButton: FC = () => {
+export const SettingsButton: FC<{ className?: string }> = ({ children, className }) => {
   const [show, toggleShow] = useToggle(false)
   const container = useRef(null)
   const toggleThemeMode = useToggleThemeMode()
@@ -71,10 +78,8 @@ export const SettingsButton: FC = () => {
   }
 
   return (
-    <Container ref={container}>
-      <Button onClick={toggleShow}>
-        <SettingsSvg />
-      </Button>
+    <Container ref={container} className={className}>
+      <Button onClick={toggleShow}>{children || <SettingsSvg />}</Button>
       <List hidden={!show}>
         <div>
           <p>Network</p>

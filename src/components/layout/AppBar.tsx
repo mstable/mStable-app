@@ -10,6 +10,17 @@ import { TransactionStatus } from '../../web3/TransactionManifest'
 import { Navigation } from './Navigation'
 import { SettingsButton } from './SettingsButton'
 import { WalletButton } from './WalletButton'
+import { TokenIcon } from '../icons/TokenIcon'
+import { useNetwork } from '../../context/NetworkProvider'
+import { ViewportWidth } from '../../theme'
+
+const NetworkButton = styled(SettingsButton)`
+  display: none;
+
+  @media (min-width: ${ViewportWidth.m}) {
+    display: inherit;
+  }
+`
 
 const Logo = styled(LogoSvg)`
   width: 1.75rem;
@@ -101,20 +112,26 @@ const TransactionsSpinner: FC = () => {
   return <ActivitySpinner pending={pending} />
 }
 
-export const AppBar: FC = () => (
-  <Container>
-    <Inner>
-      <LogoAndMasset>
-        <Link to="/" title="Home">
-          <Logo />
-        </Link>
-      </LogoAndMasset>
-      <Navigation />
-      <WalletAndSpinner>
-        <TransactionsSpinner />
-        <WalletButton />
-        <SettingsButton />
-      </WalletAndSpinner>
-    </Inner>
-  </Container>
-)
+export const AppBar: FC = () => {
+  const { protocolName } = useNetwork()
+  return (
+    <Container>
+      <Inner>
+        <LogoAndMasset>
+          <Link to="/" title="Home">
+            <Logo />
+          </Link>
+        </LogoAndMasset>
+        <Navigation />
+        <WalletAndSpinner>
+          <TransactionsSpinner />
+          <WalletButton />
+          <NetworkButton>
+            <TokenIcon symbol={protocolName.toUpperCase()} hideNetwork />
+          </NetworkButton>
+          <SettingsButton />
+        </WalletAndSpinner>
+      </Inner>
+    </Container>
+  )
+}
