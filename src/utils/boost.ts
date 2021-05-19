@@ -58,7 +58,7 @@ export const calculateBoost = (boostCoeff: number, priceCoeff: number, stakingBa
 
 export const getCoeffs = (vault: BoostedSavingsVaultState): [number, number] | undefined => {
   if (vault.boostCoeff && vault.priceCoeff) {
-    return [vault.boostCoeff, vault.priceCoeff]
+    return [vault.boostCoeff / 10, vault.priceCoeff / 1e18]
   }
 
   switch (vault.address) {
