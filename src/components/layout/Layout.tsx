@@ -25,7 +25,7 @@ const Main = styled.main<{ marginTop?: boolean }>`
   min-height: 50vh;
 
   @media (min-width: ${ViewportWidth.s}) {
-    padding: 1rem;
+    padding: 0 1rem;
   }
 `
 

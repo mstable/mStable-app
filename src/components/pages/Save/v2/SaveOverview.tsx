@@ -124,7 +124,7 @@ const useSaveVaultAPY = (symbol?: string, userBoost?: number): FetchState<Booste
       },
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userBoost, symbol, cachedAPY.value])
+  }, [userBoost, symbol, cachedAPY])
 
   return apy
 }
@@ -221,7 +221,7 @@ export const SaveOverview: FC = () => {
           )}
         </TransitionContainer>
       </TransitionCard>
-      <PokeBoost />
+      <PokeBoost apy={apy} vault={boostedSavingsVault} />
     </Container>
   )
 }

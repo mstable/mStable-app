@@ -13,6 +13,7 @@ import { UserRewards } from './UserRewards'
 import { BoostCalculator } from '../../../rewards/BoostCalculator'
 import { BoostedSavingsVaultState } from '../../../../context/DataProvider/types'
 import { TransitionCard, CardContainer as Container, CardButton as Button } from '../../../core/TransitionCard'
+import { PokeBoost } from '../../../core/PokeBoost'
 
 enum Selection {
   Stake = 'stake',
@@ -79,25 +80,28 @@ export const PoolOverview: FC = () => {
       <LiquidityMessageContent vault={vault} apy={apy.value?.base} />
     </ShowEarningPower>
   ) : (
-    <TransitionCard components={components} selection={selection}>
-      <Container>
-        <Button active={selection === Stake} onClick={() => handleSelection(Stake)}>
-          <h3>Balance</h3>
-          <CountUp end={totalUserBalance} prefix="$" />
-        </Button>
-        <Button active={selection === Boost} onClick={() => handleSelection(Boost)}>
-          <h3>Rewards APY</h3>
-          {apy.value?.userBoost ? (
-            <DifferentialCountup prev={apy.value.base} end={apy.value.userBoost} suffix="%" />
-          ) : (
-            <CountUp end={apy.value?.base ?? 0} suffix="%" />
-          )}
-        </Button>
-        <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>
-          <h3>Rewards</h3>
-          <CountUp end={totalEarned} /> MTA
-        </Button>
-      </Container>
-    </TransitionCard>
+    <>
+      <TransitionCard components={components} selection={selection}>
+        <Container>
+          <Button active={selection === Stake} onClick={() => handleSelection(Stake)}>
+            <h3>Balance</h3>
+            <CountUp end={totalUserBalance} prefix="$" />
+          </Button>
+          <Button active={selection === Boost} onClick={() => handleSelection(Boost)}>
+            <h3>Rewards APY</h3>
+            {apy.value?.userBoost ? (
+              <DifferentialCountup prev={apy.value.base} end={apy.value.userBoost} suffix="%" />
+            ) : (
+              <CountUp end={apy.value?.base ?? 0} suffix="%" />
+            )}
+          </Button>
+          <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>
+            <h3>Rewards</h3>
+            <CountUp end={totalEarned} /> MTA
+          </Button>
+        </Container>
+      </TransitionCard>
+      <PokeBoost apy={apy} vault={feederPool?.vault} />
+    </>
   )
 }
