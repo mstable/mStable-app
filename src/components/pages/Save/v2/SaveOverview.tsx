@@ -20,6 +20,7 @@ import { ReactComponent as WarningBadge } from '../../../icons/badges/warning.sv
 import { SavePosition } from './SavePosition'
 import { OnboardingBanner } from './OnboardingBanner'
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
+import { PokeBoost } from '../../../core/PokeBoost'
 
 enum Selection {
   Balance = 'Balance',
@@ -123,7 +124,7 @@ const useSaveVaultAPY = (symbol?: string, userBoost?: number): FetchState<Booste
       },
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userBoost, symbol, cachedAPY.value])
+  }, [userBoost, symbol, cachedAPY])
 
   return apy
 }
@@ -220,6 +221,7 @@ export const SaveOverview: FC = () => {
           )}
         </TransitionContainer>
       </TransitionCard>
+      <PokeBoost apy={apy} vault={boostedSavingsVault} />
     </Container>
   )
 }

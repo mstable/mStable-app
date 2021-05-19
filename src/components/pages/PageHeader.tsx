@@ -14,6 +14,7 @@ import { usePolygonModal } from '../core/usePolygonModal'
 import { Networks, useNetwork } from '../../context/NetworkProvider'
 import { LocalStorage } from '../../localStorage'
 import { MassetDropdown } from '../core/MassetDropdown'
+import { ViewportWidth } from '../../theme'
 
 export enum PageAction {
   Save = 'Save',
@@ -71,7 +72,7 @@ const Container = styled.div<{
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 0 3rem;
+  padding: 2rem 0;
 
   h2 {
     font-size: 2rem;
@@ -86,6 +87,10 @@ const Container = styled.div<{
 
   > *:not(:last-child) {
     margin-bottom: 0.5rem;
+  }
+
+  @media (min-width: ${ViewportWidth.s}) {
+    padding: 3rem 0;
   }
 `
 

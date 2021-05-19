@@ -86,7 +86,7 @@ const Container = styled.div<{
   ${Option} {
     border: ${({ theme, active, complete }) =>
       complete ? `1px solid ${theme.color.greenTransparent}` : active ? `1px solid ${theme.color.primaryTransparent}` : `none`};
-    background: ${({ theme, active, complete }) => (complete || active ? theme.color.background : theme.color.disabledButton)};
+    background: ${({ theme, active, complete }) => (complete || active ? theme.color.background[0] : theme.color.disabledButton)};
   }
 
   ${Title} {

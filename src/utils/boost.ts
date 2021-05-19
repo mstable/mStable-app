@@ -2,19 +2,20 @@ import { BigDecimal } from '../web3/BigDecimal'
 import { BoostedSavingsVaultState } from '../context/DataProvider/types'
 
 // Boost params (imUSD Vault)
-export const MAX_BOOST_IMUSD = 3
-export const MIN_BOOST_IMUSD = 1
+export const MIN_BOOST_IMUSD = 0.5
+export const MAX_BOOST_IMUSD = 1.5
 export const COEFFICIENT_IMUSD = 6
-export const EXPONENT_IMUSD = 0.875
+export const EXPONENT_IMUSD = 7 / 8
 export const PRICE_IMUSD = 0.1
 
+// Multiplied by scale of 2 for UI (0.5-1.5x -> 1-3x)
 export const calculateBoostImusd = (stakingBalance?: BigDecimal, vMTABalance?: BigDecimal): number => {
   const scaledBalance = (stakingBalance?.simple ?? 0) * PRICE_IMUSD
   if (vMTABalance && stakingBalance && vMTABalance.simple > 0 && stakingBalance.simple > 0) {
     const boost = MIN_BOOST_IMUSD + (COEFFICIENT_IMUSD * vMTABalance.simple) / scaledBalance ** EXPONENT_IMUSD
-    return Math.min(MAX_BOOST_IMUSD, boost)
+    return Math.min(MAX_BOOST_IMUSD, boost) * 2
   }
-  return MIN_BOOST_IMUSD
+  return MIN_BOOST_IMUSD * 2
 }
 
 export const calculateVMTAForMaxBoostImusd = (stakingBalance: BigDecimal): number | undefined => {
@@ -57,7 +58,7 @@ export const calculateBoost = (boostCoeff: number, priceCoeff: number, stakingBa
 
 export const getCoeffs = (vault: BoostedSavingsVaultState): [number, number] | undefined => {
   if (vault.boostCoeff && vault.priceCoeff) {
-    return [vault.boostCoeff, vault.priceCoeff]
+    return [vault.boostCoeff / 10, vault.priceCoeff / 1e18]
   }
 
   switch (vault.address) {
