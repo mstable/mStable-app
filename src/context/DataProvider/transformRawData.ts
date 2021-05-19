@@ -136,9 +136,10 @@ const transformBoostedSavingsVault = ({
     ] = accounts
     const boostedBalance = new BigDecimal(_boostedBalance)
     const rawBalance = new BigDecimal(_rawBalance)
+    const boostMultiplier = !!boostedBalance.simple && !!rawBalance.simple ? boostedBalance.simple / rawBalance.simple : 1
     account = {
       boostedBalance,
-      boostMultiplier: boostedBalance.simple > 0 && rawBalance.simple > 0 ? (boostedBalance.simple / rawBalance.simple) * 2 : 0,
+      boostMultiplier: isImusd ? boostMultiplier * 2 : boostMultiplier,
       lastAction,
       lastClaim,
       rawBalance,
