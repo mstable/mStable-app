@@ -40,17 +40,17 @@ export const MIN_DEPOSIT = 1
 
 export const calculateVMTAForMaxBoost = (stakingBalance: BigDecimal, boostCoeff: number, priceCoeff: number): number => {
   const scaledBalance = stakingBalance.simple * priceCoeff
-  const x = MAX_BOOST - FLOOR
+  const x = MAX_BOOST - FLOOR * 0.95
   const y = scaledBalance ** EXPONENT
   const unbounded = (x * y) / boostCoeff
   return Math.min(unbounded, VMTA_CAP)
 }
 
+// 0.95 + c * min(voting_weight, f) / deposit^(7/8)
 export const calculateBoost = (boostCoeff: number, priceCoeff: number, stakingBalance?: BigDecimal, vMTABalance?: BigDecimal): number => {
   const scaledBalance = (stakingBalance?.simple ?? 0) * priceCoeff
   if (vMTABalance && stakingBalance && vMTABalance.simple > 0 && scaledBalance >= MIN_DEPOSIT) {
-    const unbounded = FLOOR + (boostCoeff * Math.min(vMTABalance.simple, VMTA_CAP)) / scaledBalance ** EXPONENT
-    // bounded
+    const unbounded = FLOOR * 0.95 + (boostCoeff * Math.min(vMTABalance.simple, VMTA_CAP)) / scaledBalance ** EXPONENT
     return Math.min(MAX_BOOST, Math.max(MIN_BOOST, unbounded))
   }
   return MIN_BOOST
