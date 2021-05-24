@@ -338,7 +338,7 @@ export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainI
       return MATIC_MUMBAI
 
     default:
-      throw new Error('Unsupported chain ID')
+      return ETH_MAINNET
   }
 }
 
