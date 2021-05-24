@@ -85,7 +85,7 @@ describe('test boost calculations', () => {
       {
         amount: BigDecimal.parse('1.724137931'), // $10k
         mta: BigDecimal.parse('175'), // 175 mta
-        expected: '1.27',
+        expected: '1.22',
       },
       {
         amount: BigDecimal.parse('10'), // $10
@@ -119,7 +119,7 @@ describe('test boost calculations', () => {
       {
         amount: BigDecimal.parse('3000'), // $3k
         mta: BigDecimal.parse('100'), // 100 mta
-        expected: '1.44',
+        expected: '1.39',
       },
       {
         amount: BigDecimal.parse('10'), // $10
@@ -129,12 +129,12 @@ describe('test boost calculations', () => {
       {
         amount: BigDecimal.parse('30000'), // $30k
         mta: BigDecimal.parse('100'),
-        expected: '1.06',
+        expected: '1.01',
       },
       {
         amount: BigDecimal.parse('100000'), // $100k
         mta: BigDecimal.parse('5000'),
-        expected: '2.01',
+        expected: '1.96',
       },
     ]
 
@@ -164,7 +164,7 @@ describe('test boost calculations', () => {
       {
         amount: BigDecimal.parse('0.1724137931'), // $10k
         mta: BigDecimal.parse('100'), // 100 mta
-        expected: '1.15',
+        expected: '1.10',
       },
       {
         amount: BigDecimal.parse('0.0001724137931'), // $10
@@ -174,7 +174,7 @@ describe('test boost calculations', () => {
       {
         amount: BigDecimal.parse('1.724137931'), // $100k
         mta: BigDecimal.parse('1000'),
-        expected: '1.20',
+        expected: '1.15',
       },
     ]
 
