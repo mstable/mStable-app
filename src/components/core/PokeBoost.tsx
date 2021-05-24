@@ -107,7 +107,8 @@ export const PokeBoost: FC<Props> = ({ apy, vault }) => {
   const userBoost = useCalculateUserBoost(vault)
   const rewardStreams = useRewardStreams()
 
-  const showWarning = (account?.boostMultiplier ?? 0) < (userBoost ?? 0) && !!account?.boostMultiplier
+  // FIXME: - Replace account?.boostMultiplier !== 1 with catch to show boost director
+  const showWarning = (account?.boostMultiplier ?? 0) < (userBoost ?? 0) && account?.boostMultiplier !== 1 && !!account?.boostMultiplier
   const message = isImusd ? 'Claim rewards to update your reward rate.' : 'Poke the contract or claim rewards to update your reward rate.'
 
   if (!showWarning) return null
