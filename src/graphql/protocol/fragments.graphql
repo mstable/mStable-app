@@ -49,37 +49,3 @@ fragment BassetAll on Basset {
     ...TokenAll
   }
 }
-
-fragment BoostedSavingsVaultAll on BoostedSavingsVault {
-  id
-  lastUpdateTime
-  lockupDuration
-  unlockPercentage
-  periodDuration
-  periodFinish
-  rewardPerTokenStored
-  rewardRate
-  stakingContract
-  stakingToken {
-    address
-  }
-  totalStakingRewards
-  totalSupply
-  accounts(where: { account: $account }) @include(if: $hasAccount) {
-    id
-    boostedBalance
-    lastAction
-    lastClaim
-    rawBalance
-    rewardCount
-    rewardPerTokenPaid
-    rewards
-    rewardEntries(orderBy: index, orderDirection: asc) {
-      id
-      finish
-      index
-      rate
-      start
-    }
-  }
-}

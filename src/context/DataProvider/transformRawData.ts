@@ -15,7 +15,7 @@ import type { Tokens } from '../TokensProvider'
 
 import { BigDecimal } from '../../web3/BigDecimal'
 import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol'
-import { FeederPoolsQueryResult } from '../../graphql/feeders'
+import { FeederPoolsQueryResult, BoostedSavingsVaultAllFragment } from '../../graphql/feeders'
 
 type NonNullableMasset = NonNullable<NonNullable<MassetsQueryResult['data']>['massets'][number]>
 
@@ -111,7 +111,7 @@ const transformBoostedSavingsVault = ({
   totalSupply,
   unlockPercentage,
 }: NonNullable<
-  SavingsContractV2QueryResult['boostedSavingsVaults'][number] & {
+  BoostedSavingsVaultAllFragment & {
     priceCoeff?: string | null
     boostCoeff?: string | null
   }
@@ -177,11 +177,12 @@ const transformBoostedSavingsVault = ({
 
 const transformSavingsContractV2 = (
   savingsContract: SavingsContractV2QueryResult,
+  boostedSavingsVault: BoostedSavingsVaultAllFragment | undefined,
   tokens: Tokens,
   massetAddress: string,
   current: boolean,
 ): Extract<SavingsContractState, { version: 2 }> => {
-  const { dailyAPY, id, latestExchangeRate, totalSavings, version, boostedSavingsVaults } = savingsContract
+  const { dailyAPY, id, latestExchangeRate, totalSavings, version } = savingsContract
 
   return {
     active: true,
@@ -202,7 +203,7 @@ const transformSavingsContractV2 = (
     token: tokens[id],
     totalSavings: BigDecimal.fromMetric(totalSavings),
     version: version as 2,
-    boostedSavingsVault: boostedSavingsVaults[0] ? transformBoostedSavingsVault(boostedSavingsVaults[0]) : undefined,
+    boostedSavingsVault: boostedSavingsVault ? transformBoostedSavingsVault(boostedSavingsVault) : undefined,
   }
 }
 
@@ -299,7 +300,7 @@ const transformMassetData = (
     savingsContractsV1: [savingsContractV1],
     savingsContractsV2: [savingsContractV2],
   }: NonNullableMasset,
-  { feederPools: allFeederPools, otherVaults }: NonNullable<FeederPoolsQueryResult['data']>,
+  { feederPools: allFeederPools, saveVaults }: NonNullable<FeederPoolsQueryResult['data']>,
   tokens: Tokens,
 ): MassetState => {
   const bAssets = transformBassets(_bassets, tokens)
@@ -309,11 +310,8 @@ const transformMassetData = (
     tokens,
   )
 
-  // Handle mBTC vault is in feeders subgraph
-  let saveVaults = savingsContractV2.boostedSavingsVaults
-  if (savingsContractV2 && token.address === '0x945facb997494cc2570096c74b5f66a3507330a1') {
-    saveVaults = otherVaults.filter(v => v.stakingContract === savingsContractV2.id)
-  }
+  // Handle mUSD/mBTC vaults in feeders subgraph
+  const vault = saveVaults.filter(v => v.stakingContract === savingsContractV2.id)?.[0]
 
   return {
     address,
@@ -335,7 +333,7 @@ const transformMassetData = (
     hasFeederPools: Object.keys(feederPools).length > 0,
     savingsContracts: {
       v1: savingsContractV1 ? transformSavingsContractV1(savingsContractV1, tokens, address, false) : undefined,
-      v2: transformSavingsContractV2({ ...savingsContractV2, boostedSavingsVaults: saveVaults }, tokens, address, true),
+      v2: transformSavingsContractV2(savingsContractV2, vault, tokens, address, true),
     },
     bassetRatios: Object.fromEntries(Object.values(bAssets).map(b => [b.address, b.ratio])),
 
