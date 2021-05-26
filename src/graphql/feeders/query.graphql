@@ -46,7 +46,7 @@ query FeederPools($account: String!, $hasAccount: Boolean!)
       }
     }
   }
-  otherVaults: boostedSavingsVaults(where: { feederPool: null }) {
+  saveVaults: boostedSavingsVaults(where: { feederPool: null }) {
     ...BoostedSavingsVaultAll
   }
 }

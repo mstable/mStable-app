@@ -42,9 +42,6 @@ query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
       token {
         ...TokenAll
       }
-      boostedSavingsVaults {
-        ...BoostedSavingsVaultAll
-      }
     }
   }
 }

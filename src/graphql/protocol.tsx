@@ -4713,14 +4713,6 @@ export type BassetAllFragment = (
   & { vaultBalance: MetricFieldsFragment, token: TokenAllFragment }
 );
 
-export type BoostedSavingsVaultAllFragment = (
-  Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply'>
-  & { stakingToken: Pick<Token, 'address'>, accounts: Array<(
-    Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
-    & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
-  )> }
-);
-
 export type MassetsQueryVariables = {
   account: Scalars['String'];
   hasAccount: Scalars['Boolean'];
@@ -4728,7 +4720,7 @@ export type MassetsQueryVariables = {
 
 
 export type MassetsQuery = { massets: Array<(
-    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'forgeValidator' | 'invariantStartTime' | 'invariantStartingCap' | 'invariantCapFactor'>
+    Pick<Masset, 'id' | 'feeRate' | 'redemptionFeeRate' | 'invariantStartTime' | 'invariantStartingCap' | 'invariantCapFactor'>
     & { token: TokenAllFragment, basket: (
       Pick<Basket, 'failed' | 'collateralisationRatio' | 'undergoingRecol'>
       & { bassets: Array<BassetAllFragment>, removedBassets: Array<(
@@ -4739,7 +4731,7 @@ export type MassetsQuery = { massets: Array<(
       { totalCredits?: Maybe<MetricFieldsFragment>, creditBalances: Array<Pick<CreditBalance, 'amount'>> }
       & SavingsContractAllFragment
     )>, savingsContractsV2: Array<(
-      { token?: Maybe<TokenAllFragment>, boostedSavingsVaults: Array<BoostedSavingsVaultAllFragment> }
+      { token?: Maybe<TokenAllFragment> }
       & SavingsContractAllFragment
     )> }
   )> };
@@ -4883,41 +4875,6 @@ export const BassetAllFragmentDoc = gql`
 }
     ${MetricFieldsFragmentDoc}
 ${TokenAllFragmentDoc}`;
-export const BoostedSavingsVaultAllFragmentDoc = gql`
-    fragment BoostedSavingsVaultAll on BoostedSavingsVault {
-  id
-  lastUpdateTime
-  lockupDuration
-  unlockPercentage
-  periodDuration
-  periodFinish
-  rewardPerTokenStored
-  rewardRate
-  stakingContract
-  stakingToken {
-    address
-  }
-  totalStakingRewards
-  totalSupply
-  accounts(where: {account: $account}) @include(if: $hasAccount) {
-    id
-    boostedBalance
-    lastAction
-    lastClaim
-    rawBalance
-    rewardCount
-    rewardPerTokenPaid
-    rewards
-    rewardEntries(orderBy: index, orderDirection: asc) {
-      id
-      finish
-      index
-      rate
-      start
-    }
-  }
-}
-    `;
 export const MassetsDocument = gql`
     query Massets($account: String!, $hasAccount: Boolean!) @api(name: protocol) {
   massets {
@@ -4927,7 +4884,6 @@ export const MassetsDocument = gql`
     }
     feeRate
     redemptionFeeRate
-    forgeValidator
     invariantStartTime
     invariantStartingCap
     invariantCapFactor
@@ -4962,17 +4918,13 @@ export const MassetsDocument = gql`
       token {
         ...TokenAll
       }
-      boostedSavingsVaults {
-        ...BoostedSavingsVaultAll
-      }
     }
   }
 }
     ${TokenAllFragmentDoc}
 ${BassetAllFragmentDoc}
 ${SavingsContractAllFragmentDoc}
-${MetricFieldsFragmentDoc}
-${BoostedSavingsVaultAllFragmentDoc}`;
+${MetricFieldsFragmentDoc}`;
 
 /**
  * __useMassetsQuery__
