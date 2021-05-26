@@ -3807,7 +3807,7 @@ export type BassetAllFragment = (
 
 export type BoostedSavingsVaultAllFragment = (
   Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply' | 'priceCoeff' | 'boostCoeff'>
-  & { stakingToken: Pick<Token, 'address'>, accounts: Array<(
+  & { stakingToken: Pick<Token, 'address' | 'symbol'>, accounts: Array<(
     Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
     & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
   )> }
@@ -3828,7 +3828,10 @@ export type FeederPoolsQuery = { feederPools: Array<(
       Pick<FeederPoolAccount, 'balance' | 'price' | 'lastUpdate' | 'balanceVault' | 'priceVault' | 'lastUpdateVault'>
       & { cumulativeEarned: Pick<Metric, 'exact' | 'decimals'>, cumulativeEarnedVault: Pick<Metric, 'exact' | 'decimals'> }
     )> }
-  )>, saveVaults: Array<BoostedSavingsVaultAllFragment> };
+  )>, otherVaults: Array<BoostedSavingsVaultAllFragment>, userVaults: Array<(
+    Pick<Account, 'id'>
+    & { boostDirection: Array<Pick<BoostedSavingsVault, 'directorVaultId'>> }
+  )>, boostDirectors: Array<Pick<BoostDirector, 'id'>>, vaultIds: Array<Pick<BoostedSavingsVault, 'directorVaultId' | 'id'>> };
 
 export type FeederTokensQueryVariables = {};
 
@@ -3939,6 +3942,7 @@ export const BoostedSavingsVaultAllFragmentDoc = gql`
   stakingContract
   stakingToken {
     address
+    symbol
   }
   totalStakingRewards
   totalSupply
@@ -4009,8 +4013,21 @@ export const FeederPoolsDocument = gql`
       }
     }
   }
-  saveVaults: boostedSavingsVaults(where: {feederPool: null}) {
+  otherVaults: boostedSavingsVaults(where: {feederPool: null}) {
     ...BoostedSavingsVaultAll
+  }
+  userVaults: accounts {
+    id
+    boostDirection {
+      directorVaultId
+    }
+  }
+  boostDirectors {
+    id
+  }
+  vaultIds: boostedSavingsVaults {
+    directorVaultId
+    id
   }
 }
     ${BassetAllFragmentDoc}

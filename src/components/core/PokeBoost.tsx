@@ -12,6 +12,7 @@ import { ViewportWidth } from '../../theme'
 import { Interfaces } from '../../types'
 import { TransactionManifest } from '../../web3/TransactionManifest'
 import { Button } from './Button'
+import { SelectBoost } from './SelectBoost'
 
 interface Props {
   apy: FetchState<{ base: number; maxBoost: number; userBoost?: number }>
@@ -107,11 +108,13 @@ export const PokeBoost: FC<Props> = ({ apy, vault }) => {
   const userBoost = useCalculateUserBoost(vault)
   const rewardStreams = useRewardStreams()
 
-  // FIXME: - Replace account?.boostMultiplier !== 1 with catch to show boost director
-  const showWarning = (account?.boostMultiplier ?? 0) < (userBoost ?? 0) && account?.boostMultiplier !== 1 && !!account?.boostMultiplier
+  const showBoostPoke = (account?.boostMultiplier ?? 0) < (userBoost ?? 0) && !!account?.boostMultiplier
+  const showBoostDirector = showBoostPoke && account?.boostMultiplier === 1
   const message = isImusd ? 'Claim rewards to update your reward rate.' : 'Poke the contract or claim rewards to update your reward rate.'
 
-  if (!showWarning) return null
+  if (!showBoostPoke) return null
+  if (showBoostDirector) return <SelectBoost vault={vault} />
+
   return (
     <Container>
       <APY>
