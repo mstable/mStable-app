@@ -3815,6 +3815,7 @@ export type BoostedSavingsVaultAllFragment = (
 
 export type FeederPoolsQueryVariables = {
   account: Scalars['String'];
+  accountId: Scalars['ID'];
   hasAccount: Scalars['Boolean'];
 };
 
@@ -3968,7 +3969,7 @@ export const BoostedSavingsVaultAllFragmentDoc = gql`
 }
     `;
 export const FeederPoolsDocument = gql`
-    query FeederPools($account: String!, $hasAccount: Boolean!) @api(name: feeders) {
+    query FeederPools($account: String!, $accountId: ID!, $hasAccount: Boolean!) @api(name: feeders) {
   feederPools {
     id
     swapFeeRate
@@ -4016,7 +4017,7 @@ export const FeederPoolsDocument = gql`
   otherVaults: boostedSavingsVaults(where: {feederPool: null}) {
     ...BoostedSavingsVaultAll
   }
-  userVaults: accounts {
+  userVaults: accounts(where: {id: $accountId}) {
     id
     boostDirection {
       directorVaultId
@@ -4047,6 +4048,7 @@ ${BoostedSavingsVaultAllFragmentDoc}`;
  * const { data, loading, error } = useFeederPoolsQuery({
  *   variables: {
  *      account: // value for 'account'
+ *      accountId: // value for 'accountId'
  *      hasAccount: // value for 'hasAccount'
  *   },
  * });
