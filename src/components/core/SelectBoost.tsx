@@ -107,7 +107,6 @@ export const SelectBoost: FC<Props> = ({ vault }) => {
 
   const { isImusd } = vault ?? {}
 
-  // FIXME: - Pull out to higher hierachy ?
   const feederPoolVaults = useMemo(() => {
     const mbtcVault = dataState.mbtc?.savingsContracts?.v2?.boostedSavingsVault
     const mbtcFeederVaults = Object.keys(dataState.mbtc?.feederPools ?? {}).map(
