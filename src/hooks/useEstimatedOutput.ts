@@ -111,7 +111,7 @@ export const useEstimatedOutput = (
   }, [action, estimatedOutputRange, swapFeeRate, redemptionFeeRate, shouldSkip])
 
   const priceImpact = useMemo<FetchState<PriceImpact>>(() => {
-    if (estimatedOutputRange.fetching || !estimatedOutputRange.value || !inputValue || !lpPriceAdjustment) return { fetching: true }
+    if (estimatedOutputRange.fetching || !estimatedOutputRange.value || !inputValue) return { fetching: true }
 
     if (!inputValue.amount) return {}
 
