@@ -31,7 +31,7 @@ export const RedeemExact: FC = () => {
   const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(
     contract,
     inputValues,
-    { price: feederPool.price, isInput: true },
+    { price: feederPool.price, isInput: false },
     Route.Redeem,
   )
 

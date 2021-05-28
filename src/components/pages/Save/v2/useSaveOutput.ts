@@ -133,7 +133,7 @@ export const useSaveOutput = (route?: SaveRoutes, inputAddress?: string, inputAm
             const buyLow = massetConfig.lowInputValue.mulTruncate(nativeTokenPrice).divPrecisely(massetPrice)
             const buyHigh = _inputAmount.scale().mulTruncate(nativeTokenPrice).divPrecisely(massetPrice)
 
-            const priceImpact = getPriceImpact([buyLow, buyHigh], [low, high], undefined)
+            const priceImpact = getPriceImpact([buyLow, buyHigh], [low, high])
 
             return {
               amount: high,
