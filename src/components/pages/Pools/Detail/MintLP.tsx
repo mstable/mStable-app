@@ -208,6 +208,7 @@ export const MintLP: FC = () => {
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}
         priceImpact={priceImpact?.value}
+        price={feederPool.price.simple}
       />
     </AssetExchange>
   )

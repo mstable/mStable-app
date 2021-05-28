@@ -107,6 +107,7 @@ export const RedeemExact: FC = () => {
       outputLabel={outputLabel}
       maxOutputAmount={maxOutputAmount}
       priceImpact={priceImpact?.value}
+      price={feederPool.price.simple}
     >
       <SendButton
         title={error ?? 'Redeem'}

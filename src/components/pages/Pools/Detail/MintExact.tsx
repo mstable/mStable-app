@@ -151,6 +151,7 @@ export const MintExact: FC = () => {
       spender={contractAddress}
       minOutputAmount={minOutputAmount}
       priceImpact={priceImpact?.value}
+      price={feederPool.price.simple}
     >
       <SendButton
         title={error ?? 'Deposit'}

@@ -182,6 +182,7 @@ export const RedeemLP: FC = () => {
         slippageFormValue={slippageFormValue}
         onSetSlippage={setSlippage}
         priceImpact={priceImpact?.value}
+        price={1}
       />
     </AssetExchange>
   )
