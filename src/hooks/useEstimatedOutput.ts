@@ -37,7 +37,12 @@ const inputValuesAreEqual = (a?: BigDecimalInputValue, b?: BigDecimalInputValue)
 /**
  * This hook is designed to route to correct hook based on input/output
  */
-export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValue?: BigDecimalInputValue, shouldSkip?: boolean): Output => {
+export const useEstimatedOutput = (
+  inputValue?: BigDecimalInputValue,
+  outputValue?: BigDecimalInputValue,
+  lpPriceAdjustment?: { price: BigDecimal; isInput: boolean },
+  shouldSkip?: boolean,
+): Output => {
   const inputValuePrev = usePrevious(inputValue)
   const outputValuePrev = usePrevious(outputValue)
 
@@ -106,16 +111,16 @@ export const useEstimatedOutput = (inputValue?: BigDecimalInputValue, outputValu
   }, [action, estimatedOutputRange, swapFeeRate, redemptionFeeRate, shouldSkip])
 
   const priceImpact = useMemo<FetchState<PriceImpact>>(() => {
-    if (estimatedOutputRange.fetching || !estimatedOutputRange.value || !inputValue) return { fetching: true }
+    if (estimatedOutputRange.fetching || !estimatedOutputRange.value || !inputValue || !lpPriceAdjustment) return { fetching: true }
 
     if (!inputValue.amount) return {}
 
     if (!inputValue.amount.exact.gt(0)) return { fetching: true }
 
-    const value = getPriceImpact([massetConfig.lowInputValue, inputValue.amount.scale()], estimatedOutputRange.value)
+    const value = getPriceImpact([massetConfig.lowInputValue, inputValue.amount.scale()], estimatedOutputRange.value, lpPriceAdjustment)
 
     return { value }
-  }, [estimatedOutputRange.fetching, estimatedOutputRange.value, inputValue, massetConfig.lowInputValue])
+  }, [estimatedOutputRange.fetching, estimatedOutputRange.value, inputValue, massetConfig.lowInputValue, lpPriceAdjustment])
 
   /*
    * |------------------------------------------------------|

@@ -36,7 +36,7 @@ const RedeemExactBassetsLogic: FC = () => {
 
   const masset = useMemo(() => (signer ? Masset__factory.connect(massetAddress, signer) : undefined), [massetAddress, signer])
 
-  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(masset, bassetAmounts, Route.Redeem)
+  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(masset, bassetAmounts, undefined, Route.Redeem)
 
   const { impactWarning } = priceImpact?.value ?? {}
 

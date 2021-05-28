@@ -72,7 +72,7 @@ export const TransactionInfo: FC<Props> = ({
   const showAdditionalInfo = feeAmount || minOutputAmount || maxOutputAmount || impactPercentage || distancePercentage
 
   const formattedDistancePercentage =
-    (distancePercentage && (distancePercentage > 0 ? `+${distancePercentage.toFixed(2)}%` : `${distancePercentage.toFixed(2)}%`)) ||
+    (distancePercentage && (distancePercentage > 0 ? `+${distancePercentage.toFixed(8)}%` : `${distancePercentage.toFixed(8)}%`)) ||
     undefined
 
   const { min, max, fee } = useMemo<{

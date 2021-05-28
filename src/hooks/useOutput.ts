@@ -40,7 +40,7 @@ const useOutput = (
 
   const penaltyBonus = useMemo(() => {
     const reverse = type === OutputType.Maximum
-    const percentage = getPenaltyPercentage(inputAmount, outputAmount, reverse)
+    const percentage = getPenaltyPercentage(inputAmount, outputAmount, undefined, reverse)
     const message = getPenaltyMessage(percentage)
 
     return { percentage, message }

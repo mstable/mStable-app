@@ -104,6 +104,7 @@ export const MintLP: FC = () => {
       amount: inputAmount,
     } as BigDecimalInputValue,
     { ...outputToken, address: feederPool.address } as BigDecimalInputValue,
+    { price: feederPool.price, isInput: false },
     isStakingInVault,
   )
 

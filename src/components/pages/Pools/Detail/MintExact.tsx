@@ -41,7 +41,8 @@ export const MintExact: FC = () => {
 
   const touched = useMemo(() => Object.values(inputValues).filter(v => v.touched), [inputValues])
 
-  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(contracts?.feederPool, inputValues, Route.Mint) ?? {}
+  const { estimatedOutputAmount, priceImpact } =
+    useEstimatedOutputMulti(contracts?.feederPool, inputValues, { price: feederPool.price, isInput: false }, Route.Mint) ?? {}
 
   const { impactWarning } = priceImpact?.value ?? {}
 

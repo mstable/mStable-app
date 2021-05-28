@@ -28,7 +28,12 @@ export const RedeemExact: FC = () => {
 
   const [inputValues, slippage] = useMultiAssetExchangeState()
 
-  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(contract, inputValues, Route.Redeem)
+  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(
+    contract,
+    inputValues,
+    { price: feederPool.price, isInput: true },
+    Route.Redeem,
+  )
 
   const { impactWarning } = priceImpact?.value ?? {}
 
