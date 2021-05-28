@@ -25,6 +25,7 @@ export const getPenaltyMessage = (amount: number | undefined): string | undefine
 export const getPenaltyPercentage = (
   inputAmount?: BigDecimal,
   outputAmount?: BigDecimal, // min or max output
+  lpPriceAdjustment?: { price: BigDecimal; isInput: boolean },
   reverse?: boolean,
 ): number | undefined => {
   if (!inputAmount || !outputAmount) return
@@ -32,18 +33,24 @@ export const getPenaltyPercentage = (
   const [min, max] = getBounds(inputAmount.simple)
   if (!min || !max) return
 
-  const output = outputAmount.simple
-  const penalty = output / inputAmount.simple
+  const isInput = lpPriceAdjustment?.isInput ?? false
+  const lpPrice = lpPriceAdjustment?.price
 
-  if (reverse) {
-    return penalty > 1 ? (penalty - 1) * -100 : (1 - penalty) * 100
-  }
-  return penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100
+  const input = isInput ? inputAmount.simple * (lpPrice?.simple ?? 1) : inputAmount.simple
+  const output = isInput ? outputAmount.simple : outputAmount.simple * (lpPrice?.simple ?? 1)
+  const penalty = output / input
+  const percentage = ((): number => {
+    if (reverse) return penalty > 1 ? (penalty - 1) * -100 : (1 - penalty) * 100
+    return penalty > 1 ? (penalty - 1) * 100 : (1 - penalty) * -100
+  })()
+
+  return percentage
 }
 
 export const getPriceImpact = (
   [inputLow, inputHigh]: [BigDecimal, BigDecimal],
   [outputLow, outputHigh]: [BigDecimal, BigDecimal],
+  lpPriceAdjustment?: { price: BigDecimal; isInput: boolean },
   reverse = false,
 ): PriceImpact | undefined => {
   const startRate = outputLow.divPrecisely(inputLow).simple
@@ -51,7 +58,7 @@ export const getPriceImpact = (
 
   const impactPercentage = Math.abs(startRate - endRate) * 100
   const impactWarning = impactPercentage > 0.1
-  const distancePercentage = getPenaltyPercentage(inputHigh, outputHigh, reverse)
+  const distancePercentage = getPenaltyPercentage(inputHigh, outputHigh, lpPriceAdjustment, reverse)
 
   return {
     distancePercentage,

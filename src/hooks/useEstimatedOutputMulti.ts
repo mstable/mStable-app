@@ -36,7 +36,12 @@ interface Output {
 /**
  * This hook is designed for use with contracts that support mint & mintMulti, redeemExact
  */
-export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues?: BigDecimalInputValues, route?: Route): Output => {
+export const useEstimatedOutputMulti = (
+  contract?: MintableContract,
+  inputValues?: BigDecimalInputValues,
+  lpPriceAdjustment?: { price: BigDecimal; isInput: boolean },
+  route?: Route,
+): Output => {
   const [estimatedOutputRange, setEstimatedOutputRange] = useFetchState<[BigDecimal, BigDecimal]>()
   const massetConfig = useSelectedMassetConfig()
 
@@ -52,10 +57,10 @@ export const useEstimatedOutputMulti = (contract?: MintableContract, inputValues
 
     if (!scaledInputHigh.exact.gt(0)) return { fetching: true }
 
-    const value = getPriceImpact([totalInputLow, scaledInputHigh], estimatedOutputRange.value, route === Route.Redeem)
+    const value = getPriceImpact([totalInputLow, scaledInputHigh], estimatedOutputRange.value, lpPriceAdjustment, route === Route.Redeem)
 
     return { value }
-  }, [estimatedOutputRange.fetching, estimatedOutputRange.value, touched, route, massetConfig.lowInputValue])
+  }, [estimatedOutputRange.fetching, estimatedOutputRange.value, touched, route, lpPriceAdjustment, massetConfig.lowInputValue])
 
   const [update] = useDebounce(
     () => {

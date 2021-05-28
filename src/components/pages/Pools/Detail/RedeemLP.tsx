@@ -90,6 +90,7 @@ export const RedeemLP: FC = () => {
     {
       ...outputOptions.find(t => t.address === outputAddress),
     } as BigDecimalInputValue,
+    { price: feederPool.price, isInput: true },
     shouldSkipEstimation,
   )
 

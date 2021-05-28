@@ -57,7 +57,7 @@ const MintExactLogic: FC = () => {
 
   const touched = useMemo(() => Object.values(inputValues).filter(v => v.touched), [inputValues])
 
-  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(masset, inputValues, Route.Mint)
+  const { estimatedOutputAmount, priceImpact } = useEstimatedOutputMulti(masset, inputValues, undefined, Route.Mint)
 
   const { impactWarning } = priceImpact?.value ?? {}
 
