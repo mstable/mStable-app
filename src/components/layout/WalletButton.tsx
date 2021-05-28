@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 
-import { getNetwork, useChainIdCtx } from '../../context/NetworkProvider'
+import { ChainIds, getNetwork, useChainIdCtx } from '../../context/NetworkProvider'
 import { useConnect, useWalletAddress, useConnected, useInjectedChainIdCtx } from '../../context/AccountProvider'
 
 import { ViewportWidth } from '../../theme'
@@ -75,7 +75,14 @@ export const WalletButton: FC = () => {
   const account = useWalletAddress()
   const [injectedChainId] = useInjectedChainIdCtx()
   const [chainId] = useChainIdCtx()
-  const injectedNetwork = useMemo(() => (injectedChainId ? getNetwork(injectedChainId) : undefined), [injectedChainId])
+
+  const injectedNetwork = useMemo(() => {
+    try {
+      return getNetwork(injectedChainId ?? ChainIds.EthereumMainnet)
+    } catch {
+      return undefined
+    }
+  }, [injectedChainId])
   const [showAccountModal] = useAccountModal()
 
   const connect = useConnect()

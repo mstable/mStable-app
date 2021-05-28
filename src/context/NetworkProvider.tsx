@@ -338,7 +338,7 @@ export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainI
       return MATIC_MUMBAI
 
     default:
-      return ETH_MAINNET
+      throw new Error('Unsupported chain ID')
   }
 }
 
@@ -358,7 +358,13 @@ const jsonRpcCtx = createContext<{ provider: Provider; parentChainProvider?: Pro
 const NetworkConfigProvider: FC = ({ children }) => {
   const [chainId] = useChainIdCtx()
 
-  const network = useMemo(() => getNetwork(chainId ?? ChainIds.EthereumMainnet), [chainId])
+  const network = useMemo(() => {
+    try {
+      return getNetwork(chainId ?? ChainIds.EthereumMainnet)
+    } catch {
+      return getNetwork(ChainIds.EthereumMainnet)
+    }
+  }, [chainId])
 
   return <networkCtx.Provider value={network}>{children}</networkCtx.Provider>
 }
