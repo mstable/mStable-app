@@ -54,7 +54,7 @@ export const useWallet = (): OnboardCtx['wallet'] => useContext(onboardCtx).wall
 
 export const useProvider = (): Provider | undefined => useSignerCtx()[0]?.provider
 
-export const useWalletAddress = (): OnboardCtx['address'] => useContext(onboardCtx).address
+export const useWalletAddress = (): OnboardCtx['address'] => useContext(onboardCtx)?.address
 
 export const useConnect = (): OnboardCtx['connect'] => useContext(onboardCtx).connect
 
