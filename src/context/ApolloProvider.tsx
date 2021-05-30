@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import Skeleton from 'react-loading-skeleton'
 import { ApolloProvider as ApolloReactProvider } from '@apollo/react-hooks'
 import { MultiAPILink } from '@habx/apollo-multi-endpoint-link'
@@ -6,7 +6,6 @@ import { ApolloClient, InMemoryCache, HttpLink, NormalizedCacheObject } from '@a
 import { ApolloLink } from 'apollo-link'
 import { onError } from 'apollo-link-error'
 import { persistCache } from 'apollo-cache-persist'
-import { useThrottleFn } from 'react-use'
 
 import { useAddErrorNotification } from './NotificationsProvider'
 import { useNetwork } from './NetworkProvider'
@@ -38,17 +37,25 @@ const cache = new InMemoryCache({
 export const ApolloProvider: FC = ({ children }) => {
   const addErrorNotification = useAddErrorNotification()
   const [persisted, setPersisted] = useState(false)
-  const [error, setError] = useState<string>()
   const network = useNetwork()
 
-  useThrottleFn(
-    () => {
-      if (error) {
-        addErrorNotification(error)
+  // Serialized array of failed endpoints to be excluded from the client
+  const [failedEndpoints, setFailedEndpoints] = useState<string>('')
+
+  const handleError = useCallback(
+    (message: string, error?: unknown): void => {
+      console.error(message, error)
+
+      // Not significant at the moment; falls back to the hosted service
+      if (message.includes('Exhausted list of indexers')) return
+
+      let sanitizedError: string = message
+      if (message.includes('Failed to query subgraph deployment')) {
+        sanitizedError = `The Graph: ${message.split(': ')[1] ?? message}`
       }
+      addErrorNotification(sanitizedError)
     },
-    5000,
-    [error] as never,
+    [addErrorNotification],
   )
 
   useEffect(() => {
@@ -68,26 +75,45 @@ export const ApolloProvider: FC = ({ children }) => {
     setPersisted(true)
     if (!persisted || !network) return undefined
 
-    const errorLink = onError(({ networkError, graphQLErrors }) => {
+    const _failedEndpoints = failedEndpoints.split(',')
+
+    const errorLink = onError(({ networkError, graphQLErrors, operation }) => {
+      const ctx = operation.getContext()
+
       if (graphQLErrors) {
         graphQLErrors.forEach(({ message, ..._error }) => {
-          // eslint-disable-next-line no-console
-          console.error(message, _error)
+          if (_failedEndpoints.includes(ctx.uri)) return
+
+          handleError(message, _error)
+
+          // On any GraphQL error, mark the endpoint as failed; this may be
+          // excessive, but failed endpoints are merely deprioritised rather than
+          // excluded completely.
+          _failedEndpoints.push(ctx.uri)
         })
       }
+
       if (networkError) {
-        setError(`TheGraph: ${networkError.message}`)
+        handleError(networkError.message)
       }
+      setFailedEndpoints(_failedEndpoints.join(','))
     })
 
-    const link = ApolloLink.from([
-      errorLink,
-      new MultiAPILink({
-        endpoints: network.gqlEndpoints,
-        httpSuffix: '', // By default, this library adds `/graphql` as a suffix
-        createHttpLink: () => (new HttpLink() as unknown) as ApolloLink,
+    // Create new link by filtering out previously failed endpoints
+    const endpoints = Object.fromEntries(
+      Object.entries(network.gqlEndpoints).map(([name, _endpoints]) => {
+        const preferred = _endpoints.filter(endpoint => !failedEndpoints.split(',').includes(endpoint))[0]
+        const fallback = _endpoints[0] // There is always a fallback, even if it failed
+        return [name, preferred ?? fallback]
       }),
-    ]) as never
+    )
+    const multiApiLink = new MultiAPILink({
+      endpoints,
+      httpSuffix: '', // By default, this library adds `/graphql` as a suffix
+      createHttpLink: () => (new HttpLink() as unknown) as ApolloLink,
+    })
+
+    const link = ApolloLink.from([errorLink, multiApiLink]) as never
 
     return new ApolloClient<NormalizedCacheObject>({
       cache,
@@ -102,7 +128,7 @@ export const ApolloProvider: FC = ({ children }) => {
         },
       },
     })
-  }, [persisted, network])
+  }, [persisted, network, handleError, failedEndpoints])
 
   return client ? <ApolloReactProvider client={client as never}>{children}</ApolloReactProvider> : <Skeleton />
 }
