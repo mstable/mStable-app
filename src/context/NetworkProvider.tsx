@@ -27,14 +27,11 @@ interface CoreAddresses {
   UniswapRouter02_Like: string
 }
 
-interface MstableGqlEndpoints extends Record<string, string> {
-  protocol: string
-  feeders: string
-}
+type GraphQLEndpoints<T extends string> = Record<T, [string] | [string, string]>
 
-interface CoreGqlEndpoints extends MstableGqlEndpoints {
-  blocks: string
-}
+type MstableGqlEndpoints = GraphQLEndpoints<'protocol' | 'feeders'>
+
+type CoreGqlEndpoints = MstableGqlEndpoints & GraphQLEndpoints<'blocks'>
 
 export enum ChainIds {
   EthereumMainnet = 1,
@@ -98,7 +95,7 @@ export interface EthereumMainnet
   chainId: ChainIds.EthereumMainnet
 }
 
-export interface EthereumRopsten extends Network<{ ERC20: { WETH: string } }, {}> {
+export interface EthereumRopsten extends Network<{ ERC20: { WETH: string } }, GraphQLEndpoints<'ecosystem'>> {
   chainId: ChainIds.EthereumRopsten
 }
 
@@ -106,7 +103,7 @@ export interface EthereumGoerli extends Network<{ ERC20: { WETH: string } }, {}>
   chainId: ChainIds.EthereumGoerli
 }
 
-export interface MaticMainnet extends Network<{ ERC20: { wMATIC: string } }, {}> {
+export interface MaticMainnet extends Network<{ ERC20: { wMATIC: string } }, GraphQLEndpoints<'ecosystem'>> {
   chainId: ChainIds.MaticMainnet
   parentChainId: ChainIds.EthereumMainnet
   nativeToken: {
@@ -163,6 +160,14 @@ const maticExplorerUrl = (network?: 'mainnet' | 'mumbai') => (
   }
 }
 
+const GRAPH_API_KEY = '9bcd013940ae451d941a8e9f925546a2'
+
+const graphMainnetEndpoint = (subgraphId: string, version: number): string =>
+  `https://gateway.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/${subgraphId}-${version}`
+
+const graphHostedEndpoint = (orgName: string, subgraphName: string): string =>
+  `https://api.thegraph.com/subgraphs/name/${orgName}/${subgraphName}`
+
 const ETH_MAINNET: EthereumMainnet = {
   chainId: ChainIds.EthereumMainnet,
   protocolName: Networks.Ethereum,
@@ -178,9 +183,12 @@ const ETH_MAINNET: EthereumMainnet = {
   rpcEndpoints: ['https://mainnet.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe'],
   gasStationEndpoint: 'https://www.gasnow.org/api/v3/gas/price?utm_source=:mstable',
   gqlEndpoints: {
-    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-staging',
-    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools',
-    blocks: 'https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks',
+    protocol: [
+      graphMainnetEndpoint('0x26cf67040678eb0f5654c9cbaad78dc1694cbafa', 0),
+      graphHostedEndpoint('mstable', 'mstable-protocol-staging'),
+    ],
+    feeders: [graphHostedEndpoint('mstable', 'mstable-feeder-pools')],
+    blocks: [graphHostedEndpoint('blocklytics', 'ethereum-blocks')],
   },
   addresses: {
     MTA: '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2',
@@ -206,10 +214,10 @@ const ETH_ROPSTEN: EthereumRopsten = {
   rpcEndpoints: ['https://ropsten.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe'],
   gasStationEndpoint: 'https://gasprice.poa.network/',
   gqlEndpoints: {
-    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-ropsten',
-    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeders-ropsten',
-    blocks: 'https://api.thegraph.com/subgraphs/name/blocklytics/ropsten-blocks',
-    ecosystem: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem',
+    protocol: [graphHostedEndpoint('mstable', 'mstable-protocol-ropsten')],
+    feeders: [graphHostedEndpoint('mstable', 'mstable-feeders-ropsten')],
+    blocks: [graphHostedEndpoint('blocklytics', 'ropsten-blocks')],
+    ecosystem: [graphHostedEndpoint('mstable', 'mstable-ecosystem')],
   },
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
@@ -233,9 +241,9 @@ const ETH_GOERLI: EthereumGoerli = {
   rpcEndpoints: ['https://goerli.infura.io/v3/a6daf77ef0ae4b60af39259e435a40fe'],
   gasStationEndpoint: 'https://gasprice.poa.network/',
   gqlEndpoints: {
-    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-goerli',
-    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeders-goerli',
-    blocks: 'https://api.thegraph.com/subgraphs/name/blocklytics/goerli-blocks',
+    protocol: [graphHostedEndpoint('mstable', 'mstable-protocol-goerli')],
+    feeders: [graphHostedEndpoint('mstable', 'mstable-feeders-goerli')],
+    blocks: [graphHostedEndpoint('blocklytics', 'goerli-blocks')],
   },
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
@@ -271,10 +279,10 @@ const MATIC_MAINNET: MaticMainnet = {
   ],
   gasStationEndpoint: 'https://gasstation-mainnet.matic.network',
   gqlEndpoints: {
-    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-polygon',
-    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools-polygon',
-    blocks: 'https://api.thegraph.com/subgraphs/name/elkfinance/matic-blocks',
-    ecosystem: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-ecosystem', // Mainnet
+    protocol: [graphHostedEndpoint('mstable', 'mstable-protocol-polygon')],
+    feeders: [graphHostedEndpoint('mstable', 'mstable-feeder-pools-polygon')],
+    blocks: [graphHostedEndpoint('elkfinance', 'matic-blocks')],
+    ecosystem: [graphHostedEndpoint('mstable', 'mstable-ecosystem')], // Mainnet
   },
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0', // Mainnet
@@ -299,10 +307,10 @@ const MATIC_MUMBAI: MaticMumbai = {
   rpcEndpoints: ['https://rpc-mumbai.maticvigil.com/v1/9014a595065319bb6d40417c45281c2608a943c7'],
   gasStationEndpoint: 'https://gasstation-mumbai.matic.today',
   gqlEndpoints: {
-    protocol: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-polygon-mumbai',
-    feeders: 'https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools-mumbai',
+    protocol: [graphHostedEndpoint('mstable', 'mstable-protocol-polygon-mumbai')],
+    feeders: [graphHostedEndpoint('mstable', 'mstable-feeder-pools-mumbai')],
     // This is for mainnet, no subgraph available for Mumbai
-    blocks: 'https://api.thegraph.com/subgraphs/name/elkfinance/matic-blocks',
+    blocks: [graphHostedEndpoint('elkfinance', 'matic-blocks')],
   },
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0', // Mainnet
@@ -323,6 +331,7 @@ export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainI
   switch (chainId) {
     case 0:
     case ChainIds.EthereumMainnet:
+    default:
       return ETH_MAINNET
 
     case ChainIds.EthereumRopsten:
@@ -336,9 +345,6 @@ export const getNetwork = (chainId: ChainIds | 0): Extract<AllNetworks, { chainI
 
     case ChainIds.MaticMumbai:
       return MATIC_MUMBAI
-
-    default:
-      throw new Error('Unsupported chain ID')
   }
 }
 
@@ -358,13 +364,7 @@ const jsonRpcCtx = createContext<{ provider: Provider; parentChainProvider?: Pro
 const NetworkConfigProvider: FC = ({ children }) => {
   const [chainId] = useChainIdCtx()
 
-  const network = useMemo(() => {
-    try {
-      return getNetwork(chainId ?? ChainIds.EthereumMainnet)
-    } catch {
-      return getNetwork(ChainIds.EthereumMainnet)
-    }
-  }, [chainId])
+  const network = useMemo(() => getNetwork(chainId ?? ChainIds.EthereumMainnet), [chainId])
 
   return <networkCtx.Provider value={network}>{children}</networkCtx.Provider>
 }
