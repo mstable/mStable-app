@@ -86,6 +86,9 @@ export interface MassetState {
   feederPools: {
     [address: string]: FeederPoolState
   }
+  userVaults: { [address: string]: number[] }
+  vaultIds: { [id: number]: string }
+  boostDirector?: string
   bassetRatios: { [address: string]: BigNumber }
 }
 
@@ -118,7 +121,10 @@ export interface BoostedSavingsVaultState {
   rewardPerTokenStored: BigNumber
   rewardRate: BigNumber
   stakingContract: string
-  stakingToken: string
+  stakingToken: {
+    address: string
+    symbol: string
+  }
   totalStakingRewards: BigDecimal
   totalSupply: BigDecimal
   unlockPercentage: BigNumber

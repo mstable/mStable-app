@@ -1,7 +1,6 @@
 # import './fragments.graphql'
 
-query FeederPools($account: String!, $hasAccount: Boolean!)
-@api(name: feeders) {
+query FeederPools($account: String!, $accountId: ID!, $hasAccount: Boolean!) @api(name: feeders) {
   feederPools {
     id
     swapFeeRate
@@ -49,6 +48,19 @@ query FeederPools($account: String!, $hasAccount: Boolean!)
   saveVaults: boostedSavingsVaults(where: { feederPool: null }) {
     ...BoostedSavingsVaultAll
   }
+  userVaults: accounts(where: { id: $accountId }) {
+    id
+    boostDirection {
+      directorVaultId
+    }
+  }
+  boostDirectors {
+    id
+  }
+  vaultIds: boostedSavingsVaults {
+    directorVaultId
+    id
+  }
 }
 
 query FeederTokens @api(name: feeders) {
@@ -62,8 +74,7 @@ query FeederTokens @api(name: feeders) {
   }
 }
 
-query FeederPoolMetrics($feederPool: ID!, $block: Block_height!)
-@api(name: feeders) {
+query FeederPoolMetrics($feederPool: ID!, $block: Block_height!) @api(name: feeders) {
   current: feederPool(id: $feederPool) {
     ...FPMetrics
   }

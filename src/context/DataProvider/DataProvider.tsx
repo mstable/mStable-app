@@ -23,7 +23,7 @@ const useRawData = (): [MassetsQueryResult['data'], FeederPoolsQueryResult['data
   const account = useAccount()
   const baseOptions = useMemo(
     () => ({
-      variables: { account: account ?? '', hasAccount: !!account },
+      variables: { account: account ?? '', accountId: account ?? '', hasAccount: !!account },
     }),
     [account],
   )

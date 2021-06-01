@@ -1,4 +1,4 @@
-import type { ERC20, BoostedSavingsVault, ISavingsContractV2, Masset, FeederPool } from '@mstable/protocol/types/generated'
+import type { ERC20, BoostedSavingsVault, ISavingsContractV2, Masset, FeederPool, BoostDirector } from '@mstable/protocol/types/generated'
 
 import type { UniswapRouter02, SaveWrapper, FeederWrapper } from './typechain'
 
@@ -17,22 +17,23 @@ export enum Interfaces {
   ERC20,
   SavingsContract,
   SaveWrapper,
-  BoostedSavingsVault,
   UniswapRouter02,
   FeederPool,
   FeederWrapper,
+  BoostedSavingsVault,
+  BoostDirector,
 }
-/* eslint-enable @typescript-eslint/no-shadow */
 
 export interface Instances {
   [Interfaces.Masset]: Masset
   [Interfaces.ERC20]: ERC20
   [Interfaces.SavingsContract]: ISavingsContractV2
   [Interfaces.SaveWrapper]: SaveWrapper
-  [Interfaces.BoostedSavingsVault]: BoostedSavingsVault
   [Interfaces.UniswapRouter02]: UniswapRouter02
   [Interfaces.FeederPool]: FeederPool
   [Interfaces.FeederWrapper]: FeederWrapper
+  [Interfaces.BoostedSavingsVault]: BoostedSavingsVault
+  [Interfaces.BoostDirector]: BoostDirector
 }
 
 export interface Token {
