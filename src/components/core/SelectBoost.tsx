@@ -133,14 +133,16 @@ export const SelectBoost: FC<Props> = ({ vault }) => {
     selectedVault,
   ])
 
+  const isVaultBoosted = boostedVaults?.find(v => v?.stakingToken?.symbol === vault?.stakingToken?.symbol)
+
   const message =
     selectedVault === undefined
-      ? `To receive a boost on this vault please select one of the following vaults below to replace:`
+      ? `To continue receiving a boost on this vault please select one of the following vaults below to replace:`
       : `You have selected ${formatTokenText(selectedVault?.stakingToken?.symbol)} to replace with ${formatTokenText(
           vault?.stakingToken?.symbol,
         )}`
 
-  if (isImusd) return null
+  if (isImusd || isVaultBoosted) return null
 
   return (
     <Container>
