@@ -15,7 +15,7 @@ import type { Tokens } from '../TokensProvider'
 
 import { BigDecimal } from '../../web3/BigDecimal'
 import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol'
-import { FeederPoolsQueryResult, BoostedSavingsVaultAllFragment } from '../../graphql/feeders'
+import { BoostedSavingsVaultAllFragment, FeederPoolsQueryResult } from '../../graphql/feeders'
 
 type NonNullableMasset = NonNullable<NonNullable<MassetsQueryResult['data']>['massets'][number]>
 
@@ -205,7 +205,7 @@ const transformSavingsContractV2 = (
     token: tokens[id],
     totalSavings: BigDecimal.fromMetric(totalSavings),
     version: version as 2,
-    boostedSavingsVault: boostedSavingsVaults?.[0] ? transformBoostedSavingsVault(boostedSavingsVaults[0]) : undefined,
+    boostedSavingsVault: boostedSavingsVaults[0] ? transformBoostedSavingsVault(boostedSavingsVaults[0]) : undefined,
   }
 }
 
@@ -305,7 +305,7 @@ const transformMassetData = (
   {
     boostDirectors,
     feederPools: allFeederPools,
-    saveVaults: allVaults,
+    saveVaults,
     userVaults: _userVaults,
     vaultIds: _vaultIds,
   }: NonNullable<FeederPoolsQueryResult['data']>,
@@ -319,11 +319,11 @@ const transformMassetData = (
   )
 
   // Vaults are on the feeder pools subgraph
-  const saveVaults = allVaults.filter(v => v.stakingToken.address === savingsContractV2.id)
+  const boostedSavingsVaults = saveVaults.filter(v => v.stakingToken.address === savingsContractV2.id)
 
   const boostDirector = boostDirectors.length > 0 ? boostDirectors[0].id : undefined
-  const userVaults = Object.assign({}, ..._userVaults.map(v => ({ [v.id]: v.boostDirection.map(b => b.directorVaultId) })))
-  const vaultIds = Object.assign({}, ..._vaultIds.map(v => ({ [v.directorVaultId ?? 0]: v.id })))
+  const userVaults = Object.fromEntries(_userVaults.map(v => [v.id, v.boostDirection.map(b => b.directorVaultId as number)]))
+  const vaultIds = Object.fromEntries(_vaultIds.map(v => [v.directorVaultId ?? 0, v.id]))
 
   return {
     address,
@@ -345,7 +345,7 @@ const transformMassetData = (
     hasFeederPools: Object.keys(feederPools).length > 0,
     savingsContracts: {
       v1: savingsContractV1 ? transformSavingsContractV1(savingsContractV1, tokens, address, false) : undefined,
-      v2: transformSavingsContractV2({ ...savingsContractV2, boostedSavingsVaults: saveVaults }, tokens, address, true),
+      v2: transformSavingsContractV2({ ...savingsContractV2, boostedSavingsVaults }, tokens, address, true),
     },
     bassetRatios: Object.fromEntries(Object.values(bAssets).map(b => [b.address, b.ratio])),
     userVaults,

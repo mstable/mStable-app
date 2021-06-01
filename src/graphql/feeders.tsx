@@ -3829,7 +3829,7 @@ export type FeederPoolsQuery = { feederPools: Array<(
       Pick<FeederPoolAccount, 'balance' | 'price' | 'lastUpdate' | 'balanceVault' | 'priceVault' | 'lastUpdateVault'>
       & { cumulativeEarned: Pick<Metric, 'exact' | 'decimals'>, cumulativeEarnedVault: Pick<Metric, 'exact' | 'decimals'> }
     )> }
-  )>, otherVaults: Array<BoostedSavingsVaultAllFragment>, userVaults: Array<(
+  )>, saveVaults: Array<BoostedSavingsVaultAllFragment>, userVaults: Array<(
     Pick<Account, 'id'>
     & { boostDirection: Array<Pick<BoostedSavingsVault, 'directorVaultId'>> }
   )>, boostDirectors: Array<Pick<BoostDirector, 'id'>>, vaultIds: Array<Pick<BoostedSavingsVault, 'directorVaultId' | 'id'>> };
@@ -4014,7 +4014,7 @@ export const FeederPoolsDocument = gql`
       }
     }
   }
-  otherVaults: boostedSavingsVaults(where: {feederPool: null}) {
+  saveVaults: boostedSavingsVaults(where: {feederPool: null}) {
     ...BoostedSavingsVaultAll
   }
   userVaults: accounts(where: {id: $accountId}) {
