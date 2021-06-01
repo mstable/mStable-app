@@ -29,7 +29,10 @@ const mockVault = (address: string, isImusd = false): BoostedSavingsVaultState =
   rewardPerTokenStored: BigDecimal.ZERO.exact,
   rewardRate: BigDecimal.ZERO.exact,
   stakingContract: '',
-  stakingToken: '',
+  stakingToken: {
+    symbol: '',
+    address: '',
+  },
   totalStakingRewards: BigDecimal.ZERO,
   totalSupply: BigDecimal.ZERO,
   unlockPercentage: BigDecimal.ZERO.exact,
