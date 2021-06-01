@@ -109,11 +109,11 @@ export const PokeBoost: FC<Props> = ({ apy, vault }) => {
   const rewardStreams = useRewardStreams()
 
   const showBoostPoke = (account?.boostMultiplier ?? 0) < (userBoost ?? 0) && !!account?.boostMultiplier
-  const showBoostDirector = showBoostPoke && account?.boostMultiplier === 1
+  const showBoostDirector = !!account?.boostMultiplier && account?.boostMultiplier === 1
   const message = isImusd ? 'Claim rewards to update your reward rate.' : 'Poke the contract or claim rewards to update your reward rate.'
 
-  if (!showBoostPoke) return null
   if (showBoostDirector) return <SelectBoost vault={vault} />
+  if (!showBoostPoke) return null
 
   return (
     <Container>
