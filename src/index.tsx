@@ -56,6 +56,7 @@ const Routes: FC = () => {
       <Redirect exact path="/swap" to="/musd/forge/swap" />
       <Redirect exact path="/musd" to="/musd/forge/mint" />
       <Redirect exact path="/mbtc" to="/mbtc/forge/mint" />
+      <Redirect exact path="/musd/swap" to="/musd/forge/swap" />
       <Redirect exact path="/musd/forge" to="/musd/forge/mint" />
       <Redirect exact path="/mbtc/forge" to="/mbtc/forge/mint" />
       <Redirect exact path="/musd/analytics" to="/musd/stats" />
