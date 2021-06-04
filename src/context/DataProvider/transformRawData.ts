@@ -291,7 +291,6 @@ const transformFeederPoolsData = (feederPools: NonNullableFeederPools, tokens: T
 
 const transformMassetData = (
   {
-    feeRate,
     redemptionFeeRate,
     invariantStartTime,
     invariantStartingCap,
@@ -339,7 +338,7 @@ const transformMassetData = (
     bAssets,
     removedBassets: Object.fromEntries(removedBassets.map(b => [b.token.address, transformTokenData(b.token, tokens)])),
     collateralisationRatio: collateralisationRatio ? BigNumber.from(collateralisationRatio) : undefined,
-    feeRate: BigNumber.from(feeRate),
+    feeRate: BigNumber.from(200000000000000),
     redemptionFeeRate: BigNumber.from(redemptionFeeRate),
     feederPools,
     hasFeederPools: Object.keys(feederPools).length > 0,
