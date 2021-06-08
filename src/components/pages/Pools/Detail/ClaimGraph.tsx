@@ -69,14 +69,14 @@ interface Chart {
   }[]
 }
 
-export const ClaimGraph: FC<{ showPreview?: boolean }> = ({ showPreview }) => {
+export const ClaimGraph: FC = () => {
   const rewardStreams = useRewardStreams()
 
   const chart = useMemo<Chart>(() => {
     if (!rewardStreams) return { maxY: 0, groups: [] }
 
     // Filter for selected types
-    const filtered = showPreview ? rewardStreams.chartData : rewardStreams.chartData.filter(datum => !datum[StreamType.LockedPreview])
+    const filtered = rewardStreams.chartData
 
     // Group into ranges
     const ranges = filtered
@@ -130,7 +130,7 @@ export const ClaimGraph: FC<{ showPreview?: boolean }> = ({ showPreview }) => {
         })
         .filter(group => group.data.length > 1),
     }
-  }, [rewardStreams, showPreview])
+  }, [rewardStreams])
 
   return rewardStreams ? (
     <ChartContainer key={chart.groups.length}>
@@ -192,7 +192,7 @@ export const ClaimGraph: FC<{ showPreview?: boolean }> = ({ showPreview }) => {
                 <Label position="insideTopLeft" value="Next unlock" fontSize={14} dy={-20} dx={-6} />
               </ReferenceLine>
             )}
-            {rewardStreams && showPreview && (
+            {rewardStreams && (
               <ReferenceLine x={rewardStreams.previewStream.start} stroke={Color.greyTransparent}>
                 <Label position="insideTopLeft" value="New unlock" fontSize={14} />
               </ReferenceLine>

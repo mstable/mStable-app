@@ -14,6 +14,7 @@ import { BoostCalculator } from '../../../rewards/BoostCalculator'
 import { BoostedSavingsVaultState } from '../../../../context/DataProvider/types'
 import { TransitionCard, CardContainer as Container, CardButton as Button } from '../../../core/TransitionCard'
 import { PokeBoost } from '../../../core/PokeBoost'
+import { Tooltip } from '../../../core/ReactTooltip'
 
 enum Selection {
   Stake = 'stake',
@@ -67,7 +68,8 @@ export const PoolOverview: FC = () => {
   const userAmount = token.balance?.simple ?? 0
   const userStakedAmount = vault.account?.rawBalance.simple ?? 0
 
-  const totalEarned = rewardStreams?.amounts.earned.total ?? 0
+  const totalEarned =
+    (rewardStreams?.amounts.earned.unlocked ?? 0) + (rewardStreams?.amounts.previewLocked ?? 0) + (rewardStreams?.amounts.locked ?? 0)
   const totalLocked = rewardStreams?.amounts.locked ?? 0
   const showLiquidityMessage = totalEarned === 0 && totalLocked === 0
 
@@ -97,7 +99,10 @@ export const PoolOverview: FC = () => {
           </Button>
           <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>
             <h3>Rewards</h3>
-            <CountUp end={totalEarned} /> MTA
+            <div>
+              <CountUp end={totalEarned} suffix=" MTA" />
+              <Tooltip tip="MTA rewards unlock over time" />
+            </div>
           </Button>
         </Container>
       </TransitionCard>

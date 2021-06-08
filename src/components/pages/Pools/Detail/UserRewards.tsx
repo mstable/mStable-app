@@ -1,5 +1,4 @@
 import React, { FC } from 'react'
-import { useToggle } from 'react-use'
 import Skeleton from 'react-loading-skeleton'
 import styled from 'styled-components'
 import { BoostedSavingsVault__factory, BoostedSavingsVault } from '@mstable/protocol/types/generated'
@@ -13,7 +12,6 @@ import { useSelectedMassetState } from '../../../../context/DataProvider/DataPro
 import { TransactionManifest } from '../../../../web3/TransactionManifest'
 import { Interfaces } from '../../../../types'
 import { SendButton } from '../../../forms/SendButton'
-import { Button } from '../../../core/Button'
 import { CountUp } from '../../../core/CountUp'
 import { useSelectedFeederPoolVaultContract } from '../FeederPoolProvider'
 import { rewardsColorMapping } from '../constants'
@@ -115,7 +113,7 @@ const ClaimButton = styled(SendButton)<{ visible: boolean }>`
 `}
 `
 
-const ClaimContainer = styled.div<{ isClaiming?: boolean }>`
+const ClaimContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -138,22 +136,16 @@ const ClaimContainer = styled.div<{ isClaiming?: boolean }>`
   }
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.m}) {
-    flex-direction: ${({ isClaiming }) => (isClaiming ? 'row-reverse' : 'row')};
-
     button {
       margin-bottom: 0;
     }
   }
 
   @media (min-width: ${({ theme }) => theme.viewportWidth.l}) {
-    justify-content: ${({ isClaiming }) => (isClaiming ? 'flex-start' : 'flex-end')};
+    align-items: flex-end;
 
-    > * {
-      flex-basis: calc(33% - 0.5rem);
-    }
-    > *:first-child {
-      margin-right: ${({ isClaiming }) => (isClaiming ? '0' : '1rem')};
-      margin-left: ${({ isClaiming }) => (isClaiming ? '1rem' : '0')};
+    > div {
+      width: calc(33% - 0.5rem);
     }
   }
 `
@@ -225,31 +217,27 @@ const RewardsCard = styled(Card)`
 const RewardValue: FC<{
   title: string
   value?: number
-  previewValue?: number
-  previewLabel?: string
-  showPreview?: boolean
   streamType: StreamType
   label: string
-}> = ({ title, value, streamType, label, previewLabel, previewValue, showPreview }) => (
+}> = ({ title, value, streamType, label }) => (
   <RewardValueContainer streamType={streamType}>
     <div>
       <h4>{title}</h4>
-      {typeof value === 'number' || typeof previewValue === 'number' ? (
+      {typeof value === 'number' ? (
         <div>
-          <CountUp end={showPreview ? (previewValue as number) : (value as number)} />
+          <CountUp end={value as number} />
         </div>
       ) : (
         <Skeleton height={20} />
       )}
     </div>
-    <div>{showPreview ? previewLabel : label}</div>
+    <div>{label}</div>
   </RewardValueContainer>
 )
 
 export const UserRewards: FC = () => {
   const rewardStreams = useRewardStreams()
   const isMasquerading = useIsMasquerading()
-  const [isClaiming, toggleIsClaiming] = useToggle(false)
 
   const feederVault = useSelectedFeederPoolVaultContract()
   const saveVault = useSelectedSaveVaultContract()
@@ -258,9 +246,7 @@ export const UserRewards: FC = () => {
   const propose = usePropose()
   const contract = feederVault ?? saveVault
 
-  const showGraph =
-    (rewardStreams?.amounts.earned.total ?? 0) > 0 ||
-    (rewardStreams?.amounts.locked ?? 0) > 0
+  const showGraph = (rewardStreams?.amounts.earned.total ?? 0) > 0 || (rewardStreams?.amounts.locked ?? 0) > 0
   const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0
 
   return (
@@ -268,41 +254,32 @@ export const UserRewards: FC = () => {
       <div>
         {showGraph ? (
           <GraphAndValues>
-            <ClaimGraph showPreview={isClaiming} />
+            <ClaimGraph />
             <RewardValues>
               <RewardValue
                 title="Unclaimed"
-                label="Current earnings"
-                previewLabel="Sent to you now"
-                value={rewardStreams?.amounts.earned.total}
-                previewValue={rewardStreams?.amounts.earned.unlocked}
+                label="Sent to you now"
+                value={rewardStreams?.amounts.earned.unlocked}
                 streamType={StreamType.Earned}
-                showPreview={isClaiming}
               />
               <RewardValue
                 title="Unlocked"
-                label="From previous claims"
-                previewLabel="Sent to you now"
+                label={(rewardStreams?.amounts.unlocked ?? 0) > 0 ? `Sent to you now` : `From previous claims`}
                 value={rewardStreams?.amounts.unlocked}
-                previewValue={rewardStreams?.amounts.unlocked}
                 streamType={StreamType.Unlocked}
-                showPreview={isClaiming}
               />
               <RewardValue
                 title="Locked"
                 label="From previous earnings"
-                previewLabel="Added to a new lockup"
-                value={rewardStreams?.amounts.locked}
-                previewValue={rewardStreams?.amounts.previewLocked}
+                value={(rewardStreams?.amounts.previewLocked ?? 0) + (rewardStreams?.amounts.locked ?? 0)}
                 streamType={StreamType.Locked}
-                showPreview={isClaiming}
               />
             </RewardValues>
             {!isMasquerading && (
-              <ClaimContainer isClaiming={isClaiming}>
+              <ClaimContainer>
                 <ClaimButton
-                  visible={isClaiming}
-                  valid={isClaiming}
+                  visible
+                  valid={!!canClaim}
                   title="Claim Rewards"
                   handleSend={() => {
                     if (contract && rewardStreams) {
@@ -315,7 +292,6 @@ export const UserRewards: FC = () => {
                     }
                   }}
                 />
-                {canClaim && <Button onClick={toggleIsClaiming}>{isClaiming ? 'Cancel' : 'Preview Claim'}</Button>}
               </ClaimContainer>
             )}
           </GraphAndValues>

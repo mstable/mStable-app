@@ -22,7 +22,6 @@ export const CardButton = styled(UnstyledButton)<{
   }
 
   span {
-    ${({ theme }) => theme.mixins.numeric};
     font-size: 1.125rem;
   }
 
