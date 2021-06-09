@@ -187,8 +187,8 @@ const PoolDetailContent: FC = () => {
               Feeder Pools offer a way to earn with your assets with <span>low impermanent loss risk.</span>
             </p>
             <p>
-              Liquidity providers passively earn swap fees. Deposits to the Vault will earn swap fees in addition to MTA rewards which vest
-              over time.
+              Liquidity providers passively earn swap fees. Deposits to the Vault earn swap fees in addition to MTA rewards which vest over
+              time.
               {!readMore && <UnstyledButton onClick={setReadMore}>Learn more</UnstyledButton>}
             </p>
             {readMore && (

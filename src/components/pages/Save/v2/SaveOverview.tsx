@@ -210,8 +210,9 @@ export const SaveOverview: FC = () => {
                 <div>
                   {userBoost > 1 && apy?.value?.userBoost ? (
                     <>
-                      <DifferentialCountup prev={apy.value?.base} end={apy.value.userBoost} suffix="%" />
-                      <Tooltip tip={`Combined APY (interest earned + rewards): ${combinedUserApy.toFixed(2)}%`} />
+                      <Tooltip tip={`Combined APY: ${combinedUserApy.toFixed(2)}%`} hideIcon>
+                        <DifferentialCountup prev={apy.value?.base} end={apy.value.userBoost} suffix="%" />
+                      </Tooltip>
                     </>
                   ) : (
                     <>
@@ -219,7 +220,9 @@ export const SaveOverview: FC = () => {
                       &nbsp;-&nbsp;
                       <CountUp end={apy?.value?.maxBoost ?? 0} suffix="%" />
                       <Tooltip
-                        tip={`Combined APY (interest earned + rewards): ${combinedBaseApy.toFixed(2)}-${combinedMaxApy.toFixed(2)}%`}
+                        tip={`Deposits to the Vault earn interest in addition to MTA rewards. Combined APY: ${combinedBaseApy.toFixed(
+                          2,
+                        )}-${combinedMaxApy.toFixed(2)}%`}
                       />
                     </>
                   )}
@@ -232,7 +235,7 @@ export const SaveOverview: FC = () => {
               <h3>Rewards</h3>
               <div>
                 <CountUp end={totalEarned} suffix=" MTA" />
-                <Tooltip tip="Deposit to the Vault to earn MTA rewards" />
+                <Tooltip tip="MTA rewards unlock over time" />
               </div>
             </Button>
           )}

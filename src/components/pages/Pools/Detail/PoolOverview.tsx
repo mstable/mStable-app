@@ -101,7 +101,7 @@ export const PoolOverview: FC = () => {
             <h3>Rewards</h3>
             <div>
               <CountUp end={totalEarned} suffix=" MTA" />
-              <Tooltip tip="Deposit to the Vault to earn MTA rewards" />
+              <Tooltip tip="MTA rewards unlock over time" />
             </div>
           </Button>
         </Container>
