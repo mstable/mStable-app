@@ -22,6 +22,7 @@ import { OnboardingBanner } from './OnboardingBanner'
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
 import { PokeBoost } from '../../../core/PokeBoost'
 import { Tooltip } from '../../../core/ReactTooltip'
+import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy'
 
 enum Selection {
   Balance = 'Balance',
@@ -154,6 +155,7 @@ export const SaveOverview: FC = () => {
   const massetPrice = useSelectedMassetPrice()
   const rewardStreams = useRewardStreams()
   const [selectedSaveVersion] = useSelectedSaveVersion()
+  const saveApy = useAvailableSaveApy()
 
   const {
     savingsContracts: {
@@ -179,6 +181,9 @@ export const SaveOverview: FC = () => {
   }, [boostedSavingsVault, saveToken, saveExchangeRate, selectedSaveVersion, saveV1Balance])
 
   const isSaveV1 = selectedSaveVersion === 1
+  const combinedBaseApy = (apy?.value?.base ?? 0) + (saveApy?.value ?? 0)
+  const combinedMaxApy = (apy?.value?.maxBoost ?? 0) + (saveApy?.value ?? 0)
+  const combinedUserApy = (apy?.value?.userBoost ?? 0) + (saveApy?.value ?? 0)
 
   const handleSelection = useCallback((newValue: Selection) => setSelection(selection === newValue ? undefined : newValue), [selection])
 
@@ -204,12 +209,18 @@ export const SaveOverview: FC = () => {
               ) : (
                 <div>
                   {userBoost > 1 && apy?.value?.userBoost ? (
-                    <DifferentialCountup prev={apy.value?.base} end={apy.value.userBoost} suffix="%" />
+                    <>
+                      <DifferentialCountup prev={apy.value?.base} end={apy.value.userBoost} suffix="%" />
+                      <Tooltip tip={`Combined APY (interest earned + rewards): ${combinedUserApy.toFixed(2)}%`} />
+                    </>
                   ) : (
                     <>
                       <CountUp end={apy?.value?.base ?? 0} />
                       &nbsp;-&nbsp;
                       <CountUp end={apy?.value?.maxBoost ?? 0} suffix="%" />
+                      <Tooltip
+                        tip={`Combined APY (interest earned + rewards): ${combinedBaseApy.toFixed(2)}-${combinedMaxApy.toFixed(2)}%`}
+                      />
                     </>
                   )}
                 </div>
@@ -221,7 +232,7 @@ export const SaveOverview: FC = () => {
               <h3>Rewards</h3>
               <div>
                 <CountUp end={totalEarned} suffix=" MTA" />
-                <Tooltip tip="MTA rewards unlock over time" />
+                <Tooltip tip="Deposit to the Vault to earn MTA rewards" />
               </div>
             </Button>
           )}

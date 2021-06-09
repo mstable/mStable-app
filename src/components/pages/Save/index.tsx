@@ -105,7 +105,7 @@ export const Save: FC = () => {
                 {chainId === ChainIds.EthereumMainnet && (
                   <InfoButton
                     title="Stake MTA"
-                    content="Lockup MTA to participate in governance and earn platform rewards."
+                    content="Lockup MTA to participate in Governance and earn a boost on Vault deposits."
                     onClick={handleGovernanceClick}
                   />
                 )}
