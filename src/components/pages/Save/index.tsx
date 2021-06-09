@@ -105,7 +105,7 @@ export const Save: FC = () => {
                 {chainId === ChainIds.EthereumMainnet && (
                   <InfoButton
                     title="Stake MTA"
-                    content="Lockup MTA to participate in governance and earn platform rewards."
+                    content="Lockup MTA to participate in Governance and boost your rewards on Vault deposits."
                     onClick={handleGovernanceClick}
                   />
                 )}
@@ -115,7 +115,7 @@ export const Save: FC = () => {
                   </h4>
                   <p>
                     By depositing to {`i${massetConfig.formattedName}`} you will begin earning interest on your underlying{' '}
-                    {massetConfig.formattedName}. {vault ? 'Deposits to the Vault will earn interest in addition to MTA rewards.' : ''}
+                    {massetConfig.formattedName}. {vault ? 'Deposits to the Vault earn interest in addition to MTA rewards.' : ''}
                   </p>
                   <p>
                     Deposits from assets other than {massetConfig.formattedName} will first mint {massetConfig.formattedName} before being

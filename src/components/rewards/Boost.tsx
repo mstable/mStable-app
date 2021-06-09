@@ -41,7 +41,7 @@ const BoostBar: FC<{
   return (
     <Widget
       title="Earning Power Multiplier"
-      tooltip="Rewards are boosted by a multiplier (1x to 3x)"
+      tooltip="Stake MTA in Governance to boost your rewards by up to 3x"
       headerContent={
         <Button scale={0.7} onClick={toggleShowCalculator}>
           Calculator
