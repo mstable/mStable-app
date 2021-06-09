@@ -49,7 +49,7 @@ const timeFormatter = (dateFormat: string) => (timestamp: unknown): string => {
 }
 
 const xAxisFormatter = timeFormatter('dd.MM.yy')
-const tooltipFormatter = timeFormatter('yyyy.MM.dd HH:mm')
+const tooltipFormatter = timeFormatter('dd.MM.yy HH:mm')
 
 const ChartContainer = styled(RechartsContainerBase)`
   @media (min-width: ${ViewportWidth.m}) {
