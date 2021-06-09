@@ -21,6 +21,7 @@ import { SavePosition } from './SavePosition'
 import { OnboardingBanner } from './OnboardingBanner'
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
 import { PokeBoost } from '../../../core/PokeBoost'
+import { Tooltip } from '../../../core/ReactTooltip'
 
 enum Selection {
   Balance = 'Balance',
@@ -163,7 +164,9 @@ export const SaveOverview: FC = () => {
 
   const userBoost = useCalculateUserBoost(boostedSavingsVault)
   const apy = useSaveVaultAPY(saveToken?.symbol, userBoost)
-  const totalEarned = rewardStreams?.amounts.earned.total ?? 0
+
+  const totalEarned =
+    (rewardStreams?.amounts.earned.unlocked ?? 0) + (rewardStreams?.amounts.previewLocked ?? 0) + (rewardStreams?.amounts.locked ?? 0)
 
   const userBalance = useMemo(() => {
     if (selectedSaveVersion === 1) return saveV1Balance?.balance
@@ -216,7 +219,10 @@ export const SaveOverview: FC = () => {
           {!!boostedSavingsVault && (
             <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>
               <h3>Rewards</h3>
-              <CountUp end={totalEarned} /> MTA
+              <div>
+                <CountUp end={totalEarned} suffix=" MTA" />
+                <Tooltip tip="MTA rewards unlock over time" />
+              </div>
             </Button>
           )}
         </TransitionContainer>
