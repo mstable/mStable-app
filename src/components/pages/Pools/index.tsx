@@ -6,7 +6,7 @@ import Skeleton from 'react-loading-skeleton'
 import type { FeederPoolState, MassetState } from '../../../context/DataProvider/types'
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
 import { useSelectedMassetConfig, MassetConfig, MASSET_CONFIG } from '../../../context/MassetProvider'
-import { useNetwork } from '../../../context/NetworkProvider'
+import { ChainIds, useNetwork } from '../../../context/NetworkProvider'
 
 import { PageAction, PageHeader } from '../PageHeader'
 import { Card } from './cards/Card'
@@ -178,12 +178,14 @@ const PoolsContent: FC = () => {
         {
           user: [],
           active: hasFeederPools
-            ? [customEarnCard(massetConfig), customPoolCard(massetConfig)]
+            ? network.chainId === ChainIds.EthereumMainnet
+              ? [customEarnCard(massetConfig), customPoolCard(massetConfig)]
+              : []
             : [customNoPoolsCard(massetConfig, network.protocolName)],
           deprecated: [],
         },
       ),
-    [feederPools, massetConfig, hasFeederPools, network.protocolName],
+    [feederPools, hasFeederPools, network.chainId, network.protocolName, massetConfig],
   )
 
   const [numPoolsVisible, setNumPoolsVisible] = useState({
