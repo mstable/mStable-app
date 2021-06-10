@@ -312,10 +312,140 @@ const transformMassetData = (
 ): MassetState => {
   const bAssets = transformBassets(_bassets, tokens)
 
-  const feederPools = transformFeederPoolsData(
-    allFeederPools.filter(fp => fp.masset.id === address),
-    tokens,
-  )
+  const mockFeederPools = [
+    {
+      __typename: 'FeederPool',
+      id: '0x48c59199da51b7e30ea200a74ea07974e62c4ba7',
+      swapFeeRate: '600000000000000',
+      redemptionFeeRate: '600000000000000',
+      governanceFeeRate: '100000000000000000',
+      dailyAPY: '0',
+      price: '1001286380514048630',
+      invariantK: '126723296924145930033',
+      basket: {
+        __typename: 'Basket',
+        bassets: [
+          {
+            __typename: 'Basset',
+            id: '0x48c59199da51b7e30ea200a74ea07974e62c4ba7.0x0316eb71485b0ab14103307bf65a021042c6d380',
+            vaultBalance: {
+              __typename: 'Metric',
+              exact: '69558073335774820992',
+              decimals: 18,
+              simple: '69.558073335774820992',
+            },
+            isTransferFeeCharged: false,
+            ratio: '100000000',
+            status: 'Normal',
+            maxWeight: null,
+            token: {
+              __typename: 'Token',
+              id: '0x0316eb71485b0ab14103307bf65a021042c6d380',
+              address: '0x0316eb71485b0ab14103307bf65a021042c6d380',
+              decimals: 18,
+              symbol: 'FRAX',
+              totalSupply: {
+                __typename: 'Metric',
+                exact: '27906376659990000000000',
+                decimals: 18,
+                simple: '27906.37665999',
+              },
+            },
+          },
+          {
+            __typename: 'Basset',
+            id: '0x48c59199da51b7e30ea200a74ea07974e62c4ba7.0x945facb997494cc2570096c74b5f66a3507330a1',
+            vaultBalance: {
+              __typename: 'Metric',
+              exact: '57168963043467983666',
+              decimals: 18,
+              simple: '57.168963043467983666',
+            },
+            isTransferFeeCharged: false,
+            ratio: '100000000',
+            status: 'Normal',
+            maxWeight: null,
+            token: {
+              __typename: 'Token',
+              id: '0x945facb997494cc2570096c74b5f66a3507330a1',
+              address: '0x945facb997494cc2570096c74b5f66a3507330a1',
+              decimals: 18,
+              symbol: 'mUSD',
+              totalSupply: {
+                __typename: 'Metric',
+                exact: '188173789713309587593',
+                decimals: 18,
+                simple: '188.173789713309587593',
+              },
+            },
+          },
+        ],
+        undergoingRecol: false,
+        failed: false,
+      },
+      token: {
+        __typename: 'Token',
+        id: '0x48c59199da51b7e30ea200a74ea07974e62c4ba7',
+        address: '0x48c59199da51b7e30ea200a74ea07974e62c4ba7',
+        decimals: 18,
+        symbol: 'fPmUSD/FRAX',
+        totalSupply: {
+          __typename: 'Metric',
+          exact: '126557349005859985036',
+          decimals: 18,
+          simple: '126.557349005859985036',
+        },
+      },
+      fasset: {
+        __typename: 'Token',
+        id: '0x0316eb71485b0ab14103307bf65a021042c6d380',
+        address: '0x0316eb71485b0ab14103307bf65a021042c6d380',
+        decimals: 18,
+        symbol: 'FRAX',
+        totalSupply: {
+          __typename: 'Metric',
+          exact: '27906376659990000000000',
+          decimals: 18,
+          simple: '27906.37665999',
+        },
+      },
+      masset: {
+        __typename: 'Token',
+        id: '0x945facb997494cc2570096c74b5f66a3507330a1',
+      },
+      vault: {
+        __typename: 'BoostedSavingsVault',
+        id: '0xf65d53aa6e2e4a5f4f026e73cb3e22c22d75e35c',
+        lastUpdateTime: 1623320410,
+        lockupDuration: 15724800,
+        unlockPercentage: '330000000000000000',
+        periodDuration: 604800,
+        periodFinish: 1623656327,
+        rewardPerTokenStored: '2684293231396573495117963',
+        rewardRate: '49781630291005291',
+        stakingContract: '0x48c59199da51b7e30ea200a74ea07974e62c4ba7',
+        stakingToken: {
+          __typename: 'Token',
+          address: '0x48c59199da51b7e30ea200a74ea07974e62c4ba7',
+          symbol: 'fPmUSD/FRAX',
+        },
+        totalStakingRewards: '30107',
+        totalSupply: '228210435463409369879',
+        priceCoeff: '58000000000000000000000',
+        boostCoeff: '48',
+        accounts: [],
+      },
+      accounts: [],
+    },
+  ]
+
+  const feederPools = transformFeederPoolsData(mockFeederPools, tokens)
+
+  // TODO: Restore
+  // const feederPools = transformFeederPoolsData(
+  //   allFeederPools.filter(fp => fp.masset.id === address),
+  //   tokens,
+  // )
 
   // Vaults are on the feeder pools subgraph
   const boostedSavingsVaults = saveVaults.filter(v => v.stakingToken.address === savingsContractV2.id)
