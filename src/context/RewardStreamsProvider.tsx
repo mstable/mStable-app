@@ -199,9 +199,7 @@ export const RewardStreamsProvider: FC<{
 
       const earnedStream: Stream = {
         amount: {
-          [StreamType.Earned]: earned.total,
-          // TODO Unclaimed and earned can overlap (but not immediately)
-          // [StreamType.Unclaimed]: earned.total,
+          [StreamType.Earned]: earned.unlocked,
         },
         start: lastClaim > 0 ? Math.min(lastClaim, lastAction) : lastAction,
         finish: currentTime,
