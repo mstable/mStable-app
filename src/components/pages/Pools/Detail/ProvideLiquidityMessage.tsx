@@ -1,5 +1,6 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
+import { ChainIds, useNetwork } from '../../../../context/NetworkProvider'
 import { createToggleContext } from '../../../../hooks/createToggleContext'
 
 import { ViewportWidth } from '../../../../theme'
@@ -59,6 +60,8 @@ export const [useShowEarningPower, ShowEarningPower] = createToggleContext(false
 
 export const ProvideLiquidityMessage: FC = () => {
   const feederPool = useSelectedFeederPoolState()
+  const network = useNetwork()
+  const canBoost = network.chainId === ChainIds.EthereumMainnet
   const [, setShowEarningPower] = useShowEarningPower()
   return (
     <Container>
@@ -67,9 +70,11 @@ export const ProvideLiquidityMessage: FC = () => {
         <p>Provide liquidity by depositing below, and stake to earn rewards and trade fees</p>
       </div>
       <div>
-        <Button highlighted onClick={setShowEarningPower}>
-          Calculate Boost
-        </Button>
+        {canBoost && (
+          <Button highlighted onClick={setShowEarningPower}>
+            Calculate Boost
+          </Button>
+        )}
       </div>
     </Container>
   )
