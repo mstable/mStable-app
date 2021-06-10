@@ -1,5 +1,7 @@
 import React, { FC, SVGProps } from 'react'
 import styled from 'styled-components'
+import { Networks, useNetwork } from '../../context/NetworkProvider'
+
 import MUSD, { ReactComponent as MusdSvg } from './tokens/mUSD.svg'
 import MBTC, { ReactComponent as MbtcSvg } from './tokens/mBTC.svg'
 import TUSD, { ReactComponent as TusdSvg } from './tokens/TUSD.svg'
@@ -31,9 +33,9 @@ import HBTC, { ReactComponent as HbtcSvg } from './tokens/HBTC.svg'
 import TBTC, { ReactComponent as TbtcSvg } from './tokens/tBTC.svg'
 import VAULT, { ReactComponent as VaultSvg } from './tokens/vault.svg'
 import IMBTCMTA, { ReactComponent as ImbtcmtaSvg } from './tokens/imbtc-mta.svg'
+import FRAX, { ReactComponent as FraxSvg } from './tokens/FRAX.svg'
 import ETHEREUM, { ReactComponent as EthereumSvg } from './networks/Ethereum.svg'
 import POLYGON, { ReactComponent as PolygonSvg } from './networks/Polygon.svg'
-import { Networks, useNetwork } from '../../context/NetworkProvider'
 
 interface Props {
   className?: string
@@ -88,6 +90,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   VAULT,
   ETHEREUM,
   POLYGON,
+  FRAX,
   MATIC: POLYGON,
 }
 
@@ -133,6 +136,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   ETHEREUM: EthereumSvg as SvgComponent,
   POLYGON: PolygonSvg as SvgComponent,
   MATIC: PolygonSvg as SvgComponent,
+  FRAX: FraxSvg as SvgComponent,
 }
 
 const IconContainer = styled.div<{ isLarge: boolean }>`
@@ -222,8 +226,8 @@ export const TokenPair: FC<{
   if (!symbols || (symbols?.length ?? 0) < 2) return null
   return (
     <IconContainer isLarge={isLarge} className={className}>
-      <TokenIcon symbol={symbols[0]} />
-      <TokenIcon symbol={symbols[1]} />
+      <TokenIcon symbol={symbols[0]} hideNetwork />
+      <TokenIcon symbol={symbols[1]} hideNetwork />
     </IconContainer>
   )
 }

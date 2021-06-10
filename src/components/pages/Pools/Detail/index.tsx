@@ -26,6 +26,7 @@ import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
 import { UserLookup } from './UserLookup'
 import { PoolOverview } from './PoolOverview'
 import { InfoBox } from '../../../core/InfoBox'
+import { ChainIds, useNetwork } from '../../../../context/NetworkProvider'
 
 const HeaderChartsContainer = styled.div`
   position: relative;
@@ -147,7 +148,9 @@ const Container = styled.div`
 const PoolDetailContent: FC = () => {
   const { address, title, liquidity, vault } = useSelectedFeederPoolState() as FeederPoolState
   const massetPrice = useSelectedMassetPrice()
+  const network = useNetwork()
 
+  const isEthereum = network.chainId === ChainIds.EthereumMainnet
   const [readMore, setReadMore] = useToggle(false)
 
   const color = assetColorMapping[title]
@@ -187,9 +190,12 @@ const PoolDetailContent: FC = () => {
               Feeder Pools offer a way to earn with your assets with <span>low impermanent loss risk.</span>
             </p>
             <p>
-              Liquidity providers passively earn swap fees. Deposits to the Vault earn swap fees in addition to MTA rewards which vest over
-              time.
-              {!readMore && <UnstyledButton onClick={setReadMore}>Learn more</UnstyledButton>}
+              Liquidity providers passively earn swap fees. Deposits to the Vault earn swap fees in addition to{' '}
+              {isEthereum
+                ? `MTA rewards which vest over
+              time.`
+                : `token rewards.`}
+              {isEthereum && !readMore && <UnstyledButton onClick={setReadMore}>Learn more</UnstyledButton>}
             </p>
             {readMore && (
               <>
