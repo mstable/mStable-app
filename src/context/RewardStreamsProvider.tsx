@@ -43,6 +43,7 @@ export interface RewardStreams {
   nextUnlock?: number
   chartData: ChartData
   previewStream: Stream
+  lockedStreams: Stream[]
 }
 
 const nowUnix = getUnixTime(Date.now())
@@ -261,7 +262,8 @@ export const RewardStreamsProvider: FC<{
         currentTime,
         nextUnlock: lockedStreams[0]?.start,
         previewStream,
-      }
+        lockedStreams: [...lockedStreams, previewStream],
+      } as RewardStreams
     }
   }, [currentTime, vault])
 
