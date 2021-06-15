@@ -185,7 +185,7 @@ const ETH_MAINNET: EthereumMainnet = {
   gasStationEndpoint: 'https://www.gasnow.org/api/v3/gas/price?utm_source=:mstable',
   gqlEndpoints: {
     protocol: [
-      // graphMainnetEndpoint('0x26cf67040678eb0f5654c9cbaad78dc1694cbafa', 0),
+      graphMainnetEndpoint('0x26cf67040678eb0f5654c9cbaad78dc1694cbafa', 0),
       graphHostedEndpoint('mstable', 'mstable-protocol-staging'),
     ],
     feeders: [graphHostedEndpoint('mstable', 'mstable-feeder-pools')],

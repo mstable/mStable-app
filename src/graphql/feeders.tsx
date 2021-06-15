@@ -3788,7 +3788,7 @@ type TransactionFields_BoostedSavingsVaultRewardAddedTransaction_Fragment = Pick
 
 export type TransactionFieldsFragment = TransactionFields_FpMintMultiTransaction_Fragment | TransactionFields_FpMintSingleTransaction_Fragment | TransactionFields_FpRedeemTransaction_Fragment | TransactionFields_FpSwapTransaction_Fragment | TransactionFields_BoostedSavingsVaultStakeTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardPaidTransaction_Fragment | TransactionFields_BoostedSavingsVaultWithdrawTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardAddedTransaction_Fragment;
 
-export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
+export type MetricFieldsFragment = Pick<Metric, 'id' | 'exact' | 'decimals' | 'simple'>;
 
 export type FpMetricsFragment = (
   Pick<FeederPool, 'price' | 'invariantK' | 'dailyAPY'>
@@ -3858,6 +3858,7 @@ export const TransactionFieldsFragmentDoc = gql`
     `;
 export const MetricFieldsFragmentDoc = gql`
     fragment MetricFields on Metric {
+  id
   exact
   decimals
   simple

@@ -13,19 +13,24 @@ import type {
 } from './types'
 import type { Tokens } from '../TokensProvider'
 
+import type { RawData } from './DataProvider'
 import { BigDecimal } from '../../web3/BigDecimal'
-import { MassetsQueryResult, TokenAllFragment } from '../../graphql/protocol'
-import { BoostedSavingsVaultAllFragment, FeederPoolsQueryResult } from '../../graphql/feeders'
+import { TokenAllFragment } from '../../graphql/protocol'
+import { BoostedSavingsVaultAllFragment } from '../../graphql/feeders'
 
-type NonNullableMasset = NonNullable<NonNullable<MassetsQueryResult['data']>['massets'][number]>
+type NonNullableMasset = NonNullable<RawData['massets']>['massets'][number]
 
-type NonNullableFeederPools = NonNullable<NonNullable<FeederPoolsQueryResult['data']>['feederPools']>
+type NonNullableFeederPools = NonNullable<RawData['feederPools']>['feederPools']
 
 type SavingsContractV1QueryResult = NonNullableMasset['savingsContractsV1'][number]
 
 type SavingsContractV2QueryResult = NonNullableMasset['savingsContractsV2'][number]
 
-const transformBasset = (basset: NonNullableMasset['basket']['bassets'][0], tokens: Tokens): BassetState => {
+const transformBasset = (
+  basset: NonNullableMasset['basket']['bassets'][0],
+  vaultBalances: RawData['vaultBalances'],
+  tokens: Tokens,
+): BassetState => {
   const {
     ratio,
     status,
@@ -40,7 +45,7 @@ const transformBasset = (basset: NonNullableMasset['basket']['bassets'][0], toke
     maxWeight: maxWeight ? BigNumber.from(maxWeight) : undefined,
     ratio: BigNumber.from(ratio),
     status: status as BassetStatus,
-    totalVault: BigDecimal.fromMetric(vaultBalance),
+    totalVault: new BigDecimal(vaultBalances[address] ?? vaultBalance.exact, decimals),
     token: {
       balance: new BigDecimal(0, decimals),
       allowances: {},
@@ -60,8 +65,12 @@ const transformBasset = (basset: NonNullableMasset['basket']['bassets'][0], toke
   }
 }
 
-const transformBassets = (bassets: NonNullableMasset['basket']['bassets'], tokens: Tokens): MassetState['bAssets'] => {
-  return Object.fromEntries(bassets.map(basset => [basset.id, transformBasset(basset, tokens)]))
+const transformBassets = (
+  bassets: NonNullableMasset['basket']['bassets'],
+  vaultBalances: RawData['vaultBalances'],
+  tokens: Tokens,
+): MassetState['bAssets'] => {
+  return Object.fromEntries(bassets.map(basset => [basset.id, transformBasset(basset, vaultBalances, tokens)]))
 }
 
 const transformSavingsContractV1 = (
@@ -263,8 +272,8 @@ const transformFeederPoolsData = (feederPools: NonNullableFeederPools, tokens: T
           address,
           {
             address,
-            masset: { ...transformBasset(masset, tokens), feederPoolAddress: address },
-            fasset: { ...transformBasset(fasset, tokens), feederPoolAddress: address },
+            masset: { ...transformBasset(masset, {}, tokens), feederPoolAddress: address },
+            fasset: { ...transformBasset(fasset, {}, tokens), feederPoolAddress: address },
             token: { ...token, ...tokens[address] } as SubscribedToken,
             totalSupply: BigDecimal.fromMetric(fassetToken.totalSupply),
             governanceFeeRate: BigNumber.from(governanceFeeRate),
@@ -300,17 +309,18 @@ const transformMassetData = (
     basket: { bassets: _bassets, collateralisationRatio, failed, removedBassets, undergoingRecol },
     savingsContractsV1: [savingsContractV1],
     savingsContractsV2: [savingsContractV2],
-  }: NonNullableMasset,
+  }: NonNullable<RawData['massets']>['massets'][0],
   {
     boostDirectors,
     feederPools: allFeederPools,
     saveVaults,
     userVaults: _userVaults,
     vaultIds: _vaultIds,
-  }: NonNullable<FeederPoolsQueryResult['data']>,
+  }: NonNullable<RawData['feederPools']>,
+  vaultBalances: RawData['vaultBalances'],
   tokens: Tokens,
 ): MassetState => {
-  const bAssets = transformBassets(_bassets, tokens)
+  const bAssets = transformBassets(_bassets, vaultBalances, tokens)
 
   const mockFeederPools = [
     {
@@ -515,17 +525,15 @@ const transformMassetData = (
   }
 }
 
-export const transformRawData = ([massetsData, feedersData, tokens]: [
-  NonNullable<MassetsQueryResult['data']>,
-  NonNullable<FeederPoolsQueryResult['data']>,
-  Tokens,
-]): DataState => {
+export const transformRawData = ({ massets, feederPools, vaultBalances, tokens }: RawData): DataState => {
+  if (!massets || !feederPools) return {}
+
   return Object.fromEntries(
-    massetsData.massets.map(masset => {
+    massets.massets.map(masset => {
       const massetName = masset.token.symbol
         .toLowerCase()
         .replace(/(\(pos\) mstable usd)|(mstable usd \(polygon pos\))/, 'musd') as MassetName
-      return [massetName, transformMassetData(masset, feedersData, tokens)]
+      return [massetName, transformMassetData(masset, feederPools, vaultBalances, tokens)]
     }),
   )
 }
