@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 import { useRewardStreams } from '../../../../context/RewardStreamsProvider'
 import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider'
+import { CountdownBar } from '../../../core/CountdownBar'
 
 const EmptyState = styled.div`
   display: flex;
@@ -23,7 +24,10 @@ export const PolygonRewards: FC = () => {
     <Container>
       <div>
         {showGraph ? (
-          <p>POLY</p>
+          <div>
+            <p>POLY</p>
+            <CountdownBar percentage={50} end={Date.now() + 1000 * 240 * 1000} />
+          </div>
         ) : (
           <EmptyState>
             <h3>No rewards to claim</h3>
