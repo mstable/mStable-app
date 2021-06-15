@@ -162,6 +162,7 @@ const maticExplorerUrl = (network?: 'mainnet' | 'mumbai') => (
 
 const GRAPH_API_KEY = '9bcd013940ae451d941a8e9f925546a2'
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const graphMainnetEndpoint = (subgraphId: string, version: number): string =>
   `https://gateway.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/${subgraphId}-${version}`
 
@@ -184,7 +185,7 @@ const ETH_MAINNET: EthereumMainnet = {
   gasStationEndpoint: 'https://www.gasnow.org/api/v3/gas/price?utm_source=:mstable',
   gqlEndpoints: {
     protocol: [
-      graphMainnetEndpoint('0x26cf67040678eb0f5654c9cbaad78dc1694cbafa', 0),
+      // graphMainnetEndpoint('0x26cf67040678eb0f5654c9cbaad78dc1694cbafa', 0),
       graphHostedEndpoint('mstable', 'mstable-protocol-staging'),
     ],
     feeders: [graphHostedEndpoint('mstable', 'mstable-feeder-pools')],
