@@ -31,6 +31,7 @@ fragment TransactionFields on Transaction {
 }
 
 fragment MetricFields on Metric {
+  id
   exact
   decimals
   simple

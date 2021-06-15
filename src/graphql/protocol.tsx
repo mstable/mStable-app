@@ -4706,7 +4706,7 @@ type TransactionFields_RedeemTransaction_Fragment = Pick<RedeemTransaction, 'id'
 
 export type TransactionFieldsFragment = TransactionFields_SavingsContractDepositTransaction_Fragment | TransactionFields_SavingsContractWithdrawTransaction_Fragment | TransactionFields_BoostedSavingsVaultStakeTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardPaidTransaction_Fragment | TransactionFields_BoostedSavingsVaultWithdrawTransaction_Fragment | TransactionFields_BoostedSavingsVaultRewardAddedTransaction_Fragment | TransactionFields_SwapTransaction_Fragment | TransactionFields_PaidFeeTransaction_Fragment | TransactionFields_RedeemMassetTransaction_Fragment | TransactionFields_MintMultiTransaction_Fragment | TransactionFields_MintSingleTransaction_Fragment | TransactionFields_RedeemTransaction_Fragment;
 
-export type MetricFieldsFragment = Pick<Metric, 'exact' | 'decimals' | 'simple'>;
+export type MetricFieldsFragment = Pick<Metric, 'id' | 'exact' | 'decimals' | 'simple'>;
 
 export type BassetAllFragment = (
   Pick<Basset, 'id' | 'isTransferFeeCharged' | 'ratio' | 'status' | 'maxWeight'>
@@ -4819,6 +4819,7 @@ export type HistoricTransactionsQuery = { transactions: Array<(
 
 export const MetricFieldsFragmentDoc = gql`
     fragment MetricFields on Metric {
+  id
   exact
   decimals
   simple
