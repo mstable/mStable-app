@@ -1,5 +1,5 @@
-import { differenceInSeconds } from 'date-fns'
 import React, { FC, useState, ReactElement } from 'react'
+import { differenceInSeconds } from 'date-fns'
 import Countdown, { CountdownRenderProps } from 'react-countdown'
 
 import { useInterval } from 'react-use'
@@ -18,7 +18,7 @@ const Time = styled.span`
 `
 
 const Progress = styled.div`
-  background-color: rgb(233, 233, 233);
+  background: ${({ theme }) => theme.color.background[3]};
   border-radius: 0.5rem;
 
   > div {
