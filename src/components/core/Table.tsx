@@ -6,6 +6,7 @@ interface Props {
   className?: string
   headerTitles?: string[]
   onHeaderClick?: (i: number) => void
+  widths?: number[]
 }
 
 const Cell = styled.td<{ width?: number }>`
@@ -14,17 +15,18 @@ const Cell = styled.td<{ width?: number }>`
 
   flex-basis: ${({ width }) => width && `${width}%`};
 
-  > div *:first-child {
-    font-weight: 600;
-  }
-
   h3 {
     margin-bottom: 0.25rem;
   }
   span {
     color: ${({ theme }) => theme.color.bodyAccent};
-    font-size: 0.875rem;
   }
+`
+
+const HeaderCell = styled.th<{ width?: number }>`
+  padding: 0 1rem;
+  display: flex;
+  flex-basis: ${({ width }) => width && `${width}%`};
 `
 
 const Row = styled.tr<{ isSelectable: boolean }>`
@@ -43,7 +45,7 @@ const Row = styled.tr<{ isSelectable: boolean }>`
   }
 `
 
-const Content = styled.tbody`
+const Content = styled.tbody<{ hiddenCellWidth?: number }>`
   display: flex;
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
@@ -76,11 +78,20 @@ const Content = styled.tbody`
   > tr:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.color.defaultBorder};
   }
+
+  // Hidden by default; take last cell width
+  > tr td:last-child {
+    flex-basis: ${({ hiddenCellWidth }) => `${hiddenCellWidth}%`};
+  }
 `
 
 const Header = styled.thead<{ isSelectable: boolean }>`
   display: flex;
   padding: 0.5rem 0;
+
+  th:not(:first-child) {
+    justify-content: flex-end;
+  }
 
   > tr {
     display: flex;
@@ -90,7 +101,6 @@ const Header = styled.thead<{ isSelectable: boolean }>`
   }
 
   > tr > * {
-    flex: 1;
     text-align: right;
     font-size: 1rem;
     font-weight: 600;
@@ -137,21 +147,21 @@ export const TableRow: FC<{ onClick?: () => void; buttonTitle?: string }> = ({ c
   )
 }
 
-export const Table: FC<Props> = ({ children, className, headerTitles, onHeaderClick }) => {
+export const Table: FC<Props> = ({ children, className, headerTitles, onHeaderClick, widths }) => {
   return (
     <Container role="table" className={className}>
       {!!headerTitles?.length && (
         <Header isSelectable={!!onHeaderClick}>
           <tr>
             {headerTitles.map((title, i) => (
-              <th role="columnheader" key={title} title="Sort by" onClick={() => onHeaderClick?.(i)}>
+              <HeaderCell role="columnheader" key={title} title="Sort by" onClick={() => onHeaderClick?.(i)} width={widths?.[i]}>
                 <span>{title}</span>
-              </th>
+              </HeaderCell>
             ))}
           </tr>
         </Header>
       )}
-      <Content>{children}</Content>
+      <Content hiddenCellWidth={widths?.[widths.length - 1]}>{children}</Content>
     </Container>
   )
 }
