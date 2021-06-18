@@ -1,10 +1,15 @@
 import React, { FC, MouseEvent } from 'react'
 import styled from 'styled-components'
 import { Button } from './Button'
+import { Tooltip } from './ReactTooltip'
 
 interface Props {
   className?: string
-  headerTitles?: string[]
+  headerTitles?: {
+    title: string
+    tooltip?: string
+  }[]
+  tooltips?: (string | undefined)[]
   onHeaderClick?: (i: number) => void
   widths?: number[]
 }
@@ -158,9 +163,10 @@ export const Table: FC<Props> = ({ children, className, headerTitles, onHeaderCl
       {!!headerTitles?.length && (
         <Header isSelectable={!!onHeaderClick}>
           <tr>
-            {headerTitles.map((title, i) => (
-              <HeaderCell role="columnheader" key={title} title="Sort by" onClick={() => onHeaderClick?.(i)} width={widths?.[i]}>
+            {headerTitles.map(({ title, tooltip }, i) => (
+              <HeaderCell role="columnheader" key={title} onClick={() => onHeaderClick?.(i)} width={widths?.[i]}>
                 <span>{title}</span>
+                {tooltip && <Tooltip tip={tooltip} />}
               </HeaderCell>
             ))}
           </tr>

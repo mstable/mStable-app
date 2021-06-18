@@ -18,7 +18,7 @@ const Time = styled.span`
 `
 
 const Progress = styled.div`
-  background: ${({ theme }) => theme.color.background[3]};
+  background: ${({ theme }) => theme.color.background[2]};
   border-radius: 0.5rem;
   margin-bottom: 0.25rem;
 

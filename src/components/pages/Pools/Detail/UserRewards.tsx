@@ -263,6 +263,8 @@ export const UserRewards: FC = () => {
   const showGraph = (rewardStreams?.amounts.earned.total ?? 0) > 0 || (rewardStreams?.amounts.locked ?? 0) > 0
   const canClaim = rewardStreams && rewardStreams.amounts.unclaimed > 0
 
+  const headerTitles = ['Date unlocked', 'Amount'].map(t => ({ title: t }))
+
   return (
     <RewardsCard>
       <div>
@@ -293,7 +295,7 @@ export const UserRewards: FC = () => {
                 </RewardValues>
               </GraphAndValues>
             ) : (
-              <CustomTable headerTitles={['Date unlocked', 'Amount']}>
+              <CustomTable headerTitles={headerTitles}>
                 {rewardStreams?.lockedStreams?.map(stream => (
                   <TableRow key={stream.start} buttonTitle="View">
                     <TableCell width={75}>

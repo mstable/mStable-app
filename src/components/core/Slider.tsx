@@ -28,7 +28,7 @@ const StyledThumb = styled.div`
 
 const StyledTrack = styled.div<{ index: number }>`
   height: 1rem;
-  background: ${({ index, theme }) => (index === 1 ? theme.color.background[3] : theme.color.blue)};
+  background: ${({ index, theme }) => (index === 1 ? theme.color.background[2] : theme.color.blue)};
   border-radius: 0.5rem;
 `
 

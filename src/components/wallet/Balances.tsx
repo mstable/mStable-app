@@ -95,9 +95,10 @@ export const Balances: FC<{ onRowClick?: (symbol: string) => void }> = ({ onRowC
   )
 
   const bassetTokens = massetTokens.map(({ bassets }) => bassets).reduce((a, b) => [...a, ...b])
+  const headerTitles = ['Asset', 'Balance'].map(t => ({ title: t }))
 
   return (
-    <StyledTable headerTitles={['Asset', 'Balance']}>
+    <StyledTable headerTitles={headerTitles}>
       {MTA && (
         <TableRow key={MTA.address} buttonTitle="Explore" onClick={() => onRowClick?.(MTA.symbol)}>
           <AssetCell>
