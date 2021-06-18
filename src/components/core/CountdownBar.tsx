@@ -42,12 +42,14 @@ export const CountdownBar: FC<Props> = ({ width = 150, percentage = 0, end }) =>
   const timeMultiplier = 60 // minute
   const interval = ((((100 - percentage) / 100) * width) / dateDifference) * timeMultiplier
 
-  const renderer = ({ days, hours, minutes, completed }: CountdownRenderProps): ReactElement => {
+  const renderer = ({ days, hours, minutes, seconds, completed }: CountdownRenderProps): ReactElement => {
     const weeks = Math.floor(days / 7)
     const remainder = days % 7
     return (
       <Time>
-        {completed ? `Complete` : `${weeks > 0 ? `${weeks}w` : ``} ${remainder > 0 ? `${remainder}d` : ``} ${hours}h ${minutes}m `}
+        {completed
+          ? `Complete`
+          : `${weeks > 0 ? `${weeks}w` : ``} ${remainder > 0 ? `${remainder}d` : ``} ${hours}h ${minutes}m ${seconds}s`}
       </Time>
     )
   }

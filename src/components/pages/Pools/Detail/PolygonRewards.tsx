@@ -13,7 +13,7 @@ import { Button } from '../../../core/Button'
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
 import { AssetInput } from '../../../forms/AssetInput'
 
-const TABLE_CELL_WIDTHS = [40, 30, 30]
+const TABLE_CELL_WIDTHS = [30, 30, 30]
 const WEEK = 604800 * 1000
 const YEAR = 365 * 86400 * 1000
 
@@ -21,14 +21,45 @@ const Input = styled(AssetInput)`
   height: 2.5rem;
   border-radius: 0.5rem;
   padding: 0;
+  border: none;
 
   button {
     padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
+    border-radius: 0.5rem;
   }
 
   > div {
     margin-right: 0.5rem;
+  }
+`
+
+const LockupRow = styled(TableRow)`
+  display: flex;
+  width: 100%;
+  padding: 2rem;
+  justify-content: flex-start;
+  flex-direction: column;
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  > div span {
+    ${({ theme }) => theme.mixins.numeric};
+    color: ${({ theme }) => theme.color.blue};
+  }
+
+  > div > span {
+    border: 1px solid ${({ theme }) => theme.color.defaultBorder};
+    padding: 0.25rem 0.75rem;
+    margin-left: 1rem;
+    border-radius: 0.5rem;
+  }
+
+  > div:first-child {
+    margin-bottom: 1rem;
   }
 `
 
@@ -61,14 +92,14 @@ const MOCK_DEPOSITS = [
 ]
 
 export const PolygonRewards: FC = () => {
-  const sliderStart = Date.now() + WEEK // 7 days
+  const sliderStart = Date.now()
   const sliderEnd = Date.now() + 3 * YEAR // 3 years
   const sliderStep = WEEK
 
   const rewardStreams = useRewardStreams()
   const [selectedSaveVersion] = useSelectedSaveVersion()
   const [value, setValue] = useState(sliderStart)
-  const [toggle, setToggle] = useToggle(false)
+  const [boostToggled, setBoost] = useToggle(false)
   const [, inputFormValue, handleSetAmount] = useBigDecimalInput(MOCK_BALANCE.balance)
 
   const showGraph = (rewardStreams?.amounts.earned.total ?? 0) > 0 || (rewardStreams?.amounts.locked ?? 0) > 0
@@ -79,11 +110,20 @@ export const PolygonRewards: FC = () => {
       .filter(([, v]) => v)
       .map(([unit]) => unit)
 
+    if ((duration?.days ?? 0) < 1) return `0 days`
+
     return formatDuration(duration, {
       format: ['years', 'months', 'weeks', 'days'].filter(i => new Set(nonzero).has(i)).slice(0, 3),
       delimiter: ', ',
     })
   }, [value])
+
+  // Assumes linear, will need to check
+  const boostValue = useMemo(() => {
+    const range = sliderEnd - sliderStart
+    const scale = (value - sliderStart) / range
+    return scale < 0 ? 1 : 2 * scale + 1
+  }, [sliderEnd, sliderStart, value])
 
   const handleWithdraw = (end: number): void => {
     console.log(end)
@@ -98,8 +138,6 @@ export const PolygonRewards: FC = () => {
       <div>
         {showGraph ? (
           <div>
-            <Slider min={sliderStart} max={sliderEnd} step={sliderStep} value={value} onChange={setValue} />
-            <p>Locked for: {difference}</p>
             <br />
             <Table headerTitles={['mUSD/FRAX', 'Boost Rewards', 'Time Remaining']} widths={TABLE_CELL_WIDTHS}>
               <TableRow buttonTitle="Deposit">
@@ -113,7 +151,7 @@ export const PolygonRewards: FC = () => {
                   />
                 </TableCell>
                 <TableCell width={TABLE_CELL_WIDTHS[1]}>
-                  <ToggleInput checked={toggle} onClick={setToggle} />
+                  <ToggleInput checked={boostToggled} onClick={setBoost} />
                 </TableCell>
                 <TableCell width={TABLE_CELL_WIDTHS[2]}>
                   <Button highlighted onClick={handleDeposit}>
@@ -121,6 +159,17 @@ export const PolygonRewards: FC = () => {
                   </Button>
                 </TableCell>
               </TableRow>
+              {boostToggled && (
+                <LockupRow>
+                  <div>
+                    <p>
+                      You will lock <span>{inputFormValue}</span> mUSD/FRAX for <span>{difference}</span> and receive a boost of:
+                    </p>
+                    <span>{boostValue.toFixed(3)}x</span>
+                  </div>
+                  <Slider min={sliderStart} max={sliderEnd} step={sliderStep} value={value} onChange={setValue} />
+                </LockupRow>
+              )}
             </Table>
             <br />
             <br />

@@ -33,7 +33,7 @@ const Row = styled.tr<{ isSelectable: boolean }>`
   cursor: ${({ isSelectable }) => isSelectable && 'pointer'};
 
   :hover {
-    background: ${({ theme }) => theme.color.onboardItemHover};
+    background: ${({ theme, isSelectable }) => isSelectable && theme.color.onboardItemHover};
 
     > td:nth-last-child(2) {
       display: ${({ isSelectable }) => isSelectable && 'none'};
@@ -127,14 +127,19 @@ export const TableCell: FC<{ className?: string; width?: number }> = ({ children
   )
 }
 
-export const TableRow: FC<{ onClick?: () => void; buttonTitle?: string }> = ({ children, buttonTitle, onClick }) => {
+export const TableRow: FC<{ className?: string; onClick?: () => void; buttonTitle?: string }> = ({
+  children,
+  buttonTitle,
+  onClick,
+  className,
+}) => {
   const handleOnClick = (e: MouseEvent<HTMLButtonElement | HTMLTableRowElement>): void => {
     e?.stopPropagation()
     e?.preventDefault()
     onClick?.()
   }
   return (
-    <Row role="row" onClick={handleOnClick} isSelectable={!!onClick}>
+    <Row className={className} role="row" onClick={handleOnClick} isSelectable={!!onClick}>
       {children}
       <Cell role="cell">
         {buttonTitle && (

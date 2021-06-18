@@ -49,8 +49,10 @@ const renderThumb: FC = props => <StyledThumb {...props} />
 const renderTrack: FC = (props, state) => <StyledTrack {...props} index={state.index} />
 const renderMark: FC = props => <StyledMark {...props} />
 
-export const Slider: FC<Props> = ({ min, max, value, step, intervals = 10, onChange }) => {
-  const markRange = intervals ? Array.from(Array(intervals - 1).keys()).map(i => min + min * ((i + 1) / 100)) : undefined
+export const Slider: FC<Props> = ({ min, max, value, step, intervals = 5, onChange }) => {
+  const rangeBound = max - min
+  const interval = rangeBound / intervals
+  const markRange = intervals ? Array.from(Array(intervals - 1).keys()).map(i => min + interval * (i + 1)) : undefined
   return (
     <StyledSlider
       marks={markRange}
