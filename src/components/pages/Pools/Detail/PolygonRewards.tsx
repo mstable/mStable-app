@@ -12,6 +12,7 @@ import { ToggleInput } from '../../../forms/ToggleInput'
 import { Button } from '../../../core/Button'
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
 import { AssetInput } from '../../../forms/AssetInput'
+import { TokenIcon } from '../../../icons/TokenIcon'
 
 const TABLE_CELL_WIDTHS = [30, 30, 30]
 const WEEK = 604800 * 1000
@@ -29,6 +30,36 @@ const Input = styled(AssetInput)`
   }
 
   > div {
+    margin-right: 0.5rem;
+  }
+`
+
+const Claim = styled(Button)`
+  width: 12rem;
+`
+
+const Rewards = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+`
+
+const Token = styled.div`
+  display: flex;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  > *:first-child {
+    height: 2rem;
+    width: 2rem;
     margin-right: 0.5rem;
   }
 `
@@ -71,6 +102,24 @@ const EmptyState = styled.div`
 `
 
 const Container = styled.div``
+
+const MOCK_REWARDS = [
+  {
+    token: 'FRAX',
+    balance: 12.23,
+    apy: 12.03,
+  },
+  {
+    token: 'MATIC',
+    balance: 1,
+    apy: 3.03,
+  },
+  {
+    token: 'MTA',
+    balance: 120,
+    apy: 15.03,
+  },
+]
 
 const MOCK_BALANCE = {
   balance: '12000',
@@ -133,13 +182,14 @@ export const PolygonRewards: FC = () => {
 
   const handleSetMax = (): void => {}
 
+  const handleClaim = (): void => {}
+
   return (
     <Container>
       <div>
         {showGraph ? (
           <div>
-            <br />
-            <Table headerTitles={['mUSD/FRAX', 'Boost Rewards', 'Time Remaining']} widths={TABLE_CELL_WIDTHS}>
+            <Table headerTitles={['Wallet', 'Boost Rewards', 'Time Remaining']} widths={TABLE_CELL_WIDTHS}>
               <TableRow buttonTitle="Deposit">
                 <TableCell width={TABLE_CELL_WIDTHS[0]}>
                   <Input
@@ -173,7 +223,7 @@ export const PolygonRewards: FC = () => {
             </Table>
             <br />
             <br />
-            <Table headerTitles={['Vault Balance', 'Rewards Multiplier', 'Time Remaining']} widths={TABLE_CELL_WIDTHS}>
+            <Table headerTitles={['Vault', 'Rewards Multiplier', 'Time Remaining']} widths={TABLE_CELL_WIDTHS}>
               {MOCK_DEPOSITS.map(({ balance, end, multiplier, token }) => {
                 const canWithdraw = end < Date.now()
                 return (
@@ -191,6 +241,29 @@ export const PolygonRewards: FC = () => {
                 )
               })}
             </Table>
+            <br />
+            <br />
+            <Rewards>
+              <Table headerTitles={['Token', 'APY', 'Earned']} widths={TABLE_CELL_WIDTHS}>
+                {MOCK_REWARDS.map(({ balance, token, apy }) => {
+                  return (
+                    <TableRow key={token}>
+                      <TableCell width={TABLE_CELL_WIDTHS[0]}>
+                        <Token>
+                          <TokenIcon symbol={token} />
+                          <h3>{token}</h3>
+                        </Token>
+                      </TableCell>
+                      <TableCell width={TABLE_CELL_WIDTHS[1]}>{apy}%</TableCell>
+                      <TableCell width={TABLE_CELL_WIDTHS[2]}>{balance.toFixed(2)}</TableCell>
+                    </TableRow>
+                  )
+                })}
+              </Table>
+              <Claim highlighted onClick={handleClaim}>
+                Claim Rewards
+              </Claim>
+            </Rewards>
           </div>
         ) : (
           <EmptyState>
