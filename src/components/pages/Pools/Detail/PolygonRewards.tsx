@@ -1,8 +1,41 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
 
-import { useRewardStreams } from '../../../../context/RewardStreamsProvider'
-import { useSelectedSaveVersion } from '../../../../context/SelectedSaveVersionProvider'
+import { Table, TableCell, TableRow } from '../../../core/Table'
+import { Button } from '../../../core/Button'
+import { TokenIcon } from '../../../icons/TokenIcon'
+
+const TABLE_CELL_WIDTHS = [30, 30, 30]
+
+const Claim = styled(Button)`
+  width: 12rem;
+`
+
+const Rewards = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+`
+
+const Token = styled.div`
+  display: flex;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  > *:first-child {
+    height: 2rem;
+    width: 2rem;
+    margin-right: 0.5rem;
+  }
+`
 
 const EmptyState = styled.div`
   display: flex;
@@ -13,28 +46,58 @@ const EmptyState = styled.div`
 
 const Container = styled.div``
 
-export const PolygonRewards: FC = () => {
-  const rewardStreams = useRewardStreams()
-  const [selectedSaveVersion] = useSelectedSaveVersion()
+const MOCK_REWARDS = [
+  {
+    token: 'FRAX',
+    balance: 12.23,
+    apy: 12.03,
+  },
+  {
+    token: 'MATIC',
+    balance: 1,
+    apy: 3.03,
+  },
+  {
+    token: 'MTA',
+    balance: 120,
+    apy: 15.03,
+  },
+]
 
-  const showGraph = (rewardStreams?.amounts.earned.total ?? 0) > 0 || (rewardStreams?.amounts.locked ?? 0) > 0
+export const PolygonRewards: FC = () => {
+  const hasRewards = !!MOCK_REWARDS.length
+  const handleClaim = (): void => {}
+  const headerTitles = ['Token', 'APY', 'Earned'].map(t => ({ title: t }))
 
   return (
     <Container>
-      <div>
-        {showGraph ? (
-          <p>POLY</p>
-        ) : (
-          <EmptyState>
-            <h3>No rewards to claim</h3>
-            {selectedSaveVersion === 1 ? (
-              <p>Migrate your balance and deposit to the Vault to earn MTA rewards.</p>
-            ) : (
-              <p>Deposit to the Vault to earn MTA rewards.</p>
-            )}
-          </EmptyState>
-        )}
-      </div>
+      {hasRewards ? (
+        <Rewards>
+          <Table headerTitles={headerTitles} widths={TABLE_CELL_WIDTHS} width={48}>
+            {MOCK_REWARDS.map(({ balance, token, apy }) => {
+              return (
+                <TableRow key={token}>
+                  <TableCell width={TABLE_CELL_WIDTHS[0]}>
+                    <Token>
+                      <TokenIcon symbol={token} />
+                      <h3>{token}</h3>
+                    </Token>
+                  </TableCell>
+                  <TableCell width={TABLE_CELL_WIDTHS[1]}>{apy}%</TableCell>
+                  <TableCell width={TABLE_CELL_WIDTHS[2]}>{balance.toFixed(2)}</TableCell>
+                </TableRow>
+              )
+            })}
+          </Table>
+          <Claim highlighted onClick={handleClaim}>
+            Claim Rewards
+          </Claim>
+        </Rewards>
+      ) : (
+        <EmptyState>
+          <h3>Stake your LP token balance to begin earning rewards</h3>
+        </EmptyState>
+      )}
     </Container>
   )
 }

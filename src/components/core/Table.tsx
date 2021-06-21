@@ -1,11 +1,18 @@
 import React, { FC, MouseEvent } from 'react'
 import styled from 'styled-components'
 import { Button } from './Button'
+import { Tooltip } from './ReactTooltip'
 
 interface Props {
   className?: string
-  headerTitles?: string[]
+  headerTitles?: {
+    title: string
+    tooltip?: string
+  }[]
+  tooltips?: (string | undefined)[]
   onHeaderClick?: (i: number) => void
+  widths?: number[]
+  width?: number
 }
 
 const Cell = styled.td<{ width?: number }>`
@@ -14,24 +21,25 @@ const Cell = styled.td<{ width?: number }>`
 
   flex-basis: ${({ width }) => width && `${width}%`};
 
-  > div *:first-child {
-    font-weight: 600;
-  }
-
   h3 {
     margin-bottom: 0.25rem;
   }
   span {
     color: ${({ theme }) => theme.color.bodyAccent};
-    font-size: 0.875rem;
   }
+`
+
+const HeaderCell = styled.th<{ width?: number }>`
+  padding: 0 1rem;
+  display: flex;
+  flex-basis: ${({ width }) => width && `${width}%`};
 `
 
 const Row = styled.tr<{ isSelectable: boolean }>`
   cursor: ${({ isSelectable }) => isSelectable && 'pointer'};
 
   :hover {
-    background: ${({ theme }) => theme.color.onboardItemHover};
+    background: ${({ theme, isSelectable }) => isSelectable && theme.color.onboardItemHover};
 
     > td:nth-last-child(2) {
       display: ${({ isSelectable }) => isSelectable && 'none'};
@@ -43,7 +51,7 @@ const Row = styled.tr<{ isSelectable: boolean }>`
   }
 `
 
-const Content = styled.tbody`
+const Content = styled.tbody<{ hiddenCellWidth?: number }>`
   display: flex;
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.color.defaultBorder};
@@ -76,11 +84,20 @@ const Content = styled.tbody`
   > tr:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.color.defaultBorder};
   }
+
+  // Hidden by default; take last cell width
+  > tr td:last-child {
+    flex-basis: ${({ hiddenCellWidth }) => `${hiddenCellWidth}%`};
+  }
 `
 
 const Header = styled.thead<{ isSelectable: boolean }>`
   display: flex;
   padding: 0.5rem 0;
+
+  th:not(:first-child) {
+    justify-content: flex-end;
+  }
 
   > tr {
     display: flex;
@@ -90,7 +107,6 @@ const Header = styled.thead<{ isSelectable: boolean }>`
   }
 
   > tr > * {
-    flex: 1;
     text-align: right;
     font-size: 1rem;
     font-weight: 600;
@@ -103,10 +119,17 @@ const Header = styled.thead<{ isSelectable: boolean }>`
   }
 `
 
-const Container = styled.table`
+const Container = styled.table<{ minWidth?: number }>`
   display: flex;
   flex-direction: column;
   width: 100%;
+  overflow-y: hidden;
+  overflow-x: auto;
+  padding: 0;
+
+  > * {
+    min-width: ${({ minWidth }) => minWidth && `${minWidth}rem`};
+  }
 `
 
 export const TableCell: FC<{ className?: string; width?: number }> = ({ children, className, width }) => {
@@ -117,14 +140,19 @@ export const TableCell: FC<{ className?: string; width?: number }> = ({ children
   )
 }
 
-export const TableRow: FC<{ onClick?: () => void; buttonTitle?: string }> = ({ children, buttonTitle, onClick }) => {
+export const TableRow: FC<{ className?: string; onClick?: () => void; buttonTitle?: string }> = ({
+  children,
+  buttonTitle,
+  onClick,
+  className,
+}) => {
   const handleOnClick = (e: MouseEvent<HTMLButtonElement | HTMLTableRowElement>): void => {
     e?.stopPropagation()
     e?.preventDefault()
     onClick?.()
   }
   return (
-    <Row role="row" onClick={handleOnClick} isSelectable={!!onClick}>
+    <Row className={className} role="row" onClick={handleOnClick} isSelectable={!!onClick}>
       {children}
       <Cell role="cell">
         {buttonTitle && (
@@ -137,21 +165,22 @@ export const TableRow: FC<{ onClick?: () => void; buttonTitle?: string }> = ({ c
   )
 }
 
-export const Table: FC<Props> = ({ children, className, headerTitles, onHeaderClick }) => {
+export const Table: FC<Props> = ({ children, className, headerTitles, onHeaderClick, widths, width }) => {
   return (
-    <Container role="table" className={className}>
+    <Container role="table" className={className} minWidth={width}>
       {!!headerTitles?.length && (
         <Header isSelectable={!!onHeaderClick}>
           <tr>
-            {headerTitles.map((title, i) => (
-              <th role="columnheader" key={title} title="Sort by" onClick={() => onHeaderClick?.(i)}>
+            {headerTitles.map(({ title, tooltip }, i) => (
+              <HeaderCell role="columnheader" key={title} onClick={() => onHeaderClick?.(i)} width={widths?.[i]}>
                 <span>{title}</span>
-              </th>
+                {tooltip && <Tooltip tip={tooltip} />}
+              </HeaderCell>
             ))}
           </tr>
         </Header>
       )}
-      <Content>{children}</Content>
+      <Content hiddenCellWidth={widths?.[widths.length - 1]}>{children}</Content>
     </Container>
   )
 }
