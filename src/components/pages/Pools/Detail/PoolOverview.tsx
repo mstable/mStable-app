@@ -15,7 +15,6 @@ import { BoostedSavingsVaultState } from '../../../../context/DataProvider/types
 import { TransitionCard, CardContainer as Container, CardButton as Button } from '../../../core/TransitionCard'
 import { PokeBoost } from '../../../core/PokeBoost'
 import { Tooltip } from '../../../core/ReactTooltip'
-import { ChainIds, useNetwork } from '../../../../context/NetworkProvider'
 import { PolygonRewards } from './PolygonRewards'
 
 enum Selection {
@@ -69,13 +68,13 @@ export const PoolOverview: FC = () => {
   const feederPool = useSelectedFeederPoolState()
   const apy = useFeederPoolApy(feederPool.address)
   const massetPrice = useSelectedMassetPrice() ?? 1
-  const network = useNetwork()
 
   const { vault, token, price } = feederPool
   const fpTokenPrice = price.simple * massetPrice
   const userAmount = token.balance?.simple ?? 0
   const userStakedAmount = vault.account?.rawBalance.simple ?? 0
-  const isEthereum = network.chainId === ChainIds.EthereumMainnet
+  // FIXME: - Currently to test LP, revert later
+  const isEthereum = false // network.chainId === ChainIds.EthereumMainnet
 
   const totalEarned =
     (rewardStreams?.amounts.earned.unlocked ?? 0) + (rewardStreams?.amounts.previewLocked ?? 0) + (rewardStreams?.amounts.locked ?? 0)
