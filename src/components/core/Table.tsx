@@ -12,6 +12,7 @@ interface Props {
   tooltips?: (string | undefined)[]
   onHeaderClick?: (i: number) => void
   widths?: number[]
+  width?: number
 }
 
 const Cell = styled.td<{ width?: number }>`
@@ -118,10 +119,17 @@ const Header = styled.thead<{ isSelectable: boolean }>`
   }
 `
 
-const Container = styled.table`
+const Container = styled.table<{ minWidth?: number }>`
   display: flex;
   flex-direction: column;
   width: 100%;
+  overflow-y: hidden;
+  overflow-x: auto;
+  padding: 0;
+
+  > * {
+    min-width: ${({ minWidth }) => minWidth && `${minWidth}rem`};
+  }
 `
 
 export const TableCell: FC<{ className?: string; width?: number }> = ({ children, className, width }) => {
@@ -157,9 +165,9 @@ export const TableRow: FC<{ className?: string; onClick?: () => void; buttonTitl
   )
 }
 
-export const Table: FC<Props> = ({ children, className, headerTitles, onHeaderClick, widths }) => {
+export const Table: FC<Props> = ({ children, className, headerTitles, onHeaderClick, widths, width }) => {
   return (
-    <Container role="table" className={className}>
+    <Container role="table" className={className} minWidth={width}>
       {!!headerTitles?.length && (
         <Header isSelectable={!!onHeaderClick}>
           <tr>

@@ -27,13 +27,7 @@ import { UserLookup } from './UserLookup'
 import { PoolOverview } from './PoolOverview'
 import { InfoBox } from '../../../core/InfoBox'
 import { ChainIds, useNetwork } from '../../../../context/NetworkProvider'
-import { TabsV2 } from '../../../core/TabsV2'
 import { StakingTimelock } from './StakingTimelock'
-
-enum Position {
-  LP,
-  STAKE,
-}
 
 const HeaderChartsContainer = styled.div`
   position: relative;
@@ -147,6 +141,7 @@ const Exchange = styled.div`
     }
     > div:first-child:last-child {
       flex-basis: 100%;
+      width: 100%;
     }
   }
 `
@@ -200,7 +195,6 @@ const PoolDetailContent: FC = () => {
         </HeaderContainer>
         <AssetDetails />
         <PoolOverview />
-        {/* <TabsV2 tabs={} /> */}
         <Exchange>
           <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
           {activeTab !== 'Stake' && (

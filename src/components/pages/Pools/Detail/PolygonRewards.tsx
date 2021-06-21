@@ -73,7 +73,7 @@ export const PolygonRewards: FC = () => {
     <Container>
       {hasRewards ? (
         <Rewards>
-          <Table headerTitles={headerTitles} widths={TABLE_CELL_WIDTHS}>
+          <Table headerTitles={headerTitles} widths={TABLE_CELL_WIDTHS} width={48}>
             {MOCK_REWARDS.map(({ balance, token, apy }) => {
               return (
                 <TableRow key={token}>

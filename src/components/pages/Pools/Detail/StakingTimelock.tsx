@@ -93,11 +93,13 @@ const LockupRow = styled(TableRow)`
   }
 `
 
-const Container = styled.div`
+const StyledTable = styled(Table)`
   background: ${({ theme }) => theme.color.background[1]};
-  padding: 1rem;
+  padding: 0.25rem 0.5rem 0.5rem;
   border-radius: 1rem;
+`
 
+const Container = styled.div`
   > *:not(:last-child) {
     margin-bottom: 1.5rem;
   }
@@ -152,7 +154,7 @@ export const StakingTimelock: FC = () => {
   return (
     <Container>
       {showDeposit && (
-        <Table headerTitles={depositHeaderTitles} widths={TABLE_CELL_WIDTHS}>
+        <StyledTable headerTitles={depositHeaderTitles} widths={TABLE_CELL_WIDTHS}>
           <StyledRow buttonTitle="Stake">
             <TableCell width={TABLE_CELL_WIDTHS[0]}>
               <Input
@@ -183,10 +185,10 @@ export const StakingTimelock: FC = () => {
               <Slider min={sliderStart} max={sliderEnd} step={sliderStep} value={value} onChange={setValue} />
             </LockupRow>
           )}
-        </Table>
+        </StyledTable>
       )}
       {showWithdraw && (
-        <Table headerTitles={withdrawHeaderTitles} widths={TABLE_CELL_WIDTHS}>
+        <StyledTable headerTitles={withdrawHeaderTitles} widths={TABLE_CELL_WIDTHS} width={48}>
           {MOCK_DEPOSITS.map(({ balance, end, multiplier, token }) => {
             const canWithdraw = end < Date.now()
             return (
@@ -203,7 +205,7 @@ export const StakingTimelock: FC = () => {
               </StyledRow>
             )
           })}
-        </Table>
+        </StyledTable>
       )}
     </Container>
   )
