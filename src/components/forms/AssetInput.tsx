@@ -29,16 +29,16 @@ interface Props {
   spender?: string
   isFetching?: boolean
   decimals?: number
+  className?: string
 }
 
 const Input = styled.div`
   display: flex;
   justify-content: space-between;
   height: 100%;
+  align-items: center;
 
   button {
-    align-self: center;
-    border-radius: 0.75rem;
     text-transform: uppercase;
     color: ${({ theme }) => theme.color.body};
     border: 1px solid ${({ theme }) => theme.color.defaultBorder};
@@ -46,8 +46,6 @@ const Input = styled.div`
 `
 
 const LockButton = styled(Button)`
-  border-radius: 0.75rem;
-
   svg {
     width: 1rem;
     height: 1rem;
@@ -144,6 +142,7 @@ const AssetInputContent: FC<Props> = ({
   spender,
   isFetching,
   decimals,
+  className,
 }) => {
   const [unlockState, setUnlockState] = useState(false)
 
@@ -157,7 +156,7 @@ const AssetInputContent: FC<Props> = ({
   }, [needsApprove])
 
   return (
-    <Container error={error} disabled={disabled ?? false}>
+    <Container error={error} disabled={disabled ?? false} className={className}>
       {needsApprove && unlockState && handleApprove ? (
         <Approve onCloseClick={() => setUnlockState(false)} onApproveClick={handleApprove} hasPendingApproval={false} />
       ) : (
@@ -177,15 +176,11 @@ const AssetInputContent: FC<Props> = ({
             </Input>
           </InputContainer>
           <TokenContainer>
-            <SubscribedTokenInput disabled={addressDisabled} value={address} options={addressOptions} onChange={handleSetAddress} />
+            {!!address && (
+              <SubscribedTokenInput disabled={addressDisabled} value={address} options={addressOptions} onChange={handleSetAddress} />
+            )}
             {spender && (
-              <LockButton
-                scale={0.875}
-                highlighted={needsApprove}
-                transparent={!needsApprove}
-                disabled={!needsApprove}
-                onClick={handleUnlockClick}
-              >
+              <LockButton highlighted={needsApprove} transparent={!needsApprove} disabled={!needsApprove} onClick={handleUnlockClick}>
                 {needsApprove ? <UnlockedIcon /> : <LockIcon />}
               </LockButton>
             )}
@@ -210,10 +205,12 @@ const AssetInputApproveContent: FC<Props> = ({
   handleSetMax,
   spender,
   decimals,
+  className,
 }) => {
   const [{ needsApprove }, handleApprove] = useApprove()
   return (
     <AssetInputContent
+      className={className}
       address={address}
       addressDisabled={addressDisabled}
       addressOptions={addressOptions}
@@ -251,11 +248,13 @@ export const AssetInput: FC<Props> = ({
   addressDisabled,
   isFetching,
   decimals,
+  className,
 }) => {
   const amount = BigDecimal.maybeParse(formValue)
   return spender && address ? (
     <ApproveProvider address={address} spender={spender} amount={amount}>
       <AssetInputApproveContent
+        className={className}
         address={address}
         spender={spender}
         formValue={formValue}
@@ -277,6 +276,7 @@ export const AssetInput: FC<Props> = ({
     </ApproveProvider>
   ) : (
     <AssetInputContent
+      className={className}
       address={address}
       spender={spender}
       formValue={formValue}

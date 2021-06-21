@@ -27,6 +27,7 @@ import { UserLookup } from './UserLookup'
 import { PoolOverview } from './PoolOverview'
 import { InfoBox } from '../../../core/InfoBox'
 import { ChainIds, useNetwork } from '../../../../context/NetworkProvider'
+import { StakingTimelock } from './StakingTimelock'
 
 const HeaderChartsContainer = styled.div`
   position: relative;
@@ -124,6 +125,10 @@ const Exchange = styled.div`
     justify-content: space-between;
     align-items: flex-start;
 
+    > div {
+      transition: 0.15s all ease-out;
+    }
+
     > div:not(:last-child) {
       margin-bottom: 0;
     }
@@ -131,8 +136,12 @@ const Exchange = styled.div`
     > div:first-child {
       flex-basis: calc(65% - 0.5rem);
     }
-    > div:last-child {
+    > div:last-child:not(:first-child) {
       flex-basis: calc(35% - 0.5rem);
+    }
+    > div:first-child:last-child {
+      flex-basis: 100%;
+      width: 100%;
     }
   }
 `
@@ -166,6 +175,10 @@ const PoolDetailContent: FC = () => {
         title: 'Withdraw',
         component: <Withdraw isLowLiquidity={isLowLiquidity} />,
       },
+      Stake: {
+        title: 'Stake',
+        component: <StakingTimelock />,
+      },
     }),
     [isLowLiquidity],
   )
@@ -184,32 +197,34 @@ const PoolDetailContent: FC = () => {
         <PoolOverview />
         <Exchange>
           <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
-          <InfoBox>
-            <h4>Using mStable Feeder Pools</h4>
-            <p>
-              Feeder Pools offer a way to earn with your assets with <span>low impermanent loss risk.</span>
-            </p>
-            <p>
-              Liquidity providers passively earn swap fees. Deposits to the Vault earn swap fees in addition to{' '}
-              {isEthereum
-                ? `MTA rewards which vest over
+          {activeTab !== 'Stake' && (
+            <InfoBox>
+              <h4>Using mStable Feeder Pools</h4>
+              <p>
+                Feeder Pools offer a way to earn with your assets with <span>low impermanent loss risk.</span>
+              </p>
+              <p>
+                Liquidity providers passively earn swap fees. Deposits to the Vault earn swap fees in addition to{' '}
+                {isEthereum
+                  ? `MTA rewards which vest over
               time.`
-                : `token rewards.`}
-              {isEthereum && !readMore && <UnstyledButton onClick={setReadMore}>Learn more</UnstyledButton>}
-            </p>
-            {readMore && (
-              <>
-                <p>
-                  You can <span>multiply your rewards</span> in mStable pools by staking MTA.
-                </p>
-                <p>
-                  Claiming rewards will send 33% of the unclaimed amount to you immediately, with the rest safely locked in a stream vesting
-                  linearly and finishing 26 weeks from the time at which you claimed.
-                </p>
-                <p>When streams are unlocked, these rewards are sent to you in full along with unclaimed earnings.</p>
-              </>
-            )}
-          </InfoBox>
+                  : `token rewards.`}
+                {isEthereum && !readMore && <UnstyledButton onClick={setReadMore}>Learn more</UnstyledButton>}
+              </p>
+              {readMore && (
+                <>
+                  <p>
+                    You can <span>multiply your rewards</span> in mStable pools by staking MTA.
+                  </p>
+                  <p>
+                    Claiming rewards will send 33% of the unclaimed amount to you immediately, with the rest safely locked in a stream
+                    vesting linearly and finishing 26 weeks from the time at which you claimed.
+                  </p>
+                  <p>When streams are unlocked, these rewards are sent to you in full along with unclaimed earnings.</p>
+                </>
+              )}
+            </InfoBox>
+          )}
         </Exchange>
         <UserLookup />
       </Container>
