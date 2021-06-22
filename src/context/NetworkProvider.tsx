@@ -89,6 +89,8 @@ export interface EthereumMainnet
         WETH: string
         WBTC: string
       }
+      // TODO remove, just for testing
+      ['FRAX/IQ']: { stakingContract: string; stakingToken: string; rewardsTokens: [string, string] }
     },
     {}
   > {
@@ -200,6 +202,11 @@ const ETH_MAINNET: EthereumMainnet = {
     ERC20: {
       WETH: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
       WBTC: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+    },
+    'FRAX/IQ': {
+      stakingContract: '0xf37057823910653a554d996b49e3399dc87fae1b',
+      rewardsTokens: ['0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', '0x579cea1889991f68acc35ff5c3dd0621ff29b0c9'],
+      stakingToken: '0x853d955acef822db058eb8505911ed77f175b99e',
     },
   },
   getExplorerUrl: etherscanUrl(),
