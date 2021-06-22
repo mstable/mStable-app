@@ -11,16 +11,16 @@ import { useBlockNow } from './BlockProvider'
 
 interface StaticData {
   address: string
-  rewards: { address: string; amount: BigDecimal }[]
-  lockMaxMultiplier: BigNumber
-  lockTimeForMaxMultiplier: BigNumber
-  lockTimeMin: BigNumber
+  lockMaxMultiplier: BigDecimal
+  lockTimeForMaxMultiplier: BigDecimal
+  lockTimeMin: BigDecimal
   // TODO probably more?
 }
 
 interface SubscribedData {
-  totalSupply: BigDecimal
+  // totalSupply: BigDecimal
   // TODO probably more?
+  lastUpdate?: number
   accountData?: {
     earned: { address: string; amount: BigDecimal }[]
     combinedWeight: BigNumber
@@ -78,27 +78,15 @@ export const FraxStakingProvider: FC = ({ children }) => {
 
     setStaticData.fetching()
 
-    Promise.all([
-      (contract.current.getReward() as unknown) as Promise<[BigNumber, BigNumber]>,
-      contract.current.stakingContract.current.lock_max_multiplier(),
-      contract.current.lock_time_for_max_multiplier(),
-      contract.current.lock_time_min(),
-    ])
-      .then(([rewards, lockMaxMultiplier, lockTimeForMaxMultiplier, lockTimeMin]) => {
+    Promise.all([contract.current.lock_max_multiplier(), contract.current.lock_time_for_max_multiplier(), contract.current.lock_time_min()])
+      .then(([lockMaxMultiplier, lockTimeForMaxMultiplier, lockTimeMin]) => {
         if (!contract.current) return
 
         setStaticData.value({
           address: contract.current.address,
-          rewards: rewards.map((amount, index) => {
-            const address = index === 0 ? frax.rewardsTokens[0] : frax.rewardsTokens[1]
-            return {
-              address,
-              amount: new BigDecimal(amount), // Assumed 18 decimals (so far, we know it will be)
-            }
-          }),
-          lockMaxMultiplier: BigNumber.from(lockMaxMultiplier),
-          lockTimeForMaxMultiplier: BigNumber.from(lockTimeForMaxMultiplier),
-          lockTimeMin: BigNumber.from(lockTimeMin),
+          lockMaxMultiplier: new BigDecimal(lockMaxMultiplier),
+          lockTimeForMaxMultiplier: new BigDecimal(lockTimeForMaxMultiplier),
+          lockTimeMin: new BigDecimal(lockTimeMin),
         })
       })
       .catch(setStaticData.error)
@@ -108,12 +96,9 @@ export const FraxStakingProvider: FC = ({ children }) => {
   useEffect(() => {
     if (!frax || !contract.current || subscribedData.fetching) return
 
-    setSubscribedData.fetching()
+    // setSubscribedData.fetching()
 
     Promise.all([
-      (contract.current.totalSupply() as unknown) as Promise<BigNumber>,
-      // stakingContract.current.totalLiquidityLocked(),
-      // stakingContract.current.totalCombinedWeight(),
       account
         ? Promise.all([
             contract.current.earned(account),
@@ -123,9 +108,8 @@ export const FraxStakingProvider: FC = ({ children }) => {
           ])
         : undefined,
     ])
-      .then(([totalSupply, [earned, combinedWeight, lockedStakes, lockedLiquidity] = []]) => {
+      .then(([[earned, combinedWeight, lockedStakes, lockedLiquidity] = []]) => {
         let accountData: SubscribedData['accountData']
-
         if (earned && combinedWeight && lockedStakes && lockedLiquidity) {
           accountData = {
             earned: earned.map((amount, index) => {
@@ -146,8 +130,7 @@ export const FraxStakingProvider: FC = ({ children }) => {
             })),
           }
         }
-
-        setSubscribedData.value({ accountData, totalSupply: new BigDecimal(totalSupply) })
+        setSubscribedData.value({ accountData, lastUpdate: blockNumber })
       })
       .catch(setSubscribedData.error)
   }, [blockNumber, account, setSubscribedData, frax, subscribedData.fetching])
