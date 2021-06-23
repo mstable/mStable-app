@@ -4,8 +4,14 @@ import styled from 'styled-components'
 import { Table, TableCell, TableRow } from '../../../core/Table'
 import { Button } from '../../../core/Button'
 import { TokenIcon } from '../../../icons/TokenIcon'
+import { useFraxStakingContract, useFraxStakingState } from '../../../../context/FraxStakingProvider'
+import { CountUp } from '../../../core/CountUp'
+import { useTokens } from '../../../../context/TokensProvider'
+import { usePropose } from '../../../../context/TransactionsProvider'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
+import { Interfaces } from '../../../../types'
 
-const TABLE_CELL_WIDTHS = [30, 30, 30]
+const TABLE_CELL_WIDTHS = [60, 40]
 
 const Claim = styled(Button)`
   width: 12rem;
@@ -64,27 +70,45 @@ const MOCK_REWARDS = [
   },
 ]
 
-export const PolygonRewards: FC = () => {
-  const hasRewards = !!MOCK_REWARDS.length
-  const handleClaim = (): void => {}
-  const headerTitles = ['Token', 'APY', 'Earned'].map(t => ({ title: t }))
+export const FraxRewards: FC = () => {
+  const { subscribed: fraxAccountData } = useFraxStakingState() ?? {}
+  const contract = useFraxStakingContract()
+  const propose = usePropose()
+
+  const accountData = fraxAccountData?.value?.accountData
+  const hasRewards = !!accountData?.earned.length
+  const headerTitles = ['Token', 'Earned'].map(t => ({ title: t }))
+
+  const handleClaim = (): void => {
+    if (!contract) return
+    propose<Interfaces.FraxStakingRewardsDual, 'getReward'>(
+      new TransactionManifest(contract, 'getReward', [], {
+        present: 'Claiming rewards',
+        past: 'Claimed rewards',
+      }),
+    )
+  }
+
+  const tokens = useTokens(accountData?.earned?.map(v => v.address) ?? [])
 
   return (
     <Container>
       {hasRewards ? (
         <Rewards>
           <Table headerTitles={headerTitles} widths={TABLE_CELL_WIDTHS} width={48}>
-            {MOCK_REWARDS.map(({ balance, token, apy }) => {
+            {accountData?.earned.map(({ address, amount }) => {
+              const token = tokens.find(v => v.address === address)
               return (
-                <TableRow key={token}>
+                <TableRow key={address}>
                   <TableCell width={TABLE_CELL_WIDTHS[0]}>
                     <Token>
-                      <TokenIcon symbol={token} />
-                      <h3>{token}</h3>
+                      <TokenIcon symbol={token?.symbol ?? 'FXS'} />
+                      <h3>{token?.symbol ?? 'FXS'}</h3>
                     </Token>
                   </TableCell>
-                  <TableCell width={TABLE_CELL_WIDTHS[1]}>{apy}%</TableCell>
-                  <TableCell width={TABLE_CELL_WIDTHS[2]}>{balance.toFixed(2)}</TableCell>
+                  <TableCell width={TABLE_CELL_WIDTHS[2]}>
+                    <CountUp end={amount?.simple} decimals={2} />
+                  </TableCell>
                 </TableRow>
               )
             })}

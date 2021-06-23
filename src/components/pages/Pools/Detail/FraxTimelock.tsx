@@ -9,34 +9,18 @@ import { ToggleInput } from '../../../forms/ToggleInput'
 import { Button } from '../../../core/Button'
 import { Slider } from '../../../core/Slider'
 import { CountdownBar } from '../../../core/CountdownBar'
+import { useFraxStakingContract, useFraxStakingState } from '../../../../context/FraxStakingProvider'
+import { CountUp } from '../../../core/CountUp'
+import { Interfaces } from '../../../../types'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
+import { usePropose } from '../../../../context/TransactionsProvider'
 
 const TABLE_CELL_WIDTHS = [30, 30, 30]
-const WEEK = 604800 * 1000
-const YEAR = 365 * 86400 * 1000
+const DAY = 86400
 
 const MOCK_BALANCE: { balance?: string } = {
   balance: '12000',
 }
-
-const MOCK_DEPOSITS: {
-  balance: number
-  multiplier: number
-  end: number
-  token: string
-}[] = [
-  {
-    balance: 1200,
-    multiplier: 1.2,
-    end: Date.now() + 1000 * 240 * 1000,
-    token: 'mUSD/FRAX',
-  },
-  {
-    balance: 1200000,
-    multiplier: 1.0,
-    end: Date.now() - 1000 * 240 * 1000,
-    token: 'mUSD/FRAX',
-  },
-]
 
 const Input = styled(AssetInput)`
   height: 2.5rem;
@@ -93,10 +77,25 @@ const LockupRow = styled(TableRow)`
   }
 `
 
+const MultiplierCell = styled(TableCell)`
+  span {
+    color: ${({ theme }) => theme.color.body};
+    ${({ theme }) => theme.mixins.numeric};
+  }
+`
+
 const StyledTable = styled(Table)`
   background: ${({ theme }) => theme.color.background[1]};
   padding: 0.25rem 0.5rem 0.5rem;
   border-radius: 1rem;
+
+  td h3 {
+    color: ${({ theme }) => theme.color.bodyAccent};
+
+    span {
+      color: ${({ theme }) => theme.color.body};
+    }
+  }
 `
 
 const Container = styled.div`
@@ -105,20 +104,29 @@ const Container = styled.div`
   }
 `
 
-export const StakingTimelock: FC = () => {
-  const sliderStart = Date.now()
-  const sliderEnd = Date.now() + 3 * YEAR // 3 years
-  const sliderStep = WEEK
+export const FraxTimelock: FC = () => {
+  const { subscribed: userData, static: staticData } = useFraxStakingState() ?? {}
+  const contract = useFraxStakingContract()
+  const propose = usePropose()
 
-  const [value, setValue] = useState(sliderStart)
+  const sliderStart = staticData?.value?.lockTimeMin ?? 0
+  const sliderEnd = staticData?.value?.lockTimeMax ?? 0
+  const maxMultiplier = staticData?.value?.lockMaxMultiplier ?? 1
+  const lockTimeMax = staticData?.value?.lockTimeMax
+
+  const [seconds, setValue] = useState(sliderStart)
   const [boostToggled, setBoost] = useToggle(false)
-  const [, inputFormValue, handleSetAmount] = useBigDecimalInput(MOCK_BALANCE?.balance)
+  const [inputValue, inputFormValue, handleSetAmount] = useBigDecimalInput(MOCK_BALANCE?.balance)
+
+  const lockedStakes = userData?.value?.accountData?.lockedStakes
 
   const showDeposit = !!MOCK_BALANCE?.balance
-  const showWithdraw = !!MOCK_DEPOSITS.length
+  const showWithdraw = lockedStakes?.length
 
-  const difference = useMemo(() => {
-    const duration = intervalToDuration({ start: new Date(), end: value + 1000 }) // 1s off
+  const timeDifference = useMemo(() => {
+    const start = Date.now()
+    const duration = intervalToDuration({ start, end: start + seconds * 1000 })
+
     const nonzero = Object.entries(duration)
       .filter(([, v]) => v)
       .map(([unit]) => unit)
@@ -129,19 +137,44 @@ export const StakingTimelock: FC = () => {
       format: ['years', 'months', 'weeks', 'days'].filter(i => new Set(nonzero).has(i)).slice(0, 3),
       delimiter: ', ',
     })
-  }, [value])
+  }, [seconds])
 
-  // Assumes linear, need to check
-  const boostValue = useMemo(() => {
-    const range = sliderEnd - sliderStart
-    const scale = (value - sliderStart) / range
-    return scale < 0 ? 1 : 2 * scale + 1
-  }, [sliderEnd, sliderStart, value])
+  const boostMultiplier = useMemo(() => {
+    if (!lockTimeMax) return 1
+    const secs = Math.ceil(seconds)
+    return 1 + (secs * (maxMultiplier - 1)) / lockTimeMax
+  }, [maxMultiplier, lockTimeMax, seconds])
 
-  const handleWithdraw = (): void => {}
+  const handleWithdraw = (kekId: string): void => {
+    if (!contract || !inputValue?.exact || !seconds) return
+    propose<Interfaces.FraxStakingRewardsDual, 'withdrawLocked'>(
+      new TransactionManifest(contract, 'withdrawLocked', [kekId], {
+        present: 'Withdrawing LP token',
+        past: 'Withdrew LP token',
+      }),
+    )
+  }
 
-  const handleDeposit = (): void => {}
+  const handleDeposit = (): void => {
+    if (!contract || !inputValue?.exact || !seconds) return
+    if (boostToggled && seconds >= DAY) {
+      propose<Interfaces.FraxStakingRewardsDual, 'stakeLocked'>(
+        new TransactionManifest(contract, 'stakeLocked', [inputValue.exact, seconds], {
+          present: 'Staking LP token',
+          past: 'Staked LP token',
+        }),
+      )
+    }
+    // TODO: stake() - not available on V3 contract
+    // propose<Interfaces.FraxStakingRewardsDual, 'stake'>(
+    // new TransactionManifest(contract, 'stakeLocked', [inputValue.exact], {
+    //   present: 'Staking LP token',
+    //   past: 'Staked LP token',
+    // }),
+    // )
+  }
 
+  // TODO: - Subscribe to LP token balance
   const handleSetMax = (): void => {}
 
   if (!showDeposit && !showWithdraw) return null
@@ -178,29 +211,35 @@ export const StakingTimelock: FC = () => {
             <LockupRow>
               <div>
                 <p>
-                  You will lock <span>{inputFormValue}</span> mUSD/FRAX for <span>{difference}</span> and receive a boost of:
+                  You will lock <span>{inputFormValue}</span> mUSD/FRAX for <span>{timeDifference}</span> and receive a boost of:
                 </p>
-                <span>{boostValue.toFixed(3)}x</span>
+                <span>{boostMultiplier.toFixed(3)}x</span>
               </div>
-              <Slider min={sliderStart} max={sliderEnd} step={sliderStep} value={value} onChange={setValue} />
+              <Slider min={sliderStart} max={sliderEnd} step={DAY} value={seconds} onChange={setValue} />
             </LockupRow>
           )}
         </StyledTable>
       )}
       {showWithdraw && (
         <StyledTable headerTitles={withdrawHeaderTitles} widths={TABLE_CELL_WIDTHS} width={48}>
-          {MOCK_DEPOSITS.map(({ balance, end, multiplier, token }) => {
-            const canWithdraw = end < Date.now()
+          {lockedStakes?.map(({ liquidity, lockMultiplier, endTime, startTime, kekId }) => {
+            const dateRange = endTime - startTime
+            const unlocked = endTime < Date.now()
+            const percentage = 100 * ((endTime - Date.now()) / dateRange)
+            const token = 'FRAX/mUSD' // TODO: - Pull out to provider
             return (
-              <StyledRow key={end} onClick={(canWithdraw && handleWithdraw) || undefined} buttonTitle="Withdraw">
+              <StyledRow key={kekId} onClick={unlocked ? () => handleWithdraw(kekId) : undefined} buttonTitle="Withdraw">
                 <TableCell width={TABLE_CELL_WIDTHS[0]}>
                   <h3>
-                    {balance} {token}
+                    <CountUp end={liquidity?.simple} decimals={2} />
+                    {` ${token}`}
                   </h3>
                 </TableCell>
-                <TableCell width={TABLE_CELL_WIDTHS[1]}>{multiplier}x</TableCell>
+                <MultiplierCell width={TABLE_CELL_WIDTHS[1]}>
+                  <span>{lockMultiplier?.simple.toFixed(3)}x</span>
+                </MultiplierCell>
                 <TableCell width={TABLE_CELL_WIDTHS[2]}>
-                  {canWithdraw ? <span>Unlocked</span> : <CountdownBar percentage={50} end={end} />}
+                  {unlocked ? <span>Unlocked</span> : <CountdownBar percentage={percentage} end={endTime} />}
                 </TableCell>
               </StyledRow>
             )
