@@ -15,7 +15,7 @@ import { BoostedSavingsVaultState } from '../../../../context/DataProvider/types
 import { TransitionCard, CardContainer as Container, CardButton as Button } from '../../../core/TransitionCard'
 import { PokeBoost } from '../../../core/PokeBoost'
 import { Tooltip } from '../../../core/ReactTooltip'
-import { PolygonRewards } from './PolygonRewards'
+import { FraxRewards } from './FraxRewards'
 
 enum Selection {
   Stake = 'stake',
@@ -39,7 +39,7 @@ const ethComponents: Record<string, ReactElement> = {
 
 const polygonComponents: Record<string, ReactElement> = {
   [Stake]: <Position />,
-  [Rewards]: <PolygonRewards />,
+  [Rewards]: <FraxRewards />,
 }
 
 const LiquidityMessageContent: FC<{

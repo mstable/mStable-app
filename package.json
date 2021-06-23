@@ -77,7 +77,7 @@
     "build:ipfs": "cp .env.example .env && yarn && yarn run codegen && yarn run build",
     "codegen": "yarn codegen:typechain && yarn codegen:graphql",
     "codegen:graphql": "graphql-codegen --config ./codegen.yml -r dotenv/config",
-    "codegen:typechain": "yarn typechain --target ethers-v5 --outDir src/typechain './lib/abis/*.json'",
+    "codegen:typechain": "yarn typechain --target ethers-v5 --outDir src/typechain './lib/abis/**/*.json'",
     "eject": "rescripts eject",
     "lint": "yarn eslint './src/**/*.{ts,tsx}' --fix",
     "start": "DISABLE_ESLINT=true rescripts start",
