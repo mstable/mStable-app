@@ -98,8 +98,6 @@ export const FraxStakingProvider: FC = ({ children }) => {
   useEffect(() => {
     if (!frax || !contract.current || subscribedData.fetching) return
 
-    // setSubscribedData.fetching()
-
     Promise.all([
       account
         ? Promise.all([
@@ -125,8 +123,7 @@ export const FraxStakingProvider: FC = ({ children }) => {
             lockedLiquidity: new BigDecimal(lockedLiquidity),
             lockedStakes: lockedStakes.map(({ kek_id, start_timestamp, ending_timestamp, liquidity, lock_multiplier }) => ({
               kekId: kek_id,
-              // TODO: - Fix timestamp 10 -> 13 digit
-              startTime: new Date(parseInt(start_timestamp.toString())).getTime() * 1000,
+              startTime: new Date(parseInt(start_timestamp.toString())).getTime() * 1000, // ms
               endTime: new Date(parseInt(ending_timestamp.toString())).getTime() * 1000,
               liquidity: new BigDecimal(liquidity),
               lockMultiplier: new BigDecimal(lock_multiplier),

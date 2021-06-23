@@ -13,6 +13,12 @@ import { Interfaces } from '../../../../types'
 
 const TABLE_CELL_WIDTHS = [60, 40]
 
+// TODO: - replace with subscribedtoken when available
+const MOCK_TOKENS: Record<string, string> = {
+  '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0': 'MTA',
+  '0x579cea1889991f68acc35ff5c3dd0621ff29b0c9': 'FXS',
+}
+
 const Claim = styled(Button)`
   width: 12rem;
 `
@@ -102,8 +108,8 @@ export const FraxRewards: FC = () => {
                 <TableRow key={address}>
                   <TableCell width={TABLE_CELL_WIDTHS[0]}>
                     <Token>
-                      <TokenIcon symbol={token?.symbol ?? 'FXS'} />
-                      <h3>{token?.symbol ?? 'FXS'}</h3>
+                      <TokenIcon symbol={token?.symbol ?? MOCK_TOKENS[address]} />
+                      <h3>{token?.symbol ?? MOCK_TOKENS[address]}</h3>
                     </Token>
                   </TableCell>
                   <TableCell width={TABLE_CELL_WIDTHS[2]}>

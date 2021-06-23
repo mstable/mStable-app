@@ -18,6 +18,7 @@ import { usePropose } from '../../../../context/TransactionsProvider'
 const TABLE_CELL_WIDTHS = [30, 30, 30]
 const DAY = 86400
 
+// TODO: - replace with subscribedtoken when available
 const MOCK_BALANCE: { balance?: string } = {
   balance: '12000',
 }
