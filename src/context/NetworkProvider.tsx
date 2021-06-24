@@ -73,7 +73,7 @@ interface Network<TAddresses, TGqlEndpoints> {
 
   gqlEndpoints: CoreGqlEndpoints & TGqlEndpoints
 
-  addresses: CoreAddresses & { ERC20: { wMATIC?: string; WETH?: string } } & TAddresses
+  addresses: CoreAddresses & { ERC20: { wMATIC?: string; WETH?: string; FXS?: string } } & TAddresses
 
   gasStationEndpoint: string
 
@@ -300,6 +300,7 @@ const MATIC_MAINNET: MaticMainnet = {
     UniswapRouter02_Like: '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff', // QuickSwap
     ERC20: {
       wMATIC: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+      FXS: '0x3e121107F6F22DA4911079845a470757aF4e1A1b',
     },
   },
   getExplorerUrl: maticExplorerUrl('mainnet'),
