@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useEffectOnce } from 'react-use'
 
-import { AllNetworks, ChainIds, useNetwork } from '../context/NetworkProvider'
+import { AllNetworks, ChainIds, getNetwork, useNetwork } from '../context/NetworkProvider'
 import { useSelectedMassetName } from '../context/MassetProvider'
 import { fetchCoingeckoPrices } from '../utils/fetchCoingeckoPrices'
 
@@ -63,8 +63,8 @@ export const useWBTCPrice = (): number | undefined => {
 }
 
 export const useMtaPrice = (): number | undefined => {
-  const network = useNetwork()
-  return usePrices(network?.addresses.MTA ? [network.addresses.MTA] : [])?.[0]
+  const network = getNetwork(ChainIds.EthereumMainnet)
+  return usePrices([network.addresses.MTA])?.[0]
 }
 
 export const useSelectedMassetPrice = (): number | undefined => {
