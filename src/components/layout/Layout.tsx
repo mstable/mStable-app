@@ -6,7 +6,7 @@ import { TransitionGroup } from 'react-transition-group'
 import { ModalProvider } from 'react-modal-hook'
 import { usePrevious } from 'react-use'
 
-import { Networks, useChainIdCtx, useNetwork } from '../../context/NetworkProvider'
+import { useChainIdCtx, useNetwork } from '../../context/NetworkProvider'
 import { useSelectedMassetConfig } from '../../context/MassetProvider'
 import { useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 
