@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react'
 import { constants } from 'ethers'
-import { BoostedSavingsVault__factory, ISavingsContractV2__factory } from '@mstable/protocol/types/generated'
+import { BoostedSavingsVault__factory, ISavingsContractV2__factory, SaveWrapper__factory } from '@mstable/protocol/types/generated'
 
 import { useSigner } from '../../../../context/AccountProvider'
 import { usePropose } from '../../../../context/TransactionsProvider'
@@ -14,7 +14,6 @@ import { useSlippage } from '../../../../hooks/useSimpleInput'
 import { BigDecimal } from '../../../../web3/BigDecimal'
 import { TransactionManifest } from '../../../../web3/TransactionManifest'
 import { getPenaltyMessage, getPenaltyPercentage } from '../../../../utils/ammUtils'
-import { SaveWrapper__factory } from '../../../../typechain'
 import { AddressOption, Interfaces } from '../../../../types'
 
 import { AssetExchange } from '../../../forms/AssetExchange'

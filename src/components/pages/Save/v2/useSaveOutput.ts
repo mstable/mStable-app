@@ -2,7 +2,7 @@ import type { BigNumber } from 'ethers'
 import { Signer } from 'ethers'
 import { useEffect } from 'react'
 import { useDebounce } from 'react-use'
-import { FeederPool__factory, Masset__factory } from '@mstable/protocol/types/generated'
+import { IUniswapV2Router02__factory, FeederPool__factory, Masset__factory, SaveWrapper__factory } from '@mstable/protocol/types/generated'
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 import { MassetState } from '../../../../context/DataProvider/types'
@@ -13,7 +13,6 @@ import { useSelectedMassetConfig } from '../../../../context/MassetProvider'
 import { FetchState, useFetchState } from '../../../../hooks/useFetchState'
 import { sanitizeMassetError } from '../../../../utils/strings'
 import { BigDecimal } from '../../../../web3/BigDecimal'
-import { SaveWrapper__factory, UniswapRouter02__factory } from '../../../../typechain'
 import { getPriceImpact } from '../../../../utils/ammUtils'
 
 import { SaveOutput, SaveRoutes } from './types'
@@ -30,7 +29,7 @@ const getOptimalBasset = async (
     (networkAddresses.ERC20 as Extract<AllNetworks['addresses'], { ERC20: { WETH: string } }>['ERC20']).WETH ??
     (networkAddresses.ERC20 as Extract<AllNetworks['addresses'], { ERC20: { wMATIC: string } }>['ERC20']).wMATIC
 
-  const uniswap = UniswapRouter02__factory.connect(networkAddresses.UniswapRouter02_Like, signer)
+  const uniswap = IUniswapV2Router02__factory.connect(networkAddresses.UniswapRouter02_Like, signer)
 
   const saveWrapper = SaveWrapper__factory.connect(networkAddresses.SaveWrapper, signer)
 

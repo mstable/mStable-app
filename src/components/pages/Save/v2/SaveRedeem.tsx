@@ -138,10 +138,10 @@ export const SaveRedeem: FC = () => {
                 ),
               )
             default:
-              return propose<Interfaces.SavingsContract, 'redeemCredits(uint256)'>(
+              return propose<Interfaces.SavingsContract, 'redeemCredits'>(
                 new TransactionManifest(
                   ISavingsContractV2__factory.connect(saveAddress, signer),
-                  'redeemCredits(uint256)',
+                  'redeemCredits',
                   [inputAmount.exact],
                   purpose,
                   formId,
