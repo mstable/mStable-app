@@ -1,9 +1,7 @@
 import type { FC } from 'react'
 import React, { createContext, useContext, useMemo } from 'react'
-import type { BoostedSavingsVault, FeederPool } from '@mstable/protocol/types/generated'
-import { BoostedSavingsVault__factory, FeederPool__factory } from '@mstable/protocol/types/generated'
-import type { FeederWrapper } from '../../../typechain'
-import { FeederWrapper__factory } from '../../../typechain'
+import type { BoostedSavingsVault, FeederPool, FeederWrapper } from '@mstable/protocol/types/generated'
+import { BoostedSavingsVault__factory, FeederPool__factory, FeederWrapper__factory } from '@mstable/protocol/types/generated'
 
 import type { AddressOption } from '../../../types'
 import type { FeederPoolState, MassetState } from '../../../context/DataProvider/types'

@@ -1,6 +1,15 @@
-import type { ERC20, BoostedSavingsVault, ISavingsContractV2, Masset, FeederPool, BoostDirector } from '@mstable/protocol/types/generated'
-
-import type { UniswapRouter02, SaveWrapper, FeederWrapper, StakingRewardsDualV3FRAXIQ } from './typechain'
+import type {
+  ERC20,
+  BoostedSavingsVault,
+  ISavingsContractV2,
+  Masset,
+  FeederPool,
+  BoostDirector,
+  SaveWrapper,
+  FeederWrapper,
+  IUniswapV2Router02,
+} from '@mstable/protocol/types/generated'
+import { Contract } from 'ethers'
 
 import type { BigDecimal } from './web3/BigDecimal'
 
@@ -30,12 +39,12 @@ export interface Instances {
   [Interfaces.ERC20]: ERC20
   [Interfaces.SavingsContract]: ISavingsContractV2
   [Interfaces.SaveWrapper]: SaveWrapper
-  [Interfaces.UniswapRouter02]: UniswapRouter02
+  [Interfaces.UniswapRouter02]: IUniswapV2Router02
   [Interfaces.FeederPool]: FeederPool
   [Interfaces.FeederWrapper]: FeederWrapper
   [Interfaces.BoostedSavingsVault]: BoostedSavingsVault
   [Interfaces.BoostDirector]: BoostDirector
-  [Interfaces.FraxStakingRewardsDual]: StakingRewardsDualV3FRAXIQ
+  [Interfaces.FraxStakingRewardsDual]: Contract
 }
 
 export interface Token {

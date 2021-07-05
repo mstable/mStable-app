@@ -149,6 +149,9 @@ export const FraxTimelock: FC = () => {
   const handleWithdraw = (kekId: string): void => {
     if (!contract || !inputValue?.exact || !seconds) return
     propose<Interfaces.FraxStakingRewardsDual, 'withdrawLocked'>(
+      // Two Typechains == hell
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       new TransactionManifest(contract, 'withdrawLocked', [kekId], {
         present: 'Withdrawing LP token',
         past: 'Withdrew LP token',
@@ -160,6 +163,9 @@ export const FraxTimelock: FC = () => {
     if (!contract || !inputValue?.exact || !seconds) return
     if (boostToggled && seconds >= DAY) {
       propose<Interfaces.FraxStakingRewardsDual, 'stakeLocked'>(
+        // Two Typechains == hell
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         new TransactionManifest(contract, 'stakeLocked', [inputValue.exact, seconds], {
           present: 'Staking LP token',
           past: 'Staked LP token',
