@@ -1,8 +1,11 @@
 import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
-
 import CountUp from 'react-countup'
+
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
+import { useNetworkPrices } from '../../../context/NetworkProvider'
+import { useMtaPrice } from '../../../hooks/usePrice'
+import { createStakingRewardsContext } from '../../../hooks/createStakingRewardsContext'
 
 import { PageAction, PageHeader } from '../PageHeader'
 import { OnboardingProvider } from './hooks'
@@ -11,6 +14,8 @@ import { DailyApys } from '../../stats/DailyApys'
 import { SaveStake } from './v2/SaveStake'
 import { BigDecimal } from '../../../web3/BigDecimal'
 import { useAvailableSaveApy } from '../../../hooks/useAvailableSaveApy'
+import { calculateApy } from '../../../utils/calculateApy'
+
 import { Tooltip } from '../../core/ReactTooltip'
 import { TabCard } from '../../core/Tabs'
 import { SaveRedeem } from './v2/SaveRedeem'
@@ -68,9 +73,10 @@ const Card = styled.div`
   }
 
   span {
-    ${({ theme }) => theme.mixins.numeric};
-    margin: 0 0.25rem;
     color: ${({ theme }) => (theme.isLight ? `#643e7c` : `#f5cbff`)};
+    &.numeric {
+      ${({ theme }) => theme.mixins.numeric};
+    }
   }
 
   > span:last-child {
@@ -140,67 +146,108 @@ const InfoText = styled.p<{ large?: boolean }>`
   line-height: ${({ large }) => (large ? `2rem` : `1.5rem`)} !important;
 `
 
+const [useStakingRewards, StakingRewardsProvider] = createStakingRewardsContext()
+
+const SaveBalance: FC = () => {
+  const stakingRewards = useStakingRewards()
+  const massetState = useSelectedMassetState()
+  const saveApy = useAvailableSaveApy()
+
+  // TODO get these from the rewardToken/platformToken in a generic way
+  const mtaPrice = useMtaPrice()
+  const networkPrice = useNetworkPrices()
+
+  const balances = useMemo(() => {
+    if (
+      !stakingRewards ||
+      !massetState ||
+      !massetState.savingsContracts.v2.latestExchangeRate ||
+      !massetState.savingsContracts.v2.token ||
+      !mtaPrice ||
+      !networkPrice.value
+    )
+      return []
+
+    const rawBalance = massetState.savingsContracts.v2.token.balance ?? BigDecimal.ZERO
+    const stakingBalance = stakingRewards.stakingBalance ?? BigDecimal.ZERO
+
+    const exchangeRate = massetState.savingsContracts.v2.latestExchangeRate.rate
+    const stakingTokenPrice = 1 / exchangeRate.simple
+    // const totalSupply = stakingRewards.totalSupply
+    const totalSupply = BigDecimal.parse('10000000000000000000')
+    const rewardsApy = calculateApy(stakingTokenPrice, mtaPrice, stakingRewards.rewardRate, totalSupply) ?? 0
+    const platformApy =
+      calculateApy(stakingTokenPrice, networkPrice.value.nativeToken, stakingRewards.platformRewards?.platformRewardRate, totalSupply) ?? 0
+
+    return [
+      {
+        name: 'yield',
+        apy: saveApy.value,
+        apyTip: 'This APY is derived from internal swap fees and lending markets, and is not reflective of future rates.',
+        stakeLabel: 'Deposit stablecoins',
+        balance: rawBalance.mulTruncate(exchangeRate.exact),
+      },
+      {
+        name: 'rewards',
+        apy: rewardsApy + platformApy,
+        apyTip: 'This APY is derived from currently available staking rewards, and is not reflective of future rates.',
+        stakeLabel: 'Stake imUSD',
+        balance: stakingBalance.mulTruncate(exchangeRate.exact),
+      },
+    ]
+  }, [massetState, stakingRewards, mtaPrice, networkPrice, saveApy])
+
+  return (
+    <div>
+      {balances.map(({ balance, apy, apyTip, stakeLabel, name }) => (
+        <InfoText key={name}>
+          {balance.exact.gt(0) ? 'Earning ' : `${stakeLabel} to earn `}
+          <Tooltip tip={apyTip}>
+            <span className="numeric">{apy.toFixed(2)}%</span> APY
+          </Tooltip>
+          &nbsp;{name}&nbsp;
+          {balance.exact.gt(0) && (
+            <>
+              on <CountUp className="numeric" end={balance.simple} decimals={2} prefix="$" />
+            </>
+          )}
+        </InfoText>
+      ))}
+    </div>
+  )
+}
+
 export const PolygonSave: FC = () => {
   const massetState = useSelectedMassetState()
-  const saveToken = massetState?.savingsContracts?.v2?.token
-  const saveExchangeRate = massetState?.savingsContracts?.v2?.latestExchangeRate?.rate
-  const saveApy = useAvailableSaveApy()
+  const saveToken = massetState?.savingsContracts.v2.token
   const [activeTab, setActiveTab] = useState<string>(Tabs.Deposit as string)
 
-  // FIXME: - change to contract
-  const stakedBalance = BigDecimal.ZERO
-
-  const saveBalance = useMemo(() => {
-    const balance = saveToken?.balance.mulTruncate(saveExchangeRate?.exact ?? BigDecimal.ONE.exact)
-    return balance ?? BigDecimal.ZERO
-  }, [saveExchangeRate, saveToken])
-
-  const totalBalance = stakedBalance?.add(saveBalance)
-
-  const hasUserDeposited = saveBalance?.simple > 0
-  const hasUserStaked = stakedBalance?.simple > 0
-  const isNewUser = !hasUserDeposited && !hasUserStaked
-
-  // FIXME: - Replace 10 with staked rewards APY
-  const apy = stakedBalance?.simple > 0 ? saveApy?.value + 10 : saveApy?.value
-
-  const apyTip = !hasUserStaked
-    ? `APY is derived from internal swap fees and lending markets, and is not reflective of future rates.`
-    : `APY is a combination of native yield and annualized staking rewards `
+  // const isNewUser = !hasUserDeposited && !hasUserStaked
+  const isNewUser = true
 
   return (
     <OnboardingProvider>
-      <PageHeader action={PageAction.Save} />
-      {massetState ? (
-        <Container>
-          <Content>
-            <Card>
-              <div>
-                {isNewUser && <h2>The best passive savings account in DeFi.</h2>}
-                <InfoText large={!isNewUser}>
-                  {totalBalance?.simple > 0 ? (
-                    <>
-                      <CountUp end={totalBalance?.simple} decimals={2} prefix="$" />
-                      {` currently earning`}
-                    </>
-                  ) : (
-                    `Deposit to begin earning `
-                  )}
-                  <Tooltip tip={apyTip}>
-                    <span>{apy?.toFixed(2)}%</span>
-                  </Tooltip>
-                </InfoText>
-              </div>
-              <Tooltip tip="30-day historical APY chart" hideIcon>
-                <APYChart hideControls shimmerHeight={80} tick={false} aspect={3} color="#b880dd" strokeWidth={2} hoverEnabled={false} />
-              </Tooltip>
-            </Card>
-            <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
-          </Content>
-        </Container>
-      ) : (
-        <ThemedSkeleton height={400} />
-      )}
+      <StakingRewardsProvider stakingTokenAddress={saveToken?.address}>
+        <PageHeader action={PageAction.Save} />
+        {massetState ? (
+          <Container>
+            <Content>
+              <Card>
+                <div>
+                  {isNewUser && <h2>The best passive savings account in DeFi.</h2>}
+                  <SaveBalance />
+                </div>
+                <Tooltip tip="30-day yield APY chart" hideIcon>
+                  <APYChart hideControls shimmerHeight={80} tick={false} aspect={3} color="#b880dd" strokeWidth={1} hoverEnabled={false} />
+                </Tooltip>
+              </Card>
+              <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
+            </Content>
+          </Container>
+        ) : (
+          <ThemedSkeleton height={400} />
+        )}
+      </StakingRewardsProvider>
     </OnboardingProvider>
   )
 }
