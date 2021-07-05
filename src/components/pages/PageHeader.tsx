@@ -130,7 +130,7 @@ export const PageHeader: FC<Props> = ({ children, action, subtitle }) => {
         <Row>
           <Icon inverted>{icon}</Icon>
           <h2>{action}</h2>
-          <StyledMasset />
+          {protocolName !== Networks.Polygon && <StyledMasset />}
         </Row>
         {subtitle && <p>{subtitle}</p>}
         {children && <ChildrenRow>{children}</ChildrenRow>}

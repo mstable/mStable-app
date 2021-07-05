@@ -59,7 +59,7 @@ const Tabs = styled(TabsV2)`
   align-items: center;
 
   > div:last-child {
-    max-width: 32rem;
+    max-width: 34rem;
     width: 100%;
   }
 `

@@ -204,7 +204,7 @@ const PlaceholderIcon = styled.div`
   text-shadow: black 0 1px 1px;
 `
 
-export const TokenIcon: FC<Props> = ({ className, symbol, hideNetwork = false }) => {
+export const TokenIcon: FC<Props> = ({ className, symbol, hideNetwork = true }) => {
   const { protocolName } = useNetwork()
   const networkSymbol = protocolName.toUpperCase()
   const showNetworkIcon = symbol && protocolName !== Networks.Ethereum && !hideNetwork

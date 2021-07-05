@@ -22,7 +22,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem 2.5rem;
-  max-width: 32rem;
+  max-width: 34rem;
 
   p {
     line-height: 1.75rem;
