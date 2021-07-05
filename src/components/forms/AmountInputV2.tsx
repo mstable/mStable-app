@@ -21,7 +21,7 @@ export const InputV2 = styled.input<{
 }>`
   ${({ theme }) => theme.mixins.numeric};
 
-  font-size: 1.125rem;
+  font-size: 1rem;
   padding: 0 0.75rem;
   appearance: none;
   background: none;
