@@ -15,7 +15,7 @@ const NoData = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 10rem;
+  min-height: 2rem;
   color: ${({ theme }) => theme.color.bodyAccent};
 `
 
@@ -48,7 +48,9 @@ const DailyApysChart: FC<{
   aspect?: number
   className?: string
   color?: string
-}> = ({ shimmerHeight = 270, tick, className, marginTop, color, aspect = 2 }) => {
+  strokeWidth?: number
+  hoverEnabled?: boolean
+}> = ({ shimmerHeight = 270, tick, className, marginTop, color, aspect = 2, strokeWidth = 2, hoverEnabled = true }) => {
   const dateFilter = useDateFilter()
   const { DailyApy, UtilisationRate } = useMetrics<MetricTypes>()
   const blockTimes = useBlockTimesForDates(dateFilter.dates)
@@ -69,16 +71,18 @@ const DailyApysChart: FC<{
             barCategoryGap={1}
             data={dailyApys}
           >
-            <defs>
-              <linearGradient id="utilisationRate" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={Color.blackTransparent} stopOpacity={0.5} />
-                <stop offset="95%" stopColor={Color.blackTransparent} stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="dailyAPY" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={color ?? Color.gold} stopOpacity={0.5} />
-                <stop offset="95%" stopColor={color ?? Color.gold} stopOpacity={0} />
-              </linearGradient>
-            </defs>
+            {hoverEnabled && (
+              <defs>
+                <linearGradient id="utilisationRate" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={Color.blackTransparent} stopOpacity={0.5} />
+                  <stop offset="95%" stopColor={Color.blackTransparent} stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="dailyAPY" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={color ?? Color.gold} stopOpacity={0.5} />
+                  <stop offset="95%" stopColor={color ?? Color.gold} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+            )}
             <XAxis
               dataKey="timestamp"
               axisLine={false}
@@ -105,28 +109,30 @@ const DailyApysChart: FC<{
               yAxisId={0}
               width={!tick ? 0 : undefined}
             />
-            <Tooltip
-              cursor
-              labelFormatter={timestamp => format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')}
-              formatter={formatApy as never}
-              separator=""
-              contentStyle={{
-                fontSize: '14px',
-                padding: '8px',
-                background: 'rgba(255, 255, 255, 0.8)',
-                textAlign: 'right',
-                border: 'none',
-                borderRadius: '4px',
-                color: Color.black,
-              }}
-              wrapperStyle={{
-                top: 0,
-                left: 0,
-              }}
-            />
+            {hoverEnabled && (
+              <Tooltip
+                cursor
+                labelFormatter={timestamp => format((timestamp as number) * 1000, 'yyyy-MM-dd HH:mm')}
+                formatter={formatApy as never}
+                separator=""
+                contentStyle={{
+                  fontSize: '14px',
+                  padding: '8px',
+                  background: 'rgba(255, 255, 255, 0.8)',
+                  textAlign: 'right',
+                  border: 'none',
+                  borderRadius: '4px',
+                  color: Color.black,
+                }}
+                wrapperStyle={{
+                  top: 0,
+                  left: 0,
+                }}
+              />
+            )}
             <Area
               hide={!UtilisationRate.enabled}
-              strokeWidth={2}
+              strokeWidth={strokeWidth}
               type="monotone"
               dataKey="utilisationRate"
               name="SAVE Utilisation "
@@ -137,7 +143,7 @@ const DailyApysChart: FC<{
             />
             <Area
               hide={!DailyApy.enabled}
-              strokeWidth={2}
+              strokeWidth={strokeWidth}
               type="monotone"
               dataKey="dailyAPY"
               name="Daily APY "
@@ -164,8 +170,19 @@ export const DailyApys: FC<{
   className?: string
   color?: string
   aspect?: number
-}> = ({ hideControls = false, shimmerHeight, tick = true, className, marginTop, color, aspect }) => (
+  strokeWidth?: number
+  hoverEnabled?: boolean
+}> = ({ hideControls = false, shimmerHeight, tick = true, className, marginTop, color, aspect, strokeWidth, hoverEnabled }) => (
   <Metrics defaultDateRange={DateRange.Month} metrics={dailyApyMetrics} hideControls={hideControls}>
-    <DailyApysChart shimmerHeight={shimmerHeight} tick={tick} marginTop={marginTop} className={className} color={color} aspect={aspect} />
+    <DailyApysChart
+      shimmerHeight={shimmerHeight}
+      tick={tick}
+      marginTop={marginTop}
+      className={className}
+      color={color}
+      aspect={aspect}
+      strokeWidth={strokeWidth}
+      hoverEnabled={hoverEnabled}
+    />
   </Metrics>
 )

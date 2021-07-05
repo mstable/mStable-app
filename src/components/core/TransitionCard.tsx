@@ -13,11 +13,11 @@ export const CardButton = styled(UnstyledButton)<{
 
   h3 {
     color: ${({ theme }) => theme.color.body};
-    font-size: 1.125rem;
+    font-size: 1rem;
     font-weight: 600;
   }
 
-  h3 {
+  h3:not(:last-child) {
     margin-bottom: 0.5rem;
   }
 

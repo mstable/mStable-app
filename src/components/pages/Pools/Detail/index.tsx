@@ -28,7 +28,6 @@ import { PoolOverview } from './PoolOverview'
 import { InfoBox } from '../../../core/InfoBox'
 import { ChainIds, useNetwork } from '../../../../context/NetworkProvider'
 import { FraxTimelock } from './FraxTimelock'
-import { FraxStakingProvider } from '../../../../context/FraxStakingProvider'
 
 const HeaderChartsContainer = styled.div`
   position: relative;
@@ -176,10 +175,6 @@ const PoolDetailContent: FC = () => {
         title: 'Withdraw',
         component: <Withdraw isLowLiquidity={isLowLiquidity} />,
       },
-      Stake: {
-        title: 'Stake',
-        component: <FraxTimelock />,
-      },
     }),
     [isLowLiquidity],
   )
@@ -239,12 +234,9 @@ export const PoolDetail: FC = () => {
   }>()
   const feederPool = useFeederPool(poolAddress)
   return feederPool ? (
-    // TODO: - Change to conditionally render frax on polygon
-    <FraxStakingProvider>
-      <FeederPoolProvider poolAddress={poolAddress}>
-        <PoolDetailContent />
-      </FeederPoolProvider>
-    </FraxStakingProvider>
+    <FeederPoolProvider poolAddress={poolAddress}>
+      <PoolDetailContent />
+    </FeederPoolProvider>
   ) : (
     <Skeleton height={300} />
   )

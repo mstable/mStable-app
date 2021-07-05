@@ -227,10 +227,6 @@ export const Layout: FC = ({ children }) => {
       message = (undergoingRecol && MessageHandler.recollat(massetConfig)) || undefined
     }
 
-    if (!message) {
-      message = (protocolName === Networks.Polygon && MessageHandler.polygon()) || undefined
-    }
-
     if (bannerMessage?.title !== message?.title) {
       setBannerMessage(message)
     }

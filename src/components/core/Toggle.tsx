@@ -16,6 +16,7 @@ const Container = styled.div`
 
   button {
     border: none;
+    border-radius: 1.5rem;
   }
 
   button:not(:first-child) {

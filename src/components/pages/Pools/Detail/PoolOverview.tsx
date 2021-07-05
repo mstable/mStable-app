@@ -15,7 +15,6 @@ import { BoostedSavingsVaultState } from '../../../../context/DataProvider/types
 import { TransitionCard, CardContainer as Container, CardButton as Button } from '../../../core/TransitionCard'
 import { PokeBoost } from '../../../core/PokeBoost'
 import { Tooltip } from '../../../core/ReactTooltip'
-import { FraxRewards } from './FraxRewards'
 
 enum Selection {
   Stake = 'stake',
@@ -35,11 +34,6 @@ const ethComponents: Record<string, ReactElement> = {
   [Stake]: <Position />,
   [Boost]: <UserVaultBoost />,
   [Rewards]: <UserRewards />,
-}
-
-const polygonComponents: Record<string, ReactElement> = {
-  [Stake]: <Position />,
-  [Rewards]: <FraxRewards />,
 }
 
 const LiquidityMessageContent: FC<{
@@ -91,7 +85,7 @@ export const PoolOverview: FC = () => {
     </ShowEarningPower>
   ) : (
     <>
-      <TransitionCard components={isEthereum ? ethComponents : polygonComponents} selection={selection}>
+      <TransitionCard components={ethComponents} selection={selection}>
         <Container>
           <Button active={selection === Stake} onClick={() => handleSelection(Stake)}>
             <h3>Balance</h3>
