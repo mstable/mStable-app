@@ -1,7 +1,7 @@
 import React, { FC, createContext, useEffect, useRef, useMemo, useContext } from 'react'
 import { BigNumber } from 'ethers'
 
-import { StakingRewardsDualV3FRAXIQ__factory, StakingRewardsDualV3FRAXIQ } from '../typechain'
+import { StakingRewardsDualV3FRAXIQ__factory, StakingRewardsDualV3FRAXIQ } from '../../typechain'
 import { FetchState, useFetchState } from '../hooks/useFetchState'
 import { BigDecimal } from '../web3/BigDecimal'
 

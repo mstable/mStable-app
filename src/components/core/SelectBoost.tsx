@@ -173,10 +173,10 @@ export const SelectBoost: FC<Props> = ({ vault }) => {
 
               if (!oldVaultAddress || !newVaultAddress) return
 
-              propose<Interfaces.BoostDirector, 'setDirection(address,address,bool)'>(
+              propose<Interfaces.BoostDirector, 'setDirection'>(
                 new TransactionManifest(
                   BoostDirector__factory.connect(boostDirector, signer),
-                  'setDirection(address,address,bool)',
+                  'setDirection',
                   [oldVaultAddress, newVaultAddress, true],
                   {
                     present: 'Setting Boost Direction',

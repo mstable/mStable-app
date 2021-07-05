@@ -4,7 +4,7 @@ import type { Provider, Web3Provider as EthersWeb3Provider } from '@ethersprojec
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { createStateContext, useEffectOnce, useIdle, usePrevious } from 'react-use'
 import Onboard from '@gnosis.pm/safe-apps-onboard'
-import { ethers, Signer, utils } from 'ethers'
+import { ethers, utils } from 'ethers'
 
 import { composedComponent } from '../utils/reactUtils'
 import { LocalStorage } from '../localStorage'
@@ -35,7 +35,7 @@ const [useSignerCtx, SignerProvider] = createStateContext<
   | {
       provider: Provider
       parentChainProvider?: Provider
-      signer?: Signer
+      signer?: ethers.Signer
     }
   | undefined
 >(undefined)
@@ -58,13 +58,13 @@ export const useWalletAddress = (): OnboardCtx['address'] => useContext(onboardC
 
 export const useConnect = (): OnboardCtx['connect'] => useContext(onboardCtx).connect
 
-export const useSigner = (): Signer | undefined => useSignerCtx()[0]?.signer
+export const useSigner = (): ethers.Signer | undefined => useSignerCtx()[0]?.signer
 
 export const useConnected = (): OnboardCtx['connected'] => useContext(onboardCtx).connected
 
 export const useReset = (): OnboardCtx['reset'] => useContext(onboardCtx).reset
 
-export const useSignerOrProvider = (): Signer | Provider | undefined => {
+export const useSignerOrProvider = (): ethers.Signer | Provider | undefined => {
   const [signerProvider] = useSignerCtx()
   return signerProvider?.signer ?? signerProvider?.provider
 }
@@ -133,7 +133,7 @@ const OnboardProvider: FC<{
 
             setWallet(walletInstance)
             const ethersProvider = new ethers.providers.Web3Provider(walletInstance.provider, 'any')
-            setInjectedProvider(ethersProvider)
+            setInjectedProvider(ethersProvider as never)
             setConnected(true)
 
             if (walletInstance.name) {
@@ -357,7 +357,7 @@ const OnboardConnection: FC = ({ children }) => {
     setSigners({
       provider: injectedProvider ?? jsonRpcProviders.provider,
       parentChainProvider: jsonRpcProviders.parentChainProvider,
-      signer: injectedProvider?.getSigner(),
+      signer: injectedProvider?.getSigner() as never,
     })
   }, [injectedMismatching, injectedProvider, jsonRpcProviders, setSigners])
 

@@ -2,6 +2,7 @@ import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated'
 import React, { FC } from 'react'
 import CountUp from 'react-countup'
 import styled from 'styled-components'
+
 import { useSigner, useWalletAddress } from '../../context/AccountProvider'
 import { BoostedSavingsVaultState } from '../../context/DataProvider/types'
 import { useRewardStreams } from '../../context/RewardStreamsProvider'
@@ -153,8 +154,8 @@ export const PokeBoost: FC<Props> = ({ apy, vault }) => {
               highlighted
               onClick={() => {
                 if (!signer || !address || !vaultAddress) return
-                propose<Interfaces.BoostedSavingsVault, 'pokeBoost(address)'>(
-                  new TransactionManifest(BoostedSavingsVault__factory.connect(vaultAddress, signer), 'pokeBoost(address)', [address], {
+                propose<Interfaces.BoostedSavingsVault, 'pokeBoost'>(
+                  new TransactionManifest(BoostedSavingsVault__factory.connect(vaultAddress, signer), 'pokeBoost', [address], {
                     present: `Update boost`,
                     past: `Updated boost`,
                   }),

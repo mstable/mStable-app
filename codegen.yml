@@ -27,6 +27,14 @@ generates:
     config:
       includeDirectives: true
 
+  ./src/graphql/staking-rewards/schema.graphql:
+    overwrite: true
+    schema: https://api.thegraph.com/subgraphs/name/mstable/mstable-staking-rewards-polygon
+    plugins:
+      - 'schema-ast'
+    config:
+      includeDirectives: true
+
   ./src/graphql/blocks/schema.graphql:
     overwrite: true
     schema: https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks
@@ -49,6 +57,16 @@ generates:
     overwrite: true
     schema: https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools
     documents: 'src/graphql/feeders/*.graphql'
+    plugins:
+      - 'fragment-matcher'
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+
+  ./src/graphql/staking-rewards.tsx:
+    overwrite: true
+    schema: https://api.thegraph.com/subgraphs/name/mstable/mstable-staking-rewards-polygon
+    documents: 'src/graphql/staking-rewards/*.graphql'
     plugins:
       - 'fragment-matcher'
       - 'typescript'

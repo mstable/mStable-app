@@ -97,7 +97,7 @@ export interface EthereumMainnet
   chainId: ChainIds.EthereumMainnet
 }
 
-export interface EthereumRopsten extends Network<{ ERC20: { WETH: string } }, GraphQLEndpoints<'ecosystem'>> {
+export interface EthereumRopsten extends Network<{ ERC20: { WETH: string } }, {}> {
   chainId: ChainIds.EthereumRopsten
 }
 
@@ -105,7 +105,7 @@ export interface EthereumGoerli extends Network<{ ERC20: { WETH: string } }, {}>
   chainId: ChainIds.EthereumGoerli
 }
 
-export interface MaticMainnet extends Network<{ ERC20: { wMATIC: string } }, GraphQLEndpoints<'ecosystem'>> {
+export interface MaticMainnet extends Network<{ ERC20: { wMATIC: string } }, GraphQLEndpoints<'stakingRewards'>> {
   chainId: ChainIds.MaticMainnet
   parentChainId: ChainIds.EthereumMainnet
   nativeToken: {
@@ -127,8 +127,11 @@ export interface MaticMumbai extends Network<{ ERC20: { wMATIC: string } }, {}> 
 
 export type AllNetworks = EthereumMainnet | EthereumRopsten | EthereumGoerli | MaticMainnet | MaticMumbai
 
-const etherscanUrl = (network?: string) => (data?: string, type?: 'account' | 'transaction' | 'address' | 'token'): string => {
-  const prefix = `https://${network ? `${network}.` : ''}etherscan.io`
+const etherscanUrl = (network?: string, domain = 'etherscan.io') => (
+  data?: string,
+  type?: 'account' | 'transaction' | 'address' | 'token',
+): string => {
+  const prefix = `https://${network ? `${network}.` : ''}${domain}`
 
   if (!data) return prefix
 
@@ -137,25 +140,6 @@ const etherscanUrl = (network?: string) => (data?: string, type?: 'account' | 't
       return `${prefix}/tx/${data}`
     case 'token':
       return `${prefix}/token/${data}`
-    case 'address':
-    default:
-      return `${prefix}/address/${data}`
-  }
-}
-
-const maticExplorerUrl = (network?: 'mainnet' | 'mumbai') => (
-  data?: string,
-  type?: 'account' | 'transaction' | 'address' | 'token',
-): string => {
-  const prefix = `https://explorer-${network}.maticvigil.com`
-
-  if (!data) return prefix
-
-  switch (type) {
-    case 'transaction':
-      return `${prefix}/tx/${data}`
-    case 'token':
-      return `${prefix}/tokens/${data}`
     case 'address':
     default:
       return `${prefix}/address/${data}`
@@ -225,7 +209,6 @@ const ETH_ROPSTEN: EthereumRopsten = {
     protocol: [graphHostedEndpoint('mstable', 'mstable-protocol-ropsten')],
     feeders: [graphHostedEndpoint('mstable', 'mstable-feeders-ropsten')],
     blocks: [graphHostedEndpoint('blocklytics', 'ropsten-blocks')],
-    ecosystem: [graphHostedEndpoint('mstable', 'mstable-ecosystem')],
   },
   addresses: {
     MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
@@ -290,10 +273,10 @@ const MATIC_MAINNET: MaticMainnet = {
     protocol: [graphHostedEndpoint('mstable', 'mstable-protocol-polygon')],
     feeders: [graphHostedEndpoint('mstable', 'mstable-feeder-pools-polygon')],
     blocks: [graphHostedEndpoint('elkfinance', 'matic-blocks')],
-    ecosystem: [graphHostedEndpoint('mstable', 'mstable-ecosystem')], // Mainnet
+    stakingRewards: [graphHostedEndpoint('mstable', 'mstable-staking-rewards-polygon')],
   },
   addresses: {
-    MTA: '0x273bc479e5c21caa15aa8538decbf310981d14c0', // Mainnet
+    MTA: '0xf501dd45a1198c2e1b5aef5314a68b9006d842e0',
     vMTA: '0x77f9bf80e0947408f64faa07fd150920e6b52015', // Mainnet
     FeederWrapper: '0x17fd342630518E5AA2E96fbd2B8d895D7B3519e5', // Mainnet
     SaveWrapper: '0x299081f52738A4204C3D58264ff44f6F333C6c88',
@@ -303,7 +286,7 @@ const MATIC_MAINNET: MaticMainnet = {
       FXS: '0x3e121107F6F22DA4911079845a470757aF4e1A1b',
     },
   },
-  getExplorerUrl: maticExplorerUrl('mainnet'),
+  getExplorerUrl: etherscanUrl('mainnet', 'polygonscan.com'),
   supportedMassets: ['musd'],
 }
 
@@ -331,7 +314,7 @@ const MATIC_MUMBAI: MaticMumbai = {
       wMATIC: '0x5B67676a984807a212b1c59eBFc9B3568a474F0a',
     },
   },
-  getExplorerUrl: maticExplorerUrl('mumbai'),
+  getExplorerUrl: etherscanUrl('mumbai', 'polygonscan.com'),
 }
 
 export const NETWORKS = [ETH_MAINNET, ETH_GOERLI, ETH_ROPSTEN, MATIC_MAINNET, MATIC_MUMBAI]
