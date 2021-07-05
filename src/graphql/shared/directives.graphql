@@ -1,6 +1,6 @@
 enum PROJECTS {
   protocol
-  ecosystem
+  stakingRewards
   feeders
   balancer
   uniswap

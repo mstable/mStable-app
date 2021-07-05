@@ -25,6 +25,18 @@
         }
       }
     },
+    "staking-rewards": {
+      "includes": ["./shared/*", "./staking-rewards/*"],
+      "schemaPath": "remote-schema.graphql",
+      "extensions": {
+        "endpoints": {
+          "polygon": {
+            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-staking-rewards-polygon",
+            "introspect": false
+          }
+        }
+      }
+    },
     "blocks": {
       "includes": ["./shared/*", "./blocks/*"],
       "extensions": {

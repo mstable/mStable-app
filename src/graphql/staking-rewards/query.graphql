@@ -1,0 +1,86 @@
+fragment TokenDetails on Token {
+  id
+  address
+  decimals
+  symbol
+  totalSupply {
+    exact
+    simple
+    decimals
+  }
+}
+
+fragment StakingRewardsContractDetails on StakingRewardsContract {
+  address: id
+  id
+  type
+  duration
+  lastUpdateTime
+  periodFinish
+  rewardRate
+  rewardPerTokenStored
+  platformRewardPerTokenStored
+  platformRewardRate
+  totalSupply
+  totalStakingRewards
+  totalPlatformRewards
+  stakingToken {
+    totalSupply {
+      exact
+      decimals
+      simple
+    }
+    ...TokenDetails
+  }
+  rewardsToken {
+    ...TokenDetails
+  }
+  platformToken {
+    ...TokenDetails
+  }
+}
+
+query AllErc20Tokens @api(name: stakingRewards) {
+  tokens {
+    ...TokenDetails
+  }
+}
+
+
+query StakingRewardsContract($id: ID!, $account: Bytes) @api(name: stakingRewards) {
+  stakingRewardsContract(id: $id) {
+    ...StakingRewardsContractDetails
+    stakingBalances(where: { account: $account }) {
+      amount
+    }
+    stakingRewards: stakingRewards(where: { account: $account, type: REWARD }) {
+      amount
+      amountPerTokenPaid
+    }
+    platformRewards: stakingRewards(
+      where: { account: $account, type: PLATFORM_REWARD }
+    ) {
+      amount
+      amountPerTokenPaid
+    }
+  }
+}
+
+query StakingRewardsForStakingToken($stakingToken: String!, $account: Bytes) @api(name: stakingRewards) {
+  stakingRewardsContracts(where: { stakingToken: $stakingToken }) {
+    ...StakingRewardsContractDetails
+    stakingBalances(where: { account: $account }) {
+      amount
+    }
+    stakingRewards: stakingRewards(where: { account: $account, type: REWARD }) {
+      amount
+      amountPerTokenPaid
+    }
+    platformRewards: stakingRewards(
+      where: { account: $account, type: PLATFORM_REWARD }
+    ) {
+      amount
+      amountPerTokenPaid
+    }
+  }
+}
