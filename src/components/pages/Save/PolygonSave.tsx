@@ -3,24 +3,18 @@ import styled from 'styled-components'
 
 import CountUp from 'react-countup'
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
-import { RewardStreamsProvider } from '../../../context/RewardStreamsProvider'
-import { useSelectedMassetConfig } from '../../../context/MassetProvider'
 
 import { PageAction, PageHeader } from '../PageHeader'
-import { Save as SaveV2 } from './v2'
-import { ViewportWidth } from '../../../theme'
 import { OnboardingProvider } from './hooks'
 import { ThemedSkeleton } from '../../core/ThemedSkeleton'
 import { DailyApys } from '../../stats/DailyApys'
 import { SaveStake } from './v2/SaveStake'
 import { BigDecimal } from '../../../web3/BigDecimal'
-import { MassetState } from '../../../context/DataProvider/types'
 import { useAvailableSaveApy } from '../../../hooks/useAvailableSaveApy'
 import { Tooltip } from '../../core/ReactTooltip'
 import { TabCard } from '../../core/Tabs'
 import { SaveRedeem } from './v2/SaveRedeem'
 import { SaveDeposit } from './v2/SaveDeposit'
-import { OnboardingBanner } from './v2/OnboardingBanner'
 
 enum Tabs {
   Deposit = 'Deposit',
@@ -73,7 +67,7 @@ const Card = styled.div`
   &:before {
     content: '';
     position: absolute;
-    background: ${({ theme }) => (theme.isLight ? `#e0cbee` : `#761e8b`)};
+    background: ${({ theme }) => (theme.isLight ? `#e0cbee` : `#b880dd`)};
     left: 0;
     top: 1rem;
     bottom: 1rem;
@@ -148,7 +142,7 @@ export const PolygonSave: FC = () => {
                 </p>
               </div>
               <Tooltip tip="30-day historical APY chart" hideIcon>
-                <APYChart hideControls shimmerHeight={80} tick={false} aspect={3} color="#b880dd" strokeWidth={1} hoverEnabled={false} />
+                <APYChart hideControls shimmerHeight={80} tick={false} aspect={3} color="#b880dd" strokeWidth={2} hoverEnabled={false} />
               </Tooltip>
             </Card>
             <StyledCard tabs={tabs} active={activeTab} onClick={setActiveTab} />

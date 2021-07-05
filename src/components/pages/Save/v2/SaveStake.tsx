@@ -1,27 +1,18 @@
-import React, { FC, ReactElement, useCallback, useMemo, useState } from 'react'
+import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 
-import { useEffectOnce } from 'react-use'
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 import { MassetState } from '../../../../context/DataProvider/types'
-import { useRewardStreams } from '../../../../context/RewardStreamsProvider'
-import { useSelectedMassetPrice } from '../../../../hooks/usePrice'
-import { FetchState } from '../../../../hooks/useFetchState'
 import { BigDecimal } from '../../../../web3/BigDecimal'
 
-import { SavePosition } from './SavePosition'
-import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy'
 import { MultiRewards } from '../../Pools/Detail/MultiRewards'
-import { FraxTimelock } from '../../Pools/Detail/FraxTimelock'
 import { Table, TableRow, TableCell } from '../../../core/Table'
 import { AssetInput } from '../../../forms/AssetInput'
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
 import { Button } from '../../../core/Button'
 import { Tooltip } from '../../../core/ReactTooltip'
-import { CountUp } from '../../../core/CountUp'
 
 // TODO: - replace with subscribedtoken when available
-
 const MOCK_REWARDS = [
   {
     address: '0x0000000000000000000000000000000000000000',
@@ -32,13 +23,6 @@ const MOCK_REWARDS = [
     amount: BigDecimal.ZERO,
   },
 ]
-
-enum Selection {
-  Balance = 'Balance',
-  Rewards = 'Rewards',
-}
-
-const { Balance, Rewards } = Selection
 
 const Input = styled(AssetInput)`
   height: 2.5rem;
@@ -122,91 +106,12 @@ const Container = styled.div`
   }
 `
 
-interface BoostedApy {
-  base: number
-  userBoost?: number
-  maxBoost: number
-}
-
-interface PoolsAPIResponse {
-  pools: {
-    name: string
-    apy: string
-    apyDetails:
-      | {
-          rewardsOnlyBase: string
-          rewardsOnlyMax: string
-          combinedBase: string
-          combinedMax: string
-          yieldOnly: string
-        }
-      | {
-          rewardsOnlyBase: string
-          rewardsOnlyMax: string
-        }
-    pair: string[]
-    pairLink: string
-    poolRewards: string[]
-    totalStakedUSD: string
-    logo: string
-  }[]
-}
-
-// FIXME sir - change pattern
-let cachedAPY: FetchState<BoostedApy> = { fetching: true }
-
-// TODO this can be done without API
-const useSaveVaultAPY = (symbol?: string, userBoost?: number): FetchState<BoostedApy> => {
-  useEffectOnce(() => {
-    if (!symbol) return
-
-    fetch('https://api-dot-mstable.appspot.com/pools')
-      .then(res =>
-        res.json().then(({ pools }: PoolsAPIResponse) => {
-          const pool = pools.find(p => p.pair[0] === symbol)
-          if (!pool) return
-          const base = parseFloat(pool?.apyDetails.rewardsOnlyBase)
-          const maxBoost = parseFloat(pool?.apyDetails.rewardsOnlyMax)
-          cachedAPY = {
-            value: {
-              base,
-              maxBoost,
-            },
-          }
-        }),
-      )
-      .catch(error => {
-        cachedAPY = { error: error.message }
-      })
-  })
-
-  const apy = useMemo(() => {
-    if (!cachedAPY?.value) return cachedAPY
-    return {
-      value: {
-        base: cachedAPY.value.base,
-        maxBoost: cachedAPY.value.maxBoost,
-        userBoost: (userBoost ?? 1) * cachedAPY.value.base,
-      },
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userBoost, symbol, cachedAPY])
-
-  return apy
-}
-
-const components: Record<string, ReactElement> = {
-  [Balance]: <SavePosition />,
-  // [Rewards]: <FraxRewards />,
-}
-
 export const SaveStake: FC = () => {
-  const [selection, setSelection] = useState<Selection | undefined>()
   const massetState = useSelectedMassetState()
 
   const {
     savingsContracts: {
-      v2: { token: saveToken, latestExchangeRate: { rate: saveExchangeRate } = {} },
+      v2: { token: saveToken },
     },
   } = massetState as MassetState
 
@@ -215,18 +120,13 @@ export const SaveStake: FC = () => {
     return balance ?? BigDecimal.ZERO
   }, [saveToken])
 
-  const saveBalanceUSD = useMemo(() => {
-    return saveBalance.mulTruncate(saveExchangeRate?.exact ?? BigDecimal.ONE.exact)
-  }, [saveBalance, saveExchangeRate])
-
-  const apy = useAvailableSaveApy()
-
-  const handleSelection = useCallback((newValue: Selection) => setSelection(selection === newValue ? undefined : newValue), [selection])
-
   const stakedBalance = new BigDecimal((1e18).toString()) // change to use data
 
-  const [saveValue, saveFormValue, setSaveAmount] = useBigDecimalInput((saveBalance?.simple ?? 0).toString())
-  const [stakedValue, stakedFormValue, setStakedAmount] = useBigDecimalInput((stakedBalance?.simple ?? 0).toString())
+  const [, saveFormValue, setSaveAmount] = useBigDecimalInput((saveBalance?.simple ?? 0).toString())
+  const [, stakedFormValue, setStakedAmount] = useBigDecimalInput((stakedBalance?.simple ?? 0).toString())
+
+  const handleStake = (): void => {}
+  const handleUnstake = (): void => {}
 
   return (
     <Container>
@@ -261,7 +161,7 @@ export const SaveStake: FC = () => {
               />
             </TableCell>
             <TableCell width={20}>
-              <Button onClick={() => console.log(saveBalance?.simple)}>Unstake</Button>
+              <Button onClick={handleUnstake}>Unstake</Button>
             </TableCell>
           </StyledRow>
         </StyledTable>
@@ -275,11 +175,12 @@ export const SaveStake: FC = () => {
                   handleSetAmount={setSaveAmount}
                   handleSetMax={() => setSaveAmount(saveBalance?.simple?.toString() ?? '0')}
                   formValue={saveFormValue}
+                  // FIXME: - change for contract address
                   spender="0xf38522f63f40f9dd81abafd2b8efc2ec958a3016"
                 />
               </TableCell>
               <TableCell width={20}>
-                <Button onClick={() => console.log(saveBalance?.simple)}>Stake</Button>
+                <Button onClick={handleStake}>Stake</Button>
               </TableCell>
             </StyledRow>
           </StyledTable>

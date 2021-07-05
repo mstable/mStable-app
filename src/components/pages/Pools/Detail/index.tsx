@@ -27,7 +27,6 @@ import { UserLookup } from './UserLookup'
 import { PoolOverview } from './PoolOverview'
 import { InfoBox } from '../../../core/InfoBox'
 import { ChainIds, useNetwork } from '../../../../context/NetworkProvider'
-import { FraxTimelock } from './FraxTimelock'
 
 const HeaderChartsContainer = styled.div`
   position: relative;
