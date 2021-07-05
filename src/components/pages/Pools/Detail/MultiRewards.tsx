@@ -67,7 +67,7 @@ export const MultiRewards: FC<Props> = ({ rewards, onClaimRewards, canClaim }) =
     <Container>
       {rewards?.length ? (
         <Rewards>
-          <Table headerTitles={headerTitles} widths={TABLE_CELL_WIDTHS} width={30}>
+          <Table headerTitles={headerTitles} widths={TABLE_CELL_WIDTHS}>
             {rewards.map(({ amount, address }) => {
               const token = tokens.find(v => v.address === address)
               return (

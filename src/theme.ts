@@ -25,7 +25,7 @@ export enum Color {
   lightGrey = 'rgba(235, 235, 235, 1)',
   lighterGrey = 'rgba(248,248,248,1)',
   grey = 'rgba(146, 154, 162, 1)',
-  greyTransparent = 'rgba(146, 154, 162, 0.5)',
+  greyTransparent = 'rgba(146, 154, 162, 0.6)',
 }
 
 const ColorNew: {

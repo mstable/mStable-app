@@ -55,7 +55,7 @@ const LockButton = styled(Button)`
 const MaxButton = styled(Button)`
   display: none;
 
-  @media (min-width: ${ViewportWidth.m}) {
+  @media (min-width: ${ViewportWidth.s}) {
     display: inherit;
   }
 `

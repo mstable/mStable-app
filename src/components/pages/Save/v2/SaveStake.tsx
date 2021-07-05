@@ -11,6 +11,7 @@ import { AssetInput } from '../../../forms/AssetInput'
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
 import { Button } from '../../../core/Button'
 import { Tooltip } from '../../../core/ReactTooltip'
+import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy'
 
 // TODO: - replace with subscribedtoken when available
 const MOCK_REWARDS = [
@@ -74,11 +75,17 @@ const RewardAPY = styled.div`
   justify-content: center;
 
   div {
-    background: ${({ theme }) => theme.color.primary};
+    background: ${({ theme }) => theme.color.green};
     color: ${({ theme }) => theme.color.white};
     margin-right: 1rem;
     border-radius: 0.75rem;
     padding: 0.25rem 0.5rem;
+    align-items: center;
+    display: flex;
+  }
+
+  div:first-child {
+    background: ${({ theme }) => theme.color.greyTransparent};
   }
 
   span {
@@ -115,6 +122,8 @@ export const SaveStake: FC = () => {
     },
   } = massetState as MassetState
 
+  const saveApy = useAvailableSaveApy()
+
   const saveBalance = useMemo(() => {
     const balance = saveToken?.balance
     return balance ?? BigDecimal.ZERO
@@ -139,6 +148,11 @@ export const SaveStake: FC = () => {
         )}
         <RewardAPY>
           <div>
+            <Tooltip tip="Native imUSD base yield" hideIcon>
+              <span>{saveApy?.value?.toFixed(2)}%</span>
+            </Tooltip>
+          </div>
+          <div>
             <Tooltip tip="Reward rate annualized" hideIcon>
               <span>+3.07%</span> WMATIC
             </Tooltip>
@@ -160,7 +174,7 @@ export const SaveStake: FC = () => {
                 formValue={stakedFormValue}
               />
             </TableCell>
-            <TableCell width={20}>
+            <TableCell width={30}>
               <Button onClick={handleUnstake}>Unstake</Button>
             </TableCell>
           </StyledRow>
