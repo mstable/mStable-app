@@ -8,7 +8,7 @@ import type {
   SaveWrapper,
   FeederWrapper,
   IUniswapV2Router02,
-} from '@mstable/protocol/types/generated'
+} from '@mstable/protocol/dist/types/generated'
 import { Contract } from 'ethers'
 
 import type { BigDecimal } from './web3/BigDecimal'

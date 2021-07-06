@@ -1,5 +1,5 @@
 import React, { ChangeEventHandler, FC, useCallback, useMemo, useRef } from 'react'
-import { ERC20__factory } from '@mstable/protocol/types/generated'
+import { ERC20__factory } from '@mstable/protocol/dist/types/generated'
 import styled from 'styled-components'
 import { useSigner } from '../../context/AccountProvider'
 import { useTokensState } from '../../context/TokensProvider'

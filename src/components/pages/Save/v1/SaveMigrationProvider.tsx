@@ -2,7 +2,7 @@
 
 import React, { createContext, FC, useCallback, useContext, useMemo, useState } from 'react'
 import { BigNumber, constants } from 'ethers'
-import { ERC20__factory, ISavingsContractV1, ISavingsContractV1__factory } from '@mstable/protocol/types/generated'
+import { ERC20__factory, ISavingsContractV1, ISavingsContractV1__factory } from '@mstable/protocol/dist/types/generated'
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 import { useTokenAllowance } from '../../../../context/TokensProvider'

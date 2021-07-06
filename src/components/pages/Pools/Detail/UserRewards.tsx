@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import Skeleton from 'react-loading-skeleton'
 import styled from 'styled-components'
-import { BoostedSavingsVault__factory, BoostedSavingsVault } from '@mstable/protocol/types/generated'
+import { BoostedSavingsVault__factory, BoostedSavingsVault } from '@mstable/protocol/dist/types/generated'
 
 import { format, fromUnixTime } from 'date-fns'
 import { useToggle } from 'react-use'

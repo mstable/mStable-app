@@ -1,4 +1,4 @@
-import type { FeederPool, Masset } from '@mstable/protocol/types/generated'
+import type { FeederPool, Masset } from '@mstable/protocol/dist/types/generated'
 import { useEffect, useMemo } from 'react'
 import { useDebounce } from 'react-use'
 import { BigNumber } from 'ethers'

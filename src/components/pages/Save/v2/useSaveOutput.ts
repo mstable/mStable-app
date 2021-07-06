@@ -2,7 +2,12 @@ import type { BigNumber } from 'ethers'
 import { Signer } from 'ethers'
 import { useEffect } from 'react'
 import { useDebounce } from 'react-use'
-import { IUniswapV2Router02__factory, FeederPool__factory, Masset__factory, SaveWrapper__factory } from '@mstable/protocol/types/generated'
+import {
+  IUniswapV2Router02__factory,
+  FeederPool__factory,
+  Masset__factory,
+  SaveWrapper__factory,
+} from '@mstable/protocol/dist/types/generated'
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 import { MassetState } from '../../../../context/DataProvider/types'

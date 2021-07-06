@@ -2,7 +2,7 @@ import React, { createContext, FC, useContext, useEffect, useMemo, useRef, useSt
 import { pipe } from 'ts-pipe-compose'
 import { Interface } from '@ethersproject/abi'
 
-import type { MassetInterface } from '@mstable/protocol/types/generated/Masset'
+import type { MassetInterface } from '@mstable/protocol/dist/types/generated/Masset'
 import type { BoostedSavingsVaultState, DataState, FeederPoolState, MassetState, SavingsContractState } from './types'
 import { Tokens, useTokensState } from '../TokensProvider'
 import { recalculateState } from './recalculateState'

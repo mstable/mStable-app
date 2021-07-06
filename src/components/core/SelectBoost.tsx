@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 
-import { BoostDirector__factory } from '@mstable/protocol/types/generated'
+import { BoostDirector__factory } from '@mstable/protocol/dist/types/generated'
 import { useAccount, useSigner } from '../../context/AccountProvider'
 import { useDataState, useSelectedMassetState } from '../../context/DataProvider/DataProvider'
 import { BoostedSavingsVaultState } from '../../context/DataProvider/types'

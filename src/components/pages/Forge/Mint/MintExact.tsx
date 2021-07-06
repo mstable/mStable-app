@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 
-import { Masset__factory } from '@mstable/protocol/types/generated'
+import { Masset__factory } from '@mstable/protocol/dist/types/generated'
 import { useTokens, useTokensState } from '../../../../context/TokensProvider'
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 import { useSigner, useWalletAddress } from '../../../../context/AccountProvider'

@@ -1,5 +1,5 @@
 import React, { FC, useMemo, useState } from 'react'
-import { ISavingsContractV2__factory, BoostedSavingsVault__factory } from '@mstable/protocol/types/generated'
+import { ISavingsContractV2__factory, BoostedSavingsVault__factory } from '@mstable/protocol/dist/types/generated'
 
 import { useSigner } from '../../../../context/AccountProvider'
 import { usePropose } from '../../../../context/TransactionsProvider'

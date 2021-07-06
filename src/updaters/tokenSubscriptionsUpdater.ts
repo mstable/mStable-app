@@ -3,7 +3,7 @@ import { usePrevious } from 'react-use'
 import { Interface } from '@ethersproject/abi'
 import { Provider } from '@ethersproject/providers'
 import { constants } from 'ethers'
-import type { ERC20Interface } from '@mstable/protocol/types/generated/ERC20'
+import type { ERC20Interface } from '@mstable/protocol/dist/types/generated/ERC20'
 
 import { useBlockNow } from '../context/BlockProvider'
 import { useAccount, useSigner } from '../context/AccountProvider'
