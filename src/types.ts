@@ -8,6 +8,7 @@ import type {
   SaveWrapper,
   FeederWrapper,
   IUniswapV2Router02,
+  StakingRewardsWithPlatformToken,
 } from '@mstable/protocol/dist/types/generated'
 import { Contract } from 'ethers'
 
@@ -32,6 +33,7 @@ export enum Interfaces {
   BoostedSavingsVault,
   BoostDirector,
   FraxStakingRewardsDual,
+  StakingRewardsWithPlatformToken,
 }
 
 export interface Instances {
@@ -45,6 +47,7 @@ export interface Instances {
   [Interfaces.BoostedSavingsVault]: BoostedSavingsVault
   [Interfaces.BoostDirector]: BoostDirector
   [Interfaces.FraxStakingRewardsDual]: Contract
+  [Interfaces.StakingRewardsWithPlatformToken]: StakingRewardsWithPlatformToken
 }
 
 export interface Token {

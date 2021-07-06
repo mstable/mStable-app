@@ -65,7 +65,7 @@ export const MultiRewards: FC<Props> = ({ rewardsEarned, onClaimRewards }) => {
                   </Token>
                 </TableCell>
                 <TableCell width={TABLE_CELL_WIDTHS[2]}>
-                  <CountUp end={earned?.simple ?? 0} decimals={2} />
+                  <CountUp end={earned?.simple ?? 0} decimals={4} />
                 </TableCell>
               </TableRow>
             ))
