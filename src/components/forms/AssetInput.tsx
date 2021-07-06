@@ -30,6 +30,7 @@ interface Props {
   isFetching?: boolean
   decimals?: number
   className?: string
+  hideToken?: boolean
 }
 
 const Input = styled.div`
@@ -143,6 +144,7 @@ const AssetInputContent: FC<Props> = ({
   isFetching,
   decimals,
   className,
+  hideToken,
 }) => {
   const [unlockState, setUnlockState] = useState(false)
 
@@ -176,7 +178,7 @@ const AssetInputContent: FC<Props> = ({
             </Input>
           </InputContainer>
           <TokenContainer>
-            {!!address && (
+            {!!address && !hideToken && (
               <SubscribedTokenInput disabled={addressDisabled} value={address} options={addressOptions} onChange={handleSetAddress} />
             )}
             {spender && (
@@ -206,8 +208,10 @@ const AssetInputApproveContent: FC<Props> = ({
   spender,
   decimals,
   className,
+  hideToken,
 }) => {
   const [{ needsApprove }, handleApprove] = useApprove()
+
   return (
     <AssetInputContent
       className={className}
@@ -225,6 +229,7 @@ const AssetInputApproveContent: FC<Props> = ({
       needsApprove={needsApprove}
       spender={spender}
       decimals={decimals}
+      hideToken={hideToken}
     >
       {children}
     </AssetInputContent>
@@ -249,6 +254,7 @@ export const AssetInput: FC<Props> = ({
   isFetching,
   decimals,
   className,
+  hideToken,
 }) => {
   const amount = BigDecimal.maybeParse(formValue)
   return spender && address ? (
@@ -270,6 +276,7 @@ export const AssetInput: FC<Props> = ({
         addressDisabled={addressDisabled}
         isFetching={isFetching}
         decimals={decimals}
+        hideToken={hideToken}
       >
         {children}
       </AssetInputApproveContent>
