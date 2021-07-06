@@ -1,17 +1,15 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
 
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
-import { MassetState } from '../../../../context/DataProvider/types'
-
-import { MultiRewards } from '../../Pools/Detail/MultiRewards'
-import { Table, TableRow, TableCell } from '../../../core/Table'
-import { AssetInput } from '../../../forms/AssetInput'
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
+
+import { Table, TableRow, TableCell } from '../../../core/Table'
 import { Button } from '../../../core/Button'
 import { Tooltip } from '../../../core/ReactTooltip'
-import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy'
-import { useStakingRewards } from '../hooks'
+import { MultiRewards } from '../../Pools/Detail/MultiRewards'
+import { AssetInput } from '../../../forms/AssetInput'
+
+import { useRewardsEarned, useStakingRewards, RewardsEarnedProvider } from '../hooks'
 
 const Input = styled(AssetInput)`
   height: 2.5rem;
@@ -76,8 +74,9 @@ const RewardAPY = styled.div`
     background: ${({ theme }) => theme.color.greyTransparent};
   }
 
-  span {
+  div > span > span > span:first-child {
     ${({ theme }) => theme.mixins.numeric};
+    margin-right: 0.3rem;
   }
 `
 
@@ -101,74 +100,50 @@ const Container = styled.div`
   }
 `
 
+const RewardsEarned: FC = () => {
+  const rewardsEarned = useRewardsEarned()
+  const handleRewardClaim = (): void => {}
+  return <MultiRewards rewardsEarned={rewardsEarned} onClaimRewards={handleRewardClaim} />
+}
+
 export const SaveStake: FC = () => {
   const stakingRewards = useStakingRewards()
-  const massetState = useSelectedMassetState()
 
-  const {
-    savingsContracts: {
-      v2: { token: saveToken },
-    },
-  } = massetState as MassetState
-
-  const saveApy = useAvailableSaveApy()
-
-  const saveBalance = saveToken?.balance
-  const stakedBalance = stakingRewards?.stakingBalance
-
-  const [, saveFormValue, setSaveAmount] = useBigDecimalInput((saveBalance?.simple ?? 0).toString())
-  const [, stakedFormValue, setStakedAmount] = useBigDecimalInput((stakedBalance?.simple ?? 0).toString())
+  const [, saveFormValue, setSaveAmount] = useBigDecimalInput((stakingRewards.unstakedBalance?.simple ?? 0).toString())
+  const [, stakedFormValue, setStakedAmount] = useBigDecimalInput((stakingRewards.stakedBalance?.simple ?? 0).toString())
 
   const handleStake = (): void => {}
   const handleUnstake = (): void => {}
-  const handleRewardClaim = (): void => {}
-
-  const rewardsData = stakingRewards
-    ? [
-        {
-          symbol: stakingRewards.rewardsToken.symbol,
-          amount: stakingRewards.stakingReward.amount,
-        },
-        {
-          symbol: stakingRewards.platformRewards?.platformToken.symbol,
-          amount: stakingRewards.platformRewards?.platformReward.amount,
-        },
-      ]
-    : []
 
   return (
     <Container>
       <RewardContainer>
-        {!stakedBalance?.simple && !!saveBalance?.simple ? (
+        {!stakingRewards.hasStakedBalance && stakingRewards.hasUnstakedBalance ? (
           <p>Stake to earn rewards in addition to native yield</p>
         ) : (
-          !saveBalance?.simple && !stakedBalance?.simple && <p>Deposit to get imUSD and then stake to earn rewards</p>
+          !stakingRewards.hasUnstakedBalance &&
+          !stakingRewards.hasStakedBalance && <p>Deposit to get imUSD and then stake to earn rewards</p>
         )}
         <RewardAPY>
-          <div>
-            <Tooltip tip="Native imUSD base yield" hideIcon>
-              <span>{saveApy?.value?.toFixed(2)}%</span>
-            </Tooltip>
-          </div>
-          <div>
-            <Tooltip tip="Reward rate annualized" hideIcon>
-              <span>+3.07%</span> WMATIC
-            </Tooltip>
-          </div>
-          <div>
-            <Tooltip tip="Reward rate annualized" hideIcon>
-              <span>+4.02%</span> MTA
-            </Tooltip>
-          </div>
+          {stakingRewards.rewards
+            ?.filter(reward => reward.tokens.length < 2)
+            .map(({ apy, apyTip, tokens, name }) => (
+              <div>
+                <Tooltip tip={apyTip} hideIcon>
+                  <span>+{apy.toFixed(2)}%</span>
+                  <span>{tokens.length ? tokens[0] : name}</span>
+                </Tooltip>
+              </div>
+            ))}
         </RewardAPY>
       </RewardContainer>
-      {!!stakedBalance?.simple && (
+      {stakingRewards.hasStakedBalance && (
         <StyledTable headerTitles={[{ title: 'Staked Balance' }]}>
           <StyledRow buttonTitle="Stake">
             <TableCell width={70}>
               <Input
                 handleSetAmount={setStakedAmount}
-                handleSetMax={() => setStakedAmount(stakedBalance?.simple?.toString() ?? '0')}
+                handleSetMax={() => setStakedAmount(stakingRewards.stakedBalance?.string ?? '0')}
                 formValue={stakedFormValue}
               />
             </TableCell>
@@ -178,17 +153,16 @@ export const SaveStake: FC = () => {
           </StyledRow>
         </StyledTable>
       )}
-      {!!saveBalance?.simple && (
+      {stakingRewards.hasUnstakedBalance && (
         <>
           <StyledTable headerTitles={[{ title: 'Unstaked Balance' }]}>
             <StyledRow buttonTitle="Stake">
               <TableCell width={70}>
                 <Input
                   handleSetAmount={setSaveAmount}
-                  handleSetMax={() => setSaveAmount(saveBalance?.simple?.toString() ?? '0')}
+                  handleSetMax={() => setSaveAmount(stakingRewards.unstakedBalance?.string ?? '0')}
                   formValue={saveFormValue}
-                  // FIXME: - change for contract address
-                  spender="0xf38522f63f40f9dd81abafd2b8efc2ec958a3016"
+                  spender={stakingRewards.stakingRewardsContract?.address}
                 />
               </TableCell>
               <TableCell width={20}>
@@ -200,7 +174,9 @@ export const SaveStake: FC = () => {
           </StyledTable>
         </>
       )}
-      <MultiRewards rewards={rewardsData} onClaimRewards={handleRewardClaim} />
+      <RewardsEarnedProvider>
+        <RewardsEarned />
+      </RewardsEarnedProvider>
     </Container>
   )
 }
