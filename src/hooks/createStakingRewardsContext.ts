@@ -171,7 +171,7 @@ export const createStakingRewardsContext = (): Readonly<
         skip: !address && !stakingTokenAddress,
         pollInterval: 5e3, // 5s
         variables: {
-          account,
+          account: account || null,
           ...(stakingTokenAddress
             ? ({ stakingToken: stakingTokenAddress as string } as StakingRewardsForStakingTokenQueryVariables)
             : ({ id: address as string } as StakingRewardsContractQueryVariables)),
