@@ -286,7 +286,7 @@ const MATIC_MAINNET: MaticMainnet = {
       FXS: '0x3e121107F6F22DA4911079845a470757aF4e1A1b',
     },
   },
-  getExplorerUrl: etherscanUrl('mainnet', 'polygonscan.com'),
+  getExplorerUrl: etherscanUrl(undefined, 'polygonscan.com'),
   supportedMassets: ['musd'],
 }
 
