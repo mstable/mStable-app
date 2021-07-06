@@ -1,6 +1,6 @@
 import React, { createContext, Dispatch, FC, SetStateAction, useContext, useMemo, useState } from 'react'
 import { constants } from 'ethers'
-import { ERC20__factory } from '@mstable/protocol/types/generated'
+import { ERC20__factory } from '@mstable/protocol/dist/types/generated'
 
 import { BigDecimal } from '../../web3/BigDecimal'
 import { TransactionManifest } from '../../web3/TransactionManifest'

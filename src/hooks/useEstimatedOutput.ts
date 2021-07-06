@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { FeederPool, FeederPool__factory, Masset, Masset__factory } from '@mstable/protocol/types/generated'
+import { FeederPool, FeederPool__factory, Masset, Masset__factory } from '@mstable/protocol/dist/types/generated'
 import { usePrevious, useDebounce } from 'react-use'
 import type { BigNumber } from 'ethers'
 

@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react'
 import { constants } from 'ethers'
-import { BoostedSavingsVault__factory, ISavingsContractV2__factory, SaveWrapper__factory } from '@mstable/protocol/types/generated'
+import { BoostedSavingsVault__factory, ISavingsContractV2__factory, SaveWrapper__factory } from '@mstable/protocol/dist/types/generated'
 
 import { useSigner } from '../../../../context/AccountProvider'
 import { usePropose } from '../../../../context/TransactionsProvider'

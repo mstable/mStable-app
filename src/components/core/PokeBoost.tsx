@@ -1,4 +1,4 @@
-import { BoostedSavingsVault__factory } from '@mstable/protocol/types/generated'
+import { BoostedSavingsVault__factory } from '@mstable/protocol/dist/types/generated'
 import React, { FC } from 'react'
 import CountUp from 'react-countup'
 import styled from 'styled-components'

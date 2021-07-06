@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { FeederPool__factory, Masset__factory } from '@mstable/protocol/types/generated'
+import { FeederPool__factory, Masset__factory } from '@mstable/protocol/dist/types/generated'
 
 import { useSigner, useWalletAddress } from '../../../../context/AccountProvider'
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'

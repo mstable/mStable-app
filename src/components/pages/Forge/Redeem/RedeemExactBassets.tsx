@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react'
 
-import { Masset__factory } from '@mstable/protocol/types/generated'
+import { Masset__factory } from '@mstable/protocol/dist/types/generated'
 import { usePropose } from '../../../../context/TransactionsProvider'
 import { useSigner, useWalletAddress } from '../../../../context/AccountProvider'
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
