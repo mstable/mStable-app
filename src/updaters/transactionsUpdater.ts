@@ -48,14 +48,18 @@ export const TransactionsUpdater = (): null => {
               .then((receipt: TransactionReceipt) => {
                 if (!stale) {
                   if (!receipt) {
-                    check(tx.manifest.id, blockNumber)
+                    if (tx?.manifest?.id) {
+                      check(tx.manifest.id, blockNumber)
+                    }
                   } else {
                     finalize(tx.manifest, receipt)
                   }
                 }
               })
               .catch(() => {
-                check(tx.manifest.id, blockNumber)
+                if (tx?.manifest?.id) {
+                  check(tx.manifest.id, blockNumber)
+                }
               })
           })
 
