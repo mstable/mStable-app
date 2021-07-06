@@ -1,8 +1,7 @@
 import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 
-import { ERC20__factory, StakingRewardsWithPlatformToken__factory } from '@mstable/protocol/dist/types/generated'
-import { constants } from 'ethers'
+import { StakingRewardsWithPlatformToken__factory } from '@mstable/protocol/dist/types/generated'
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
 
 import { Table, TableRow, TableCell } from '../../../core/Table'
@@ -28,6 +27,16 @@ const Input = styled(AssetInput)`
   button {
     padding: 0.25rem 0.5rem;
     border-radius: 0.5rem;
+    height: 1.875rem;
+  }
+
+  .approve-button {
+    border-radius: 0.75rem;
+    height: 3rem;
+    span {
+      font-size: 0.875rem;
+      color: ${({ theme }) => theme.color.white};
+    }
   }
 
   > div {
@@ -156,10 +165,13 @@ export const SaveStake: FC = () => {
   const saveBalance = saveToken?.balance
   const stakedBalance = stakingRewards?.stakedBalance
 
-  // const needsApprove = saveToken?.allowances[stakingRewardsAddress ?? '']
-
   const [amountToStake, saveFormValue, setSaveAmount] = useBigDecimalInput((saveBalance?.simple ?? 0).toString())
   const [amountToWithdraw, stakedFormValue, setStakedAmount] = useBigDecimalInput((stakedBalance?.simple ?? 0).toString())
+
+  const needsApprove =
+    !amountToStake?.simple ||
+    (!!amountToStake?.simple && (saveToken?.allowances[stakingRewardsAddress ?? '']?.simple ?? 0) < amountToStake.simple) ||
+    false
 
   const handleStake = (): void => {
     if (!contract || !amountToStake?.exact) return
@@ -178,21 +190,6 @@ export const SaveStake: FC = () => {
         present: `Withdrawing ${amountToWithdraw?.simple.toFixed(0)} imUSD`,
         past: 'Withdrew imUSD',
       }),
-    )
-  }
-
-  const handleApprove = (): void => {
-    if (!saveToken?.address || !stakingRewardsAddress || !signer) return
-    propose<Interfaces.ERC20, 'approve'>(
-      new TransactionManifest<Interfaces.ERC20, 'approve'>(
-        ERC20__factory.connect(saveToken.address, signer),
-        'approve',
-        [stakingRewardsAddress, constants.MaxUint256],
-        {
-          present: `Approving imUSD`,
-          past: `Approved imUSD`,
-        },
-      ),
     )
   }
 
@@ -243,13 +240,13 @@ export const SaveStake: FC = () => {
                   handleSetAmount={setSaveAmount}
                   handleSetMax={() => setSaveAmount(stakingRewards.unstakedBalance?.string ?? '0')}
                   formValue={saveFormValue}
-                  // needsApprove
-                  handleApprove={handleApprove}
+                  address={saveToken?.address}
                   spender={stakingRewards.stakingRewardsContract?.address}
+                  hideToken
                 />
               </TableCell>
               <TableCell width={20}>
-                <Button highlighted onClick={handleStake}>
+                <Button disabled={needsApprove} highlighted={!needsApprove} onClick={handleStake}>
                   Stake
                 </Button>
               </TableCell>

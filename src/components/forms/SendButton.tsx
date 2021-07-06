@@ -92,6 +92,7 @@ export const ApproveContent: FC<{
   <ApproveContainer className={className}>
     {isApproveEdgeCase ? (
       <StyledButton
+        className="approve-button"
         highlighted
         disabled={hasPendingApproval}
         onClick={() => {
@@ -108,6 +109,7 @@ export const ApproveContent: FC<{
     ) : (
       <>
         <StyledButton
+          className="approve-button"
           highlighted
           disabled={hasPendingApproval}
           onClick={() => {
@@ -122,6 +124,7 @@ export const ApproveContent: FC<{
           </Tooltip>
         </StyledButton>
         <StyledButton
+          className="approve-button"
           highlighted
           disabled={hasPendingApproval}
           onClick={() => {
