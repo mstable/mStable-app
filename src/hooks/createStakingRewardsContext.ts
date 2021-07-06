@@ -207,7 +207,7 @@ export const createStakingRewardsContext = (): Readonly<
 
       // TODO find value of stakingToken based on collateral (when needed)
       const exchangeRate = (isSave && massetState.savingsContracts.v2.latestExchangeRate?.rate) || BigDecimal.ONE
-      const stakingTokenPrice = 1 / exchangeRate.simple
+      const stakingTokenPrice = 1 * exchangeRate.simple
 
       const rewardsApy =
         calculateApy(stakingTokenPrice, rewardsPrice.value, stakingRewardsContract.rewardRate.simple, stakingRewardsContract.totalSupply) ??
