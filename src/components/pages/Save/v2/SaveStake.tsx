@@ -1,8 +1,13 @@
 import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
-
 import { StakingRewardsWithPlatformToken__factory } from '@mstable/protocol/dist/types/generated'
+
+import { usePropose } from '../../../../context/TransactionsProvider'
+import { useTokenAllowance } from '../../../../context/TokensProvider'
+import { useSigner } from '../../../../context/AccountProvider'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
+import { Interfaces } from '../../../../types'
 
 import { Table, TableRow, TableCell } from '../../../core/Table'
 import { Button } from '../../../core/Button'
@@ -11,12 +16,6 @@ import { MultiRewards } from '../../Pools/Detail/MultiRewards'
 import { AssetInput } from '../../../forms/AssetInput'
 
 import { useRewardsEarned, useStakingRewards, RewardsEarnedProvider } from '../hooks'
-import { useSigner } from '../../../../context/AccountProvider'
-import { TransactionManifest } from '../../../../web3/TransactionManifest'
-import { Interfaces } from '../../../../types'
-import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
-import { usePropose } from '../../../../context/TransactionsProvider'
-import { MassetState } from '../../../../context/DataProvider/types'
 
 const Input = styled(AssetInput)`
   height: 2.5rem;
@@ -145,33 +144,25 @@ const RewardsEarned: FC = () => {
 
 export const SaveStake: FC = () => {
   const stakingRewards = useStakingRewards()
-  const massetState = useSelectedMassetState()
   const signer = useSigner()
   const propose = usePropose()
 
   const stakingRewardsAddress = stakingRewards.stakingRewardsContract?.address
+  const stakingTokenAddress = stakingRewards.stakingRewardsContract?.stakingToken.address
 
   const contract = useMemo(
     () => (signer && stakingRewardsAddress ? StakingRewardsWithPlatformToken__factory.connect(stakingRewardsAddress, signer) : undefined),
     [stakingRewardsAddress, signer],
   )
 
-  const {
-    savingsContracts: {
-      v2: { token: saveToken },
-    },
-  } = massetState as MassetState
-
-  const saveBalance = saveToken?.balance
+  const unstakedBalance = stakingRewards?.unstakedBalance
   const stakedBalance = stakingRewards?.stakedBalance
 
-  const [amountToStake, saveFormValue, setSaveAmount] = useBigDecimalInput((saveBalance?.simple ?? 0).toString())
+  const [amountToStake, saveFormValue, setSaveAmount] = useBigDecimalInput((unstakedBalance?.simple ?? 0).toString())
   const [amountToWithdraw, stakedFormValue, setStakedAmount] = useBigDecimalInput((stakedBalance?.simple ?? 0).toString())
 
-  const needsApprove =
-    !amountToStake?.simple ||
-    (!!amountToStake?.simple && (saveToken?.allowances[stakingRewardsAddress ?? '']?.simple ?? 0) < amountToStake.simple) ||
-    false
+  const allowance = useTokenAllowance(stakingTokenAddress, stakingRewardsAddress)
+  const needsApprove = !amountToStake || !allowance || (amountToStake && allowance?.exact.lt(amountToStake.exact))
 
   const handleStake = (): void => {
     if (!contract || !amountToStake?.exact) return
@@ -232,27 +223,25 @@ export const SaveStake: FC = () => {
         </StyledTable>
       )}
       {stakingRewards.hasUnstakedBalance && (
-        <>
-          <StyledTable headerTitles={[{ title: 'Unstaked Balance' }]}>
-            <StyledRow buttonTitle="Stake">
-              <TableCell width={70}>
-                <Input
-                  handleSetAmount={setSaveAmount}
-                  handleSetMax={() => setSaveAmount(stakingRewards.unstakedBalance?.string ?? '0')}
-                  formValue={saveFormValue}
-                  address={saveToken?.address}
-                  spender={stakingRewards.stakingRewardsContract?.address}
-                  hideToken
-                />
-              </TableCell>
-              <TableCell width={20}>
-                <Button disabled={needsApprove} highlighted={!needsApprove} onClick={handleStake}>
-                  Stake
-                </Button>
-              </TableCell>
-            </StyledRow>
-          </StyledTable>
-        </>
+        <StyledTable headerTitles={[{ title: 'Unstaked Balance' }]}>
+          <StyledRow buttonTitle="Stake">
+            <TableCell width={70}>
+              <Input
+                handleSetAmount={setSaveAmount}
+                handleSetMax={() => setSaveAmount(stakingRewards.unstakedBalance?.string ?? '0')}
+                formValue={saveFormValue}
+                address={stakingTokenAddress}
+                spender={stakingRewardsAddress}
+                hideToken
+              />
+            </TableCell>
+            <TableCell width={20}>
+              <Button disabled={needsApprove} highlighted={!needsApprove} onClick={handleStake}>
+                Stake
+              </Button>
+            </TableCell>
+          </StyledRow>
+        </StyledTable>
       )}
       <RewardsEarnedProvider>
         <RewardsEarned />
