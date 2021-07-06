@@ -1,25 +1,20 @@
-import React, { FC, useMemo, useState } from 'react'
+import React, { FC, useState } from 'react'
 import styled from 'styled-components'
 import CountUp from 'react-countup'
 
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
-import { useNetworkPrices } from '../../../context/NetworkProvider'
-import { useMtaPrice } from '../../../hooks/usePrice'
 
-import { PageAction, PageHeader } from '../PageHeader'
-import { OnboardingProvider, StakingRewardsProvider, useStakingRewards } from './hooks'
-import { ThemedSkeleton } from '../../core/ThemedSkeleton'
 import { DailyApys } from '../../stats/DailyApys'
-import { SaveStake } from './v2/SaveStake'
-import { BigDecimal } from '../../../web3/BigDecimal'
-import { useAvailableSaveApy } from '../../../hooks/useAvailableSaveApy'
-import { calculateApy } from '../../../utils/calculateApy'
-
+import { ViewportWidth } from '../../../theme'
+import { ThemedSkeleton } from '../../core/ThemedSkeleton'
 import { Tooltip } from '../../core/ReactTooltip'
 import { TabCard } from '../../core/Tabs'
+import { PageAction, PageHeader } from '../PageHeader'
+
 import { SaveRedeem } from './v2/SaveRedeem'
 import { SaveDeposit } from './v2/SaveDeposit'
-import { ViewportWidth } from '../../../theme'
+import { SaveStake } from './v2/SaveStake'
+import { OnboardingProvider, useStakingRewards, StakingRewardsProvider } from './hooks'
 
 enum Tabs {
   Deposit = 'Deposit',
@@ -147,74 +142,28 @@ const InfoText = styled.p<{ large?: boolean }>`
 
 const SaveBalance: FC = () => {
   const stakingRewards = useStakingRewards()
-  const massetState = useSelectedMassetState()
-  const saveApy = useAvailableSaveApy()
 
-  // TODO get these from the rewardToken/platformToken in a generic way
-  const mtaPrice = useMtaPrice()
-  const networkPrice = useNetworkPrices()
-
-  const balances = useMemo(() => {
-    if (
-      !stakingRewards ||
-      !massetState ||
-      !massetState.savingsContracts.v2.latestExchangeRate ||
-      !massetState.savingsContracts.v2.token ||
-      !mtaPrice ||
-      !networkPrice.value
-    )
-      return []
-
-    const rawBalance = massetState.savingsContracts.v2.token.balance ?? BigDecimal.ZERO
-    const stakingBalance = stakingRewards.stakingBalance ?? BigDecimal.ZERO
-
-    const exchangeRate = massetState.savingsContracts.v2.latestExchangeRate.rate
-    const stakingTokenPrice = 1 / exchangeRate.simple
-    // const totalSupply = stakingRewards.totalSupply
-    const totalSupply = BigDecimal.parse('10000000000000000000')
-    const rewardsApy = calculateApy(stakingTokenPrice, mtaPrice, stakingRewards.rewardRate, totalSupply) ?? 0
-    const platformApy =
-      calculateApy(stakingTokenPrice, networkPrice.value.nativeToken, stakingRewards.platformRewards?.platformRewardRate, totalSupply) ?? 0
-
-    return [
-      {
-        name: '',
-        apy: saveApy.value,
-        apyTip: 'This APY is derived from internal swap fees and lending markets, and is not reflective of future rates.',
-        stakeLabel: 'Deposit stablecoins',
-        balance: rawBalance.mulTruncate(exchangeRate.exact),
-      },
-      {
-        name: 'rewards',
-        apy: rewardsApy + platformApy,
-        apyTip: 'This APY is derived from currently available staking rewards, and is not reflective of future rates.',
-        stakeLabel: 'Stake',
-        balance: stakingBalance.mulTruncate(exchangeRate.exact),
-      },
-    ]
-  }, [massetState, stakingRewards, mtaPrice, networkPrice, saveApy])
-
-  const hasUserStaked = !!stakingRewards?.stakingBalance?.simple
-  const hasUserDeposited = !!massetState?.savingsContracts?.v2?.token?.balance?.simple
-  const isNewUser = !hasUserDeposited && !hasUserStaked
+  const isNewUser = !stakingRewards.hasStakedBalance && !stakingRewards.hasUnstakedBalance
 
   return (
     <div>
       {isNewUser && <h2>The best passive savings account in DeFi.</h2>}
-      {balances.map(({ balance, apy, apyTip, stakeLabel, name }) => (
-        <InfoText key={name}>
-          {balance.exact.gt(0) ? 'Earning ' : `${stakeLabel} to earn `}
-          <Tooltip tip={apyTip}>
-            <span className="numeric">{apy.toFixed(2)}%</span> APY
-          </Tooltip>
-          &nbsp;{name}&nbsp;
-          {balance.exact.gt(0) && (
-            <>
-              on <CountUp className="numeric" end={balance.simple} decimals={2} prefix="$" />
-            </>
-          )}
-        </InfoText>
-      ))}
+      {stakingRewards.rewards
+        ?.filter(rewards => rewards.priority)
+        .map(({ balance, apy, apyTip, stakeLabel, name }) => (
+          <InfoText key={name}>
+            {balance.exact.gt(0) ? 'Earning ' : `${stakeLabel} to earn `}
+            <Tooltip tip={apyTip}>
+              <span className="numeric">{apy.toFixed(2)}%</span> APY
+            </Tooltip>
+            &nbsp;{name}&nbsp;
+            {balance.exact.gt(0) && (
+              <>
+                on <CountUp className="numeric" end={balance.simple} decimals={2} prefix="$" />
+              </>
+            )}
+          </InfoText>
+        ))}
     </div>
   )
 }

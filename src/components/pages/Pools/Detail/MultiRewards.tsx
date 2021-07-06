@@ -1,20 +1,18 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
 
+import { RewardsEarned } from '../../../../hooks/createRewardsEarnedContext'
+
 import { Table, TableCell, TableRow } from '../../../core/Table'
 import { Button } from '../../../core/Button'
-import { TokenIcon } from '../../../icons/TokenIcon'
 import { CountUp } from '../../../core/CountUp'
-import { BigDecimal } from '../../../../web3/BigDecimal'
 import { ThemedSkeleton } from '../../../core/ThemedSkeleton'
+import { TokenIcon } from '../../../icons/TokenIcon'
 
 const TABLE_CELL_WIDTHS = [60, 40]
 
 interface Props {
-  rewards: {
-    symbol?: string
-    amount?: BigDecimal
-  }[]
+  rewardsEarned: RewardsEarned
   onClaimRewards?: () => void
 }
 
@@ -50,30 +48,27 @@ const Token = styled.div`
 
 const Container = styled.div``
 
-export const MultiRewards: FC<Props> = ({ rewards, onClaimRewards }) => {
-  const headerTitles = ['Token', 'Earned'].map(t => ({ title: t }))
-  const canClaim = !!rewards?.find(v => (v?.amount?.simple ?? 0) > 0)
+const headerTitles = ['Token', 'Earned'].map(t => ({ title: t }))
 
+export const MultiRewards: FC<Props> = ({ rewardsEarned, onClaimRewards }) => {
   return (
     <Container>
       <Rewards>
         <Table headerTitles={headerTitles} widths={TABLE_CELL_WIDTHS}>
-          {rewards.length ? (
-            rewards.map(({ symbol, amount }) => {
-              return (
-                <TableRow key={symbol}>
-                  <TableCell width={TABLE_CELL_WIDTHS[0]}>
-                    <Token>
-                      <TokenIcon symbol={symbol} hideNetwork />
-                      <h3>{symbol}</h3>
-                    </Token>
-                  </TableCell>
-                  <TableCell width={TABLE_CELL_WIDTHS[2]}>
-                    <CountUp end={amount?.simple ?? 0} decimals={2} />
-                  </TableCell>
-                </TableRow>
-              )
-            })
+          {rewardsEarned.rewards.length ? (
+            rewardsEarned.rewards.map(({ token, earned }) => (
+              <TableRow key={token}>
+                <TableCell width={TABLE_CELL_WIDTHS[0]}>
+                  <Token>
+                    <TokenIcon symbol={token} hideNetwork />
+                    <h3>{token}</h3>
+                  </Token>
+                </TableCell>
+                <TableCell width={TABLE_CELL_WIDTHS[2]}>
+                  <CountUp end={earned?.simple ?? 0} decimals={2} />
+                </TableCell>
+              </TableRow>
+            ))
           ) : (
             <TableRow key="BLANK">
               <TableCell width={80}>
@@ -85,7 +80,7 @@ export const MultiRewards: FC<Props> = ({ rewards, onClaimRewards }) => {
             </TableRow>
           )}
         </Table>
-        {canClaim && (
+        {rewardsEarned.canClaim && (
           <Claim highlighted onClick={onClaimRewards}>
             Claim Rewards
           </Claim>
