@@ -5,10 +5,9 @@ import CountUp from 'react-countup'
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
 import { useNetworkPrices } from '../../../context/NetworkProvider'
 import { useMtaPrice } from '../../../hooks/usePrice'
-import { createStakingRewardsContext } from '../../../hooks/createStakingRewardsContext'
 
 import { PageAction, PageHeader } from '../PageHeader'
-import { OnboardingProvider } from './hooks'
+import { OnboardingProvider, StakingRewardsProvider, useStakingRewards } from './hooks'
 import { ThemedSkeleton } from '../../core/ThemedSkeleton'
 import { DailyApys } from '../../stats/DailyApys'
 import { SaveStake } from './v2/SaveStake'
@@ -146,8 +145,6 @@ const InfoText = styled.p<{ large?: boolean }>`
   line-height: ${({ large }) => (large ? `2rem` : `1.5rem`)} !important;
 `
 
-const [useStakingRewards, StakingRewardsProvider] = createStakingRewardsContext()
-
 const SaveBalance: FC = () => {
   const stakingRewards = useStakingRewards()
   const massetState = useSelectedMassetState()
@@ -181,7 +178,7 @@ const SaveBalance: FC = () => {
 
     return [
       {
-        name: 'yield',
+        name: '',
         apy: saveApy.value,
         apyTip: 'This APY is derived from internal swap fees and lending markets, and is not reflective of future rates.',
         stakeLabel: 'Deposit stablecoins',
@@ -191,14 +188,19 @@ const SaveBalance: FC = () => {
         name: 'rewards',
         apy: rewardsApy + platformApy,
         apyTip: 'This APY is derived from currently available staking rewards, and is not reflective of future rates.',
-        stakeLabel: 'Stake imUSD',
+        stakeLabel: 'Stake',
         balance: stakingBalance.mulTruncate(exchangeRate.exact),
       },
     ]
   }, [massetState, stakingRewards, mtaPrice, networkPrice, saveApy])
 
+  const hasUserStaked = !!stakingRewards?.stakingBalance?.simple
+  const hasUserDeposited = !!massetState?.savingsContracts?.v2?.token?.balance?.simple
+  const isNewUser = !hasUserDeposited && !hasUserStaked
+
   return (
     <div>
+      {isNewUser && <h2>The best passive savings account in DeFi.</h2>}
       {balances.map(({ balance, apy, apyTip, stakeLabel, name }) => (
         <InfoText key={name}>
           {balance.exact.gt(0) ? 'Earning ' : `${stakeLabel} to earn `}
@@ -219,11 +221,9 @@ const SaveBalance: FC = () => {
 
 export const PolygonSave: FC = () => {
   const massetState = useSelectedMassetState()
+
   const saveToken = massetState?.savingsContracts.v2.token
   const [activeTab, setActiveTab] = useState<string>(Tabs.Deposit as string)
-
-  // const isNewUser = !hasUserDeposited && !hasUserStaked
-  const isNewUser = true
 
   return (
     <OnboardingProvider>
@@ -233,10 +233,7 @@ export const PolygonSave: FC = () => {
           <Container>
             <Content>
               <Card>
-                <div>
-                  {isNewUser && <h2>The best passive savings account in DeFi.</h2>}
-                  <SaveBalance />
-                </div>
+                <SaveBalance />
                 <Tooltip tip="30-day yield APY chart" hideIcon>
                   <APYChart hideControls shimmerHeight={80} tick={false} aspect={3} color="#b880dd" strokeWidth={1} hoverEnabled={false} />
                 </Tooltip>
