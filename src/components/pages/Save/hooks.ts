@@ -1,8 +1,7 @@
 import { createStakingRewardsContext } from '../../../hooks/createStakingRewardsContext'
+import { createRewardsEarnedContext } from '../../../hooks/createRewardsEarnedContext'
 import { createToggleContext } from '../../../hooks/createToggleContext'
 
-const [useOnboarding, OnboardingProvider] = createToggleContext(false)
-
-const [useStakingRewards, StakingRewardsProvider] = createStakingRewardsContext()
-
-export { useOnboarding, useStakingRewards, OnboardingProvider, StakingRewardsProvider }
+export const [useOnboarding, OnboardingProvider] = createToggleContext(false)
+export const [useStakingRewards, StakingRewardsProvider, stakingRewardsCtx] = createStakingRewardsContext()
+export const [useRewardsEarned, RewardsEarnedProvider] = createRewardsEarnedContext(stakingRewardsCtx)
