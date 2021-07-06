@@ -9,6 +9,7 @@ import { Chevron } from './Chevron'
 import { TokenIcon, TokenPair } from '../icons/TokenIcon'
 import { Tooltip } from './ReactTooltip'
 import { AddressOption } from '../../types'
+import { useTokenSubscription } from '../../context/TokensProvider'
 
 export interface DropdownOption {
   icon?: {
@@ -108,6 +109,9 @@ const Container = styled.div`
 `
 
 const Asset: FC<{ asset?: AddressOption }> = ({ asset }) => {
+  // Subscribe in any case, so that we can show balances before the asset is selected
+  useTokenSubscription(asset?.address)
+
   if (!asset) return null
   const { tip, label, symbol, balance } = asset
   return (
