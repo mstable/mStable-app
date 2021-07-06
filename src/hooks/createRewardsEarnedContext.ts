@@ -6,7 +6,6 @@ import { BigDecimal } from '../web3/BigDecimal'
 import { StakingRewardsExtended } from './createStakingRewardsContext'
 
 import { createUseContextFn, providerFactory } from './utils'
-import { BigNumber } from 'ethers'
 import { SCALE } from '../constants'
 
 export interface RewardsEarned {

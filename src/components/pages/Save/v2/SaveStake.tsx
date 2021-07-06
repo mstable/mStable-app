@@ -1,6 +1,8 @@
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 import styled from 'styled-components'
 
+import { ERC20__factory, StakingRewardsWithPlatformToken__factory } from '@mstable/protocol/dist/types/generated'
+import { constants } from 'ethers'
 import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
 
 import { Table, TableRow, TableCell } from '../../../core/Table'
@@ -10,6 +12,12 @@ import { MultiRewards } from '../../Pools/Detail/MultiRewards'
 import { AssetInput } from '../../../forms/AssetInput'
 
 import { useRewardsEarned, useStakingRewards, RewardsEarnedProvider } from '../hooks'
+import { useSigner } from '../../../../context/AccountProvider'
+import { TransactionManifest } from '../../../../web3/TransactionManifest'
+import { Interfaces } from '../../../../types'
+import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
+import { usePropose } from '../../../../context/TransactionsProvider'
+import { MassetState } from '../../../../context/DataProvider/types'
 
 const Input = styled(AssetInput)`
   height: 2.5rem;
@@ -101,19 +109,92 @@ const Container = styled.div`
 `
 
 const RewardsEarned: FC = () => {
+  const stakingRewards = useStakingRewards()
   const rewardsEarned = useRewardsEarned()
-  const handleRewardClaim = (): void => {}
+  const propose = usePropose()
+  const signer = useSigner()
+
+  const stakingRewardsAddress = stakingRewards.stakingRewardsContract?.address
+
+  const contract = useMemo(
+    () => (signer && stakingRewardsAddress ? StakingRewardsWithPlatformToken__factory.connect(stakingRewardsAddress, signer) : undefined),
+    [stakingRewardsAddress, signer],
+  )
+
+  const handleRewardClaim = (): void => {
+    if (!contract) return
+    propose<Interfaces.StakingRewardsWithPlatformToken, 'claimReward'>(
+      new TransactionManifest(contract, 'claimReward', [], {
+        present: `Claiming rewards`,
+        past: 'Claimed rewards',
+      }),
+    )
+  }
+
   return <MultiRewards rewardsEarned={rewardsEarned} onClaimRewards={handleRewardClaim} />
 }
 
 export const SaveStake: FC = () => {
   const stakingRewards = useStakingRewards()
+  const massetState = useSelectedMassetState()
+  const signer = useSigner()
+  const propose = usePropose()
 
-  const [, saveFormValue, setSaveAmount] = useBigDecimalInput((stakingRewards.unstakedBalance?.simple ?? 0).toString())
-  const [, stakedFormValue, setStakedAmount] = useBigDecimalInput((stakingRewards.stakedBalance?.simple ?? 0).toString())
+  const stakingRewardsAddress = stakingRewards.stakingRewardsContract?.address
 
-  const handleStake = (): void => {}
-  const handleUnstake = (): void => {}
+  const contract = useMemo(
+    () => (signer && stakingRewardsAddress ? StakingRewardsWithPlatformToken__factory.connect(stakingRewardsAddress, signer) : undefined),
+    [stakingRewardsAddress, signer],
+  )
+
+  const {
+    savingsContracts: {
+      v2: { token: saveToken },
+    },
+  } = massetState as MassetState
+
+  const saveBalance = saveToken?.balance
+  const stakedBalance = stakingRewards?.stakedBalance
+
+  // const needsApprove = saveToken?.allowances[stakingRewardsAddress ?? '']
+
+  const [amountToStake, saveFormValue, setSaveAmount] = useBigDecimalInput((saveBalance?.simple ?? 0).toString())
+  const [amountToWithdraw, stakedFormValue, setStakedAmount] = useBigDecimalInput((stakedBalance?.simple ?? 0).toString())
+
+  const handleStake = (): void => {
+    if (!contract || !amountToStake?.exact) return
+    propose<Interfaces.StakingRewardsWithPlatformToken, 'stake(uint256)'>(
+      new TransactionManifest(contract, 'stake(uint256)', [amountToStake.exact], {
+        present: `Staking ${amountToStake?.simple.toFixed(0)} imUSD`,
+        past: 'Staked imUSD',
+      }),
+    )
+  }
+
+  const handleUnstake = (): void => {
+    if (!contract || !amountToWithdraw?.exact) return
+    propose<Interfaces.StakingRewardsWithPlatformToken, 'withdraw'>(
+      new TransactionManifest(contract, 'withdraw', [amountToWithdraw.exact], {
+        present: `Withdrawing ${amountToWithdraw?.simple.toFixed(0)} imUSD`,
+        past: 'Withdrew imUSD',
+      }),
+    )
+  }
+
+  const handleApprove = (): void => {
+    if (!saveToken?.address || !stakingRewardsAddress || !signer) return
+    propose<Interfaces.ERC20, 'approve'>(
+      new TransactionManifest<Interfaces.ERC20, 'approve'>(
+        ERC20__factory.connect(saveToken.address, signer),
+        'approve',
+        [stakingRewardsAddress, constants.MaxUint256],
+        {
+          present: `Approving imUSD`,
+          past: `Approved imUSD`,
+        },
+      ),
+    )
+  }
 
   return (
     <Container>
@@ -162,6 +243,8 @@ export const SaveStake: FC = () => {
                   handleSetAmount={setSaveAmount}
                   handleSetMax={() => setSaveAmount(stakingRewards.unstakedBalance?.string ?? '0')}
                   formValue={saveFormValue}
+                  // needsApprove
+                  handleApprove={handleApprove}
                   spender={stakingRewards.stakingRewardsContract?.address}
                 />
               </TableCell>
