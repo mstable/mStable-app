@@ -169,6 +169,7 @@ export const createStakingRewardsContext = (): Readonly<
       stakingTokenAddress ? StakingRewardsForStakingTokenDocument : StakingRewardsContractDocument,
       {
         skip: !address && !stakingTokenAddress,
+        pollInterval: 5e3, // 5s
         variables: {
           account,
           ...(stakingTokenAddress
