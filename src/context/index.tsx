@@ -1,4 +1,5 @@
 import { composedComponent } from '../utils/reactUtils'
+import { createPricesContext } from '../hooks/createPricesContext'
 
 import { AppProvider } from './AppProvider'
 import { MassetProvider } from './MassetProvider'
@@ -13,7 +14,9 @@ import { SelectedSaveVersionProvider } from './SelectedSaveVersionProvider'
 import { NetworkProvider } from './NetworkProvider'
 import { AccountProvider } from './AccountProvider'
 
-export const Providers = composedComponent(
+const [useFetchPriceCtx, PricesProvider] = createPricesContext()
+
+const Providers = composedComponent(
   NetworkProvider,
   MassetProvider,
   NotificationsProvider,
@@ -23,7 +26,10 @@ export const Providers = composedComponent(
   TransactionsProvider,
   TokensProvider,
   DataProvider,
+  PricesProvider,
   AppProvider,
   SelectedSaveVersionProvider,
   ThemeProvider,
 )
+
+export { useFetchPriceCtx, Providers }
