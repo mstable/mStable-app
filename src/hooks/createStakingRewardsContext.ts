@@ -49,6 +49,7 @@ export interface StakingRewardsContract {
 }
 
 export interface Reward {
+  id: string
   name: string
   apy: number
   apyTip: string
@@ -222,6 +223,7 @@ export const createStakingRewardsContext = (): Readonly<
 
       const yieldEntry = isSave
         ? {
+            id: 'yieldRewards',
             name: 'yield',
             apy: massetState.savingsContracts.v2.dailyAPY,
             apyTip: 'This APY is derived from internal swap fees and lending markets, and is not reflective of future rates.',
@@ -234,6 +236,7 @@ export const createStakingRewardsContext = (): Readonly<
         : undefined
 
       const rewardsEntry = {
+        id: 'rewards',
         name: 'rewards',
         apy: rewardsApy,
         apyTip: 'This APY is derived from currently available staking rewards, and is not reflective of future rates.',
@@ -246,6 +249,7 @@ export const createStakingRewardsContext = (): Readonly<
       const platformRewardsEntry = stakingRewardsContract.platformRewards?.platformToken
         ? {
             ...rewardsEntry,
+            id: 'platformRewards',
             apy: platformApy,
             tokens: [stakingRewardsContract.platformRewards.platformToken.symbol],
             amounts: [stakingRewardsContract.platformRewards.totalPlatformRewards],
@@ -256,6 +260,7 @@ export const createStakingRewardsContext = (): Readonly<
         rewardsEntry || platformRewardsEntry
           ? {
               ...(rewardsEntry || platformRewardsEntry),
+              id: 'combinedRewards',
               apy: (rewardsApy ?? 0) + (platformApy ?? 0),
               priority: true,
               tokens: [...rewardsEntry?.tokens, ...(platformRewardsEntry?.tokens ?? [])].filter(Boolean),
