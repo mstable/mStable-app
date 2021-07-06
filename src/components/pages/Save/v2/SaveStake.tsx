@@ -196,10 +196,13 @@ export const SaveStake: FC = () => {
         <RewardAPY>
           {stakingRewards.rewards
             ?.filter(reward => reward.tokens.length < 2)
-            .map(({ apy, apyTip, tokens, name }) => (
-              <div>
+            .map(({ apy, apyTip, tokens, name, id }) => (
+              <div key={id}>
                 <Tooltip tip={apyTip} hideIcon>
-                  <span>+{apy.toFixed(2)}%</span>
+                  <span>
+                    {id === 'yieldRewards' ? '' : '+'}
+                    {apy.toFixed(2)}%
+                  </span>
                   <span>{tokens.length ? tokens[0] : name}</span>
                 </Tooltip>
               </div>
