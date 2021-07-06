@@ -1,9 +1,8 @@
-import React, { FC, useMemo } from 'react'
+import React, { FC } from 'react'
 import styled from 'styled-components'
 
 import { useSelectedMassetState } from '../../../../context/DataProvider/DataProvider'
 import { MassetState } from '../../../../context/DataProvider/types'
-import { BigDecimal } from '../../../../web3/BigDecimal'
 
 import { MultiRewards } from '../../Pools/Detail/MultiRewards'
 import { Table, TableRow, TableCell } from '../../../core/Table'
@@ -12,18 +11,7 @@ import { useBigDecimalInput } from '../../../../hooks/useBigDecimalInput'
 import { Button } from '../../../core/Button'
 import { Tooltip } from '../../../core/ReactTooltip'
 import { useAvailableSaveApy } from '../../../../hooks/useAvailableSaveApy'
-
-// TODO: - replace with subscribedtoken when available
-const MOCK_REWARDS = [
-  {
-    address: '0x0000000000000000000000000000000000000000',
-    amount: BigDecimal.ONE,
-  },
-  {
-    address: '0x273bc479e5c21caa15aa8538decbf310981d14c0',
-    amount: BigDecimal.ZERO,
-  },
-]
+import { useStakingRewards } from '../hooks'
 
 const Input = styled(AssetInput)`
   height: 2.5rem;
@@ -65,7 +53,7 @@ const RewardContainer = styled.div`
   }
 
   p:first-child {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 `
 
@@ -114,6 +102,7 @@ const Container = styled.div`
 `
 
 export const SaveStake: FC = () => {
+  const stakingRewards = useStakingRewards()
   const massetState = useSelectedMassetState()
 
   const {
@@ -124,27 +113,36 @@ export const SaveStake: FC = () => {
 
   const saveApy = useAvailableSaveApy()
 
-  const saveBalance = useMemo(() => {
-    const balance = saveToken?.balance
-    return balance ?? BigDecimal.ZERO
-  }, [saveToken])
-
-  const stakedBalance = new BigDecimal((1e18).toString()) // change to use data
+  const saveBalance = saveToken?.balance
+  const stakedBalance = stakingRewards?.stakingBalance
 
   const [, saveFormValue, setSaveAmount] = useBigDecimalInput((saveBalance?.simple ?? 0).toString())
   const [, stakedFormValue, setStakedAmount] = useBigDecimalInput((stakedBalance?.simple ?? 0).toString())
 
   const handleStake = (): void => {}
   const handleUnstake = (): void => {}
+  const handleRewardClaim = (): void => {}
+
+  const rewardsData = stakingRewards
+    ? [
+        {
+          symbol: stakingRewards.rewardsToken.symbol,
+          amount: stakingRewards.stakingReward.amount,
+        },
+        {
+          symbol: stakingRewards.platformRewards?.platformToken.symbol,
+          amount: stakingRewards.platformRewards?.platformReward.amount,
+        },
+      ]
+    : []
 
   return (
     <Container>
       <RewardContainer>
-        {!stakedBalance?.simple && saveBalance?.simple > 0 ? (
+        {!stakedBalance?.simple && !!saveBalance?.simple ? (
           <p>Stake to earn rewards in addition to native yield</p>
         ) : (
-          !saveBalance?.simple &&
-          !stakedBalance?.simple && <p>Deposit to get imUSD and stake to earn rewards in addition to native yield</p>
+          !saveBalance?.simple && !stakedBalance?.simple && <p>Deposit to get imUSD and then stake to earn rewards</p>
         )}
         <RewardAPY>
           <div>
@@ -164,7 +162,7 @@ export const SaveStake: FC = () => {
           </div>
         </RewardAPY>
       </RewardContainer>
-      {stakedBalance?.simple > 0 && (
+      {!!stakedBalance?.simple && (
         <StyledTable headerTitles={[{ title: 'Staked Balance' }]}>
           <StyledRow buttonTitle="Stake">
             <TableCell width={70}>
@@ -180,7 +178,7 @@ export const SaveStake: FC = () => {
           </StyledRow>
         </StyledTable>
       )}
-      {saveBalance?.simple > 0 && (
+      {!!saveBalance?.simple && (
         <>
           <StyledTable headerTitles={[{ title: 'Unstaked Balance' }]}>
             <StyledRow buttonTitle="Stake">
@@ -194,13 +192,15 @@ export const SaveStake: FC = () => {
                 />
               </TableCell>
               <TableCell width={20}>
-                <Button onClick={handleStake}>Stake</Button>
+                <Button highlighted onClick={handleStake}>
+                  Stake
+                </Button>
               </TableCell>
             </StyledRow>
           </StyledTable>
         </>
       )}
-      <MultiRewards rewards={MOCK_REWARDS} canClaim={!!MOCK_REWARDS?.find(v => (v?.amount?.simple ?? 0) > 0) ?? [].length} />
+      <MultiRewards rewards={rewardsData} onClaimRewards={handleRewardClaim} />
     </Container>
   )
 }

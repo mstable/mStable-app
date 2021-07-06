@@ -93,6 +93,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   POLYGON,
   FRAX,
   MATIC: POLYGON,
+  WMATIC: POLYGON,
   FXS,
 }
 
