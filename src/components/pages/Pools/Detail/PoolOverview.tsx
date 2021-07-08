@@ -30,7 +30,7 @@ const UserVaultBoost: FC = () => {
   return <UserBoost vault={feederPool.vault} apy={apy} />
 }
 
-const ethComponents: Record<string, ReactElement> = {
+const components: Record<string, ReactElement> = {
   [Stake]: <Position />,
   [Boost]: <UserVaultBoost />,
   [Rewards]: <UserRewards />,
@@ -67,8 +67,6 @@ export const PoolOverview: FC = () => {
   const fpTokenPrice = price.simple * massetPrice
   const userAmount = token.balance?.simple ?? 0
   const userStakedAmount = vault.account?.rawBalance.simple ?? 0
-  // FIXME: - Currently to test LP, revert later
-  const isEthereum = false // network.chainId === ChainIds.EthereumMainnet
 
   const totalEarned =
     (rewardStreams?.amounts.earned.unlocked ?? 0) + (rewardStreams?.amounts.previewLocked ?? 0) + (rewardStreams?.amounts.locked ?? 0)
@@ -85,40 +83,27 @@ export const PoolOverview: FC = () => {
     </ShowEarningPower>
   ) : (
     <>
-      <TransitionCard components={ethComponents} selection={selection}>
+      <TransitionCard components={components} selection={selection}>
         <Container>
           <Button active={selection === Stake} onClick={() => handleSelection(Stake)}>
             <h3>Balance</h3>
             <CountUp end={totalUserBalance} prefix="$" />
           </Button>
-          {isEthereum ? (
-            <>
-              <Button active={selection === Boost} onClick={() => handleSelection(Boost)}>
-                <h3>Rewards APY</h3>
-                {apy.value?.userBoost ? (
-                  <DifferentialCountup prev={apy.value.base} end={apy.value.userBoost} suffix="%" />
-                ) : (
-                  <CountUp end={apy.value?.base ?? 0} suffix="%" />
-                )}
-              </Button>
-              <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>
-                <h3>Rewards</h3>
-                <div>
-                  <CountUp end={totalEarned} suffix=" MTA" />
-                  <Tooltip tip="MTA rewards unlock over time" />
-                </div>
-              </Button>
-            </>
-          ) : (
-            <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>
-              <h3>Rewards</h3>
-              {apy.value?.userBoost ? (
-                <DifferentialCountup prev={apy.value.base} end={apy.value.userBoost} suffix="%" />
-              ) : (
-                <CountUp end={apy.value?.base ?? 0} suffix="%" />
-              )}
-            </Button>
-          )}
+          <Button active={selection === Boost} onClick={() => handleSelection(Boost)}>
+            <h3>Rewards APY</h3>
+            {apy.value?.userBoost ? (
+              <DifferentialCountup prev={apy.value.base} end={apy.value.userBoost} suffix="%" />
+            ) : (
+              <CountUp end={apy.value?.base ?? 0} suffix="%" />
+            )}
+          </Button>
+          <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>
+            <h3>Rewards</h3>
+            <div>
+              <CountUp end={totalEarned} suffix=" MTA" />
+              <Tooltip tip="MTA rewards unlock over time" />
+            </div>
+          </Button>
         </Container>
       </TransitionCard>
       <PokeBoost apy={apy} vault={feederPool?.vault} />
