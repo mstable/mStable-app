@@ -2,6 +2,7 @@ import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import CountUp from 'react-countup'
 
+import { Link } from 'react-router-dom'
 import { useSelectedMassetState } from '../../../context/DataProvider/DataProvider'
 
 import { DailyApys } from '../../stats/DailyApys'
@@ -192,9 +193,19 @@ export const PolygonSave: FC = () => {
             <Content>
               <Card>
                 <SaveBalance />
-                <Tooltip tip="30-day yield APY chart" hideIcon>
-                  <APYChart hideControls shimmerHeight={80} tick={false} aspect={3} color="#b880dd" strokeWidth={1} hoverEnabled={false} />
-                </Tooltip>
+                <Link to="/musd/stats">
+                  <Tooltip tip="30-day yield APY chart" hideIcon>
+                    <APYChart
+                      hideControls
+                      shimmerHeight={80}
+                      tick={false}
+                      aspect={3}
+                      color="#b880dd"
+                      strokeWidth={1}
+                      hoverEnabled={false}
+                    />
+                  </Tooltip>
+                </Link>
               </Card>
               <TabCard tabs={tabs} active={activeTab} onClick={setActiveTab} />
             </Content>
