@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import CountUp from 'react-countup'
 
@@ -145,12 +145,20 @@ const SaveBalance: FC = () => {
 
   const isNewUser = !stakingRewards.hasStakedBalance && !stakingRewards.hasUnstakedBalance
 
+  const balanceInfo = useMemo(() => {
+    if (stakingRewards.hasStakedBalance && !stakingRewards.hasUnstakedBalance) {
+      return [stakingRewards?.rewards?.find(v => v.id === 'yieldEntryWithRewards')]
+    }
+    return stakingRewards.rewards?.filter(rewards => rewards.priority) ?? []
+  }, [stakingRewards])
+
   return (
     <div>
       {isNewUser && <h2>The best passive savings account in DeFi.</h2>}
-      {stakingRewards.rewards
-        ?.filter(rewards => rewards.priority)
-        .map(({ balance, apy, apyTip, stakeLabel, name }) => (
+      {balanceInfo.map(info => {
+        if (!info) return undefined
+        const { balance, apy, apyTip, stakeLabel, name } = info
+        return (
           <InfoText key={name}>
             {balance.exact.gt(0) ? 'Earning ' : `${stakeLabel} to earn `}
             <Tooltip tip={apyTip}>
@@ -163,7 +171,8 @@ const SaveBalance: FC = () => {
               </>
             )}
           </InfoText>
-        ))}
+        )
+      })}
     </div>
   )
 }

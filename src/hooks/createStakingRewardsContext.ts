@@ -229,7 +229,7 @@ export const createStakingRewardsContext = (): Readonly<
             apy: massetState.savingsContracts.v2.dailyAPY,
             apyTip: 'This APY is derived from internal swap fees and lending markets, and is not reflective of future rates.',
             stakeLabel: 'Deposit stablecoins',
-            balance: unstakedBalance.mulTruncate(exchangeRate.exact),
+            balance: unstakedBalance.add(stakedBalance).mulTruncate(exchangeRate.exact),
             tokens: [],
             amounts: [],
             priority: true,
@@ -269,7 +269,19 @@ export const createStakingRewardsContext = (): Readonly<
             }
           : undefined
 
-      const rewards = [yieldEntry, rewardsEntry, platformRewardsEntry, combinedRewardsEntry].filter(
+      const yieldEntryWithRewards = combinedRewardsEntry
+        ? {
+            ...combinedRewardsEntry,
+            id: 'yieldEntryWithRewards',
+            name: '',
+            apy: (rewardsApy ?? 0) + (platformApy ?? 0) + massetState.savingsContracts.v2.dailyAPY,
+            priority: false,
+            apyTip:
+              'This APY is derived from the native interest rate + current available staking rewards, and is not reflective of future rates.',
+          }
+        : undefined
+
+      const rewards = [yieldEntry, rewardsEntry, platformRewardsEntry, combinedRewardsEntry, yieldEntryWithRewards].filter(
         Boolean,
       ) as StakingRewardsExtended['rewards']
 
