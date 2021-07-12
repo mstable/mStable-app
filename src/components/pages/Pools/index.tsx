@@ -24,7 +24,7 @@ interface CustomAssetCardProps {
   component: ReactElement
 }
 
-const DEFAULT_ITEM_COUNT = 4
+const DEFAULT_ITEM_COUNT = 10
 
 const EmptyCard = styled(Card)`
   min-height: 6rem;
