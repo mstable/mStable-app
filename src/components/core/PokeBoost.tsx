@@ -10,13 +10,13 @@ import { usePropose } from '../../context/TransactionsProvider'
 import { useCalculateUserBoost } from '../../hooks/useCalculateUserBoost'
 import { FetchState } from '../../hooks/useFetchState'
 import { ViewportWidth } from '../../theme'
-import { Interfaces } from '../../types'
+import { BoostedCombinedAPY, Interfaces } from '../../types'
 import { TransactionManifest } from '../../web3/TransactionManifest'
 import { Button } from './Button'
 import { SelectBoost } from './SelectBoost'
 
 interface Props {
-  apy: FetchState<{ base: number; maxBoost: number; userBoost?: number }>
+  apy: FetchState<BoostedCombinedAPY>
   vault?: BoostedSavingsVaultState
 }
 
@@ -120,9 +120,9 @@ export const PokeBoost: FC<Props> = ({ apy, vault }) => {
     <Container>
       <APY>
         <h3>Boosted APY</h3>
-        <CurrentMultiplier end={(account?.boostMultiplier ?? 1) * (apy?.value?.base ?? 0)} decimals={2} suffix="%" />
+        <CurrentMultiplier end={(account?.boostMultiplier ?? 1) * (apy?.value?.combined.base ?? 0)} decimals={2} suffix="%" />
         <span>&nbsp;⭢&nbsp;</span>
-        <UpdatedMultiplier end={(userBoost ?? 0) * (apy?.value?.base ?? 0)} decimals={2} suffix="%" />
+        <UpdatedMultiplier end={(userBoost ?? 0) * (apy?.value?.combined.base ?? 0)} decimals={2} suffix="%" />
       </APY>
       <Info>
         <p>

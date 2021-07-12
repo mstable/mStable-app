@@ -76,3 +76,15 @@ export interface AddressOption {
   custom?: boolean
   tip?: string
 }
+
+export interface BoostedAPY {
+  base: number
+  maxBoost: number
+  userBoost: number
+}
+
+export interface BoostedCombinedAPY {
+  combined: BoostedAPY
+  rewards: BoostedAPY
+  platformRewards?: BoostedAPY
+}

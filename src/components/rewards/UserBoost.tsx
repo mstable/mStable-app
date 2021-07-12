@@ -1,11 +1,12 @@
-import React, { FC } from 'react';
-import styled from 'styled-components';
+import React, { FC } from 'react'
+import styled from 'styled-components'
 
-import { CountUp, DifferentialCountup } from '../core/CountUp';
-import { Boost } from './Boost';
-import { BoostedSavingsVaultState } from '../../context/DataProvider/types';
-import { FetchState } from '../../hooks/useFetchState';
-import { ThemedSkeleton } from '../core/ThemedSkeleton';
+import { CountUp, DifferentialCountup } from '../core/CountUp'
+import { Boost } from './Boost'
+import { BoostedSavingsVaultState } from '../../context/DataProvider/types'
+import { FetchState } from '../../hooks/useFetchState'
+import { ThemedSkeleton } from '../core/ThemedSkeleton'
+import { BoostedCombinedAPY } from '../../types'
 
 const Container = styled.div`
   h3 {
@@ -39,30 +40,26 @@ const Container = styled.div`
       }
     }
   }
-`;
+`
 
 export const UserBoost: FC<{
-  vault: BoostedSavingsVaultState;
-  apy: FetchState<{ base: number; maxBoost: number; userBoost?: number }>;
+  vault: BoostedSavingsVaultState
+  apy: FetchState<BoostedCombinedAPY>
 }> = ({ vault, vault: { isImusd }, apy }) => (
   <Container>
-    <Boost vault={vault} apy={apy.value?.base}>
+    <Boost vault={vault} apy={apy.value?.combined.base}>
       <div>
         <div>
           <div>
             <h4>Base APY</h4>
-            {apy.fetching ? (
-              <ThemedSkeleton height={20} width={64} />
-            ) : (
-              apy.value && <CountUp end={apy.value.base} suffix="%" />
-            )}
+            {apy.fetching ? <ThemedSkeleton height={20} width={64} /> : apy.value && <CountUp end={apy.value.combined.base} suffix="%" />}
           </div>
           <div>
             <h4>Max APY</h4>
             {apy.fetching ? (
               <ThemedSkeleton height={20} width={64} />
             ) : (
-              apy.value && <CountUp end={apy.value.maxBoost} suffix="%" />
+              apy.value && <CountUp end={apy.value.combined.maxBoost} suffix="%" />
             )}
           </div>
           <div>
@@ -72,19 +69,16 @@ export const UserBoost: FC<{
             ) : (
               apy.value && (
                 <DifferentialCountup
-                  prev={apy.value.base}
-                  end={apy.value?.userBoost ?? apy.value.base}
+                  prev={apy.value.combined.base}
+                  end={apy.value?.combined.userBoost ?? apy.value.combined.base}
                   suffix="%"
                 />
               )
             )}
           </div>
         </div>
-        <p>
-          {isImusd ? 20 : 33}% of earned MTA rewards are claimable immediately.
-          The remaining rewards are streamed linearly after 26 weeks
-        </p>
+        <p>{isImusd ? 20 : 33}% of earned rewards are claimable immediately. The remaining rewards are streamed linearly after 26 weeks</p>
       </div>
     </Boost>
   </Container>
-);
+)
