@@ -27,10 +27,12 @@ export const useFeederPoolApy = (poolAddress: string): FetchState<BoostedCombine
 
   if (rewardRateSimple.toString() === '0') return { fetching: true }
 
+  const platformRewardRateSimple = vault.platformRewardRate ? parseInt(vault.platformRewardRate.toString()) / 1e18 : undefined
+
   const stakingTokenPrice = pool.price.simple * massetPrice
 
   const base = calculateApy(stakingTokenPrice, rewardsTokenPrice.value, rewardRateSimple, vault.totalSupply) as number
-  const basePlatform = calculateApy(stakingTokenPrice, platformTokenPrice.value, rewardRateSimple, vault.totalSupply)
+  const basePlatform = calculateApy(stakingTokenPrice, platformTokenPrice.value, platformRewardRateSimple, vault.totalSupply)
 
   const maxBoost = MAX_BOOST * base
 
@@ -46,8 +48,7 @@ export const useFeederPoolApy = (poolAddress: string): FetchState<BoostedCombine
 
       userBoost = calculateApy(stakingTokenPrice, rewardsTokenPrice.value, boostedRewardRate, vault.totalSupply) as number
 
-      if (vault.platformRewardRate) {
-        const platformRewardRateSimple = parseInt(vault.platformRewardRate.toString()) / 1e18
+      if (platformRewardRateSimple) {
         const boostedPlatformRewardRate = platformRewardRateSimple * boost
         userBoostPlatform = calculateApy(
           stakingTokenPrice,
