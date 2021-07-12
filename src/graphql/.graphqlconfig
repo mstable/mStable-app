@@ -6,7 +6,7 @@
       "schemaPath": "remote-schema.graphql",
       "extensions": {
         "endpoints": {
-          "ropsten": {
+          "default": {
             "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-protocol-ropsten",
             "introspect": false
           }
@@ -18,8 +18,8 @@
       "schemaPath": "remote-schema.graphql",
       "extensions": {
         "endpoints": {
-          "ropsten": {
-            "url": "https://api.thegraph.com/subgraphs/name/mstable/mstable-feeders-ropsten",
+          "default": {
+            "url": "https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.2",
             "introspect": false
           }
         }

@@ -91,9 +91,20 @@ fragment BoostedSavingsVaultAll on BoostedSavingsVault {
     symbol
   }
   totalStakingRewards
+  totalRaw
   totalSupply
   priceCoeff
   boostCoeff
+  platformRewardPerTokenStored
+  platformRewardRate
+  platformRewardsToken {
+    address
+    symbol
+  }
+  rewardsToken {
+    address
+    symbol
+  }
   accounts(where: { account: $account }) @include(if: $hasAccount) {
     id
     boostedBalance
@@ -103,6 +114,8 @@ fragment BoostedSavingsVaultAll on BoostedSavingsVault {
     rewardCount
     rewardPerTokenPaid
     rewards
+    platformRewardPerTokenPaid
+    platformRewards
     rewardEntries(orderBy: index, orderDirection: asc) {
       id
       finish

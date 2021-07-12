@@ -1587,6 +1587,14 @@ type BoostedSavingsVault {
   totalSupply: BigInt!
   """Total staking rewards (rewardRate * periodDuration)"""
   totalStakingRewards: BigInt!
+  """The platform reward per token stored (optional)"""
+  platformRewardPerTokenStored: BigInt
+  """The platform reward rate for the rest of the rewards period (optional)"""
+  platformRewardRate: BigInt
+  """Total raw balance"""
+  totalRaw: BigInt
+  """The platform rewards token, e.g. WMATIC (optional)"""
+  platformRewardsToken: Token
   stakeTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultStakeTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultStakeTransaction_filter): [BoostedSavingsVaultStakeTransaction!]!
   rewardAddedTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultRewardAddedTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultRewardAddedTransaction_filter): [BoostedSavingsVaultRewardAddedTransaction!]!
   rewardPaidTransactions(skip: Int = 0, first: Int = 100, orderBy: BoostedSavingsVaultRewardPaidTransaction_orderBy, orderDirection: OrderDirection, where: BoostedSavingsVaultRewardPaidTransaction_filter): [BoostedSavingsVaultRewardPaidTransaction!]!
@@ -1600,6 +1608,8 @@ enum BoostedSavingsVaultAccount_orderBy {
   boostedBalance
   rewardPerTokenPaid
   rewards
+  platformRewardPerTokenPaid
+  platformRewards
   lastAction
   lastClaim
   rewardCount
@@ -1678,6 +1688,22 @@ input BoostedSavingsVaultAccount_filter {
   rewards_lte: BigInt
   rewards_in: [BigInt!]
   rewards_not_in: [BigInt!]
+  platformRewardPerTokenPaid: BigInt
+  platformRewardPerTokenPaid_not: BigInt
+  platformRewardPerTokenPaid_gt: BigInt
+  platformRewardPerTokenPaid_lt: BigInt
+  platformRewardPerTokenPaid_gte: BigInt
+  platformRewardPerTokenPaid_lte: BigInt
+  platformRewardPerTokenPaid_in: [BigInt!]
+  platformRewardPerTokenPaid_not_in: [BigInt!]
+  platformRewards: BigInt
+  platformRewards_not: BigInt
+  platformRewards_gt: BigInt
+  platformRewards_lt: BigInt
+  platformRewards_gte: BigInt
+  platformRewards_lte: BigInt
+  platformRewards_in: [BigInt!]
+  platformRewards_not_in: [BigInt!]
   lastAction: Int
   lastAction_not: Int
   lastAction_gt: Int
@@ -1725,6 +1751,8 @@ type BoostedSavingsVaultAccount {
   boostedBalance: BigInt!
   rewardPerTokenPaid: BigInt!
   rewards: BigInt!
+  platformRewardPerTokenPaid: BigInt
+  platformRewards: BigInt
   lastAction: Int!
   lastClaim: Int!
   rewardCount: Int!
@@ -1901,6 +1929,10 @@ enum BoostedSavingsVault_orderBy {
   stakingContract
   totalSupply
   totalStakingRewards
+  platformRewardPerTokenStored
+  platformRewardRate
+  totalRaw
+  platformRewardsToken
   stakeTransactions
   rewardAddedTransactions
   rewardPaidTransactions
@@ -2065,6 +2097,44 @@ input BoostedSavingsVault_filter {
   totalStakingRewards_lte: BigInt
   totalStakingRewards_in: [BigInt!]
   totalStakingRewards_not_in: [BigInt!]
+  platformRewardPerTokenStored: BigInt
+  platformRewardPerTokenStored_not: BigInt
+  platformRewardPerTokenStored_gt: BigInt
+  platformRewardPerTokenStored_lt: BigInt
+  platformRewardPerTokenStored_gte: BigInt
+  platformRewardPerTokenStored_lte: BigInt
+  platformRewardPerTokenStored_in: [BigInt!]
+  platformRewardPerTokenStored_not_in: [BigInt!]
+  platformRewardRate: BigInt
+  platformRewardRate_not: BigInt
+  platformRewardRate_gt: BigInt
+  platformRewardRate_lt: BigInt
+  platformRewardRate_gte: BigInt
+  platformRewardRate_lte: BigInt
+  platformRewardRate_in: [BigInt!]
+  platformRewardRate_not_in: [BigInt!]
+  totalRaw: BigInt
+  totalRaw_not: BigInt
+  totalRaw_gt: BigInt
+  totalRaw_lt: BigInt
+  totalRaw_gte: BigInt
+  totalRaw_lte: BigInt
+  totalRaw_in: [BigInt!]
+  totalRaw_not_in: [BigInt!]
+  platformRewardsToken: String
+  platformRewardsToken_not: String
+  platformRewardsToken_gt: String
+  platformRewardsToken_lt: String
+  platformRewardsToken_gte: String
+  platformRewardsToken_lte: String
+  platformRewardsToken_in: [String!]
+  platformRewardsToken_not_in: [String!]
+  platformRewardsToken_contains: String
+  platformRewardsToken_not_contains: String
+  platformRewardsToken_starts_with: String
+  platformRewardsToken_not_starts_with: String
+  platformRewardsToken_ends_with: String
+  platformRewardsToken_not_ends_with: String
 }
 enum BoostedSavingsVaultRewardEntry_orderBy {
   id
@@ -2259,6 +2329,7 @@ enum BoostedSavingsVaultRewardPaidTransaction_orderBy {
   timestamp
   boostedSavingsVault
   amount
+  platformAmount
   account
 }
 input BoostedSavingsVaultRewardPaidTransaction_filter {
@@ -2320,6 +2391,14 @@ input BoostedSavingsVaultRewardPaidTransaction_filter {
   amount_lte: BigInt
   amount_in: [BigInt!]
   amount_not_in: [BigInt!]
+  platformAmount: BigInt
+  platformAmount_not: BigInt
+  platformAmount_gt: BigInt
+  platformAmount_lt: BigInt
+  platformAmount_gte: BigInt
+  platformAmount_lte: BigInt
+  platformAmount_in: [BigInt!]
+  platformAmount_not_in: [BigInt!]
   account: String
   account_not: String
   account_gt: String
@@ -2345,6 +2424,8 @@ type BoostedSavingsVaultRewardPaidTransaction implements Transaction {
   boostedSavingsVault: BoostedSavingsVault!
   """The amount of the reward paid."""
   amount: BigInt!
+  """The amount of platform reward paid (optional)."""
+  platformAmount: BigInt
   """The account receiving the rewarded amount."""
   account: BoostedSavingsVaultAccount!
 }
@@ -2453,6 +2534,7 @@ enum BoostedSavingsVaultRewardAddedTransaction_orderBy {
   timestamp
   boostedSavingsVault
   amount
+  platformAmount
 }
 input BoostedSavingsVaultRewardAddedTransaction_filter {
   id: ID
@@ -2513,6 +2595,14 @@ input BoostedSavingsVaultRewardAddedTransaction_filter {
   amount_lte: BigInt
   amount_in: [BigInt!]
   amount_not_in: [BigInt!]
+  platformAmount: BigInt
+  platformAmount_not: BigInt
+  platformAmount_gt: BigInt
+  platformAmount_lt: BigInt
+  platformAmount_gte: BigInt
+  platformAmount_lte: BigInt
+  platformAmount_in: [BigInt!]
+  platformAmount_not_in: [BigInt!]
 }
 type BoostedSavingsVaultRewardAddedTransaction implements Transaction {
   id: ID!
@@ -2524,6 +2614,8 @@ type BoostedSavingsVaultRewardAddedTransaction implements Transaction {
   boostedSavingsVault: BoostedSavingsVault!
   """The amount of rewards added."""
   amount: BigInt!
+  """The amount of platform rewards added (optional)."""
+  platformAmount: BigInt
 }
 enum Basket_orderBy {
   id

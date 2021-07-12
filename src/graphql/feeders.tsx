@@ -661,6 +661,14 @@ export type BoostedSavingsVault = {
   totalSupply: Scalars['BigInt'];
   /** Total staking rewards (rewardRate * periodDuration) */
   totalStakingRewards: Scalars['BigInt'];
+  /** The platform reward per token stored (optional) */
+  platformRewardPerTokenStored?: Maybe<Scalars['BigInt']>;
+  /** The platform reward rate for the rest of the rewards period (optional) */
+  platformRewardRate?: Maybe<Scalars['BigInt']>;
+  /** Total raw balance */
+  totalRaw?: Maybe<Scalars['BigInt']>;
+  /** The platform rewards token, e.g. WMATIC (optional) */
+  platformRewardsToken?: Maybe<Token>;
   stakeTransactions: Array<BoostedSavingsVaultStakeTransaction>;
   rewardAddedTransactions: Array<BoostedSavingsVaultRewardAddedTransaction>;
   rewardPaidTransactions: Array<BoostedSavingsVaultRewardPaidTransaction>;
@@ -880,6 +888,44 @@ export type BoostedSavingsVault_Filter = {
   totalStakingRewards_lte?: Maybe<Scalars['BigInt']>;
   totalStakingRewards_in?: Maybe<Array<Scalars['BigInt']>>;
   totalStakingRewards_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewardPerTokenStored?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_not?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_gt?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_lt?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_gte?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_lte?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenStored_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewardPerTokenStored_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewardRate?: Maybe<Scalars['BigInt']>;
+  platformRewardRate_not?: Maybe<Scalars['BigInt']>;
+  platformRewardRate_gt?: Maybe<Scalars['BigInt']>;
+  platformRewardRate_lt?: Maybe<Scalars['BigInt']>;
+  platformRewardRate_gte?: Maybe<Scalars['BigInt']>;
+  platformRewardRate_lte?: Maybe<Scalars['BigInt']>;
+  platformRewardRate_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewardRate_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  totalRaw?: Maybe<Scalars['BigInt']>;
+  totalRaw_not?: Maybe<Scalars['BigInt']>;
+  totalRaw_gt?: Maybe<Scalars['BigInt']>;
+  totalRaw_lt?: Maybe<Scalars['BigInt']>;
+  totalRaw_gte?: Maybe<Scalars['BigInt']>;
+  totalRaw_lte?: Maybe<Scalars['BigInt']>;
+  totalRaw_in?: Maybe<Array<Scalars['BigInt']>>;
+  totalRaw_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewardsToken?: Maybe<Scalars['String']>;
+  platformRewardsToken_not?: Maybe<Scalars['String']>;
+  platformRewardsToken_gt?: Maybe<Scalars['String']>;
+  platformRewardsToken_lt?: Maybe<Scalars['String']>;
+  platformRewardsToken_gte?: Maybe<Scalars['String']>;
+  platformRewardsToken_lte?: Maybe<Scalars['String']>;
+  platformRewardsToken_in?: Maybe<Array<Scalars['String']>>;
+  platformRewardsToken_not_in?: Maybe<Array<Scalars['String']>>;
+  platformRewardsToken_contains?: Maybe<Scalars['String']>;
+  platformRewardsToken_not_contains?: Maybe<Scalars['String']>;
+  platformRewardsToken_starts_with?: Maybe<Scalars['String']>;
+  platformRewardsToken_not_starts_with?: Maybe<Scalars['String']>;
+  platformRewardsToken_ends_with?: Maybe<Scalars['String']>;
+  platformRewardsToken_not_ends_with?: Maybe<Scalars['String']>;
 };
 
 export enum BoostedSavingsVault_OrderBy {
@@ -903,6 +949,10 @@ export enum BoostedSavingsVault_OrderBy {
   StakingContract = 'stakingContract',
   TotalSupply = 'totalSupply',
   TotalStakingRewards = 'totalStakingRewards',
+  PlatformRewardPerTokenStored = 'platformRewardPerTokenStored',
+  PlatformRewardRate = 'platformRewardRate',
+  TotalRaw = 'totalRaw',
+  PlatformRewardsToken = 'platformRewardsToken',
   StakeTransactions = 'stakeTransactions',
   RewardAddedTransactions = 'rewardAddedTransactions',
   RewardPaidTransactions = 'rewardPaidTransactions',
@@ -917,6 +967,8 @@ export type BoostedSavingsVaultAccount = {
   boostedBalance: Scalars['BigInt'];
   rewardPerTokenPaid: Scalars['BigInt'];
   rewards: Scalars['BigInt'];
+  platformRewardPerTokenPaid?: Maybe<Scalars['BigInt']>;
+  platformRewards?: Maybe<Scalars['BigInt']>;
   lastAction: Scalars['Int'];
   lastClaim: Scalars['Int'];
   rewardCount: Scalars['Int'];
@@ -1032,6 +1084,22 @@ export type BoostedSavingsVaultAccount_Filter = {
   rewards_lte?: Maybe<Scalars['BigInt']>;
   rewards_in?: Maybe<Array<Scalars['BigInt']>>;
   rewards_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewardPerTokenPaid?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenPaid_not?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenPaid_gt?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenPaid_lt?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenPaid_gte?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenPaid_lte?: Maybe<Scalars['BigInt']>;
+  platformRewardPerTokenPaid_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewardPerTokenPaid_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewards?: Maybe<Scalars['BigInt']>;
+  platformRewards_not?: Maybe<Scalars['BigInt']>;
+  platformRewards_gt?: Maybe<Scalars['BigInt']>;
+  platformRewards_lt?: Maybe<Scalars['BigInt']>;
+  platformRewards_gte?: Maybe<Scalars['BigInt']>;
+  platformRewards_lte?: Maybe<Scalars['BigInt']>;
+  platformRewards_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformRewards_not_in?: Maybe<Array<Scalars['BigInt']>>;
   lastAction?: Maybe<Scalars['Int']>;
   lastAction_not?: Maybe<Scalars['Int']>;
   lastAction_gt?: Maybe<Scalars['Int']>;
@@ -1080,6 +1148,8 @@ export enum BoostedSavingsVaultAccount_OrderBy {
   BoostedBalance = 'boostedBalance',
   RewardPerTokenPaid = 'rewardPerTokenPaid',
   Rewards = 'rewards',
+  PlatformRewardPerTokenPaid = 'platformRewardPerTokenPaid',
+  PlatformRewards = 'platformRewards',
   LastAction = 'lastAction',
   LastClaim = 'lastClaim',
   RewardCount = 'rewardCount',
@@ -1100,6 +1170,8 @@ export type BoostedSavingsVaultRewardAddedTransaction = Transaction & {
   boostedSavingsVault: BoostedSavingsVault;
   /** The amount of rewards added. */
   amount: Scalars['BigInt'];
+  /** The amount of platform rewards added (optional). */
+  platformAmount?: Maybe<Scalars['BigInt']>;
 };
 
 export type BoostedSavingsVaultRewardAddedTransaction_Filter = {
@@ -1161,6 +1233,14 @@ export type BoostedSavingsVaultRewardAddedTransaction_Filter = {
   amount_lte?: Maybe<Scalars['BigInt']>;
   amount_in?: Maybe<Array<Scalars['BigInt']>>;
   amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformAmount?: Maybe<Scalars['BigInt']>;
+  platformAmount_not?: Maybe<Scalars['BigInt']>;
+  platformAmount_gt?: Maybe<Scalars['BigInt']>;
+  platformAmount_lt?: Maybe<Scalars['BigInt']>;
+  platformAmount_gte?: Maybe<Scalars['BigInt']>;
+  platformAmount_lte?: Maybe<Scalars['BigInt']>;
+  platformAmount_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformAmount_not_in?: Maybe<Array<Scalars['BigInt']>>;
 };
 
 export enum BoostedSavingsVaultRewardAddedTransaction_OrderBy {
@@ -1170,7 +1250,8 @@ export enum BoostedSavingsVaultRewardAddedTransaction_OrderBy {
   Sender = 'sender',
   Timestamp = 'timestamp',
   BoostedSavingsVault = 'boostedSavingsVault',
-  Amount = 'amount'
+  Amount = 'amount',
+  PlatformAmount = 'platformAmount'
 }
 
 export type BoostedSavingsVaultRewardEntry = {
@@ -1274,6 +1355,8 @@ export type BoostedSavingsVaultRewardPaidTransaction = Transaction & {
   boostedSavingsVault: BoostedSavingsVault;
   /** The amount of the reward paid. */
   amount: Scalars['BigInt'];
+  /** The amount of platform reward paid (optional). */
+  platformAmount?: Maybe<Scalars['BigInt']>;
   /** The account receiving the rewarded amount. */
   account: BoostedSavingsVaultAccount;
 };
@@ -1337,6 +1420,14 @@ export type BoostedSavingsVaultRewardPaidTransaction_Filter = {
   amount_lte?: Maybe<Scalars['BigInt']>;
   amount_in?: Maybe<Array<Scalars['BigInt']>>;
   amount_not_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformAmount?: Maybe<Scalars['BigInt']>;
+  platformAmount_not?: Maybe<Scalars['BigInt']>;
+  platformAmount_gt?: Maybe<Scalars['BigInt']>;
+  platformAmount_lt?: Maybe<Scalars['BigInt']>;
+  platformAmount_gte?: Maybe<Scalars['BigInt']>;
+  platformAmount_lte?: Maybe<Scalars['BigInt']>;
+  platformAmount_in?: Maybe<Array<Scalars['BigInt']>>;
+  platformAmount_not_in?: Maybe<Array<Scalars['BigInt']>>;
   account?: Maybe<Scalars['String']>;
   account_not?: Maybe<Scalars['String']>;
   account_gt?: Maybe<Scalars['String']>;
@@ -1361,6 +1452,7 @@ export enum BoostedSavingsVaultRewardPaidTransaction_OrderBy {
   Timestamp = 'timestamp',
   BoostedSavingsVault = 'boostedSavingsVault',
   Amount = 'amount',
+  PlatformAmount = 'platformAmount',
   Account = 'account'
 }
 
@@ -3806,9 +3898,9 @@ export type BassetAllFragment = (
 );
 
 export type BoostedSavingsVaultAllFragment = (
-  Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalSupply' | 'priceCoeff' | 'boostCoeff'>
-  & { stakingToken: Pick<Token, 'address' | 'symbol'>, accounts: Array<(
-    Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards'>
+  Pick<BoostedSavingsVault, 'id' | 'lastUpdateTime' | 'lockupDuration' | 'unlockPercentage' | 'periodDuration' | 'periodFinish' | 'rewardPerTokenStored' | 'rewardRate' | 'stakingContract' | 'totalStakingRewards' | 'totalRaw' | 'totalSupply' | 'priceCoeff' | 'boostCoeff' | 'platformRewardPerTokenStored' | 'platformRewardRate'>
+  & { stakingToken: Pick<Token, 'address' | 'symbol'>, platformRewardsToken?: Maybe<Pick<Token, 'address' | 'symbol'>>, rewardsToken: Pick<Token, 'address' | 'symbol'>, accounts: Array<(
+    Pick<BoostedSavingsVaultAccount, 'id' | 'boostedBalance' | 'lastAction' | 'lastClaim' | 'rawBalance' | 'rewardCount' | 'rewardPerTokenPaid' | 'rewards' | 'platformRewardPerTokenPaid' | 'platformRewards'>
     & { rewardEntries: Array<Pick<BoostedSavingsVaultRewardEntry, 'id' | 'finish' | 'index' | 'rate' | 'start'>> }
   )> }
 );
@@ -3947,9 +4039,20 @@ export const BoostedSavingsVaultAllFragmentDoc = gql`
     symbol
   }
   totalStakingRewards
+  totalRaw
   totalSupply
   priceCoeff
   boostCoeff
+  platformRewardPerTokenStored
+  platformRewardRate
+  platformRewardsToken {
+    address
+    symbol
+  }
+  rewardsToken {
+    address
+    symbol
+  }
   accounts(where: {account: $account}) @include(if: $hasAccount) {
     id
     boostedBalance
@@ -3959,6 +4062,8 @@ export const BoostedSavingsVaultAllFragmentDoc = gql`
     rewardCount
     rewardPerTokenPaid
     rewards
+    platformRewardPerTokenPaid
+    platformRewards
     rewardEntries(orderBy: index, orderDirection: asc) {
       id
       finish
