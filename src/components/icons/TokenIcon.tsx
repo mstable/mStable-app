@@ -35,6 +35,7 @@ import VAULT, { ReactComponent as VaultSvg } from './tokens/vault.svg'
 import IMBTCMTA, { ReactComponent as ImbtcmtaSvg } from './tokens/imbtc-mta.svg'
 import FRAX, { ReactComponent as FraxSvg } from './tokens/FRAX.svg'
 import FXS, { ReactComponent as FxsSvg } from './tokens/FXS.svg'
+import ALUSD, { ReactComponent as AlusdSvg } from './tokens/alUSD.svg'
 import ETHEREUM, { ReactComponent as EthereumSvg } from './networks/Ethereum.svg'
 import POLYGON, { ReactComponent as PolygonSvg } from './networks/Polygon.svg'
 
@@ -95,6 +96,7 @@ export const TOKEN_ICONS: Record<string, string> = {
   MATIC: POLYGON,
   WMATIC: POLYGON,
   FXS,
+  ALUSD,
 }
 
 const SVG_ICONS: Record<string, SvgComponent> = {
@@ -141,6 +143,7 @@ const SVG_ICONS: Record<string, SvgComponent> = {
   MATIC: PolygonSvg as SvgComponent,
   FRAX: FraxSvg as SvgComponent,
   FXS: FxsSvg as SvgComponent,
+  ALUSD: AlusdSvg as SvgComponent,
 }
 
 const IconContainer = styled.div<{ isLarge: boolean }>`
