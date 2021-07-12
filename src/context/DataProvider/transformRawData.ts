@@ -112,6 +112,7 @@ const transformBoostedSavingsVault = ({
   periodFinish,
   rewardPerTokenStored,
   rewardRate,
+  rewardsToken,
   stakingContract,
   stakingToken,
   totalStakingRewards,
@@ -119,6 +120,10 @@ const transformBoostedSavingsVault = ({
   boostCoeff,
   totalSupply,
   unlockPercentage,
+  // totalRaw,
+  platformRewardPerTokenStored,
+  platformRewardRate,
+  platformRewardsToken,
 }: NonNullable<
   BoostedSavingsVaultAllFragment & {
     priceCoeff?: string | null
@@ -141,6 +146,8 @@ const transformBoostedSavingsVault = ({
         rewardEntries,
         rewardPerTokenPaid,
         rewards,
+        platformRewards,
+        platformRewardPerTokenPaid,
       },
     ] = accounts
     const boostedBalance = new BigDecimal(_boostedBalance)
@@ -161,6 +168,12 @@ const transformBoostedSavingsVault = ({
         index,
         start,
       })),
+      ...(platformRewards && platformRewardPerTokenPaid
+        ? {
+            platformRewardPerTokenPaid: BigNumber.from(platformRewardPerTokenPaid),
+            platformRewards: BigNumber.from(platformRewards),
+          }
+        : {}),
     }
   }
 
@@ -178,12 +191,26 @@ const transformBoostedSavingsVault = ({
       address: stakingToken.address,
       symbol: stakingToken.symbol,
     },
+    rewardsToken: {
+      address: rewardsToken.address,
+      symbol: rewardsToken.symbol,
+    },
     totalStakingRewards: BigDecimal.parse(totalStakingRewards),
     totalSupply: new BigDecimal(totalSupply),
     unlockPercentage: BigNumber.from(unlockPercentage),
     boostCoeff: boostCoeff ? parseFloat(boostCoeff) : undefined,
     priceCoeff: priceCoeff ? parseFloat(priceCoeff) : undefined,
     isImusd,
+    ...(platformRewardsToken && platformRewardPerTokenStored && platformRewardRate
+      ? {
+          platformRewardsToken: {
+            address: platformRewardsToken.address,
+            symbol: platformRewardsToken.symbol,
+          },
+          platformRewardRate: BigNumber.from(platformRewardRate),
+          platformRewardPerTokenStored: BigNumber.from(platformRewardPerTokenStored),
+        }
+      : {}),
   }
 }
 
