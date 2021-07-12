@@ -96,7 +96,7 @@ const useSaveVaultAPY = (symbol?: string, userBoost?: number): FetchState<Booste
   useEffectOnce(() => {
     if (!symbol) return
 
-    fetch('https://api-dot-mstable.appspot.com/pools')
+    fetch('https://api.mstable.org/pools')
       .then(res =>
         res.json().then(({ pools }: PoolsAPIResponse) => {
           const pool = pools.find(p => p.pair[0] === symbol)
