@@ -175,7 +175,7 @@ const ETH_MAINNET: EthereumMainnet = {
       graphHostedEndpoint('mstable', 'mstable-protocol-staging'),
     ],
     // TODO replace when published
-    feeders: ['https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.4'],
+    feeders: ['https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.5'],
     blocks: [graphHostedEndpoint('blocklytics', 'ethereum-blocks')],
   },
   addresses: {
