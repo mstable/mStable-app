@@ -153,21 +153,21 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({ isLarge = false
       )}
       <RewardsAPY isLarge={isLarge}>
         <p>
-          <Tooltip tip="33% of earned MTA rewards are claimable immediately. The remaining rewards are streamed linearly after 26 weeks">
+          <Tooltip tip="33% of earned rewards are claimable immediately. The remaining rewards are streamed linearly after 26 weeks">
             Rewards APY
           </Tooltip>
         </p>
         <div>
-          <div>{feederPoolApy.value && <CountUp end={feederPoolApy.value.base} />}%</div>
+          <div>{feederPoolApy.value && <CountUp end={feederPoolApy.value.combined.base} />}%</div>
           <div>
             &nbsp;→&nbsp;
             <UnderlinedTip tip="Max boost can be achieved by staking MTA" hideIcon>
-              {feederPoolApy.value && <CountUp end={feederPoolApy.value.maxBoost} />}%
+              {feederPoolApy.value && <CountUp end={feederPoolApy.value.combined.maxBoost} />}%
             </UnderlinedTip>
           </div>
         </div>
       </RewardsAPY>
-      {feederPoolApy.value && feederPoolApy.value.base > 1000 && <div>While liquidity is low, this APY is highly volatile</div>}
+      {feederPoolApy.value && feederPoolApy.value.combined.base > 1000 && <div>While liquidity is low, this APY is highly volatile</div>}
     </StatsContainer>
   )
 }
