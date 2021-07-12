@@ -24,6 +24,9 @@ const cache = new InMemoryCache({
     Token: {
       keyFields: false,
     },
+    Metric: {
+      keyFields: false,
+    },
     Query: {
       fields: {
         tokens: {
