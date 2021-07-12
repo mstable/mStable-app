@@ -120,8 +120,18 @@ export interface BoostedSavingsVaultState {
   boostCoeff?: number
   rewardPerTokenStored: BigNumber
   rewardRate: BigNumber
+  platformRewardRate?: BigNumber
+  platformRewardPerTokenStored?: BigNumber
   stakingContract: string
   stakingToken: {
+    address: string
+    symbol: string
+  }
+  rewardsToken: {
+    address: string
+    symbol: string
+  }
+  platformRewardsToken?: {
     address: string
     symbol: string
   }
