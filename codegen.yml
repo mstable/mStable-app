@@ -21,7 +21,7 @@ generates:
 
   ./src/graphql/feeders/schema.graphql:
     overwrite: true
-    schema: https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools
+    schema: https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.2
     plugins:
       - 'schema-ast'
     config:
@@ -55,7 +55,7 @@ generates:
 
   ./src/graphql/feeders.tsx:
     overwrite: true
-    schema: https://api.thegraph.com/subgraphs/name/mstable/mstable-feeder-pools
+    schema: https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.2
     documents: 'src/graphql/feeders/*.graphql'
     plugins:
       - 'fragment-matcher'
