@@ -129,7 +129,7 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({ isLarge = false
       return swapped.add(minted).add(redeemed)
     }
     return BigDecimal.ZERO
-  }, [fpMetrics.data])
+  }, [fpMetrics])
 
   return (
     <StatsContainer isLarge={isLarge}>
