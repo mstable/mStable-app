@@ -119,9 +119,9 @@ const useSaveVaultAPY = (symbol?: string, userBoost?: number): FetchState<Booste
   const apy = useMemo(() => {
     if (!cachedAPY?.value) return cachedAPY
     const rewards = {
-      base: cachedAPY.value.combined.base,
-      maxBoost: cachedAPY.value.combined.maxBoost,
-      userBoost: (userBoost ?? 1) * cachedAPY.value.combined.base,
+      base: cachedAPY.value.rewards.base,
+      maxBoost: cachedAPY.value.rewards.maxBoost,
+      userBoost: (userBoost ?? 1) * cachedAPY.value.rewards.base,
     }
     return {
       value: {
@@ -185,9 +185,9 @@ export const SaveEthereumOverview: FC = () => {
   }, [boostedSavingsVault, saveToken, saveExchangeRate, selectedSaveVersion, saveV1Balance])
 
   const isSaveV1 = selectedSaveVersion === 1
-  const combinedBaseApy = (apy.value?.combined.base ?? 0) + (saveApy?.value ?? 0)
-  const combinedMaxApy = (apy.value?.combined.maxBoost ?? 0) + (saveApy?.value ?? 0)
-  const combinedUserApy = (apy.value?.combined.userBoost ?? 0) + (saveApy?.value ?? 0)
+  const combinedBaseApy = (apy.value?.rewards.base ?? 0) + (saveApy?.value ?? 0)
+  const combinedMaxApy = (apy.value?.rewards.maxBoost ?? 0) + (saveApy?.value ?? 0)
+  const combinedUserApy = (apy.value?.rewards.userBoost ?? 0) + (saveApy?.value ?? 0)
 
   const handleSelection = useCallback((newValue: Selection) => setSelection(selection === newValue ? undefined : newValue), [selection])
 
@@ -212,17 +212,17 @@ export const SaveEthereumOverview: FC = () => {
                 <ThemedSkeleton height={20} width={64} />
               ) : (
                 <div>
-                  {userBoost > 1 && apy.value?.combined.userBoost ? (
+                  {userBoost > 1 && apy.value?.rewards.userBoost ? (
                     <>
                       <Tooltip tip={`Combined APY: ${combinedUserApy.toFixed(2)}%`} hideIcon>
-                        <DifferentialCountup prev={apy.value?.combined.base} end={apy.value.combined.userBoost} suffix="%" />
+                        <DifferentialCountup prev={apy.value?.rewards.base} end={apy.value.rewards.userBoost} suffix="%" />
                       </Tooltip>
                     </>
                   ) : (
                     <>
-                      <CountUp end={apy.value?.combined.base ?? 0} />
+                      <CountUp end={apy.value?.rewards.base ?? 0} />
                       &nbsp;-&nbsp;
-                      <CountUp end={apy.value?.combined.maxBoost ?? 0} suffix="%" />
+                      <CountUp end={apy.value?.rewards.maxBoost ?? 0} suffix="%" />
                       <Tooltip
                         tip={`Deposits to the Vault earn interest in addition to MTA rewards. Combined APY: ${combinedBaseApy.toFixed(
                           2,

@@ -5,6 +5,7 @@ export const assetColorMapping: Record<string, string> = {
   'mBTC/fAST': '#eb6ba9',
   'mUSD/GUSD': '#1ecdea',
   'mUSD/BUSD': '#F0B90B',
+  'mUSD/alUSD': '#e7bd9d',
   'mUSD/FRAX': '#cccccc',
   'mBTC/HBTC': '#0B197D',
   'mBTC/TBTC': '#DCD1AB',

@@ -79,7 +79,7 @@ export const PoolOverview: FC = () => {
 
   return showLiquidityMessage ? (
     <ShowEarningPower>
-      <LiquidityMessageContent vault={vault} apy={apy.value?.combined.base} />
+      <LiquidityMessageContent vault={vault} apy={apy.value?.rewards.base} />
     </ShowEarningPower>
   ) : (
     <>
@@ -91,10 +91,10 @@ export const PoolOverview: FC = () => {
           </Button>
           <Button active={selection === Boost} onClick={() => handleSelection(Boost)}>
             <h3>Rewards APY</h3>
-            {apy.value?.combined.userBoost ? (
-              <DifferentialCountup prev={apy.value.combined.base} end={apy.value.combined.userBoost} suffix="%" />
+            {apy.value?.rewards.userBoost ? (
+              <DifferentialCountup prev={apy.value.rewards.base} end={apy.value.rewards.userBoost} suffix="%" />
             ) : (
-              <CountUp end={apy.value?.combined.base ?? 0} suffix="%" />
+              <CountUp end={apy.value?.rewards.base ?? 0} suffix="%" />
             )}
           </Button>
           <Button active={selection === Rewards} onClick={() => handleSelection(Rewards)}>

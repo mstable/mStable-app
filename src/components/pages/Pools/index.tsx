@@ -127,7 +127,7 @@ const customEarnCard = (massetConfig: MassetConfig): CustomAssetCardProps => ({
   key: 'earn',
   title: 'Earn Pools',
   url: `https://earn.mstable.org/#/${massetConfig.massetName}/earn`,
-  color: '#eba062',
+  color: '#afa4db',
   component: <CustomContent>Earn pools have moved and are now available here</CustomContent>,
 })
 
