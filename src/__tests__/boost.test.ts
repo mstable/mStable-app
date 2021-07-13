@@ -2,42 +2,43 @@ import { BoostedSavingsVaultState } from '../context/DataProvider/types'
 import { calculateBoost, calculateBoostImusd, calculateVMTAForMaxBoost, calculateVMTAForMaxBoostImusd, getCoeffs } from '../utils/boost'
 import { BigDecimal } from '../web3/BigDecimal'
 
-const mockVault = (address: string, isImusd = false): BoostedSavingsVaultState => ({
-  address,
-  account: {
-    boostedBalance: BigDecimal.ZERO,
-    boostMultiplier: 0,
-    rawBalance: BigDecimal.ZERO,
-    lastAction: 0,
-    lastClaim: 0,
-    rewardCount: 0,
-    rewardPerTokenPaid: BigDecimal.ZERO.exact,
-    rewards: BigDecimal.ZERO.exact,
-    rewardEntries: [
-      {
-        finish: 0,
-        start: 0,
-        index: 0,
-        rate: BigDecimal.ZERO.exact,
-      },
-    ],
-  },
-  lastUpdateTime: 0,
-  lockupDuration: 0,
-  periodDuration: 0,
-  periodFinish: 0,
-  rewardPerTokenStored: BigDecimal.ZERO.exact,
-  rewardRate: BigDecimal.ZERO.exact,
-  stakingContract: '',
-  stakingToken: {
-    symbol: '',
-    address: '',
-  },
-  totalStakingRewards: BigDecimal.ZERO,
-  totalSupply: BigDecimal.ZERO,
-  unlockPercentage: BigDecimal.ZERO.exact,
-  isImusd,
-})
+const mockVault = (address: string, isImusd = false): BoostedSavingsVaultState =>
+  ({
+    address,
+    account: {
+      boostedBalance: BigDecimal.ZERO,
+      boostMultiplier: 0,
+      rawBalance: BigDecimal.ZERO,
+      lastAction: 0,
+      lastClaim: 0,
+      rewardCount: 0,
+      rewardPerTokenPaid: BigDecimal.ZERO.exact,
+      rewards: BigDecimal.ZERO.exact,
+      rewardEntries: [
+        {
+          finish: 0,
+          start: 0,
+          index: 0,
+          rate: BigDecimal.ZERO.exact,
+        },
+      ],
+    },
+    lastUpdateTime: 0,
+    lockupDuration: 0,
+    periodDuration: 0,
+    periodFinish: 0,
+    rewardPerTokenStored: BigDecimal.ZERO.exact,
+    rewardRate: BigDecimal.ZERO.exact,
+    stakingContract: '',
+    stakingToken: {
+      symbol: '',
+      address: '',
+    },
+    totalStakingRewards: BigDecimal.ZERO,
+    totalSupply: BigDecimal.ZERO,
+    unlockPercentage: BigDecimal.ZERO.exact,
+    isImusd,
+  } as never)
 
 describe('test boost calculations', () => {
   test('it correctly calculates imusd boost', () => {
