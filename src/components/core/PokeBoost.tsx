@@ -120,9 +120,9 @@ export const PokeBoost: FC<Props> = ({ apy, vault }) => {
     <Container>
       <APY>
         <h3>Boosted APY</h3>
-        <CurrentMultiplier end={(account?.boostMultiplier ?? 1) * (apy?.value?.combined.base ?? 0)} decimals={2} suffix="%" />
+        <CurrentMultiplier end={(account?.boostMultiplier ?? 1) * (apy?.value?.rewards.base ?? 0)} decimals={2} suffix="%" />
         <span>&nbsp;⭢&nbsp;</span>
-        <UpdatedMultiplier end={(userBoost ?? 0) * (apy?.value?.combined.base ?? 0)} decimals={2} suffix="%" />
+        <UpdatedMultiplier end={(userBoost ?? 0) * (apy?.value?.rewards.base ?? 0)} decimals={2} suffix="%" />
       </APY>
       <Info>
         <p>

@@ -158,16 +158,16 @@ const PoolStats: FC<{ isLarge?: boolean; address: string }> = ({ isLarge = false
           </Tooltip>
         </p>
         <div>
-          <div>{feederPoolApy.value && <CountUp end={feederPoolApy.value.combined.base} />}%</div>
+          <div>{feederPoolApy.value && <CountUp end={feederPoolApy.value.rewards.base} />}%</div>
           <div>
             &nbsp;→&nbsp;
             <UnderlinedTip tip="Max boost can be achieved by staking MTA" hideIcon>
-              {feederPoolApy.value && <CountUp end={feederPoolApy.value.combined.maxBoost} />}%
+              {feederPoolApy.value && <CountUp end={feederPoolApy.value.rewards.maxBoost} />}%
             </UnderlinedTip>
           </div>
         </div>
       </RewardsAPY>
-      {feederPoolApy.value && feederPoolApy.value.combined.base > 1000 && <div>While liquidity is low, this APY is highly volatile</div>}
+      {feederPoolApy.value && feederPoolApy.value.rewards.base > 1000 && <div>While liquidity is low, this APY is highly volatile</div>}
     </StatsContainer>
   )
 }

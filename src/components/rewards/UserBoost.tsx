@@ -47,19 +47,19 @@ export const UserBoost: FC<{
   apy: FetchState<BoostedCombinedAPY>
 }> = ({ vault, vault: { isImusd }, apy }) => (
   <Container>
-    <Boost vault={vault} apy={apy.value?.combined.base}>
+    <Boost vault={vault} apy={apy.value?.rewards.base}>
       <div>
         <div>
           <div>
             <h4>Base APY</h4>
-            {apy.fetching ? <ThemedSkeleton height={20} width={64} /> : apy.value && <CountUp end={apy.value.combined.base} suffix="%" />}
+            {apy.fetching ? <ThemedSkeleton height={20} width={64} /> : apy.value && <CountUp end={apy.value.rewards.base} suffix="%" />}
           </div>
           <div>
             <h4>Max APY</h4>
             {apy.fetching ? (
               <ThemedSkeleton height={20} width={64} />
             ) : (
-              apy.value && <CountUp end={apy.value.combined.maxBoost} suffix="%" />
+              apy.value && <CountUp end={apy.value.rewards.maxBoost} suffix="%" />
             )}
           </div>
           <div>
@@ -69,8 +69,8 @@ export const UserBoost: FC<{
             ) : (
               apy.value && (
                 <DifferentialCountup
-                  prev={apy.value.combined.base}
-                  end={apy.value?.combined.userBoost ?? apy.value.combined.base}
+                  prev={apy.value.rewards.base}
+                  end={apy.value?.rewards.userBoost ?? apy.value.rewards.base}
                   suffix="%"
                 />
               )
