@@ -208,7 +208,7 @@ const ETH_ROPSTEN: EthereumRopsten = {
   gasStationEndpoint: 'https://gasprice.poa.network/',
   gqlEndpoints: {
     protocol: [graphHostedEndpoint('mstable', 'mstable-protocol-ropsten')],
-    feeders: [graphHostedEndpoint('mstable', 'mstable-feeders-ropsten')],
+    feeders: ['https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.5'],
     blocks: [graphHostedEndpoint('blocklytics', 'ropsten-blocks')],
   },
   addresses: {
@@ -234,7 +234,7 @@ const ETH_GOERLI: EthereumGoerli = {
   gasStationEndpoint: 'https://gasprice.poa.network/',
   gqlEndpoints: {
     protocol: [graphHostedEndpoint('mstable', 'mstable-protocol-goerli')],
-    feeders: [graphHostedEndpoint('mstable', 'mstable-feeders-goerli')],
+    feeders: ['https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.5'],
     blocks: [graphHostedEndpoint('blocklytics', 'goerli-blocks')],
   },
   addresses: {
@@ -272,7 +272,7 @@ const MATIC_MAINNET: MaticMainnet = {
   gasStationEndpoint: 'https://gasstation-mainnet.matic.network',
   gqlEndpoints: {
     protocol: [graphHostedEndpoint('mstable', 'mstable-protocol-polygon')],
-    feeders: [graphHostedEndpoint('mstable', 'mstable-feeder-pools-polygon')],
+    feeders: ['https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.5'],
     blocks: [graphHostedEndpoint('elkfinance', 'matic-blocks')],
     stakingRewards: [graphHostedEndpoint('mstable', 'mstable-staking-rewards-polygon')],
   },
