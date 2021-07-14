@@ -21,6 +21,14 @@ export interface RawData {
   vaultBalances: { [address: string]: string }
 }
 
+const EMPTY_FEEDER_POOLS: RawData['feederPools'] = Object.freeze({
+  feederPools: [],
+  saveVaults: [],
+  userVaults: [],
+  boostDirectors: [],
+  vaultIds: [],
+})
+
 const dataStateCtx = createContext<DataState>({})
 
 const useRawData = (): Pick<RawData, 'massets' | 'feederPools'> => {
@@ -41,7 +49,10 @@ const useRawData = (): Pick<RawData, 'massets' | 'feederPools'> => {
     !Object.prototype.hasOwnProperty.call(network.gqlEndpoints, 'feeders'),
   )
 
-  return { massets: massetsSub.data, feederPools: feedersSub.data }
+  return {
+    massets: massetsSub.data,
+    feederPools: feedersSub.data ?? EMPTY_FEEDER_POOLS,
+  }
 }
 
 export const useDataState = (): DataState => useContext(dataStateCtx)
