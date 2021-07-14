@@ -4,6 +4,7 @@ import { Interface } from '@ethersproject/abi'
 
 import type { MassetInterface } from '@mstable/protocol/dist/types/generated/Masset'
 import type { BoostedSavingsVaultState, DataState, FeederPoolState, MassetState, SavingsContractState } from './types'
+import { useNetwork } from '../NetworkProvider'
 import { Tokens, useTokensState } from '../TokensProvider'
 import { recalculateState } from './recalculateState'
 import { transformRawData } from './transformRawData'
@@ -23,6 +24,7 @@ export interface RawData {
 const dataStateCtx = createContext<DataState>({})
 
 const useRawData = (): Pick<RawData, 'massets' | 'feederPools'> => {
+  const network = useNetwork()
   const account = useAccount()
   const baseOptions = useMemo(
     () => ({
@@ -33,7 +35,11 @@ const useRawData = (): Pick<RawData, 'massets' | 'feederPools'> => {
 
   const massetsSub = useBlockPollingSubscription(useMassetsLazyQuery, baseOptions)
 
-  const feedersSub = useBlockPollingSubscription(useFeederPoolsLazyQuery, baseOptions)
+  const feedersSub = useBlockPollingSubscription(
+    useFeederPoolsLazyQuery,
+    baseOptions,
+    !Object.prototype.hasOwnProperty.call(network.gqlEndpoints, 'feeders'),
+  )
 
   return { massets: massetsSub.data, feederPools: feedersSub.data }
 }
