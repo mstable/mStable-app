@@ -92,7 +92,7 @@ export interface EthereumMainnet
       // TODO remove, just for testing
       ['FRAX/IQ']: { stakingContract: string; stakingToken: string; rewardsTokens: [string, string] }
     },
-    { feeders: [string] }
+    { feeders: string[] }
   > {
   chainId: ChainIds.EthereumMainnet
 }
@@ -149,8 +149,8 @@ const etherscanUrl = (network?: string, domain = 'etherscan.io') => (
 const GRAPH_API_KEY = '9bcd013940ae451d941a8e9f925546a2'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const graphMainnetEndpoint = (subgraphId: string, version: number): string =>
-  `https://gateway.thegraph.com/api/${GRAPH_API_KEY}/subgraphs/id/${subgraphId}-${version}`
+const graphMainnetEndpoint = (subgraphId: string, version: number, apiKey = GRAPH_API_KEY): string =>
+  `https://gateway.thegraph.com/api/${apiKey}/subgraphs/id/${subgraphId}-${version}`
 
 const graphHostedEndpoint = (orgName: string, subgraphName: string): string =>
   `https://api.thegraph.com/subgraphs/name/${orgName}/${subgraphName}`
@@ -174,8 +174,10 @@ const ETH_MAINNET: EthereumMainnet = {
       graphMainnetEndpoint('0x26cf67040678eb0f5654c9cbaad78dc1694cbafa', 0),
       graphHostedEndpoint('mstable', 'mstable-protocol-staging'),
     ],
-    // TODO replace when published
-    feeders: ['https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.5'],
+    feeders: [
+      graphMainnetEndpoint('0x021c1a1ce318e7b4545f6280b248062592b71706', 0, 'd76d19662493d9daedc9b4401f039afc'),
+      'https://api.studio.thegraph.com/query/948/mstable-feeder-pools-and-vaults/v0.0.5',
+    ],
     blocks: [graphHostedEndpoint('blocklytics', 'ethereum-blocks')],
   },
   addresses: {
