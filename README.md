@@ -1,12 +1,12 @@
-# mStable App
+# 🏡🚚 The mStable App has moved!
 
-A web frontend for interacting with the [mStable contracts](https://github.com/mstable/mStable-contracts).
+The app deployed at [https://mstable.app](https://mstable.app) is now part of [mStable-apps](https://github.com/mstable/mStable-apps). 
 
 ---
 
-## The mStable App has moved!
+# mStable App
 
-The app deployed at [https://mstable.app](https://mstable.app) is now part of [mStable-apps](https://github.com/mstable/mStable-apps).
+A web frontend for interacting with the [mStable contracts](https://github.com/mstable/mStable-contracts).
 
 ---
 
