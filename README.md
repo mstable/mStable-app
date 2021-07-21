@@ -4,6 +4,12 @@ A web frontend for interacting with the [mStable contracts](https://github.com/m
 
 ---
 
+## The mStable App has moved!
+
+The app deployed at [https://mstable.app](https://mstable.app) is now part of [mStable-apps](https://github.com/mstable/mStable-apps).
+
+---
+
 ## Setup
 
 ### Installation
